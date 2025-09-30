@@ -1,17 +1,16 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI", "FreeAI\FreeAI.csproj", "{CF7029E1-AA25-421A-AD96-8E3CBABB0251}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI", "FreeAI\FreeAI.csproj", "{CF7029E1-AA25-421A-AD96-8E3CBABB0251}"
 EndProject
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI.Client", "FreeAI.Client\FreeAI.Client.csproj", "{4F459A7C-5DC1-48F0-BD36-CC926ADD7AD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.Client", "FreeAI.Client\FreeAI.Client.csproj", "{4F459A7C-5DC1-48F0-BD36-CC926ADD7AD1}"
 EndProject
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI.DataAccess", "FreeAI.DataAccess\FreeAI.DataAccess.csproj", "{A4D95C52-12BC-4C2E-B19F-BC06D03550A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.DataAccess", "FreeAI.DataAccess\FreeAI.DataAccess.csproj", "{A4D95C52-12BC-4C2E-B19F-BC06D03550A6}"
 EndProject
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI.DataObjects", "FreeAI.DataObjects\FreeAI.DataObjects.csproj", "{06B3D946-EE55-4BB2-8DD4-3735A5FF1D1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.DataObjects", "FreeAI.DataObjects\FreeAI.DataObjects.csproj", "{06B3D946-EE55-4BB2-8DD4-3735A5FF1D1B}"
 EndProject
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI.EFModels", "FreeAI.EFModels\FreeAI.EFModels.csproj", "{B72C99C6-7BEF-42CC-B555-E8527C4228E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.EFModels", "FreeAI.EFModels\FreeAI.EFModels.csproj", "{B72C99C6-7BEF-42CC-B555-E8527C4228E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8F7EF635-F6C8-4094-9C35-9BD001104879}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,7 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Rename FreeFreeAI.exe = Rename FreeFreeAI.exe
 	EndProjectSection
 EndProject
-Project("{C213B74C-EB04-42E8-893F-3EF0099941BF}") = "FreeAI.Plugins", "FreeAI.Plugins\FreeAI.Plugins.csproj", "{2B9FDB90-2F94-44A7-95C4-C975D215A129}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.Plugins", "FreeAI.Plugins\FreeAI.Plugins.csproj", "{2B9FDB90-2F94-44A7-95C4-C975D215A129}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeAI.LocalTests", "FreeAI.LocalTests\FreeAI.LocalTests.csproj", "{0018C81C-01E4-4794-8EDF-763B6C5CA953}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +56,10 @@ Global
 		{2B9FDB90-2F94-44A7-95C4-C975D215A129}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B9FDB90-2F94-44A7-95C4-C975D215A129}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B9FDB90-2F94-44A7-95C4-C975D215A129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0018C81C-01E4-4794-8EDF-763B6C5CA953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0018C81C-01E4-4794-8EDF-763B6C5CA953}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0018C81C-01E4-4794-8EDF-763B6C5CA953}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0018C81C-01E4-4794-8EDF-763B6C5CA953}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
