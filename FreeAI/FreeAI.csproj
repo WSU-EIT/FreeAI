@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-	<UserSecretsId>3a86cb9d-e002-49ba-ab89-d834826fcce0</UserSecretsId>
+	<UserSecretsId>de19af2b-c157-4789-aed0-ff0a8731e5b7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +16,7 @@
     <ProjectReference Include="..\FreeAI.DataAccess\FreeAI.DataAccess.csproj" />
     <ProjectReference Include="..\FreeAI.Client\FreeAI.Client.csproj" />
     <ProjectReference Include="..\FreeAI.Plugins\FreeAI.Plugins.csproj" />
-    <PackageReference Include="AspNet.Security.OAuth.Apple" Version="9.4.0" />
+    <PackageReference Include="AspNet.Security.OAuth.Apple" Version="9.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.9" />
