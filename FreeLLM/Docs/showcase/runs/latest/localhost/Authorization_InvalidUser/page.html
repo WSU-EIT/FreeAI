@@ -1,0 +1,862 @@
+<!DOCTYPE html><html lang="en" style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: &quot;100%&quot;;"><head><meta name="app:server" content="EM2672">
+    <meta name="app:version" content="1.0.0">
+    <meta name="app:released" content="9/23/2025">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="http://localhost:5102/favicon.svg">
+    <link rel="icon" type="image/png" href="http://localhost:5102/favicon-96x96.png" sizes="96x96">
+    <link rel="shortcut icon" href="http://localhost:5102/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="http://localhost:5102/apple-touch-icon.png">
+    <link rel="manifest" href="http://localhost:5102/site.webmanifest">
+    <base href="/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="http://localhost:5102/_content/Blazor.Bootstrap/blazor.bootstrap.css?v=1.0.0">
+    <link rel="stylesheet" href="http://localhost:5102/_content/FreeBlazor/styles.css?v=1.0.0">
+    <link rel="stylesheet" href="http://localhost:5102/_content/MudBlazor/MudBlazor.min.css?v=1.0.0">
+    <link rel="stylesheet" href="http://localhost:5102/_content/Radzen.Blazor/css/material-base.css?v=1.0.0">
+    <link rel="stylesheet" href="fontawesome/css/fontawesome.6bhxool9h4.css">
+    <link rel="stylesheet" href="fontawesome/css/regular.viqntgrdek.css">
+    <link rel="stylesheet" href="fontawesome/css/solid.4bor9qsy68.css">
+    <link rel="stylesheet" href="js/bootstrap/css/bootstrap.min.t7g9wg1led.css">
+    <link rel="stylesheet" href="css/site.cz5vhg1qjr.css">
+    <link rel="stylesheet" href="css/site.App.xviwj5of65.css">
+    <link rel="stylesheet" href="css/themes.ez6neukup5.css">
+    <link rel="stylesheet" href="css/tags.feni277ed4.css">
+    <script type="importmap">{
+  "imports": {
+    "./Shared/Highcharts.razor.js": "./Shared/Highcharts.binshxw88r.razor.js",
+    "./Shared/UploadFile.razor.js": "./Shared/UploadFile.dv5vy9hepo.razor.js",
+    "./Shared/UserDefinedFields.razor.js": "./Shared/UserDefinedFields.9pjvca2av2.razor.js",
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.5vmds449nb.js",
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.pdf.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.pdf.ct0ej5e0q0.js",
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.sortable-list.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.sortable-list.ezlxc6gzv3.js",
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.theme-switcher.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.theme-switcher.pisakkcwob.js",
+    "./_content/Blazor.Bootstrap/pdfjs-4.0.379.min.js": "./_content/Blazor.Bootstrap/pdfjs-4.0.379.min.j8zp7bt7w3.js",
+    "./_content/Blazor.Bootstrap/pdfjs-4.0.379.worker.min.js": "./_content/Blazor.Bootstrap/pdfjs-4.0.379.worker.min.79hai7knhw.js",
+    "./_content/BlazorMonaco/jsInterop.js": "./_content/BlazorMonaco/jsInterop.0912lfifp4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/base/worker/workerMain.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/base/worker/workerMain.izrdgqrf74.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/abap/abap.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/abap/abap.j2zpqs5ddn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/abap/abap.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/abap/abap.min.39kqk1iu30.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/apex/apex.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/apex/apex.3gotb9e9u0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/apex/apex.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/apex/apex.min.jplz7o37wb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/azcli/azcli.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/azcli/azcli.min.t3wevwyfb4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/azcli/azcli.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/azcli/azcli.v8qrza9b8f.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bat/bat.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bat/bat.7qfe5pcmoh.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bat/bat.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bat/bat.min.aoai15t6lm.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bicep/bicep.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bicep/bicep.gpv6zqpklx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bicep/bicep.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/bicep/bicep.min.9g8d4my0ip.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cameligo/cameligo.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cameligo/cameligo.lugi1k3flr.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cameligo/cameligo.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cameligo/cameligo.min.l25grw3zw7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/clojure/clojure.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/clojure/clojure.byanror6qo.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/clojure/clojure.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/clojure/clojure.min.d2j7i4uk7f.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/coffee/coffee.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/coffee/coffee.i9ewn6wr7i.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/coffee/coffee.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/coffee/coffee.min.mq3xs9gztj.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cpp/cpp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cpp/cpp.e6gaaua66q.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cpp/cpp.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cpp/cpp.min.tqjk9p2nfe.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csharp/csharp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csharp/csharp.bstkxym89r.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csharp/csharp.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csharp/csharp.min.x51ow3e1a0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csp/csp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csp/csp.kfhfpfntz4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csp/csp.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/csp/csp.min.r0x04jpcx3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/css/css.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/css/css.min.332kdjl5au.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/css/css.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/css/css.pecfuqd0i9.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cypher/cypher.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cypher/cypher.itdf1p8553.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cypher/cypher.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/cypher/cypher.min.kmp8854cpy.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dart/dart.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dart/dart.min.ihtklkn6f3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dart/dart.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dart/dart.umwq7wfr8u.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dockerfile/dockerfile.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dockerfile/dockerfile.24vxsqy5s6.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dockerfile/dockerfile.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/dockerfile/dockerfile.min.w57ufc3myd.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ecl/ecl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ecl/ecl.2mi5hycqiy.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ecl/ecl.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ecl/ecl.min.tpx81cr3u7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/elixir/elixir.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/elixir/elixir.m7847ijiy8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/elixir/elixir.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/elixir/elixir.min.8ghqbgvhn4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/flow9/flow9.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/flow9/flow9.1ig6f53dnn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/flow9/flow9.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/flow9/flow9.min.bkonxzg7tb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/freemarker2/freemarker2.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/freemarker2/freemarker2.min.i91fgn1ofp.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/freemarker2/freemarker2.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/freemarker2/freemarker2.ocwwe8fuxb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/fsharp/fsharp.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/fsharp/fsharp.min.dmql1darsf.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/fsharp/fsharp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/fsharp/fsharp.qm1uwwgei0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/go/go.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/go/go.8hojrm38j3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/go/go.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/go/go.min.p2ts36l822.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/graphql/graphql.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/graphql/graphql.min.wq8pdfibam.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/graphql/graphql.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/graphql/graphql.rjjs54okbo.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/handlebars/handlebars.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/handlebars/handlebars.7pkels3e48.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/handlebars/handlebars.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/handlebars/handlebars.min.8fpbtsjtf8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/hcl/hcl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/hcl/hcl.gf3mvykw55.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/hcl/hcl.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/hcl/hcl.min.myajd4dzdy.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/html/html.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/html/html.min.c84cv5hj56.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/html/html.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/html/html.pwb3bc13y7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ini/ini.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ini/ini.gz43095gg9.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ini/ini.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ini/ini.min.gxe9w7im6b.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/java/java.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/java/java.hp97s6kt4h.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/java/java.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/java/java.min.jh5m2gg4sv.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/javascript/javascript.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/javascript/javascript.c3fekk78ay.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/javascript/javascript.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/javascript/javascript.min.8n194jt561.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/julia/julia.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/julia/julia.j8o5m36h4o.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/julia/julia.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/julia/julia.min.22v3ivo42h.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/kotlin/kotlin.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/kotlin/kotlin.hsr2gumx6i.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/kotlin/kotlin.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/kotlin/kotlin.min.qtexpsnon6.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/less/less.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/less/less.2326rpavif.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/less/less.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/less/less.min.x3gua3wlfl.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lexon/lexon.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lexon/lexon.exutz0to1k.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lexon/lexon.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lexon/lexon.min.udwn776hl8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/liquid/liquid.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/liquid/liquid.min.qcjhn9rcwn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/liquid/liquid.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/liquid/liquid.yle8qvb9n4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lua/lua.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lua/lua.h9egigfoyn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lua/lua.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/lua/lua.min.oxd5ovitge.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/m3/m3.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/m3/m3.iia0k5lto7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/m3/m3.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/m3/m3.min.g0umlcrsy0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/markdown/markdown.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/markdown/markdown.8056qaybss.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/markdown/markdown.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/markdown/markdown.min.49i3eyshg7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mdx/mdx.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mdx/mdx.334de9kitq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mdx/mdx.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mdx/mdx.min.ticwbtn2dv.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mips/mips.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mips/mips.ecrsc7q19q.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mips/mips.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mips/mips.min.jdhxzvna0h.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/msdax/msdax.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/msdax/msdax.jsk4mk35l1.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/msdax/msdax.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/msdax/msdax.min.nzlmu5m0lp.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mysql/mysql.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mysql/mysql.1vudo8266a.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mysql/mysql.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/mysql/mysql.min.o1oikopevw.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/objective-c/objective-c.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/objective-c/objective-c.min.6rvehdns15.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/objective-c/objective-c.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/objective-c/objective-c.nsoiekkrng.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascal/pascal.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascal/pascal.min.hrsb3qmvq4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascal/pascal.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascal/pascal.nnhgpijkxj.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascaligo/pascaligo.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascaligo/pascaligo.min.i65yd0mfh9.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascaligo/pascaligo.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pascaligo/pascaligo.x199iwe4wr.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/perl/perl.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/perl/perl.min.b3jft4fhu6.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/perl/perl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/perl/perl.rjm2vihhyh.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pgsql/pgsql.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pgsql/pgsql.13i5modmsn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pgsql/pgsql.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pgsql/pgsql.min.q712bia4s1.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/php/php.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/php/php.m8slulhnr7.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/php/php.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/php/php.min.ftbv6tra7r.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pla/pla.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pla/pla.min.gnp2xyphhf.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pla/pla.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pla/pla.tcr7u9lwz3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/postiats/postiats.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/postiats/postiats.33gdgziar5.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/postiats/postiats.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/postiats/postiats.min.ea3z94r26h.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powerquery/powerquery.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powerquery/powerquery.min.f6fz6ezdi3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powerquery/powerquery.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powerquery/powerquery.ur0qp9mqpz.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powershell/powershell.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powershell/powershell.min.5cw13u4wu5.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powershell/powershell.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/powershell/powershell.y7uyzdo0mx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/protobuf/protobuf.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/protobuf/protobuf.min.v74b2nsa3m.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/protobuf/protobuf.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/protobuf/protobuf.z6i8380zvr.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pug/pug.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pug/pug.min.1x9evz2rxc.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pug/pug.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/pug/pug.yorqwgvvrg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/python/python.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/python/python.min.b2ajjdnn4h.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/python/python.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/python/python.oo43y588uq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/qsharp/qsharp.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/qsharp/qsharp.min.tnhtlbego1.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/qsharp/qsharp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/qsharp/qsharp.nut55qp7ba.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/r/r.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/r/r.7c90ya0kfi.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/r/r.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/r/r.min.9r0yp628ia.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/razor/razor.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/razor/razor.fy27qlvt57.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/razor/razor.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/razor/razor.min.ccsi9ckij5.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redis/redis.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redis/redis.min.t7o3e1rnk8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redis/redis.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redis/redis.txdezr8q6w.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redshift/redshift.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redshift/redshift.min.etxrru1xaq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redshift/redshift.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/redshift/redshift.wnzco4wien.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/restructuredtext/restructuredtext.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/restructuredtext/restructuredtext.min.sk1vzx6z49.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/restructuredtext/restructuredtext.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/restructuredtext/restructuredtext.y89iznrvyd.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ruby/ruby.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ruby/ruby.min.r2z6vz7jri.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ruby/ruby.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/ruby/ruby.wlylh45qqp.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/rust/rust.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/rust/rust.8n5nd33yt8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/rust/rust.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/rust/rust.min.e9u95nfoxx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sb/sb.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sb/sb.34do22eqir.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sb/sb.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sb/sb.min.h2iumo5ajp.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scala/scala.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scala/scala.d0uzawk7v4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scala/scala.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scala/scala.min.l9uy8vshp6.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scheme/scheme.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scheme/scheme.min.kfsigsbkpk.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scheme/scheme.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scheme/scheme.mzoouobxzq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scss/scss.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scss/scss.fv3snw9ew0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scss/scss.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/scss/scss.min.y0k6o9b7wo.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/shell/shell.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/shell/shell.min.oszrxv8kii.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/shell/shell.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/shell/shell.peyv6y9usd.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/solidity/solidity.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/solidity/solidity.min.17ce75okcj.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/solidity/solidity.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/solidity/solidity.o2o458uuox.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sophia/sophia.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sophia/sophia.a5uhjvxk37.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sophia/sophia.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sophia/sophia.min.wovqwhm67k.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sparql/sparql.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sparql/sparql.3li5r1qbba.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sparql/sparql.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sparql/sparql.min.02hwo20myl.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sql/sql.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sql/sql.21kuob03jb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sql/sql.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/sql/sql.min.1o04bxrign.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/st/st.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/st/st.8kjdeao31e.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/st/st.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/st/st.min.jklusvntsa.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/swift/swift.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/swift/swift.min.j491llmm78.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/swift/swift.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/swift/swift.n81ihmgwt9.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/systemverilog/systemverilog.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/systemverilog/systemverilog.fvra1zpxlk.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/systemverilog/systemverilog.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/systemverilog/systemverilog.min.m7l4q1lvht.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/tcl/tcl.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/tcl/tcl.min.y1vfad46bz.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/tcl/tcl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/tcl/tcl.uj0ualgzsn.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/twig/twig.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/twig/twig.2qt3f5v2o4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/twig/twig.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/twig/twig.min.scjaatmwcb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typescript/typescript.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typescript/typescript.6z0n5jw5i8.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typescript/typescript.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typescript/typescript.min.w4zyeudvdc.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typespec/typespec.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typespec/typespec.min.qmkeb77dnx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typespec/typespec.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/typespec/typespec.xib1jyzjpg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/vb/vb.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/vb/vb.min.fxb67bzjga.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/vb/vb.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/vb/vb.u4ygen53by.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/wgsl/wgsl.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/wgsl/wgsl.min.sh8hfq8nin.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/wgsl/wgsl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/wgsl/wgsl.qms29c9yx5.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/xml/xml.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/xml/xml.24jwrlun5p.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/xml/xml.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/xml/xml.min.dbmlz2qvgw.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/yaml/yaml.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/yaml/yaml.min.afa1m2nu0c.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/yaml/yaml.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/yaml/yaml.zxgpeswuq3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.8yxqoci4bx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssMode.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssMode.j20ii989xw.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssMode.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssMode.min.0zefns6hu4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssWorker.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssWorker.min.rocihdn3pf.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssWorker.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/cssWorker.sexjau67wz.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlMode.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlMode.cid9ocldnu.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlMode.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlMode.min.25l546tbhg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlWorker.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlWorker.386j4ptk2q.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlWorker.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/htmlWorker.min.p7rozp3bz5.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonMode.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonMode.apu57ydo7s.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonMode.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonMode.min.3f8opgzw4p.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonWorker.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonWorker.c51qnwkdgx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonWorker.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/jsonWorker.min.y3mk8je8or.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsMode.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsMode.zvashk7oxg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsWorker.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsWorker.min.gfxobh8za0.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsWorker.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/tsWorker.yhs38028v3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.fn9hi5e428.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.min.kbu1jxjjc4.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.9miu1te82x.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.min.i0wifs8lsq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.236bouitz3.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.min.x6kezu29xv.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.9ja4l956gq.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.min.od5snptk7d.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.min.cvwp1fy2gb.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.mrd3c03ykx.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.7vn04c08ok.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.min.ebdy62amcg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.lbj4aiydap.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.min.tu3p345y2l.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.cbdfikudpo.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.min.1nehi47xxg.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.kjdjkhz42w.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.min.vw19slfuql.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.min.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.min.kksbxfhwzj.js",
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.t20r05dcat.js",
+    "./_content/FreeBlazor/ckEditor/adapters/jquery.js": "./_content/FreeBlazor/ckEditor/adapters/jquery.kem07i7mdx.js",
+    "./_content/FreeBlazor/ckEditor/build-config.js": "./_content/FreeBlazor/ckEditor/build-config.y0jx7osk9f.js",
+    "./_content/FreeBlazor/ckEditor/ckeditor.js": "./_content/FreeBlazor/ckEditor/ckeditor.w76sfwedj7.js",
+    "./_content/FreeBlazor/ckEditor/config.js": "./_content/FreeBlazor/ckEditor/config.8xg3h3ne9e.js",
+    "./_content/FreeBlazor/ckEditor/lang/en.js": "./_content/FreeBlazor/ckEditor/lang/en.s6a62zst0d.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/a11yhelp.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/a11yhelp.21ve2voibe.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/af.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/af.h8v8h9kt2r.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ar.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ar.fo3qpi3rj7.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/az.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/az.a826vw8lkj.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/bg.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/bg.6dbfvd6qx8.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ca.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ca.04vc5vplid.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cs.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cs.4m077v7iys.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cy.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cy.t0p3hi6zfo.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/da.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/da.f6ghtbhv4a.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de-ch.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de-ch.j6pu1o46ye.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de.u2cv0j8acb.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/el.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/el.0qzbn3b4cx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-au.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-au.2zafnhjmrp.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-gb.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-gb.3bdlj312sh.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en.on080wvzyr.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eo.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eo.ted0mmin6c.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es-mx.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es-mx.h5ncnwzak9.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es.mzuv38avue.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/et.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/et.sfo6dp8k9y.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eu.z0v19tcncu.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fa.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fa.p0bd2gqdmp.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fi.v5yf976acv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fo.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fo.8mjtz89xvd.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr-ca.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr-ca.9gknkibd81.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr.pux0dr8vrg.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gl.ixvqaol5ih.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gu.t7hn0fbxpb.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/he.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/he.1igw4lo4th.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hi.esy9sjqh82.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hr.nkun7nkwum.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hu.rz5xbb7nud.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/id.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/id.q49tf66rwy.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/it.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/it.3orbmp688t.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ja.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ja.w8gjkizjd5.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/km.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/km.29h2trwdfu.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ko.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ko.uddr6vxrl6.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ku.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ku.0k7rpr1ulm.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lt.jlenvwmcnv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lv.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lv.vg2ca5t5ow.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mk.p9meg4r2wf.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mn.vf4zrwra8v.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nb.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nb.xqxv29nkxv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nl.pfwmbp1yxd.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/no.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/no.796pgea5ia.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/oc.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/oc.kce8bvqrx4.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pl.pzpmy1eraq.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt-br.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt-br.mt1u0qhzmo.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt.c71cp595i1.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ro.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ro.9vcp6dnxrp.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ru.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ru.5rxjx0airm.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/si.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/si.my0vqvs2wz.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sk.bt53hj24qs.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sl.9ev52uy4th.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sq.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sq.623wiv0593.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr-latn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr-latn.c43ma5piu5.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr.pygpt7u19v.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sv.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sv.zbr00idbb1.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/th.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/th.hh60lke3v3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tr.c5o1nl9vmu.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tt.u3haosholv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ug.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ug.krv5fc07xf.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/uk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/uk.58uch94j1m.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/vi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/vi.c4irqqt18m.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh-cn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh-cn.h1pharotxa.js",
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh.cxp2336vyl.js",
+    "./_content/FreeBlazor/ckEditor/plugins/about/dialogs/about.js": "./_content/FreeBlazor/ckEditor/plugins/about/dialogs/about.33s7si6ho7.js",
+    "./_content/FreeBlazor/ckEditor/plugins/clipboard/dialogs/paste.js": "./_content/FreeBlazor/ckEditor/plugins/clipboard/dialogs/paste.z7ntypqy0e.js",
+    "./_content/FreeBlazor/ckEditor/plugins/colordialog/dialogs/colordialog.js": "./_content/FreeBlazor/ckEditor/plugins/colordialog/dialogs/colordialog.s4g8mtvs7t.js",
+    "./_content/FreeBlazor/ckEditor/plugins/dialog/dialogDefinition.js": "./_content/FreeBlazor/ckEditor/plugins/dialog/dialogDefinition.jowyo6217k.js",
+    "./_content/FreeBlazor/ckEditor/plugins/div/dialogs/div.js": "./_content/FreeBlazor/ckEditor/plugins/div/dialogs/div.sjhiy6yuhg.js",
+    "./_content/FreeBlazor/ckEditor/plugins/find/dialogs/find.js": "./_content/FreeBlazor/ckEditor/plugins/find/dialogs/find.j1lo1lrrhl.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/button.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/button.76br5no4hn.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/checkbox.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/checkbox.gcrkdv7fhx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/form.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/form.g1gxbri36l.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/hiddenfield.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/hiddenfield.ks5fqixdxb.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/radio.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/radio.gbg0ytiitp.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/select.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/select.6l23xmpvnw.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textarea.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textarea.xc7dan92h2.js",
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textfield.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textfield.tddx2kexc3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/iframe/dialogs/iframe.js": "./_content/FreeBlazor/ckEditor/plugins/iframe/dialogs/iframe.7ndozg8qhv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/image/dialogs/image.js": "./_content/FreeBlazor/ckEditor/plugins/image/dialogs/image.wgfre0bkl9.js",
+    "./_content/FreeBlazor/ckEditor/plugins/image2/dialogs/image2.js": "./_content/FreeBlazor/ckEditor/plugins/image2/dialogs/image2.6m8b15n7tx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/anchor.js": "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/anchor.x2e7t7qgkf.js",
+    "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/link.js": "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/link.zfzvkyv5rz.js",
+    "./_content/FreeBlazor/ckEditor/plugins/liststyle/dialogs/liststyle.js": "./_content/FreeBlazor/ckEditor/plugins/liststyle/dialogs/liststyle.7fi8nbakxx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromgdocs/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromgdocs/filter/default.u9ek2n3uzx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromlibreoffice/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromlibreoffice/filter/default.r5xqimfuks.js",
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromword/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromword/filter/default.m78ldvjlqt.js",
+    "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/common.js": "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/common.79axtziw2t.js",
+    "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/image.js": "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/image.3j2v65jz21.js",
+    "./_content/FreeBlazor/ckEditor/plugins/scayt/dialogs/options.js": "./_content/FreeBlazor/ckEditor/plugins/scayt/dialogs/options.bfvea7b1mt.js",
+    "./_content/FreeBlazor/ckEditor/plugins/smiley/dialogs/smiley.js": "./_content/FreeBlazor/ckEditor/plugins/smiley/dialogs/smiley.8dcn7bac46.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/af.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/af.c38k2xlxh8.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ar.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ar.bq8lja5gw3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/az.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/az.x31w2662b8.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/bg.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/bg.0lp8zbf010.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ca.3f4kjmqwvo.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cs.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cs.cxz6x0kym3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cy.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cy.aau5euqgas.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/da.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/da.lg2xd20tp3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de-ch.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de-ch.u8bh72qpxl.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de.fkq24y9vkr.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/el.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/el.9gvbc0xwa3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-au.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-au.khq76j5bj5.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-ca.uo5ekaw5mi.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-gb.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-gb.jt8k63ztv6.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en.jo0l2f8xxb.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eo.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eo.fpt05xr66p.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es-mx.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es-mx.r4br79qgeu.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es.1k1p6ivmyg.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/et.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/et.ct5vibj8yz.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eu.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eu.6ituk9vuow.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fa.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fa.eoyzj4v5eq.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fi.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fi.3liziazx2p.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr-ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr-ca.6tlv1y663a.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr.m92q750bgf.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/gl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/gl.oldqw0tmxy.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/he.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/he.9ul72vd89d.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hr.17r792iwgd.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hu.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hu.thjlwg5d5w.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/id.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/id.9svaawgbqs.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/it.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/it.piydgs0kxc.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ja.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ja.8zxxkkr98j.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/km.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/km.ddyihj88oz.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ko.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ko.f1qf9u4480.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ku.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ku.77bncxue4h.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lt.14zcnggv44.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lv.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lv.feq99v37qm.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nb.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nb.puzvxuop0z.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nl.i16h05zlup.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/no.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/no.8xze7hjhvv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/oc.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/oc.9u29q3ucf3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pl.be6frdylx5.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt-br.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt-br.bdd7z4oopo.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt.45u3s2sttn.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ro.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ro.51h83r5nxv.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ru.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ru.fzpdrei8cx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/si.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/si.eohetxtajq.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sk.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sk.6q7v906vk3.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sl.z8ttavml1m.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sq.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sq.p1uedb7yl1.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr-latn.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr-latn.1nrwh804qi.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr.laxhfgp8qc.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sv.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sv.1b3d0q2o9m.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/th.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/th.73tdpq17fx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tr.35l6ffej5k.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tt.9ug9zbcwkt.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ug.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ug.f0qznvxcwu.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/uk.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/uk.cqe12t5ud4.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/vi.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/vi.35tu22q0qx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh-cn.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh-cn.o732xv7amn.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh.cvdnu14cdc.js",
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/specialchar.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/specialchar.xz5i7sxqfp.js",
+    "./_content/FreeBlazor/ckEditor/plugins/table/dialogs/table.js": "./_content/FreeBlazor/ckEditor/plugins/table/dialogs/table.tjlpau0pkx.js",
+    "./_content/FreeBlazor/ckEditor/plugins/tabletools/dialogs/tableCell.js": "./_content/FreeBlazor/ckEditor/plugins/tabletools/dialogs/tableCell.z627466z6s.js",
+    "./_content/FreeBlazor/ckEditor/plugins/templates/dialogs/templates.js": "./_content/FreeBlazor/ckEditor/plugins/templates/dialogs/templates.2i79muphep.js",
+    "./_content/FreeBlazor/ckEditor/plugins/templates/templatedefinition.js": "./_content/FreeBlazor/ckEditor/plugins/templates/templatedefinition.jowyo6217k.js",
+    "./_content/FreeBlazor/ckEditor/plugins/templates/templates/default.js": "./_content/FreeBlazor/ckEditor/plugins/templates/templates/default.woq2x31dlq.js",
+    "./_content/FreeBlazor/ckEditor/samples/js/sample.js": "./_content/FreeBlazor/ckEditor/samples/js/sample.o9wkvayatx.js",
+    "./_content/FreeBlazor/ckEditor/samples/js/sf.js": "./_content/FreeBlazor/ckEditor/samples/js/sf.51srjoi1mb.js",
+    "./_content/FreeBlazor/ckEditor/samples/old/assets/uilanguages/languages.js": "./_content/FreeBlazor/ckEditor/samples/old/assets/uilanguages/languages.65exdczdnn.js",
+    "./_content/FreeBlazor/ckEditor/samples/old/dialog/assets/my_dialog.js": "./_content/FreeBlazor/ckEditor/samples/old/dialog/assets/my_dialog.lnco34y632.js",
+    "./_content/FreeBlazor/ckEditor/samples/old/sample.js": "./_content/FreeBlazor/ckEditor/samples/old/sample.cmu88iwocf.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/abstracttoolbarmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/abstracttoolbarmodifier.a39wi0jqoy.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/fulltoolbareditor.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/fulltoolbareditor.qp5cpxc5lx.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbarmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbarmodifier.uq56uzbnph.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbartextmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbartextmodifier.djmt9vypns.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/codemirror.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/codemirror.nmzs0hdcq8.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/javascript.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/javascript.9rzyumrztz.js",
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/show-hint.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/show-hint.qlla3479c2.js",
+    "./_content/FreeBlazor/ckEditor/styles.js": "./_content/FreeBlazor/ckEditor/styles.9l6pg925xq.js",
+    "./_content/FreeBlazor/ckEditor/vendor/promise.js": "./_content/FreeBlazor/ckEditor/vendor/promise.kq0twi1itf.js",
+    "./_content/MudBlazor/MudBlazor.min.js": "./_content/MudBlazor/MudBlazor.min.lftp6ydp6b.js",
+    "./_content/Radzen.Blazor/Radzen.Blazor.js": "./_content/Radzen.Blazor/Radzen.Blazor.2m5u4xjxyl.js",
+    "./_content/Radzen.Blazor/Radzen.Blazor.min.js": "./_content/Radzen.Blazor/Radzen.Blazor.min.oq3ezmhw9q.js",
+    "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",
+    "./_framework/blazor.server.js": "./_framework/blazor.server.cj5793hgrt.js",
+    "./_framework/blazor.web.js": "./_framework/blazor.web.ej96puwv3k.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.b6b78lel0r.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
+    "./js/bootstrap/js/bootstrap.bundle.js": "./js/bootstrap/js/bootstrap.bundle.coucdleqvw.js",
+    "./js/bootstrap/js/bootstrap.bundle.min.js": "./js/bootstrap/js/bootstrap.bundle.min.kq3enx1zfc.js",
+    "./js/bootstrap/js/bootstrap.esm.js": "./js/bootstrap/js/bootstrap.esm.dvuf5es4er.js",
+    "./js/bootstrap/js/bootstrap.esm.min.js": "./js/bootstrap/js/bootstrap.esm.min.w0gms4gy0v.js",
+    "./js/bootstrap/js/bootstrap.js": "./js/bootstrap/js/bootstrap.i62jd590hj.js",
+    "./js/bootstrap/js/bootstrap.min.js": "./js/bootstrap/js/bootstrap.min.7g5exmj95a.js",
+    "./js/jquery/jquery-3.7.0.min.js": "./js/jquery/jquery-3.7.0.min.skkcmj0da5.js",
+    "./js/sortablejs/Sortable.js": "./js/sortablejs/Sortable.jhm3o1xz4r.js",
+    "./js/sortablejs/sortable.1.13.0.min.js": "./js/sortablejs/sortable.1.13.0.min.o9y166nr9q.js",
+    "./js/sortablejs/sortable.min.js": "./js/sortablejs/sortable.min.n39if9i3yn.js",
+    "_framework/resource-collection.js": "./_framework/resource-collection.iPVfG.js",
+    "_framework/resource-collection.js.gz": "./_framework/resource-collection.iPVfG.js.gz"
+  },
+  "integrity": {
+    "./_framework/resource-collection.iPVfG.js": "sha256-q4cgqTOYJE4J7F9C6Z0jPwRcQFrqkR+ifHUxszC6Sso=",
+    "./_framework/resource-collection.iPVfG.js.gz": "sha256-q4cgqTOYJE4J7F9C6Z0jPwRcQFrqkR+ifHUxszC6Sso="
+  }
+}</script>
+    <!--!--><!--!--><!--!--><title>FreeLLM</title><!--!--><!--!--><link rel="stylesheet" type="text/css" data-name="vs/editor/editor.main" href="http://localhost:5102/_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css"><style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+
+<body id="body-element" data-bs-theme="" class="light"><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><div id="page-area" class=""><!--!--><div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasQuickAction" aria-labelledby="offcanvasQuickActionLabel" role="dialog"><!--!--><div class="offcanvas-header"><h5 class="offcanvas-title" id="offcanvasQuickActionLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+    <div class="offcanvas-body"></div></div><!--!-->
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUserMenu" aria-labelledby="offcanvasUserMenuLabel" role="dialog"><!--!--><div class="offcanvas-header"><h5 class="offcanvas-title" id="offcanvasUserMenuLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+    <div class="offcanvas-body"><div class="mb-2"><div class="menu-user-name"><span>Admin</span><!--!-->
+                    <span>User</span></div><div class="menu-user-username"><!--!--><i class=""><!--!-->username</i><!--!-->:
+                    <span>admin</span></div><!--!-->
+                <div class="menu-user-email"><!--!--><i class=""><!--!-->email</i><!--!-->:
+                    <span>admin@local</span></div></div><!--!--><hr>
+                <div class="mt-2"><!--!--><i class=""><!--!-->You have access to multiple app instances. You can switch to another instance below:</i></div><div class="pointer hover-highlight"><!--!--><i class="icon icon-fa fa-regular fa-circle"></i><span class="icon-text">Admin</span></div><div class="current-tenant"><!--!--><i class="icon icon-fa fa-regular fa-circle-dot"></i><span class="icon-text">Tenant 1</span></div><!--!--><hr><div class="mb-1 pointer hover-highlight"><!--!--><!--!--><i class="icon icon-fa fa-regular fa-address-card"></i><span class="icon-text"><!--!-->Manage Profile</span></div><div class="mb-1 pointer hover-highlight"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-key"></i><span class="icon-text"><!--!-->Change Password</span></div><div class="mb-1 pointer hover-highlight"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-sign-in-alt"></i><span class="icon-text"><!--!-->Logout</span></div><div class="mb-1 pointer hover-highlight"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-circle-info"></i><span class="icon-text"><!--!-->About</span></div><!--!--><hr>
+            <div class="version-and-copyright"><!--!-->
+                v. <span>1.0.0</span><span> - <span>9/23/2025</span></span><div>© <!--!--><i class=""><!--!-->Company Name</i></div></div></div></div><!--!--><header><nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3"><div class="container-fluid"><a class="navbar-brand" href="http://localhost:5102/"><span>FreeLLM</span></a><!--!-->
+            <!--!--><button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="navbar-collapse collapse show" id="navBarToggler"><ul class="navbar-nav me-auto"><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-sliders"></i><span class="icon-text"><!--!-->Admin</span></a><!--!-->
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown"><li><a class="dropdown-item app-admin-only" href="http://localhost:5102/Settings/AppSettings"><!--!--><i class="icon icon-fa fa-solid fa-screwdriver-wrench"></i><span class="icon-text"><!--!-->Application Settings</span></a></li><li><a class="dropdown-item" href="http://localhost:5102/Settings/Language"><!--!--><i class="icon icon-fa fa-solid fa-language"></i><span class="icon-text"><!--!-->Language</span></a></li><li><a class="dropdown-item" href="http://localhost:5102/Settings"><!--!--><i class="icon icon-fa fa-solid fa-sliders"></i><span class="icon-text"><!--!-->Settings</span></a></li><li><a class="dropdown-item app-admin-only" href="http://localhost:5102/Settings/Tenants"><!--!--><i class="icon icon-fa fa-solid fa-building-user"></i><span class="icon-text"><!--!-->Tenants</span></a></li><li><a class="dropdown-item" href="http://localhost:5102/Settings/Users"><!--!--><i class="icon icon-fa fa-solid fa-user"></i><span class="icon-text"><!--!-->Users</span></a></li></ul></li></ul><!--!-->
+                <form class="d-flex"><ul class="navbar-nav me-auto"><li class="nav-item dropdown" title="Theme"><a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><!--!--><i class="icon icon-fa fa-regular fa-sun"></i></a><!--!-->
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown"><li><a class="dropdown-item disabled" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-regular fa-sun"></i><span class="icon-text"><!--!-->Theme</span></a></li><!--!-->
+                                    <!--!--><li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-circle-half-stroke"></i><span class="icon-text"><!--!-->Auto (based on system settings)</span></a></li><!--!-->
+                                    <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-regular fa-sun"></i><span class="icon-text"><!--!-->Light</span></a></li><!--!-->
+                                    <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-moon"></i><span class="icon-text"><!--!-->Dark</span></a></li></ul></li><li class="nav-item"><a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasUserMenu" role="button" aria-controls="offcanvasUserMenu"><img class="user-menu-icon" src="http://localhost:5102/File/View/2ca1fcc7-0cd6-4bc2-ba4b-e032a01cf557"></a></li></ul></form></div></div></nav></header><div class="container-fluid page-view"><div class="pb-3"><!--!--><h1 class="page-title"><!--!--><!--!--><span class="icon-text"><!--!-->INVALID USER</span></h1><button type="button" class="btn btn-primary"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-chevron-left"></i><span class="icon-text"><!--!-->Back to Login</span></button></div></div><!--!-->
+
+    <div id="password-generator" style="display:none;"></div></div><!--!-->
+
+<!--!--><div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">X</a></div>
+
+<!--!--><!--!-->
+<!--!--><!--!-->
+        <!--!-->
+    <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs/dist/thumbmark.umd.js"></script>
+    <script src="http://localhost:5102/_content/Blazor.Bootstrap/blazor.bootstrap.js?v=1.0.0"></script>
+    <script src="http://localhost:5102/_content/MudBlazor/MudBlazor.min.js?v=1.0.0"></script>
+    <script src="http://localhost:5102/_content/Radzen.Blazor/Radzen.Blazor.js?v=7.3.5.0"></script>
+    <script src="_content/BlazorSortableList/SortableList.razor.js?v=1.0.0" type="module"></script>
+    <script src="js/sortablejs/sortable.min.n39if9i3yn.js"></script>
+    <script src="js/jquery/jquery-3.7.0.min.skkcmj0da5.js"></script>
+    <script src="js/bootstrap/js/bootstrap.bundle.min.kq3enx1zfc.js"></script>
+    <script src="http://localhost:5102/_content/BlazorMonaco/jsInterop.js?v=1.0.0"></script>
+    <script src="http://localhost:5102/_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js?v=1.0.0"></script>
+    <script src="http://localhost:5102/_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js?v=1.0.0"></script>
+    <script src="_framework/blazor.web.js"></script>
+    
+
+    <script type="text/javascript">
+        let dotNetHelper;
+        let fingerprint;
+
+        const onReady = (callback) => {
+            if (document.readyState!='loading') {
+                callback();
+            } else if (document.addEventListener) {
+                document.addEventListener('DOMContentLoaded', callback);
+            } else {
+                document.attachEvent('onreadystatechange', function() {
+                    if (document.readyState=='complete') callback();
+                });
+            }
+        };
+
+        onReady(() => {
+            SetPreferredColorScheme("");
+        });
+
+        function ConsoleLog(message, objects) {
+            if (objects != undefined && objects != null) {
+                if (message != undefined && message != null && message != "") {
+                    console.log(message, objects);
+                } else {
+                    console.log(objects);
+                }
+            } else if (message != undefined && message != null && message != "") {
+                console.log(message);
+            }
+        }
+
+        function CookieRead(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+
+            return "";
+        }
+
+        function CookieWrite(name, value, days) {
+            var expires;
+
+            if (days == undefined || days == null || days < 1) {
+                days = 14;
+            }
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+
+        function CopyToClipboard(value) {
+            navigator.clipboard.writeText(value);
+        }
+
+        function DelayedFocus(element) {
+            setTimeout(() => DelayedFocusInternal(element, 0), 0);
+        }
+
+        function DelayedFocusInternal(element, safety) {
+            if (safety > 20) { return; }
+            safety++;
+
+            if (isVisibleByElementId(element)) {
+                let el = document.getElementById(element);
+
+                if (el != undefined && el != null) {
+                    if (el instanceof HTMLDivElement || el instanceof HTMLTableElement) {
+                        // The element provided was a div or table, so find the first input element inside that element.
+                        let inputElements = el.querySelectorAll("input,textarea,select");
+                        if (inputElements != null && inputElements.length > 0) {
+                            for (let i = 0; i < inputElements.length ; i++) {
+                                let inputElement = inputElements[i];
+                                if (isVisible(inputElement)) {
+                                    inputElement.focus();
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        el.focus();
+                    }
+                }
+            } else {
+                setTimeout(() => DelayedFocusInternal(element, safety), 20);
+            }
+        }
+
+        function DelayedSelect(element) {
+            setTimeout(() => DelayedSelectInternal(element, 0), 0);
+        }
+
+        function DelayedSelectInternal(element, safety) {
+            if (safety > 20) { return; }
+            safety++;
+
+            let el = document.getElementById(element);
+            if (el != undefined && el != null) {
+                if (isVisible(el)) {
+                    if (el instanceof HTMLDivElement || el instanceof HTMLTableElement) {
+                        // The element provided was a div or table, so find the first input element inside that element.
+                        let inputElements = el.querySelectorAll("input,textarea,select");
+                        if (inputElements != null && inputElements.length > 0) {
+                            for (let i = 0; i < inputElements.length ; i++) {
+                                let inputElement = inputElements[i];
+                                if (isVisible(inputElement)) {
+                                    inputElement.select();
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        el.select();
+                    }
+                } else {
+                    setTimeout(() => DelayedSelectInternal(element, safety), 20);
+                }
+            }
+
+        }
+
+        async function DownloadFileFromStream(fileName, contentStreamReference) {
+            const arrayBuffer = await contentStreamReference.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function ElementHasClass(elementId, className) {
+            let el = document.getElementById(elementId);
+            if (el != undefined && el != null) {
+                if (el.classList.contains(className)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function GetFingerprint(){
+            ThumbmarkJS.setOption('exclude', ['permissions']);
+            // ThumbmarkJS.getFingerprint(includeData = true).then(
+            //     function(fp) {
+            //         console.log("FP", fp.hash);
+            //         console.log("FP DATA", JSON.stringify(fp.data, null, 2));
+            //         dotNetHelper.invokeMethod("SetFingerprint", fp.hash);
+            //     }
+            // );
+
+            ThumbmarkJS.getFingerprint().then(
+                function(fp) {
+                    fingerprint = fp;
+                    dotNetHelper.invokeMethod("SetFingerprint", fp);
+                }
+            );
+        }
+
+        function HideElementByClass(className) {
+            let elements = document.getElementsByClassName(className);
+            if (elements != undefined && elements != null) {
+                for(let i = 0; i < elements.length ; i++) {
+                    elements[i].setAttribute("previous-display-style", elements[i].style.display);
+                    elements[i].style.display = "none";
+                }
+            }
+        }
+
+        function HideElementById(id) {
+            let el = document.getElementById(id);
+            if (el != undefined && el != null) {
+                el.style.display = "none";
+            }
+        }
+
+        function HideMenu() {
+            let bsOffcanvasUserMenu = bootstrap.Offcanvas.getInstance("#offcanvasUserMenu");
+            if (bsOffcanvasUserMenu != undefined && bsOffcanvasUserMenu != null && bsOffcanvasUserMenu._isShown) {
+                bsOffcanvasUserMenu.hide();
+            }
+
+            let bsOffcanvasQuickActionMenu = bootstrap.Offcanvas.getInstance("#offcanvasQuickAction");
+            if (bsOffcanvasQuickActionMenu != undefined && bsOffcanvasQuickActionMenu != null && bsOffcanvasQuickActionMenu._isShown) {
+                bsOffcanvasQuickActionMenu.hide();
+            }
+        }
+
+        function InsertAtCursor(field, value) {
+            var $txt = jQuery("#" + field);
+            var caretPos = $txt[0].selectionStart;
+            var textAreaTxt = $txt.val();
+            $txt.val(textAreaTxt.substring(0, caretPos) + value + textAreaTxt.substring(caretPos));
+        }
+
+        function isVisible(e) {
+            if (e == undefined || e == null) {
+                return false;
+            } else {
+                return !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length );
+            }
+        }
+
+        function isVisibleByElementId(elementId) {
+            let e = document.getElementById(elementId);
+            if (e == undefined || e == null) {
+                return false;
+            } else {
+                return isVisible(e);
+            }
+        }
+
+        function Loaded() {
+            let el = document.getElementById("body-element");
+            if (el != undefined && el != null) {
+                el.classList.remove("loading");
+            }
+        }
+
+        function NavigateTo(url) {
+            window.location.href = url;
+        }
+
+        function ReloadCurrentPage() {
+            window.location.href = window.location.href;
+        }
+
+        function RemoveElementHighlightByClass(className, classToRemove = "highlight") {
+            let elements = document.getElementsByClassName(className);
+            if (elements != undefined && elements != null) {
+                for(let i = 0; i < elements.length ; i++) {
+                    elements[i].classList.remove(classToRemove);
+                }
+            }
+        }
+
+        function SetDotNetHelper(value) {
+            dotNetHelper = value;
+        }
+
+        function SetPreferredColorScheme(preferred) {
+            Loaded();
+
+            if (preferred == undefined || preferred == null) {
+                preferred = "light";
+            }
+
+            if (preferred == "auto") {
+                let colorScheme = getComputedStyle(document.body, ':after').content;
+                preferred = colorScheme.indexOf("dark") > -1 ? "dark" : "light";
+            }
+
+            let setTheme = "";
+            let setClass = "";
+            let setMonacoTheme = "vs";
+
+            if (preferred == "dark") {
+                setTheme = "dark";
+                setClass = "dark";
+                setMonacoTheme = "vs-dark";
+            } else if (preferred == "light") {
+                setTheme = "";
+                setClass = "light";
+            } else {
+                setTheme = preferred;
+                setClass = preferred;
+            }
+
+            // Only update if this has changed.
+            if (ElementHasClass("body-element", setClass)) {
+                // Already up-to-date
+            } else {
+                let el = document.getElementById("body-element");
+                if (el != undefined && el != null) {
+                    el.setAttribute("data-bs-theme", setTheme);
+                    el.classList = "";
+
+                    if (setClass != "") {
+                        el.classList.add(setClass);
+                    }
+                }
+            }
+
+            if (typeof(monaco) == 'object'){
+                monaco.editor.setTheme(setMonacoTheme);
+            }
+        }
+
+        function ShowElementByClass(className, display = "block") {
+            let elements = document.getElementsByClassName(className);
+            if (elements != undefined && elements != null) {
+                for(let i = 0; i < elements.length ; i++) {
+                    let previous = elements[i].getAttribute("previous-display-style");
+                    if (previous != undefined && previous != null && previous != "") {
+                        elements[i].removeAttribute("previous-display-style");
+                        elements[i].style.display = previous;
+                    } else {
+                        elements[i].style.display = display;
+                    }
+                }
+            }
+        }
+
+        function ShowElementById(id, display = "block") {
+            let el = document.getElementById(id);
+            if (el != undefined && el != null) {
+                el.style.display = display;
+            }
+        }
+
+        function ShowQuickActionMenu() {
+            HideMenu();
+
+            const bsOffcanvasQuickActionMenu = new bootstrap.Offcanvas("#offcanvasQuickAction");
+            if (bsOffcanvasQuickActionMenu != undefined && bsOffcanvasQuickActionMenu != null) {
+                bsOffcanvasQuickActionMenu.show();
+            }
+        }
+
+        function SetElementValue(id, value) {
+            let el = document.getElementById(id);
+            if (el != undefined && el != null) {
+                if (el instanceof HTMLInputElement || el instanceof  HTMLSelectElement || el instanceof HTMLTextAreaElement) {
+                    el.value = value;
+                } else if (el.innerHTML != undefined && el.innerHTML != null) {
+                    el.innerHTML = value;
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+            const onReadyApp = (callback) => {
+                if (document.readyState!='loading') {
+                    callback();
+                } else if (document.addEventListener) {
+                    document.addEventListener('DOMContentLoaded', callback);
+                } else {
+                    document.attachEvent('onreadystatechange', function() {
+                        if (document.readyState=='complete') callback();
+                    });
+                }
+            };
+
+            onReadyApp(() => {
+                // myFunction();
+            });
+
+            function myFunction(){
+                // console.log("My Function");
+            }
+        </script></body></html>

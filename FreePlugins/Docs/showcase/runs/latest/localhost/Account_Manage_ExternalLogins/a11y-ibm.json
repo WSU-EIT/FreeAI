@@ -1,0 +1,53 @@
+[
+  {
+    "Tool": "ibm",
+    "RuleId": "page_title_exists",
+    "CanonicalRuleId": "page_title_exists",
+    "Severity": "serious",
+    "Message": "Missing \u003Ctitle\u003E element in \u003Chead\u003E element",
+    "Selector": "/html[1]",
+    "Snippet": "\u003Chtml style=\u0022--blazor-load-percentage: 100%; --blazor-load-percentage-text: \u0022100%\u0022;\u0022 lang=\u0022en\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "skip_main_exists",
+    "CanonicalRuleId": "skip_main_exists",
+    "Severity": "serious",
+    "Message": "The page does not provide a way to quickly navigate to the main content (ARIA \u0022main\u0022 landmark or a skip link)",
+    "Selector": "/html[1]/body[1]",
+    "Snippet": "\u003Cbody class=\u0022\u0022 data-bs-theme=\u0022\u0022 id=\u0022body-element\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/h3[1]",
+    "Snippet": "\u003Ch3\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]
