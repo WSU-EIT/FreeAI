@@ -1,36 +1,23 @@
-﻿# FreeServicesHub — Roadmap
+﻿# FreeServicesHub -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Agent installer UI -- register and install the Windows Service from the hub web UI
+- [ ] Alert thresholds -- notify when CPU > N% or disk < N GB for more than M minutes
+- [ ] Historical telemetry charts -- graph CPU/RAM over time using stored heartbeats
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Linux agent support (replace WMI CPU query with /proc/stat)
+- [ ] Multi-hub federation -- one hub aggregating data from regional sub-hubs
+- [ ] Windows Service management -- start/stop/restart services on remote agents from the hub
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Anomaly detection -- flag unusual resource consumption patterns
+- [ ] Integration with FreeA11yChecker -- correlate scan times with server load

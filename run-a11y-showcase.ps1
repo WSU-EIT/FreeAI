@@ -102,7 +102,9 @@ foreach ($t in $allTargets) {
     }
 
     # Start app — no stdout redirect to avoid pipe deadlock
+    # ASPNETCORE_URLS env var overrides any app-level Kestrel config (more reliable than --urls arg)
     $env:ASPNETCORE_ENVIRONMENT = "Development"
+    $env:ASPNETCORE_URLS = $url
     $proc = Start-Process dotnet -ArgumentList @(
         "run","--project",$projectPath,"--no-build","--no-launch-profile",
         "--","--urls",$url

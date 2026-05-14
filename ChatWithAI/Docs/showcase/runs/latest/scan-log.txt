@@ -1,0 +1,818 @@
+﻿=== FreeA11yChecker run log — started 2026-05-14 15:00:48
+=== Full transcript: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\latest\_logs\scan.log
+
+
+  ╔══════════════════════════════════════════════════╗
+  ║  FreeA11yChecker Console Scanner v2.0           ║
+  ║  WCAG 2.2 AA Accessibility Testing             ║
+  ║  Powered by FreeA11yChecker.Scanner             ║
+  ╚══════════════════════════════════════════════════╝
+
+[OK]   source-seed from C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI: 37 static route(s) added, 43 parameterized route(s) deferred (need IDs), 81 total @page directives found
+    parameterized routes:
+      /Settings/EditDepartment/{departmentid}
+      /Settings/EditDepartmentGroup/{departmentgroupid}
+      /Settings/EditTenant/{tenantid}
+      /Settings/EditUser/{userid}
+      /Settings/EditUserGroup/{groupid}
+      /{TenantCode}
+      /{TenantCode}/About
+      /{TenantCode}/Authorization/AccessDenied
+      /{TenantCode}/Authorization/InvalidUser
+      /{TenantCode}/Authorization/NoLocalAccout
+      ... and 33 more
+[STEP]   to scan 43 parameterized route(s):
+[STEP]     1. fill in real IDs at: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\.cookies\localhost-seed-ids-template.json
+[STEP]     2. re-run with: --seed-ids "C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\.cookies\localhost-seed-ids-template.json"
+  Crawl target: http://localhost:5100
+  Max depth:    5
+  Output:       C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\latest
+  Auth:         as admin
+
+  ── Iteration 1/5 — 38 page(s) to scan ──
+    [0/0] Authenticating as 'admin'...
+    [0/0] auth: navigating to http://localhost:5100
+    [0/0] auth: waiting for any interactive element to mount (Blazor hydration signal, up to 15s)
+    [0/0] auth: checking for tenant chooser, looking for [SFS] row (up to 15s)
+    [0/0]   → no tenant chooser row found for '[SFS]' — assuming login form is direct
+    [0/0] auth: settling 3s for initial Blazor hydration
+    [0/0] auth: capturing anonymous form screenshot
+    [0/0] auth: checking page state (URL=http://localhost:5100/Login)
+    [0/0]   → login form inputs already present, skipping provider-button hunt
+    [0/0] auth: pre-fill state — URL=http://localhost:5100/Login, email/password input count=2
+    [0/0] auth: filling username 'admin' via selector '#login-email, input[type='email'], input[name='username']'
+    [0/0] auth: filling password via selector '#login-password, input[type='password']'
+    [0/0] auth: capturing credentials-entered screenshot
+    [0/0] auth: clicking submit
+    [0/0] auth: waiting for #login-email to become hidden (positive login-success signal, up to 15s)
+    [0/0] auth: #login-email is hidden — login form went away, flagging success early
+    [0/0] auth: settling 3s for SPA router redirect
+    [0/0] auth: verifying authenticated state
+    [0/0] auth: capturing post-auth screenshot (SUCCESS)
+    [0/0] Saved auth cookies → C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\latest\.cookies\localhost.json (will be reused on next iteration)
+    [1/38] Scanning /...
+    [1/38]   navigating to http://localhost:5100/ (Load, up to 60000ms)
+    [1/38]   waiting for page hydration (Blazor / SPA settle)
+    [1/38]   extracting links for discovery
+    [1/38]   capturing page-load sequence (10s of PNG screenshots)
+    [1/38]     → captured 1 unique frame(s) after dedup
+    [1/38]   expanding collapsed content (details, accordions, tabs)
+    [1/38]   cataloging images (alt-text audit)
+    [1/38]   analyzing SSL certificate
+    [1/38]   running axe-core (Deque)
+    [1/38]     → axe: 3 issue(s), 22 passed, 0 incomplete
+    [1/38]   running HtmlChecker (regex pattern audit)
+    [1/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [1/38]   running HTML_CodeSniffer (Squiz)
+    [1/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [1/38]   running IBM Equal Access
+    [1/38]     → IBM: 4 issue(s), 241 passed, 6 potential, 1 manual
+    [1/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [1/38]   capturing color-vision deficiency simulations (7 types)
+    [1/38]   capturing screen reader view
+    [2/38] Scanning /About...
+    [2/38]   navigating to http://localhost:5100/About (Load, up to 60000ms)
+    [2/38]   waiting for page hydration (Blazor / SPA settle)
+    [2/38]   extracting links for discovery
+    [2/38]   capturing page-load sequence (10s of PNG screenshots)
+    [2/38]     → captured 1 unique frame(s) after dedup
+    [2/38]   expanding collapsed content (details, accordions, tabs)
+    [2/38]   cataloging images (alt-text audit)
+    [2/38]   analyzing SSL certificate
+    [2/38]   running axe-core (Deque)
+    [2/38]     → axe: 3 issue(s), 22 passed, 0 incomplete
+    [2/38]   running HtmlChecker (regex pattern audit)
+    [2/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [2/38]   running HTML_CodeSniffer (Squiz)
+    [2/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [2/38]   running IBM Equal Access
+    [2/38]     → IBM: 4 issue(s), 249 passed, 6 potential, 1 manual
+    [2/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [2/38]   capturing color-vision deficiency simulations (7 types)
+    [2/38]   capturing screen reader view
+    [3/38] Scanning /Authorization/AccessDenied...
+    [3/38]   navigating to http://localhost:5100/Authorization/AccessDenied (Load, up to 60000ms)
+    [3/38]   waiting for page hydration (Blazor / SPA settle)
+    [3/38]   extracting links for discovery
+    [3/38]   capturing page-load sequence (10s of PNG screenshots)
+    [3/38]     → captured 1 unique frame(s) after dedup
+    [3/38]   expanding collapsed content (details, accordions, tabs)
+    [3/38]   cataloging images (alt-text audit)
+    [3/38]   analyzing SSL certificate
+    [3/38]   running axe-core (Deque)
+    [3/38]     → axe: 3 issue(s), 23 passed, 0 incomplete
+    [3/38]   running HtmlChecker (regex pattern audit)
+    [3/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [3/38]   running HTML_CodeSniffer (Squiz)
+    [3/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [3/38]   running IBM Equal Access
+    [3/38]     → IBM: 4 issue(s), 261 passed, 6 potential, 1 manual
+    [3/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [3/38]   capturing color-vision deficiency simulations (7 types)
+    [3/38]   capturing screen reader view
+    [4/38] Scanning /Authorization/InvalidUser...
+    [4/38]   navigating to http://localhost:5100/Authorization/InvalidUser (Load, up to 60000ms)
+    [4/38]   waiting for page hydration (Blazor / SPA settle)
+    [4/38]   extracting links for discovery
+    [4/38]   capturing page-load sequence (10s of PNG screenshots)
+    [4/38]     → captured 1 unique frame(s) after dedup
+    [4/38]   expanding collapsed content (details, accordions, tabs)
+    [4/38]   cataloging images (alt-text audit)
+    [4/38]   analyzing SSL certificate
+    [4/38]   running axe-core (Deque)
+    [4/38]     → axe: 3 issue(s), 23 passed, 0 incomplete
+    [4/38]   running HtmlChecker (regex pattern audit)
+    [4/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [4/38]   running HTML_CodeSniffer (Squiz)
+    [4/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [4/38]   running IBM Equal Access
+    [4/38]     → IBM: 4 issue(s), 257 passed, 6 potential, 1 manual
+    [4/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [4/38]   capturing color-vision deficiency simulations (7 types)
+    [4/38]   capturing screen reader view
+    [5/38] Scanning /Authorization/NoLocalAccount...
+    [5/38]   navigating to http://localhost:5100/Authorization/NoLocalAccount (Load, up to 60000ms)
+    [5/38]   waiting for page hydration (Blazor / SPA settle)
+    [5/38]   extracting links for discovery
+    [5/38]   capturing page-load sequence (10s of PNG screenshots)
+    [5/38]     → captured 1 unique frame(s) after dedup
+    [5/38]   expanding collapsed content (details, accordions, tabs)
+    [5/38]   cataloging images (alt-text audit)
+    [5/38]   analyzing SSL certificate
+    [5/38]   running axe-core (Deque)
+    [5/38]     → axe: 3 issue(s), 23 passed, 0 incomplete
+    [5/38]   running HtmlChecker (regex pattern audit)
+    [5/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [5/38]   running HTML_CodeSniffer (Squiz)
+    [5/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [5/38]   running IBM Equal Access
+    [5/38]     → IBM: 4 issue(s), 264 passed, 6 potential, 1 manual
+    [5/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [5/38]   capturing color-vision deficiency simulations (7 types)
+    [5/38]   capturing screen reader view
+    [6/38] Scanning /ChangePassword...
+    [6/38]   navigating to http://localhost:5100/ChangePassword (Load, up to 60000ms)
+    [6/38]   waiting for page hydration (Blazor / SPA settle)
+    [6/38]   extracting links for discovery
+    [6/38]   capturing page-load sequence (10s of PNG screenshots)
+    [6/38]     → captured 1 unique frame(s) after dedup
+    [6/38]   expanding collapsed content (details, accordions, tabs)
+    [6/38]   cataloging images (alt-text audit)
+    [6/38]   analyzing SSL certificate
+    [6/38]   running axe-core (Deque)
+    [6/38]     → axe: 3 issue(s), 25 passed, 0 incomplete
+    [6/38]   running HtmlChecker (regex pattern audit)
+    [6/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [6/38]   running HTML_CodeSniffer (Squiz)
+    [6/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [6/38]   running IBM Equal Access
+    [6/38]     → IBM: 9 issue(s), 452 passed, 12 potential, 1 manual
+    [6/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [6/38]   capturing color-vision deficiency simulations (7 types)
+    [6/38]   capturing screen reader view
+    [7/38] Scanning /DatabaseOffline...
+    [7/38]   navigating to http://localhost:5100/DatabaseOffline (Load, up to 60000ms)
+    [7/38]   waiting for page hydration (Blazor / SPA settle)
+    [7/38]   extracting links for discovery
+    [7/38]   capturing page-load sequence (10s of PNG screenshots)
+    [7/38]     → captured 1 unique frame(s) after dedup
+    [7/38]   expanding collapsed content (details, accordions, tabs)
+    [7/38]   cataloging images (alt-text audit)
+    [7/38]   analyzing SSL certificate
+    [7/38]   running axe-core (Deque)
+    [7/38]     → axe: 3 issue(s), 23 passed, 0 incomplete
+    [7/38]   running HtmlChecker (regex pattern audit)
+    [7/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [7/38]   running HTML_CodeSniffer (Squiz)
+    [7/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [7/38]   running IBM Equal Access
+    [7/38]     → IBM: 4 issue(s), 266 passed, 6 potential, 1 manual
+    [7/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [7/38]   capturing color-vision deficiency simulations (7 types)
+    [7/38]   capturing screen reader view
+    [8/38] Scanning /DoubleClick...
+    [8/38]   navigating to http://localhost:5100/DoubleClick (Load, up to 60000ms)
+    [8/38]   waiting for page hydration (Blazor / SPA settle)
+    [8/38]   extracting links for discovery
+    [8/38]   capturing page-load sequence (10s of PNG screenshots)
+    [8/38]     → captured 1 unique frame(s) after dedup
+    [8/38]   expanding collapsed content (details, accordions, tabs)
+    [8/38]   cataloging images (alt-text audit)
+    [8/38]   analyzing SSL certificate
+    [8/38]   running axe-core (Deque)
+    [8/38]     → axe: 3 issue(s), 23 passed, 0 incomplete
+    [8/38]   running HtmlChecker (regex pattern audit)
+    [8/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [8/38]   running HTML_CodeSniffer (Squiz)
+    [8/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [8/38]   running IBM Equal Access
+    [8/38]     → IBM: 4 issue(s), 239 passed, 7 potential, 1 manual
+    [8/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [8/38]   capturing color-vision deficiency simulations (7 types)
+    [8/38]   capturing screen reader view
+    [9/38] Scanning /Error...
+    [9/38]   navigating to http://localhost:5100/Error (Load, up to 60000ms)
+    [9/38]   waiting for page hydration (Blazor / SPA settle)
+    [9/38]   extracting links for discovery
+    [9/38]   capturing page-load sequence (10s of PNG screenshots)
+    [9/38]     → captured 1 unique frame(s) after dedup
+    [9/38]   expanding collapsed content (details, accordions, tabs)
+    [9/38]   cataloging images (alt-text audit)
+    [9/38]   analyzing SSL certificate
+    [9/38]   running axe-core (Deque)
+    [9/38]     → axe: 3 issue(s), 22 passed, 0 incomplete
+    [9/38]   running HtmlChecker (regex pattern audit)
+    [9/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [9/38]   running HTML_CodeSniffer (Squiz)
+    [9/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [9/38]   running IBM Equal Access
+    [9/38]     → IBM: 4 issue(s), 241 passed, 6 potential, 1 manual
+    [9/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [9/38]   capturing color-vision deficiency simulations (7 types)
+    [9/38]   capturing screen reader view
+    [10/38] Scanning /InvalidTenantCode...
+    [10/38]   navigating to http://localhost:5100/InvalidTenantCode (Load, up to 60000ms)
+    [10/38]   waiting for page hydration (Blazor / SPA settle)
+    [10/38]   extracting links for discovery
+    [10/38]   capturing page-load sequence (10s of PNG screenshots)
+    [10/38]     → captured 1 unique frame(s) after dedup
+    [10/38]   expanding collapsed content (details, accordions, tabs)
+    [10/38]   cataloging images (alt-text audit)
+    [10/38]   analyzing SSL certificate
+    [10/38]   running axe-core (Deque)
+    [10/38]     → axe: 3 issue(s), 22 passed, 0 incomplete
+    [10/38]   running HtmlChecker (regex pattern audit)
+    [10/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [10/38]   running HTML_CodeSniffer (Squiz)
+    [10/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [10/38]   running IBM Equal Access
+    [10/38]     → IBM: 4 issue(s), 241 passed, 6 potential, 1 manual
+    [10/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [10/38]   capturing color-vision deficiency simulations (7 types)
+    [10/38]   capturing screen reader view
+    [11/38] Scanning /Login...
+    [11/38]   navigating to http://localhost:5100/Login (Load, up to 60000ms)
+    [11/38]   waiting for page hydration (Blazor / SPA settle)
+    [11/38]   extracting links for discovery
+    [11/38]   capturing page-load sequence (10s of PNG screenshots)
+    [11/38]     → captured 1 unique frame(s) after dedup
+    [11/38]   expanding collapsed content (details, accordions, tabs)
+    [11/38]   cataloging images (alt-text audit)
+    [11/38]   analyzing SSL certificate
+    [11/38]   running axe-core (Deque)
+    [11/38]     → axe: 3 issue(s), 22 passed, 0 incomplete
+    [11/38]   running HtmlChecker (regex pattern audit)
+    [11/38]     → HtmlChecker: 5 issue(s), 16/20 checks passed
+    [11/38]   running HTML_CodeSniffer (Squiz)
+    [11/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [11/38]   running IBM Equal Access
+    [11/38]     → IBM: 4 issue(s), 241 passed, 6 potential, 1 manual
+    [11/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [11/38]   capturing color-vision deficiency simulations (7 types)
+    [11/38]   capturing screen reader view
+    [12/38] Scanning /Logout...
+    [12/38]   navigating to http://localhost:5100/Logout (Load, up to 60000ms)
+    [12/38]   waiting for page hydration (Blazor / SPA settle)
+    [12/38]   extracting links for discovery
+    [12/38]   capturing page-load sequence (10s of PNG screenshots)
+    [12/38]     → captured 1 unique frame(s) after dedup
+    [12/38]   expanding collapsed content (details, accordions, tabs)
+    [12/38]   cataloging images (alt-text audit)
+    [12/38]   analyzing SSL certificate
+    [12/38]   running axe-core (Deque)
+    [12/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [12/38]   running HtmlChecker (regex pattern audit)
+    [12/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [12/38]   running HTML_CodeSniffer (Squiz)
+    [12/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [12/38]   running IBM Equal Access
+    [12/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [12/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [12/38]   capturing color-vision deficiency simulations (7 types)
+    [12/38]   capturing screen reader view
+    [13/38] Scanning /MissingTenantCode...
+    [13/38]   navigating to http://localhost:5100/MissingTenantCode (Load, up to 60000ms)
+    [13/38]   waiting for page hydration (Blazor / SPA settle)
+    [13/38]   extracting links for discovery
+    [13/38]   capturing page-load sequence (10s of PNG screenshots)
+    [13/38]     → captured 1 unique frame(s) after dedup
+    [13/38]   expanding collapsed content (details, accordions, tabs)
+    [13/38]   cataloging images (alt-text audit)
+    [13/38]   analyzing SSL certificate
+    [13/38]   running axe-core (Deque)
+    [13/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [13/38]   running HtmlChecker (regex pattern audit)
+    [13/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [13/38]   running HTML_CodeSniffer (Squiz)
+    [13/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [13/38]   running IBM Equal Access
+    [13/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [13/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [13/38]   capturing color-vision deficiency simulations (7 types)
+    [13/38]   capturing screen reader view
+    [14/38] Scanning /Monaco...
+    [14/38]   navigating to http://localhost:5100/Monaco (Load, up to 60000ms)
+    [14/38]   waiting for page hydration (Blazor / SPA settle)
+    [14/38]   extracting links for discovery
+    [14/38]   capturing page-load sequence (10s of PNG screenshots)
+    [14/38]     → captured 1 unique frame(s) after dedup
+    [14/38]   expanding collapsed content (details, accordions, tabs)
+    [14/38]   cataloging images (alt-text audit)
+    [14/38]   analyzing SSL certificate
+    [14/38]   running axe-core (Deque)
+    [14/38]     → axe: 2 issue(s), 26 passed, 0 incomplete
+    [14/38]   running HtmlChecker (regex pattern audit)
+    [14/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [14/38]   running HTML_CodeSniffer (Squiz)
+    [14/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [14/38]   running IBM Equal Access
+    [14/38]     → IBM: 7 issue(s), 310 passed, 9 potential, 1 manual
+    [14/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [14/38]   capturing color-vision deficiency simulations (7 types)
+    [14/38]   capturing screen reader view
+    [15/38] Scanning /PasswordChanged...
+    [15/38]   navigating to http://localhost:5100/PasswordChanged (Load, up to 60000ms)
+    [15/38]   waiting for page hydration (Blazor / SPA settle)
+    [15/38]   extracting links for discovery
+    [15/38]   capturing page-load sequence (10s of PNG screenshots)
+    [15/38]     → captured 1 unique frame(s) after dedup
+    [15/38]   expanding collapsed content (details, accordions, tabs)
+    [15/38]   cataloging images (alt-text audit)
+    [15/38]   analyzing SSL certificate
+    [15/38]   running axe-core (Deque)
+    [15/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [15/38]   running HtmlChecker (regex pattern audit)
+    [15/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [15/38]   running HTML_CodeSniffer (Squiz)
+    [15/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [15/38]   running IBM Equal Access
+    [15/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [15/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [15/38]   capturing color-vision deficiency simulations (7 types)
+    [15/38]   capturing screen reader view
+    [16/38] Scanning /Plugins...
+    [16/38]   navigating to http://localhost:5100/Plugins (Load, up to 60000ms)
+    [16/38]   waiting for page hydration (Blazor / SPA settle)
+    [16/38]   extracting links for discovery
+    [16/38]   capturing page-load sequence (10s of PNG screenshots)
+    [16/38]     → captured 1 unique frame(s) after dedup
+    [16/38]   expanding collapsed content (details, accordions, tabs)
+    [16/38]   cataloging images (alt-text audit)
+    [16/38]   analyzing SSL certificate
+    [16/38]   running axe-core (Deque)
+    [16/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [16/38]   running HtmlChecker (regex pattern audit)
+    [16/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [16/38]   running HTML_CodeSniffer (Squiz)
+    [16/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [16/38]   running IBM Equal Access
+    [16/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [16/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [16/38]   capturing color-vision deficiency simulations (7 types)
+    [16/38]   capturing screen reader view
+    [17/38] Scanning /ProcessLogin...
+    [17/38]   navigating to http://localhost:5100/ProcessLogin (Load, up to 60000ms)
+    [17/38]   waiting for page hydration (Blazor / SPA settle)
+    [17/38]   extracting links for discovery
+    [17/38]   capturing page-load sequence (10s of PNG screenshots)
+    [17/38]     → captured 1 unique frame(s) after dedup
+    [17/38]   expanding collapsed content (details, accordions, tabs)
+    [17/38]   cataloging images (alt-text audit)
+    [17/38]   analyzing SSL certificate
+    [17/38]   running axe-core (Deque)
+    [17/38]     → axe: 2 issue(s), 22 passed, 0 incomplete
+    [17/38]   running HtmlChecker (regex pattern audit)
+    [17/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [17/38]   running HTML_CodeSniffer (Squiz)
+    [17/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [17/38]   running IBM Equal Access
+    [17/38]     → IBM: 3 issue(s), 200 passed, 6 potential, 1 manual
+    [17/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [17/38]   capturing color-vision deficiency simulations (7 types)
+    [17/38]   capturing screen reader view
+    [18/38] Scanning /Profile...
+    [18/38]   navigating to http://localhost:5100/Profile (Load, up to 60000ms)
+    [18/38]   waiting for page hydration (Blazor / SPA settle)
+    [18/38]   extracting links for discovery
+    [18/38]   capturing page-load sequence (10s of PNG screenshots)
+    [18/38]     → captured 1 unique frame(s) after dedup
+    [18/38]   expanding collapsed content (details, accordions, tabs)
+    [18/38]   cataloging images (alt-text audit)
+    [18/38]   analyzing SSL certificate
+    [18/38]   running axe-core (Deque)
+    [18/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [18/38]   running HtmlChecker (regex pattern audit)
+    [18/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [18/38]   running HTML_CodeSniffer (Squiz)
+    [18/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [18/38]   running IBM Equal Access
+    [18/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [18/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [18/38]   capturing color-vision deficiency simulations (7 types)
+    [18/38]   capturing screen reader view
+    [19/38] Scanning /ServerUpdated...
+    [19/38]   navigating to http://localhost:5100/ServerUpdated (Load, up to 60000ms)
+    [19/38]   waiting for page hydration (Blazor / SPA settle)
+    [19/38]   extracting links for discovery
+    [19/38]   capturing page-load sequence (10s of PNG screenshots)
+    [19/38]     → captured 1 unique frame(s) after dedup
+    [19/38]   expanding collapsed content (details, accordions, tabs)
+    [19/38]   cataloging images (alt-text audit)
+    [19/38]   analyzing SSL certificate
+    [19/38]   running axe-core (Deque)
+    [19/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [19/38]   running HtmlChecker (regex pattern audit)
+    [19/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [19/38]   running HTML_CodeSniffer (Squiz)
+    [19/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [19/38]   running IBM Equal Access
+    [19/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [19/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [19/38]   capturing color-vision deficiency simulations (7 types)
+    [19/38]   capturing screen reader view
+    [20/38] Scanning /Settings...
+    [20/38]   navigating to http://localhost:5100/Settings (Load, up to 60000ms)
+    [20/38]   waiting for page hydration (Blazor / SPA settle)
+    [20/38]   extracting links for discovery
+    [20/38]   capturing page-load sequence (10s of PNG screenshots)
+    [20/38]     → captured 1 unique frame(s) after dedup
+    [20/38]   expanding collapsed content (details, accordions, tabs)
+    [20/38]   cataloging images (alt-text audit)
+    [20/38]   analyzing SSL certificate
+    [20/38]   running axe-core (Deque)
+    [20/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [20/38]   running HtmlChecker (regex pattern audit)
+    [20/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [20/38]   running HTML_CodeSniffer (Squiz)
+    [20/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [20/38]   running IBM Equal Access
+    [20/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [20/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [20/38]   capturing color-vision deficiency simulations (7 types)
+    [20/38]   capturing screen reader view
+    [21/38] Scanning /Settings/AddDepartment...
+    [21/38]   navigating to http://localhost:5100/Settings/AddDepartment (Load, up to 60000ms)
+    [21/38]   waiting for page hydration (Blazor / SPA settle)
+    [21/38]   extracting links for discovery
+    [21/38]   capturing page-load sequence (10s of PNG screenshots)
+    [21/38]     → captured 1 unique frame(s) after dedup
+    [21/38]   expanding collapsed content (details, accordions, tabs)
+    [21/38]   cataloging images (alt-text audit)
+    [21/38]   analyzing SSL certificate
+    [21/38]   running axe-core (Deque)
+    [21/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [21/38]   running HtmlChecker (regex pattern audit)
+    [21/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [21/38]   running HTML_CodeSniffer (Squiz)
+    [21/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [21/38]   running IBM Equal Access
+    [21/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [21/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [21/38]   capturing color-vision deficiency simulations (7 types)
+    [21/38]   capturing screen reader view
+    [22/38] Scanning /Settings/AddDepartmentGroup...
+    [22/38]   navigating to http://localhost:5100/Settings/AddDepartmentGroup (Load, up to 60000ms)
+    [22/38]   waiting for page hydration (Blazor / SPA settle)
+    [22/38]   extracting links for discovery
+    [22/38]   capturing page-load sequence (10s of PNG screenshots)
+    [22/38]     → captured 1 unique frame(s) after dedup
+    [22/38]   expanding collapsed content (details, accordions, tabs)
+    [22/38]   cataloging images (alt-text audit)
+    [22/38]   analyzing SSL certificate
+    [22/38]   running axe-core (Deque)
+    [22/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [22/38]   running HtmlChecker (regex pattern audit)
+    [22/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [22/38]   running HTML_CodeSniffer (Squiz)
+    [22/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [22/38]   running IBM Equal Access
+    [22/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [22/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [22/38]   capturing color-vision deficiency simulations (7 types)
+    [22/38]   capturing screen reader view
+    [23/38] Scanning /Settings/AddTenant...
+    [23/38]   navigating to http://localhost:5100/Settings/AddTenant (Load, up to 60000ms)
+    [23/38]   waiting for page hydration (Blazor / SPA settle)
+    [23/38]   extracting links for discovery
+    [23/38]   capturing page-load sequence (10s of PNG screenshots)
+    [23/38]     → captured 1 unique frame(s) after dedup
+    [23/38]   expanding collapsed content (details, accordions, tabs)
+    [23/38]   cataloging images (alt-text audit)
+    [23/38]   analyzing SSL certificate
+    [23/38]   running axe-core (Deque)
+    [23/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [23/38]   running HtmlChecker (regex pattern audit)
+    [23/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [23/38]   running HTML_CodeSniffer (Squiz)
+    [23/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [23/38]   running IBM Equal Access
+    [23/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [23/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [23/38]   capturing color-vision deficiency simulations (7 types)
+    [23/38]   capturing screen reader view
+    [24/38] Scanning /Settings/AddUser...
+    [24/38]   navigating to http://localhost:5100/Settings/AddUser (Load, up to 60000ms)
+    [24/38]   waiting for page hydration (Blazor / SPA settle)
+    [24/38]   extracting links for discovery
+    [24/38]   capturing page-load sequence (10s of PNG screenshots)
+    [24/38]     → captured 1 unique frame(s) after dedup
+    [24/38]   expanding collapsed content (details, accordions, tabs)
+    [24/38]   cataloging images (alt-text audit)
+    [24/38]   analyzing SSL certificate
+    [24/38]   running axe-core (Deque)
+    [24/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [24/38]   running HtmlChecker (regex pattern audit)
+    [24/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [24/38]   running HTML_CodeSniffer (Squiz)
+    [24/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [24/38]   running IBM Equal Access
+    [24/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [24/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [24/38]   capturing color-vision deficiency simulations (7 types)
+    [24/38]   capturing screen reader view
+    [25/38] Scanning /Settings/AddUserGroup...
+    [25/38]   navigating to http://localhost:5100/Settings/AddUserGroup (Load, up to 60000ms)
+    [25/38]   waiting for page hydration (Blazor / SPA settle)
+    [25/38]   extracting links for discovery
+    [25/38]   capturing page-load sequence (10s of PNG screenshots)
+    [25/38]     → captured 1 unique frame(s) after dedup
+    [25/38]   expanding collapsed content (details, accordions, tabs)
+    [25/38]   cataloging images (alt-text audit)
+    [25/38]   analyzing SSL certificate
+    [25/38]   running axe-core (Deque)
+    [25/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [25/38]   running HtmlChecker (regex pattern audit)
+    [25/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [25/38]   running HTML_CodeSniffer (Squiz)
+    [25/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [25/38]   running IBM Equal Access
+    [25/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [25/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [25/38]   capturing color-vision deficiency simulations (7 types)
+    [25/38]   capturing screen reader view
+    [26/38] Scanning /Settings/AppSettings...
+    [26/38]   navigating to http://localhost:5100/Settings/AppSettings (Load, up to 60000ms)
+    [26/38]   waiting for page hydration (Blazor / SPA settle)
+    [26/38]   extracting links for discovery
+    [26/38]   capturing page-load sequence (10s of PNG screenshots)
+    [26/38]     → captured 1 unique frame(s) after dedup
+    [26/38]   expanding collapsed content (details, accordions, tabs)
+    [26/38]   cataloging images (alt-text audit)
+    [26/38]   analyzing SSL certificate
+    [26/38]   running axe-core (Deque)
+    [26/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [26/38]   running HtmlChecker (regex pattern audit)
+    [26/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [26/38]   running HTML_CodeSniffer (Squiz)
+    [26/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [26/38]   running IBM Equal Access
+    [26/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [26/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [26/38]   capturing color-vision deficiency simulations (7 types)
+    [26/38]   capturing screen reader view
+    [27/38] Scanning /Settings/DeletedRecords...
+    [27/38]   navigating to http://localhost:5100/Settings/DeletedRecords (Load, up to 60000ms)
+    [27/38]   waiting for page hydration (Blazor / SPA settle)
+    [27/38]   extracting links for discovery
+    [27/38]   capturing page-load sequence (10s of PNG screenshots)
+    [27/38]     → captured 1 unique frame(s) after dedup
+    [27/38]   expanding collapsed content (details, accordions, tabs)
+    [27/38]   cataloging images (alt-text audit)
+    [27/38]   analyzing SSL certificate
+    [27/38]   running axe-core (Deque)
+    [27/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [27/38]   running HtmlChecker (regex pattern audit)
+    [27/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [27/38]   running HTML_CodeSniffer (Squiz)
+    [27/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [27/38]   running IBM Equal Access
+    [27/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [27/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [27/38]   capturing color-vision deficiency simulations (7 types)
+    [27/38]   capturing screen reader view
+    [28/38] Scanning /Settings/DepartmentGroups...
+    [28/38]   navigating to http://localhost:5100/Settings/DepartmentGroups (Load, up to 60000ms)
+    [28/38]   waiting for page hydration (Blazor / SPA settle)
+    [28/38]   extracting links for discovery
+    [28/38]   capturing page-load sequence (10s of PNG screenshots)
+    [28/38]     → captured 1 unique frame(s) after dedup
+    [28/38]   expanding collapsed content (details, accordions, tabs)
+    [28/38]   cataloging images (alt-text audit)
+    [28/38]   analyzing SSL certificate
+    [28/38]   running axe-core (Deque)
+    [28/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [28/38]   running HtmlChecker (regex pattern audit)
+    [28/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [28/38]   running HTML_CodeSniffer (Squiz)
+    [28/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [28/38]   running IBM Equal Access
+    [28/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [28/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [28/38]   capturing color-vision deficiency simulations (7 types)
+    [28/38]   capturing screen reader view
+    [29/38] Scanning /Settings/Departments...
+    [29/38]   navigating to http://localhost:5100/Settings/Departments (Load, up to 60000ms)
+    [29/38]   waiting for page hydration (Blazor / SPA settle)
+    [29/38]   extracting links for discovery
+    [29/38]   capturing page-load sequence (10s of PNG screenshots)
+    [29/38]     → captured 1 unique frame(s) after dedup
+    [29/38]   expanding collapsed content (details, accordions, tabs)
+    [29/38]   cataloging images (alt-text audit)
+    [29/38]   analyzing SSL certificate
+    [29/38]   running axe-core (Deque)
+    [29/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [29/38]   running HtmlChecker (regex pattern audit)
+    [29/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [29/38]   running HTML_CodeSniffer (Squiz)
+    [29/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [29/38]   running IBM Equal Access
+    [29/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [29/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [29/38]   capturing color-vision deficiency simulations (7 types)
+    [29/38]   capturing screen reader view
+    [30/38] Scanning /Settings/Files...
+    [30/38]   navigating to http://localhost:5100/Settings/Files (Load, up to 60000ms)
+    [30/38]   waiting for page hydration (Blazor / SPA settle)
+    [30/38]   extracting links for discovery
+    [30/38]   capturing page-load sequence (10s of PNG screenshots)
+    [30/38]     → captured 1 unique frame(s) after dedup
+    [30/38]   expanding collapsed content (details, accordions, tabs)
+    [30/38]   cataloging images (alt-text audit)
+    [30/38]   analyzing SSL certificate
+    [30/38]   running axe-core (Deque)
+    [30/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [30/38]   running HtmlChecker (regex pattern audit)
+    [30/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [30/38]   running HTML_CodeSniffer (Squiz)
+    [30/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [30/38]   running IBM Equal Access
+    [30/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [30/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [30/38]   capturing color-vision deficiency simulations (7 types)
+    [30/38]   capturing screen reader view
+    [31/38] Scanning /Settings/Language...
+    [31/38]   navigating to http://localhost:5100/Settings/Language (Load, up to 60000ms)
+    [31/38]   waiting for page hydration (Blazor / SPA settle)
+    [31/38]   extracting links for discovery
+    [31/38]   capturing page-load sequence (10s of PNG screenshots)
+    [31/38]     → captured 1 unique frame(s) after dedup
+    [31/38]   expanding collapsed content (details, accordions, tabs)
+    [31/38]   cataloging images (alt-text audit)
+    [31/38]   analyzing SSL certificate
+    [31/38]   running axe-core (Deque)
+    [31/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [31/38]   running HtmlChecker (regex pattern audit)
+    [31/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [31/38]   running HTML_CodeSniffer (Squiz)
+    [31/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [31/38]   running IBM Equal Access
+    [31/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [31/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [31/38]   capturing color-vision deficiency simulations (7 types)
+    [31/38]   capturing screen reader view
+    [32/38] Scanning /Settings/Tenants...
+    [32/38]   navigating to http://localhost:5100/Settings/Tenants (Load, up to 60000ms)
+    [32/38]   waiting for page hydration (Blazor / SPA settle)
+    [32/38]   extracting links for discovery
+    [32/38]   capturing page-load sequence (10s of PNG screenshots)
+    [32/38]     → captured 1 unique frame(s) after dedup
+    [32/38]   expanding collapsed content (details, accordions, tabs)
+    [32/38]   cataloging images (alt-text audit)
+    [32/38]   analyzing SSL certificate
+    [32/38]   running axe-core (Deque)
+    [32/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [32/38]   running HtmlChecker (regex pattern audit)
+    [32/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [32/38]   running HTML_CodeSniffer (Squiz)
+    [32/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [32/38]   running IBM Equal Access
+    [32/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [32/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [32/38]   capturing color-vision deficiency simulations (7 types)
+    [32/38]   capturing screen reader view
+    [33/38] Scanning /Settings/UDF...
+    [33/38]   navigating to http://localhost:5100/Settings/UDF (Load, up to 60000ms)
+    [33/38]   waiting for page hydration (Blazor / SPA settle)
+    [33/38]   extracting links for discovery
+    [33/38]   capturing page-load sequence (10s of PNG screenshots)
+    [33/38]     → captured 1 unique frame(s) after dedup
+    [33/38]   expanding collapsed content (details, accordions, tabs)
+    [33/38]   cataloging images (alt-text audit)
+    [33/38]   analyzing SSL certificate
+    [33/38]   running axe-core (Deque)
+    [33/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [33/38]   running HtmlChecker (regex pattern audit)
+    [33/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [33/38]   running HTML_CodeSniffer (Squiz)
+    [33/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [33/38]   running IBM Equal Access
+    [33/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [33/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [33/38]   capturing color-vision deficiency simulations (7 types)
+    [33/38]   capturing screen reader view
+    [34/38] Scanning /Settings/UserGroups...
+    [34/38]   navigating to http://localhost:5100/Settings/UserGroups (Load, up to 60000ms)
+    [34/38]   waiting for page hydration (Blazor / SPA settle)
+    [34/38]   extracting links for discovery
+    [34/38]   capturing page-load sequence (10s of PNG screenshots)
+    [34/38]     → captured 1 unique frame(s) after dedup
+    [34/38]   expanding collapsed content (details, accordions, tabs)
+    [34/38]   cataloging images (alt-text audit)
+    [34/38]   analyzing SSL certificate
+    [34/38]   running axe-core (Deque)
+    [34/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [34/38]   running HtmlChecker (regex pattern audit)
+    [34/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [34/38]   running HTML_CodeSniffer (Squiz)
+    [34/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [34/38]   running IBM Equal Access
+    [34/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [34/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [34/38]   capturing color-vision deficiency simulations (7 types)
+    [34/38]   capturing screen reader view
+    [35/38] Scanning /Settings/Users...
+    [35/38]   navigating to http://localhost:5100/Settings/Users (Load, up to 60000ms)
+    [35/38]   waiting for page hydration (Blazor / SPA settle)
+    [35/38]   extracting links for discovery
+    [35/38]   capturing page-load sequence (10s of PNG screenshots)
+    [35/38]     → captured 1 unique frame(s) after dedup
+    [35/38]   expanding collapsed content (details, accordions, tabs)
+    [35/38]   cataloging images (alt-text audit)
+    [35/38]   analyzing SSL certificate
+    [35/38]   running axe-core (Deque)
+    [35/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [35/38]   running HtmlChecker (regex pattern audit)
+    [35/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [35/38]   running HTML_CodeSniffer (Squiz)
+    [35/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [35/38]   running IBM Equal Access
+    [35/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [35/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [35/38]   capturing color-vision deficiency simulations (7 types)
+    [35/38]   capturing screen reader view
+    [36/38] Scanning /Setup...
+    [36/38]   navigating to http://localhost:5100/Setup (Load, up to 60000ms)
+    [36/38]   waiting for page hydration (Blazor / SPA settle)
+    [36/38]   extracting links for discovery
+    [36/38]   capturing page-load sequence (10s of PNG screenshots)
+    [36/38]     → captured 0 unique frame(s) after dedup
+    [36/38]   expanding collapsed content (details, accordions, tabs)
+    [36/38]   cataloging images (alt-text audit)
+    [36/38]   analyzing SSL certificate
+    [36/38]   running axe-core (Deque)
+    [36/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [36/38]   running HtmlChecker (regex pattern audit)
+    [36/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [36/38]   running HTML_CodeSniffer (Squiz)
+    [36/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [36/38]   running IBM Equal Access
+    [36/38]     → IBM: 7 issue(s), 293 passed, 8 potential, 1 manual
+    [36/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [36/38]   capturing color-vision deficiency simulations (7 types)
+    [36/38]   capturing screen reader view
+    [37/38] Scanning /SortTest...
+    [37/38]   navigating to http://localhost:5100/SortTest (Load, up to 60000ms)
+    [37/38]   waiting for page hydration (Blazor / SPA settle)
+    [37/38]   extracting links for discovery
+    [37/38]   capturing page-load sequence (10s of PNG screenshots)
+    [37/38]     → captured 1 unique frame(s) after dedup
+    [37/38]   expanding collapsed content (details, accordions, tabs)
+    [37/38]   cataloging images (alt-text audit)
+    [37/38]   analyzing SSL certificate
+    [37/38]   running axe-core (Deque)
+    [37/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [37/38]   running HtmlChecker (regex pattern audit)
+    [37/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [37/38]   running HTML_CodeSniffer (Squiz)
+    [37/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [37/38]   running IBM Equal Access
+    [37/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [37/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [37/38]   capturing color-vision deficiency simulations (7 types)
+    [37/38]   capturing screen reader view
+    [38/38] Scanning /TimerTest...
+    [38/38]   navigating to http://localhost:5100/TimerTest (Load, up to 60000ms)
+    [38/38]   waiting for page hydration (Blazor / SPA settle)
+    [38/38]   extracting links for discovery
+    [38/38]   capturing page-load sequence (10s of PNG screenshots)
+    [38/38]     → captured 1 unique frame(s) after dedup
+    [38/38]   expanding collapsed content (details, accordions, tabs)
+    [38/38]   cataloging images (alt-text audit)
+    [38/38]   analyzing SSL certificate
+    [38/38]   running axe-core (Deque)
+    [38/38]     → axe: 2 issue(s), 25 passed, 0 incomplete
+    [38/38]   running HtmlChecker (regex pattern audit)
+    [38/38]     → HtmlChecker: 4 issue(s), 17/20 checks passed
+    [38/38]   running HTML_CodeSniffer (Squiz)
+    [38/38]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+    [38/38]   running IBM Equal Access
+    [38/38]     → IBM: 7 issue(s), 303 passed, 8 potential, 1 manual
+    [38/38]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+    [38/38]   capturing color-vision deficiency simulations (7 types)
+    [38/38]   capturing screen reader view
+    Iter 1 done in 1127.3s. Discovered 0 new path(s). Total visited: 38.
+
+  Crawl complete. 38 pages scanned, 484 total violations, 18.8 min.
+  Aggregated report: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\latest\localhost\_crawl-summary.html
+[STEP]   Generating AI handoff doc...
+[OK]   AI handoff: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\ChatWithAI\Docs\showcase\runs\latest\localhost\_ai-handoff.md

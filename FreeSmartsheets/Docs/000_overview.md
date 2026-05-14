@@ -1,4 +1,4 @@
-﻿# FreeSmartsheets — Overview
+﻿# FreeSmartsheets -- Overview
 
 > **Category:** Overview
 > **Purpose:** What this project is, why it exists, and how to get started.
@@ -7,31 +7,43 @@
 
 ## What it is
 
-Smartsheet workspace inventory and access-summary viewer
-
-<!-- TODO: expand with 2-3 paragraphs describing the problem it solves and the approach it takes -->
+FreeSmartsheets is a Blazor WebAssembly application that connects to the Smartsheet API to display an organization''s workspace inventory -- showing what workspaces, sheets, and reports exist and who has access to what. It is built on the FreeCRM framework (.NET 10) and uses the Smartsheet .NET SDK to query the API.
 
 ## Why it exists
 
-<!-- TODO: describe the business or technical need that drove this project -->
+Large organizations accumulate hundreds of Smartsheet workspaces and sheets with inconsistent ownership and access. FreeSmartsheets gives administrators a single read-only view of the entire Smartsheet estate without needing to click through the Smartsheet web UI folder by folder.
 
 ## Who it is for
 
-<!-- TODO: list intended users/consumers — developers, end users, other systems, etc. -->
+- WSU-EIT administrators who manage organization-wide Smartsheet access
+- IT teams auditing Smartsheet usage and permissions before license consolidation
+- Anyone who needs a quick inventory of their Smartsheet account
 
 ## Quick start
 
-<!-- TODO: minimum steps to run or consume this project -->
+1. Add your Smartsheet API key to `appsettings.json`:
 
-`ash
-# clone and build
-cd FreeSmartsheets
-dotnet build
+```json
+"Smartsheet": {
+  "ApiKey": "your-api-key-here"
+}
+```
 
-# run
-dotnet run --project {entrypoint}
-`
+2. Run the application:
+
+```bash
+cd FreeSmartsheets/FreeSmartsheets/FreeSmartsheets
+dotnet run
+```
+
+Navigate to `http://localhost:5106`.
 
 ## Related projects
 
-<!-- TODO: list dependent or sibling projects with links -->
+- [FreeCRM](https://github.com/WSU-EIT/FreeCRM) -- source framework
+- [FreeGLBA](../FreeGLBA/README.md) -- similar audit/inventory pattern for GLBA compliance
+
+---
+
+*Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT).***
+*Website: https://em.wsu.edu/eit/ | GitHub: https://github.com/WSU-EIT | MIT License*

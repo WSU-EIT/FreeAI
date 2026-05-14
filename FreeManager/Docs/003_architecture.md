@@ -1,46 +1,42 @@
-﻿# FreeManager — Architecture
+﻿# FreeManager -- Architecture
 
 > **Category:** Architecture
-> **Purpose:** Internal structure, key design decisions, and data flows.
+> **Purpose:** How the projects fit together and how data flows.
 
 ---
 
 ## Project structure
 
-<!-- TODO: describe the projects in this solution and how they relate -->
-
 | Project | Role |
 |---------|------|
-| | |
+| `FreeManager` | ASP.NET Core host; controllers, SignalR, OAuth, plugin loader |
+| `FreeManager.Client` | Blazor WASM; App Builder, Entity Wizard, template gallery |
+| `FreeManager.DataAccess` | Business logic; EF Core, code-generation engine, auth helpers |
+| `FreeManager.DataObjects` | Shared DTOs; entity wizard models, project/file models |
+| `FreeManager.EFModels` | EF Core DbContext; saved projects, core framework tables |
+| `FreeManager.Plugins` | Roslyn dynamic plugin runtime |
+| `FreeManager.Cli` | `FreeManager.exe` console; template rendering, file generation |
 
-## Key design decisions
+## App Builder data flow
 
-<!-- TODO: ADR-style entries for non-obvious choices -->
+```
+Browser (Entity Wizard)
+  -> POST /api/Data/SaveProject     (persist entity model to DB)
+  -> POST /api/Data/GenerateCode    (render templates to C# / Razor text)
+  -> GET  /api/Data/PreviewCode     (syntax-highlighted display)
+  -> GET  /api/Data/ExportProject   (zip download)
+```
 
-### Decision: <!-- title -->
+## CLI data flow
 
-**Context:** <!-- why this came up -->
-**Decision:** <!-- what was decided -->
-**Consequences:** <!-- what this enables or constrains -->
+```
+FreeManager.exe new Tasks
+  -> template engine renders partial-class stubs
+  -> writes files to --output directory
+  -> prints file manifest to stdout
+```
 
 ---
 
-## Data flow
-
-<!-- TODO: describe how data moves through the system — a diagram or prose -->
-
-`
-Input → Processing → Output
-`
-
-## External dependencies
-
-<!-- TODO: list external systems, APIs, NuGet packages that are load-bearing -->
-
-| Dependency | Version | Why |
-|------------|---------|-----|
-| | | |
-
-## Extension points
-
-<!-- TODO: describe how this project is meant to be extended — plugins, partial classes, config, etc. -->
+*Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT).***
+*Website: https://em.wsu.edu/eit/ | GitHub: https://github.com/WSU-EIT | MIT License*

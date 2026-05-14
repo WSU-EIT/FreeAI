@@ -1,46 +1,35 @@
-﻿# FreeBlazorExtended — Architecture
+﻿# FreeBlazorExtended -- Architecture
 
 > **Category:** Architecture
-> **Purpose:** Internal structure, key design decisions, and data flows.
+> **Purpose:** How the projects fit together and how data flows.
 
 ---
 
 ## Project structure
 
-<!-- TODO: describe the projects in this solution and how they relate -->
+| Project | SDK | Framework | Role |
+|---------|-----|-----------|------|
+| `FreeBlazorExtended` | `Microsoft.NET.Sdk.Razor` | net10.0 | Razor class library; 12 components + 6 services + SignalR hubs |
+| `FreeBlazorExtended.Agent` | `Microsoft.NET.Sdk.Worker` | net10.0-windows | Windows Service; heartbeats + remote service/IIS control |
+| `FreeBlazorExample` | `Microsoft.NET.Sdk.Web` | net10.0 | ASP.NET Core showcase host |
+| `FreeBlazorExample.Client` | `Microsoft.NET.Sdk.BlazorWebAssembly` | net10.0 | WASM client; standard pages + /showcase/* demo pages |
+| `FreeBlazorExample.DataAccess` | `Microsoft.NET.Sdk` | net10.0 | Business logic and EF Core |
+| `FreeBlazorExample.DataObjects` | `Microsoft.NET.Sdk` | net10.0 | Shared DTOs |
+| `FreeBlazorExample.EFModels` | `Microsoft.NET.Sdk` | net10.0 | EF Core DbContext |
+| `FreeBlazorExample.Plugins` | `Microsoft.NET.Sdk` | net10.0 | Roslyn dynamic plugin runtime |
+| `FreeBlazorExample.ShowcaseTool` | `Microsoft.NET.Sdk` | net10.0 | Console; Playwright screenshots + Magick.NET GIF generation |
 
-| Project | Role |
-|---------|------|
-| | |
+## Component consumption pattern
 
-## Key design decisions
-
-<!-- TODO: ADR-style entries for non-obvious choices -->
-
-### Decision: <!-- title -->
-
-**Context:** <!-- why this came up -->
-**Decision:** <!-- what was decided -->
-**Consequences:** <!-- what this enables or constrains -->
+```
+Downstream Blazor app
+  -> references FreeBlazorExtended (Razor class library)
+  -> @using FreeBlazorExtended.Components
+  -> <FBEDataTable ...> <FBEModal ...> etc.
+  -> SignalR services registered in DI at startup
+```
 
 ---
 
-## Data flow
-
-<!-- TODO: describe how data moves through the system — a diagram or prose -->
-
-`
-Input → Processing → Output
-`
-
-## External dependencies
-
-<!-- TODO: list external systems, APIs, NuGet packages that are load-bearing -->
-
-| Dependency | Version | Why |
-|------------|---------|-----|
-| | | |
-
-## Extension points
-
-<!-- TODO: describe how this project is meant to be extended — plugins, partial classes, config, etc. -->
+*Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT).***
+*Website: https://em.wsu.edu/eit/ | GitHub: https://github.com/WSU-EIT | MIT License*

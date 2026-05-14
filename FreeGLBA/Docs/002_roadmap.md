@@ -1,36 +1,23 @@
-﻿# FreeGLBA — Roadmap
+﻿# FreeGLBA -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Fix InMemory seeding so admin/admin login works out of the box
+- [ ] CSV and PDF export of audit logs
+- [ ] Access pattern anomaly detection (flag unusual access volumes)
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Integration with Banner / PeopleSoft for automatic subject resolution
+- [ ] Role-based access control for who can view audit logs vs. configure the system
+- [ ] Webhook notifications when access thresholds are exceeded
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] FERPA access tracking alongside GLBA (combined compliance dashboard)
+- [ ] Retention policy automation (auto-purge events older than N years per policy)

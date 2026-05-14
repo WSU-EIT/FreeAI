@@ -1,4 +1,4 @@
-﻿# FreePlugins — Overview
+﻿# FreePlugins -- Overview
 
 > **Category:** Overview
 > **Purpose:** What this project is, why it exists, and how to get started.
@@ -7,31 +7,39 @@
 
 ## What it is
 
-Plugin authoring playground and v1 plugin SDK for the FreeCRM ecosystem
+FreePlugins is a plugin authoring and testing workspace that demonstrates the WSU-EIT Roslyn-based dynamic plugin system. It contains two sub-projects:
 
-<!-- TODO: expand with 2-3 paragraphs describing the problem it solves and the approach it takes -->
+- **FreePluginsV1** -- The full solution: a FreeCRM-based web host, Blazor WASM client, data layer, and the complete Roslyn plugin runtime. Includes example plugins and a published NuGet plugin SDK (`FreePlugins.Abstractions`) for external consumers.
+- **BlazorApp1** -- A throwaway Blazor Server app used as a scan/test target by analysis tools.
+
+The plugin system allows `.cs` and `.plugin` files to be dropped into a running application at startup, compiled on-the-fly by Roslyn, and executed without restarting or recompiling the host.
 
 ## Why it exists
 
-<!-- TODO: describe the business or technical need that drove this project -->
+FreeCRM applications need a safe way to extend behavior without modifying core source files. FreePlugins codifies the plugin contract (`IPlugin`) and runtime (`FreePlugins.Plugins`) and provides example implementations so developers know exactly how to write a plugin.
 
 ## Who it is for
 
-<!-- TODO: list intended users/consumers — developers, end users, other systems, etc. -->
+- WSU-EIT developers writing plugins for any FreeCRM-based application
+- External teams who want to consume the `FreePlugins.Abstractions` NuGet package
+- Engineers who want to see how Roslyn runtime compilation works in practice
 
 ## Quick start
 
-<!-- TODO: minimum steps to run or consume this project -->
+```bash
+cd FreePlugins/FreePluginsV1/FreePlugins
+dotnet run
+```
 
-`ash
-# clone and build
-cd FreePlugins
-dotnet build
-
-# run
-dotnet run --project {entrypoint}
-`
+Navigate to `http://localhost:5104`.
 
 ## Related projects
 
-<!-- TODO: list dependent or sibling projects with links -->
+- [ChatWithAI](../ChatWithAI/README.md) -- uses the same plugin pattern
+- [FreeManager](../FreeManager/README.md) -- can generate plugin scaffolding
+- [FreeA11yChecker](../FreeA11yChecker/README.md) -- uses Roslyn plugins for custom auth and background processes
+
+---
+
+*Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT).***
+*Website: https://em.wsu.edu/eit/ | GitHub: https://github.com/WSU-EIT | MIT License*
