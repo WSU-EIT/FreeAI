@@ -428,3 +428,6 @@ _consolebuild/
 **/runs/latest/**
 **/.claude/**
 **/runs/**
+# Allow Docs showcase runs
+!Docs/**/runs/
+!Docs/**/runs/**

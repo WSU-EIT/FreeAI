@@ -1,0 +1,53 @@
+[
+  {
+    "Tool": "htmlcheck",
+    "RuleId": "img-alt",
+    "CanonicalRuleId": "image-alt",
+    "Severity": "serious",
+    "Message": "Image missing alt attribute",
+    "Selector": "",
+    "Snippet": "\u003Cimg class=\u0022user-menu-icon\u0022 src=\u0022http://localhost:5108/File/View/f6cf9be5-baee-4200-953e-e4695985e703\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "htmlcheck",
+    "RuleId": "heading-order",
+    "CanonicalRuleId": "heading-order",
+    "Severity": "moderate",
+    "Message": "Heading level skipped: h1 to h3",
+    "Selector": "",
+    "Snippet": "",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "htmlcheck",
+    "RuleId": "heading-order",
+    "CanonicalRuleId": "heading-order",
+    "Severity": "moderate",
+    "Message": "Heading level skipped: h3 to h5",
+    "Selector": "",
+    "Snippet": "",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]
