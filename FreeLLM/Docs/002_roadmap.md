@@ -1,36 +1,23 @@
-﻿# FreeLLM — Roadmap
+﻿# FreeLLM -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Token counting in the browser (WASM-based BPE tokenizer) so chunk boundaries match actual context limits
+- [ ] Saved file selection sets -- remember which files a user typically includes for a given project
+- [ ] Fix boot issue when ASPNETCORE_URLS env var is not set (currently binds to random port)
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Azure OpenAI integration -- send the assembled prompt directly from the UI and stream the response back
+- [ ] Git diff mode -- pre-select only files changed since a given commit
+- [ ] `.gitignore`-aware file exclusion
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Support remote directories (SSH / SMB mount) so the tool is not limited to the server''s local filesystem
+- [ ] Session history -- save and replay previous prompts with the same file selection

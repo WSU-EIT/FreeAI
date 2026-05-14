@@ -1,36 +1,25 @@
-﻿# FreeA11yChecker — Roadmap
+﻿# FreeA11yChecker -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term (pre-July 2026 WCAG 2.2 deadline)
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] WCAG 2.2 criterion coverage gap analysis -- document which 2.2 criteria each engine covers
+- [ ] Violation trend dashboard -- show issue count over time per site
+- [ ] Email/Teams notification when a scheduled scan finds new violations
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Mobile viewport scanning (iOS/Android user-agent simulation)
+- [ ] Keyboard navigation simulation across all pages
+- [ ] Automated re-test -- mark a violation fixed, re-scan just that rule to confirm
+- [ ] Public compliance status page per site (unauthenticated endpoint)
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Integration with GitHub Actions / CI pipelines (fail the build on critical violations)
+- [ ] AI-assisted remediation suggestions (send violation + page HTML to LLM, get fix code)
+- [ ] Browser extension for on-demand single-page scanning without the CLI

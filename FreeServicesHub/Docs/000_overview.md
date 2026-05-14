@@ -1,4 +1,4 @@
-﻿# FreeServicesHub — Overview
+﻿# FreeServicesHub -- Overview
 
 > **Category:** Overview
 > **Purpose:** What this project is, why it exists, and how to get started.
@@ -7,31 +7,46 @@
 
 ## What it is
 
-SignalR hub-and-agent demo for complex multi-process interaction
+FreeServicesHub is a hub-and-agent system for real-time Windows server fleet monitoring. A Blazor/SignalR web application (the hub) receives heartbeats from one or more Windows agent services, displaying live CPU, RAM, disk, and uptime telemetry. Agents register with the hub via JWT, maintain a persistent SignalR connection, and can be managed (settings updated, jobs dispatched) from the web UI.
 
-<!-- TODO: expand with 2-3 paragraphs describing the problem it solves and the approach it takes -->
+The solution also includes an .NET Aspire AppHost for local development that starts both the hub and an agent together, wiring their ports and environment variables automatically.
 
 ## Why it exists
 
-<!-- TODO: describe the business or technical need that drove this project -->
+WSU-EIT needed a lightweight way to monitor Windows servers running FreeCRM-based applications -- CPU spikes, disk fill-up, service status -- without deploying a heavyweight monitoring stack. FreeServicesHub provides that visibility with a single `dotnet run` on the AppHost.
 
 ## Who it is for
 
-<!-- TODO: list intended users/consumers — developers, end users, other systems, etc. -->
+- IT operations staff who need a live dashboard of server health
+- Developers who want to see how SignalR hub-and-agent patterns work in .NET 10
+- WSU-EIT teams running FreeCRM applications on Windows servers
 
 ## Quick start
 
-<!-- TODO: minimum steps to run or consume this project -->
+```bash
+cd FreeServicesHub/FreeServicesHub.AppHost
+dotnet run
+```
 
-`ash
-# clone and build
-cd FreeServicesHub
-dotnet build
+The Aspire dashboard shows both processes. Navigate to `http://localhost:5105` for the hub UI.
 
-# run
-dotnet run --project {entrypoint}
-`
+Or run hub and agent separately:
+
+```bash
+# Hub
+cd FreeServicesHub/FreeServicesHub/FreeServicesHub
+dotnet run
+
+# Agent (in a separate terminal)
+cd FreeServicesHub/FreeServicesHub.Agent
+dotnet run
+```
 
 ## Related projects
 
-<!-- TODO: list dependent or sibling projects with links -->
+- [FreeBlazorExtended](../FreeBlazorExtended/README.md) -- also has an agent component for IIS/Windows Service control
+
+---
+
+*Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT).***
+*Website: https://em.wsu.edu/eit/ | GitHub: https://github.com/WSU-EIT | MIT License*

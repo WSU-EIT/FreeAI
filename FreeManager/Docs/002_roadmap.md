@@ -1,36 +1,23 @@
-﻿# FreeManager — Roadmap
+﻿# FreeManager -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Fix InMemory seeding so admin/admin login works out of the box for the showcase
+- [ ] Generated code preview with syntax highlighting in the Entity Wizard
+- [ ] Export directly to a zip file or GitHub repo from the web UI
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] AI-assisted entity design -- describe your domain in plain English, get suggested entities and relationships
+- [ ] Live preview: spin up a generated app in a Docker container from the wizard
+- [ ] Versioned project storage -- track entity-model changes over time
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Plugin generator wizard -- generate plugin scaffolding alongside app code
+- [ ] Multi-project workspace -- manage related FreeCRM apps from one FreeManager instance

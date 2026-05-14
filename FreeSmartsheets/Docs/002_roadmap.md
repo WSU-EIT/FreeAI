@@ -1,36 +1,23 @@
-﻿# FreeSmartsheets — Roadmap
+﻿# FreeSmartsheets -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Fix InMemory seeding so admin/admin login works out of the box
+- [ ] Snapshot/export -- save the workspace inventory to CSV or PDF for point-in-time auditing
+- [ ] Search and filter across workspace/sheet names
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Diff between snapshots -- detect newly created, deleted, or access-changed items
+- [ ] Scheduled inventory runs -- automatically capture the inventory on a cron schedule
+- [ ] Permission audit report -- list all users with access to each sheet
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Write operations -- rename, move, or update sharing settings from within the app
+- [ ] Multi-account aggregation -- view multiple Smartsheet accounts in one dashboard

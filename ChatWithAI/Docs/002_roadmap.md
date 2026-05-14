@@ -1,36 +1,26 @@
-﻿# ChatWithAI — Roadmap
+﻿# ChatWithAI -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Wire the Azure OpenAI chat into a Blazor UI page (stream responses via SignalR)
+- [ ] Persist conversation history to the database (EF Core `ChatSession` entity)
+- [ ] Multi-tenant conversation isolation -- each tenant sees only their own chat history
+- [ ] Expose chat as a REST endpoint so other services can call it
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Support additional providers (Anthropic, OpenAI direct, Azure AI Foundry)
+- [ ] Retrieval-Augmented Generation (RAG) using document embeddings stored in the database
+- [ ] Token usage dashboard -- show spend and usage per tenant in the admin UI
+- [ ] Plugin hook for custom pre/post-processing of prompts
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] Fine-tuned model management UI
+- [ ] Semantic search across uploaded files using vector embeddings
+- [ ] Integration with FreeLLM for local/self-hosted model fallback

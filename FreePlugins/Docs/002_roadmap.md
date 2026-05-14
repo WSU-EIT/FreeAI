@@ -1,36 +1,23 @@
-﻿# FreePlugins — Roadmap
+﻿# FreePlugins -- Roadmap
 
 > **Category:** Roadmap
-> **Purpose:** Future plans, known gaps, and ideas for this project.
+> **Purpose:** Planned and potential future work.
 
 ---
 
-## Priority: High
+## Near-term
 
-<!-- TODO: things that are clearly needed and relatively near-term -->
+- [ ] Hot-reload plugin support -- detect file changes in `PluginFiles/` and recompile without restart
+- [ ] Plugin error reporting UI -- show Roslyn compilation errors in the web UI
+- [ ] Fix InMemory seeding so admin/admin login works out of the box
 
-- [ ] Item
+## Medium-term
 
-## Priority: Medium
+- [ ] Plugin marketplace UI -- browse, install, and version plugins from a central registry
+- [ ] Sandboxed plugin execution -- limit what system resources a plugin can access
+- [ ] Plugin test runner -- execute plugin unit tests from the web UI
 
-<!-- TODO: useful additions that aren't blocking anything -->
+## Long-term
 
-- [ ] Item
-
-## Priority: Low / Nice to have
-
-<!-- TODO: interesting ideas that aren't urgent -->
-
-- [ ] Item
-
-## Known gaps
-
-<!-- TODO: things that are missing compared to what you'd expect this project to have -->
-
-- [ ] Gap
-
-## Ideas parking lot
-
-<!-- TODO: raw ideas not yet triaged -->
-
-- Idea
+- [ ] WASM plugin support -- compile and run plugins in the browser for client-side extensibility
+- [ ] Blazor component plugins -- drop-in `.razor` files rendered dynamically in the UI
