@@ -8,9 +8,8 @@ namespace FreeA11yChecker.Console;
 /// log file path is printed to the terminal so the user (or anyone reading screenshots
 /// of the run) always sees where to find the full transcript.
 ///
-/// **Canonical location, decided here:** `runs/latest/_logs/scan-{ISO-timestamp}.log`
-/// — one file per CLI invocation, never overwritten. When the user reports a problem
-/// they can just point at this directory; the most-recent file IS the failed run.
+/// **Canonical location, decided here:** `runs/latest/_logs/scan.log`
+/// — fixed filename, overwritten on every run. Git history tracks the diff across runs.
 /// </summary>
 public static class RunLogger
 {
@@ -25,7 +24,7 @@ public static class RunLogger
         try {
             string logsDir = Path.Combine(Path.GetFullPath(outputDir), "_logs");
             Directory.CreateDirectory(logsDir);
-            string filename = $"scan-{DateTime.Now:yyyy-MM-ddTHH-mm-ss}.log";
+            string filename = "scan.log";
             CurrentLogPath = Path.Combine(logsDir, filename);
             _file = new StreamWriter(CurrentLogPath, append: false, Encoding.UTF8) { AutoFlush = true };
 
