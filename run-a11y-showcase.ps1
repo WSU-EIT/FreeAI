@@ -25,7 +25,8 @@ $allTargets = @(
     @{ Name="FreePlugins";      Project="FreePlugins\FreePluginsV1\FreePlugins\FreePlugins.csproj";                   Port=5104; ShowcaseRel="FreePlugins\Docs\showcase" },
     @{ Name="FreeServicesHub";  Project="FreeServicesHub\FreeServicesHub\FreeServicesHub\FreeServicesHub.csproj";     Port=5105; ShowcaseRel="FreeServicesHub\Docs\showcase" },
     @{ Name="FreeSmartsheets";  Project="FreeSmartsheets\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.csproj";     Port=5106; ShowcaseRel="FreeSmartsheets\Docs\showcase" },
-    @{ Name="FreeBlazorExample";Project="FreeBlazorExtended\FreeBlazorExample\FreeBlazorExample\FreeBlazorExample.csproj"; Port=5107; ShowcaseRel="FreeBlazorExtended\Docs\showcase" }
+    @{ Name="FreeBlazorExample";Project="FreeBlazorExtended\FreeBlazorExample\FreeBlazorExample\FreeBlazorExample.csproj"; Port=5107; ShowcaseRel="FreeBlazorExtended\Docs\showcase" },
+    @{ Name="FreeA11yChecker"; Project="FreeA11yChecker\FreeA11yChecker\FreeA11yChecker.csproj";                         Port=5108; ShowcaseRel="FreeA11yChecker\Docs\showcase" }
 )
 
 $consoleDll = "$root\FreeA11yChecker\.publish\console\FreeA11yChecker.Console.dll"
