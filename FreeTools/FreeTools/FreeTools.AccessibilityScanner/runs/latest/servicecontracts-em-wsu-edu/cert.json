@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=servicecontracts.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "A13539D3F735985555644DE1DE66A9089C29CE83",
+  "SerialNumber": "6F2CE772E1B31A0D3545AF2056816DA7",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "servicecontracts.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "servicecontracts.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

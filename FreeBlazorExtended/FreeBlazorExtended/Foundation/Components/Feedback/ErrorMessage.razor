@@ -1,0 +1,252 @@
+﻿@*
+    ErrorMessage — Foundation error-state message block with optional validation detail list and dismiss action.
+
+    Use this component to surface form validation failures, API errors, or any blocking condition
+    that the user must acknowledge before proceeding. It renders nothing when Message is empty,
+    making it safe to bind directly to a nullable error string without extra guard logic.
+
+    Required parameters:
+        Message — the primary error body text (block is hidden when empty)
+
+    Optional parameters:
+        Title       — header line inside the block (default "Error")
+        Details     — additional validation messages rendered as a bullet list below Message
+        ShowDismiss — shows an × button that hides the block (default true)
+        Compact     — reduces padding for use inside cards or modals
+        OnDismissed — EventCallback invoked after the user clicks dismiss
+        ChildContent — render fragment for retry buttons or remediation links
+
+    Example (API error with retry):
+        <ErrorMessage Message="@_apiError"
+                      Title="Save failed"
+                      Details="@_validationErrors"
+                      OnDismissed="@(() => _apiError = null)">
+            <button class="btn btn-sm btn-outline-danger" @onclick="Retry">Retry</button>
+        </ErrorMessage>
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_message)) {
+    <div class="error-message @_messageClass" role="alert" aria-live="assertive">
+        <div class="error-content">
+            <span class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </span>
+
+            <div class="error-text">
+                <h5 class="error-title">@_title</h5>
+                <p class="error-description">@_message</p>
+
+                @if (Details?.Any() == true) {
+                    <ul class="error-details">
+                        @foreach (var detail in Details) {
+                            <li>@detail</li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            @if (ShowDismiss) {
+                <button type="button" class="error-dismiss" @onclick="Dismiss" aria-label="Dismiss error">
+                    <i class="fas fa-times"></i>
+                </button>
+            }
+        </div>
+
+        @if (ChildContent != null) {
+            <div class="error-footer">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .error-message {
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 1px solid var(--bs-danger);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .error-message.compact {
+        padding: 0.75rem;
+    }
+
+    .error-message.full-width {
+        width: 100%;
+    }
+
+    .error-content {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .error-icon {
+        flex-shrink: 0;
+        color: var(--bs-danger);
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+
+    .error-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .error-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--bs-danger);
+    }
+
+    .error-description {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.95rem;
+        color: var(--bs-body-color);
+        line-height: 1.5;
+    }
+
+    .error-details {
+        margin: 0;
+        padding-left: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--bs-body-color);
+    }
+
+    .error-details li {
+        margin-bottom: 0.25rem;
+    }
+
+    .error-dismiss {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        color: var(--bs-danger);
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease;
+    }
+
+    .error-dismiss:hover {
+        opacity: 0.7;
+    }
+
+    .error-footer {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bs-danger);
+    }
+
+    @@media (max-width: 576px) {
+        .error-message {
+            padding: 0.75rem;
+        }
+
+        .error-content {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .error-icon {
+            margin-top: 0;
+        }
+
+        .error-footer {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    protected string _message = "";
+    protected string _title = "";
+    protected string _messageClass = "";
+    protected bool _dismissed = false;
+
+    /// <summary>
+    /// The primary error description shown in the message body.
+    /// <para><b>Required.</b> The entire block is hidden when this is empty or whitespace —
+    /// bind directly to a nullable field and the component self-manages visibility.</para>
+    /// </summary>
+    [Parameter] public string Message { get; set; } = "";
+
+    /// <summary>
+    /// Header line rendered above <see cref="Message"/> in a bold danger colour.
+    /// Default: <c>"Error"</c>. Override with a domain-specific label
+    /// (e.g. <c>"Save failed"</c>, <c>"Validation errors"</c>).
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Supplementary validation messages rendered as a bullet list below <see cref="Message"/>.
+    /// Populate from model-state or API error arrays (e.g. <c>result.Errors</c>).
+    /// Optional — omit when a single sentence is sufficient.
+    /// </summary>
+    [Parameter] public List<string> Details { get; set; } = new();
+
+    /// <summary>
+    /// When <c>true</c> (default), renders an × button in the top-right corner.
+    /// Clicking it triggers <see cref="OnDismissed"/> and hides the block.
+    /// Set to <c>false</c> when the error cannot be dismissed without corrective action.
+    /// </summary>
+    [Parameter] public bool ShowDismiss { get; set; } = true;
+
+    /// <summary>
+    /// Reduces internal padding for tight layouts (cards, modals, inline sections).
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Compact { get; set; } = false;
+
+    /// <summary>
+    /// Invoked after the dismiss button is clicked and the block is hidden.
+    /// Use to clear the bound error field so the component returns to its hidden state:
+    /// <code>OnDismissed="@(() => _error = null)"</code>
+    /// </summary>
+    [Parameter] public EventCallback OnDismissed { get; set; }
+
+    /// <summary>
+    /// Optional render fragment rendered in the footer, separated by a danger-coloured top border.
+    /// Use for retry buttons, support links, or remediation actions.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _message = Message ?? "";
+        _title = String.IsNullOrWhiteSpace(Title) ? "Error" : Title;
+
+        _messageClass = "";
+        if (Compact) {
+            _messageClass += "compact ";
+        }
+        _messageClass = _messageClass.Trim();
+    }
+
+    protected async Task Dismiss()
+    {
+        _dismissed = true;
+        await OnDismissed.InvokeAsync();
+    }
+}

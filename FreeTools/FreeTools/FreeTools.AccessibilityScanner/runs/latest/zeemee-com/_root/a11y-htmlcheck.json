@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-main",
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

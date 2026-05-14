@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 282,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "a[href$=\u0022index.wsu.edu/\u0022]",
+      "Snippet": "\u003Ca href=\u0022http://index.wsu.edu/\u0022 class=\u0022wsu-link--external\u0022\u003EA-Z Index\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "a[href$=\u0022overview/\u0022]",
+      "Snippet": "\u003Ca href=\u0022https://wsu.edu/life/overview/\u0022 class=\u0022wsu-link--external\u0022\u003ELife at WSU\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "li:nth-child(3) \u003E .wsu-link--external",
+      "Snippet": "\u003Ca href=\u0022https://foundation.wsu.edu/give/\u0022 class=\u0022wsu-link--external\u0022\u003EGive to the Graduate School\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

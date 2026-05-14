@@ -1,0 +1,325 @@
+﻿@page "/showcase/feature101-dynamic-forms"
+@using FreeBlazorExtended.DynamicForms
+@using FreeBlazorExtended.Components
+@inject FormService FormService
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Feature 101: Dynamic Form Rendering</h1>
+            <p class="lead">Forms defined as data (JSON schema), not code. Build, preview, and submit forms dynamically at runtime.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout
+        WhatTechnical="A runtime form renderer that reads a JSON schema definition and produces a fully interactive HTML form — fields, validation rules, and submission handling — without any compiled Razor code."
+        WhatEli5="You describe what a form should look like in JSON (a text file), and the app draws the actual form for you. Change the JSON, the form changes — no deploy needed."
+        Who=@(new[]{ "Product owners who need to iterate on surveys or data-entry screens without a developer", "Developers building platforms where customers define their own intake forms", "Admins creating configuration wizards that vary by workflow or customer type" })
+        WhenUse=@(new[]{ "Forms that differ per customer, tenant, or workflow", "Any scenario where new form fields are added at runtime by non-developers", "Multi-step wizards or surveys that need versioning and submission history" })
+        WhenNot=@(new[]{ "Simple, static forms that never change — hard-coded Razor is simpler", "Forms requiring complex cross-field business logic better expressed in C#" })
+        Why="Every time a form changes, a developer writes Razor, tests, and deploys. Schema-driven rendering breaks that cycle — a product owner edits JSON and the change is live immediately."
+        TechNotes=@(new[]{ "FormSchema stored as a JSON column in the FormDefinition table via EF Core", "FormService: GetForms, GetForm, SaveForm, DeleteForm, GetSubmissions, SaveSubmission", "Renderer traverses schema node tree recursively — supports text, textarea, select, multi-select, radio, checkbox, date, number", "Validation rules (required, min/max length, regex) are encoded in the schema and re-evaluated client-side", "Submissions stored as JSON blobs keyed by FormDefinitionId + UserId + timestamp" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — schema + submissions in SQL", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Form Definition Editor</h2>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group mb-3" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-primary @(_mode == "builder" ? "active" : "")" @onclick='() => SetMode("builder")'>
+                            Builder
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary @(_mode == "list" ? "active" : "")" @onclick='() => SetMode("list")'>
+                            Forms
+                        </button>
+                    </div>
+
+                    @if (_mode == "builder")
+                    {
+                        <FormBuilder TenantId="_tenantId" OnSaved="HandleFormSaved" />
+                    }
+                    else
+                    {
+                        <div class="form-list">
+                            @if (_forms.Count == 0)
+                            {
+                                <div class="alert alert-info">No forms yet. Create one using the Builder tab.</div>
+                            }
+                            else
+                            {
+                                <div class="list-group">
+                                    @foreach (var form in _forms)
+                                    {
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h3 class="mb-1">@form.Name</h3>
+                                                <small>
+                                                    <span class="badge @(form.IsPublished ? "bg-success" : "bg-secondary")">
+                                                        @(form.IsPublished ? "Published" : "Draft")
+                                                    </span>
+                                                    <span class="badge bg-info">v@form.Version</span>
+                                                </small>
+                                            </div>
+                                            <p class="mb-1 text-muted">@form.Description</p>
+                                            <small>@form.Fields.Count fields</small>
+                                            <div class="mt-2">
+                                                <button class="btn btn-xs btn-outline-primary" @onclick="() => EditForm(form)">Edit</button>
+                                                <button class="btn btn-xs btn-outline-secondary" @onclick="() => PreviewForm(form)">Preview</button>
+                                                <button class="btn btn-xs btn-outline-info" @onclick="() => ViewSubmissions(form)">Submissions</button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title h5 mb-0">Form Preview & Submissions</h2>
+                </div>
+                <div class="card-body">
+                    @if (_previewForm != null)
+                    {
+                        <div>
+                            <h3 class="mb-3">Preview: @_previewForm.Name</h3>
+                            <DynamicFormRenderer FormDef="_previewForm" OnSubmit="HandleFormSubmit" />
+                        </div>
+                    }
+                    else if (_submissionsForm != null)
+                    {
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary mb-3" @onclick="ClearSubmissionsView">← Back</button>
+                            <h3 class="mb-3">Submissions for: @_submissionsForm.Name</h3>
+
+                            @if (_submissions.Count == 0)
+                            {
+                                <div class="alert alert-info">No submissions yet.</div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Submitted By</th>
+                                                <th>Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var submission in _submissions)
+                                            {
+                                                <tr>
+                                                    <td>@(submission.SubmittedBy ?? "Anonymous")</td>
+                                                    <td>@submission.SubmittedAt.ToString("g")</td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-outline-info" @onclick="() => ViewSubmissionDetail(submission)">View</button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                @if (_selectedSubmission != null)
+                                {
+                                    <hr />
+                                    <h3>Submission Details</h3>
+                                    <div class="bg-light p-3">
+                                        @{
+                                            var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(_selectedSubmission.DataJson) ?? new();
+                                            foreach (var kvp in data)
+                                            {
+                                                <div class="mb-2">
+                                                    <strong>@kvp.Key:</strong> @kvp.Value
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary">Select a form to preview or view submissions.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title h5 mb-0">Sample Forms (Pre-loaded)</h2>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary me-2" @onclick="LoadSampleForms">Load Sample Forms</button>
+                    <p class="text-muted mt-2">Includes: Customer Feedback, Incident Report, Job Application</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Guid _tenantId = Guid.NewGuid();
+    private List<FormDefinition> _forms = new();
+    private List<FormSubmission> _submissions = new();
+    private FormDefinition? _previewForm;
+    private FormDefinition? _submissionsForm;
+    private FormSubmission? _selectedSubmission;
+    private string _mode = "builder";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadForms();
+    }
+
+    private async Task LoadForms()
+    {
+        _forms = await FormService.GetFormDefinitions(_tenantId);
+    }
+
+    private void SetMode(string mode)
+    {
+        _mode = mode;
+        _previewForm = null;
+        _submissionsForm = null;
+    }
+
+    private void EditForm(FormDefinition form)
+    {
+        _previewForm = null;
+        _submissionsForm = null;
+        _mode = "builder";
+    }
+
+    private void PreviewForm(FormDefinition form)
+    {
+        _previewForm = form;
+        _submissionsForm = null;
+    }
+
+    private async Task ViewSubmissions(FormDefinition form)
+    {
+        _submissionsForm = form;
+        _previewForm = null;
+        _selectedSubmission = null;
+        _submissions = await FormService.GetFormSubmissions(form.FormDefinitionId, _tenantId);
+    }
+
+    private void ClearSubmissionsView()
+    {
+        _submissionsForm = null;
+        _submissions.Clear();
+        _selectedSubmission = null;
+    }
+
+    private void ViewSubmissionDetail(FormSubmission submission)
+    {
+        _selectedSubmission = submission;
+    }
+
+    private async Task HandleFormSaved(FormDefinition form)
+    {
+        await LoadForms();
+        _mode = "list";
+    }
+
+    private async Task HandleFormSubmit(Dictionary<Guid, string?> values)
+    {
+        if (_previewForm == null) return;
+
+        var submission = new FormSubmission
+        {
+            TenantId = _tenantId,
+            FormDefinitionId = _previewForm.FormDefinitionId,
+            FormVersion = _previewForm.Version,
+            SubmittedBy = "Demo User",
+            SubmittedAt = DateTime.UtcNow
+        };
+
+        var (success, error) = await FormService.SaveFormSubmission(
+            submission, _previewForm, values);
+
+        if (success)
+        {
+            // Success handled by component
+            _previewForm = null;
+            await LoadForms();
+        }
+    }
+
+    private async Task LoadSampleForms()
+    {
+        var customerFeedback = new FormDefinition
+        {
+            TenantId = _tenantId,
+            Name = "Customer Feedback Survey",
+            Description = "Help us improve by sharing your feedback",
+            SubmitButtonText = "Submit Feedback",
+            SuccessMessage = "Thank you for your feedback!",
+            IsPublished = true,
+            Fields = new()
+            {
+                new FormField { Order = 0, Label = "Email Address", FieldType = FormFieldType.Email, IsRequired = true, PlaceholderText = "you@example.com" },
+                new FormField { Order = 1, Label = "Overall Satisfaction", FieldType = FormFieldType.Radio, IsRequired = true, Options = new() { ("5", "Very Satisfied"), ("4", "Satisfied"), ("3", "Neutral"), ("2", "Dissatisfied"), ("1", "Very Dissatisfied") } },
+                new FormField { Order = 2, Label = "Comments", FieldType = FormFieldType.Textarea, HelpText = "Please share any additional thoughts", PlaceholderText = "Your comments here..." },
+                new FormField { Order = 3, Label = "May we contact you?", FieldType = FormFieldType.Checkbox, HelpText = "Yes, contact me with follow-up questions" }
+            }
+        };
+
+        var incidentReport = new FormDefinition
+        {
+            TenantId = _tenantId,
+            Name = "Incident Report",
+            Description = "Report an incident or issue",
+            SubmitButtonText = "File Report",
+            SuccessMessage = "Your report has been filed successfully.",
+            IsPublished = true,
+            Fields = new()
+            {
+                new FormField { Order = 0, Label = "Incident Title", FieldType = FormFieldType.Text, IsRequired = true, PlaceholderText = "Brief description" },
+                new FormField { Order = 1, Label = "Incident Date", FieldType = FormFieldType.Date, IsRequired = true },
+                new FormField { Order = 2, Label = "Severity", FieldType = FormFieldType.Select, IsRequired = true, Options = new() { ("high", "High - Critical Issue"), ("medium", "Medium - Important"), ("low", "Low - Minor Issue") } },
+                new FormField { Order = 3, Label = "Description", FieldType = FormFieldType.Textarea, IsRequired = true, PlaceholderText = "Detailed description of what happened..." }
+            }
+        };
+
+        var jobApplication = new FormDefinition
+        {
+            TenantId = _tenantId,
+            Name = "Job Application",
+            Description = "Apply for a position",
+            SubmitButtonText = "Apply Now",
+            SuccessMessage = "Thank you for applying! We will review your application.",
+            IsPublished = true,
+            Fields = new()
+            {
+                new FormField { Order = 0, Label = "Full Name", FieldType = FormFieldType.Text, IsRequired = true },
+                new FormField { Order = 1, Label = "Email Address", FieldType = FormFieldType.Email, IsRequired = true },
+                new FormField { Order = 2, Label = "Phone Number", FieldType = FormFieldType.Telephone, IsRequired = true },
+                new FormField { Order = 3, Label = "Position Applied For", FieldType = FormFieldType.Select, IsRequired = true, Options = new() { ("dev", "Developer"), ("design", "Designer"), ("marketing", "Marketing Manager"), ("sales", "Sales Representative") } },
+                new FormField { Order = 4, Label = "Years of Experience", FieldType = FormFieldType.Number, IsRequired = true, DefaultValue = "0" },
+                new FormField { Order = 5, Label = "Cover Letter", FieldType = FormFieldType.Textarea, IsRequired = true, PlaceholderText = "Tell us why you're a great fit..." }
+            }
+        };
+
+        await FormService.SaveFormDefinition(customerFeedback);
+        await FormService.SaveFormDefinition(incidentReport);
+        await FormService.SaveFormDefinition(jobApplication);
+
+        await LoadForms();
+    }
+}

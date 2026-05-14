@@ -1,0 +1,74 @@
+{
+  "PagePath": "/event-scheduling/25live-help/",
+  "Url": "https://registrar.schedule.wsu.edu/event-scheduling/25live-help/",
+  "FinalUrl": null,
+  "Title": "25Live Help | Event Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 656455,
+  "ScreenshotSizeBytes": 337420,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 337420
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761938/listview25live.png?width=283\u0026height=101\u0026mode=max",
+      "AltText": "List View in 25Live"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761936/calendarview25live.png?width=226\u0026height=100\u0026mode=max",
+      "AltText": "Calendar View in 25Live"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761935/availabilityview.png?width=296\u0026height=100\u0026mode=max",
+      "AltText": "Availability View in 25Live"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761939/dashboard_hamburger25live.png?width=245\u0026height=157\u0026mode=max",
+      "AltText": "25Live Dashboard with arrows"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:13:11.1237857Z"
+}

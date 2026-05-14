@@ -1,0 +1,57 @@
+{
+  "PagePath": "/Workday",
+  "Url": "https://prod.em.wsu.edu/Workday",
+  "FinalUrl": null,
+  "Title": "Workday",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 166203,
+  "ScreenshotSizeBytes": 75064,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 75064
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:10:38.8900713Z"
+}

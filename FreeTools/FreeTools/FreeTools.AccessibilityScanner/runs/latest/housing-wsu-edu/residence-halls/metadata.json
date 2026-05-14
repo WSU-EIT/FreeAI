@@ -1,0 +1,127 @@
+{
+  "PagePath": "/residence-halls/",
+  "Url": "https://housing.wsu.edu/residence-halls/",
+  "FinalUrl": null,
+  "Title": "Residence Halls",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 76818,
+  "ScreenshotSizeBytes": 388048,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 388048
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 15,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/manhwtjc/cdd-exterior-entrance.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ysmfnp1w/honors-exterior-wide.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/elbfi15c/gg-exterior-side.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/im4dlkjr/gsh-exterior-winter.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2xvhmjnf/mccroskey-exterior-side.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/l5zdabcg/mceachern-east-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hzppywll/northside-exterior-side.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ukoke1lc/olympia-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/besfhfhk/orton-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ciicewbt/regents-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hdwpzitg/rogers-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mo5nab5z/scott-coman-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/55mfxi0f/stephenson-exterior-towers.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3xqf4cuc/stimson-exterior.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/avzetzyn/streit-perham-exterior.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 26,
+    "Critical": 6,
+    "Serious": 20,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 20,
+        "Critical": 0,
+        "Serious": 20,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:13:57 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:13:57.0854276Z"
+}

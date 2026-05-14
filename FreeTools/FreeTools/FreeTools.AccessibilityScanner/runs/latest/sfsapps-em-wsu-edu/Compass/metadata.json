@@ -1,0 +1,74 @@
+{
+  "PagePath": "/Compass",
+  "Url": "https://sfsapps.em.wsu.edu/Compass",
+  "FinalUrl": null,
+  "Title": "Login | Student Financial Aid | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 48018,
+  "ScreenshotSizeBytes": 191611,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 17,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 191611
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://sfsapps.em.wsu.edu/Compass/Content/images/EstimateGraphic2.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 1,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "content-length": "38680",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:31 GMT",
+    "expires": "-1",
+    "pragma": "no-cache",
+    "server": "Microsoft-IIS/10.0",
+    "x-aspnet-version": "4.0.30319",
+    "x-aspnetmvc-version": "5.2",
+    "x-powered-by": "ASP.NET",
+    "x-ua-compatible": "IE=edge,chrome=1"
+  },
+  "CapturedAt": "2026-02-19T02:10:27.6224036Z"
+}

@@ -1,0 +1,81 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 4,
+  "Critical": 2,
+  "Serious": 2,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 2,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca id=\u0022cardLinkButton\u0022 class=\u0022button cardLinkButton\u0022 href=\u0022/helping-my-coug/transfer-student/\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Certain ARIA roles must contain particular children",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cul id=\u0022mainNav\u0022 class=\u0022dropdown menu\u0022 aria-label=\u0022Main Navigation\u0022 data-dropdown-menu=\u0022c9qb63-dropdown-menu\u0022 role=\u0022menubar\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/resources/\u0022 aria-label=\u0022Resources\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EResources\u003C/a\u003E"
+    }
+  ]
+}

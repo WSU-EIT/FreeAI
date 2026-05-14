@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 92,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "html-has-lang",
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "Selector": "html",
+      "Snippet": "\u003Chtml\u003E\u003Chead\u003E\n\u003Ctitle\u003EAccess Denied\u003C/title\u003E\n\u003C/head\u003E\u003Cbody\u003E\n\u003Ch1\u003EAccess Denied\u003C/h1\u003E\n \nYou don\u0027t have permission to access \u0022http://tableau.com/\u0022 on this ser...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

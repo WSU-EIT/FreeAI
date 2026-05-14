@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=trusselbuilder.com, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "E5A6C3D29192608E2F66E4BA94B42139F030804E",
+  "SerialNumber": "00A3389773911C5C70E20DCE52B257CA84",
+  "NotBefore": "2026-01-12T16:00:00-08:00",
+  "NotAfter": "2027-01-13T15:59:59-08:00",
+  "DaysUntilExpiry": 328,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "trusselbuilder.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "trusselbuilder.com"
+  ],
+  "ErrorMessage": null
+}

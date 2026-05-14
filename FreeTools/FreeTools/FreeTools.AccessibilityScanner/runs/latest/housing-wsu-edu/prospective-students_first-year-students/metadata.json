@@ -1,0 +1,119 @@
+{
+  "PagePath": "/prospective-students/first-year-students/",
+  "Url": "https://housing.wsu.edu/prospective-students/first-year-students/",
+  "FinalUrl": null,
+  "Title": "First Year Students",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 82030,
+  "ScreenshotSizeBytes": 408181,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 408181
+    }
+  ],
+  "ImageCount": 13,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/yvafwp15/honors-exterior.jpg",
+      "AltText": "Elmina White Honors"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/elbfi15c/gg-exterior-side.jpg",
+      "AltText": "Gannon Goldsworthy"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4vbb1phv/mccroskey-exterior-side.jpg",
+      "AltText": "McCroskey"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ukoke1lc/olympia-exterior.jpg",
+      "AltText": "Olympia"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mo5nab5z/scott-coman-exterior.jpg",
+      "AltText": "Scott Coman"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/55mfxi0f/stephenson-exterior-towers.jpg",
+      "AltText": "Stephenson Complex"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ciicewbt/regents-exterior.jpg",
+      "AltText": "Regents"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/avzetzyn/streit-perham-exterior.jpg",
+      "AltText": "Streit Perham"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3bmjynz1/rogers-exterior-banner.jpg",
+      "AltText": "Rogers"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/besfhfhk/orton-exterior.jpg",
+      "AltText": "Orton"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xa0j0hdb/community-duncan-dunn-exterior.jpg",
+      "AltText": "Community Duncan Dunn"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mbpdhi1d/northside-desk-exterior.png",
+      "AltText": "Northside"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gvgfsgmn/gsh-exterior-cougar-way.jpg",
+      "AltText": "Global Scholars Hall"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:13:29 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:13:29.8427974Z"
+}

@@ -1,0 +1,65 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 5,
+  "Critical": 0,
+  "Serious": 5,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 4,
+      "Critical": 0,
+      "Serious": 4,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022https://www.flywire.com/school/wsu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003Cimg decoding=\u0022async\u0022 src=\u0022https://s3.wp.wsu.edu/uploads/sites/..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    }
+  ]
+}

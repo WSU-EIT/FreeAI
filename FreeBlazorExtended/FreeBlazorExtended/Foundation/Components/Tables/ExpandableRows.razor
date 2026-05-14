@@ -1,0 +1,323 @@
+﻿@*
+    ExpandableRows<TItem> — Foundation table with collapsible detail panels per row.
+
+    Each row renders a toggle button (▶/▼) that expands an inline detail section.
+    The detail content is fully caller-controlled via DetailTemplate, allowing rich
+    sub-forms, nested tables, or media. Columns are registered at runtime via AddColumn().
+
+    Required host setup:
+        1. Add the component: <ExpandableRows TItem="Order" Items="_orders" @ref="_table">
+                                  <DetailTemplate Context="order">...</DetailTemplate>
+                              </ExpandableRows>
+        2. Register columns (first render): _table.AddColumn("Id", nameof(Order.Id));
+        3. Supply an ItemKeySelector when the default GetHashCode is not stable.
+
+    Required parameters:
+        Items          — the record list to display.
+        DetailTemplate — RenderFragment<TItem> for the expanded detail row.
+
+    Optional parameters:
+        ItemKeySelector      — Func<TItem, string> returning a stable unique key per row.
+        AllowMultipleExpanded — allow more than one row open at a time (default true).
+        EmptyMessage         — text displayed when Items is empty.
+        AriaLabel            — accessible label for the <table> element.
+
+    Programmatic control (requires @ref):
+        tableRef.ExpandAll()          — open every row
+        tableRef.CollapseAll()        — close every row
+        tableRef.ExpandRow(item)      — open a specific row
+        tableRef.CollapseRow(item)    — close a specific row
+*@
+@namespace FreeBlazorExtended.Components
+@typeparam TItem
+
+@if (_items?.Any() == true) {
+    <div class="expandable-table-container">
+        <div class="table-responsive">
+            <table class="table expandable-table" role="grid" aria-label="@(String.IsNullOrWhiteSpace(AriaLabel) ? "Expandable table" : AriaLabel)">
+                <thead>
+                    <tr role="row">
+                        <th scope="col" class="expandable-toggle-col" role="columnheader">
+                            <span class="visually-hidden">Expand/Collapse</span>
+                        </th>
+                        @foreach (var column in _columns) {
+                            <th scope="col" role="columnheader">@column.Header</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in _items) {
+                        string rowId = $"row-{GetItemKey(item)}";
+                        <tr role="row" class="expandable-row" id="@rowId">
+                            <td class="expandable-toggle-col">
+                                <button type="button"
+                                    class="btn btn-sm btn-link expandable-toggle"
+                                    @onclick="@(() => ToggleRow(item))"
+                                    aria-expanded="@IsRowExpanded(item)"
+                                    aria-controls="@(rowId + "-details")"
+                                    aria-label="Toggle details">
+                                    <i class="@(_expandedRows.Contains(GetItemKey(item)) ? "fas fa-chevron-down" : "fas fa-chevron-right")" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            @foreach (var column in _columns) {
+                                <td role="gridcell">
+                                    @if (column.Template != null) {
+                                        @column.Template(item)
+                                    } else {
+                                        @GetPropertyValue(item, column.PropertyName)
+                                    }
+                                </td>
+                            }
+                        </tr>
+                        @if (_expandedRows.Contains(GetItemKey(item))) {
+                            <tr class="expandable-details" id="@(rowId + "-details")">
+                                <td colspan="@(_columns.Count + 1)">
+                                    <div class="expandable-content">
+                                        @if (DetailTemplate != null) {
+                                            @DetailTemplate(item)
+                                        } else {
+                                            <p class="text-muted">No additional details available</p>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+} else {
+    <div class="alert alert-info" role="status">
+        <i class="fas fa-info-circle me-2"></i>
+        @(String.IsNullOrWhiteSpace(EmptyMessage) ? "No data available" : EmptyMessage)
+    </div>
+}
+
+<style>
+    .expandable-table-container {
+        border-radius: 0.375rem;
+        border: 1px solid var(--bs-border-color);
+        overflow: hidden;
+    }
+
+    .expandable-table {
+        margin-bottom: 0;
+        background-color: var(--bs-body-bg);
+    }
+
+    .expandable-table thead th {
+        background-color: var(--bs-light);
+        border-color: var(--bs-border-color);
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .expandable-table tbody td {
+        border-color: var(--bs-border-color);
+        vertical-align: middle;
+    }
+
+    .expandable-table tbody tr:not(.expandable-details):hover {
+        background-color: var(--bs-light);
+    }
+
+    .expandable-toggle-col {
+        width: 50px;
+        text-align: center;
+    }
+
+    .expandable-toggle {
+        color: var(--bs-body-color);
+        padding: 0.25rem 0.5rem;
+    }
+
+    .expandable-toggle:hover {
+        color: var(--bs-primary);
+    }
+
+    .expandable-details {
+        background-color: #f9f9f9;
+    }
+
+    .expandable-details td {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .expandable-content {
+        padding: 1rem;
+        background-color: var(--bs-light);
+        border-radius: 0.375rem;
+    }
+
+    .expandable-content h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .expandable-content dl {
+        margin-bottom: 0;
+    }
+
+    .expandable-content dt {
+        font-weight: 600;
+        float: left;
+        clear: left;
+        width: 30%;
+    }
+
+    .expandable-content dd {
+        margin-left: 30%;
+        margin-bottom: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .expandable-toggle-col {
+            width: 40px;
+        }
+
+        .expandable-toggle {
+            padding: 0.25rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+@code {
+    private class ColumnDefinition {
+        public string Header { get; set; } = "";
+        public string PropertyName { get; set; } = "";
+        public RenderFragment<TItem>? Template { get; set; }
+    }
+
+    private List<ColumnDefinition> _columns = new();
+    private List<string> _expandedRows = new();
+    private List<TItem>? _items;
+
+    /// <summary>
+    /// Records to display. Each item maps to one collapsible row.
+    /// <para><b>Required.</b> Replace (do not mutate) to trigger a re-render.</para>
+    /// </summary>
+    [Parameter]
+    public List<TItem>? Items { get; set; }
+
+    /// <summary>
+    /// Content rendered inside the expanded detail panel for each row.
+    /// <para><b>Required</b> for the expand/collapse feature to be useful.</para>
+    /// The <c>Context</c> parameter receives the current <typeparamref name="TItem"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TItem>? DetailTemplate { get; set; }
+
+    /// <summary>
+    /// Returns a unique string key per item, used to track expand/collapse state.
+    /// Default: <c>item.GetHashCode().ToString()</c>. Override when items lack a
+    /// stable hash code — e.g. pass <c>item =&gt; item.Id.ToString()</c>.
+    /// </summary>
+    [Parameter]
+    public Func<TItem, string> ItemKeySelector { get; set; } = (item) => item?.GetHashCode().ToString() ?? "";
+
+    /// <summary>
+    /// Text displayed when <see cref="Items"/> is null or empty.
+    /// Defaults to the component's built-in empty message when left blank.
+    /// </summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "";
+
+    /// <summary>
+    /// Accessible label for the <c>&lt;table&gt;</c> element (<c>aria-label</c>).
+    /// Defaults to <c>"Expandable table"</c> when omitted.
+    /// </summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "";
+
+    /// <summary>
+    /// When <c>true</c> (default), more than one detail row may be open at the same time.
+    /// Set to <c>false</c> for accordion-style behaviour where opening one row collapses
+    /// any previously expanded row.
+    /// </summary>
+    [Parameter]
+    public bool AllowMultipleExpanded { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _items = Items ?? new();
+    }
+
+    public void AddColumn(string header, string propertyName, RenderFragment<TItem>? template = null)
+    {
+        _columns.Add(new ColumnDefinition {
+            Header = header,
+            PropertyName = propertyName,
+            Template = template
+        });
+    }
+
+    protected void ToggleRow(TItem item)
+    {
+        string key = GetItemKey(item);
+
+        if (_expandedRows.Contains(key)) {
+            _expandedRows.Remove(key);
+        } else {
+            if (!AllowMultipleExpanded) {
+                _expandedRows.Clear();
+            }
+            _expandedRows.Add(key);
+        }
+    }
+
+    protected bool IsRowExpanded(TItem item)
+    {
+        return _expandedRows.Contains(GetItemKey(item));
+    }
+
+    protected string GetItemKey(TItem item)
+    {
+        return ItemKeySelector(item);
+    }
+
+    protected object? GetPropertyValue(TItem item, string propertyName)
+    {
+        var prop = typeof(TItem).GetProperty(propertyName);
+        return prop?.GetValue(item);
+    }
+
+    public void ExpandAll()
+    {
+        if (_items == null) return;
+        _expandedRows.Clear();
+        foreach (var item in _items) {
+            _expandedRows.Add(GetItemKey(item));
+        }
+    }
+
+    public void CollapseAll()
+    {
+        _expandedRows.Clear();
+    }
+
+    public void ExpandRow(TItem item)
+    {
+        string key = GetItemKey(item);
+        if (!_expandedRows.Contains(key)) {
+            _expandedRows.Add(key);
+        }
+    }
+
+    public void CollapseRow(TItem item)
+    {
+        _expandedRows.Remove(GetItemKey(item));
+    }
+}

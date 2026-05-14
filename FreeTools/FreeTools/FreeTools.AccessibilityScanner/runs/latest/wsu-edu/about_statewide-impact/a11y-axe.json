@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 331,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-column:nth-child(1) \u003E .wsu-heading--style-outline \u003E strong",
+      "Snippet": "\u003Cstrong\u003EServing\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--xxlarge \u003E .wsu-heading--style-outline \u003E strong",
+      "Snippet": "\u003Cstrong\u003EStatewide\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

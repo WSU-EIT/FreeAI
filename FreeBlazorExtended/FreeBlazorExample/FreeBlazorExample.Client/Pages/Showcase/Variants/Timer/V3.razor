@@ -1,0 +1,114 @@
+@page "/showcase/timer/v3"
+@using FreeBlazorExtended.Timer
+
+<div class="container-fluid py-4">
+    <h1>Chained Work / Break Timers</h1>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="StartCycle">Start Cycle</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetAll">Reset All</button>
+        <span class="badge bg-info text-dark">Tick count: @_tickCount</span>
+        <span class="badge bg-secondary">@_cycleStatus</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Work Timer</h2>
+                    <Timer @ref="_workTimer"
+                           Duration="@_workDuration"
+                           OnElapsed="StartBreak"
+                           OnTick="HandleWorkTick"
+                           ShowControls="false" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h2 class="h5">Break Timer</h2>
+                    <Timer @ref="_breakTimer"
+                           Duration="@_breakDuration"
+                           OnElapsed="HandleBreakElapsed"
+                           ShowControls="false"
+                           Class="border border-success rounded p-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h2 class="h5">Event Log</h2>
+            <ul class="small mb-0 ps-3">
+                @foreach (var item in _eventLog) {
+                    <li>@item</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly TimeSpan _workDuration = TimeSpan.FromSeconds(25);
+    private readonly TimeSpan _breakDuration = TimeSpan.FromSeconds(10);
+
+    private FreeBlazorExtended.Timer.Timer? _workTimer;
+    private FreeBlazorExtended.Timer.Timer? _breakTimer;
+    private int _tickCount;
+    private string _cycleStatus = "Idle";
+    private List<string> _eventLog = new() { "Cycle not started." };
+
+    private void StartCycle()
+    {
+        _tickCount = 0;
+        _cycleStatus = "Work timer running";
+        _eventLog.Clear();
+        AddLog("Started work timer.");
+        _breakTimer?.Reset();
+        _workTimer?.Reset();
+        _workTimer?.Start();
+    }
+
+    private void ResetAll()
+    {
+        _workTimer?.Reset();
+        _breakTimer?.Reset();
+        _tickCount = 0;
+        _cycleStatus = "Reset";
+        _eventLog.Clear();
+        AddLog("Reset both timers.");
+    }
+
+    private Task HandleWorkTick(TimeSpan remaining)
+    {
+        _tickCount++;
+        _cycleStatus = $"Work remaining: {remaining:mm\\:ss}";
+        return Task.CompletedTask;
+    }
+
+    private Task StartBreak()
+    {
+        _cycleStatus = "Break timer running";
+        AddLog("Work timer elapsed. Starting break timer.");
+        _breakTimer?.Start();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleBreakElapsed()
+    {
+        _cycleStatus = "Cycle complete";
+        AddLog("Break timer elapsed. Cycle complete.");
+        return Task.CompletedTask;
+    }
+
+    private void AddLog(string message)
+    {
+        _eventLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — {message}");
+        if (_eventLog.Count > 8) {
+            _eventLog = _eventLog.Take(8).ToList();
+        }
+    }
+}

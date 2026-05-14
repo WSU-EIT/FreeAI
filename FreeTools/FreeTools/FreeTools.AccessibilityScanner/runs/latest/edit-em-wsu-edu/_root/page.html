@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="en-us"><head>
+    <meta charset="UTF-8">
+    <base href="/umbraco/">
+    <link rel="icon" type="image/svg+xml" href="/umbraco/login/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="pinterest" content="nopin">
+    <title>Umbraco</title>
+
+    
+    <link href="/sb/umbraco-backoffice-css.css.v639069608030828058" rel="stylesheet">
+    <link rel="stylesheet" href="/umbraco/lib/umbraco-ui/uui-css/dist/uui-css.css?v=OWUkjIYrZLAnTkOKu5NcY0xXxErQEPZcif__LSuXC7g">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+    </style>
+</head>
+
+<body class="uui-font uui-text" style="margin: 0; padding: 0; overflow: hidden">
+<noscript>
+    <style>
+        #noscript-container {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 0 20px;
+            text-align: center;
+        }
+    </style>
+    <div id="noscript-container">
+        <h1 class="uui-h3" style="display: inline-flex; align-items: center; gap: 10px">
+            <img aria-hidden="true" alt="logo" src="/umbraco/assets/img/application/logo.svg" style="width: 30px" />
+            <span>Umbraco</span>
+        </h1>
+        <p>For full functionality of Umbraco CMS it is necessary to enable JavaScript.</p>
+        <p>Here are the <a href="https://www.enable-javascript.com/" target="_blank" rel="noopener" style="text-decoration: underline;">instructions how to enable JavaScript in your web browser</a>.</p>
+    </div>
+</noscript>
+
+<umb-backoffice-icon-registry>
+    <umb-auth return-url="/umbraco" logo-image="" logo-image-alternative="assets/img/application/umbraco_logo_blue.svg" background-image="/Images/LoginBG/wsu04.jpg" username-is-email="username-is-email" allow-user-invite="allow-user-invite" class="uui-text uui-font">
+            <umb-external-login-provider slot="external" display-name="WSU Okta Single Sign-On" provider-name="Umbraco.Okta" icon="icon-user" external-login-url="/umbraco/ExternalLogin" button-look="outline" button-color="default" custom-view="/App_Plugins/Okta/oktaSingleSignOn.js?v=9daf1f7b4f3d49699f3eb1fd522312c4">
+            </umb-external-login-provider>
+    <form id="umb-login-form" name="login-form" novalidate=""><uui-form-layout-item><label for="username-input"><umb-localize>Email</umb-localize></label><input type="text" name="username" autocomplete="username" id="username-input" required="" inputmode="email" aria-label="Email" autofocus="" style=""></uui-form-layout-item><uui-form-layout-item><label for="password-input"><umb-localize>Password</umb-localize></label><input type="password" name="password" autocomplete="current-password" id="password-input" required="" inputmode="" aria-label="Password" style=""></uui-form-layout-item><style>#umb-login-form input{width:100%;height:var(--input-height);box-sizing:border-box;display:block;border:1px solid var(--uui-color-border);border-radius:var(--uui-border-radius);background-color:var(--uui-color-surface);padding:var(--uui-size-1, 3px) var(--uui-size-space-4, 9px)}#umb-login-form uui-form-layout-item{margin-top:var(--uui-size-space-4);margin-bottom:var(--uui-size-space-4)}#umb-login-form input:focus-within{border-color:var(--uui-input-border-color-focus, var(--uui-color-border-emphasis, #a1a1a1));outline:calc(2px * var(--uui-show-focus-outline, 1)) solid var(--uui-color-focus)}#umb-login-form input:hover:not(:focus-within){border-color:var(--uui-input-border-color-hover, var(--uui-color-border-standalone, #c2c2c2))}#umb-login-form input::-ms-reveal{display:none}#umb-login-form input span{position:absolute;right:1px;top:50%;transform:translateY(-50%);z-index:100}#umb-login-form input span svg{background-color:#fff;display:block;padding:.2em;width:1.3em;height:1.3em}</style></form></umb-auth>
+<!----><slot></slot></umb-backoffice-icon-registry>
+
+<script src="/umbraco/lib/umbraco-ui/uui/dist/uui.min.js?v=1cKGbHKHoQhMe_jmh53B_xsAHz652StY99AYq40-fZs"></script>
+<script src="/umbraco/login/login.iife.js?v=I0q3b1JIODaHuupric_qlUMItPwDROIeXkWiwcMocuI"></script>
+
+
+
+</body></html>

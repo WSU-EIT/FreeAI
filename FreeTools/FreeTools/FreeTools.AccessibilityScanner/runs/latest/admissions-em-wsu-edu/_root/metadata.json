@@ -1,0 +1,193 @@
+{
+  "PagePath": "/",
+  "Url": "https://admissions.em.wsu.edu/",
+  "FinalUrl": "https://admission.wsu.edu/",
+  "Title": "Admissions | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 184561,
+  "ScreenshotSizeBytes": 842115,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 5,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 842115
+    }
+  ],
+  "ImageCount": 31,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2023/01/Business-class.jpg",
+      "AltText": "Students talking at a table"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2023/01/CBBRBusinessClass_2046.jpg",
+      "AltText": "Student working on a laptop"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2023/01/Research.jpg",
+      "AltText": "Student doing research in a lab"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2022/11/students-on-grass-1188x553-1.png",
+      "AltText": "Students sitting on lawn talking"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2022/11/Mask-group-23.png",
+      "AltText": "Students working together"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2022/11/WinterDroneAerial_0468-1900x1266-1-792x792.png",
+      "AltText": "WSU Campus"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2022/11/library-road-e1605824401570-792x564-1.jpg",
+      "AltText": "Students walking on WSU Campus"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2022/11/Mask-Group-32@2x-scaled-2-792x566-1.jpg",
+      "AltText": "Students wearing WSU Clothes"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2022/11/Bike-Trail_0006@2x-792x567.jpg",
+      "AltText": "Students biking"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385360803.jpg",
+      "AltText": "Image posted by wsupullman to tiktok"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/source_default_image/182239.webp",
+      "AltText": "Profile image for "
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385340120.jpg",
+      "AltText": "Image posted by WSUPullman to facebook"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385340120_user_image",
+      "AltText": "Profile image for WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385319033.jpg",
+      "AltText": "Image posted by WSUPullman to facebook"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385319033_user_image",
+      "AltText": "Profile image for WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385272197.jpg",
+      "AltText": "Image posted by wsupullman to instagram"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385272197_user_image.jpg",
+      "AltText": "Profile image for wsupullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385354765.jpg",
+      "AltText": "Image posted by wsupullman to instagram"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385354765_user_image.jpg",
+      "AltText": "Profile image for wsupullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385329741.jpg",
+      "AltText": "Image posted by wsupullman to tiktok"
+    },
+    {
+      "SourceUrl": "https://pbs.twimg.com/media/HBYbC4xbcAE7_Oa.jpg:medium",
+      "AltText": "Image posted by WSUPullman to twitter"
+    },
+    {
+      "SourceUrl": "https://pbs.twimg.com/profile_images/1438135903071858694/cxupnNSr_normal.jpg",
+      "AltText": "Profile image for WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385273602.jpg",
+      "AltText": "Image posted by WSUPullman to facebook"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385273602_user_image",
+      "AltText": "Profile image for WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385353819.jpg",
+      "AltText": "Image posted by WSUPullman to facebook"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385353819_user_image",
+      "AltText": "Profile image for WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://pbs.twimg.com/media/HBc8KP8akAAKGYo.jpg:medium",
+      "AltText": "Image posted by WSUPullman to twitter"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385320403.jpg",
+      "AltText": "Image posted by wsupullman to instagram"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385320403_user_image.jpg",
+      "AltText": "Profile image for wsupullman"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385300175.jpg",
+      "AltText": "Image posted by WSUPullman to facebook"
+    },
+    {
+      "SourceUrl": "https://curatorio.s3.amazonaws.com/bb776265-563a-4123-a3a3-801c974cd238/385300175_user_image",
+      "AltText": "Profile image for WSU Pullman"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 1,
+    "Serious": 10,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 8,
+        "Critical": 0,
+        "Serious": 8,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:07:21 GMT",
+    "etag": "\u00220108a8fed56a6adad1789dad73614016\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:57:09 GMT",
+    "link": "\u003Chttps://admission.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://admission.wsu.edu/wp-json/wp/v2/pages/2\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://admission.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "HIT",
+    "x-cache-status": "HIT"
+  },
+  "CapturedAt": "2026-02-19T02:07:18.486285Z"
+}

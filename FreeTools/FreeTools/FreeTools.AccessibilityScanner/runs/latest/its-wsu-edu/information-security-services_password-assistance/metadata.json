@@ -1,0 +1,71 @@
+{
+  "PagePath": "/information-security-services/password-assistance/",
+  "Url": "https://its.wsu.edu/information-security-services/password-assistance/",
+  "FinalUrl": null,
+  "Title": "How to change your password | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 240448,
+  "ScreenshotSizeBytes": 127445,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 127445
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/1056/2015/10/keyboard-396x110.jpg",
+      "AltText": "keyboard"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:18:52 GMT",
+    "etag": "\u00223f2d5283d7ce82abd6252a0793bf635d\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:32:48 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/500\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=500\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding"
+  },
+  "CapturedAt": "2026-02-19T02:18:52.3255916Z"
+}

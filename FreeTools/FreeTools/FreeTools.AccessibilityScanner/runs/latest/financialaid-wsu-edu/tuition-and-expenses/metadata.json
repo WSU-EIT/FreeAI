@@ -1,0 +1,97 @@
+{
+  "PagePath": "/tuition-and-expenses/",
+  "Url": "https://financialaid.wsu.edu/tuition-and-expenses/",
+  "FinalUrl": null,
+  "Title": "Tuition \u0026 Expenses | Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 274947,
+  "ScreenshotSizeBytes": 823009,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 823009
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/09/MovingwithButch.jpg",
+      "AltText": "Butch T. Cougar helps a student push a cart of belongings to her new dorm."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/StudentsinDorm.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/09/StudentswithFood.jpg",
+      "AltText": "Week of Welcome Convocation_All Campus Picnic_Resource Fair on the campus of Washington State University, Wednesday, August 14, 2024."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/students-at-table.jpg",
+      "AltText": "Two students discuss their work during WSU prep week."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/vancouver-student.jpg",
+      "AltText": "A student works at a computer on the WSU Vancouver campus."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/calculator-scaled.jpg",
+      "AltText": "A woman calculates expenses at her desk."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/CougsStudying-1024x699.jpg",
+      "AltText": "Students on laptops working together at a table."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:14:10 GMT",
+    "etag": "\u0022bc377ccd90e531259d223c9c7a451b25\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:54:45 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/142\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/?p=142\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "HIT",
+    "x-cache-status": "HIT"
+  },
+  "CapturedAt": "2026-02-19T02:14:10.2206517Z"
+}

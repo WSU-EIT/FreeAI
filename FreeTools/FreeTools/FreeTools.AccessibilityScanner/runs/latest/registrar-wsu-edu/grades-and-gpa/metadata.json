@@ -1,0 +1,57 @@
+{
+  "PagePath": "/grades-and-gpa/",
+  "Url": "https://registrar.wsu.edu/grades-and-gpa/",
+  "FinalUrl": null,
+  "Title": "Grades and GPA | Office of the Registrar",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 741803,
+  "ScreenshotSizeBytes": 353965,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 353965
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:11:45.4727308Z"
+}

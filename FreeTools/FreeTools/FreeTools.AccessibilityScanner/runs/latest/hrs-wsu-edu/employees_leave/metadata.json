@@ -1,0 +1,64 @@
+{
+  "PagePath": "/employees/leave/",
+  "Url": "https://hrs.wsu.edu/employees/leave/",
+  "FinalUrl": null,
+  "Title": "Leave Policies and Programs \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 89772,
+  "ScreenshotSizeBytes": 560332,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 560332
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:15:56 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/220\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=220\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:15:56.1259917Z"
+}

@@ -1,0 +1,128 @@
+{
+  "PagePath": "/academics/",
+  "Url": "https://wsu.edu/academics/",
+  "FinalUrl": null,
+  "Title": "WSU Academics | Washington State University | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 129084,
+  "ScreenshotSizeBytes": 832785,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 832785
+    }
+  ],
+  "ImageCount": 14,
+  "ImagesMissingAlt": 10,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Filipino-Cultural-Night-_8253.jpg",
+      "AltText": "Filipino Cultural Night hosted by the Washington State University Filipino American Student Association (FASA), Saturday, March 7, 2020 at Ensminger Pavilion in Pullman."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Game-Day-Atmosphere_8020.jpg",
+      "AltText": "ROTC  and Marching Band Leader leads the band on Gesa Field at Washington State University, Saturday, September, 11, 2021"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Nursing-Spring-2019_2369.jpg",
+      "AltText": "WSU Nursing students practice skills at the College of Nursing on the Spokane campus of Washington State University, Friday, January 18, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Tri-Cities-Core-Fall-2019_3913.jpg",
+      "AltText": "Students relax and study in the Student Union Building on the Tri-Cities campus of Washington State University, Tuesday, August 20, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-22.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-23.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-7.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-17.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-18.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-19.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-20.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/affordable-photo.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/students.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=548, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:09:27 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:08:35 GMT",
+    "link": "\u003Chttps://wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/wp-json/wp/v2/pages/11\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:09:27.7882641Z"
+}

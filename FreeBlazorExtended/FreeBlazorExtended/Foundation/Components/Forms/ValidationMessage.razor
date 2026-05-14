@@ -1,0 +1,175 @@
+﻿@*
+    ValidationMessage — Lightweight inline or block validation hint beneath individual form fields.
+
+    Use this component instead of the heavier <ErrorMessage> when you need a single-line cue
+    directly below an input — it does not occupy a full banner, does not have a dismiss button,
+    and renders nothing when Message is empty so it is safe to bind to a nullable string.
+
+    Required parameters:
+        Message — the text to show (component is invisible when empty)
+
+    Optional parameters:
+        Type  — semantic colour: "error" (default, red) | "warning" (amber) | "info" (blue) | "success" (green)
+        Block — wraps the message in a padded bordered box instead of a plain inline line
+
+    Example (beneath a text input):
+        <input @bind="Email" class="form-control" />
+        <ValidationMessage Message="@_emailError" />
+
+    Example (block-style, grouped):
+        <ValidationMessage Message="Password must be at least 12 characters."
+                           Type="warning"
+                           Block="true" />
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_message)) {
+    <div class="validation-message @_messageClass" role="alert">
+        <span class="validation-icon">
+            <i class="@_iconClass"></i>
+        </span>
+        <span class="validation-text">@_message</span>
+    </div>
+}
+
+<style>
+    .validation-message {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+        margin-top: 0.25rem;
+    }
+
+    .validation-message.error {
+        color: var(--bs-danger);
+    }
+
+    .validation-message.warning {
+        color: var(--bs-warning);
+    }
+
+    .validation-message.info {
+        color: var(--bs-info);
+    }
+
+    .validation-message.success {
+        color: var(--bs-success);
+    }
+
+    .validation-icon {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .validation-text {
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .validation-message.inline {
+        padding: 0;
+        margin: 0;
+    }
+
+    .validation-message.block {
+        display: flex;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        border-radius: 0.375rem;
+        background-color: rgba(220, 53, 69, 0.05);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .validation-message.block.warning {
+        background-color: rgba(255, 193, 7, 0.05);
+        border-color: rgba(255, 193, 7, 0.2);
+    }
+
+    .validation-message.block.info {
+        background-color: rgba(23, 162, 184, 0.05);
+        border-color: rgba(23, 162, 184, 0.2);
+    }
+
+    .validation-message.block.success {
+        background-color: rgba(25, 135, 84, 0.05);
+        border-color: rgba(25, 135, 84, 0.2);
+    }
+</style>
+
+@code {
+    protected string _message = "";
+    protected string _messageClass = "";
+    protected string _iconClass = "";
+
+    /// <summary>
+    /// The validation text rendered next to an icon.
+    /// <para><b>Required.</b> The component renders nothing when this is empty or whitespace —
+    /// bind directly to a nullable error field.</para>
+    /// </summary>
+    [Parameter] public string Message { get; set; } = "";
+
+    /// <summary>
+    /// Semantic colour and icon used to communicate the nature of the message.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"error"</c> — red, exclamation-circle (default, for required/invalid)</item>
+    ///   <item><c>"warning"</c> — amber, exclamation-triangle (for soft constraints)</item>
+    ///   <item><c>"info"</c> — blue, info-circle (for hints or guidance)</item>
+    ///   <item><c>"success"</c> — green, check-circle (for positive validation)</item>
+    /// </list>
+    /// </summary>
+    [Parameter] public string Type { get; set; } = "error";
+
+    /// <summary>
+    /// When <c>true</c>, wraps the message in a padded, bordered box suitable for
+    /// prominent group-level validation feedback. When <c>false</c> (default), the
+    /// message renders as a plain inline line directly beneath the field.
+    /// </summary>
+    [Parameter] public bool Block { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _message = Message ?? "";
+
+        string type = (Type ?? "error").ToLower();
+
+        _messageClass = type switch
+        {
+            "warning" => "warning",
+            "info" => "info",
+            "success" => "success",
+            _ => "error"
+        };
+
+        if (Block) {
+            _messageClass += " block";
+        } else {
+            _messageClass += " inline";
+        }
+
+        _iconClass = type switch
+        {
+            "warning" => "fas fa-exclamation-triangle",
+            "info" => "fas fa-info-circle",
+            "success" => "fas fa-check-circle",
+            _ => "fas fa-times-circle"
+        };
+    }
+}

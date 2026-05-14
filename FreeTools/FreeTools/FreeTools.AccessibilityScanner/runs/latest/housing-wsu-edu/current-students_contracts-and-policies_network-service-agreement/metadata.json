@@ -1,0 +1,66 @@
+{
+  "PagePath": "/current-students/contracts-and-policies/network-service-agreement/",
+  "Url": "https://housing.wsu.edu/current-students/contracts-and-policies/network-service-agreement/",
+  "FinalUrl": null,
+  "Title": "Network Service Agreement",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 58344,
+  "ScreenshotSizeBytes": 456647,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 456647
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:12:00 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:12:00.2157163Z"
+}

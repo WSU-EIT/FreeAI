@@ -1,0 +1,62 @@
+{
+  "PagePath": "/",
+  "Url": "https://servicecontracts.em.wsu.edu/",
+  "FinalUrl": "https://servicecontracts.em.wsu.edu/Login",
+  "Title": "ServiceContracts",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 200559,
+  "ScreenshotSizeBytes": 20545,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 20545
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://servicecontracts.em.wsu.edu/images/okta_256.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:50.9816646Z"
+}

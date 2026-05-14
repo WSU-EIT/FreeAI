@@ -1,0 +1,134 @@
+{
+  "PagePath": "/students/class-search/",
+  "Url": "https://registrar.schedule.wsu.edu/students/class-search/",
+  "FinalUrl": null,
+  "Title": "Class Search | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 695286,
+  "ScreenshotSizeBytes": 366176,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 366176
+    }
+  ],
+  "ImageCount": 19,
+  "ImagesMissingAlt": 16,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762544/classdetails-f2f.png?width=500\u0026height=131.0810810810811",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762546/classdetails-so.png?width=500\u0026height=129.33333333333331",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762545/classdetails-online.png?width=500\u0026height=148.42381786339755",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762547/classdetails-hybrid.png?width=500\u0026height=133.7466784765279",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762552/viewmyclass-vc2.png?width=500\u0026height=136.6799204771372",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762548/classdetails-vc.png?width=500\u0026height=134.92779783393502",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762513/weeklyviewmixed.png?width=500\u0026height=232.80159521435692",
+      "AltText": "Weekly Schedule View"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762550/weekly-online.png?width=600\u0026height=48\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762549/weeklyschedule-vc.png?width=201\u0026height=116\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762551/viewmyclass-vc.png?width=500\u0026height=99.34853420195441",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762540/classsearch-f2f.png?width=500\u0026height=56.055363321799305",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762542/classsearch-dd.png?width=500\u0026height=68.83217324052592",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762543/classsearchblendednotes.png?width=500\u0026height=94.75218658892128",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762553/classsearch-vc.png?width=500\u0026height=41.149068322981364",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762554/classsearch-vc2.png?width=500\u0026height=37.51914241960184",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762517/soc-f2f.png?width=500\u0026height=35.67251461988304",
+      "AltText": "SOC FaceToFace Section"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762515/soc-pols424-firstview.png?width=500\u0026height=49.06542056074766",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762516/soc-globalsection.png?width=500\u0026height=63.44586728754366",
+      "AltText": "GlobalSection"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/762555/soc-vc.png?width=500\u0026height=71.07843137254902",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 1,
+    "Serious": 3,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:42:38.2462044Z"
+}

@@ -1,0 +1,75 @@
+{
+  "PagePath": "/apply/graduate-students/",
+  "Url": "https://admission.wsu.edu/apply/graduate-students/",
+  "FinalUrl": "https://gradschool.wsu.edu/",
+  "Title": "The Graduate School | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 396613,
+  "ScreenshotSizeBytes": 277454,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 277454
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-gradschool/uploads/sites/3121/2025/09/graduation-scaled.jpg",
+      "AltText": "Students graduating"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-gradschool/uploads/sites/3121/2025/09/headshot_MM-scaled.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 9,
+    "Critical": 0,
+    "Serious": 9,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:10:43 GMT",
+    "etag": "\u0022e5c5169cdf9fc81fa93bce3c6c99c90a\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:28:04 GMT",
+    "link": "\u003Chttps://gradschool.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://gradschool.wsu.edu/wp-json/wp/v2/pages/31490\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://gradschool.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding"
+  },
+  "CapturedAt": "2026-02-19T02:10:43.5849369Z"
+}

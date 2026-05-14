@@ -1,0 +1,382 @@
+@page "/Settings/ManualChecks/{SiteId}"
+@page "/{TenantCode}/Settings/ManualChecks/{SiteId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="ManualCheckWizard" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="ManualCheckWizard" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/EditSite/" + SiteId))" class="btn btn-dark">
+                    <Language Tag="Back" IncludeIcon="true" />
+                </a>
+            </div>
+        </div>
+
+        @* ── Site Name ── *@
+        <div class="mb-3">
+            <h5>@_site.Name</h5>
+            <div class="text-muted">@_site.BaseUrl</div>
+        </div>
+
+        @* ── Progress Bar ── *@
+        <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+                <span>@_checkedCount / @_allCriteria.Count <Language Tag="CriteriaChecked" /></span>
+                <span>@(_currentIndex + 1) / @_allCriteria.Count</span>
+            </div>
+            <div class="progress" style="height: 24px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: @((_allCriteria.Count > 0 ? (_checkedCount * 100 / _allCriteria.Count) : 0))%"
+                     aria-valuenow="@_checkedCount" aria-valuemin="0" aria-valuemax="@_allCriteria.Count">
+                    @((_allCriteria.Count > 0 ? (_checkedCount * 100 / _allCriteria.Count) : 0))%
+                </div>
+            </div>
+        </div>
+
+        @if (_allCriteria.Any()) {
+            var current = _allCriteria[_currentIndex];
+            var check = GetOrCreateCheck(current.Number);
+
+            @* ── Current Criterion Card ── *@
+            <div class="card mb-3">
+                <div class="card-header">
+                    <strong>@current.Number</strong> &mdash; @current.Name
+                    <span class="badge bg-secondary ms-2">@current.Level</span>
+                    <span class="badge bg-dark ms-1">@current.Principle</span>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong><Language Tag="WhatToTest" />:</strong></p>
+                    <p class="text-muted">@current.Description</p>
+
+                    @* ── Status Radio Buttons ── *@
+                    <div class="mb-3">
+                        <label class="form-label"><Language Tag="ConformanceStatus" /></label>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" id="status-pass"
+                                   name="status" value="Pass" checked="@(check.Status == "Pass")"
+                                   @onchange="@(() => SetStatus(check, "Pass"))" />
+                            <label class="form-check-label" for="status-pass">
+                                <span class="badge bg-success">Pass</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" id="status-fail"
+                                   name="status" value="Fail" checked="@(check.Status == "Fail")"
+                                   @onchange="@(() => SetStatus(check, "Fail"))" />
+                            <label class="form-check-label" for="status-fail">
+                                <span class="badge bg-danger">Fail</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" id="status-na"
+                                   name="status" value="N/A" checked="@(check.Status == "N/A")"
+                                   @onchange="@(() => SetStatus(check, "N/A"))" />
+                            <label class="form-check-label" for="status-na">
+                                <span class="badge bg-info">N/A</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" id="status-nottested"
+                                   name="status" value="Not Tested" checked="@(check.Status == "Not Tested" || String.IsNullOrWhiteSpace(check.Status))"
+                                   @onchange="@(() => SetStatus(check, "Not Tested"))" />
+                            <label class="form-check-label" for="status-nottested">
+                                <span class="badge bg-secondary">Not Tested</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    @* ── Notes ── *@
+                    <div class="mb-3">
+                        <label for="check-notes" class="form-label"><Language Tag="Notes" /></label>
+                        <textarea id="check-notes" class="form-control" rows="3"
+                                  @bind="check.Notes" @bind:event="oninput"></textarea>
+                    </div>
+
+                    @* ── Tested Info ── *@
+                    @if (check.TestedAt.HasValue) {
+                        <div class="text-muted small">
+                            <Language Tag="TestedBy" />: @check.TestedBy &mdash; @check.TestedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* ── Navigation Buttons ── *@
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-dark" @onclick="Previous" disabled="@(_currentIndex == 0)">
+                    <Language Tag="Previous" IncludeIcon="true" />
+                </button>
+                @if (_currentIndex < _allCriteria.Count - 1) {
+                    <button type="button" class="btn btn-success" @onclick="NextAndSave">
+                        <Language Tag="Next" IncludeIcon="true" />
+                    </button>
+                } else {
+                    <button type="button" class="btn btn-success" @onclick="FinishAndSave">
+                        <Language Tag="Save" IncludeIcon="true" />
+                    </button>
+                }
+            </div>
+        }
+    }
+}
+@code {
+    [Parameter] public string? SiteId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _validatedUrl = false;
+    private string _pageName = "manualcheckwizard";
+
+    private DataObjects.Site _site = new DataObjects.Site();
+    private List<WcagCriterionDetail> _allCriteria = new();
+    private List<DataObjects.ManualCheckResult> _manualChecks = new();
+    private int _currentIndex = 0;
+    private int _checkedCount = 0;
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        _allCriteria = GetAllWcagCriteria();
+
+        Guid siteGuid = Guid.Parse(SiteId!);
+
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid> { siteGuid });
+        if (sites != null && sites.Any()) {
+            _site = sites.First();
+        }
+
+        var checks = await Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/GetManualChecks", new { Ids = new List<Guid>(), SiteId = siteGuid });
+        if (checks != null) {
+            _manualChecks = checks;
+        }
+
+        UpdateCheckedCount();
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private DataObjects.ManualCheckResult GetOrCreateCheck(string criterion)
+    {
+        var existing = _manualChecks.FirstOrDefault(x => x.WcagCriterion == criterion);
+        if (existing != null) return existing;
+
+        var newCheck = new DataObjects.ManualCheckResult {
+            ManualCheckResultId = Guid.Empty,
+            SiteId = Guid.Parse(SiteId!),
+            WcagCriterion = criterion,
+            Status = "Not Tested",
+        };
+        _manualChecks.Add(newCheck);
+        return newCheck;
+    }
+
+    private void SetStatus(DataObjects.ManualCheckResult check, string status)
+    {
+        check.Status = status;
+        if (status != "Not Tested") {
+            check.TestedBy = Model.User.DisplayName;
+            check.TestedAt = DateTime.UtcNow;
+        }
+        UpdateCheckedCount();
+    }
+
+    private void UpdateCheckedCount()
+    {
+        _checkedCount = _manualChecks.Count(x => !String.IsNullOrWhiteSpace(x.Status) && x.Status != "Not Tested");
+    }
+
+    private void Previous()
+    {
+        if (_currentIndex > 0) {
+            _currentIndex--;
+        }
+    }
+
+    private async Task NextAndSave()
+    {
+        await SaveCurrentCheck();
+        if (_currentIndex < _allCriteria.Count - 1) {
+            _currentIndex++;
+        }
+    }
+
+    private async Task FinishAndSave()
+    {
+        await SaveCurrentCheck();
+        Model.Message_Saved();
+    }
+
+    private async Task SaveCurrentCheck()
+    {
+        var current = _allCriteria[_currentIndex];
+        var check = _manualChecks.FirstOrDefault(x => x.WcagCriterion == current.Number);
+
+        if (check != null && !String.IsNullOrWhiteSpace(check.Status) && check.Status != "Not Tested") {
+            check.SiteId = Guid.Parse(SiteId!);
+
+            Model.Message_Saving();
+
+            var saved = await Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/SaveManualChecks", new List<DataObjects.ManualCheckResult> { check });
+
+            Model.ClearMessages();
+
+            if (saved != null && saved.Any()) {
+                var result = saved.First();
+                // Update local list with saved version
+                int idx = _manualChecks.FindIndex(x => x.WcagCriterion == current.Number);
+                if (idx >= 0) {
+                    _manualChecks[idx] = result;
+                }
+            }
+
+            UpdateCheckedCount();
+            StateHasChanged();
+        }
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _site.SiteId == Guid.Empty) { return; }
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+            update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object != null) {
+                try {
+                    var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                    var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (scanRun != null && scanRun.SiteId == _site.SiteId) {
+                        InvokeAsync(StateHasChanged);
+                    }
+                } catch { }
+            }
+        }
+    }
+
+    // ── WCAG 2.2 AA Criteria with descriptions ──
+
+    private class WcagCriterionDetail
+    {
+        public string Number { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Principle { get; set; } = "";
+        public string Level { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+
+    private static List<WcagCriterionDetail> GetAllWcagCriteria()
+    {
+        return new List<WcagCriterionDetail> {
+            new() { Number = "1.1.1", Name = "Non-text Content", Principle = "Perceivable", Level = "A", Description = "All non-text content has a text alternative that serves the equivalent purpose." },
+            new() { Number = "1.2.1", Name = "Audio-only and Video-only", Principle = "Perceivable", Level = "A", Description = "Alternatives are provided for time-based media (audio-only or video-only content)." },
+            new() { Number = "1.2.2", Name = "Captions (Prerecorded)", Principle = "Perceivable", Level = "A", Description = "Captions are provided for all prerecorded audio content in synchronized media." },
+            new() { Number = "1.2.3", Name = "Audio Description or Media Alternative", Principle = "Perceivable", Level = "A", Description = "An alternative or audio description is provided for prerecorded video content." },
+            new() { Number = "1.2.5", Name = "Audio Description (Prerecorded)", Principle = "Perceivable", Level = "AA", Description = "Audio description is provided for all prerecorded video content." },
+            new() { Number = "1.3.1", Name = "Info and Relationships", Principle = "Perceivable", Level = "A", Description = "Information, structure, and relationships conveyed through presentation can be programmatically determined." },
+            new() { Number = "1.3.2", Name = "Meaningful Sequence", Principle = "Perceivable", Level = "A", Description = "The correct reading sequence can be programmatically determined when sequence affects meaning." },
+            new() { Number = "1.3.3", Name = "Sensory Characteristics", Principle = "Perceivable", Level = "A", Description = "Instructions do not rely solely on sensory characteristics like shape, color, size, or location." },
+            new() { Number = "1.3.4", Name = "Orientation", Principle = "Perceivable", Level = "AA", Description = "Content does not restrict its view and operation to a single display orientation unless essential." },
+            new() { Number = "1.3.5", Name = "Identify Input Purpose", Principle = "Perceivable", Level = "AA", Description = "The purpose of input fields collecting user information can be programmatically determined." },
+            new() { Number = "1.4.1", Name = "Use of Color", Principle = "Perceivable", Level = "A", Description = "Color is not used as the only visual means of conveying information." },
+            new() { Number = "1.4.2", Name = "Audio Control", Principle = "Perceivable", Level = "A", Description = "If audio plays automatically for more than 3 seconds, there is a mechanism to pause or control volume." },
+            new() { Number = "1.4.3", Name = "Contrast (Minimum)", Principle = "Perceivable", Level = "AA", Description = "Text and images of text have a contrast ratio of at least 4.5:1 (3:1 for large text)." },
+            new() { Number = "1.4.4", Name = "Resize Text", Principle = "Perceivable", Level = "AA", Description = "Text can be resized up to 200% without loss of content or functionality." },
+            new() { Number = "1.4.5", Name = "Images of Text", Principle = "Perceivable", Level = "AA", Description = "Text is used to convey information rather than images of text, unless customizable or essential." },
+            new() { Number = "1.4.10", Name = "Reflow", Principle = "Perceivable", Level = "AA", Description = "Content can be presented without loss of information at 320 CSS px wide without horizontal scrolling." },
+            new() { Number = "1.4.11", Name = "Non-text Contrast", Principle = "Perceivable", Level = "AA", Description = "Visual presentation of UI components and graphical objects have a contrast ratio of at least 3:1." },
+            new() { Number = "1.4.12", Name = "Text Spacing", Principle = "Perceivable", Level = "AA", Description = "No loss of content or functionality when overriding text spacing properties." },
+            new() { Number = "1.4.13", Name = "Content on Hover or Focus", Principle = "Perceivable", Level = "AA", Description = "Additional content triggered by hover or focus is dismissible, hoverable, and persistent." },
+            new() { Number = "2.1.1", Name = "Keyboard", Principle = "Operable", Level = "A", Description = "All functionality is operable through a keyboard interface without requiring specific timings." },
+            new() { Number = "2.1.2", Name = "No Keyboard Trap", Principle = "Operable", Level = "A", Description = "Keyboard focus can always be moved away from a component using standard navigation." },
+            new() { Number = "2.1.4", Name = "Character Key Shortcuts", Principle = "Operable", Level = "A", Description = "If character key shortcuts exist, they can be turned off, remapped, or are only active on focus." },
+            new() { Number = "2.2.1", Name = "Timing Adjustable", Principle = "Operable", Level = "A", Description = "Users can turn off, adjust, or extend time limits set by the content." },
+            new() { Number = "2.2.2", Name = "Pause, Stop, Hide", Principle = "Operable", Level = "A", Description = "Moving, blinking, scrolling, or auto-updating information can be paused, stopped, or hidden." },
+            new() { Number = "2.3.1", Name = "Three Flashes or Below Threshold", Principle = "Operable", Level = "A", Description = "Content does not contain anything that flashes more than three times per second." },
+            new() { Number = "2.4.1", Name = "Bypass Blocks", Principle = "Operable", Level = "A", Description = "A mechanism is available to bypass blocks of content that are repeated on multiple pages." },
+            new() { Number = "2.4.2", Name = "Page Titled", Principle = "Operable", Level = "A", Description = "Web pages have titles that describe their topic or purpose." },
+            new() { Number = "2.4.3", Name = "Focus Order", Principle = "Operable", Level = "A", Description = "Focusable components receive focus in an order that preserves meaning and operability." },
+            new() { Number = "2.4.4", Name = "Link Purpose (In Context)", Principle = "Operable", Level = "A", Description = "The purpose of each link can be determined from the link text alone or together with context." },
+            new() { Number = "2.4.5", Name = "Multiple Ways", Principle = "Operable", Level = "AA", Description = "More than one way is available to locate a web page within a set of web pages." },
+            new() { Number = "2.4.6", Name = "Headings and Labels", Principle = "Operable", Level = "AA", Description = "Headings and labels describe topic or purpose." },
+            new() { Number = "2.4.7", Name = "Focus Visible", Principle = "Operable", Level = "AA", Description = "Any keyboard operable user interface has a mode where the keyboard focus indicator is visible." },
+            new() { Number = "2.4.11", Name = "Focus Not Obscured (Minimum)", Principle = "Operable", Level = "AA", Description = "When a UI component receives keyboard focus, it is not entirely hidden by author-created content." },
+            new() { Number = "2.5.1", Name = "Pointer Gestures", Principle = "Operable", Level = "A", Description = "Functionality using multipoint or path-based gestures can also be operated with a single pointer." },
+            new() { Number = "2.5.2", Name = "Pointer Cancellation", Principle = "Operable", Level = "A", Description = "Functionality operated by a single pointer can be cancelled, and the up-event completes the function." },
+            new() { Number = "2.5.3", Name = "Label in Name", Principle = "Operable", Level = "A", Description = "For UI components with labels that include text or images of text, the accessible name contains the visible text." },
+            new() { Number = "2.5.4", Name = "Motion Actuation", Principle = "Operable", Level = "A", Description = "Functionality triggered by device motion can also be operated by UI components and motion can be disabled." },
+            new() { Number = "2.5.7", Name = "Dragging Movements", Principle = "Operable", Level = "AA", Description = "Functionality that uses dragging can also be achieved with a single pointer without dragging." },
+            new() { Number = "2.5.8", Name = "Target Size (Minimum)", Principle = "Operable", Level = "AA", Description = "The size of the target for pointer inputs is at least 24 by 24 CSS pixels, with some exceptions." },
+            new() { Number = "3.1.1", Name = "Language of Page", Principle = "Understandable", Level = "A", Description = "The default human language of each web page can be programmatically determined." },
+            new() { Number = "3.1.2", Name = "Language of Parts", Principle = "Understandable", Level = "AA", Description = "The human language of each passage or phrase can be programmatically determined." },
+            new() { Number = "3.2.1", Name = "On Focus", Principle = "Understandable", Level = "A", Description = "Receiving focus on a component does not initiate a change of context." },
+            new() { Number = "3.2.2", Name = "On Input", Principle = "Understandable", Level = "A", Description = "Changing the setting of a UI component does not automatically cause a change of context." },
+            new() { Number = "3.2.6", Name = "Consistent Help", Principle = "Understandable", Level = "A", Description = "Help mechanisms occur in the same relative order on each page within a set of web pages." },
+            new() { Number = "3.3.1", Name = "Error Identification", Principle = "Understandable", Level = "A", Description = "If an input error is automatically detected, the item in error is identified and described to the user in text." },
+            new() { Number = "3.3.2", Name = "Labels or Instructions", Principle = "Understandable", Level = "A", Description = "Labels or instructions are provided when content requires user input." },
+            new() { Number = "3.3.3", Name = "Error Suggestion", Principle = "Understandable", Level = "AA", Description = "If an input error is detected and suggestions are known, they are provided to the user." },
+            new() { Number = "3.3.4", Name = "Error Prevention (Legal, Financial, Data)", Principle = "Understandable", Level = "AA", Description = "For pages with legal commitments or financial transactions, submissions are reversible, checked, or confirmed." },
+            new() { Number = "3.3.7", Name = "Redundant Entry", Principle = "Understandable", Level = "A", Description = "Information previously entered by the user is auto-populated or available for selection." },
+            new() { Number = "4.1.2", Name = "Name, Role, Value", Principle = "Robust", Level = "A", Description = "For all UI components, the name, role, and state can be programmatically determined and set." },
+            new() { Number = "4.1.3", Name = "Status Messages", Principle = "Robust", Level = "AA", Description = "Status messages can be programmatically determined through role or properties without receiving focus." },
+        };
+    }
+}

@@ -1,0 +1,397 @@
+﻿@* EntityWizardStepOptions.App.razor - Step 4: Code Generation Options *@
+
+<div class="row">
+    <div class="col-lg-8">
+        @* Read-Only Entity Mode - Most important toggle *@
+        <div class="card mb-3 @(Options.IsReadOnly ? "border-warning" : "border-secondary")">
+            <div class="card-header @(Options.IsReadOnly ? "bg-warning bg-opacity-25" : "")">
+                <i class="fa-solid @(Options.IsReadOnly ? "fa-lock" : "fa-lock-open") me-1"></i>
+                Entity Access Mode
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="opt-readonly"
+                           checked="@Options.IsReadOnly"
+                           @onchange="OnReadOnlyChanged" />
+                    <label class="form-check-label" for="opt-readonly">
+                        <strong>Read-Only Entity</strong>
+                    </label>
+                </div>
+                <small class="text-muted d-block mt-1">
+                    Enable for audit logs, event histories, or any data that should not be edited/deleted via the UI.
+                </small>
+                
+                @if (Options.IsReadOnly) {
+                    <div class="alert alert-info mt-3 mb-0 py-2">
+                        <i class="fa-solid fa-info-circle me-1"></i>
+                        <strong>Read-only mode will:</strong>
+                        <ul class="mb-0 mt-1 small">
+                            <li>Skip generating Edit page</li>
+                            <li>Skip generating Save/Delete API endpoints</li>
+                            <li>Remove "Add New" button from list page</li>
+                            <li>Replace Edit buttons with View buttons</li>
+                            <li>Add a detail view modal for viewing records</li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Page Pattern Selector *@
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                Page Pattern Template
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Choose a UI pattern for your generated pages. Each pattern is optimized for specific use cases.
+                </p>
+                <div class="row g-3">
+                    @foreach (var pattern in DataObjects.FMPagePatterns.GetByPriority()) {
+                        var isSelected = Options.SelectedPagePattern == pattern.Pattern;
+                        var cardClass = isSelected ? "border-primary bg-primary bg-opacity-10" : "border-secondary";
+                        var requiresEntity = pattern.RequiresEntity;
+                        var isImplemented = pattern.IsImplemented;
+                        
+                        <div class="col-md-6">
+                            <div class="card h-100 @cardClass @(!isImplemented ? "opacity-75" : "")" 
+                                 style="cursor: pointer; position: relative;"
+                                 @onclick="() => SelectPattern(pattern)">
+                                 
+                                @if (!isImplemented) {
+                                    <span class="badge bg-secondary position-absolute" style="top: 8px; right: 8px; z-index: 1;">
+                                        Coming Soon
+                                    </span>
+                                }
+                                
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-start">
+                                        <div class="form-check me-2">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="pagePattern"
+                                                   checked="@isSelected"
+                                                   @onchange="() => SelectPattern(pattern)" />
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="fa-solid @pattern.Icon text-primary me-2"></i>
+                                                <strong>@pattern.Name</strong>
+                                                <span class="badge bg-@GetComplexityColor(pattern.Complexity) ms-2 small">
+                                                    @pattern.Complexity
+                                                </span>
+                                            </div>
+                                            <p class="text-muted small mb-2">@pattern.Description</p>
+                                            <div class="small text-secondary">
+                                                <i class="fa-solid fa-bullseye me-1"></i>
+                                                @pattern.UseCase
+                                            </div>
+                                            @if (!requiresEntity) {
+                                                <span class="badge bg-info mt-2 small">
+                                                    <i class="fa-solid fa-bolt me-1"></i>No entity required
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* What to Generate - Hidden/disabled when read-only *@
+        <div class="card mb-3 @(Options.IsReadOnly ? "opacity-50" : "")">
+            <div class="card-header">
+                <i class="fa-solid fa-file-code me-1"></i>
+                What to Generate
+                @if (Options.IsReadOnly) {
+                    <span class="badge bg-warning ms-2">Limited in Read-Only mode</span>
+                }
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-list"
+                                   @bind="Options.GenerateListPage" />
+                            <label class="form-check-label" for="opt-list">
+                                <strong>List Page</strong>
+                                <div class="text-muted small">
+                                    Paginated grid with search, filters, and sorting
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-edit"
+                                   checked="@(!Options.IsReadOnly && Options.GenerateEditPage)"
+                                   disabled="@Options.IsReadOnly"
+                                   @onchange="e => Options.GenerateEditPage = (bool)(e.Value ?? false)" />
+                            <label class="form-check-label @(Options.IsReadOnly ? "text-muted" : "")" for="opt-edit">
+                                <strong>Edit Page</strong>
+                                @if (Options.IsReadOnly) {
+                                    <i class="fa-solid fa-lock text-warning ms-1" title="Disabled in read-only mode"></i>
+                                }
+                                <div class="text-muted small">
+                                    Form for creating and editing records
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Data Features *@
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-database me-1"></i>
+                Data Features
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-soft-delete"
+                                   checked="@(!Options.IsReadOnly && Options.IncludeSoftDelete)"
+                                   disabled="@Options.IsReadOnly"
+                                   @onchange="e => Options.IncludeSoftDelete = (bool)(e.Value ?? false)" />
+                            <label class="form-check-label @(Options.IsReadOnly ? "text-muted" : "")" for="opt-soft-delete">
+                                <strong>Soft Delete</strong>
+                                @if (Options.IsReadOnly) {
+                                    <i class="fa-solid fa-lock text-warning ms-1" title="Disabled in read-only mode"></i>
+                                }
+                                <div class="text-muted small">
+                                    Records are marked deleted, not removed
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-audit"
+                                   @bind="Options.IncludeAuditFields" />
+                            <label class="form-check-label" for="opt-audit">
+                                <strong>Audit Fields</strong>
+                                <div class="text-muted small">
+                                    Track CreatedAt, UpdatedAt, LastModifiedBy
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-tenant"
+                                   @bind="Options.IncludeTenantId" />
+                            <label class="form-check-label" for="opt-tenant">
+                                <strong>Multi-Tenant</strong>
+                                <div class="text-muted small">
+                                    Include TenantId for data isolation
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="opt-signalr"
+                                   checked="@(!Options.IsReadOnly && Options.GenerateSignalRUpdates)"
+                                   disabled="@Options.IsReadOnly"
+                                   @onchange="e => Options.GenerateSignalRUpdates = (bool)(e.Value ?? false)" />
+                            <label class="form-check-label @(Options.IsReadOnly ? "text-muted" : "")" for="opt-signalr">
+                                <strong>Real-time Updates</strong>
+                                @if (Options.IsReadOnly) {
+                                    <i class="fa-solid fa-lock text-warning ms-1" title="Disabled in read-only mode"></i>
+                                }
+                                <div class="text-muted small">
+                                    SignalR notifications on save/delete
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* List Settings *@
+        @if (Options.GenerateListPage) {
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fa-solid fa-table me-1"></i>
+                    List Page Settings
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Default Page Size</label>
+                            <select class="form-select" @bind="Options.DefaultPageSize">
+                                <option value="10">10 per page</option>
+                                <option value="25">25 per page</option>
+                                <option value="50">50 per page</option>
+                                <option value="100">100 per page</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        @* Selected Pattern Info *@
+        @if (SelectedPatternInfo != null) {
+            <div class="card mb-3 @(SelectedPatternInfo.IsImplemented ? "border-primary" : "border-secondary")">
+                <div class="card-header @(SelectedPatternInfo.IsImplemented ? "bg-primary text-white" : "bg-secondary text-white")">
+                    <i class="fa-solid @SelectedPatternInfo.Icon me-1"></i>
+                    @SelectedPatternInfo.Name
+                    @if (!SelectedPatternInfo.IsImplemented) {
+                        <span class="badge bg-warning text-dark ms-2">Coming Soon</span>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (!SelectedPatternInfo.IsImplemented) {
+                        <div class="alert alert-warning py-2 mb-3">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                            <strong>Not Yet Implemented</strong>
+                            <div class="small">Code will be generated using the standard CRUD List + Edit pattern.</div>
+                        </div>
+                    }
+                    
+                    <h6 class="card-subtitle text-muted mb-3">@SelectedPatternInfo.Description</h6>
+                    
+                    <h6 class="mt-3">
+                        <i class="fa-solid fa-star text-warning me-1"></i>
+                        Key Features
+                    </h6>
+                    <ul class="small mb-3">
+                        @foreach (var feature in SelectedPatternInfo.KeyFeatures) {
+                            <li>@feature</li>
+                        }
+                    </ul>
+
+                    <h6>
+                        <i class="fa-solid fa-folder-open text-primary me-1"></i>
+                        Generated Files
+                    </h6>
+                    <ul class="list-unstyled small mb-0">
+                        @foreach (var file in SelectedPatternInfo.GeneratedFiles) {
+                            <li class="mb-1">
+                                <i class="fa-solid fa-file-code text-success me-1"></i>
+                                @file
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        @* Summary Card *@
+        <div class="card bg-light sticky-top" style="top: 100px;">
+            <div class="card-body">
+                @if (Options.IsReadOnly) {
+                    <div class="alert alert-warning py-2 mb-3">
+                        <i class="fa-solid fa-lock me-1"></i>
+                        <strong>Read-Only Mode</strong>
+                    </div>
+                }
+                
+                <h6 class="card-title">
+                    <i class="fa-solid fa-file-lines text-primary me-1"></i>
+                    Files to Generate
+                </h6>
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-1">
+                        <i class="fa-solid fa-check text-success me-1"></i>
+                        EF Model (Entity POCO)
+                    </li>
+                    <li class="mb-1">
+                        <i class="fa-solid fa-check text-success me-1"></i>
+                        DataObjects (DTOs, Filters)
+                    </li>
+                    <li class="mb-1">
+                        <i class="fa-solid fa-check text-success me-1"></i>
+                        DataAccess (@(Options.IsReadOnly ? "Read methods only" : "CRUD methods"))
+                    </li>
+                    <li class="mb-1">
+                        <i class="fa-solid fa-check text-success me-1"></i>
+                        Controller (@(Options.IsReadOnly ? "Get endpoints only" : "API endpoints"))
+                    </li>
+                    @if (Options.GenerateListPage) {
+                        <li class="mb-1">
+                            <i class="fa-solid fa-check text-success me-1"></i>
+                            List Page (@(Options.IsReadOnly ? "with view modal" : "paginated grid"))
+                        </li>
+                    }
+                    @if (Options.GenerateEditPage && !Options.IsReadOnly) {
+                        <li class="mb-1">
+                            <i class="fa-solid fa-check text-success me-1"></i>
+                            Edit Page (form)
+                        </li>
+                    }
+                </ul>
+
+                <hr />
+
+                <h6 class="card-title">
+                    <i class="fa-solid fa-cog text-info me-1"></i>
+                    Features Included
+                </h6>
+                <ul class="list-unstyled small mb-0">
+                    @if (Options.IsReadOnly) {
+                        <li><i class="fa-solid fa-lock text-warning me-1"></i> Read-only entity</li>
+                    }
+                    @if (Options.IncludeSoftDelete && !Options.IsReadOnly) {
+                        <li><i class="fa-solid fa-check text-info me-1"></i> Soft delete</li>
+                    }
+                    @if (Options.IncludeAuditFields) {
+                        <li><i class="fa-solid fa-check text-info me-1"></i> Audit fields</li>
+                    }
+                    @if (Options.IncludeTenantId) {
+                        <li><i class="fa-solid fa-check text-info me-1"></i> Multi-tenant</li>
+                    }
+                    @if (Options.GenerateSignalRUpdates && !Options.IsReadOnly) {
+                        <li><i class="fa-solid fa-check text-info me-1"></i> Real-time updates</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DataObjects.EntityWizardOptions Options { get; set; } = new();
+    [Parameter] public EventCallback<DataObjects.EntityWizardOptions> OptionsChanged { get; set; }
+
+    private DataObjects.FMPagePatternInfo? SelectedPatternInfo => 
+        DataObjects.FMPagePatterns.All.FirstOrDefault(p => p.Pattern == Options.SelectedPagePattern);
+
+    private void SelectPattern(DataObjects.FMPagePatternInfo pattern)
+    {
+        Options.SelectedPagePattern = pattern.Pattern;
+        OptionsChanged.InvokeAsync(Options);
+    }
+
+    private void OnReadOnlyChanged(ChangeEventArgs e)
+    {
+        Options.IsReadOnly = (bool)(e.Value ?? false);
+        
+        if (Options.IsReadOnly) {
+            // Cascade: disable incompatible options
+            Options.GenerateEditPage = false;
+            Options.IncludeSoftDelete = false;
+            Options.GenerateSignalRUpdates = false;
+        }
+        
+        OptionsChanged.InvokeAsync(Options);
+    }
+
+    private string GetComplexityColor(string complexity) => complexity switch
+    {
+        "Low" => "success",
+        "Medium" => "warning",
+        "High" => "danger",
+        _ => "secondary"
+    };
+}

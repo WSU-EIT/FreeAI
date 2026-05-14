@@ -1,0 +1,806 @@
+﻿@page "/showcase/feature105-agent-monitoring"
+@using FreeBlazorExtended.AgentMonitoring
+@inject AgentMonitoringService MonitoringService
+
+@*
+    Feature 105: Agent Monitoring & Management Dashboard
+    -----------------------------------------------------
+    Distributed Windows-server agent management surface modeled after the
+    FreeServicesHub pattern. Each registered agent reports host telemetry
+    (CPU/memory/disk) plus the inventory of installed Windows Services and
+    IIS application pools/sites on its host. The hub can issue commands
+    back to any agent: start/stop/restart/uninstall a Windows Service,
+    recycle/start/stop an IIS application pool, etc.
+
+    All command execution is Windows-only and is routed via SignalR in a
+    production deployment. This showcase runs the in-memory simulation so
+    a reviewer can click through the full surface without provisioning real
+    Windows hosts.
+
+    Linux-port research targets (in priority order):
+        1. systemd unit files + systemctl (closest 1:1 service-control match)
+        2. nginx (server { } / upstream { } blocks for IIS-equivalent routing)
+        3. Caddy or Traefik (reverse-proxy with auto-managed certs)
+*@
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Feature 105: Agent Monitoring &amp; Management</h1>
+            <p class="lead">
+                Manage a fleet of Windows-server agents from a single hub. Monitor host telemetry, inventory installed Windows
+                Services and IIS application pools, and issue start / stop / restart / uninstall commands &mdash; all via SignalR.
+            </p>
+        </div>
+    </div>
+
+    <ShowcaseAbout
+        WhatTechnical="A distributed monitoring system where a lightweight .NET Worker Service runs on each Windows host, phones home via SignalR with CPU/memory/disk telemetry, and exposes the host's Windows Services and IIS application pools for remote start/stop/restart/uninstall commands."
+        WhatEli5="A tiny watchdog program runs quietly on each server and sends its health stats to a central dashboard — and you can click a button in the dashboard to restart a crashed service without touching the server directly."
+        Who=@(new[]{ "IT operations teams monitoring a fleet of application servers", "System administrators who currently RDP into each server individually to check service health", "DevOps engineers who want a lightweight self-hosted alternative to full APM suites for Windows service oversight" })
+        WhenUse=@(new[]{ "Monitoring Windows Services and IIS pools across multiple hosts from one screen", "Alerting when CPU/disk crosses a threshold", "Remotely restarting a crashed service without opening RDP" })
+        WhenNot=@(new[]{ "Linux hosts — agent uses Windows-only PerformanceCounter and ServiceController APIs (systemd port is on the roadmap)", "Full APM/observability — use OpenTelemetry + Grafana for distributed tracing and log aggregation" })
+        Why="Checking each server via RDP is slow, error-prone, and doesn't scale past a handful of machines. This provides a centralised command-and-control surface without deploying a commercial monitoring product."
+        TechNotes=@(new[]{ "Agent = .NET 10 Worker Service; registered as a Windows Service via UseWindowsService()", "Telemetry collected via System.Diagnostics.PerformanceCounter (CPU) and DriveInfo/GC (disk/memory)", "Agent connects to the hub as a SignalR client on startup; reconnects with exponential back-off on disconnect", "Hub routes commands back to the correct agent by ConnectionId; results stream back as SignalR events", "Showcase runs an in-memory simulation — no real Windows host required to explore the UI", "Linux research targets: systemd (services), nginx (IIS equivalent), Caddy/Traefik (reverse proxy)" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Agent + Hub + UI", ["Persisted"] = "Metrics: in-memory ring buffer; registrations: SQL", ["Real-time"] = "SignalR (bidirectional)", ["Auth required"] = "Yes", ["OS support"] = "Windows only (Linux: roadmap)" }) />
+
+
+    @*  ===================================================================
+        Dashboard Summary - status counts at a glance
+        =================================================================== *@
+    <section aria-label="Agent status summary" class="mb-4">
+        <h2 class="h5 mb-3">Status Summary</h2>
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-success" role="region" aria-label="Online agents">
+                    <div class="card-body py-2">
+                        <div class="h3 text-success mb-0" aria-label="@_summary.OnlineCount online">@_summary.OnlineCount</div>
+                        <small class="text-muted">Online</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-warning" role="region" aria-label="Warning agents">
+                    <div class="card-body py-2">
+                        <div class="h3 text-warning mb-0" aria-label="@_summary.WarningCount warning">@_summary.WarningCount</div>
+                        <small class="text-muted">Warning</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-danger" role="region" aria-label="Error agents">
+                    <div class="card-body py-2">
+                        <div class="h3 text-danger mb-0" aria-label="@_summary.ErrorCount error">@_summary.ErrorCount</div>
+                        <small class="text-muted">Error</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center border-secondary" role="region" aria-label="Offline agents">
+                    <div class="card-body py-2">
+                        <div class="h3 text-secondary mb-0" aria-label="@_summary.OfflineCount offline">@_summary.OfflineCount</div>
+                        <small class="text-muted">Offline</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @*  ===================================================================
+        Tab navigation - Dashboard | Agents | Services | IIS | Registration
+        =================================================================== *@
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "dashboard" ? "active" : "")" @onclick="@(() => SetTab("dashboard"))" role="tab" aria-selected="@(_tab == "dashboard")">
+                <i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "agents" ? "active" : "")" @onclick="@(() => SetTab("agents"))" role="tab" aria-selected="@(_tab == "agents")">
+                <i class="bi bi-pc-display" aria-hidden="true"></i> Agents (@_agents.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "services" ? "active" : "")" @onclick="@(() => SetTab("services"))" role="tab" aria-selected="@(_tab == "services")">
+                <i class="bi bi-gear" aria-hidden="true"></i> Windows Services
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "iis" ? "active" : "")" @onclick="@(() => SetTab("iis"))" role="tab" aria-selected="@(_tab == "iis")">
+                <i class="bi bi-globe" aria-hidden="true"></i> IIS
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "registration" ? "active" : "")" @onclick="@(() => SetTab("registration"))" role="tab" aria-selected="@(_tab == "registration")">
+                <i class="bi bi-key" aria-hidden="true"></i> Registration Keys
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link @(_tab == "commands" ? "active" : "")" @onclick="@(() => SetTab("commands"))" role="tab" aria-selected="@(_tab == "commands")">
+                <i class="bi bi-list-check" aria-hidden="true"></i> Command History
+            </button>
+        </li>
+    </ul>
+
+    @*  ===================================================================
+        Tab Body
+        =================================================================== *@
+    @if (_tab == "dashboard") {
+        <section aria-label="Dashboard">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h2 class="card-title h5 mb-0">Fleet Overview</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Total Agents:</strong> @_summary.TotalAgents</p>
+                                    <p class="mb-1"><strong>Commands Queued:</strong> @_summary.CommandsQueued</p>
+                                    <p class="mb-1"><strong>Commands Running:</strong> @_summary.CommandsRunning</p>
+                                    <p class="mb-1"><strong>Commands Completed Today:</strong> @_summary.CommandsCompletedToday</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Generated:</strong> @_summary.GeneratedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</p>
+                                    <p class="mb-1"><strong>Stale Agents:</strong> @_summary.StaleCount</p>
+                                    <p class="mb-1"><strong>Active Alerts:</strong> @_summary.ActiveAlerts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h2 class="card-title h5 mb-0">Agent Cards</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                @foreach (var agent in _agents) {
+                                    <div class="col-md-6 col-xl-4">
+                                        <div class="card h-100 border-@StatusColor(agent.Status)" role="region" aria-label="@agent.Name">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h3 class="h5 mb-0">@agent.Name</h3>
+                                                    <span class="badge bg-@StatusColor(agent.Status) text-white">@agent.Status</span>
+                                                </div>
+                                                <p class="small text-muted mb-2">
+                                                    <i class="bi bi-pc-display" aria-hidden="true"></i> @agent.Hostname<br />
+                                                    <i class="bi bi-cpu" aria-hidden="true"></i> @agent.OperatingSystem<br />
+                                                    <i class="bi bi-clock" aria-hidden="true"></i> Up @FormatUptime(agent.Uptime)
+                                                </p>
+                                                <div class="btn-group btn-group-sm w-100" role="group" aria-label="Agent actions">
+                                                    <button type="button" class="btn btn-outline-primary" @onclick="@(() => OpenAgent(agent.AgentId))">
+                                                        <i class="bi bi-eye" aria-hidden="true"></i> Manage
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    } else if (_tab == "agents") {
+        <section aria-label="Agent list">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="card-title h5 mb-0">Registered Agents</h2>
+                    <button type="button" class="btn btn-light btn-sm" @onclick="LoadData">
+                        <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" aria-label="Agents">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Hostname</th>
+                                    <th scope="col">OS</th>
+                                    <th scope="col">Agent Version</th>
+                                    <th scope="col">Last Heartbeat</th>
+                                    <th scope="col">Uptime</th>
+                                    <th scope="col" class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var agent in _agents) {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-@StatusColor(agent.Status) text-white">@agent.Status</span>
+                                        </td>
+                                        <td>@agent.Name</td>
+                                        <td><code>@agent.Hostname</code></td>
+                                        <td><small>@agent.OperatingSystem</small></td>
+                                        <td>@agent.AgentVersion</td>
+                                        <td>
+                                            @if (agent.LastHeartbeat.HasValue) {
+                                                <span title="@agent.LastHeartbeat.Value.ToString("u")">@FormatRelative(agent.LastHeartbeat.Value)</span>
+                                            } else {
+                                                <span class="text-muted">never</span>
+                                            }
+                                        </td>
+                                        <td>@FormatUptime(agent.Uptime)</td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="@(() => OpenAgent(agent.AgentId))">
+                                                Manage
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    } else if (_tab == "services") {
+        <section aria-label="Windows Services">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Windows Services on Selected Agent</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="agentSelectServices" class="form-label">Agent</label>
+                        <select id="agentSelectServices" class="form-select" @bind="_selectedAgentId" @bind:after="OnAgentSelected" aria-label="Select agent">
+                            <option value="@Guid.Empty">-- Select an agent --</option>
+                            @foreach (var agent in _agents) {
+                                <option value="@agent.AgentId">@agent.Name (@agent.Hostname)</option>
+                            }
+                        </select>
+                    </div>
+
+                    @if (_selectedAgentId == Guid.Empty) {
+                        <div class="alert alert-info mb-0" role="alert">Select an agent to view its installed Windows Services.</div>
+                    } else if (_services.Count == 0) {
+                        <div class="alert alert-secondary mb-0" role="alert">No services reported by this agent.</div>
+                    } else {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" aria-label="Windows Services">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">State</th>
+                                        <th scope="col">Display Name</th>
+                                        <th scope="col">Service Name</th>
+                                        <th scope="col">Startup</th>
+                                        <th scope="col">Account</th>
+                                        <th scope="col">PID</th>
+                                        <th scope="col" class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var svc in _services) {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-@ServiceStateColor(svc.State) text-white">@svc.State</span>
+                                            </td>
+                                            <td>@svc.DisplayName</td>
+                                            <td><code>@svc.ServiceName</code></td>
+                                            <td>@svc.StartupType</td>
+                                            <td><small>@svc.LogOnAccount</small></td>
+                                            <td>@(svc.ProcessId == 0 ? "" : svc.ProcessId.ToString())</td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Service actions">
+                                                    <button type="button" class="btn btn-outline-success" @onclick="@(() => OnStartService(svc.ServiceName))" disabled="@(svc.State == "Running")" aria-label="Start @svc.DisplayName">
+                                                        <i class="bi bi-play-fill" aria-hidden="true"></i> Start
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning" @onclick="@(() => OnStopService(svc.ServiceName))" disabled="@(svc.State == "Stopped")" aria-label="Stop @svc.DisplayName">
+                                                        <i class="bi bi-stop-fill" aria-hidden="true"></i> Stop
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-primary" @onclick="@(() => OnRestartService(svc.ServiceName))" aria-label="Restart @svc.DisplayName">
+                                                        <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Restart
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="@(() => OnUninstallService(svc.ServiceName))" aria-label="Uninstall @svc.DisplayName">
+                                                        <i class="bi bi-trash" aria-hidden="true"></i> Uninstall
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    } else if (_tab == "iis") {
+        <section aria-label="IIS application pools and sites">
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h2 class="card-title h5 mb-0">IIS &mdash; Application Pools &amp; Sites</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="agentSelectIis" class="form-label">Agent</label>
+                                <select id="agentSelectIis" class="form-select" @bind="_selectedAgentId" @bind:after="OnAgentSelected" aria-label="Select agent">
+                                    <option value="@Guid.Empty">-- Select an agent --</option>
+                                    @foreach (var agent in _agents) {
+                                        <option value="@agent.AgentId">@agent.Name (@agent.Hostname)</option>
+                                    }
+                                </select>
+                            </div>
+
+                            @if (_selectedAgentId == Guid.Empty) {
+                                <div class="alert alert-info mb-0" role="alert">Select an agent to view its IIS configuration.</div>
+                            } else {
+                                <h3 class="h6">Application Pools</h3>
+                                @if (_appPools.Count == 0) {
+                                    <div class="alert alert-secondary" role="alert">This agent has no IIS application pools (IIS may not be installed).</div>
+                                } else {
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-hover mb-0" aria-label="Application Pools">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">State</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">.NET CLR</th>
+                                                    <th scope="col">Pipeline</th>
+                                                    <th scope="col">Identity</th>
+                                                    <th scope="col">Idle (min)</th>
+                                                    <th scope="col" class="text-end">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var pool in _appPools) {
+                                                    <tr>
+                                                        <td><span class="badge bg-@AppPoolStateColor(pool.State) text-white">@pool.State</span></td>
+                                                        <td><code>@pool.Name</code></td>
+                                                        <td>@pool.ManagedRuntimeVersion</td>
+                                                        <td>@pool.ManagedPipelineMode</td>
+                                                        <td><small>@pool.IdentityUsername</small></td>
+                                                        <td>@pool.IdleTimeoutMinutes</td>
+                                                        <td class="text-end">
+                                                            <div class="btn-group btn-group-sm" role="group" aria-label="App pool actions">
+                                                                <button type="button" class="btn btn-outline-success" @onclick="@(() => OnStartAppPool(pool.Name))" disabled="@(pool.State == "Started")" aria-label="Start @pool.Name">
+                                                                    <i class="bi bi-play-fill" aria-hidden="true"></i> Start
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-warning" @onclick="@(() => OnStopAppPool(pool.Name))" disabled="@(pool.State == "Stopped")" aria-label="Stop @pool.Name">
+                                                                    <i class="bi bi-stop-fill" aria-hidden="true"></i> Stop
+                                                                </button>
+                                                                <button type="button" class="btn btn-outline-primary" @onclick="@(() => OnRecycleAppPool(pool.Name))" aria-label="Recycle @pool.Name">
+                                                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Recycle
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+
+                                <h3 class="h6">Sites</h3>
+                                @if (_iisSites.Count == 0) {
+                                    <div class="alert alert-secondary mb-0" role="alert">This agent has no IIS sites configured.</div>
+                                } else {
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0" aria-label="IIS Sites">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">State</th>
+                                                    <th scope="col">Site</th>
+                                                    <th scope="col">Pool</th>
+                                                    <th scope="col">Bindings</th>
+                                                    <th scope="col">Physical Path</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var site in _iisSites) {
+                                                    <tr>
+                                                        <td><span class="badge bg-@AppPoolStateColor(site.State) text-white">@site.State</span></td>
+                                                        <td>@site.Name</td>
+                                                        <td><code>@site.AppPoolName</code></td>
+                                                        <td>
+                                                            <small>
+                                                                @foreach (var b in site.Bindings) {
+                                                                    <div>@b.Protocol://@b.HostName:@b.Port</div>
+                                                                }
+                                                            </small>
+                                                        </td>
+                                                        <td><small><code>@site.PhysicalPath</code></small></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    } else if (_tab == "registration") {
+        <section aria-label="Registration keys">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Generate New Registration Key</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">
+                        Generate a one-time registration key, then put it in the agent's <code>appsettings.json</code> as
+                        <code>Agent:RegistrationKey</code>. The agent will redeem it on first start to receive a long-lived API token.
+                    </p>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label for="newKeyDescription" class="form-label">Description</label>
+                            <input id="newKeyDescription" type="text" class="form-control" @bind="_newKeyDescription" placeholder="e.g. WS-BUILD-04" />
+                        </div>
+                        <div class="col-md-3">
+                            <label for="newKeyHours" class="form-label">Expires in (hours)</label>
+                            <input id="newKeyHours" type="number" class="form-control" min="1" max="720" @bind="_newKeyHours" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-success w-100" @onclick="OnGenerateKey">
+                                <i class="bi bi-key" aria-hidden="true"></i> Generate Key
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="card-title h5 mb-0">All Registration Keys</h2>
+                </div>
+                <div class="card-body p-0">
+                    @if (_registrationKeys.Count == 0) {
+                        <div class="p-3 text-muted">No registration keys yet.</div>
+                    } else {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" aria-label="Registration Keys">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Key</th>
+                                        <th scope="col">Created</th>
+                                        <th scope="col">Expires</th>
+                                        <th scope="col" class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var key in _registrationKeys) {
+                                        <tr>
+                                            <td>
+                                                @if (key.Revoked) {
+                                                    <span class="badge bg-danger text-white">Revoked</span>
+                                                } else if (key.ConsumedAt.HasValue) {
+                                                    <span class="badge bg-secondary text-white">Consumed</span>
+                                                } else if (key.ExpiresAt.HasValue && key.ExpiresAt.Value < DateTime.UtcNow) {
+                                                    <span class="badge bg-warning text-dark">Expired</span>
+                                                } else {
+                                                    <span class="badge bg-success text-white">Active</span>
+                                                }
+                                            </td>
+                                            <td>@key.Description</td>
+                                            <td><code>@key.Key</code></td>
+                                            <td>@key.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@(key.ExpiresAt.HasValue ? key.ExpiresAt.Value.ToString("yyyy-MM-dd HH:mm") : "")</td>
+                                            <td class="text-end">
+                                                @if (!key.Revoked && !key.ConsumedAt.HasValue) {
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" @onclick="@(() => OnRevokeKey(key.RegistrationKeyId))" aria-label="Revoke registration key">
+                                                        <i class="bi bi-x-circle" aria-hidden="true"></i> Revoke
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    } else if (_tab == "commands") {
+        <section aria-label="Command history">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Command History</h2>
+                </div>
+                <div class="card-body p-0">
+                    @if (_commands.Count == 0) {
+                        <div class="p-3 text-muted">No commands have been issued yet. Use the Services or IIS tab to issue start/stop/restart commands.</div>
+                    } else {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" aria-label="Command history">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Queued</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Target</th>
+                                        <th scope="col">Agent</th>
+                                        <th scope="col">Issued By</th>
+                                        <th scope="col">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var cmd in _commands) {
+                                        <tr>
+                                            <td><span class="badge bg-@CommandStatusColor(cmd.Status) text-white">@cmd.Status</span></td>
+                                            <td><small>@cmd.QueuedAt.ToString("HH:mm:ss")</small></td>
+                                            <td><code>@cmd.CommandType</code></td>
+                                            <td>@cmd.TargetName</td>
+                                            <td><small>@AgentName(cmd.AgentId)</small></td>
+                                            <td><small>@cmd.IssuedBy</small></td>
+                                            <td><small>@cmd.ResponseMessage</small></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+
+    @*  ===================================================================
+        Toast for command results
+        =================================================================== *@
+    @if (!string.IsNullOrEmpty(_toastMessage)) {
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+            <div class="toast show align-items-center text-white bg-@_toastClass border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">@_toastMessage</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="@(() => _toastMessage = string.Empty)" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    protected Guid _tenantId = Guid.NewGuid();
+    protected string _tab = "dashboard";
+
+    protected List<AgentMonitoring.Agent> _agents = new List<AgentMonitoring.Agent>();
+    protected AgentMonitoring.AgentDashboardSummary _summary = new AgentMonitoring.AgentDashboardSummary();
+
+    protected Guid _selectedAgentId = Guid.Empty;
+    protected List<AgentMonitoring.AgentService> _services = new List<AgentMonitoring.AgentService>();
+    protected List<AgentMonitoring.AgentIisAppPool> _appPools = new List<AgentMonitoring.AgentIisAppPool>();
+    protected List<AgentMonitoring.AgentIisSite> _iisSites = new List<AgentMonitoring.AgentIisSite>();
+    protected List<AgentMonitoring.AgentRegistrationKey> _registrationKeys = new List<AgentMonitoring.AgentRegistrationKey>();
+    protected List<AgentMonitoring.AgentCommand> _commands = new List<AgentMonitoring.AgentCommand>();
+
+    protected string _newKeyDescription = string.Empty;
+    protected int _newKeyHours = 24;
+
+    protected string _toastMessage = string.Empty;
+    protected string _toastClass = "success";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    protected async Task LoadData()
+    {
+        _agents = await MonitoringService.GetManagedAgents(_tenantId);
+        _summary = await MonitoringService.GetDashboardSummary(_tenantId);
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+
+        if (_selectedAgentId == Guid.Empty && _agents.Count > 0) {
+            _selectedAgentId = _agents.First().AgentId;
+            await OnAgentSelected();
+        } else if (_selectedAgentId != Guid.Empty) {
+            await OnAgentSelected();
+        }
+    }
+
+    protected void SetTab(string tab)
+    {
+        _tab = tab;
+    }
+
+    protected async Task OnAgentSelected()
+    {
+        if (_selectedAgentId == Guid.Empty) {
+            _services = new List<AgentMonitoring.AgentService>();
+            _appPools = new List<AgentMonitoring.AgentIisAppPool>();
+            _iisSites = new List<AgentMonitoring.AgentIisSite>();
+            _commands = new List<AgentMonitoring.AgentCommand>();
+            return;
+        }
+
+        _services = await MonitoringService.GetAgentServices(_selectedAgentId);
+        _appPools = await MonitoringService.GetAgentAppPools(_selectedAgentId);
+        _iisSites = await MonitoringService.GetAgentIisSites(_selectedAgentId);
+        _commands = await MonitoringService.GetCommands(_selectedAgentId);
+    }
+
+    protected void OpenAgent(Guid AgentId)
+    {
+        _selectedAgentId = AgentId;
+        _tab = "services";
+        InvokeAsync(OnAgentSelected);
+    }
+
+    // -------------------------------------------------------------------------
+    // Service actions
+    // -------------------------------------------------------------------------
+    protected async Task OnStartService(string ServiceName)
+    {
+        var cmd = await MonitoringService.StartService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnStopService(string ServiceName)
+    {
+        var cmd = await MonitoringService.StopService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnRestartService(string ServiceName)
+    {
+        var cmd = await MonitoringService.RestartService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnUninstallService(string ServiceName)
+    {
+        var cmd = await MonitoringService.UninstallService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    // -------------------------------------------------------------------------
+    // App pool actions
+    // -------------------------------------------------------------------------
+    protected async Task OnStartAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.StartAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnStopAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.StopAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnRecycleAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.RecycleAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    // -------------------------------------------------------------------------
+    // Registration keys
+    // -------------------------------------------------------------------------
+    protected async Task OnGenerateKey()
+    {
+        if (string.IsNullOrWhiteSpace(_newKeyDescription)) {
+            _toastMessage = "Description is required.";
+            _toastClass = "danger";
+            return;
+        }
+
+        var key = await MonitoringService.GenerateRegistrationKey(_tenantId, _newKeyDescription, _newKeyHours);
+        _newKeyDescription = string.Empty;
+        _toastMessage = "Registration key generated: " + key.Key;
+        _toastClass = "success";
+
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+    }
+
+    protected async Task OnRevokeKey(Guid RegistrationKeyId)
+    {
+        var resp = await MonitoringService.RevokeRegistrationKey(RegistrationKeyId);
+        if (resp.Result) {
+            _toastMessage = "Registration key revoked.";
+            _toastClass = "warning";
+        } else {
+            _toastMessage = string.Join(" ", resp.Messages);
+            _toastClass = "danger";
+        }
+
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+    protected void ShowCommandResult(AgentMonitoring.AgentCommand cmd)
+    {
+        _toastMessage = cmd.CommandType + " " + cmd.TargetName + ": " + (string.IsNullOrEmpty(cmd.ResponseMessage) ? cmd.Status : cmd.ResponseMessage);
+        _toastClass = cmd.ActionResponse.Result ? "success" : "danger";
+    }
+
+    protected string AgentName(Guid AgentId)
+    {
+        var a = _agents.FirstOrDefault(x => x.AgentId == AgentId);
+        return a?.Name ?? AgentId.ToString();
+    }
+
+    protected string StatusColor(string status)
+    {
+        return status switch {
+            AgentMonitoring.AgentStatuses.Online => "success",
+            AgentMonitoring.AgentStatuses.Warning => "warning",
+            AgentMonitoring.AgentStatuses.Error => "danger",
+            AgentMonitoring.AgentStatuses.Offline => "secondary",
+            AgentMonitoring.AgentStatuses.Stale => "info",
+            _ => "secondary",
+        };
+    }
+
+    protected string ServiceStateColor(string state)
+    {
+        return state switch {
+            "Running" => "success",
+            "Stopped" => "secondary",
+            "StartPending" or "StopPending" => "warning",
+            _ => "secondary",
+        };
+    }
+
+    protected string AppPoolStateColor(string state)
+    {
+        return state switch {
+            "Started" => "success",
+            "Stopped" => "secondary",
+            "Starting" or "Stopping" => "warning",
+            _ => "secondary",
+        };
+    }
+
+    protected string CommandStatusColor(string status)
+    {
+        return status switch {
+            "Completed" => "success",
+            "Failed" or "TimedOut" => "danger",
+            "Running" or "Sent" => "warning",
+            "Cancelled" => "secondary",
+            _ => "info",
+        };
+    }
+
+    protected string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1) {
+            return uptime.Days + "d " + uptime.Hours + "h";
+        }
+        if (uptime.TotalHours >= 1) {
+            return uptime.Hours + "h " + uptime.Minutes + "m";
+        }
+        return uptime.Minutes + "m";
+    }
+
+    protected string FormatRelative(DateTime utc)
+    {
+        TimeSpan delta = DateTime.UtcNow - utc;
+        if (delta.TotalSeconds < 60) {
+            return ((int)delta.TotalSeconds) + "s ago";
+        }
+        if (delta.TotalMinutes < 60) {
+            return ((int)delta.TotalMinutes) + "m ago";
+        }
+        if (delta.TotalHours < 24) {
+            return ((int)delta.TotalHours) + "h ago";
+        }
+        return ((int)delta.TotalDays) + "d ago";
+    }
+}

@@ -1,0 +1,66 @@
+{
+  "PagePath": "/",
+  "Url": "https://cougnet.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "CougNet",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 647310,
+  "ScreenshotSizeBytes": 123970,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 123970
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://cougnet.wsu.edu/media/1560/campus-view.jpg",
+      "AltText": "Campus View"
+    },
+    {
+      "SourceUrl": "https://cougnet.wsu.edu/media/1574/admissions.jpg",
+      "AltText": "Admissions Team"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 1,
+    "Serious": 3,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 4,
+        "Critical": 1,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:07:35.2527176Z"
+}

@@ -1,0 +1,80 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 1,
+  "Serious": 5,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 1,
+      "Serious": 2,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 3,
+      "Critical": 0,
+      "Serious": 3,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-navigation-vertical wsu-slide-in-panel wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Ctd style=\u0022color:#989898;background-color:white\u0022 title=\u0022light gray text on white background\u0022\u003Elight gray text on white background\u003C/td\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    }
+  ]
+}

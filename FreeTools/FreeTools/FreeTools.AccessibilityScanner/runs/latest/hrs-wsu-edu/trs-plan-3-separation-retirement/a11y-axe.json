@@ -1,0 +1,63 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 203,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "li:nth-child(6) \u003E a[data-type=\u0022link\u0022]",
+      "Snippet": "\u003Ca href=\u0022https://www.drs.wa.gov/plan/pers3/#plan-3-investment-withdrawals\u0022 data-type=\u0022link\u0022 data-id=\u0022https://www.drs.wa.gov/plan/pers3/#plan-3-investm...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "pre:nth-child(19) \u003E a:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022https://hrs.wsu.edu/wp-content/uploads/2024/04/DRS-Retirement-Checklist-04.24-Final.pdf\u0022\u003EDRS retirement checklist\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "pre:nth-child(19) \u003E a:nth-child(2)",
+      "Snippet": "\u003Ca href=\u0022http://hrs.wsu.edu/employees/benefits/retirement-information/\u0022\u003Eschedule of Pre-Retirement Seminars\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "li:nth-child(1) \u003E a[data-type=\u0022link\u0022]",
+      "Snippet": "\u003Ca href=\u0022https://www.hca.wa.gov/assets/pebb/51-0205-retiree-enrollment-guide-2024.pdf\u0022 data-type=\u0022link\u0022 data-id=\u0022https://www.hca.wa.gov/assets/pebb/51...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "a[href$=\u0022VEBA\u0022]",
+      "Snippet": "\u003Ca href=\u0022http://hrs.wsu.edu/VEBA\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003EVEBA Medical Expense Plan\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

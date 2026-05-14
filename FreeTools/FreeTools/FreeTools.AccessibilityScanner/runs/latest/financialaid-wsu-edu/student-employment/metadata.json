@@ -1,0 +1,81 @@
+{
+  "PagePath": "/student-employment/",
+  "Url": "https://financialaid.wsu.edu/student-employment/",
+  "FinalUrl": null,
+  "Title": "Employment Opportunities | Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 229243,
+  "ScreenshotSizeBytes": 278615,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 278615
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/thumbnail_IMG_6218.jpg",
+      "AltText": "Student Financial Services Employees post for a group photo in a WSU Pullman dining hall."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/StaffPic.png",
+      "AltText": "Student Financial Services employees pose casually in the front lobby of their office."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2025/02/outreach-with-butch-576x1024.jpg",
+      "AltText": "A student employee poses with Butch T. Cougar at a Financial Aid outreach event."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:14:02 GMT",
+    "etag": "\u0022b5ba9b61c1a159725a6f40b49a155c52\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:14:02 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/134\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/?p=134\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:14:02.5025089Z"
+}

@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-order",
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Message": "Heading level skipped: \u003Ch1\u003E to \u003Ch4\u003E",
+      "Selector": null,
+      "Snippet": "\u003Ch4\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

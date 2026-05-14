@@ -1,0 +1,73 @@
+{
+  "PagePath": "/apply/application-process/mywsu/",
+  "Url": "https://admission.wsu.edu/apply/application-process/mywsu/",
+  "FinalUrl": null,
+  "Title": "FutureCoug Portal \u0026 myWSU | Admissions | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 95501,
+  "ScreenshotSizeBytes": 655389,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 655389
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3144/2023/10/Computer-web-792x792.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 9,
+    "Critical": 1,
+    "Serious": 8,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:09:19 GMT",
+    "etag": "\u002230c8cb88a8cd7ad71455010231dbffb0\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:09:18 GMT",
+    "link": "\u003Chttps://admission.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://admission.wsu.edu/wp-json/wp/v2/pages/2719\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://admission.wsu.edu/?p=2719\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:09:19.4973455Z"
+}

@@ -1,0 +1,458 @@
+/*
+    FreeA11yChecker app-specific CSS
+*/
+
+/* ── Utility ── */
+.cursor-pointer { cursor: pointer; }
+
+/* ── Compliance Dashboard Cards ── */
+
+.compliance-card {
+    border-width: 2px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+}
+
+.compliance-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.compliance-card .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.compliance-stat {
+    font-size: 0.85rem;
+    margin-bottom: 0.15rem;
+}
+
+.compliance-trend {
+    font-size: 0.8rem;
+}
+
+.compliance-date {
+    font-size: 0.75rem;
+}
+
+/* ── Status Badges ── */
+
+.badge.bg-danger,
+.badge.bg-warning,
+.badge.bg-success,
+.badge.bg-secondary,
+.badge.bg-info,
+.badge.bg-primary {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ── Violation Cards ── */
+
+.violation-card {
+    border-left: 4px solid #6c757d;
+}
+
+.violation-card:has(.badge.bg-danger) {
+    border-left-color: #dc3545;
+}
+
+.violation-card:has(.badge.bg-warning) {
+    border-left-color: #ffc107;
+}
+
+.violation-card:has(.badge.bg-info) {
+    border-left-color: #0dcaf0;
+}
+
+.violation-card pre {
+    max-height: 200px;
+    overflow: auto;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.violation-card code {
+    font-size: 0.8rem;
+    word-break: break-all;
+}
+
+/* ── Screenshot Gallery ── */
+
+.screenshot-gallery {
+    margin-bottom: 1rem;
+}
+
+.screenshot-thumb {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    overflow: hidden;
+}
+
+.screenshot-thumb:hover {
+    transform: scale(1.03);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.screenshot-thumb img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.screenshot-thumb .card-body {
+    min-height: 0;
+}
+
+.screenshot-thumb small {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    display: block;
+}
+
+/* ── Lightbox Overlay ── */
+
+.screenshot-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.screenshot-lightbox {
+    background: #fff;
+    border-radius: 8px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
+    position: relative;
+}
+
+.lightbox-header {
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.lightbox-body {
+    position: relative;
+    min-height: 300px;
+}
+
+.lightbox-image {
+    max-height: 70vh;
+    max-width: 100%;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.lightbox-prev {
+    left: 8px;
+}
+
+.lightbox-next {
+    right: 8px;
+}
+
+.lightbox-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* ── About Section ── */
+
+.about-section .card-header {
+    background-color: #f0f7ff;
+    border-bottom: 1px solid #d0e3f7;
+}
+
+.about-section .card-body {
+    background-color: #fafcff;
+    font-size: 0.9rem;
+}
+
+/* ── Scan Detail Table ── */
+
+.table-hover tbody tr:hover {
+    cursor: pointer;
+}
+
+/* ── Trend Report ── */
+
+#violations-trend-chart {
+    width: 100%;
+    min-height: 400px;
+}
+
+/* ── Scan Monitor Transitions ── */
+
+/* Cards slide in from below and fade in */
+@keyframes scan-card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 600px;
+    }
+}
+
+/* Cards fade out and collapse when done */
+@keyframes scan-card-exit {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 600px;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+        margin-bottom: 0;
+        padding: 0;
+        border-width: 0;
+    }
+}
+
+.scan-monitor-card {
+    animation: scan-card-enter 0.35s ease-out both;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.scan-monitor-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Stagger animation for queued items */
+.scan-queue-item {
+    animation: scan-card-enter 0.3s ease-out both;
+    transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.scan-queue-item:hover {
+    transform: translateX(4px);
+}
+
+/* Recent completed scans slide in */
+.scan-recent-item {
+    animation: scan-card-enter 0.3s ease-out both;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.scan-recent-item:hover {
+    transform: translateX(4px);
+}
+
+/* Progress bar smoothing */
+.scan-monitor-card .progress-bar {
+    transition: width 0.6s ease-in-out;
+}
+
+/* Log container scroll smoothing */
+.scan-log-container {
+    scroll-behavior: smooth;
+}
+
+/* Badge count transitions */
+.scan-monitor-badge {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.scan-monitor-badge:not(:empty) {
+    animation: badge-pop 0.3s ease-out;
+}
+
+@keyframes badge-pop {
+    0% { transform: scale(0.7); opacity: 0.5; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Section headers slide in */
+.scan-section-header {
+    animation: scan-card-enter 0.25s ease-out both;
+}
+
+/* Stagger children: each successive card delays slightly */
+.scan-monitor-card:nth-child(1) { animation-delay: 0s; }
+.scan-monitor-card:nth-child(2) { animation-delay: 0.05s; }
+.scan-monitor-card:nth-child(3) { animation-delay: 0.1s; }
+.scan-monitor-card:nth-child(4) { animation-delay: 0.15s; }
+.scan-monitor-card:nth-child(5) { animation-delay: 0.2s; }
+.scan-monitor-card:nth-child(6) { animation-delay: 0.25s; }
+.scan-monitor-card:nth-child(7) { animation-delay: 0.3s; }
+.scan-monitor-card:nth-child(8) { animation-delay: 0.35s; }
+
+.scan-queue-item:nth-child(1) { animation-delay: 0s; }
+.scan-queue-item:nth-child(2) { animation-delay: 0.04s; }
+.scan-queue-item:nth-child(3) { animation-delay: 0.08s; }
+.scan-queue-item:nth-child(4) { animation-delay: 0.12s; }
+.scan-queue-item:nth-child(5) { animation-delay: 0.16s; }
+.scan-queue-item:nth-child(6) { animation-delay: 0.2s; }
+.scan-queue-item:nth-child(7) { animation-delay: 0.24s; }
+.scan-queue-item:nth-child(8) { animation-delay: 0.28s; }
+.scan-queue-item:nth-child(9) { animation-delay: 0.32s; }
+.scan-queue-item:nth-child(10) { animation-delay: 0.36s; }
+
+.scan-recent-item:nth-child(1) { animation-delay: 0s; }
+.scan-recent-item:nth-child(2) { animation-delay: 0.03s; }
+.scan-recent-item:nth-child(3) { animation-delay: 0.06s; }
+.scan-recent-item:nth-child(4) { animation-delay: 0.09s; }
+.scan-recent-item:nth-child(5) { animation-delay: 0.12s; }
+
+/* ── Smooth Transitions for All Live Data Pages ── */
+
+/* Table rows slide in */
+@keyframes table-row-enter {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.scan-table-row {
+    animation: table-row-enter 0.3s ease-out both;
+    transition: background-color 0.25s ease;
+}
+
+/* Smooth number/stat transitions */
+.scan-stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.scan-stat-card h3,
+.scan-stat-card h5,
+.scan-stat-card h2 {
+    transition: color 0.3s ease;
+}
+
+/* Section reveal (for show/hide sections like "Active Scans") */
+.scan-section-reveal {
+    animation: section-reveal 0.4s ease-out both;
+    overflow: hidden;
+}
+
+@keyframes section-reveal {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px;
+        transform: translateY(0);
+    }
+}
+
+/* Compliance card entry */
+.compliance-card {
+    border-width: 2px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
+    animation: compliance-card-enter 0.3s ease-out both;
+}
+
+@keyframes compliance-card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Stagger compliance cards */
+.row-cols-2 .col:nth-child(1) .compliance-card { animation-delay: 0s; }
+.row-cols-2 .col:nth-child(2) .compliance-card { animation-delay: 0.03s; }
+.row-cols-2 .col:nth-child(3) .compliance-card { animation-delay: 0.06s; }
+.row-cols-2 .col:nth-child(4) .compliance-card { animation-delay: 0.09s; }
+.row-cols-2 .col:nth-child(5) .compliance-card { animation-delay: 0.12s; }
+.row-cols-2 .col:nth-child(6) .compliance-card { animation-delay: 0.15s; }
+.row-cols-2 .col:nth-child(7) .compliance-card { animation-delay: 0.18s; }
+.row-cols-2 .col:nth-child(8) .compliance-card { animation-delay: 0.21s; }
+
+/* List items with smooth entry */
+.live-list-item {
+    animation: table-row-enter 0.25s ease-out both;
+    transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.25s ease;
+}
+
+.live-list-item:hover {
+    transform: translateX(3px);
+}
+
+/* Dashboard stat cards */
+.dashboard-stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.4s ease;
+}
+
+.dashboard-stat-card h3 {
+    transition: color 0.4s ease;
+}
+
+/* Scanning overlay on cards — pulse gently */
+.scanning-overlay {
+    transition: opacity 0.4s ease;
+}
+
+/* Heartbeat dots on trend report */
+.heartbeat-dot {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    display: inline-block;
+}
+
+.heartbeat-dot:hover {
+    transform: scale(1.5);
+}
+
+/* Violation cards */
+.violation-card {
+    border-left: 4px solid #6c757d;
+    animation: table-row-enter 0.3s ease-out both;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.violation-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Trend report site rows */
+.trend-site-row {
+    transition: background-color 0.2s ease;
+    animation: table-row-enter 0.25s ease-out both;
+}
+
+/* Smooth progress bars everywhere */
+.progress-bar {
+    transition: width 0.6s ease-in-out, background-color 0.3s ease;
+}
+
+/* Smooth log container scroll */
+.scan-log-container,
+[id^="scan-log-"] {
+    scroll-behavior: smooth;
+}

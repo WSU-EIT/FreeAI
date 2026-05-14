@@ -1,0 +1,72 @@
+{
+  "PagePath": "/",
+  "Url": "https://tasks.em.wsu.edu/",
+  "FinalUrl": "https://tasks.em.wsu.edu/Login",
+  "Title": "Tasks",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 152595,
+  "ScreenshotSizeBytes": 19289,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 19289
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://tasks.em.wsu.edu/images/Okta_256.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "blazor-enhanced-nav": "allow",
+    "cache-control": "no-cache, no-store",
+    "content-security-policy": "frame-ancestors \u0027self\u0027 login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:12:04 GMT",
+    "pragma": "no-cache",
+    "server": "Microsoft-IIS/10.0",
+    "strict-transport-security": "max-age=2592000",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:12:03.9598506Z"
+}

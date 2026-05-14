@@ -1,0 +1,81 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 1,
+  "Serious": 5,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 2,
+      "Critical": 1,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 4,
+      "Critical": 0,
+      "Serious": 4,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-navigation-vertical wsu-slide-in-panel wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022https://www.section508.gov/create/documents\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    }
+  ]
+}

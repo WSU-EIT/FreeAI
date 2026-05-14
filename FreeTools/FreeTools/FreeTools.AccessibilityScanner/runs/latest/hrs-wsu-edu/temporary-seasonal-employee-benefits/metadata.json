@@ -1,0 +1,64 @@
+{
+  "PagePath": "/temporary-seasonal-employee-benefits/",
+  "Url": "https://hrs.wsu.edu/temporary-seasonal-employee-benefits/",
+  "FinalUrl": "https://hrs.wsu.edu/employees/benefits/temporary-seasonal-employee-benefits/",
+  "Title": "Nonpermanent/Seasonal Employee Benefits \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 83631,
+  "ScreenshotSizeBytes": 425378,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 425378
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:30:10 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/4512\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=4512\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:30:09.8170756Z"
+}

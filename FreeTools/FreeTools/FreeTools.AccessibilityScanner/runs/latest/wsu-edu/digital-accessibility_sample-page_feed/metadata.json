@@ -1,0 +1,74 @@
+{
+  "PagePath": "/digital-accessibility/sample-page/feed/",
+  "Url": "https://wsu.edu/digital-accessibility/sample-page/feed/",
+  "FinalUrl": null,
+  "Title": "",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 1026,
+  "ScreenshotSizeBytes": 38464,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 38464
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 3,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "connection": "keep-alive",
+    "content-type": "application/rss\u002Bxml; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:15:56 GMT",
+    "etag": "\u002264a1019136e55f5df5b9499f6acacd5a\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:15:56 GMT",
+    "link": "\u003Chttps://wsu.edu/digital-accessibility/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/digital-accessibility/wp-json/wp/v2/pages/2\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-pingback": "https://wsu.edu/digital-accessibility/xmlrpc.php",
+    "x-tec-api-origin": "https://wsu.edu/digital-accessibility",
+    "x-tec-api-root": "https://wsu.edu/digital-accessibility/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:15:56.3623284Z"
+}

@@ -1,0 +1,177 @@
+﻿@*
+    SelectFile — Fully-controlled file-picker tile grid.
+
+    Renders a grid of clickable file tiles. Image files show an inline thumbnail;
+    other file types display a Font Awesome icon and a human-readable size label.
+    The component is deliberately host-agnostic: it owns no data-fetching, no DI
+    dependencies, and no dialog framework — the caller supplies the file list and
+    handles all callbacks.
+
+    Required parameters:
+        Files          — List<FileItem> to display. Provide an empty list to show
+                         the EmptyText message. The caller is responsible for loading.
+        OnFileSelected — EventCallback<FileItem> fired when the user clicks a tile.
+
+    Optional parameters:
+        ShowCancelButton  / CancelButtonText / OnCancel   — Cancel button wiring.
+        ShowRefreshButton / RefreshButtonText / OnRefresh — Refresh button wiring.
+        Loading           — When true replaces the grid with a spinner.
+        EmptyText         — Message shown when Files is empty or null.
+
+    FileItem shape (see SelectFile/FileItem.cs):
+        FileName, Extension, Bytes         — display metadata
+        Value (byte[])                     — raw bytes; rendered as base64 data URI for images
+        RemoteImageUrl                     — fallback image URL when Value is null/empty
+        ThumbnailIcon                      — Font Awesome class overriding the default icon
+
+    Refactored from FreeExamples/FreeExamples.Client/Shared/SelectFile.razor.
+*@
+
+@if (Loading) {
+    <div class="select-file-loading text-center py-3" role="status" aria-live="polite">
+        <div class="spinner-border text-primary" aria-hidden="true"></div>
+        <div class="mt-2 text-muted">Loading...</div>
+    </div>
+} else {
+    <div class="select-file mt-2">
+        @if (ShowCancelButton || ShowRefreshButton) {
+            <div class="btn-group mb-2" role="group">
+                @if (ShowCancelButton) {
+                    <button type="button" class="btn btn-dark" @onclick="HandleCancel">
+                        <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i>
+                        @CancelButtonText
+                    </button>
+                }
+                @if (ShowRefreshButton) {
+                    <button type="button" class="btn btn-primary" @onclick="HandleRefresh">
+                        <i class="fa-solid fa-arrows-rotate me-1" aria-hidden="true"></i>
+                        @RefreshButtonText
+                    </button>
+                }
+            </div>
+        }
+
+        @if (Files is { Count: > 0 }) {
+            <div class="select-file-grid d-flex flex-wrap gap-2">
+                @foreach (var file in Files) {
+                    var isImage = IsImageExtension(file.Extension);
+                    var title = $"{BytesToFriendlyLabel(file.Bytes)} - {file.FileName}";
+                    var imgSrc = isImage ? ResolveImageSrc(file) : null;
+                    var icon = string.IsNullOrWhiteSpace(file.ThumbnailIcon)
+                        ? "fa-solid fa-file"
+                        : file.ThumbnailIcon;
+                    var captured = file;
+
+                    <button type="button"
+                            class="select-file-tile btn btn-outline-secondary text-start p-2"
+                            style="width: 9rem;"
+                            title="@title"
+                            @onclick="() => HandleFileSelected(captured)">
+                        <div class="select-file-thumbnail d-flex align-items-center justify-content-center"
+                             style="height: 5rem;">
+                            @if (isImage && !string.IsNullOrEmpty(imgSrc)) {
+                                <img src="@imgSrc"
+                                     alt="@file.FileName"
+                                     style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                            } else {
+                                <i class="@icon fa-2x text-secondary" aria-hidden="true"></i>
+                            }
+                        </div>
+                        <div class="select-file-name text-truncate small mt-1">@file.FileName</div>
+                    </button>
+                }
+            </div>
+        } else {
+            <div class="text-muted">@EmptyText</div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The files to display as clickable tiles.
+    /// <para><b>Required.</b> The caller is responsible for loading and refreshing this collection.
+    /// Pass an empty list to show the <see cref="EmptyText"/> message.</para>
+    /// </summary>
+    [Parameter] public List<FileItem> Files { get; set; } = new();
+
+    /// <summary>
+    /// Fires when the user clicks a file tile. The selected <see cref="FileItem"/> is passed as the event argument.
+    /// <para><b>Required</b> if you want any action to occur on selection.</para>
+    /// </summary>
+    [Parameter] public EventCallback<FileItem> OnFileSelected { get; set; }
+
+    /// <summary>Show a Cancel button above the tile grid. Default <c>false</c>.</summary>
+    [Parameter] public bool ShowCancelButton { get; set; } = false;
+
+    /// <summary>Text for the Cancel button (default <c>"Cancel"</c>).</summary>
+    [Parameter] public string CancelButtonText { get; set; } = "Cancel";
+
+    /// <summary>Fires when the user clicks the Cancel button.</summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    /// <summary>Show a Refresh button at the top of the picker.</summary>
+    [Parameter] public bool ShowRefreshButton { get; set; } = false;
+
+    /// <summary>Text for the Refresh button (default <c>"Refresh"</c>).</summary>
+    [Parameter] public string RefreshButtonText { get; set; } = "Refresh";
+
+    /// <summary>Fires when the user clicks the Refresh button.</summary>
+    [Parameter] public EventCallback OnRefresh { get; set; }
+
+    /// <summary>When true, renders a spinner instead of the tile grid.</summary>
+    [Parameter] public bool Loading { get; set; } = false;
+
+    /// <summary>Message shown when <see cref="Files"/> is empty.</summary>
+    [Parameter] public string EmptyText { get; set; } = "No files available.";
+
+    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".gif", ".jpg", ".jpeg", ".png", ".svg"
+    };
+
+    private static bool IsImageExtension(string? extension)
+        => !string.IsNullOrWhiteSpace(extension) && _imageExtensions.Contains(extension);
+
+    private static string? ResolveImageSrc(FileItem file)
+    {
+        if (file.Value is { Length: > 0 }) {
+            var ext = (file.Extension ?? "").Replace(".", "").ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)) ext = "png";
+            return $"data:image/{ext};base64,{Convert.ToBase64String(file.Value)}";
+        }
+        return file.RemoteImageUrl;
+    }
+
+    private static string BytesToFriendlyLabel(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        double kb = bytes / 1024.0;
+        if (kb < 1024) return $"{kb:0.#} KB";
+        double mb = kb / 1024.0;
+        if (mb < 1024) return $"{mb:0.#} MB";
+        double gb = mb / 1024.0;
+        return $"{gb:0.#} GB";
+    }
+
+    private async Task HandleFileSelected(FileItem file)
+    {
+        if (OnFileSelected.HasDelegate) {
+            await OnFileSelected.InvokeAsync(file);
+        }
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate) {
+            await OnCancel.InvokeAsync();
+        }
+    }
+
+    private async Task HandleRefresh()
+    {
+        if (OnRefresh.HasDelegate) {
+            await OnRefresh.InvokeAsync();
+        }
+    }
+}

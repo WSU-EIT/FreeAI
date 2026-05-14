@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 593,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "iframe",
+      "Snippet": "\u003Ciframe width=\u00221000\u0022 height=\u0022700\u0022 frameborder=\u00220\u0022 src=\u0022https://app.smartsheet.com/b/publish?EQBCT=36841827f24b481c9a9e95f46f378a8f\u0022\u003E\u003C/iframe\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

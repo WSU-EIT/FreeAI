@@ -1,0 +1,134 @@
+{
+  "PagePath": "/research/",
+  "Url": "https://wsu.edu/research/",
+  "FinalUrl": null,
+  "Title": "WSU Research | Washington State University | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 128344,
+  "ScreenshotSizeBytes": 797781,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 797781
+    }
+  ],
+  "ImageCount": 16,
+  "ImagesMissingAlt": 11,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Grizzly_Bears_7-17-2015___120.jpg",
+      "AltText": "Six-month-old grizzly bear cubs run in the Washington State University Bear Research, Education, and Conservation Center yard Friday, July 17, 2015 in Pullman."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Pharmacy-1_18_20-BH_2649.jpg",
+      "AltText": "Research is conducted in the Pharmacy and Pharmaceutical Sciences lab of Dr. Travis Denton\non the Spokane campus of Washington State University, Friday, January 18, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/PhD-Student-Kaitlin-Witherell_5028.jpg",
+      "AltText": "PhD student on the campus of Washington State University, Monday, June 17, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Tri-Cities-Wine-Science-2019_9495.jpg",
+      "AltText": "Students learn about the Viticulture and Enology Program in the Ste Michelle Wine Estates WSU Wine Science Center in Tri_Cities, Thursday, June 13, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/VCEA-Travis-Olds-Glowing-Minerals_5115.jpg",
+      "AltText": "Graduate student showing minerals he discovered glow, on the campus of Washington State University, Tuesday, September 3, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-15.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-16-792x686.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-17.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-18-792x408.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-19-792x378.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/basketball-hoop-ball-and-hands-in-huddle.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/assisting-dead-car-battery-with-jumper-cables.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/couple-in-warm-embrace.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/Ryan-Driskell-and-Sean-Thompson-with-pigs.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/arthritis-photo.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2026/02/bull-elk-in-snow.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 0,
+    "Serious": 11,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 11,
+        "Critical": 0,
+        "Serious": 11,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:19:43 GMT",
+    "link": "\u003Chttps://wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/wp-json/wp/v2/pages/15\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:19:43.7596509Z"
+}

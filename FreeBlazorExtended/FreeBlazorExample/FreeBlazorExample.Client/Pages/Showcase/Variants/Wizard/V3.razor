@@ -1,0 +1,196 @@
+@page "/showcase/wizard/v3"
+@using FreeBlazorExtended.Wizard
+
+<div class="container-fluid py-4">
+    <h1>Full Wizard: Stepper + Header + Summary</h1>
+
+    <WizardStepper Steps="BuildSteps()" CurrentStep="@_step" OnStepClick="GoToStep" />
+    <WizardSummary Selections="BuildSelections()" />
+
+    @if (_submitted) {
+        <div class="alert alert-success" role="status">
+            Setup complete for the <strong>@_planChoice</strong> plan in <strong>@_region</strong> with notifications set to <strong>@_email</strong>.
+        </div>
+    } else {
+        <div class="card shadow-sm">
+            <WizardStepHeader StepNumber="@(_step + 1)"
+                              Title="@CurrentTitle()"
+                              ShowStartOver="true"
+                              ShowBack="@(_step > 0)"
+                              ShowNext="@(_step < 2)"
+                              ShowFinish="@(_step == 2)"
+                              NextDisabled="@(!IsCurrentStepValid())"
+                              ShowSpinner="@_isSubmitting"
+                              SpinnerText="Submitting..."
+                              BadgeIcon="@(_step == 2 ? "fa-flag-checkered" : "")"
+                              BadgeClass="bg-light text-success"
+                              HeaderClass="bg-dark text-white"
+                              OnStartOver="StartOver"
+                              OnBack="Back"
+                              OnNext="Next"
+                              OnFinish="Finish"
+                              NextButtonText="Next"
+                              FinishButtonText="Finish"
+                              InfoText="@CurrentInfo()" />
+
+            <div class="card-body">
+                @if (_step == 0) {
+                    <div>
+                        <label class="form-label fw-semibold">Choose a plan</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="form-check">
+                                <input id="planStarter" class="form-check-input" type="radio" name="plan" value="Starter" checked="@(_planChoice == "Starter")" @onchange="OnPlanChanged" />
+                                <label class="form-check-label" for="planStarter">Starter</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="planPro" class="form-check-input" type="radio" name="plan" value="Pro" checked="@(_planChoice == "Pro")" @onchange="OnPlanChanged" />
+                                <label class="form-check-label" for="planPro">Pro</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="planEnterprise" class="form-check-input" type="radio" name="plan" value="Enterprise" checked="@(_planChoice == "Enterprise")" @onchange="OnPlanChanged" />
+                                <label class="form-check-label" for="planEnterprise">Enterprise</label>
+                            </div>
+                        </div>
+                    </div>
+                } else if (_step == 1) {
+                    <div>
+                        <label for="regionSelect" class="form-label fw-semibold">Select region</label>
+                        <select id="regionSelect" class="form-select" value="@_region" @onchange="OnRegionChanged">
+                            <option value="">-- Select a region --</option>
+                            <option value="US-East">US-East</option>
+                            <option value="US-West">US-West</option>
+                            <option value="EU-Central">EU-Central</option>
+                        </select>
+                    </div>
+                } else {
+                    <div>
+                        <label for="emailField" class="form-label fw-semibold">Notification email</label>
+                        <input id="emailField" class="form-control" value="@_email" @oninput="OnEmailChanged" placeholder="ops@example.com" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private int _step;
+    private string _planChoice = "";
+    private string _region = "";
+    private string _email = "";
+    private bool _isSubmitting;
+    private bool _submitted;
+
+    private List<WizardStepper.WizardStepInfo> BuildSteps()
+    {
+        return new List<WizardStepper.WizardStepInfo>
+        {
+            new() { Name = "Plan", SelectedValue = _planChoice },
+            new() { Name = "Region", SelectedValue = _region },
+            new() { Name = "Notifications", SelectedValue = _email },
+        };
+    }
+
+    private List<WizardSummary.SelectionItem> BuildSelections()
+    {
+        return new List<WizardSummary.SelectionItem>
+        {
+            new() { Label = "Plan", Value = _planChoice },
+            new() { Label = "Region", Value = _region },
+            new() { Label = "Email", Value = _email },
+        };
+    }
+
+    private Task GoToStep(int step)
+    {
+        _step = step;
+        return Task.CompletedTask;
+    }
+
+    private Task StartOver()
+    {
+        _step = 0;
+        _planChoice = "";
+        _region = "";
+        _email = "";
+        _submitted = false;
+        _isSubmitting = false;
+        return Task.CompletedTask;
+    }
+
+    private Task Back()
+    {
+        if (_step > 0) {
+            _step--;
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task Next()
+    {
+        if (_step < 2 && IsCurrentStepValid()) {
+            _step++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task Finish()
+    {
+        if (!IsCurrentStepValid()) {
+            return;
+        }
+
+        _isSubmitting = true;
+        await Task.Delay(1000);
+        _isSubmitting = false;
+        _submitted = true;
+    }
+
+    private bool IsCurrentStepValid()
+    {
+        return _step switch
+        {
+            0 => !string.IsNullOrWhiteSpace(_planChoice),
+            1 => !string.IsNullOrWhiteSpace(_region),
+            2 => !string.IsNullOrWhiteSpace(_email),
+            _ => true,
+        };
+    }
+
+    private string CurrentTitle()
+    {
+        return _step switch
+        {
+            0 => "Choose your plan",
+            1 => "Pick a region",
+            2 => "Confirm notifications",
+            _ => "Wizard",
+        };
+    }
+
+    private string CurrentInfo()
+    {
+        return _step switch
+        {
+            0 => "Select the subscription level.",
+            1 => "Choose where the environment should live.",
+            2 => "Set who receives updates.",
+            _ => "",
+        };
+    }
+
+    private void OnPlanChanged(ChangeEventArgs args)
+    {
+        _planChoice = args.Value?.ToString() ?? "";
+    }
+
+    private void OnRegionChanged(ChangeEventArgs args)
+    {
+        _region = args.Value?.ToString() ?? "";
+    }
+
+    private void OnEmailChanged(ChangeEventArgs args)
+    {
+        _email = args.Value?.ToString() ?? "";
+    }
+}

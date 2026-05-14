@@ -1,0 +1,25 @@
+{
+  "Subject": "CN=zeemee.com",
+  "Issuer": "CN=Amazon RSA 2048 M04, O=Amazon, C=US",
+  "Thumbprint": "02F8E32A3801D6697DAEDF3C93D5B0EA0455421F",
+  "SerialNumber": "0A0B19FE96528601DA92495DB0E250B8",
+  "NotBefore": "2025-12-21T16:00:00-08:00",
+  "NotAfter": "2027-01-20T15:59:59-08:00",
+  "DaysUntilExpiry": 335,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.platform.zeemee.com",
+    "*.zeemee.com",
+    "platform.zeemee.com",
+    "zeemee.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "*.platform.zeemee.com",
+    "*.zeemee.com",
+    "platform.zeemee.com",
+    "zeemee.com"
+  ],
+  "ErrorMessage": null
+}

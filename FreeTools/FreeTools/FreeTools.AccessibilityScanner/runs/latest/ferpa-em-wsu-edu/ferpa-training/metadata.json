@@ -1,0 +1,57 @@
+{
+  "PagePath": "/ferpa-training/",
+  "Url": "https://ferpa.em.wsu.edu/ferpa-training/",
+  "FinalUrl": null,
+  "Title": "FERPA Training | FERPA - Rights and Privacy",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 657131,
+  "ScreenshotSizeBytes": 103089,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 103089
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:13:45.0442156Z"
+}

@@ -1,0 +1,132 @@
+{
+  "PagePath": "/about/leadership/",
+  "Url": "https://wsu.edu/about/leadership/",
+  "FinalUrl": null,
+  "Title": "Leadership | Washington State University | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 114815,
+  "ScreenshotSizeBytes": 461071,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 461071
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 13,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/04/Elizabeth-Cantwell_1057-792x567.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/12/LBrunelli-Headshot.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/12/chris-riley-tillman-square.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/05/Glynda_Pref_Pic-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/05/Kim-Headshot002-2.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/10/Mike-Connell-Foundation_4958-scaled-e1636146510583-396x223-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/12/kerri-leadership-photo.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2024/09/r-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2023/03/Tony_Opheim_2022-e1682967523441.jpeg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/07/pam-scott-portrait.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2025/12/MattSkinner-leadership-photo.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2024/09/Whitney2c-Paul_Sept2016_image2992-1-e1500487376951-crop-1_Fotor-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/09/Campus-photo-24.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/09/Campus-photo-21.jpg",
+      "AltText": "Sandra Haynes"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/09/Campus-photo-23.jpg",
+      "AltText": "Paul Pitre"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=600, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:08:25 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:08:25 GMT",
+    "link": "\u003Chttps://wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/wp-json/wp/v2/pages/3383\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:08:25.1217781Z"
+}

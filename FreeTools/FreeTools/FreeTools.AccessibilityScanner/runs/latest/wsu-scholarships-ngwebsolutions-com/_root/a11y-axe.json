@@ -1,0 +1,52 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 118,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "image-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "critical",
+      "Message": "Images must have alternative text",
+      "Selector": "#EP_content \u003E div \u003E .img-responsive",
+      "Snippet": "\u003Cimg class=\u0022img-responsive\u0022 border=\u00220\u0022 src=\u0022https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsu_header.jpg\u0022 style=\u0022height:130px\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/image-alt?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "image-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "critical",
+      "Message": "Images must have alternative text",
+      "Selector": "div \u003E div \u003E div:nth-child(3) \u003E .img-responsive",
+      "Snippet": "\u003Cimg class=\u0022img-responsive\u0022 src=\u0022https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsufooter.png\u0022 style=\u0022margin-top:40px;\u0022 border=\u00220\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/image-alt?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "a[href$=\u0022ferpa.em.wsu.edu/\u0022]",
+      "Snippet": "\u003Ca href=\u0022http://ferpa.em.wsu.edu/\u0022 target=\u0022_blank\u0022\u003E(FERPA)\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "a[target=\u0022_blank\u0022]:nth-child(3)",
+      "Snippet": "\u003Ca href=\u0022http://ferpa.em.wsu.edu/faculty-staff/\u0022 target=\u0022_blank\u0022\u003EFaculty \u0026amp; Staff Guidelines\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

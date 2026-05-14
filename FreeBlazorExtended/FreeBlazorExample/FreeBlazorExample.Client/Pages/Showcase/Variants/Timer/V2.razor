@@ -1,0 +1,18 @@
+@page "/showcase/timer/v2"
+@using FreeBlazorExtended.Timer
+
+<div class="container-fluid py-4">
+    <h1>Pomodoro-Style Timer</h1>
+    <p class="text-muted">A 25-minute work block with hours included in the display and controls hidden from the component chrome.</p>
+
+    <Timer Duration="@TimeSpan.FromMinutes(25)"
+           DisplayFormat="@_displayFormat"
+           AutoStart="true"
+           ShowControls="false"
+           ShowProgressBar="true"
+           Class="bg-light p-4 rounded shadow-sm" />
+</div>
+
+@code {
+    private readonly string _displayFormat = @"hh\:mm\:ss";
+}

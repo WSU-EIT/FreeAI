@@ -1,0 +1,62 @@
+{
+  "PagePath": "/instructions/combined-sections/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/combined-sections/",
+  "FinalUrl": null,
+  "Title": "Combined Section Guidelines | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 692557,
+  "ScreenshotSizeBytes": 454607,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 454607
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756588/combined-sections-conjoint.jpg?width=500\u0026height=101.50375939849624",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:16:44.3542235Z"
+}

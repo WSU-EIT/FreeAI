@@ -1,0 +1,64 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 2,
+  "Critical": 0,
+  "Serious": 1,
+  "Moderate": 1,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 1,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "list",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "\u003Cul\u003E and \u003Col\u003E must only directly contain \u003Cli\u003E, \u003Cscript\u003E or \u003Ctemplate\u003E elements",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cul class=\u0022navbar-nav me-auto\u0022\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

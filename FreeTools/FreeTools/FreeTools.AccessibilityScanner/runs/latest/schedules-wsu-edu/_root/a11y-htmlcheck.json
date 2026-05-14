@@ -1,0 +1,30 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-missing-h1",
+      "CanonicalRuleId": "page-has-heading-one",
+      "Severity": "moderate",
+      "Message": "Page has headings but no \u003Ch1\u003E",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-button-ui-search\u0022 href=\u0022https://search.wsu.edu/\u0022 title=\u0022WSU Search Page\u0022\u003E\n                    \u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

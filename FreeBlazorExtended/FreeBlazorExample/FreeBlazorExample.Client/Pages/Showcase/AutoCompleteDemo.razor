@@ -1,0 +1,347 @@
+﻿@page "/showcase/autocomplete"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>AutoComplete Component</h1>
+            <p class="lead">An intelligent autocomplete input component with dropdown suggestions, customizable filtering, and keyboard navigation support.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A text input bound to a string list that opens a filtered dropdown of matching suggestions as the user types, supporting minimum-character thresholds, max-results caps, case sensitivity, and a custom-entry allow/deny flag."
+        WhatEli5="A text box that suggests matching options as you type — like a search bar that shows guesses before you finish typing."
+        Who=@(new[]{ "Developers adding search-as-you-type UX to any text field", "Form builders where the valid values are too long for a <select> but should still guide the user", "Any UI where free text is allowed but known values are preferred" })
+        WhenUse=@(new[]{ "Fields with a large option list where typing to filter is faster than scrolling a dropdown", "Search boxes where partial matches are expected", "Tags or label entry where both free text and suggestions are valid" })
+        WhenNot=@(new[]{ "Small fixed option lists (≤10 items) — a plain <select> is less surprising", "Fields that must be restricted to the list — use MultiSelect with AllowCustom=false and a validation rule instead" })
+        Why="Standard <datalist> is inconsistent across browsers and can't be styled. This provides a predictable, accessible, styleable alternative with full Blazor data binding."
+        TechNotes=@(new[]{ "Filters the Options list client-side on each keystroke; no server round-trip unless the caller provides a dynamic options source via a callback", "MinChars prevents the dropdown opening until the user has typed enough to produce useful results", "AllowCustom=false: OnSelected fires only when the user picks a suggestion; the input reverts if they blur without selecting", "Keyboard navigation: ArrowDown/Up move through suggestions; Enter selects; Escape closes" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic Autocomplete</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard autocomplete with filtering suggestions.</p>
+                    <label class="form-label">Select a country:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchCountries"
+                        OnSelected="@(item => _selectedCountry = item.label)"
+                        PlaceholderText="Start typing..." />
+                    @if (!string.IsNullOrEmpty(_selectedCountry)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_selectedCountry
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Minimum Characters</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Suggestions only appear after typing 3 characters.</p>
+                    <label class="form-label">Select a city:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchCities"
+                        OnSelected="@(item => _selectedCity = item.label)"
+                        PlaceholderText="Search cities (3+ chars)..."
+                        MinimumCharacters="3" />
+                    @if (!string.IsNullOrEmpty(_selectedCity)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_selectedCity
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Highlight First Match</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Auto-highlights the first result so Enter immediately selects it.</p>
+                    <label class="form-label">Select a programming language:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchLanguages"
+                        OnSelected="@(item => _selectedLanguage = item.label)"
+                        PlaceholderText="Choose language..."
+                        HighlightFirstMatch="true" />
+                    @if (!string.IsNullOrEmpty(_selectedLanguage)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_selectedLanguage
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Lookup Delay</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">1 second debounce before the lookup fires — useful for async data sources.</p>
+                    <label class="form-label">Select a framework:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchFrameworks"
+                        OnSelected="@(item => _selectedFramework = item.label)"
+                        PlaceholderText="Search frameworks..."
+                        LookupDelay="1000" />
+                    @if (!string.IsNullOrEmpty(_selectedFramework)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_selectedFramework
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Autocomplete in a disabled state.</p>
+                    <label class="form-label">Disabled autocomplete:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchCountries"
+                        PlaceholderText="Cannot interact..."
+                        Disabled="true" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Key/Label Pairs</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Results return a key (id) and a label — OnSelected receives both.</p>
+                    <label class="form-label">Select a color:</label>
+                    <AutoComplete GetAutoCompleteItems="@SearchColors"
+                        OnSelected="@OnColorSelected"
+                        PlaceholderText="Choose color..." />
+                    @if (!string.IsNullOrEmpty(_selectedColor)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Key:</strong> @_selectedColorKey &nbsp; <strong>Label:</strong> @_selectedColor
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>GetAutoCompleteItems</code></td>
+                                    <td>Func&lt;string, Task&lt;List&lt;(string key, string label)&gt;?&gt;&gt;</td>
+                                    <td>-</td>
+                                    <td>Required. Callback that receives the typed text and returns matching key/label pairs.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OnSelected</code></td>
+                                    <td>EventCallback&lt;(string key, string label)&gt;</td>
+                                    <td>-</td>
+                                    <td>Fires when the user picks a suggestion. Receives the selected key and label.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>PlaceholderText</code></td>
+                                    <td>string</td>
+                                    <td>""</td>
+                                    <td>Placeholder text shown inside the input.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MinimumCharacters</code></td>
+                                    <td>int</td>
+                                    <td>2</td>
+                                    <td>Minimum characters typed before suggestions appear.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>LookupDelay</code></td>
+                                    <td>int</td>
+                                    <td>500</td>
+                                    <td>Milliseconds to debounce after the user stops typing before calling GetAutoCompleteItems.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>HighlightFirstMatch</code></td>
+                                    <td>bool</td>
+                                    <td>false</td>
+                                    <td>Automatically pre-selects the first suggestion so Enter immediately confirms it.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Disabled</code></td>
+                                    <td>bool</td>
+                                    <td>false</td>
+                                    <td>Disables the input so it cannot be interacted with.</td>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td><code>MatchParentWidth</code></td>
+                                    <td>bool</td>
+                                    <td>true</td>
+                                    <td>Dropdown stretches to match the input width.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/demo"
+
+&lt;AutoComplete GetAutoCompleteItems="@@SearchCountries"
+    OnSelected="@@(item => _selected = item.label)"
+    PlaceholderText="Start typing..."
+    MinimumCharacters="2"
+    PlaceholderText="Start typing..." /&gt;
+
+@@if (!string.IsNullOrEmpty(_selected)) {
+    &lt;p&gt;Selected: @@_selected&lt;/p&gt;
+}
+
+@@code {{
+    private string _selected = "";
+
+    private Task&lt;List&lt;(string key, string label)&gt;?&gt; SearchCountries(string text) =>
+        Task.FromResult&lt;List&lt;(string key, string label)&gt;?&gt;(
+            _countryList
+                .Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
+                .Select(c => (c, c))
+                .ToList()
+        );
+
+    private List&lt;string&gt; _countryList = new() {{
+        "United States", "United Kingdom", "Canada", "Australia"
+    }};
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Full keyboard navigation support (arrows, enter, escape)</li>
+                        <li>ARIA live region for announcement of suggestions</li>
+                        <li>Screen reader friendly with proper roles and labels</li>
+                        <li>Suggestions are announced as they appear</li>
+                        <li>Selected item is clearly indicated with visual highlighting</li>
+                        <li>Dropdown closes on escape key</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected string _selectedCountry = "";
+    protected string _selectedCity = "";
+    protected string _selectedLanguage = "";
+    protected string _selectedFramework = "";
+    protected string _selectedColor = "";
+    protected string _selectedColorKey = "";
+
+    protected List<string> _countries = new() {
+        "United States", "United Kingdom", "Canada", "Australia",
+        "Germany", "France", "Japan", "Brazil", "India", "China"
+    };
+
+    protected List<string> _cities = new() {
+        "New York", "Los Angeles", "Chicago", "Houston", "Phoenix",
+        "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
+        "London", "Paris", "Tokyo", "Sydney"
+    };
+
+    protected List<string> _languages = new() {
+        "C#", "JavaScript", "Python", "Java", "C++",
+        "Go", "Rust", "TypeScript", "PHP", "Ruby"
+    };
+
+    protected List<string> _frameworks = new() {
+        "ASP.NET Core", "React", "Vue.js", "Angular", "Blazor",
+        "Next.js", "Django", "Flask", "Spring Boot", "Express.js"
+    };
+
+    protected List<(string key, string label)> _colors = new() {
+        ("red", "Red"), ("blue", "Blue"), ("green", "Green"),
+        ("yellow", "Yellow"), ("purple", "Purple"), ("orange", "Orange"),
+        ("pink", "Pink"), ("brown", "Brown"), ("gray", "Gray"), ("black", "Black")
+    };
+
+    private Task<List<(string key, string label)>?> SearchCountries(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _countries.Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
+                      .Select(c => (c, c)).ToList());
+
+    private Task<List<(string key, string label)>?> SearchCities(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _cities.Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
+                   .Select(c => (c, c)).ToList());
+
+    private Task<List<(string key, string label)>?> SearchLanguages(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _languages.Where(l => l.Contains(text, StringComparison.OrdinalIgnoreCase))
+                      .Select(l => (l, l)).ToList());
+
+    private Task<List<(string key, string label)>?> SearchFrameworks(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _frameworks.Where(f => f.Contains(text, StringComparison.OrdinalIgnoreCase))
+                       .Select(f => (f, f)).ToList());
+
+    private Task<List<(string key, string label)>?> SearchColors(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _colors.Where(c => c.label.Contains(text, StringComparison.OrdinalIgnoreCase))
+                   .ToList());
+
+    private void OnColorSelected((string key, string label) item) {
+        _selectedColorKey = item.key;
+        _selectedColor = item.label;
+    }
+}

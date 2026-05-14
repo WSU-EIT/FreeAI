@@ -1,0 +1,89 @@
+{
+  "PagePath": "/visit/travel/",
+  "Url": "https://admission.wsu.edu/visit/travel/",
+  "FinalUrl": null,
+  "Title": "Travel Information | Admissions | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 100755,
+  "ScreenshotSizeBytes": 332235,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 332235
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Cougs-Plane-792x528.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2022/12/img-1280x720-36-1188x668-1-792x445.jpg",
+      "AltText": "Students getting on bus"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Dancers-scaled.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Coug-Soccer.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Ferdinands-scaled.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 9,
+    "Critical": 1,
+    "Serious": 8,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:14:38 GMT",
+    "etag": "\u0022834a1a093a1e825209fda8d19af24d17\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:14:38 GMT",
+    "link": "\u003Chttps://admission.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://admission.wsu.edu/wp-json/wp/v2/pages/42\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://admission.wsu.edu/?p=42\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:14:38.1317162Z"
+}

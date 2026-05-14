@@ -1,0 +1,31 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 0,
+  "Critical": 0,
+  "Serious": 0,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 0,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 0,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": []
+}

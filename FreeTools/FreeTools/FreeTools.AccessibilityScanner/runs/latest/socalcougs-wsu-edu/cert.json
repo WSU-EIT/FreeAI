@@ -1,0 +1,37 @@
+{
+  "Subject": "CN=admission.wsu.edu",
+  "Issuer": "CN=Amazon RSA 2048 M02, O=Amazon, C=US",
+  "Thumbprint": "6590E191000D216585A5B816E71676A19CAB32CD",
+  "SerialNumber": "0902215CBF1FCD8062D3375A357B9154",
+  "NotBefore": "2025-05-13T17:00:00-07:00",
+  "NotAfter": "2026-06-12T16:59:59-07:00",
+  "DaysUntilExpiry": 113,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.admission.wsu.edu",
+    "*.alive.wsu.edu",
+    "*.choose.wsu.edu",
+    "*.explore.wsu.edu",
+    "*.why.wsu.edu",
+    "admission.wsu.edu",
+    "alive.wsu.edu",
+    "choose.wsu.edu",
+    "explore.wsu.edu",
+    "why.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "*.admission.wsu.edu",
+    "*.alive.wsu.edu",
+    "*.choose.wsu.edu",
+    "*.explore.wsu.edu",
+    "*.why.wsu.edu",
+    "admission.wsu.edu",
+    "alive.wsu.edu",
+    "choose.wsu.edu",
+    "explore.wsu.edu",
+    "why.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

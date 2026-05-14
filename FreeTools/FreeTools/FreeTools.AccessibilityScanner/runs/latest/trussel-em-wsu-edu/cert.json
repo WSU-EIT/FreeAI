@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=trussel.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "E1C42411DCD52AC417713A7100B17A5A969B1069",
+  "SerialNumber": "009EBA139155141567AC7E23E0A18BF1E2",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "trussel.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "trussel.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

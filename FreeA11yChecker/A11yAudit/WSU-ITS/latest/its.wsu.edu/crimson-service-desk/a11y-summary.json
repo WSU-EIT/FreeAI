@@ -1,0 +1,334 @@
+{
+  "TotalViolations": 15,
+  "CriticalCount": 0,
+  "SeriousCount": 9,
+  "ModerateCount": 6,
+  "MinorCount": 0,
+  "AxeCount": 0,
+  "HtmlCheckCount": 4,
+  "HtmlCsCount": 0,
+  "IbmCount": 11,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "aria_id_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_id_unique",
+          "CanonicalRuleId": "aria_id_unique",
+          "Severity": "serious",
+          "Message": "The \u0027id\u0027 \u0022title\u0022 specified for the ARIA property \u0027aria-labelledby\u0027 value is not valid",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/p[1]/svg[1]",
+          "Snippet": "\u003Csvg aria-labelledby=\u0022title\u0022 role=\u0022img\u0022 title=\u0022month\u0022 style=\u0022fill:#000000;\u0022 class=\u0022genericon genericond-genericons-neue genericons-neue-month genericond-genericons-neue-3x genericond-rotate-normal\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_id_unique",
+          "CanonicalRuleId": "aria_id_unique",
+          "Severity": "serious",
+          "Message": "The \u0027id\u0027 \u0022title\u0022 specified for the ARIA property \u0027aria-labelledby\u0027 value is not valid",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/p[5]/a[1]/svg[1]",
+          "Snippet": "\u003Csvg aria-labelledby=\u0022title\u0022 role=\u0022img\u0022 title=\u0022location\u0022 style=\u0022fill:#000000;\u0022 class=\u0022genericon genericond-genericons-neue genericons-neue-location genericond-genericons-neue-3x genericond-rotate-normal\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_id_unique",
+          "CanonicalRuleId": "aria_id_unique",
+          "Severity": "serious",
+          "Message": "The \u0027id\u0027 \u0022title\u0022 specified for the ARIA property \u0027aria-labelledby\u0027 value is not valid",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/p[7]/svg[1]",
+          "Snippet": "\u003Csvg aria-labelledby=\u0022title\u0022 role=\u0022img\u0022 title=\u0022phone\u0022 style=\u0022fill:#000000;\u0022 class=\u0022genericon genericond-genericons-neue genericons-neue-phone genericond-genericons-neue-3x genericond-rotate-normal\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_id_unique",
+          "CanonicalRuleId": "aria_id_unique",
+          "Severity": "serious",
+          "Message": "The \u0027id\u0027 \u0022title\u0022 specified for the ARIA property \u0027aria-labelledby\u0027 value is not valid",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/p[9]/svg[1]",
+          "Snippet": "\u003Csvg aria-labelledby=\u0022title\u0022 role=\u0022img\u0022 title=\u0022time\u0022 style=\u0022fill:#000000;\u0022 class=\u0022genericon genericond-genericons-neue genericons-neue-time genericond-genericons-neue-3x genericond-rotate-normal\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_id_unique",
+          "CanonicalRuleId": "aria_id_unique",
+          "Severity": "serious",
+          "Message": "The \u0027id\u0027 \u0022title\u0022 specified for the ARIA property \u0027aria-labelledby\u0027 value is not valid",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/p[11]/svg[1]",
+          "Snippet": "\u003Csvg aria-labelledby=\u0022title\u0022 role=\u0022img\u0022 title=\u0022mail\u0022 style=\u0022fill:#000000;\u0022 class=\u0022genericon genericond-genericons-neue genericons-neue-mail genericond-genericons-neue-3x genericond-rotate-normal\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_single",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader aria-label=\u0022WSU system\u0022 class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "figure_label_exists",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022aligncenter size-large\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/div[2]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022aligncenter size-large is-resized\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[4]/div[2]/article[1]/div[1]/span[1]/div[3]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022aligncenter size-large\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main skip-to-menu-desktop\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/button[1]",
+          "Snippet": "\u003Cbutton id=\u0022open-modal\u0022 data-panel=\u0022wsu-quicklinks-panel\u0022 class=\u0022wsu-header-utility-bar__quicklinks wsu-slide-in-panel--open\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "fieldset-missing",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "fieldset-missing",
+          "CanonicalRuleId": "fieldset-missing",
+          "Severity": "moderate",
+          "Message": "Radio/checkbox group is not wrapped in a fieldset",
+          "Selector": "",
+          "Snippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

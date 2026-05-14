@@ -1,0 +1,159 @@
+@* EntityWizardCodeEditor.App.razor - Monaco-based code editor for generated files *@
+@* Supports editing, revert to original, and diff view *@
+
+<div class="entity-code-editor">
+    @* Editor Controls *@
+    <div class="d-flex justify-content-between align-items-center mb-2 bg-light p-2 rounded">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid @GetFileIcon(File.FileType) @GetFileIconColor(File.FileType)"></i>
+            <strong>@File.FileName</strong>
+            <span class="badge bg-secondary">@File.FileType</span>
+            @if (File.IsEdited) {
+                <span class="badge bg-warning text-dark">
+                    <i class="fa-solid fa-pen me-1"></i>Modified
+                </span>
+            }
+        </div>
+        <div class="btn-group btn-group-sm">
+            @if (!ReadOnly) {
+                <button class="btn @(_showDiff ? "btn-primary" : "btn-outline-secondary")"
+                        @onclick="ToggleDiff"
+                        title="@(_showDiff ? "Hide diff" : "Show diff vs original")">
+                    <i class="fa-solid fa-code-compare"></i>
+                </button>
+                @if (File.IsEdited) {
+                    <button class="btn btn-outline-warning" @onclick="RevertToOriginal" title="Revert to original">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                }
+                <button class="btn btn-outline-success" @onclick="RegenerateFile" title="Regenerate from wizard">
+                    <i class="fa-solid fa-refresh"></i>
+                </button>
+            }
+            <button class="btn btn-outline-secondary" @onclick="CopyToClipboard" title="Copy to clipboard">
+                <i class="fa-solid fa-copy"></i>
+            </button>
+        </div>
+    </div>
+
+    @* Description *@
+    @if (!string.IsNullOrWhiteSpace(File.Description)) {
+        <div class="alert alert-info py-2 small mb-2">
+            <i class="fa-solid fa-info-circle me-1"></i>
+            @File.Description
+        </div>
+    }
+
+    @* Monaco Editor *@
+    <div class="editor-container" style="height: @Height; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
+        @if (_showDiff && !string.IsNullOrEmpty(File.OriginalContent)) {
+            <MonacoEditor Id="@($"editor-diff-{EditorId}")"
+                          Language="@File.Language"
+                          Value="@File.Content"
+                          ValueToDiff="@File.OriginalContent"
+                          ReadOnly="true"
+                          MinHeight="@Height"
+                          Class="wizard-code-editor" />
+        } else {
+            <MonacoEditor Id="@($"editor-{EditorId}")"
+                          Language="@File.Language"
+                          @bind-Value="CurrentContent"
+                          ReadOnly="@ReadOnly"
+                          MinHeight="@Height"
+                          Class="wizard-code-editor" />
+        }
+    </div>
+
+    @* Line count *@
+    <div class="text-muted small mt-1 text-end">
+        @File.Content.Split('\n').Length lines
+        @if (File.IsEdited) {
+            var diff = File.Content.Split('\n').Length - File.OriginalContent.Split('\n').Length;
+            if (diff != 0) {
+                <span class="@(diff > 0 ? "text-success" : "text-danger") ms-2">
+                    (@(diff > 0 ? "+" : "")@diff)
+                </span>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public DataObjects.GeneratedFileInfo File { get; set; } = new();
+    [Parameter] public EventCallback<DataObjects.GeneratedFileInfo> FileChanged { get; set; }
+    [Parameter] public EventCallback OnRegenerate { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public string Height { get; set; } = "400px";
+
+    private string _currentContent = "";
+    private string _lastFileContent = "";
+    private bool _showDiff = false;
+    private string EditorId => File.FileName.Replace(".", "-").Replace("/", "-");
+
+    protected override void OnParametersSet() {
+        // Only update _currentContent if File.Content changed externally
+        if (_lastFileContent != File.Content) {
+            _currentContent = File.Content;
+            _lastFileContent = File.Content;
+        }
+    }
+
+    // Called by the binding when Monaco editor content changes
+    private string CurrentContent {
+        get => _currentContent;
+        set {
+            if (_currentContent != value) {
+                _currentContent = value;
+                _ = SyncToFile();
+            }
+        }
+    }
+
+    private async Task SyncToFile() {
+        if (_currentContent != File.Content) {
+            File.Content = _currentContent;
+            File.IsEdited = _currentContent != File.OriginalContent;
+            _lastFileContent = _currentContent;
+            await FileChanged.InvokeAsync(File);
+        }
+    }
+
+    private void ToggleDiff() {
+        _showDiff = !_showDiff;
+    }
+
+    private async Task RevertToOriginal() {
+        File.Content = File.OriginalContent;
+        File.IsEdited = false;
+        _currentContent = File.Content;
+        _lastFileContent = File.Content;
+        await FileChanged.InvokeAsync(File);
+    }
+
+    private async Task RegenerateFile() {
+        await OnRegenerate.InvokeAsync();
+    }
+
+    private async Task CopyToClipboard() {
+        await Helpers.CopyToClipboard(File.Content);
+    }
+
+    private string GetFileIcon(string fileType) => fileType switch {
+        "EFModel" => "fa-database",
+        "DataObjects" => "fa-code",
+        "DataAccess" => "fa-cogs",
+        "Controller" => "fa-server",
+        "RazorPage" => "fa-file-code",
+        "RazorComponent" => "fa-puzzle-piece",
+        _ => "fa-file"
+    };
+
+    private string GetFileIconColor(string fileType) => fileType switch {
+        "EFModel" => "text-warning",
+        "DataObjects" => "text-info",
+        "DataAccess" => "text-success",
+        "Controller" => "text-primary",
+        "RazorPage" or "RazorComponent" => "text-danger",
+        _ => "text-secondary"
+    };
+}

@@ -1,0 +1,269 @@
+﻿@page "/showcase/feature104-user-preferences"
+@using FreeBlazorExtended.UserPreferences
+@inject UserPreferencesService PreferencesService
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Feature 104: Per-User Preferences System</h1>
+            <p class="lead">User-specific settings persisted to server and synchronized across sessions. Includes theme, zoom, density, and per-entity customizations.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout
+        WhatTechnical="A server-persisted, per-user key-value settings store covering theme, UI density, zoom, language, panel widths, and arbitrary per-entity JSON blobs."
+        WhatEli5="Each user gets their own saved settings that follow them to every device and browser session — like a preferences file that lives on the server, not the browser."
+        Who=@(new[]{ "End users — adjusting their personal theme, zoom, and layout", "Developers — storing per-entity expansion state or sort preferences without a database schema change" })
+        WhenUse=@(new[]{ "Any preference that should survive browser-cache clears", "Per-entity UI state (expanded/collapsed, sort column, column visibility)", "Multi-device users who expect consistent settings everywhere" })
+        WhenNot=@(new[]{ "App-wide config that applies to all users (use tenant settings instead)", "Temporary UI state that resets on navigation (use component-local state)" })
+        Why="Browser localStorage is wiped on cache clears and doesn't roam across devices. Storing prefs server-side means a user's dark-mode setting on their phone matches their laptop automatically."
+        TechNotes=@(new[]{ "UserPreferences table: one row per user, JSON blob column holds the full preferences object", "UserPreferencesService (scoped) — Get, Save, Reset, GetForEntity, SaveForEntity", "Loaded at login and cached in BlazorDataModel; auto-saved via 500 ms debounce in MainLayout.razor", "Entity prefs: dictionary keyed by entity GUID — each entry is an arbitrary JSON string", "Cross-tab sync via SignalR: saving in one tab broadcasts to other open tabs for the same user" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time sync"] = "SignalR (cross-tab)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+
+    <div class="row mt-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Theme & Appearance</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="prefTheme">Theme Mode</label>
+                        <select id="prefTheme" class="form-select" @bind="_preferences.Theme" @bind:after="SavePreferences">
+                            @foreach (var theme in Enum.GetValues(typeof(ThemeMode)).Cast<ThemeMode>())
+                            {
+                                <option value="@theme">@theme</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prefDensity">UI Density</label>
+                        <select id="prefDensity" class="form-select" @bind="_preferences.Density" @bind:after="SavePreferences">
+                            @foreach (var density in Enum.GetValues(typeof(UIDensity)).Cast<UIDensity>())
+                            {
+                                <option value="@density">@density</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prefZoom">Zoom Level: @_preferences.Zoom%</label>
+                        <input id="prefZoom" type="range" class="form-range" min="50" max="200" step="10" @bind="_preferences.Zoom" @bind:after="SavePreferences" />
+                        <small class="text-muted">@_preferences.Zoom%</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prefCulture">Language / Culture</label>
+                        <select id="prefCulture" class="form-select" @bind="_preferences.CultureCode" @bind:after="SavePreferences">
+                            <option value="en-US">English (US)</option>
+                            <option value="en-GB">English (UK)</option>
+                            <option value="es-ES">Spanish</option>
+                            <option value="fr-FR">French</option>
+                            <option value="de-DE">German</option>
+                            <option value="it-IT">Italian</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title h5 mb-0">Layout Preferences</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="prefLeftWidth">Left Panel Width: @_preferences.LayoutPanelLeftWidth px</label>
+                        <input id="prefLeftWidth" type="range" class="form-range" min="200" max="500" step="10" @bind="_preferences.LayoutPanelLeftWidth" @bind:after="SavePreferences" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prefRightWidth">Right Panel Width: @_preferences.LayoutPanelRightWidth px</label>
+                        <input id="prefRightWidth" type="range" class="form-range" min="200" max="500" step="10" @bind="_preferences.LayoutPanelRightWidth" @bind:after="SavePreferences" />
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="sidebarCollapsed" @bind="_preferences.SidebarCollapsed" @bind:after="SavePreferences" />
+                        <label class="form-check-label" for="sidebarCollapsed">
+                            Collapse Sidebar
+                        </label>
+                    </div>
+
+                    <hr />
+
+                    <div class="mt-3">
+                        <h3>Layout Preview</h3>
+                        <div class="border p-3" style="font-size: 0.875rem;">
+                            <div style="display: grid; grid-template-columns: @(_preferences.SidebarCollapsed ? "50px" : "150px") 1fr 150px; gap: 0.5rem;">
+                                <div class="bg-light p-2 text-center text-muted">@(_preferences.SidebarCollapsed ? "SB" : "Sidebar")</div>
+                                <div class="bg-light p-2 text-center text-muted">Content</div>
+                                <div class="bg-light p-2 text-center text-muted">Panel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title h5 mb-0">Preferences Management</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h3>Preference Status</h3>
+                        <div class="alert alert-success">
+                            <strong>User ID:</strong> @_userId<br />
+                            <strong>Tenant ID:</strong> @_tenantId<br />
+                            <strong>Last Saved:</strong> @_lastSaved?.ToString("g")
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" @onclick="SavePreferences">Save Changes</button>
+                        <button class="btn btn-warning" @onclick="ResetToDefaults">Reset to Defaults</button>
+                    </div>
+
+                    <hr />
+
+                    <h3>Per-Entity Preferences</h3>
+                    <p class="text-muted small">Examples of page-specific settings stored per entity</p>
+
+                    <div class="mb-3">
+                        <button class="btn btn-sm btn-outline-secondary w-100" @onclick="AddEntityPreference">+ Add Entity Preference</button>
+                    </div>
+
+                    @if (_entityPrefs.Count > 0)
+                    {
+                        <div class="entity-list">
+                            @foreach (var pref in _entityPrefs)
+                            {
+                                <div class="mb-2 p-2 bg-light rounded">
+                                    <div class="d-flex justify-content-between">
+                                        <small><strong>@pref.Key</strong></small>
+                                        <button class="btn btn-xs btn-link text-danger" @onclick="() => RemoveEntityPref(pref.Key)">×</button>
+                                    </div>
+                                    <small class="text-muted">@pref.Value</small>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="card-title h5 mb-0">Recent Items</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">Track recently viewed items</p>
+
+                    @if (_recentItems.Count == 0)
+                    {
+                        <div class="alert alert-info">No recent items yet.</div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-sm">
+                            @foreach (var item in _recentItems.Take(10))
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <strong>@item</strong>
+                                        <small class="text-muted">Recently viewed</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <button class="btn btn-sm btn-outline-secondary mt-3 w-100" @onclick="AddRecentItem">+ Add Recent Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="card-title h5 mb-0">Raw Preferences Data (JSON)</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code>@@System.Text.Json.JsonSerializer.Serialize(_preferences, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Guid _tenantId = Guid.NewGuid();
+    private Guid _userId = Guid.NewGuid();
+    private UserPreferences _preferences = new();
+    private List<string> _recentItems = new();
+    private Dictionary<string, string> _entityPrefs = new();
+    private DateTime? _lastSaved;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _preferences = await PreferencesService.GetUserPreferences(_tenantId, _userId);
+        _recentItems = await PreferencesService.GetRecentItems(_tenantId, _userId);
+
+        // Load some sample entity preferences
+        try
+        {
+            var perEntity = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(_preferences.PerEntityJson) ?? new();
+            foreach (var kvp in perEntity)
+            {
+                _entityPrefs[kvp.Key] = kvp.Value.GetRawText();
+            }
+        }
+        catch { }
+    }
+
+    private async Task SavePreferences()
+    {
+        await PreferencesService.SaveUserPreferences(_preferences);
+        _lastSaved = DateTime.Now;
+    }
+
+    private async Task ResetToDefaults()
+    {
+        await PreferencesService.ResetUserPreferences(_tenantId, _userId);
+        _preferences = await PreferencesService.GetUserPreferences(_tenantId, _userId);
+        _lastSaved = DateTime.Now;
+    }
+
+    private async Task AddRecentItem()
+    {
+        var itemId = $"Item-{DateTime.Now.Ticks}";
+        await PreferencesService.AddRecentItem(_tenantId, _userId, itemId);
+        _recentItems = await PreferencesService.GetRecentItems(_tenantId, _userId);
+    }
+
+    private async Task AddEntityPreference()
+    {
+        var key = $"entity:{Guid.NewGuid()}";
+        var value = new { expanded = true, sortBy = "name" };
+        await PreferencesService.SetPerEntityPreference(_tenantId, _userId, key, value);
+
+        _entityPrefs[key] = System.Text.Json.JsonSerializer.Serialize(value);
+    }
+
+    private async Task RemoveEntityPref(string key)
+    {
+        _entityPrefs.Remove(key);
+        var perEntity = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(_preferences.PerEntityJson) ?? new();
+        perEntity.Remove(key);
+        _preferences.PerEntityJson = System.Text.Json.JsonSerializer.Serialize(perEntity);
+        await SavePreferences();
+    }
+}

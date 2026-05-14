@@ -1,0 +1,57 @@
+{
+  "PagePath": "/instructions/videos/access-and-training/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/videos/access-and-training/",
+  "FinalUrl": null,
+  "Title": "Access and Training | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 689188,
+  "ScreenshotSizeBytes": 250692,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 250692
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 1,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 1,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:30:57.3145586Z"
+}

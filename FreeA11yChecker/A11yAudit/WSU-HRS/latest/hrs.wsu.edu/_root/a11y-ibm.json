@@ -1,0 +1,53 @@
+[
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/a[1]",
+    "Snippet": "\u003Ca class=\u0022screen-reader-shortcut\u0022 href=\u0022#wsuwp-main\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/section[1]/ul[1]",
+    "Snippet": "\u003Cul class=\u0022spine-actions-tabs spine-tabs clearfix\u0022 id=\u0022wsu-actions-tabs\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "svg_graphics_labelled",
+    "CanonicalRuleId": "svg_graphics_labelled",
+    "Severity": "serious",
+    "Message": "The SVG element has no accessible name",
+    "Selector": "/html[1]/body[1]/div[1]/div[1]/main[1]/footer[1]/div[1]/div[1]/svg[1]",
+    "Snippet": "\u003Csvg viewBox=\u00227.481 7.416 50.428 50\u0022 height=\u002250\u0022 width=\u002250.428\u0022 xmlns=\u0022http://www.w3.org/2000/svg\u0022 class=\u0022wsu-cougar-head\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

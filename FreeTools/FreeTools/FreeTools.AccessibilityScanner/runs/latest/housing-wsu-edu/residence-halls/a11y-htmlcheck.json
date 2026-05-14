@@ -1,0 +1,228 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022hillside\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022southside\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022northside\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022genderinclusive\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022coedhall\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022womanonly\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022menonly\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022privatebathrooms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022semiprivatebathrooms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022communitybathrooms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022airconditioning\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022inroomsink\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022$_least\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022$$_moderate\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022$$$_most\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022singlerooms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022doublerooms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022suitestyle\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022agerestricted\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022checkbox\u0022 value=\u0022specialinterestprograms\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

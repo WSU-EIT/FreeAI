@@ -1,0 +1,41 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-order",
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Message": "Heading level skipped: \u003Ch2\u003E to \u003Ch4\u003E",
+      "Selector": null,
+      "Snippet": "\u003Ch4\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-missing-h1",
+      "CanonicalRuleId": "page-has-heading-one",
+      "Severity": "moderate",
+      "Message": "Page has headings but no \u003Ch1\u003E",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd colspan=\u00223\u0022 style=\u0022text-align: center;\u0022\u003E\n\u003Ch4\u003E\u003Cspan style=\u0022text-decoration: underline;\u0022\u003EIT Contacts for Support\u003C/sp...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

@@ -1,0 +1,637 @@
+<!DOCTYPE html><html lang="en-US" class="wsu-has-js wsu-reduce-motion"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+    
+    
+    <title>Page Not Found | Enrollment Management</title>
+    <link rel="stylesheet" href="_content/FreeBlazor/styles.css">
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css">
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
+    <link rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" id="wsu_design_system_normalize-css" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" id="wsu_design_system_icons-css" media="all" href="https://cdn.web.wsu.edu/designsystem/1.x/wsu-icons/dist/wsu-icons.bundle.css">
+    <link rel="stylesheet" id="wsu_design_system_css-css" media="all" href="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.css">
+    <script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-2SK9Y0XXMP&amp;cx=c&amp;gtm=4e65b1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-CFV4Y78L3N&amp;cx=c&amp;gtm=4e65b1"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-T266HC2L"></script><script id="wsu_design_system_js_init-js" src="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.init.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/wsuStyles.css?v=0bc6e86d15e347fa8dd61ad1e97f1067">
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/da9cb2f29a.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/scripts/colorbox/colorbox.css">
+    <link rel="stylesheet" type="text/css" href="/scripts/fancybox/jquery.fancybox.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css?v=0bc6e86d15e347fa8dd61ad1e97f1067">
+    
+    <script integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/scripts/colorbox/jquery.colorbox.js"></script>
+    <script type="text/javascript" src="/scripts/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript" src="/scripts/common.js"></script>
+    <script integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T266HC2L');</script>
+    <!-- End Google Tag Manager -->
+
+    
+      <script type="text/javascript">
+      	jQuery(document).ready(function(){
+      		jQuery(".wsu-g-header__search-icon-link").attr("href", "javascript:void('0');");
+      		jQuery(".wsu-g-header__search-icon-link").addClass("spine-search-tab");
+      	});
+      </script>
+      <script>
+      	var ss_config={
+      		client_identifier:"SpotSearch_c2ph6u89t042vi53jyqik9hvtha",
+      		rel:"2.0",
+      		api_v:"V2",
+      		version:"2019-12-12",
+      		unique_id:"622nvx83u57nxb3n8hnmlxily75"
+      	}
+      </script>
+
+    <script type="text/javascript">
+        var loadedStyleSheetSelectors = [];
+        window.ajaxBase = "https://cms.em.wsu.edu/Ajax";
+        window.baseUrl = "https://registrar.wsu.edu";
+        window.cookieDomain = ".wsu.edu";
+
+        $(document).ready(function () {
+            $("a:has(img)").addClass("no-border");
+            FixAnchorLinks();
+            GetAllStylesheetSelectors();
+            SetupRemoteContentLinks();
+            //UpdateTheme();
+
+            //var bootstrapButton = $.fn.button.noConflict()
+            //$.fn.bootstrapBtn = bootstrapButton;
+        });
+
+        function FixAnchorLinks() {
+            var currentUrl = document.location.href;
+            if (currentUrl.indexOf("#") > -1) {
+                currentUrl = currentUrl.substring(0, currentUrl.indexOf("#"));
+            }
+
+            var baseHref = document.querySelector("base").href;
+            //console.log("baseHref", baseHref);
+
+            document.querySelectorAll("a[href*='#']").forEach(function (current) {
+                var anchorLink = current.hash;
+                var currentHref = current.href;
+
+                var remoteLink = false;
+                if(currentHref != null && currentHref != undefined){
+                    remoteLink = currentHref.toLowerCase().indexOf(window.baseUrl.toLowerCase()) == -1;
+                }
+
+                //console.log(remoteLink, currentUrl, currentHref);
+
+                if (remoteLink) {
+                    // Don't fix this URL
+                }else{
+                    if (anchorLink != undefined && anchorLink != "" && anchorLink.indexOf("#") == 0) {
+                        // Only update these if they are the base url + #.
+                        if (current.href.indexOf(baseHref + "#") > -1) {
+                            //console.log("Update:", current.href, "to", currentUrl + anchorLink);
+
+                            current.href = currentUrl + anchorLink;
+                        }
+                    }
+                }
+
+                //console.log(remoteLink, anchorLink, currentHref, currentUrl);
+            });
+        }
+
+        function GetAllStylesheetSelectors() {
+            loadedStyleSheetSelectors = [];
+            for (var i = 0; i < document.styleSheets.length; i++) {
+                var css = document.styleSheets[i];
+                try {
+                    if (css.rules || css.cssRules) {
+                        var rules = css.rules || css.cssRules;
+                        for (var x in rules) {
+                            if (typeof rules[x].selectorText == 'string') {
+                                loadedStyleSheetSelectors.push(rules[x].selectorText);
+                            }
+                        }
+                    }
+                } catch (error) { }
+            }
+        }
+
+        function SetupRemoteContentLinks() {
+            $(".remote-content").each(function () {
+                $(this).on('click', function (e) {
+                    var href = $(this).attr("href");
+                    var title = $(this).attr("title");
+                    if (title == undefined || title == null || title == "") {
+                        title = $(this).attr("alt");
+                        if (title == undefined || title == null || title == "") {
+                            title = "Info";
+                        }
+                    }
+
+                    var contentURL = "https://cms.em.wsu.edu/Ajax?Action=RemoteContent&URL=" + encodeURI(href);
+                    var umbracoPageId = $(this).attr("rel");
+                    if (umbracoPageId != undefined && umbracoPageId != null && umbracoPageId != "") {
+                        contentURL = "https://cms.em.wsu.edu/Ajax?Action=RenderPage&PageId=" + umbracoPageId;
+                    }
+
+                    if (href != undefined && href != null && href != "") {
+                        // Load the remote content
+                        e.preventDefault();
+                        $.ajax({
+                            url: contentURL,
+                            type: 'GET',
+                            success: (data) => {
+                                $("<div>" + data + "</div>").dialog({
+                                    height: "auto",
+                                    width: "98%",
+                                    modal: true,
+                                    title: title,
+                                    buttons: {
+                                        Close: function () {
+                                            $(this).dialog("close");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function LoadScriptResource(url, eval, callback) {
+            if (eval != undefined && eval != null && eval == true) {
+                if (callback != undefined && callback != null) {
+                    callback();
+                }
+                return;
+            }
+
+            var head = document.getElementsByTagName('head')[0];
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = url;
+            if (callback != undefined && callback != null) {
+                script.onload = callback;
+            }
+            head.appendChild(script);
+        }
+
+        function FileNameFromUrl(url) {
+            var output = url;
+            if (url != undefined && url != null && url != "") {
+                var lastSlash = url.lastIndexOf("/");
+                if (lastSlash > -1) {
+                    output = url.substring(lastSlash + 1);
+                }
+            }
+            return output;
+        }
+
+        function LoadCssResource(url, existingClass, callback) {
+            // Only load if the existingClass to test for is not found
+            var exists = false;
+
+            if (existingClass != undefined && existingClass != null && existingClass != "") {
+                if (loadedStyleSheetSelectors != null && loadedStyleSheetSelectors.length > 0) {
+                    for (var i = 0; i < loadedStyleSheetSelectors.length; i++) {
+                        if (loadedStyleSheetSelectors[i] == existingClass) {
+                            exists = true;
+                        }
+                    }
+                }
+            } else {
+                // Instead of checking for an existing class, just check to see if this script is already loaded.
+                var scriptName = FileNameFromUrl(url);
+                if (scriptName != undefined && scriptName != null && scriptName != "") {
+                    // Check to see if this script is already loaded.
+                    $("script").each(function () {
+                        var source = $(this).attr("src");
+                        if (source != undefined && source != null && source != "") {
+                            var sourceScriptName = FileNameFromUrl(source);
+                            if (sourceScriptName != undefined && sourceScriptName != null && sourceScriptName != "") {
+                                if (scriptName.toLowerCase() == sourceScriptName.toLowerCase()) {
+                                    exists = true;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (exists) {
+                if (callback != undefined && callback != null) {
+                    callback();
+                }
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement("link");
+                link.href = url;
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                if (callback != undefined && callback != null) {
+                    link.onload = callback;
+                }
+                head.appendChild(link);
+            }
+        }
+
+        function ssoSetRequestHeaders(xhr) {
+        }
+    </script>
+<style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+<body id="body-element" data-bs-theme="">
+    <div class="wsu-wrapper-global">
+        <a class="wsu-skip-to-main" href="#wsu-site-menu">Skip to menu</a>
+        <a class="wsu-skip-to-main" href="#wsu-content">Skip to content</a>
+            <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T266HC2L" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+        <!-- Global Header -->
+        <header class="wsu-header-global">
+            <div class="wsu-header-global__content">
+                <a class="wsu-wordmark" href="https://wsu.edu" aria-label="Go to Washington State University Homepage">
+                    <span class="wsu-coug-head-boxed">
+                        <svg role="img" aria-label="WSU Cougar Head" class="wsu-coug-head-boxed__icon" enable-background="new 0 0 70.2 69.6" version="1.1" viewBox="0 0 70.2 69.6" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                        <title>WSU Cougar Head</title>
+                        <path class="st0" d="m42.8 69.6s3.6-1.5 5.5-7.4c1 2.3 1.5 4.8 1.3 7.3-2.3 0.1-4.5 0.2-6.8 0.1zm14.9-11.8c-10.4 1.4-12.2-20.3-12.2-20.3s3.5 11.1 10.9 10.7c7.7-0.4 5.5-12.2 5.5-12.2s7.5 20.2-4.2 21.8zm-47.7-5c-3.3 1-6.6 1.8-10 2.4 0 0 5.9-4.5 10.3-18.3l4.3 3.9-0.8 2.6c1.1 1.5 1.9 3.1 2.5 4.9 1.6-3.6 1.5-7.7-0.3-11.2l-0.5 1.6-1.7-1.5-2.8-2.7c1.2-3.6 3-7 5.3-10.1l0.4 0.4 3.3 3.8-1 1.7c1.5 1.7 2.9 3.4 4.2 5.3 0.6-3.4 0.4-6.8-0.4-10.1l-1.5 1.4-3.6-4.2c4.5-4.7 10-8.2 16.2-10.3-0.4 0.4-0.7 0.8-1 1.3-2 2.9-4.1 8.1-2.4 16.4 0.3 1.3 0.7 3.2 1.1 5.1 0.9 3.8 1.9 8.2 2.2 10.9 0.7 5.7 0.1 9.4-1.8 11.4-1.3 1.4-3.5 2-6.4 1.9v-1.4c0-2.4-0.3-4.8-0.8-7.2l-0.8-2.7-1.2 2.6c-1.9 4.1-8.6 14.1-17.2 16.1 2.6-4.2 4.1-9 4.4-14zm25.4 16.4h-0.5-0.1-0.3c-0.5 0-0.8-0.1-1.2-0.1-0.7-0.1-1.6-0.2-2.6-0.4-6.4-1.1-12.9-1.7-19.4-2 6.2-3.6 10.4-9.9 12-12.5 0.2 1.3 0.3 2.5 0.3 3.8 0 0.8 0 1.6-0.1 2.2l-0.1 1.1 1.1 0.1c0.7 0.1 1.3 0.1 1.9 0.1 3.3 0 5.7-0.8 7.3-2.5 2.4-2.5 3.1-6.7 2.3-13.1-0.4-2.9-1.4-7.4-2.3-11.1-0.5-2-0.9-3.8-1.1-5-1.5-7.6 0.3-12.3 2.1-14.8 1.3-1.9 3.2-3.4 5.5-4.2h0.1l3.3-10.8h1.1l-2.3 10.3c0.7-0.1 1.2-0.2 1.7-0.3l3-9.5h1.1l-2 9.2c2.9-0.4 6.1-0.7 10.3-1 0.8 0.4 1.4 1.1 1.8 1.9l9.8-3 0.4 1.1-9.5 3.7c0.1 0.2 0.2 0.4 0.2 0.6l10.3-1.3 0.2 1.1-10 2c0 0.2 0.1 0.4 0.1 0.6l10.4 0.3v1.1l-10.2 0.4c0 1.2-0.2 2.4-0.5 3.6 0.6 2.1 0.7 4.3 0.3 6.5-1.7-3.9-3-5.1-3-5.1-1.4-0.7-2.9-1-4.5-1-2.5 0-4.8 1.1-6.4 2.9-2.3 2.6-3.5 6-3.3 9.5 0.2 2.4 0.7 5.1 1.4 8.6 0.7 3.6 1.6 8.1 2.3 13.5 0.6 4.1-0.1 7.3-1.8 9.7-1.6 2.1-4 3.4-6.5 3.8h-0.1-0.2-0.1-2.2zm10.4-51.5c-2.1-0.1-4.2 0.4-6 1.3-1.5 1-2.5 2.7-2.6 4.5-0.1 0.6-0.1 1.2 0 1.8 0.8-1.5 2-2.8 3.3-3.9 2.4-1.5 5.1-2.3 7.9-2.4h0.9 0.3c0.4 0 0.7-0.1 0.8-0.2 0-0.1-0.1-0.3-0.4-0.4-1.3-0.5-2.7-0.8-4.2-0.7z"></path>
+                                </svg>
+                    </span>
+                    <span class="wsu-wordmark__title">
+                        Washington State University
+                    </span>
+                    <span class="wsu-wordmark__title-mobile">
+                        WSU
+                    </span>
+                </a>
+                <nav class="wsu-header-global__navigation" aria-label="WSU header menu">
+                    <div class="wsu-header-global__quick-links">
+                        <button class="wsu-button-ui-more-horizontal wsu-menu-expand--toggle" aria-label="Open Header Menu"></button>
+                        <ul class="wsu-menu-admin wsu-menu-admin--tablet-dropdown" aria-label="WSU header menu">
+                            <li>
+                                <a href="https://foundation.wsu.edu/">Give</a>
+                            </li>
+                            <li>
+                                <a href="https://admission.wsu.edu/apply/as/find-your-application/">Apply</a>
+                            </li>
+                            <li>
+                                <a href="https://wsu.edu/about/statewide/">Locations</a>
+                            </li>
+                            <li>
+                                <a href="https://mywsu.wsu.edu/">My WSU</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="mobile-menu">
+                    <button class="wsu-button-menu wsu-slide-in-panel--open" data-panel="wsu-navigation-mobile" aria-label="Open Site Menu">Menu</button>
+                </div>
+            </div>
+        </header>
+        <!-- TOP HEADER:END -->
+        
+        <!-- NAVIGATION MENU: START -->
+        <!-- Mobile Navigation Menu -->
+        <nav id="wsu-navigation-mobile" class="wsu-slide-in-panel wsu-navigation-mobile wsu-slide-in-panel--style-crimson-mark" aria-expanded="false" aria-haspopup="true" aria-label="Demo menu">
+            <button class="wsu-slide-in-panel__overlay wsu-slide-in-panel--close">Close Demo</button>
+            <div class="wsu-slide-in-panel__panel ">
+                <div class="wsu-slide-in-panel__panel-inner">
+                    <div class="wsu-navigation-mobile__close">
+                        <button class="wsu-button wsu-button--style-action wsu-slide-in-panel--close">Close Menu</button>
+                    </div>
+                    <div class="wsu-navigation-mobile__search">
+                        <button data-panel="wsu-quicklinks-panel" class="wsu-navigation-mobile__search-button wsu-slide-in-panel--close-this wsu-slide-in-panel--open">Search/Quicklinks</button>
+                    </div>
+                    <div class="wsu-navigation-mobile__menu">
+                            
+                          <ul id="wsu-site-menu" class="wsu-menu wsu-menu--primary-vertical">
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://em.wsu.edu/">Site Home</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://help.em.wsu.edu/" target="_blank">EIT Help Desk</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://admission.wsu.edu/">Admissions</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://orientation.wsu.edu/">New Coug Orientation</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://financialaid.wsu.edu/home/">Student Financial Services</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/">Registrar</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://provost.wsu.edu/vice-provosts/saichi-oba/">Vice Provost EM</a>
+                            </li>
+                          </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Standard Navigation Menu -->
+        <div id="wsu-navigation-vertical" class="wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none wsu-slide-in-panel--position-left wsu-slide-in-panel--width-vertical-nav wsu-slide-in-panel--style-crimson-mark" aria-expanded="true" aria-haspopup="true" aria-label="Site menu">
+            <div class="wsu-slide-in-panel__panel ">
+                <div class="wsu-slide-in-panel__panel-inner" style="padding-top: 60px;">
+                    <div class="wsu-navigation-vertical__menu-wrapper">
+                            
+                          <ul id="wsu-site-menu" class="wsu-menu wsu-menu--primary-vertical">
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://em.wsu.edu/">Site Home</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://help.em.wsu.edu/" target="_blank">EIT Help Desk</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://admission.wsu.edu/">Admissions</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://orientation.wsu.edu/">New Coug Orientation</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://financialaid.wsu.edu/home/">Student Financial Services</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/">Registrar</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://provost.wsu.edu/vice-provosts/saichi-oba/">Vice Provost EM</a>
+                            </li>
+                          </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- NAVIGATION MENU: END -->
+
+        <!-- SITE WRAPPER:START -->
+        <div class="wsu-wrapper-site">
+            <!-- Site Header -->
+                <header class="wsu-header-site wsu-header-site--dark">
+                    <div class="wsu-header-site__label">
+                            <div class="wsu-header-site__subtitle">Enrollment Management</div>
+                        <div class="wsu-header-site__title"><h1>Page Not Found</h1></div>
+                    </div>
+                </header>
+            
+            <div class="wsu-wrapper-content">
+                <main role="main" id="wsu-content" class="wsu-wrapper-main" tabindex="-1">
+                    <!-- BEGIN UMBRACO MAIN CONTENT -->
+                    
+                        
+<p>Sorry, the page you are looking for does not exist.</p>
+                        
+
+
+                    <!-- END UMBRACO MAIN CONTENT -->
+                </main>
+            </div>
+
+
+        </div>
+        <!-- SITE WRAPPER:END -->
+
+        <!-- Global Footer -->
+        <footer class="wsu-footer-global">
+            <div class="wsu-footer-global__copyright">
+                © Washington State University 2026
+            </div>
+            <nav class="wsu-footer-global__navigation">
+                <ul class="wsu-menu-tertiary">
+                    <li>
+                        <a href="https://access.wsu.edu/">Access</a>
+                    </li>
+                    <li>
+                        <a href="https://policies.wsu.edu/">Policies</a>
+                    </li>
+                    <li>
+                        <a href="https://portal.wsu.edu/">MyWSU</a>
+                    </li>
+                    <li>
+                        <a href="https://socialmedia.wsu.edu/">Follow&nbsp;WSU</a>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+
+        <div style="display:none;">
+            <div id="Umbraco_Page_Title">Page Not Found</div>
+            <div id="Umbraco_Site_Name">Enrollment Management</div>
+        </div>
+
+        <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+        <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+        <script src="/_framework/blazor.server.js"></script>
+
+        <script type="text/javascript">
+            function ConsoleLog(message, objects) {
+                if (objects != undefined && objects != null) {
+                    if (message != undefined && message != null && message != "") {
+                        console.log(message, objects);
+                    } else {
+                        console.log(objects);
+                    }
+                } else if (message != undefined && message != null && message != "") {
+                    console.log(message);
+                }
+            }
+
+            function CookieRead(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+
+                return "";
+            }
+
+            function CookieWrite(name, value, days) {
+                var expires;
+
+                if (days == undefined || days == null || days < 1) {
+                    days = 14;
+                }
+
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toGMTString();
+                } else {
+                    expires = "";
+                }
+
+                var setDomain = "";
+                if (window.cookieDomain != "") {
+                    setDomain = "; domain=" + window.cookieDomain;
+                }
+
+                document.cookie = name + "=" + value + expires + setDomain + "; path=/";
+            }
+
+            function CopyToClipboard(value) {
+                navigator.clipboard.writeText(value);
+            }
+
+            function DelayedFocus(element) {
+                setTimeout(() => DelayedFocusInternal(element, 0), 100);
+            }
+
+            function DelayedFocusInternal(element, safety) {
+                if (safety > 20) { return; }
+                safety++;
+
+                if ($("#" + element).is(":visible") == true) {
+                    // See if the element is a <div>. If so, find the first child that is an input.
+                    if ($("#" + element).is("div")) {
+                        var input = $("#" + element).find('input,textarea,select').filter(":visible:first");
+                        if (input != null) {
+                            input.trigger("focus");
+                        }
+                    } else {
+                        $("#" + element).trigger("focus");
+                    }
+                } else {
+                    setTimeout(() => DelayedFocusInternal(element, safety), 20);
+                }
+            }
+
+            function DelayedSelect(element) {
+                setTimeout(() => DelayedSelectInternal(element, 0), 100);
+            }
+
+            function DelayedSelectInternal(element, safety) {
+                if (safety > 20) { return; }
+                safety++;
+
+                if ($("#" + element).is(":visible") == true) {
+                    $("#" + element).trigger("select");
+                } else {
+                    setTimeout(() => DelayedSelectInternal(element, safety), 20);
+                }
+            }
+
+            async function DownloadFileFromStream(fileName, contentStreamReference) {
+                const arrayBuffer = await contentStreamReference.arrayBuffer();
+                const blob = new Blob([arrayBuffer]);
+                const url = URL.createObjectURL(blob);
+                const anchorElement = document.createElement('a');
+                anchorElement.href = url;
+                anchorElement.download = fileName ?? '';
+                anchorElement.click();
+                anchorElement.remove();
+                URL.revokeObjectURL(url);
+            }
+
+            function GetAjaxBase() {
+                var output = "";
+
+                if (window.ajaxBase != undefined && window.ajaxBase != null) {
+                    output += window.ajaxBase;
+                }
+
+                return output;
+            }
+
+            function HighlightElementByClass(c) {
+                $("." + c).off("click");
+                $("." + c).on("click", function () {
+                    RemoveElementHighlightByClass(c);
+                });
+                $("." + c).addClass("highlight");
+
+                $("." + c).fadeOut(200)
+                    .fadeIn(200)
+                    .fadeOut(200)
+                    .fadeIn(200)
+                    .fadeOut(200)
+                    .fadeIn(200);
+            }
+
+            function NavigateTo(url) {
+                window.location.href = url;
+            }
+
+            function ReloadCurrentPage() {
+                window.location.href = window.location.href;
+            }
+
+            function RemoveElementHighlightByClass(c) {
+                $("." + c).off("click");
+                $("." + c).removeClass("highlight");
+            }
+
+            function SetElementValue(id, value) {
+                $("#" + id).val(value);
+            }
+
+            function SetTheme(theme){
+                $("#main-theme-icon").removeClass();
+
+                switch(theme){
+                    case "light":
+                        $("#main-theme-icon").addClass("fa-regular fa-sun");
+                        CookieWrite("umbraco-wsu-spine-theme", "light");
+                        break;
+
+                    case "dark":
+                        $("#main-theme-icon").addClass("fa-solid fa-moon");
+                        CookieWrite("umbraco-wsu-spine-theme", "dark");
+                        break;
+
+                    default:
+                        $("#main-theme-icon").addClass("fa-solid fa-circle-half-stroke");
+                        CookieWrite("umbraco-wsu-spine-theme", "auto");
+                        break;
+                }
+
+                UpdateTheme();
+            }
+
+            function UpdateTheme(){
+                var theme = CookieRead("umbraco-wsu-spine-theme");
+
+                if(theme == "" || theme == "auto"){
+                    var colorScheme = getComputedStyle(document.body, ':after').content;
+                    theme = colorScheme.indexOf("dark") > -1 ? "dark" : "light";
+                }
+
+                if(theme == "dark"){
+                    $("#body-element").attr("data-bs-theme", "dark");
+                    $("#body-element").addClass("dark");
+                }else{
+                    $("#body-element").attr("data-bs-theme", "");
+                    $("#body-element").removeClass();
+                }
+
+                $("#body-element").removeClass("loading");
+            }
+        </script>
+    </div>
+    <script id="wsu_design_system_js-js" src="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.js?ver=1.11.0-1.31.6"></script>
+
+
+</body></html>

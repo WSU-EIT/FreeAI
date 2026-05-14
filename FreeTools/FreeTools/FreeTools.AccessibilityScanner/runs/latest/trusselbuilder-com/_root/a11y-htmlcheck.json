@@ -1,0 +1,74 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 id=\u0022cboxPrevious\u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 id=\u0022cboxNext\u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 id=\u0022cboxSlideshow\u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-main",
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-nav",
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

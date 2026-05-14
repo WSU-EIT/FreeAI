@@ -1,0 +1,45 @@
+@page "/showcase/wizard/v2"
+@using FreeBlazorExtended.Wizard
+
+<div class="container-fluid py-4">
+    <h1>Stepper Plus Summary</h1>
+
+    <WizardStepper Steps="BuildSteps()" CurrentStep="@_current" OnStepClick="HandleStepClick" />
+    <WizardSummary Selections="BuildSelections()" />
+
+    <div class="card">
+        <div class="card-body">
+            Step <code>@(_current + 1)</code> content here.
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _current = 2;
+
+    private List<WizardStepper.WizardStepInfo> BuildSteps()
+    {
+        return new List<WizardStepper.WizardStepInfo>
+        {
+            new() { Name = "Choose Plan", SelectedValue = "Pro" },
+            new() { Name = "Pick Region", SelectedValue = "US-East" },
+            new() { Name = "Notifications", SelectedValue = "On" },
+        };
+    }
+
+    private List<WizardSummary.SelectionItem> BuildSelections()
+    {
+        return new List<WizardSummary.SelectionItem>
+        {
+            new() { Label = "Plan", Value = "Pro" },
+            new() { Label = "Region", Value = "US-East" },
+            new() { Label = "Email Notifications", Value = "On" },
+        };
+    }
+
+    private Task HandleStepClick(int step)
+    {
+        _current = step;
+        return Task.CompletedTask;
+    }
+}

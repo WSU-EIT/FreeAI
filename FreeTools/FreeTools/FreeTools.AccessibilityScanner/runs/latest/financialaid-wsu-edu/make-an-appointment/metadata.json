@@ -1,0 +1,97 @@
+{
+  "PagePath": "/make-an-appointment/",
+  "Url": "https://financialaid.wsu.edu/make-an-appointment/",
+  "FinalUrl": "https://financialaid.wsu.edu/contact-page/",
+  "Title": "Contact Page | Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 248634,
+  "ScreenshotSizeBytes": 653057,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 653057
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2025/09/Lighty-in-Spring-scaled.jpg",
+      "AltText": "An external shot of the Lighty Student Services building front door, partially obscured by a blooming tree."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/Spokane-Students.jpg",
+      "AltText": "Students sit at outside dining tables during WSU Spokane\u0027s all-campus picnic."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/everett-campus-scaled.jpg",
+      "AltText": "An exterior view of the south entrance of the WSU Everett campus\u0027s main building."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/vancouver-cougar-statue-scaled.jpg",
+      "AltText": "The cougar pride statue on the WSU Vancouver campus during spring."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/tri-cities-cougar-statue.jpg",
+      "AltText": "The cougar statue at the WSU Tri-Cities campus against a backdrop of bright green trees."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/logo-and-leaves.jpg",
+      "AltText": "Cougar Banner on a lamp post against a background of fall leaves on the campus of Washington State University"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/BryanHall.jpg",
+      "AltText": "Bryan Hall Clock Tower lit up at night."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 6,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:12:14 GMT",
+    "etag": "\u0022a3985a1f67fcf7dbd578841924009572\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:09:01 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/285\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/?p=285\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "HIT",
+    "x-cache-status": "HIT"
+  },
+  "CapturedAt": "2026-02-19T02:12:13.8631675Z"
+}

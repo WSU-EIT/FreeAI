@@ -1,0 +1,94 @@
+{
+  "PagePath": "/news/newsletters/wsu-zoom-newsletter/",
+  "Url": "https://its.wsu.edu/news/newsletters/wsu-zoom-newsletter/",
+  "FinalUrl": null,
+  "Title": "WSU Zoom Newsletter | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 259305,
+  "ScreenshotSizeBytes": 453568,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 453568
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/221/2023/04/zoom-team-web-2023-1.jpg",
+      "AltText": "WSU\u2019s Zoom Services team"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/221/2023/04/Screenshot-2023-04-07-at-3.45.07-PM.png",
+      "AltText": "New Waiting Room Experience"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/221/2023/04/Screenshot-2023-04-10-at-1.54.49-PM.png",
+      "AltText": "Zoom navigation you are screen sharing "
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Travis-Williams-web-450-23.jpg",
+      "AltText": "Photo of Travis Williams Manager, VC Infrastructure and Support"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Henry-Brandon-web-450-23-update.jpg",
+      "AltText": "Photo of Brandon Henry\nVideoconferencing Specialist"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Casey-Oleary-web-450-23-update.jpg",
+      "AltText": "Photo of Casey O\u2019Leary\nVideoconferencing Specialist"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:20:35 GMT",
+    "etag": "\u0022350cc0662cbe0f75f77bf41b09e86fc4\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:20:35 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/2689\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=2689\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:20:35.4992121Z"
+}

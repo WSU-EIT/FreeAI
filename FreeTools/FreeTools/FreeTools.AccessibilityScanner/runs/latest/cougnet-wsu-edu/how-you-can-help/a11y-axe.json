@@ -1,0 +1,52 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 429,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".gray:nth-child(2)",
+      "Snippet": "\u003Cp class=\u0022gray\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".gray:nth-child(4)",
+      "Snippet": "\u003Cp class=\u0022gray\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".gray:nth-child(6)",
+      "Snippet": "\u003Cp class=\u0022gray\u0022\u003EDo you know a student interested in WSU? Think they\u0027d make a great Coug? Submit a recommendation form and make sure they receive infor...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

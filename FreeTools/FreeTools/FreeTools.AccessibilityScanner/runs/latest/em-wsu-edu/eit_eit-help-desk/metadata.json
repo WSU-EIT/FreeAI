@@ -1,0 +1,66 @@
+{
+  "PagePath": "/eit/eit-help-desk/",
+  "Url": "https://em.wsu.edu/eit/eit-help-desk/",
+  "FinalUrl": null,
+  "Title": "EIT Help Desk | Enrollment IT",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 650721,
+  "ScreenshotSizeBytes": 78098,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 78098
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1077/jamesthornton.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/754888/mattspencer.jpg",
+      "AltText": "Staff Image"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:05.4170744Z"
+}

@@ -1,0 +1,76 @@
+{
+  "PagePath": "/effective-stress-management-living-intentionally/",
+  "Url": "https://hrs.wsu.edu/effective-stress-management-living-intentionally/",
+  "FinalUrl": null,
+  "Title": "Effective Stress Management \u002B Living Intentionally \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 82661,
+  "ScreenshotSizeBytes": 190411,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 190411
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/EAP-Stress-Mng-792x594.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f6e0.svg",
+      "AltText": "\uD83D\uDEE0\uFE0F"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:09:49 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:09:49 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/posts/56769\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=56769\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-pingback": "https://hrs.wsu.edu/xmlrpc.php",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:09:49.1975297Z"
+}

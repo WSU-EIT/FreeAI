@@ -1,0 +1,12 @@
+@page "/showcase/signature/v1"
+@using FreeBlazorExtended.Signature
+
+<div class="container-fluid py-4">
+    <h1>Default Signature Pad</h1>
+
+    <Signature @bind-Value="_signatureValue" />
+</div>
+
+@code {
+    private string _signatureValue = "";
+}

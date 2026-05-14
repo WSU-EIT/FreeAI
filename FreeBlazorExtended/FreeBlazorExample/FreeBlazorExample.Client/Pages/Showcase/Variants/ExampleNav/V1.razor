@@ -1,0 +1,18 @@
+@page "/showcase/examplenav/v1"
+@using FreeBlazorExtended.ExampleNav
+
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Default</h1>
+    <p class="text-muted">This is a minimal three-page strip with the current route anchored to the middle entry.</p>
+
+    <ExampleNav Pages="_pages" CurrentRoute="/showcase/examplenav/v1" />
+</div>
+
+@code {
+    private readonly List<ExampleNav.NavPage> _pages = new()
+    {
+        new() { Category = "Demo", Route = "/demo/a", Title = "Page A" },
+        new() { Category = "Demo", Route = "/showcase/examplenav/v1", Title = "This Page" },
+        new() { Category = "Demo", Route = "/demo/c", Title = "Page C" },
+    };
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/div[1]/a[1]",
+    "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "label_name_visible",
+    "CanonicalRuleId": "label_name_visible",
+    "Severity": "serious",
+    "Message": "Accessible name does not match or contain the visible label text",
+    "Selector": "/html[1]/body[1]/div[1]/header[1]/div[1]/a[1]",
+    "Snippet": "\u003Ca aria-label=\u0022Go to Washington State University Homepage\u0022 href=\u0022https://wsu.edu\u0022 class=\u0022wsu-wordmark\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/ul[1]",
+    "Snippet": "\u003Cul class=\u0022wsu-menu wsu-menu--primary-vertical\u0022 id=\u0022wsu-site-menu\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

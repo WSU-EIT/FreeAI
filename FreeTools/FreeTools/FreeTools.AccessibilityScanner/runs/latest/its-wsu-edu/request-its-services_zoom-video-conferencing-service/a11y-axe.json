@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 574,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-children",
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must contain particular children",
+      "Selector": ".plugin_pagetree_children_list_noleftspace",
+      "Snippet": "\u003Cul role=\u0022list\u0022 aria-busy=\u0022true\u0022 class=\u0022plugin_pagetree_children_list plugin_pagetree_children_list_noleftspace\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#login-link",
+      "Snippet": "\u003Ca role=\u0022menuitem\u0022 id=\u0022login-link\u0022 href=\u0022/login.action?os_destination=%2Fspaces%2FITSERVICES%2Fpages%2F297828492%2FZoom%2BVideoconferencing\u0022 class=\u0022  ...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".aui-iconfont-appswitcher",
+      "Snippet": "\u003Cspan class=\u0022aui-icon aui-icon-small aui-iconfont-appswitcher\u0022\u003ELinked Applications\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "PagePath": "/home2/",
+  "Url": "https://gocougs.em.wsu.edu/home2/",
+  "FinalUrl": null,
+  "Title": "Office of the Registrar | gocougs.em.wsu.edu",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 666557,
+  "ScreenshotSizeBytes": 85621,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 3,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 85621
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:44.8233095Z"
+}

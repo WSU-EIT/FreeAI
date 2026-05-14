@@ -1,0 +1,62 @@
+{
+  "PagePath": "/wsu-rotc/",
+  "Url": "https://va.wsu.edu/wsu-rotc/",
+  "FinalUrl": null,
+  "Title": "WSU ROTC | WSU Veterans \u0026 Military Affiliated Student Services",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 657435,
+  "ScreenshotSizeBytes": 160519,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 160519
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://va.wsu.edu/media/4x2p2suz/dsc_0623.jpg?width=500\u0026height=333.3333333333333",
+      "AltText": "Air Force ROTC unit on steps of the Pullman WSU campus"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:22:33.4008463Z"
+}

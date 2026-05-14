@@ -1,0 +1,20 @@
+@page "/showcase/pipelinetracker/v2"
+@using FreeBlazorExtended.PipelineTracker
+
+<div class="container-fluid py-4">
+    <h1>Build Pipeline With Error Stage</h1>
+    <p class="text-muted">CI run #42 failed at the test stage. The explicit error state overrides the inferred in-progress styling.</p>
+
+    <PipelineTracker Stages="_stages" CurrentStageIndex="3" />
+</div>
+
+@code {
+    private readonly List<PipelineTracker.PipelineStage> _stages = new()
+    {
+        new() { Id = "checkout", Name = "Checkout", Icon = "fa-solid fa-code-branch", CompletedAt = DateTime.Now.AddMinutes(-18), CompletedBy = "Runner 12" },
+        new() { Id = "build", Name = "Build", Icon = "fa-solid fa-hammer", CompletedAt = DateTime.Now.AddMinutes(-12), CompletedBy = "Runner 12" },
+        new() { Id = "test", Name = "Test", Icon = "fa-solid fa-vial", State = PipelineTracker.PipelineStageState.Error, Notes = "3 unit tests failed." },
+        new() { Id = "deploy", Name = "Deploy", Icon = "fa-solid fa-rocket" },
+        new() { Id = "smoke", Name = "Smoke Test", Icon = "fa-solid fa-fire" },
+    };
+}

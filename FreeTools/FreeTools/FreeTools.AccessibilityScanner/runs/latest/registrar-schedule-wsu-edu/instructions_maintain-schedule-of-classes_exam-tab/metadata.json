@@ -1,0 +1,74 @@
+{
+  "PagePath": "/instructions/maintain-schedule-of-classes/exam-tab/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/maintain-schedule-of-classes/exam-tab/",
+  "FinalUrl": null,
+  "Title": "Exam tab | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 687348,
+  "ScreenshotSizeBytes": 274725,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 274725
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756062/exam-tab.jpg?width=804\u0026height=424",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756063/exam-tab-4-credit.jpg?width=805\u0026height=456",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756078/exam-tab-3-credit-block.jpg?width=809\u0026height=427",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756079/exam-tab-4-credit-block.jpg?width=806\u0026height=424",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:25:01.9939141Z"
+}

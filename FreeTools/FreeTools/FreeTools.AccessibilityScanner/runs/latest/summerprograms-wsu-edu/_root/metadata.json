@@ -1,0 +1,81 @@
+{
+  "PagePath": "/",
+  "Url": "https://summerprograms.wsu.edu/",
+  "FinalUrl": "https://learn365.wsu.edu/summer-session/",
+  "Title": "Summer Session | Learn365 | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 73809,
+  "ScreenshotSizeBytes": 271359,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 271359
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-global/uploads/sites/2987/2023/11/SS-Web-Banner-2024-smoothie-NoURL.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/2987/2023/11/Summer-1.jpg",
+      "AltText": "Two students study lying in grass near Terrell Library dome"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/2987/2018/05/learn365-cap-left_488x89-space-right.png",
+      "AltText": "Learn365"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:11:57 GMT",
+    "etag": "\u002260e69b6ea67da7c859b453cb5c823e29\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:11:57 GMT",
+    "link": "\u003Chttps://learn365.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://learn365.wsu.edu/wp-json/wp/v2/pages/2141\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://learn365.wsu.edu/?p=2141\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:11:57.1926497Z"
+}

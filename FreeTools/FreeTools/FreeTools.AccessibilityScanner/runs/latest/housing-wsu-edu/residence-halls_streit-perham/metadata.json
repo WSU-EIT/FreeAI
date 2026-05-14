@@ -1,0 +1,151 @@
+{
+  "PagePath": "/residence-halls/streit-perham/",
+  "Url": "https://housing.wsu.edu/residence-halls/streit-perham/",
+  "FinalUrl": null,
+  "Title": "Streit Perham",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 102594,
+  "ScreenshotSizeBytes": 327447,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 327447
+    }
+  ],
+  "ImageCount": 21,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1jknnkfe/streit-perham-students.jpg",
+      "AltText": "Streit Perham Students"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1pvpyfuz/streit-perham-lounge.jpg",
+      "AltText": "Streit Perham Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/x2nmn21m/streit-perham-single.jpg",
+      "AltText": "Streit Perham Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qgedotf2/lindseyweaver.jpg",
+      "AltText": "Lindsey Weaver"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/htfb32ta/sarah-hadaway.jpg",
+      "AltText": "Sarah Hadaway"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tucfb5yy/streit-perham-lounge-study.jpg",
+      "AltText": "Quick Facts"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/iqqjssqx/north-campus-bus.png",
+      "AltText": "Neighborhood: North Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4bol5w3e/northside-desk-square.png",
+      "AltText": "Northside Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/evabojsj/northside-students-eating-4.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eqkh22fn/floor-plan-streit-1st-floor.png",
+      "AltText": "Streit first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tsgbkzdy/floor-plan-streit-2nd-floor.png",
+      "AltText": "Streit second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zlth20jp/floor-plan-streit-3rd-floor.png",
+      "AltText": "Streit third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uwpdeuks/floor-plan-streit-4th-floor.png",
+      "AltText": "Streit fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dkhljg3z/floor-plan-streit-5th-floor.png",
+      "AltText": "Streit Fifth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/40mhm3m1/floor-plan-streit-6th-floor.png",
+      "AltText": "Streit sixth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/h3uju1p5/floor-plan-perham-1st-floor.png",
+      "AltText": "Perham first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mchnawkz/floor-plan-perham-2nd-floor.png",
+      "AltText": "Perham second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/m0xpx5yt/floor-plan-perham-3rd-floor.png",
+      "AltText": "Perham third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/h35lq1vh/floor-plan-perham-4th-floor.png",
+      "AltText": "Perham fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3fkpubti/floor-plan-perham-5th-floor.png",
+      "AltText": "Perham fifth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/t55f3dss/floor-plan-perham-6th-floor.png",
+      "AltText": "Perham sixth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:16:32 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:16:31.9147994Z"
+}

@@ -1,0 +1,132 @@
+{
+  "PagePath": "/economicimpact/",
+  "Url": "https://wsu.edu/economicimpact/",
+  "FinalUrl": null,
+  "Title": "Economic Impact | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 220650,
+  "ScreenshotSizeBytes": 740636,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 740636
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 11,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/economic-impact-map.jpg",
+      "AltText": "Map of Washington state containing economic impact in Washington $4 billion generated in total"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/icon-flag.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/Elizabeth-Cantwell_1057-792x567-1-e1767913762888.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/economic-impact-grad-stat.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/Economic-Impact-Report-Fact-Sheet-grad-1024x882.jpg",
+      "AltText": "WSU students graduating"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/murray.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/2025-eir-lab.jpg",
+      "AltText": "WSU researcher working with fish in a lab"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/2025-eir-orchard-1024x549.jpg",
+      "AltText": "Researcher working on robotic arm in an orchard"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/Rep-Dan-Newhouse.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3527/2026/01/2025-eir-butch.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/whitehead-photo.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/chumrau-photo-683x1024-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/Kris-Johson-2020-portrait-0587_crop-788x1024-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/Rachel-Smith-headshot-cropped.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3532/2026/01/Petes-Headshot-scaled-e1767913004978-808x1024-1-792x1004.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=600, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:17:28 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:17:28 GMT",
+    "link": "\u003Chttps://wsu.edu/economicimpact/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/economicimpact/wp-json/wp/v2/pages/6\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:17:27.9487152Z"
+}

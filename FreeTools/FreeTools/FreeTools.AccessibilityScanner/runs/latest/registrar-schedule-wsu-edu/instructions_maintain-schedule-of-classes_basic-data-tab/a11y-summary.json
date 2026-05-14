@@ -1,0 +1,80 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 8,
+  "Critical": 1,
+  "Serious": 2,
+  "Moderate": 5,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 1,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 7,
+      "Critical": 0,
+      "Serious": 2,
+      "Moderate": 5,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Link has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Ca id=\u0022related\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 5,
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Ctable border=\u00220\u0022 style=\u0022margin-left: 10px; margin-right: auto;\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd\u003E\n\u003Cul\u003E\n\u003Cli\u003E\u003Ca href=\u0022https://registrar.schedule.wsu.edu/instructions/..."
+    }
+  ]
+}

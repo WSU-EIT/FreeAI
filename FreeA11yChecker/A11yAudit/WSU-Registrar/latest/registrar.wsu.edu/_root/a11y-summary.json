@@ -1,0 +1,289 @@
+{
+  "TotalViolations": 13,
+  "CriticalCount": 1,
+  "SeriousCount": 10,
+  "ModerateCount": 2,
+  "MinorCount": 0,
+  "AxeCount": 9,
+  "HtmlCheckCount": 1,
+  "HtmlCsCount": 0,
+  "IbmCount": 3,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "aria-allowed-attr",
+          "CanonicalRuleId": "aria-allowed-attr",
+          "Severity": "critical",
+          "Message": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\u0022true\u0022",
+          "Selector": "#wsu-navigation-vertical",
+          "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none wsu-slide-in-panel--position-left wsu-slide-in-panel--width-vertical-nav wsu-slide-in-panel--style-crimson-mark\u0022 aria-expanded=\u0022true\u0022 aria-haspopup=\u0022true\u0022 aria-label=\u0022Site menu\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[title=\u0022wsu.registration@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:wsu.registration@wsu.edu\u0022 title=\u0022wsu.registration@wsu.edu\u0022\u003E Email WSU Registration\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href$=\u0022my.wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022https://my.wsu.edu\u0022 title=\u0022https://my.wsu.edu\u0022 data-anchor=\u0022?client_id=okta.2b1959c8-bcc0-56eb-a589-cfcfb7422f26\u0026amp;code_challenge=m18SWfw3Y2WnnzbL2gHScznU7iIY1bvntliSfxDDIEM\u0026amp;code_challenge_method=S256\u0026amp;nonce=vFrZriv5eLNKTl7vkKZIF4LTS4L1sA26JwySkH31PNMVbQUjbiEFFtBoTGpErQcN\u0026amp;redirect_uri=https%3A%2F%2Flogin.wsu.edu%2Fenduser%2Fcallback\u0026amp;response_type=code\u0026amp;state=GJtgQAGBYVnOEsznHqj9qhLlAU7s8nGNzEynn47OI0isxtBSkGh9YlnGGgRN8uPq\u0026amp;scope=openid%20profile%20email%20okta.use",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[title=\u0022undergrad.petitions@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:undergrad.petitions@wsu.edu\u0022 title=\u0022undergrad.petitions@wsu.edu\u0022\u003EEmail Petitions. \u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href=\u0022mailto:grad.school@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:grad.school@wsu.edu\u0022 title=\u0022grad.school@wsu.edu\u0022\u003EGraduate School\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href=\u0022mailto:wsu.graduations@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:wsu.graduations@wsu.edu\u0022 title=\u0022wsu.graduations@wsu.edu\u0022\u003EEmail Graduations \u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href=\u0022mailto:commencement@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:commencement@wsu.edu\u0022 title=\u0022commencement@wsu.edu\u0022\u003EEmail Commencement\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href$=\u0022mailto:residency@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:residency@wsu.edu\u0022 title=\u0022residency@wsu.edu\u0022\u003EEmail Residency\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-in-text-block",
+          "CanonicalRuleId": "link-in-text-block",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  The link has insufficient color contrast of 1.96:1 with the surrounding text. (Minimum contrast is 3:1, link text: #a60f2d, surrounding text: #262626)\n  The link has no styling (such as underline) to distinguish it from the surrounding text",
+          "Selector": "a[href=\u0022https://em.wsu.edu/rr411/\u0022]",
+          "Snippet": "\u003Ca href=\u0022https://em.wsu.edu/rr411/\u0022 title=\u0022https://em.wsu.edu/rr411/\u0022\u003ERegistration \u0026amp; Enrollment 411\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag141",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-empty",
+          "CanonicalRuleId": "link-name",
+          "Severity": "serious",
+          "Message": "Link has no text content",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022mailto:official.transcripts@wsu.edu\u0022 title=\u0022Email Transcripts\u0022\u003E \u003C/a\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "label_name_visible",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca aria-label=\u0022Go to Washington State University Homepage\u0022 href=\u0022https://wsu.edu\u0022 class=\u0022wsu-wordmark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/ul[1]",
+          "Snippet": "\u003Cul class=\u0022wsu-menu wsu-menu--primary-vertical\u0022 id=\u0022wsu-site-menu\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

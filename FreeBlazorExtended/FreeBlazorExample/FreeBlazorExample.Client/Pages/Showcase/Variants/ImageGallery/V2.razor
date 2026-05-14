@@ -1,0 +1,27 @@
+@page "/showcase/imagegallery/v2"
+@using FreeBlazorExtended.ImageGallery
+
+<div class="container-fluid py-4">
+    <h1>Captioned Photo Gallery</h1>
+
+    <ImageGallery Images="_images"
+                  ColumnCount="5"
+                  EnableLightbox="true"
+                  ThumbnailClass="mb-4" />
+</div>
+
+@code {
+    private readonly List<ImageGallery.GalleryImage> _images = new()
+    {
+        new() { Id = "m1", Url = "https://picsum.photos/seed/mountain1/1200/800", ThumbnailUrl = "https://picsum.photos/seed/mountain1/200/150", Caption = "Ridge Light", Category = "Mountains", Alt = "Sunlight across a mountain ridge" },
+        new() { Id = "m2", Url = "https://picsum.photos/seed/mountain2/1200/800", ThumbnailUrl = "https://picsum.photos/seed/mountain2/200/150", Caption = "Alpine Pass", Category = "Mountains", Alt = "Snow-lined alpine pass" },
+        new() { Id = "m3", Url = "https://picsum.photos/seed/mountain3/1200/800", ThumbnailUrl = "https://picsum.photos/seed/mountain3/200/150", Caption = "Summit Trail", Category = "Mountains", Alt = "Trail leading to a summit" },
+        new() { Id = "b1", Url = "https://picsum.photos/seed/beach1/1200/800", ThumbnailUrl = "https://picsum.photos/seed/beach1/200/150", Caption = "Morning Surf", Category = "Beaches", Alt = "Beach waves at sunrise" },
+        new() { Id = "b2", Url = "https://picsum.photos/seed/beach2/1200/800", ThumbnailUrl = "https://picsum.photos/seed/beach2/200/150", Caption = "Tide Line", Category = "Beaches", Alt = "Tide line on a sandy shore" },
+        new() { Id = "b3", Url = "https://picsum.photos/seed/beach3/1200/800", ThumbnailUrl = "https://picsum.photos/seed/beach3/200/150", Caption = "Pier View", Category = "Beaches", Alt = "Long pier into the ocean" },
+        new() { Id = "f1", Url = "https://picsum.photos/seed/forest1/1200/800", ThumbnailUrl = "https://picsum.photos/seed/forest1/200/150", Caption = "Moss Path", Category = "Forests", Alt = "Forest path covered in moss" },
+        new() { Id = "f2", Url = "https://picsum.photos/seed/forest2/1200/800", ThumbnailUrl = "https://picsum.photos/seed/forest2/200/150", Caption = "Tall Pines", Category = "Forests", Alt = "Tall pine trees" },
+        new() { Id = "f3", Url = "https://picsum.photos/seed/forest3/1200/800", ThumbnailUrl = "https://picsum.photos/seed/forest3/200/150", Caption = "Canopy Light", Category = "Forests", Alt = "Sunlight through a forest canopy" },
+        new() { Id = "f4", Url = "https://picsum.photos/seed/forest4/1200/800", ThumbnailUrl = "https://picsum.photos/seed/forest4/200/150", Caption = "Creek Crossing", Category = "Forests", Alt = "Creek crossing in the woods" },
+    };
+}

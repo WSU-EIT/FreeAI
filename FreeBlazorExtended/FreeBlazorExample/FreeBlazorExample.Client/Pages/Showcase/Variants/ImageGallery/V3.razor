@@ -1,0 +1,91 @@
+@page "/showcase/imagegallery/v3"
+@using FreeBlazorExtended.ImageGallery
+
+<div class="container-fluid py-4">
+    <h1>Gallery With Custom Click Handler</h1>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <ImageGallery Images="_images"
+                          ColumnCount="4"
+                          EnableLightbox="false"
+                          OnImageClick="HandleImageClick" />
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-body">
+                    <h2 class="h5">Selected Photo</h2>
+                    @if (_selectedImage is null) {
+                        <p class="text-muted mb-0">Click an image to inspect its details here.</p>
+                    } else {
+                        <img src="@_selectedImage.Url" alt="@_selectedImage.Alt" class="img-fluid rounded mb-3" />
+                        <p class="small mb-1"><strong>Caption:</strong> @_selectedImage.Caption</p>
+                        <p class="small mb-1"><strong>Category:</strong> @_selectedImage.Category</p>
+                        <p class="small mb-0"><strong>Metadata:</strong> @MetadataFor(_selectedImage.Id)</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h2 class="h5">Click History</h2>
+                    <ul class="small mb-0 ps-3">
+                        @foreach (var entry in _clickHistory) {
+                            <li>@entry</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<ImageGallery.GalleryImage> _images = new()
+    {
+        new() { Id = "1", Url = "https://picsum.photos/seed/custom1/1200/800", Caption = "Blue Ridge", Category = "Mountains", Alt = "Blue mountain ridge" },
+        new() { Id = "2", Url = "https://picsum.photos/seed/custom2/1200/800", Caption = "Cliff View", Category = "Mountains", Alt = "Cliff overlooking a valley" },
+        new() { Id = "3", Url = "https://picsum.photos/seed/custom3/1200/800", Caption = "Calm Shore", Category = "Beaches", Alt = "Calm shoreline at dusk" },
+        new() { Id = "4", Url = "https://picsum.photos/seed/custom4/1200/800", Caption = "Boardwalk", Category = "Beaches", Alt = "Boardwalk leading to the beach" },
+        new() { Id = "5", Url = "https://picsum.photos/seed/custom5/1200/800", Caption = "Forest Mist", Category = "Forests", Alt = "Mist through a forest path" },
+        new() { Id = "6", Url = "https://picsum.photos/seed/custom6/1200/800", Caption = "Fern Floor", Category = "Forests", Alt = "Ferns across a forest floor" },
+        new() { Id = "7", Url = "https://picsum.photos/seed/custom7/1200/800", Caption = "River Bend", Category = "Rivers", Alt = "River bend with tree line" },
+        new() { Id = "8", Url = "https://picsum.photos/seed/custom8/1200/800", Caption = "Desert Sky", Category = "Deserts", Alt = "Desert landscape under a wide sky" },
+    };
+
+    private readonly Dictionary<string, string> _metadata = new()
+    {
+        ["1"] = "1200x800 — Photo by Alex Carter",
+        ["2"] = "1200x800 — Photo by Jamie Lee",
+        ["3"] = "1200x800 — Photo by Morgan Shaw",
+        ["4"] = "1200x800 — Photo by Riley West",
+        ["5"] = "1200x800 — Photo by Dana Cole",
+        ["6"] = "1200x800 — Photo by Sam Green",
+        ["7"] = "1200x800 — Photo by Robin Diaz",
+        ["8"] = "1200x800 — Photo by Casey Frost",
+    };
+
+    private ImageGallery.GalleryImage? _selectedImage;
+    private List<string> _clickHistory = new() { "No images selected yet." };
+
+    private Task HandleImageClick(ImageGallery.GalleryImage image)
+    {
+        _selectedImage = image;
+        if (_clickHistory.Count == 1 && _clickHistory[0] == "No images selected yet.") {
+            _clickHistory.Clear();
+        }
+
+        _clickHistory.Insert(0, $"{DateTime.Now:HH:mm:ss} — {image.Id}");
+        if (_clickHistory.Count > 5) {
+            _clickHistory = _clickHistory.Take(5).ToList();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private string MetadataFor(string id)
+    {
+        return _metadata.TryGetValue(id, out var value) ? value : "Unknown";
+    }
+}

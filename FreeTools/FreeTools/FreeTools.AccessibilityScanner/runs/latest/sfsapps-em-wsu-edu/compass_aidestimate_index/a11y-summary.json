@@ -1,0 +1,112 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 12,
+  "Critical": 0,
+  "Serious": 11,
+  "Moderate": 1,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 6,
+      "Critical": 0,
+      "Serious": 6,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 6,
+      "Critical": 0,
+      "Serious": 5,
+      "Moderate": 1,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 5,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Cspan class=\u0022text-warning\u0022\u003E\u003Cstrong\u003ENote:\u003C/strong\u003E Do not enter commas or decimal points\u003C/span\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 4,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022#spine-sitenav\u0022 role=\u0022navigation\u0022 class=\u0022screen-reader-shortcut\u0022\u003ESkip to navigation\u003C/a\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput name=\u0022term\u0022 type=\u0022text\u0022 value=\u0022\u0022 placeholder=\u0022search\u0022 title=\u0022Type search term here\u0022 class=\u0022ui-autocomplete-input\u0022 autocomplete=\u0022off\u0022 style=\u0022\u0022\u003E"
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "page-has-heading-one",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has headings but no \u003Ch1\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

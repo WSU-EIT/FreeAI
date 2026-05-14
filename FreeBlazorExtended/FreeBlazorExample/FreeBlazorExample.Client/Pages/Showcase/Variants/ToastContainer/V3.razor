@@ -1,0 +1,87 @@
+@page "/showcase/toastcontainer/v3"
+@using FreeBlazorExtended.Toast
+@inject FreeBlazorExtended.Foundation.Services.NotificationService Notifications
+
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Burst &amp; No-Dismiss Pattern</h1>
+    <p class="text-muted mb-4">
+        Demonstrates firing multiple toasts at once (simulating a batch operation result) and
+        the persistent error pattern with <code>ShowDismissButton="false"</code> — forcing the user
+        to acknowledge by clicking a separate action.
+    </p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">Burst Fire (Batch Result)</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-primary" @onclick="FireBatch">
+                        <i class="fas fa-bolt me-1"></i> Run Batch Import (5 toasts)
+                    </button>
+                    <p class="text-muted small mb-0">
+                        Fires 5 toasts rapidly: 3 success, 1 warning, 1 error — as a batch job would.
+                        Auto-dismiss on success/warning; error stays until closed.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">Persistent Error (No Auto-Dismiss)</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-danger" @onclick="FirePersistentError">
+                        <i class="fas fa-triangle-exclamation me-1"></i> Simulate Critical Error
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="AcknowledgeError" disabled="@(!_hasCritical)">
+                        <i class="fas fa-check me-1"></i> Acknowledge &amp; Dismiss
+                    </button>
+                    <p class="text-muted small mb-0">
+                        Error with <code>durationMs=0</code> never auto-dismisses. Only the explicit
+                        Acknowledge button removes it.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-sm btn-outline-secondary" @onclick="() => Notifications.ClearAll()">
+            <i class="fas fa-trash me-1"></i> Clear All
+        </button>
+    </div>
+
+    <ToastContainer Position="ToastPosition.BottomStart" ShowProgressBar="true" ShowTimestamp="true" />
+</div>
+
+@code {
+    private string? _criticalId;
+    private bool _hasCritical => !string.IsNullOrEmpty(_criticalId);
+
+    private void FireBatch()
+    {
+        Notifications.ShowSuccess("Orders 1001-1003 imported (3 records).", "Import OK", 6000);
+        Notifications.ShowWarning("Order 1004 skipped — duplicate SKU.", "Skipped", 8000);
+        Notifications.ShowError("Order 1005 failed — invalid customer ID.", "Import Error", 0);
+    }
+
+    private void FirePersistentError()
+    {
+        // durationMs = 0 → never auto-dismissed
+        Notifications.Show(
+            "Database connection lost. Changes are not being saved. Contact your administrator.",
+            FreeBlazorExtended.Foundation.Services.NotificationType.Error,
+            "Critical: DB Offline",
+            durationMs: 0
+        );
+        // track so we can dismiss manually
+        _criticalId = Notifications.GetAll().LastOrDefault()?.Id;
+    }
+
+    private void AcknowledgeError()
+    {
+        if (!string.IsNullOrEmpty(_criticalId)) {
+            Notifications.Remove(_criticalId);
+            _criticalId = null;
+        }
+    }
+}

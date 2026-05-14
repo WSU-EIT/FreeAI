@@ -1,0 +1,37 @@
+@page "/showcase/networkchart/v2"
+@using FreeBlazorExtended.NetworkChart
+
+<div class="container-fluid py-4">
+    <h1>Configured Network Chart</h1>
+    <p class="text-muted">This example fixes the layout seed, switches to the Barnes-Hut solver, and uses icons plus varied edge styling.</p>
+
+    <NetworkChart Nodes="_nodes"
+                  Relationships="_relationships"
+                  NetworkSolver="barnesHut"
+                  Seed="42"
+                  ElementId="config-net"
+                  StartNodeId="hub" />
+</div>
+
+@code {
+    private readonly List<NetworkChart.NetworkNode> _nodes = new()
+    {
+        new() { id = "hub", label = "Gateway", title = "Gateway", icon = new() { code = "f0ec", color = "#0d6efd", size = 60 } },
+        new() { id = "svc-a", label = "Service A", title = "Service A", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-b", label = "Service B", title = "Service B", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-c", label = "Service C", title = "Service C", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "db", label = "Database", title = "Primary database", icon = new() { code = "f1c0", color = "#6f42c1" } },
+        new() { id = "cache", label = "Cache", title = "Redis cache", icon = new() { code = "f1c0", color = "#fd7e14" } },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _relationships = new()
+    {
+        new() { id = "r1", from = "hub", to = "svc-a", label = "routes", color = "#0d6efd" },
+        new() { id = "r2", from = "hub", to = "svc-b", label = "routes", color = "#0d6efd" },
+        new() { id = "r3", from = "hub", to = "svc-c", label = "routes", color = "#0d6efd", dashes = true },
+        new() { id = "r4", from = "svc-a", to = "db", label = "reads", arrows = "to", color = "#198754" },
+        new() { id = "r5", from = "svc-b", to = "db", label = "writes", arrows = "to", color = "#dc3545" },
+        new() { id = "r6", from = "svc-b", to = "cache", label = "caches", arrows = "to", color = "#fd7e14", dashes = true },
+        new() { id = "r7", from = "svc-c", to = "cache", label = "optional", arrows = "to", color = "#6c757d", dashes = true },
+    };
+}

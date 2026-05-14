@@ -1,0 +1,313 @@
+﻿@*
+    NetworkChart — Interactive vis.js network graph hosted inside a Blazor component.
+
+    Renders directed or undirected graphs as nodes and labelled edges inside a full-height
+    container. Bridges Blazor parameters into the chart via JS interop; handles first-render
+    initialisation and incremental updates through RenderChart() and ChartUpdate.
+
+    Required host setup:
+        1. Include vis.js (network) in the host page — this component does NOT bundle it:
+               <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+           or serve it from your own CDN/static asset.
+        2. Add nodes and edges:
+               <NetworkChart Nodes="_nodes" Relationships="_edges" />
+        3. Call RenderChart() after adding or replacing data.
+
+    Required parameters:
+        Nodes         — List<NetworkNode>  — the graph vertices
+        Relationships — List<NetworkRelationship>  — the graph edges
+
+    Optional parameters:
+        ElementId     — custom HTML id for the container div (auto-generated if omitted)
+        NetworkSolver — vis.js physics solver: "repulsion" (default) or "barnesHut"
+        Seed          — integer string for deterministic layout (default "0")
+        StartNodeId   — node id to focus on after initial render
+        OnElementSelected     — Delegate invoked with the selected node id string
+        OnRelationshipSelected — Delegate invoked with the selected edge id string
+        OnLoadFailed  — Delegate invoked if vis.js fails to load
+
+    Programmatic control (requires @ref):
+        await chartRef.RenderChart()   — redraw with current Nodes / Relationships
+        await chartRef.RandomizeLayout() — shuffle positions and return the new seed
+        await chartRef.UpdateNetworkSolver("barnesHut") — change physics engine live
+*@
+@implements IDisposable
+@inject IJSRuntime jsRuntime
+
+<style>
+    .network-chart-container {
+        background: #fff;
+        width: 100%;
+        height: calc(100vh - 200px);
+        border: solid 1px #555;
+    }
+</style>
+
+<div id="@_elementId" class="network-chart-container"></div>
+
+@code {
+    /// <summary>
+    /// Custom HTML <c>id</c> attribute for the chart container <c>&lt;div&gt;</c>.
+    /// Auto-generates a stable id (<c>network-chart-element</c>) when omitted.
+    /// Only needed if you render multiple charts on the same page.
+    /// </summary>
+    [Parameter] public string? ElementId { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // Set _elementId from the parameter before the first render so the DOM element
+        // gets the correct id immediately. If we wait until OnAfterRenderAsync it is too
+        // late — the DOM will have been stamped with the default id and ChartRender will
+        // fail to find the element by the custom id.
+        if (!String.IsNullOrWhiteSpace(ElementId))
+            _elementId = ElementId;
+    }
+
+    /// <summary>
+    /// vis.js physics solver used for auto-layout. Accepted values: <c>"repulsion"</c> (default)
+    /// or <c>"barnesHut"</c>. Change live via <see cref="UpdateNetworkSolver"/>.
+    /// </summary>
+    [Parameter] public string? NetworkSolver { get; set; }
+
+    /// <summary>
+    /// The graph vertices to render. Each <see cref="NetworkNode"/> must have a unique <c>id</c>
+    /// and a <c>label</c>. Replace the list (do not mutate in place) then call
+    /// <see cref="RenderChart"/> to redraw.
+    /// <para><b>Required.</b></para>
+    /// </summary>
+    [Parameter] public List<NetworkNode> Nodes { get; set; } = new List<NetworkNode>();
+
+    /// <summary>
+    /// The directed or undirected edges connecting <see cref="Nodes"/>. Each
+    /// <see cref="NetworkRelationship"/> must reference valid <c>from</c> and <c>to</c> node ids.
+    /// <para><b>Required</b> (may be an empty list for isolated nodes).</para>
+    /// </summary>
+    [Parameter] public List<NetworkRelationship> Relationships { get; set; } = new List<NetworkRelationship>();
+
+    /// <summary>
+    /// Delegate invoked (via <c>DynamicInvoke</c>) when the user clicks a node.
+    /// The single argument is the selected node's <c>id</c> string. Use a typed lambda:
+    /// <code>OnElementSelected="(string id) =&gt; HandleNodeClick(id)"</code>
+    /// </summary>
+    [Parameter] public Delegate? OnElementSelected { get; set; }
+
+    /// <summary>
+    /// Delegate invoked when the user clicks an edge. The argument is the relationship
+    /// <c>id</c> string. Same signature requirements as <see cref="OnElementSelected"/>.
+    /// </summary>
+    [Parameter] public Delegate? OnRelationshipSelected { get; set; }
+
+    /// <summary>
+    /// Delegate invoked if the vis.js library fails to load (e.g. no CDN access).
+    /// Use this to show a fallback message or switch to a table view.
+    /// </summary>
+    [Parameter] public Delegate? OnLoadFailed { get; set; }
+
+    /// <summary>
+    /// Integer string used as the random seed for the vis.js layout engine.
+    /// Passing the same seed always produces the same node positions. Default <c>"0"</c>.
+    /// Retrieve a new randomised seed via <see cref="RandomizeLayout"/>.
+    /// </summary>
+    [Parameter] public string? Seed { get; set; }
+
+    /// <summary>
+    /// Node <c>id</c> that the chart camera focuses on after initial render (or after
+    /// <see cref="RenderChart"/> is called). Leave <c>null</c> to use the default viewport.
+    /// </summary>
+    [Parameter] public string? StartNodeId { get; set; }
+
+    protected string _elementId = "network-chart-element";
+    protected bool _firstRender = true;
+    protected IJSObjectReference? jsModule;
+    protected string _networkSolver = "";
+    protected string _seed = "0";
+    protected DotNetObjectReference<NetworkChart>? dotNetHelper;
+
+    public void Dispose()
+    {
+        dotNetHelper?.Dispose();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            _elementId = !String.IsNullOrWhiteSpace(ElementId)
+                ? ElementId : "network-chart-element";
+            _networkSolver = !String.IsNullOrWhiteSpace(NetworkSolver)
+                ? NetworkSolver : "repulsion";
+            _seed = !String.IsNullOrWhiteSpace(Seed) ? Seed : "0";
+
+            if (!Nodes.Any()) {
+                return;
+            }
+
+            dotNetHelper = DotNetObjectReference.Create(this);
+
+            jsModule = await jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./_content/FreeBlazorExtended/NetworkChart/NetworkChart.razor.js?v=" + Guid.NewGuid().ToString().Replace("-", ""));
+
+            await jsModule.InvokeVoidAsync("SetDotNetHelper", dotNetHelper);
+            await RenderChart();
+        }
+    }
+
+    public async Task RenderChart()
+    {
+        CalculateItems();
+
+        var data = new {
+            nodes = Nodes.ToArray(),
+            edges = Relationships.ToArray(),
+        };
+
+        if (jsModule != null) {
+            if (_firstRender) {
+                _firstRender = false;
+                await jsModule.InvokeVoidAsync("ChartRender",
+                    _elementId, data, _networkSolver, _seed, StartNodeId);
+            } else {
+                await jsModule.InvokeVoidAsync("ChartUpdate", data, StartNodeId);
+            }
+        }
+    }
+
+    public async Task<string> RandomizeLayout()
+    {
+        if (jsModule != null) {
+            _seed = await jsModule.InvokeAsync<string>("RandomizeLayout", StartNodeId);
+        }
+        return _seed;
+    }
+
+    public async Task UpdateNetworkSolver(string solver)
+    {
+        _networkSolver = solver;
+        if (jsModule != null) {
+            await jsModule.InvokeVoidAsync("UpdateSolver", _networkSolver);
+        }
+    }
+
+    [JSInvokable]
+    public void ElementSelected(string element)
+    {
+        if (OnElementSelected != null) {
+            OnElementSelected.DynamicInvoke(element);
+        }
+    }
+
+    [JSInvokable]
+    public void RelationshipSelected(string element)
+    {
+        if (OnRelationshipSelected != null) {
+            OnRelationshipSelected.DynamicInvoke(element);
+        }
+    }
+
+    [JSInvokable]
+    public void OnVisLoadFailed()
+    {
+        if (OnLoadFailed != null) {
+            OnLoadFailed.DynamicInvoke();
+        }
+    }
+
+    protected void CalculateItems()
+    {
+        foreach (var item in Nodes) {
+            if (item.font != null) {
+                if (String.IsNullOrWhiteSpace(item.font.background)) {
+                    item.font.background = "transparent";
+                }
+                if (String.IsNullOrWhiteSpace(item.font.color)) {
+                    item.font.color = "black";
+                }
+                if (String.IsNullOrWhiteSpace(item.font.align)) {
+                    item.font.align = "bottom";
+                }
+            }
+        }
+
+        foreach (var item in Relationships) {
+            if (item.font == null) {
+                item.font = new NetworkNodeFont();
+            }
+            if (String.IsNullOrWhiteSpace(item.font.background)) {
+                item.font.background = "transparent";
+            }
+            if (String.IsNullOrWhiteSpace(item.font.color)) {
+                item.font.color = "black";
+            }
+        }
+    }
+
+    // === DATA MODELS ===
+
+    /// <summary>A single vertex in the network graph, mapped directly to vis.js node options.</summary>
+    public class NetworkNode
+    {
+        /// <summary>Unique node identifier. Must match edge <c>from</c>/<c>to</c> values. <b>Required.</b></summary>
+        public string id { get; set; } = "";
+        /// <summary>Text label rendered beneath or beside the node shape. <b>Required.</b></summary>
+        public string label { get; set; } = "";
+        /// <summary>HTML tooltip shown on hover (may contain basic HTML tags).</summary>
+        public string title { get; set; } = "";
+        /// <summary>vis.js shape type. Default <c>"icon"</c> (Font Awesome glyph). Other values: <c>"dot"</c>, <c>"box"</c>, <c>"ellipse"</c>.</summary>
+        public string shape { get; set; } = "icon";
+        /// <summary>Background or border colour as a CSS colour string. Default <c>"#fff"</c>.</summary>
+        public string color { get; set; } = "#fff";
+        /// <summary>Font Awesome icon definition used when <c>shape == "icon"</c>.</summary>
+        public NetworkNodeIcon icon { get; set; } = new NetworkNodeIcon();
+        /// <summary>Optional label-font overrides (colour, background, alignment).</summary>
+        public NetworkNodeFont? font { get; set; }
+    }
+
+    /// <summary>Font options applied to a node or edge label in the vis.js canvas.</summary>
+    public class NetworkNodeFont
+    {
+        /// <summary>Label alignment relative to the node: <c>"bottom"</c> (default), <c>"top"</c>, <c>"center"</c>.</summary>
+        public string align { get; set; } = "bottom";
+        /// <summary>Background fill colour behind the label text. Use <c>"transparent"</c> for none.</summary>
+        public string? background { get; set; }
+        /// <summary>Label text colour as a CSS colour string.</summary>
+        public string? color { get; set; }
+    }
+
+    /// <summary>Font Awesome icon specification applied to a node when its shape is <c>"icon"</c>.</summary>
+    public class NetworkNodeIcon
+    {
+        /// <summary>Font family name as registered with vis.js. Default <c>"Font Awesome 6 Free"</c>.</summary>
+        public string face { get; set; } = "Font Awesome 6 Free";
+        /// <summary>Unicode code point of the glyph (without the <c>\u</c> prefix). Example: <c>"f059"</c> (ⓘ).</summary>
+        public string code { get; set; } = "f059";
+        /// <summary>Glyph size in pixels. Default <c>50</c>.</summary>
+        public int size { get; set; } = 50;
+        /// <summary>CSS colour of the icon glyph.</summary>
+        public string? color { get; set; }
+        /// <summary>Font weight. Use <c>"900"</c> for solid icons, <c>"400"</c> for regular.</summary>
+        public string weight { get; set; } = "900";
+    }
+
+    /// <summary>A directed or undirected edge connecting two <see cref="NetworkNode"/> vertices.</summary>
+    public class NetworkRelationship
+    {
+        /// <summary>Unique edge identifier. <b>Required</b> for reliable selection callbacks.</summary>
+        public string id { get; set; } = "";
+        /// <summary>Source node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
+        public string from { get; set; } = "";
+        /// <summary>Target node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
+        public string to { get; set; } = "";
+        /// <summary>Label rendered along the centre of the edge.</summary>
+        public string label { get; set; } = "";
+        /// <summary>HTML tooltip shown when the user hovers over the edge.</summary>
+        public string title { get; set; } = "";
+        /// <summary>Edge colour as a CSS colour string (or a vis.js colour object serialised to JSON).</summary>
+        public string? color { get; set; }
+        /// <summary>Arrow end-point(s): <c>"to"</c> (default), <c>"from"</c>, <c>"to;from"</c>, or <c>""</c> for none.</summary>
+        public string arrows { get; set; } = "to";
+        /// <summary>When <c>true</c>, renders the edge as a dashed line to indicate an indirect or optional relationship.</summary>
+        public bool dashes { get; set; }
+        /// <summary>Optional font overrides for the edge label.</summary>
+        public NetworkNodeFont? font { get; set; }
+    }
+}

@@ -1,0 +1,361 @@
+<header class="wsu-hero">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-auto">
+                <div class="wsu-logo" style="background:rgba(255,255,255,0.12);padding:0.5rem;border-radius:8px;display:inline-flex;">
+                    <img src="img/wsu-cougar.svg" alt="" aria-hidden="true" width="72" height="72" style="color:#fff;" />
+                </div>
+            </div>
+            <div class="col-md">
+                <p class="mb-1" style="font-size:0.875rem;letter-spacing:1.5px;text-transform:uppercase;opacity:0.95;">Washington State University - Enrollment Information Technology</p>
+                <h1 class="display-5 fw-bold mb-2">FreeBlazor Component Showcase</h1>
+                <p class="lead mb-2">Interactive demos for FreeBlazorExtended features, core FreeBlazor controls, and the full 45-page variant gallery.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="@ShowcaseExampleManifest.FirstExampleRoute" class="btn btn-warning btn-sm">
+                        <i class="fa-solid fa-route me-1"></i> Start Guided Tour
+                    </a>
+                    <a href="@Helpers.BuildShowcaseCatalogUrl()" class="btn btn-light btn-sm">
+                        <i class="fa-solid fa-table-cells me-1"></i> Component Catalog
+                    </a>
+                    <a href="@Helpers.BuildShowcaseAnchorUrl("tier1-variants")" class="btn btn-outline-light btn-sm">
+                        <i class="fa-solid fa-layer-group me-1"></i> Variant Families
+                    </a>
+                    <span class="badge bg-white text-dark align-self-center">@TotalDemoPageCount live demos</span>
+                    <span class="badge bg-white text-dark align-self-center">@FeatureCount features</span>
+                    <span class="badge bg-white text-dark align-self-center">@CoreDemoCount core demos</span>
+                    <span class="badge bg-white text-dark align-self-center">@VariantFamilyCount variant families</span>
+                    <span class="badge bg-white text-dark align-self-center">@VariantPageCount variant pages</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid pb-5">
+    <div class="card shadow-sm mb-4 border-0 bg-light mt-4">
+        <div class="card-body py-3">
+            <div class="row g-3 align-items-start">
+                <div class="col-lg-6">
+                    <h2 class="h5 mb-2"><i class="fa-solid fa-circle-question text-info me-2"></i>What is this showcase?</h2>
+                    <p class="mb-1 small">
+                        Every page here is a live, interactive demo of a component or feature built in <strong>FreeBlazorExtended</strong>
+                        or the upstream <strong>FreeBlazor</strong> library that this repo is extending.
+                    </p>
+                    <p class="mb-0 small text-muted">
+                        The landing page now groups the work into full features, core FreeBlazor demos, and focused V1/V2/V3 variant families so
+                        local testing can move through the whole surface from one place.
+                    </p>
+                </div>
+                <div class="col-lg-3">
+                    <h2 class="h6 mb-2 text-muted text-uppercase" style="font-size:0.75rem;letter-spacing:1px;">How to use this page</h2>
+                    <ul class="small mb-0 ps-3">
+                        <li>Open a full feature card to test an end-to-end surface</li>
+                        <li>Use the core demos for the original FreeBlazor controls</li>
+                        <li>Use the Tier 1 / 2A / 2B sections for isolated variant-page testing</li>
+                        <li>Use the Component Catalog for a neutral one-page sandbox of the core components</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h2 class="h6 mb-2 text-muted text-uppercase" style="font-size:0.75rem;letter-spacing:1px;">Source</h2>
+                    <ul class="small mb-0 ps-3">
+                        <li>Root demos: <code>Pages/Showcase/</code></li>
+                        <li>Variant demos: <code>Pages/Showcase/Variants/</code></li>
+                        <li>Components: <code>FreeBlazorExtended/</code></li>
+                        <li>Shared UI: <code>Shared/</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        @foreach (var section in _sections) {
+            <a href="@Helpers.BuildShowcaseAnchorUrl(section.AnchorId)" class="btn btn-outline-secondary btn-sm">@section.Title</a>
+        }
+    </div>
+
+    @foreach (var section in _sections) {
+        <section id="@section.AnchorId" aria-labelledby="@(section.AnchorId + "-heading")" class="mb-5">
+            <div class="d-flex align-items-center mb-3 flex-wrap">
+                <h2 id="@(section.AnchorId + "-heading")" class="h4 mb-0 me-3">@section.Title</h2>
+                <span class="badge bg-@section.Accent">@section.BadgeText</span>
+                <span class="text-muted small ms-3">@section.Description</span>
+            </div>
+
+            <div class="row g-3 g-lg-4">
+                @foreach (var item in section.Items) {
+                    <div class="@section.ColumnClass">
+                        <div class="card h-100 shadow-sm hover-shadow border-@section.Accent border-opacity-50">
+                            <div class="card-header bg-@section.Accent bg-opacity-10 border-@section.Accent border-opacity-25 py-2">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(item.BadgeText)) {
+                                        <span class="badge bg-@section.Accent">@item.BadgeText</span>
+                                    }
+                                    <strong>
+                                        @if (!string.IsNullOrWhiteSpace(item.IconClass)) {
+                                            <i class="@item.IconClass me-1" aria-hidden="true"></i>
+                                        }
+                                        @item.Title
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text small mb-2">@item.Summary</p>
+                                @if (!string.IsNullOrWhiteSpace(item.Detail)) {
+                                    <p class="card-text small text-muted mb-3">@item.Detail</p>
+                                }
+                                <div class="d-flex gap-2 align-items-center flex-wrap">
+                                    @for (int i = 0; i < item.Links.Count; i++) {
+                                        var link = item.Links[i];
+                                        var buttonClass = item.Links.Count == 1
+                                            ? $"btn btn-{section.Accent} btn-sm"
+                                            : i == 0
+                                                ? $"btn btn-{section.Accent} btn-xs"
+                                                : $"btn btn-outline-{section.Accent} btn-xs";
+                                        <a href="@Helpers.BuildUrl(link.Route)" class="@buttonClass">@link.Label</a>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(item.CodePath)) {
+                                    <code class="text-muted d-block mt-2" style="font-size:0.7rem;">@item.CodePath</code>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <div class="card bg-light border-0 shadow-sm">
+        <div class="card-body py-3">
+            <div class="row align-items-center g-2">
+                <div class="col-auto">
+                    <i class="fa-solid fa-compass text-muted me-1"></i>
+                    <strong class="small">Also worth exploring:</strong>
+                </div>
+                <div class="col-auto">
+                    <a href="@Helpers.BuildShowcaseCatalogUrl()" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-table-cells me-1"></i> Component Catalog
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="@Helpers.BuildShowcaseAnchorUrl("tier1-variants")" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-layer-group me-1"></i> Tier 1 Variants
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="@Helpers.BuildShowcaseAnchorUrl("tier2b-variants")" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-rocket me-1"></i> Tier 2B Variants
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow {
+        transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-xs {
+        padding: 0.15rem 0.5rem;
+        font-size: 0.75rem;
+    }
+</style>
+
+@code {
+    private readonly List<ShowcaseSectionData> _sections = new();
+
+    private int FeatureCount => _sections.FirstOrDefault(section => section.AnchorId == "full-features")?.Items.Count ?? 0;
+    private int CoreDemoCount => _sections.FirstOrDefault(section => section.AnchorId == "core-components")?.Items.Count ?? 0;
+    private int VariantFamilyCount => _sections.Where(section => section.AnchorId.Contains("variants")).Sum(section => section.Items.Count);
+    private int VariantPageCount => _sections.Where(section => section.AnchorId.Contains("variants")).Sum(section => section.Items.Sum(item => item.Links.Count));
+    private int TotalDemoPageCount => FeatureCount + CoreDemoCount + VariantPageCount;
+
+    protected override void OnInitialized()
+    {
+        _sections.Add(BuildFeatureSection());
+        _sections.Add(BuildCoreComponentSection());
+        _sections.Add(BuildTier1Section());
+        _sections.Add(BuildTier2ASection());
+        _sections.Add(BuildTier2BSection());
+    }
+
+    private static ShowcaseSectionData BuildFeatureSection()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "full-features",
+            Title = "Full Features",
+            BadgeText = "6 features",
+            Description = "Complex, multi-service capabilities that cover a real business workflow end to end.",
+            Accent = "success",
+            ColumnClass = "col-md-6 col-lg-4",
+            Items = new List<ShowcaseCardItem>
+            {
+                new() { BadgeText = "101", IconClass = "fa-solid fa-list-check", Title = "Dynamic Forms", Summary = "JSON-schema-driven form builder and renderer.", Detail = "Use this for forms that vary by customer, workflow, or survey definition.", CodePath = "FreeBlazorExtended/DynamicForms/", Links = SingleLink("View Demo", "showcase/feature101-dynamic-forms") },
+                new() { BadgeText = "102", IconClass = "fa-solid fa-display", Title = "Multi-View Sync", Summary = "SignalR-backed master/slave session for synchronized views.", Detail = "Use this for projectors, guided workflows, and shared presentation surfaces.", CodePath = "FreeBlazorExtended/MultiViewSync/", Links = SingleLink("View Demo", "showcase/feature102-multi-view-sync") },
+                new() { BadgeText = "103", IconClass = "fa-regular fa-calendar", Title = "Calendar & Scheduling", Summary = "Calendar, recurrence, reservation, and conflict-detection surface.", Detail = "Use this for appointment booking and resource scheduling scenarios.", CodePath = "FreeBlazorExtended/Calendar/", Links = SingleLink("View Demo", "showcase/feature103-calendar") },
+                new() { BadgeText = "104", IconClass = "fa-solid fa-sliders", Title = "User Preferences", Summary = "Server-persisted per-user settings with roaming preference state.", Detail = "Use this for preferences that must survive cache clears and follow users across devices.", CodePath = "FreeBlazorExtended/UserPreferences/", Links = SingleLink("View Demo", "showcase/feature104-user-preferences") },
+                new() { BadgeText = "105", IconClass = "fa-solid fa-server", Title = "Agent Monitoring", Summary = "Distributed Windows host monitoring and remote command surface.", Detail = "Use this for central monitoring of services, IIS pools, and host telemetry.", CodePath = "FreeBlazorExtended/AgentMonitoring/", Links = SingleLink("View Demo", "showcase/feature105-agent-monitoring") },
+                new() { BadgeText = "107", IconClass = "fa-solid fa-sitemap", Title = "Hierarchical Tree", Summary = "Recursive tree with drag-to-reparent and cycle prevention.", Detail = "Use this for org charts, folder structures, category trees, and menu builders.", CodePath = "FreeBlazorExtended/HierarchicalTree/", Links = SingleLink("View Demo", "showcase/feature107-hierarchical-tree") },
+            },
+        };
+    }
+
+    private static ShowcaseSectionData BuildCoreComponentSection()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "core-components",
+            Title = "Core FreeBlazor Demos",
+            BadgeText = "10 components",
+            Description = "Existing upstream-style component demos that still belong on the root surface.",
+            Accent = "primary",
+            ColumnClass = "col-md-6 col-lg-4 col-xl-3",
+            Items = new List<ShowcaseCardItem>
+            {
+                new() { IconClass = "fa-solid fa-magnifying-glass", Title = "AutoComplete", Summary = "Search-as-you-type dropdown with filtering and keyboard navigation.", CodePath = "FreeBlazor.AutoComplete", Links = SingleLink("Demo", "showcase/autocomplete") },
+                new() { IconClass = "fa-solid fa-text-height", Title = "AutoGrow Text", Summary = "Textarea that expands to fit its content without internal scrollbars.", CodePath = "FreeBlazor.AutoGrowText", Links = SingleLink("Demo", "showcase/autogrowtext") },
+                new() { IconClass = "fa-solid fa-hashtag", Title = "Confirmation Code", Summary = "Multi-box OTP/PIN input with auto-advance behavior.", CodePath = "FreeBlazor.ConfirmationCode", Links = SingleLink("Demo", "showcase/confirmationcode") },
+                new() { IconClass = "fa-regular fa-calendar", Title = "Date Time Picker", Summary = "Type-aware picker for DateTime?, DateOnly?, and TimeOnly?.", CodePath = "FreeBlazor.DateTimePicker", Links = SingleLink("Demo", "showcase/datetimepicker") },
+                new() { IconClass = "fa-solid fa-trash-can", Title = "Delete Confirmation", Summary = "Two-step delete guard with minimal boilerplate.", CodePath = "FreeBlazor.DeleteConfirmation", Links = SingleLink("Demo", "showcase/deleteconfirmation") },
+                new() { IconClass = "fa-solid fa-keyboard", Title = "GetInput", Summary = "Universal input for text, select, multi-select, radio, checkbox, and more.", CodePath = "FreeBlazor.GetInput", Links = SingleLink("Demo", "showcase/getinput") },
+                new() { IconClass = "fa-solid fa-check-double", Title = "MultiSelect", Summary = "Tag-chip multi-value picker with search and max-selection behavior.", CodePath = "FreeBlazor.MultiSelect", Links = SingleLink("Demo", "showcase/multiselect") },
+                new() { IconClass = "fa-solid fa-table", Title = "Paged Recordset", Summary = "Generic paginated table with sorting and row actions.", CodePath = "FreeBlazor.PagedRecordset", Links = SingleLink("Demo", "showcase/pagedrecordset") },
+                new() { IconClass = "fa-solid fa-list", Title = "StringList", Summary = "Editable List<string> with add, edit, delete, and reorder behavior.", CodePath = "FreeBlazor.StringList", Links = SingleLink("Demo", "showcase/stringlist") },
+                new() { IconClass = "fa-solid fa-eye-slash", Title = "Toggle Password", Summary = "Password input with show/hide toggle and optional strength indicator.", CodePath = "FreeBlazor.TogglePasswordInput", Links = SingleLink("Demo", "showcase/togglepassword") },
+            },
+        };
+    }
+
+    private static ShowcaseSectionData BuildTier1Section()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "tier1-variants",
+            Title = "Tier 1 Variant Families",
+            BadgeText = "15 pages",
+            Description = "Foundational extracted components, each with focused V1 / V2 / V3 routes for local testing.",
+            Accent = "info",
+            ColumnClass = "col-md-6 col-lg-4 col-xl-3",
+            Items = new List<ShowcaseCardItem>
+            {
+                BuildVariantFamily("Signature", "fa-solid fa-signature", "3 variants", "jSignature pad with binding, remount round-trip, and programmatic clear.", "FreeBlazorExtended/Signature/", "signature"),
+                BuildVariantFamily("InfoTip", "fa-solid fa-circle-info", "3 variants", "Inline explanation popover for labels, forms, and embedded snippets.", "FreeBlazorExtended/InfoTip/", "infotip"),
+                BuildVariantFamily("NetworkChart", "fa-solid fa-diagram-project", "3 variants", "vis.js network graph with seeded layouts, callbacks, and ref-driven controls.", "FreeBlazorExtended/NetworkChart/", "networkchart"),
+                BuildVariantFamily("Wizard", "fa-solid fa-list-ol", "3 variants", "Stepper, header, and summary primitives composed into simple and advanced flows.", "FreeBlazorExtended/Wizard/", "wizard"),
+                BuildVariantFamily("AboutSection", "fa-solid fa-circle-question", "3 variants", "Collapsible contextual explainer card with rich child content.", "FreeBlazorExtended/AboutSection/", "aboutsection"),
+            },
+        };
+    }
+
+    private static ShowcaseSectionData BuildTier2ASection()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "tier2a-variants",
+            Title = "Tier 2A Variant Families",
+            BadgeText = "15 pages",
+            Description = "Search, timing, pipeline, timeline, and gallery families with focused isolated demos.",
+            Accent = "primary",
+            ColumnClass = "col-md-6 col-lg-4 col-xl-3",
+            Items = new List<ShowcaseCardItem>
+            {
+                BuildVariantFamily("ToastContainer", "fa-solid fa-bell", "3 variants", "Global notification stack driven by NotificationService — success, error, warning, info with auto-dismiss.", "FreeBlazorExtended/Toast/", "toastcontainer"),
+                BuildVariantFamily("CommandPalette", "fa-solid fa-terminal", "3 variants", "Ctrl+K overlay with categories, hotkeys, recent history, and callback routing.", "FreeBlazorExtended/CommandPalette/", "commandpalette"),
+                BuildVariantFamily("Timer", "fa-regular fa-clock", "3 variants", "Countdown timer with defaults, Pomodoro styling, and chained work/break behavior.", "FreeBlazorExtended/Timer/", "timer"),
+                BuildVariantFamily("PipelineTracker", "fa-solid fa-route", "3 variants", "Horizontal process tracker with explicit states, details panel, and click handling.", "FreeBlazorExtended/PipelineTracker/", "pipelinetracker"),
+                BuildVariantFamily("Timeline", "fa-solid fa-stream", "3 variants", "Vertical event feed with actors, timestamps, rich details, and drill-in state.", "FreeBlazorExtended/Timeline/", "timeline"),
+                BuildVariantFamily("ImageGallery", "fa-regular fa-images", "3 variants", "Grid gallery with lightbox mode and a custom click-handler mode.", "FreeBlazorExtended/ImageGallery/", "imagegallery"),
+            },
+        };
+    }
+
+    private static ShowcaseSectionData BuildTier2BSection()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "tier2b-variants",
+            Title = "Tier 2B Variant Families",
+            BadgeText = "15 pages",
+            Description = "Carousel, board, navigation, file-picker, and file-rendering families with composed demo routes.",
+            Accent = "secondary",
+            ColumnClass = "col-md-6 col-lg-4 col-xl-3",
+            Items = new List<ShowcaseCardItem>
+            {
+                BuildVariantFamily("Carousel", "fa-solid fa-images", "3 variants", "Hero-slider pattern with autoplay, dots, filmstrip, and ref-driven controls.", "FreeBlazorExtended/Carousel/", "carousel"),
+                BuildVariantFamily("KanbanBoard", "fa-solid fa-table-columns", "3 variants", "Controlled drag-drop board with WIP limits, custom cards, and move logging.", "FreeBlazorExtended/KanbanBoard/", "kanbanboard"),
+                BuildVariantFamily("ExampleNav", "fa-solid fa-signs-post", "3 variants", "Breadcrumb plus Prev / All / Next strip for demo-family navigation.", "FreeBlazorExtended/ExampleNav/", "examplenav"),
+                BuildVariantFamily("SelectFile", "fa-solid fa-folder-open", "3 variants", "Host-agnostic file picker, loading states, and composed attachment flow.", "FreeBlazorExtended/SelectFile/", "selectfile"),
+                BuildVariantFamily("RenderFiles", "fa-solid fa-file-lines", "3 variants", "Inline file tile renderer with click handlers, deletion, and mixed file types.", "FreeBlazorExtended/RenderFiles/", "renderfiles"),
+            },
+        };
+    }
+
+    private static ShowcaseCardItem BuildVariantFamily(string title, string iconClass, string badgeText, string summary, string codePath, string routeSegment)
+    {
+        return new ShowcaseCardItem
+        {
+            Title = title,
+            IconClass = iconClass,
+            BadgeText = badgeText,
+            Summary = summary,
+            Detail = "Open V1 for the bare default usage, V2 for a configured real-world example, and V3 for the advanced interaction slice.",
+            CodePath = codePath,
+            Links = BuildVariantLinks(routeSegment),
+        };
+    }
+
+    private static List<ShowcaseLink> BuildVariantLinks(string routeSegment)
+    {
+        return new List<ShowcaseLink>
+        {
+            new() { Label = "V1", Route = $"showcase/{routeSegment}/v1" },
+            new() { Label = "V2", Route = $"showcase/{routeSegment}/v2" },
+            new() { Label = "V3", Route = $"showcase/{routeSegment}/v3" },
+        };
+    }
+
+    private static List<ShowcaseLink> SingleLink(string label, string route)
+    {
+        return new List<ShowcaseLink>
+        {
+            new() { Label = label, Route = route },
+        };
+    }
+
+    private sealed class ShowcaseSectionData
+    {
+        public string AnchorId { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string BadgeText { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Accent { get; set; } = "primary";
+        public string ColumnClass { get; set; } = "col-md-6 col-lg-4";
+        public List<ShowcaseCardItem> Items { get; set; } = new();
+    }
+
+    private sealed class ShowcaseCardItem
+    {
+        public string Title { get; set; } = "";
+        public string IconClass { get; set; } = "";
+        public string BadgeText { get; set; } = "";
+        public string Summary { get; set; } = "";
+        public string Detail { get; set; } = "";
+        public string CodePath { get; set; } = "";
+        public List<ShowcaseLink> Links { get; set; } = new();
+    }
+
+    private sealed class ShowcaseLink
+    {
+        public string Label { get; set; } = "";
+        public string Route { get; set; } = "";
+    }
+}

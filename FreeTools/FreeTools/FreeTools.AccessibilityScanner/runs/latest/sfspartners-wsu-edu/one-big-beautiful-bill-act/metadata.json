@@ -1,0 +1,57 @@
+{
+  "PagePath": "/one-big-beautiful-bill-act/",
+  "Url": "https://sfspartners.wsu.edu/one-big-beautiful-bill-act/",
+  "FinalUrl": null,
+  "Title": "One Big Beautiful Bill Act | SFS Partner Portal",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 659386,
+  "ScreenshotSizeBytes": 79775,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 79775
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:53.4707091Z"
+}

@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 163,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "figure \u003E a",
+      "Snippet": "\u003Ca href=\u0022https://hrs.wsu.edu/wp-content/uploads/2020/09/test-tube-5065426_1920-e1600722449623-1188x891.jpg\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

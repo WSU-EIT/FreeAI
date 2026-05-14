@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 645,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "list",
+      "CanonicalRuleId": "list",
+      "Severity": "serious",
+      "Message": "\u003Cul\u003E and \u003Col\u003E must only directly contain \u003Cli\u003E, \u003Cscript\u003E or \u003Ctemplate\u003E elements",
+      "Selector": ".d-flex \u003E .navbar-nav.me-auto",
+      "Snippet": "\u003Cul class=\u0022navbar-nav me-auto\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

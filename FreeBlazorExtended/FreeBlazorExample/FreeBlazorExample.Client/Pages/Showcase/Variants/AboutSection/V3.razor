@@ -1,0 +1,40 @@
+@page "/showcase/aboutsection/v3"
+@using FreeBlazorExtended.AboutSection
+@using FreeBlazorExtended.InfoTip
+
+<div class="container-fluid py-4">
+    <h1>Stacked About Sections With Embedded InfoTips</h1>
+
+    <AboutSection Title="Overview"
+                  Subtitle="Why this pattern works"
+                  IconClass="fa-solid fa-circle-info"
+                  StartExpanded="true">
+        <p class="mb-0">
+            AboutSection is a flexible explanation container for pages that need background context.
+            <InfoTip Title="Flexible container"
+                     Description="The component simply renders caller-supplied ChildContent inside a collapsible card, so the page decides what the content should be." />
+        </p>
+    </AboutSection>
+
+    <AboutSection Title="Audience"
+                  Subtitle="Who benefits from the extra context"
+                  IconClass="fa-solid fa-users"
+                  StartExpanded="false">
+        <p class="mb-0">
+            It helps implementers, reviewers, and business users align on the intent of a page before they start clicking.
+            <InfoTip Title="Reviewers"
+                     Description="This includes developers, QA, accessibility reviewers, and product owners who need to understand the purpose of the page quickly." />
+        </p>
+    </AboutSection>
+
+    <AboutSection Title="Tech Stack"
+                  Subtitle="Composing components together"
+                  IconClass="fa-solid fa-screwdriver-wrench"
+                  StartExpanded="false">
+        <p class="mb-0">
+            This slot can host plain markup or other reusable components like InfoTip.
+            <InfoTip Title="Composition"
+                     Description="Because ChildContent is just a RenderFragment, nested components work normally inside the expanded body." />
+        </p>
+    </AboutSection>
+</div>

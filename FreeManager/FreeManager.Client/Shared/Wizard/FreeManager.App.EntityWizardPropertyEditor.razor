@@ -1,0 +1,442 @@
+﻿@* EntityWizardPropertyEditor.App.razor - Modal for adding/editing properties *@
+@* Improved UX: Visual type picker, collapsible sections, Save & Add Another, smart suggestions *@
+
+@if (IsOpen) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-list-check me-2"></i>
+                        @(Property.Id == Guid.Empty ? "Add Property" : "Edit Property")
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @* ============================================================ *@
+                    @* SECTION 1: Basic Info (Always visible) *@
+                    @* ============================================================ *@
+                    <div class="property-section mb-4">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Property Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg @Helpers.MissingValue(Property.Name)"
+                                   @bind="Property.Name" @bind:event="oninput"
+                                   @onfocusout="OnNameChanged"
+                                   placeholder="e.g., CustomerName, Status, CreatedAt" />
+                            <div class="form-text">
+                                Must be a valid C# identifier (letters and numbers, starts with letter).
+                            </div>
+                        </div>
+
+                        @* Smart Name Suggestion *@
+                        <FreeManager_App_EntityWizardSmartSuggestion PropertyName="@Property.Name"
+                                                         CurrentType="@_selectedType"
+                                                         OnApply="ApplySmartSuggestion" />
+
+                        @* Visual Type Picker *@
+                        <FreeManager_App_EntityWizardTypePicker SelectedType="@_selectedType" 
+                                                     SelectedTypeChanged="OnTypePickerChanged"
+                                                     OnTypeSelected="OnTypeChanged" />
+                    </div>
+
+                    @* ============================================================ *@
+                    @* SECTION 2: Type-Specific Options (Collapsible) *@
+                    @* ============================================================ *@
+                    <div class="property-section mb-3">
+                        <div class="section-header" @onclick="() => _showTypeOptions = !_showTypeOptions">
+                            <i class="fa-solid @(_showTypeOptions ? "fa-chevron-down" : "fa-chevron-right") me-2"></i>
+                            <span>Type Options</span>
+                            <span class="badge bg-secondary ms-2">@GetTypeOptionsSummary()</span>
+                        </div>
+                        
+                        @if (_showTypeOptions) {
+                            <div class="section-content mt-3">
+                                @* Enum-specific options *@
+                                @if (_selectedType == "enum") {
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            Enum <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <select class="form-select" @bind="Property.EnumName">
+                                                <option value="">-- Select Enum --</option>
+                                                @foreach (var enumDef in Enums) {
+                                                    <option value="@enumDef.Name">@enumDef.Name</option>
+                                                }
+                                            </select>
+                                            <button class="btn btn-outline-primary" type="button" @onclick="CreateNewEnum">
+                                                <i class="fa-solid fa-plus me-1"></i>
+                                                New Enum
+                                            </button>
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(Property.EnumName)) {
+                                            var enumDef = Enums.FirstOrDefault(e => e.Name == Property.EnumName);
+                                            if (enumDef != null) {
+                                                <div class="form-text">
+                                                    <i class="fa-solid fa-list me-1"></i>
+                                                    Values: <code>@string.Join(", ", enumDef.Values)</code>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+
+                                @* String-specific options *@
+                                @if (_selectedType == "string") {
+                                    <div class="mb-3">
+                                        <label class="form-label">Max Length</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" 
+                                                   @bind="Property.MaxLength"
+                                                   placeholder="Leave blank for unlimited" />
+                                            <span class="input-group-text">chars</span>
+                                        </div>
+                                        <div class="form-text">
+                                            <div class="d-flex gap-2 mt-1">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => Property.MaxLength = 50">50</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => Property.MaxLength = 100">100</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => Property.MaxLength = 200">200</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => Property.MaxLength = 500">500</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => Property.MaxLength = null">Max</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @* Default Value *@
+                                <div class="mb-3">
+                                    <label class="form-label">Default Value</label>
+                                    <input type="text" class="form-control"
+                                           @bind="Property.DefaultValue"
+                                           placeholder="@GetDefaultPlaceholder()" />
+                                    <div class="form-text">
+                                        C# expression for the default value. Leave blank for type default.
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @* ============================================================ *@
+                    @* SECTION 3: Constraints (Collapsible) *@
+                    @* ============================================================ *@
+                    <div class="property-section mb-3">
+                        <div class="section-header" @onclick="() => _showConstraints = !_showConstraints">
+                            <i class="fa-solid @(_showConstraints ? "fa-chevron-down" : "fa-chevron-right") me-2"></i>
+                            <span>Constraints</span>
+                            <span class="badge bg-secondary ms-2">@GetConstraintsSummary()</span>
+                        </div>
+                        
+                        @if (_showConstraints) {
+                            <div class="section-content mt-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="prop-required"
+                                                   @bind="Property.IsRequired" />
+                                            <label class="form-check-label" for="prop-required">
+                                                <strong>Required</strong>
+                                            </label>
+                                        </div>
+                                        <div class="form-text mb-3">Field must have a value.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="prop-nullable"
+                                                   @bind="Property.IsNullable" 
+                                                   disabled="@Property.IsRequired" />
+                                            <label class="form-check-label" for="prop-nullable">
+                                                <strong>Nullable</strong>
+                                            </label>
+                                        </div>
+                                        <div class="form-text mb-3">Type becomes nullable (e.g., int?).</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="prop-system"
+                                           @bind="Property.IsSystemField" />
+                                    <label class="form-check-label" for="prop-system">
+                                        <strong>System Field</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text mb-3">Mark as system-managed (shown differently in UI).</div>
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="prop-filterable"
+                                           @bind="Property.IsFilterable" />
+                                    <label class="form-check-label" for="prop-filterable">
+                                        <strong>Filterable</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text">Include in search/filter panel.</div>
+                            </div>
+                        }
+                    </div>
+
+                    @* ============================================================ *@
+                    @* SECTION 4: Description (Collapsible) *@
+                    @* ============================================================ *@
+                    <div class="property-section mb-3">
+                        <div class="section-header" @onclick="() => _showDescription = !_showDescription">
+                            <i class="fa-solid @(_showDescription ? "fa-chevron-down" : "fa-chevron-right") me-2"></i>
+                            <span>Description</span>
+                            @if (!string.IsNullOrWhiteSpace(Property.Description)) {
+                                <span class="badge bg-success ms-2">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            }
+                        </div>
+                        
+                        @if (_showDescription) {
+                            <div class="section-content mt-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Description / Comment</label>
+                                    <textarea class="form-control" rows="2"
+                                              @bind="Property.Description"
+                                              placeholder="Brief description of this property (optional)"></textarea>
+                                    <div class="form-text">
+                                        This becomes a code comment in the generated entity.
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">
+                        Cancel
+                    </button>
+                    @if (Property.Id == Guid.Empty) {
+                        <button type="button" class="btn btn-outline-primary" 
+                                @onclick="SaveAndAddAnother"
+                                disabled="@(!CanSave())">
+                            <i class="fa-solid fa-plus me-1"></i>
+                            Save & Add Another
+                        </button>
+                    }
+                    <button type="button" class="btn btn-primary" 
+                            @onclick="Save"
+                            disabled="@(!CanSave())">
+                        <i class="fa-solid fa-save me-1"></i>
+                        Save Property
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .property-section {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .section-header {
+        background: #f8f9fa;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        user-select: none;
+    }
+    
+    .section-header:hover {
+        background: #e9ecef;
+    }
+    
+    .section-content {
+        padding: 0 1rem 1rem 1rem;
+    }
+    
+    .property-section:first-child {
+        border: none;
+    }
+    
+    .property-section:first-child .section-content {
+        padding: 0;
+    }
+</style>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DataObjects.PropertyDefinition Property { get; set; } = new();
+    [Parameter] public EventCallback<DataObjects.PropertyDefinition> PropertyChanged { get; set; }
+
+    [Parameter] public List<DataObjects.EnumDefinition> Enums { get; set; } = new();
+
+    [Parameter] public EventCallback<DataObjects.PropertyDefinition> OnSave { get; set; }
+    [Parameter] public EventCallback<string> OnAddEnum { get; set; }
+
+    private string _selectedType = "string";
+    
+    // Collapsible section states
+    private bool _showTypeOptions = true;
+    private bool _showConstraints = false;
+    private bool _showDescription = false;
+
+    protected override void OnParametersSet() {
+        if (IsOpen && Property != null) {
+            // Parse type for picker
+            if (Property.Type.StartsWith("enum:")) {
+                _selectedType = "enum";
+                Property.EnumName = Property.Type.Replace("enum:", "");
+            } else if (!string.IsNullOrEmpty(Property.Type)) {
+                _selectedType = Property.Type;
+            } else {
+                _selectedType = "string";
+            }
+            
+            // Auto-set nullable based on required
+            if (Property.IsRequired) {
+                Property.IsNullable = false;
+            }
+            
+            // For new properties, expand type options
+            if (Property.Id == Guid.Empty) {
+                _showTypeOptions = true;
+                _showConstraints = false;
+                _showDescription = false;
+            } else {
+                // For edit, show sections with values
+                _showTypeOptions = true;
+                _showConstraints = Property.IsSystemField || !Property.IsFilterable;
+                _showDescription = !string.IsNullOrWhiteSpace(Property.Description);
+            }
+        }
+    }
+
+    private void OnNameChanged() {
+        // Smart suggestion will automatically update via parameter binding
+    }
+
+    private void OnTypePickerChanged(string newType) {
+        _selectedType = newType;
+        // Clear enum name if switching away from enum
+        if (newType != "enum") {
+            Property.EnumName = null;
+        }
+        // Clear max length if not string
+        if (newType != "string") {
+            Property.MaxLength = null;
+        }
+    }
+
+    private void OnTypeChanged(string newType) {
+        _selectedType = newType;
+        // Clear enum name if switching away from enum
+        if (newType != "enum") {
+            Property.EnumName = null;
+        }
+        // Clear max length if not string
+        if (newType != "string") {
+            Property.MaxLength = null;
+        }
+    }
+
+    private void ApplySmartSuggestion(DataObjects.SmartNameSuggestion suggestion) {
+        _selectedType = suggestion.SuggestedType;
+        if (suggestion.SuggestedDefault != null) {
+            Property.DefaultValue = suggestion.SuggestedDefault;
+        }
+        if (suggestion.SuggestMaxLength.HasValue) {
+            Property.MaxLength = suggestion.SuggestMaxLength;
+        }
+        Property.IsRequired = suggestion.SuggestRequired;
+        Property.IsSystemField = suggestion.SuggestSystemField;
+        Property.IsNullable = !suggestion.SuggestRequired;
+    }
+
+    private string GetTypeOptionsSummary() {
+        var parts = new List<string>();
+        if (_selectedType == "enum" && !string.IsNullOrWhiteSpace(Property.EnumName)) {
+            parts.Add(Property.EnumName);
+        }
+        if (_selectedType == "string" && Property.MaxLength.HasValue) {
+            parts.Add($"max {Property.MaxLength}");
+        }
+        if (!string.IsNullOrWhiteSpace(Property.DefaultValue)) {
+            parts.Add("default set");
+        }
+        return parts.Count > 0 ? string.Join(", ", parts) : "defaults";
+    }
+
+    private string GetConstraintsSummary() {
+        var parts = new List<string>();
+        if (Property.IsRequired) parts.Add("required");
+        if (Property.IsNullable) parts.Add("nullable");
+        if (Property.IsSystemField) parts.Add("system");
+        if (!Property.IsFilterable) parts.Add("not filterable");
+        return parts.Count > 0 ? string.Join(", ", parts) : "optional";
+    }
+
+    private bool CanSave() {
+        if (string.IsNullOrWhiteSpace(Property.Name)) return false;
+        if (!System.Text.RegularExpressions.Regex.IsMatch(Property.Name, @"^[A-Za-z][A-Za-z0-9]*$")) return false;
+        if (_selectedType == "enum" && string.IsNullOrWhiteSpace(Property.EnumName)) return false;
+        return true;
+    }
+
+    private string GetDefaultPlaceholder() {
+        var typeInfo = DataObjects.PropertyTypes.Get(_selectedType);
+        return typeInfo?.CommonDefault ?? "Leave blank for type default";
+    }
+
+    private async Task Save() {
+        if (!CanSave()) return;
+        await SavePropertyInternal();
+    }
+
+    private async Task SaveAndAddAnother() {
+        if (!CanSave()) return;
+        await SavePropertyInternal();
+        
+        // Reset for new property
+        Property = new DataObjects.PropertyDefinition {
+            SortOrder = Property.SortOrder + 1
+        };
+        _selectedType = "string";
+        _showTypeOptions = true;
+        _showConstraints = false;
+        _showDescription = false;
+        
+        await PropertyChanged.InvokeAsync(Property);
+    }
+
+    private async Task SavePropertyInternal() {
+        // Set the type based on selection
+        if (_selectedType == "enum") {
+            Property.Type = $"enum:{Property.EnumName}";
+        } else {
+            Property.Type = _selectedType;
+            Property.EnumName = null;
+        }
+
+        // Ensure ID
+        if (Property.Id == Guid.Empty) {
+            Property.Id = Guid.NewGuid();
+        }
+
+        await OnSave.InvokeAsync(Property);
+    }
+
+    private async Task Close() {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private async Task CreateNewEnum() {
+        // Generate enum name from property name
+        var enumName = Property.Name + "Type";
+        if (string.IsNullOrWhiteSpace(Property.Name)) {
+            enumName = "NewEnum";
+        }
+        await OnAddEnum.InvokeAsync(enumName);
+    }
+}

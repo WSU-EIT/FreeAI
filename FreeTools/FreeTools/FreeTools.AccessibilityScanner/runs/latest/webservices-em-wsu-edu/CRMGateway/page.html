@@ -1,0 +1,306 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trussel Gateway</title>
+    <link href="/CRMGateway/Content/themes/base/theme.css" rel="stylesheet">
+    <link href="/CRMGateway/Content/bootstrap.min.css" rel="stylesheet">
+    <link href="/CRMGateway/Content/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/CRMGateway/Content/glyphicons.css" rel="stylesheet">
+    <link href="/CRMGateway/Content/Site.css" rel="stylesheet">
+    <script src="/CRMGateway/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="/CRMGateway/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="/CRMGateway/Scripts/bootstrap.min.js"></script>
+    <script src="/CRMGateway/Scripts/knockout-3.4.1.js"></script>
+    <script src="/CRMGateway/Scripts/Common.js"></script>
+
+    <!-- need to setup CodeMirror for SQL -->
+    <link href="/CRMGateway/Scripts/CodeMirror/codemirror.css" rel="stylesheet">
+    <link href="/CRMGateway/Scripts/CodeMirror/addon/dialog/dialog.css" rel="stylesheet">
+    <link href="/CRMGateway/Scripts/CodeMirror/addon/hint/show-hint.css" rel="stylesheet">
+    <script src="/CRMGateway/Scripts/CodeMirror/codemirror.js"></script>
+    <script src="/CRMGateway/Scripts/CodeMirror/mode/sql/sql.js"></script>
+    <script src="/CRMGateway/Scripts/CodeMirror/addon/hint/show-hint.js"></script>
+    <script src="/CRMGateway/Scripts/CodeMirror/addon/hint/sql-hint.js"></script>
+
+
+    <style>
+        .CodeMirror {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        .CodeMirror-scroll {
+            max-height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- BEGIN Modal Bootstrap Dialog -->
+    <div id="modalDialog" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" id="modalDialogBox">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" id="modalDialogTitleCloseButton" onclick="ModalDialogHide();">×</button>
+                    <h4 class="modal-title" id="modalDialogTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="modalDialogMessage" class="alert alert-success" style="display:none;"></div>
+                    <div id="modalDialogError" class="alert alert-danger" style="display:none;"></div>
+                    <div id="modalDialogBody"></div>
+                    <div id="modalDialogOkButtonHandler" class="hidden"></div>
+
+                    <div class="modal-section" id="modal-section-queries" style="display:none;">
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" onclick="ModalDialogHide();">
+                                        <i class="glyphicon glyphicon-remove"></i> Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <!-- ko if: Queries().length == 0 -->
+                                The queries could not be loaded.
+                                <!-- /ko -->
+                                <!-- ko if: Queries().length > 0 -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:1%;"></th>
+                                            <th style="width:1%;">ID</th>
+                                            <th style="width:auto;">Query</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach:Queries">
+                                        <tr>
+                                            <td>
+                                                <button type="button" class="btn btn-xs btn-primary" data-bind="click:function(){$root.EditQuery($data.QueryId())}">
+                                                    <i class="glyphicon glyphicon-edit"></i>
+                                                </button>
+                                            </td>
+                                            <td data-bind="text:$data.QueryId"></td>
+                                            <td data-bind="html:$data.Label"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer" id="modalDialogFooter">
+                    <button type="button" class="btn btn-success" id="modalDialogOkButton" onclick="ModalDialogOK();">
+                        <i class="" id="modalDialogOkButtonIcon"></i>
+                        <span id="modalDialogOkButtonText">OK</span>
+                    </button>
+                    <span id="modalExtraButtons" style="display:none;"></span>
+                    <button type="button" class="btn btn-default" id="modalDialogCancelButton" onclick="ModalDialogHide();">
+                        <i class="glyphicon glyphicon-remove"></i>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- END Modal Bootstrap Dialog -->
+
+    <!-- BEGIN Modal Bootstrap Page Dialog -->
+    <div id="modalPageDialog" class="modal" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" id="modalPageDialogBox">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" id="modalPageDialogTitleCloseButton" onclick="ModalPageDialogHide();">×</button>
+                    <h4 class="modal-title" id="modalPageDialogTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="modalPageDialogMessage" class="alert alert-success" style="display:none;"></div>
+                    <div id="modalPageDialogError" class="alert alert-danger" style="display:none;"></div>
+                    <div id="modalPageDialogBody"></div>
+                    <div id="modalPageDialogOkButtonHandler" class="hidden"></div>
+
+                    <div class="modal-page-section" id="modal-page-section-query" style="display:none;">
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" onclick="ModalPageDialogHide();">
+                                        <i class="glyphicon glyphicon-remove"></i> Close
+                                    </button>
+                                    <button type="button" class="btn btn-warning" data-bind="click:ValidateQuery, enable:Validated() == false">
+                                        <i class="glyphicon glyphicon-check"></i> Validate Query
+                                    </button>
+                                    <button type="button" class="btn btn-success" data-bind="click:SaveQuery, enable:Validated() == true">
+                                        <i class="glyphicon glyphicon-save"></i> Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <span data-bind="html:Query().Description"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <textarea class="form-control" id="edit-query-sql" style=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="modalPageDialogFooter">
+                    <button class="btn btn-success" id="modalPageDialogOkButton" onclick="ModalPageDialogOK();">
+                        <i class="" id="modalPageDialogOkButtonIcon"></i>
+                        <span id="modalPageDialogOkButtonText">OK</span>
+                    </button>
+                    <button class="btn btn-default" id="modalPageDialogCancelButton" onclick="ModalPageDialogHide()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                        <span id="modalPageDialogCancelButtonText">Cancel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Bootstrap Page Dialog -->
+
+    
+
+
+<div class="centered">
+    <div class="login-centered" id="login-area">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1 class="panel-title"> Login Required</h1>
+            </div>
+            <div class="panel-body">
+<form action="/CRMGateway/Login" id="login-form" method="post" onsubmit="return checkLoginForm()">                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" title="Username"><span class="glyphicon glyphicon-user" style="width:20px;"></span></span>
+                                    <input class="form-control padbottom" id="login-username" name="Username" placeholder="username" type="text" value="" style="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" title="Password"><span class="glyphicon glyphicon-lock" style="width:20px;"></span></span>
+                                    <input class="form-control padbottom" id="login-password" name="Password" placeholder="password" type="password" style="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" title="URL"><span class="glyphicon glyphicon-link" style="width:20px;"></span></span>
+                                    <input class="form-control padbottom" id="login-endpoint" name="Endpoint" placeholder="enter the URL of your Trussel application" type="text" value="https://trusselbuilder.com/" style="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row padbottom">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon" title="Customer ID"><span class="glyphicon glyphicon-info-sign" style="width:20px;"></span></span>
+                                    <input class="form-control padbottom" id="login-customer-id" name="CustomerId" placeholder="enter your unique Customer ID GUID" type="text" value="edb2e2d3-2e86-42d9-9500-68669de505fb" style="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-success">
+                                    <span class="glyphicon glyphicon-log-in"></span>
+                                    Login
+                                </button>
+                            </div>
+                        </div>
+</form>            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#login-username").focus();
+    });
+
+    function checkLoginForm() {
+        var u = $("#login-username").val();
+        var p = $("#login-password").val();
+        var e = $("#login-endpoint").val();
+        if (u == "") {
+            $("#login-username").focus();
+            return false;
+        }
+        if (p == "") {
+            $("#login-password").focus();
+            return false;
+        }
+        if (e == "") {
+            $("#login-endpoint").focus();
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+
+
+    <script type="text/javascript">
+        RootUrl = "/CRMGateway/";
+        Token = "";
+        var SqlCodeMirror;
+
+        $(document).ready(function () {
+            
+        });
+
+        function SetupSqlCodeMirror() {
+            SqlCodeMirror = CodeMirror.fromTextArea(document.getElementById("edit-query-sql"), {
+                mode: "text/x-mssql",
+                indentWithTabs: true,
+                smartIndent: true,
+                lineNumbers: true,
+                matchBrackets: true,
+                autofocus: true,
+                extraKeys: { "Ctrl-Space": "autocomplete" },
+                hintOptions: {
+                    tables: {
+                        users: { name: null, score: null, birthDate: null },
+                        countries: { name: null, population: null, size: null }
+                    }
+                }
+            });
+            SqlCodeMirror.on("change", function () {
+                SqlCodeMirror.save();
+                window.viewModel.UpdateQuerySQL($("#edit-query-sql").val());
+            });
+        }
+
+        function RefreshSqlCodeMirror(safety) {
+            if (safety == undefined || safety == null) {
+                safety = 0;
+            }
+            safety += 1;
+            if (safety > 20) {
+                return;
+            }
+
+            if ($("#modalPageDialog").is(":visible") == true) {
+                SqlCodeMirror.setValue($("#edit-query-sql").val());
+                SqlCodeMirror.refresh();
+            } else {
+                setTimeout("RefreshSqlCodeMirror(" + safety + ")", 100);
+            }
+        }
+    </script>
+
+
+</body></html>

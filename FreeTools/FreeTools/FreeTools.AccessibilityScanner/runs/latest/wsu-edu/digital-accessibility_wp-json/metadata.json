@@ -1,0 +1,21 @@
+{
+  "PagePath": "/digital-accessibility/wp-json/",
+  "Url": "https://wsu.edu/digital-accessibility/wp-json/",
+  "FinalUrl": null,
+  "Title": null,
+  "StatusCode": 200,
+  "Success": false,
+  "HtmlSizeBytes": 0,
+  "ScreenshotSizeBytes": 0,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": null,
+  "ErrorMessage": "Timeout 30000ms exceeded.\nCall log:\n  - taking page screenshot\n  - waiting for fonts to load...\n  - fonts loaded",
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:16:09.8792448Z"
+}

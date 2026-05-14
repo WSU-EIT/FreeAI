@@ -1,0 +1,103 @@
+{
+  "PagePath": "/apartments/",
+  "Url": "https://housing.wsu.edu/apartments/",
+  "FinalUrl": null,
+  "Title": "Apartments",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 65833,
+  "ScreenshotSizeBytes": 202092,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 202092
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 9,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/o3ijkg4z/chief-jo-renovated-furnished-2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ep0ipbd1/chinook-exterior-3.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pxmnc3qm/columbia-exterior-3.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hpcl5spy/kamiak-exterior-2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pwnhpjqm/nez-perce-6.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u0ropgsu/stimson-courtyard-adjusted.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/esplsalp/terrace-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hflg3a3c/valley-crest-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5v2d0lg2/yakama-exterior.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 19,
+    "Critical": 6,
+    "Serious": 13,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 13,
+        "Critical": 0,
+        "Serious": 13,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:11 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:09:12.5465775Z"
+}

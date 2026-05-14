@@ -1,0 +1,797 @@
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Helpers.BuildShowcaseUrl()">Showcase</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Component Catalog</li>
+        </ol>
+    </nav>
+
+    <div class="row align-items-start g-3 mb-4">
+        <div class="col-xl-8">
+            <h1 class="mb-1">Component Catalog</h1>
+            <p class="lead mb-2">A neutral stage for the shared controls, plus a structured index for the larger feature and variant surfaces.</p>
+            <div class="d-flex gap-2 flex-wrap">
+                <span class="badge text-bg-dark">@EmbeddedDemoCount embedded demos</span>
+                <span class="badge text-bg-secondary">@FeatureCount feature demos</span>
+                <span class="badge text-bg-secondary">@VariantFamilyCount variant families</span>
+                <span class="badge text-bg-secondary">@SharedSurfaceCount shared showcase surfaces</span>
+            </div>
+        </div>
+        <div class="col-xl-4 text-xl-end">
+            <a href="@Helpers.BuildShowcaseUrl()" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Showcase
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 bg-light mb-4">
+        <div class="card-body py-3">
+            <p class="small mb-2">
+                The route hosts are now thin. <strong>/showcase</strong> is backed by <strong>ShowcaseHome</strong>, and
+                <strong>/showcase/catalog</strong> is backed by <strong>ShowcaseCatalogSurface</strong>, so both surfaces can be reused without copying page markup.
+            </p>
+            <p class="small text-muted mb-0">
+                Embedded component examples stay on a neutral gray stage. Larger feature demos and variant families stay linked out so the catalog stays fast and scannable.
+            </p>
+        </div>
+    </div>
+
+    <nav aria-label="Catalog section index" class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var section in _sectionLinks) {
+                <a href="@Helpers.BuildShowcaseCatalogAnchorUrl(section.AnchorId)" class="btn btn-outline-secondary btn-sm">@section.Title</a>
+            }
+        </div>
+    </nav>
+
+    <section id="showcase-surfaces" aria-labelledby="showcase-surfaces-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="showcase-surfaces-heading" class="h4 mb-0">Showcase Surfaces</h2>
+            <span class="badge text-bg-info">2 shared components</span>
+            <span class="text-muted small">The showcase landing page and catalog are both reusable shared components now.</span>
+        </div>
+
+        <div class="row g-3">
+            @foreach (var item in _surfaceCards) {
+                <div class="col-md-6 col-xl-4">
+                    <div class="card h-100 shadow-sm border-0 catalog-link-card">
+                        <div class="card-body">
+                            @if (!string.IsNullOrWhiteSpace(item.BadgeText)) {
+                                <span class="badge text-bg-secondary mb-2">@item.BadgeText</span>
+                            }
+                            <h3 class="h5 mb-2">@item.Title</h3>
+                            <p class="small mb-2">@item.Summary</p>
+                            @if (!string.IsNullOrWhiteSpace(item.Detail)) {
+                                <p class="small text-muted mb-3">@item.Detail</p>
+                            }
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var link in item.Links) {
+                                    <a href="@link.Href" class="btn btn-outline-primary btn-sm">@link.Label</a>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.CodePath)) {
+                                <code class="catalog-code d-block mt-3">@item.CodePath</code>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="core-inputs" aria-labelledby="core-inputs-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="core-inputs-heading" class="h4 mb-0">Core Inputs</h2>
+            <span class="badge text-bg-primary">5 embedded controls</span>
+            <span class="text-muted small">Input primitives that fit directly into forms and light workflows.</span>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">AutoComplete</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.AutoComplete</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("autocomplete")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Search-as-you-type dropdown. Filters a string list as the user types and lets them pick a suggestion or type a custom value.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card">
+                    <label class="form-label small fw-semibold">Pick a country</label>
+                    <AutoComplete
+                        GetAutoCompleteItems="@SearchCountries"
+                        PlaceholderText="Start typing..."
+                        OnSelected="@OnCountrySelected" />
+                    @if (!string.IsNullOrEmpty(_acValue)) {
+                        <div class="mt-2 text-success small"><i class="fa-solid fa-check me-1"></i>Selected: <strong>@_acValue</strong></div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">AutoGrowText</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.AutoGrowText</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("autogrowtext")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Textarea that grows to fit its content. Paste a paragraph and the control expands without introducing an internal scrollbar.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card" style="max-width:480px">
+                    <label class="form-label small fw-semibold">Notes</label>
+                    <AutoGrowText Placeholder="Type or paste here. The box will grow." MinimumHeight="48px" @bind-Value="_agtValue" />
+                    <div class="text-muted small mt-1">@_agtValue?.Length chars</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">ConfirmationCode</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.ConfirmationCode</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("confirmationcode")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Multi-box digit input with auto-advance and backspace retreat. It is useful for OTP, PIN, and short verification workflows.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card">
+                    <label class="form-label small fw-semibold">Enter your 6-digit verification code</label>
+                    <ConfirmationCode Length="6" @bind-Value="_codeValue" OnValueChanged="@(() => { if (_codeValue?.Length == 6) _codeComplete = _codeValue; })" />
+                    @if (!string.IsNullOrEmpty(_codeComplete)) {
+                        <div class="mt-2 text-success small"><i class="fa-solid fa-check me-1"></i>Code entered: <strong>@_codeComplete</strong></div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">DateTimePicker</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.DateTimePicker</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("datetimepicker")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Type-aware date and time input. The control infers its mode from the bound TValue and covers DateOnly, TimeOnly, and DateTime use cases.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card">
+                    <div class="row g-3">
+                        <div class="col-sm-auto">
+                            <label class="form-label small fw-semibold">Date</label>
+                            <DateTimePicker TValue="DateOnly?" Value="_dateOnly" OnUpdate="@((DateOnly? value) => { _dateOnly = value; StateHasChanged(); })" />
+                            <div class="text-muted small mt-1">@(_dateOnly?.ToString("MMM d, yyyy") ?? "-")</div>
+                        </div>
+                        <div class="col-sm-auto">
+                            <label class="form-label small fw-semibold">Time</label>
+                            <DateTimePicker TValue="TimeOnly?" Value="_timeOnly" OnUpdate="@((TimeOnly? value) => { _timeOnly = value; StateHasChanged(); })" />
+                            <div class="text-muted small mt-1">@(_timeOnly?.ToString("h:mm tt") ?? "-")</div>
+                        </div>
+                        <div class="col-sm-auto">
+                            <label class="form-label small fw-semibold">Date + Time</label>
+                            <DateTimePicker TValue="DateTime?" Value="_dateTime" OnUpdate="@((DateTime? value) => { _dateTime = value; StateHasChanged(); })" />
+                            <div class="text-muted small mt-1">@(_dateTime?.ToString("MMM d h:mm tt") ?? "-")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-0">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">TogglePasswordInput</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.TogglePasswordInput</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("togglepassword")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Password box with a show or hide toggle. It fits basic auth flows while keeping the field itself consistent with the rest of the form controls.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card" style="max-width:360px">
+                    <label class="form-label small fw-semibold">Password</label>
+                    <TogglePasswordInput Value="_pwValue" OnChange="@(value => { _pwValue = value; StateHasChanged(); })"
+                                         Placeholder="Enter a password..." UseBootstrapInputGroup="true" />
+                    @if (!string.IsNullOrEmpty(_pwValue)) {
+                        <div class="text-muted small mt-2">Length: @_pwValue.Length characters</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="selection-collection" aria-labelledby="selection-collection-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="selection-collection-heading" class="h4 mb-0">Selection and Collection</h2>
+            <span class="badge text-bg-primary">3 embedded controls</span>
+            <span class="text-muted small">Shared primitives for options, chips, list editing, and general-purpose data collection.</span>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">GetInput</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.GetInput</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("getinput")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Universal input surface. One component can render text, select, checkbox, and the rest of the standard input families through configuration.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-semibold">Text</label>
+                            <GetInput UserInputType="GetInput.InputType.Text"
+                                      PlaceholderText="Name"
+                                      OnInputAccepted="@(new Action<string>(value => { _giText = value; StateHasChanged(); }))" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-semibold">Select</label>
+                            <GetInput UserInputType="GetInput.InputType.Select"
+                                      PlaceholderText="Choose a role"
+                                      UserInputOptions="@(new Dictionary<string, string> { { "Admin", "Admin" }, { "Manager", "Manager" }, { "User", "User" } })"
+                                      OnInputAccepted="@(new Action<string>(value => { _giSelect = value; StateHasChanged(); }))" />
+                        </div>
+                        <div class="col-sm-12">
+                            <label class="form-label small fw-semibold">Checkboxes</label>
+                            <GetInput UserInputType="GetInput.InputType.Checkbox"
+                                      UserInputOptions="@(new Dictionary<string, string> { { "Read", "Read" }, { "Write", "Write" }, { "Delete", "Delete" } })"
+                                      OnInputAccepted="@(new Action<List<string>>(value => { _giCheck = string.Join(", ", value); StateHasChanged(); }))" />
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-2">Values: "@_giText" / "@_giSelect" / "@_giCheck"</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">MultiSelect</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.MultiSelect</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("multiselect")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Multi-value picker with removable chips. It supports a compact many-choice workflow without forcing users into a full dialog surface.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card" style="max-width:420px">
+                    <label class="form-label small fw-semibold">Tags</label>
+                    <MultiSelect Options="@(_tagOptions.Select(tag => (tag, tag, _msValue?.Contains(tag) ?? false)).ToList())"
+                                 OnUpdate="@(selected => { _msValue = selected; StateHasChanged(); })" />
+                    @if (_msValue?.Count > 0) {
+                        <div class="text-muted small mt-2">Selected: @string.Join(", ", _msValue)</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-0">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">StringList</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.StringList</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("stringlist")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Editable list of strings with add, edit, delete, and reorder behavior. It works well for tags, skills, labels, and other short-value collections.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card" style="max-width:400px">
+                    <label class="form-label small fw-semibold">Required skills</label>
+                    <div class="input-group input-group-sm mb-2">
+                        <input type="text" class="form-control" placeholder="Add a skill"
+                               @bind="_slNewItem" @bind:event="oninput"
+                               @onkeydown="@(args => { if (args.Key == "Enter") AddSkill(); })" />
+                        <button class="btn btn-outline-primary" type="button" @onclick="AddSkill" disabled="@string.IsNullOrWhiteSpace(_slNewItem)">
+                            <i class="fa-solid fa-plus me-1"></i> Add
+                        </button>
+                    </div>
+                    <StringList @bind-Value="_slValue" />
+                    <div class="text-muted small mt-2">@_slValue.Count item(s)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="data-actions" aria-labelledby="data-actions-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="data-actions-heading" class="h4 mb-0">Data and Actions</h2>
+            <span class="badge text-bg-primary">2 embedded controls</span>
+            <span class="text-muted small">Shared behavior for confirmation flows and tabular data navigation.</span>
+        </div>
+
+        <div class="catalog-entry mb-5">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">DeleteConfirmation</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.DeleteConfirmation</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("deleteconfirmation")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Two-step delete guard that prevents accidental destructive actions with a compact interaction instead of a modal dialog.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card">
+                    <p class="small text-muted mb-3">Click once to arm the action, then confirm it.</p>
+                    <DeleteConfirmation OnConfirmed="@(() => _deleteConfirmed = true)" />
+                    @if (_deleteConfirmed) {
+                        <div class="mt-2 text-success small"><i class="fa-solid fa-check me-1"></i>Deletion confirmed. Nothing was actually deleted.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="catalog-entry mb-0">
+            <div class="catalog-header">
+                <div>
+                    <span class="catalog-name">PagedRecordset</span>
+                    <code class="catalog-ns ms-2">FreeBlazor.PagedRecordset</code>
+                </div>
+                <a href="@Helpers.BuildShowcaseUrl("pagedrecordset")" class="btn btn-outline-primary btn-sm">Full Demo</a>
+            </div>
+            <p class="catalog-desc">Paginated data table for record browsing. It is the compact catalog view for list-heavy admin and operations screens.</p>
+            <div class="catalog-stage">
+                <div class="catalog-component-card p-0 overflow-hidden">
+                    <PagedRecordset RecordData="@_recordset" NavigationCallbackHander="@OnRecordsetNav" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="full-features" aria-labelledby="full-features-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="full-features-heading" class="h4 mb-0">Feature Modules</h2>
+            <span class="badge text-bg-success">@FeatureCount demo surfaces</span>
+            <span class="text-muted small">Larger workflows stay linked here instead of being flattened into a single neutral stage.</span>
+        </div>
+
+        <div class="row g-3">
+            @foreach (var item in _featureCards) {
+                <div class="col-md-6 col-xl-4">
+                    <div class="card h-100 shadow-sm border-0 catalog-link-card">
+                        <div class="card-body">
+                            @if (!string.IsNullOrWhiteSpace(item.BadgeText)) {
+                                <span class="badge text-bg-success mb-2">@item.BadgeText</span>
+                            }
+                            <h3 class="h5 mb-2">@item.Title</h3>
+                            <p class="small mb-2">@item.Summary</p>
+                            @if (!string.IsNullOrWhiteSpace(item.Detail)) {
+                                <p class="small text-muted mb-3">@item.Detail</p>
+                            }
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var link in item.Links) {
+                                    <a href="@link.Href" class="btn btn-outline-success btn-sm">@link.Label</a>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.CodePath)) {
+                                <code class="catalog-code d-block mt-3">@item.CodePath</code>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section id="variant-families" aria-labelledby="variant-families-heading" class="catalog-section mb-5">
+        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+            <h2 id="variant-families-heading" class="h4 mb-0">Variant Families</h2>
+            <span class="badge text-bg-secondary">@VariantFamilyCount families</span>
+            <span class="text-muted small">The catalog indexes every V1, V2, and V3 route while keeping the detailed interactions on their own pages.</span>
+        </div>
+
+        @foreach (var group in _variantGroups) {
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+                    <h3 class="h5 mb-0">@group.Title</h3>
+                    <span class="badge text-bg-light border">@group.BadgeText</span>
+                    <span class="text-muted small">@group.Description</span>
+                </div>
+
+                <div class="row g-3">
+                    @foreach (var item in group.Items) {
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card h-100 shadow-sm border-0 catalog-link-card">
+                                <div class="card-body">
+                                    <h4 class="h6 mb-2">@item.Title</h4>
+                                    <p class="small mb-2">@item.Summary</p>
+                                    @if (!string.IsNullOrWhiteSpace(item.Detail)) {
+                                        <p class="small text-muted mb-3">@item.Detail</p>
+                                    }
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var link in item.Links) {
+                                            <a href="@link.Href" class="btn btn-outline-secondary btn-sm">@link.Label</a>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(item.CodePath)) {
+                                        <code class="catalog-code d-block mt-3">@item.CodePath</code>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+</div>
+
+<style>
+    .catalog-section {
+        scroll-margin-top: 1rem;
+    }
+
+    .catalog-link-card {
+        background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    }
+
+    .catalog-entry {
+        border-top: 2px solid #dee2e6;
+        padding-top: 1.5rem;
+    }
+
+    .catalog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .catalog-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .catalog-ns,
+    .catalog-code {
+        font-size: 0.72rem;
+        color: #6c757d;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .catalog-desc {
+        font-size: 0.875rem;
+        color: #555;
+        margin-bottom: 1rem;
+        max-width: 720px;
+    }
+
+    .catalog-stage {
+        background: #e9ecef;
+        border-radius: 8px;
+        padding: 2.5rem 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 120px;
+    }
+
+    .catalog-component-card {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+        padding: 1.25rem 1.5rem;
+        min-width: 280px;
+    }
+
+    @@media (max-width: 767.98px) {
+        .catalog-stage {
+            padding: 1.25rem;
+        }
+
+        .catalog-component-card {
+            min-width: 0;
+            width: 100%;
+        }
+    }
+</style>
+
+@code {
+    private readonly List<CatalogSectionLink> _sectionLinks = new();
+    private readonly List<CatalogCardItem> _surfaceCards = new();
+    private readonly List<CatalogCardItem> _featureCards = new();
+    private readonly List<CatalogCardGroup> _variantGroups = new();
+
+    private int EmbeddedDemoCount => 10;
+    private int FeatureCount => _featureCards.Count;
+    private int VariantFamilyCount => _variantGroups.Sum(group => group.Items.Count);
+    private int SharedSurfaceCount => _surfaceCards.Count;
+
+    protected override void OnInitialized()
+    {
+        _sectionLinks.AddRange(BuildSectionLinks());
+        _surfaceCards.AddRange(BuildSurfaceCards());
+        _featureCards.AddRange(BuildFeatureCards());
+        _variantGroups.AddRange(BuildVariantGroups());
+    }
+
+    private static List<CatalogSectionLink> BuildSectionLinks()
+    {
+        return new List<CatalogSectionLink>
+        {
+            new() { AnchorId = "showcase-surfaces", Title = "Surfaces" },
+            new() { AnchorId = "core-inputs", Title = "Core Inputs" },
+            new() { AnchorId = "selection-collection", Title = "Selection + Collection" },
+            new() { AnchorId = "data-actions", Title = "Data + Actions" },
+            new() { AnchorId = "full-features", Title = "Feature Modules" },
+            new() { AnchorId = "variant-families", Title = "Variant Families" },
+        };
+    }
+
+    private static List<CatalogCardItem> BuildSurfaceCards()
+    {
+        return new List<CatalogCardItem>
+        {
+            new()
+            {
+                BadgeText = "Shared",
+                Title = "ShowcaseHome",
+                Summary = "Reusable landing surface for the main showcase route.",
+                Detail = "This is the shared component behind /showcase. The page host stays thin and the surface can be embedded elsewhere.",
+                CodePath = "FreeBlazorExample.Client/Shared/ShowcaseHome.razor",
+                Links = new List<CatalogCardLink>
+                {
+                    new() { Label = "Open Showcase", Href = Helpers.BuildShowcaseUrl() },
+                },
+            },
+            new()
+            {
+                BadgeText = "Shared",
+                Title = "ShowcaseCatalogSurface",
+                Summary = "Reusable catalog surface for the component index route.",
+                Detail = "This shared component now owns the catalog layout, section index, embedded demos, and demo-directory cards.",
+                CodePath = "FreeBlazorExample.Client/Shared/ShowcaseCatalogSurface.razor",
+                Links = new List<CatalogCardLink>
+                {
+                    new() { Label = "Open Catalog", Href = Helpers.BuildShowcaseCatalogUrl() },
+                },
+            },
+        };
+    }
+
+    private static List<CatalogCardItem> BuildFeatureCards()
+    {
+        return new List<CatalogCardItem>
+        {
+            FeatureCard("101", "Dynamic Forms", "JSON-schema-driven form builder and renderer.", "Use this for forms that vary by customer, workflow, or survey definition.", "FreeBlazorExtended/DynamicForms/", "feature101-dynamic-forms"),
+            FeatureCard("102", "Multi-View Sync", "SignalR-backed master and slave session for synchronized views.", "Use this for guided presentations and shared screens.", "FreeBlazorExtended/MultiViewSync/", "feature102-multi-view-sync"),
+            FeatureCard("103", "Calendar and Scheduling", "Calendar, recurrence, reservation, and conflict-detection surface.", "Use this for appointment booking and resource scheduling.", "FreeBlazorExtended/Calendar/", "feature103-calendar"),
+            FeatureCard("104", "User Preferences", "Server-persisted per-user settings with roaming preference state.", "Use this for settings that survive cache clears and follow users across devices.", "FreeBlazorExtended/UserPreferences/", "feature104-user-preferences"),
+            FeatureCard("105", "Agent Monitoring", "Distributed Windows host monitoring and remote command surface.", "Use this for central monitoring of services, IIS pools, and host telemetry.", "FreeBlazorExtended/AgentMonitoring/", "feature105-agent-monitoring"),
+            FeatureCard("107", "Hierarchical Tree", "Recursive tree with drag-to-reparent and cycle prevention.", "Use this for org charts, folder structures, category trees, and menu builders.", "FreeBlazorExtended/HierarchicalTree/", "feature107-hierarchical-tree"),
+        };
+    }
+
+    private static CatalogCardItem FeatureCard(string badgeText, string title, string summary, string detail, string codePath, string route)
+    {
+        return new CatalogCardItem
+        {
+            BadgeText = badgeText,
+            Title = title,
+            Summary = summary,
+            Detail = detail,
+            CodePath = codePath,
+            Links = new List<CatalogCardLink>
+            {
+                new() { Label = "Open Demo", Href = Helpers.BuildShowcaseUrl(route) },
+            },
+        };
+    }
+
+    private static List<CatalogCardGroup> BuildVariantGroups()
+    {
+        return new List<CatalogCardGroup>
+        {
+            new()
+            {
+                Title = "Tier 1",
+                BadgeText = "15 pages",
+                Description = "Foundational extracted components with focused V1, V2, and V3 routes.",
+                Items = new List<CatalogCardItem>
+                {
+                    VariantCard("Signature", "jSignature pad with binding, remount round-trip, and programmatic clear.", "FreeBlazorExtended/Signature/", "signature"),
+                    VariantCard("InfoTip", "Inline explanation popover for labels, forms, and embedded snippets.", "FreeBlazorExtended/InfoTip/", "infotip"),
+                    VariantCard("NetworkChart", "vis.js network graph with seeded layouts, callbacks, and ref-driven controls.", "FreeBlazorExtended/NetworkChart/", "networkchart"),
+                    VariantCard("Wizard", "Stepper, header, and summary primitives composed into simple and advanced flows.", "FreeBlazorExtended/Wizard/", "wizard"),
+                    VariantCard("AboutSection", "Collapsible contextual explainer card with rich child content.", "FreeBlazorExtended/AboutSection/", "aboutsection"),
+                },
+            },
+            new()
+            {
+                Title = "Tier 2A",
+                BadgeText = "15 pages",
+                Description = "Search, timing, pipeline, timeline, and gallery families with isolated demos.",
+                Items = new List<CatalogCardItem>
+                {
+                    VariantCard("ToastContainer", "Global notification stack driven by NotificationService — success, error, warning, info with auto-dismiss.", "FreeBlazorExtended/Toast/", "toastcontainer"),
+                    VariantCard("CommandPalette", "Ctrl+K overlay with categories, hotkeys, recent history, and callback routing.", "FreeBlazorExtended/CommandPalette/", "commandpalette"),
+                    VariantCard("Timer", "Countdown timer with defaults, Pomodoro styling, and chained work and break behavior.", "FreeBlazorExtended/Timer/", "timer"),
+                    VariantCard("PipelineTracker", "Horizontal process tracker with explicit states, details panel, and click handling.", "FreeBlazorExtended/PipelineTracker/", "pipelinetracker"),
+                    VariantCard("Timeline", "Vertical event feed with actors, timestamps, rich details, and drill-in state.", "FreeBlazorExtended/Timeline/", "timeline"),
+                    VariantCard("ImageGallery", "Grid gallery with lightbox mode and a custom click-handler mode.", "FreeBlazorExtended/ImageGallery/", "imagegallery"),
+                },
+            },
+            new()
+            {
+                Title = "Tier 2B",
+                BadgeText = "15 pages",
+                Description = "Carousel, board, navigation, file-picker, and file-rendering families with composed demo routes.",
+                Items = new List<CatalogCardItem>
+                {
+                    VariantCard("Carousel", "Hero-slider pattern with autoplay, dots, filmstrip, and ref-driven controls.", "FreeBlazorExtended/Carousel/", "carousel"),
+                    VariantCard("KanbanBoard", "Controlled drag-drop board with WIP limits, custom cards, and move logging.", "FreeBlazorExtended/KanbanBoard/", "kanbanboard"),
+                    VariantCard("ExampleNav", "Breadcrumb plus Prev, All, and Next strip for demo-family navigation.", "FreeBlazorExtended/ExampleNav/", "examplenav"),
+                    VariantCard("SelectFile", "Host-agnostic file picker, loading states, and composed attachment flow.", "FreeBlazorExtended/SelectFile/", "selectfile"),
+                    VariantCard("RenderFiles", "Inline file tile renderer with click handlers, deletion, and mixed file types.", "FreeBlazorExtended/RenderFiles/", "renderfiles"),
+                },
+            },
+        };
+    }
+
+    private static CatalogCardItem VariantCard(string title, string summary, string codePath, string routeSegment)
+    {
+        return new CatalogCardItem
+        {
+            Title = title,
+            Summary = summary,
+            Detail = "Open V1 for the default slice, V2 for the configured scenario, and V3 for the advanced interaction case.",
+            CodePath = codePath,
+            Links = new List<CatalogCardLink>
+            {
+                new() { Label = "V1", Href = Helpers.BuildShowcaseUrl(routeSegment + "/v1") },
+                new() { Label = "V2", Href = Helpers.BuildShowcaseUrl(routeSegment + "/v2") },
+                new() { Label = "V3", Href = Helpers.BuildShowcaseUrl(routeSegment + "/v3") },
+            },
+        };
+    }
+
+    private string _acValue = string.Empty;
+    private readonly List<string> _countries = new()
+    {
+        "Australia", "Canada", "France", "Germany", "Japan",
+        "Mexico", "Netherlands", "New Zealand", "Spain",
+        "United Kingdom", "United States"
+    };
+
+    private Task<List<(string key, string label)>?> SearchCountries(string term)
+    {
+        var matches = _countries
+            .Where(country => country.Contains(term ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+            .Select(country => (key: country, label: country))
+            .ToList();
+
+        return Task.FromResult<List<(string key, string label)>?>(matches);
+    }
+
+    private void OnCountrySelected((string key, string label) selected)
+    {
+        _acValue = selected.label;
+    }
+
+    private string? _agtValue;
+    private string _codeValue = string.Empty;
+    private string _codeComplete = string.Empty;
+    private DateOnly? _dateOnly;
+    private TimeOnly? _timeOnly;
+    private DateTime? _dateTime;
+    private bool _deleteConfirmed;
+    private string _giText = string.Empty;
+    private string _giSelect = string.Empty;
+    private string _giCheck = string.Empty;
+    private List<string>? _msValue;
+    private readonly List<string> _tagOptions = new()
+    {
+        "Blazor", "C#", ".NET", "SignalR", "EF Core",
+        "Bootstrap", "TypeScript", "Azure", "SQL Server"
+    };
+
+    private sealed class CatalogRow
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
+
+    private readonly List<CatalogRow> _allRows = new()
+    {
+        new() { Name = "AutoComplete", Type = "Input", Status = "Stable" },
+        new() { Name = "AutoGrowText", Type = "Input", Status = "Stable" },
+        new() { Name = "ConfirmationCode", Type = "Input", Status = "Stable" },
+        new() { Name = "DateTimePicker", Type = "Input", Status = "Stable" },
+        new() { Name = "DeleteConfirmation", Type = "Action", Status = "Stable" },
+        new() { Name = "GetInput", Type = "Input", Status = "Stable" },
+        new() { Name = "MultiSelect", Type = "Input", Status = "Stable" },
+        new() { Name = "PagedRecordset", Type = "Data", Status = "Stable" },
+        new() { Name = "StringList", Type = "Input", Status = "Stable" },
+        new() { Name = "TogglePasswordInput", Type = "Input", Status = "Stable" },
+    };
+
+    private int _rsPage = 1;
+    private int _rsPerPage = 5;
+
+    private PagedRecordset.Recordset _recordset => BuildRecordset();
+
+    private PagedRecordset.Recordset BuildRecordset()
+    {
+        var skip = (_rsPage - 1) * _rsPerPage;
+        var pageRows = _allRows.Skip(skip).Take(_rsPerPage).Cast<object>().ToList();
+
+        return new PagedRecordset.Recordset
+        {
+            Records = pageRows,
+            TotalRecords = _allRows.Count,
+            CurrentPage = _rsPage,
+            RecordsPerPage = _rsPerPage,
+            TotalPages = (int)Math.Ceiling(_allRows.Count / (double)_rsPerPage),
+            Columns = new List<PagedRecordset.Column>
+            {
+                new() { Label = "Component", DataElementName = "Name" },
+                new() { Label = "Type", DataElementName = "Type" },
+                new() { Label = "Status", DataElementName = "Status" },
+            }
+        };
+    }
+
+    private void OnRecordsetNav(string changeType, object value)
+    {
+        if (changeType == "page" && value is int newPage) {
+            _rsPage = newPage;
+        } else if (changeType == "count" && value is int newCount) {
+            _rsPerPage = newCount;
+            _rsPage = 1;
+        }
+
+        StateHasChanged();
+    }
+
+    private List<string> _slValue = new() { "C#", "Blazor", ".NET" };
+    private string _slNewItem = string.Empty;
+
+    private void AddSkill()
+    {
+        var trimmed = _slNewItem.Trim();
+
+        if (!string.IsNullOrEmpty(trimmed)) {
+            _slValue.Add(trimmed);
+            _slNewItem = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    private string _pwValue = string.Empty;
+
+    private sealed class CatalogSectionLink
+    {
+        public string AnchorId { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+    }
+
+    private sealed class CatalogCardGroup
+    {
+        public string Title { get; set; } = string.Empty;
+        public string BadgeText { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public List<CatalogCardItem> Items { get; set; } = new();
+    }
+
+    private sealed class CatalogCardItem
+    {
+        public string BadgeText { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Summary { get; set; } = string.Empty;
+        public string Detail { get; set; } = string.Empty;
+        public string CodePath { get; set; } = string.Empty;
+        public List<CatalogCardLink> Links { get; set; } = new();
+    }
+
+    private sealed class CatalogCardLink
+    {
+        public string Label { get; set; } = string.Empty;
+        public string Href { get; set; } = string.Empty;
+    }
+}

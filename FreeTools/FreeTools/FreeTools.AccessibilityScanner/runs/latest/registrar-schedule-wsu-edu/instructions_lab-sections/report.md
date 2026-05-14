@@ -1,0 +1,175 @@
+# 📄 Page Scan Report
+
+> **URL:** https://registrar.schedule.wsu.edu/instructions/lab-sections/  
+> **Captured:** 2026-02-19 02:21:28 UTC  
+> **Status:** ❌ 0  
+
+---
+
+## 📑 Contents
+
+- [Summary](#-summary)
+- [Screenshots](#-screenshots)
+- [Page Images](#-page-images)
+- [Accessibility](#-accessibility)
+- [Actions](#-actions)
+- [Files](#-files)
+
+---
+
+## 📋 Summary
+
+| Field | Value |
+|-------|-------|
+| URL | https://registrar.schedule.wsu.edu/instructions/lab-sections/ |
+| Title | Add a Lab Section | Academic Room Scheduling |
+| Status | ❌ 0 |
+| HTML Size | 671.0 KB |
+| Screenshots | 1 (253.3 KB) |
+| Images | 4 (referenced by URL) |
+| Images Missing Alt | ⚠️ 4 |
+| JS Errors | ✅ 0 |
+| JS Warnings | 1 |
+| A11y Violations | ⚠️ 1 |
+| 🔴 Critical | 1 |
+| 🟠 Serious | 0 |
+| 🟡 Moderate | 0 |
+| 🔵 Minor | 0 |
+| Tools Run | axe, htmlcheck |
+| Auth | none |
+| Captured | 2026-02-19T02:21:28.5734794Z |
+
+## 🔧 Actions
+
+<details>
+<summary><strong>4 action(s) performed</strong></summary>
+
+- Screenshot #1: page-loaded (253.3 KB)
+- Cataloged 4 images by URL (no download)
+- axe-core: 1 violations (265ms)
+- htmlcheck: 0 violations (0ms)
+
+</details>
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="01-page-loaded.jpg">
+<img src="01-page-loaded.jpg" width="400" alt="page-loaded" />
+</a>
+<br /><strong>1. page-loaded</strong>
+<br /><sub>253.3 KB</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+## 🖼️ Page Images (4)
+
+<details open>
+<summary><strong>📋 Image Index</strong> — 4 images (referenced by URL)</summary>
+
+| # | Source URL | Alt Text |
+|--:|-----------|----------|
+| 1 | https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.j... | ⚠️ *(missing)* |
+| 2 | https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?wi... | ⚠️ *(missing)* |
+| 3 | https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-... | ⚠️ *(missing)* |
+| 4 | https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-... | ⚠️ *(missing)* |
+
+</details>
+
+<details open>
+<summary><strong>🖼️ Gallery</strong></summary>
+
+<table>
+<tr>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.jpg?width=649&height=170">
+<img src="https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.jpg?width=649&height=170" width="200" alt="https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.jpg?width=649&height=170" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/756456... ⚠️</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?width=645&height=666">
+<img src="https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?width=645&height=666" width="200" alt="https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?width=645&height=666" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/756452... ⚠️</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-message.jpg?width=648&height=223">
+<img src="https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-message.jpg?width=648&height=223" width="200" alt="https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-message.jpg?width=648&height=223" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/756455... ⚠️</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-class-box.jpg?width=644&height=664">
+<img src="https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-class-box.jpg?width=644&height=664" width="200" alt="https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-class-box.jpg?width=644&height=664" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/756453... ⚠️</sub>
+</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary>⚠️ <strong>Images Missing Alt Text</strong> (4)</summary>
+
+| # | Source URL |
+|--:|-----------|
+| 1 | https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.j... |
+| 2 | https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?wi... |
+| 3 | https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-... |
+| 4 | https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-... |
+
+</details>
+
+## ♿ Accessibility
+
+### Summary
+
+| Severity | axe | htmlcheck |
+|----------|:---:|:---:|
+| 🔴 critical | 1 | 0 |
+| 🟠 serious | 0 | 0 |
+| 🟡 moderate | 0 | 0 |
+| 🔵 minor | 0 | 0 |
+| **Total** | **1** | **0** |
+
+### Violations by Confidence
+
+<details open>
+<summary><strong>1 rule(s) violated</strong></summary>
+
+| # | Rule | Sev | Confidence | axe | htmlcheck | Example |
+|--:|------|:---:|:----------:|:---:|:---:|---------|
+| 1 | [aria-allowed-attr](../../a11y-rules.md#aria-allowed-attr) | 🔴 | 🟢 1/1 | ⚠️ | — | `<div id="wsu-navigation-vertical" class="wsu-slide-in-pan...` |
+
+</details>
+
+> **Note:** Automated scanning catches ~30-60% of WCAG issues. Manual keyboard and screen reader testing is still required for full compliance.
+
+## 📁 Files
+
+| File | Description |
+|------|-------------|
+| `01-page-loaded.jpg` | page-loaded (253.3 KB) |
+| `page.html` | Rendered HTML content |
+| `metadata.json` | Machine-readable scan data |
+| `errors.log` | JavaScript console errors |
+| `warnings.log` | JavaScript console warnings |
+| `info.log` | Navigation and timing details |
+| `actions.log` | Interactions performed |
+| `a11y-axe.json` | axe accessibility results |
+| `a11y-htmlcheck.json` | htmlcheck accessibility results |
+| `a11y-summary.json` | Merged cross-tool accessibility summary |
+
+---
+
+*Generated by AccessibilityScanner (FreeTools) v1.0*

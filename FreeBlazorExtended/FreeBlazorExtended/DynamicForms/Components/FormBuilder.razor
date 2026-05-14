@@ -1,0 +1,367 @@
+﻿@*
+    Purpose: DynamicForms authoring surface for creating and editing form definitions.
+    Key behaviors: Edits schema metadata, field order, and publishing data before saving through FormService.
+    Dependencies: Relies on DynamicForms models and FormService as the feature's authoring backend.
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.DynamicForms
+@using FreeBlazorExtended.DynamicForms
+@inject FormService FormService
+
+<div class="form-builder-container">
+    <div class="fb-header">
+        <h3>@(IsEditMode ? "Edit Form: " + FormDef?.Name : "New Form")</h3>
+        <div class="fb-header-actions">
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ResetForm">Reset</button>
+            <button type="button" class="btn btn-sm btn-primary" @onclick="SaveForm">Save Form</button>
+        </div>
+    </div>
+
+    <div class="fb-grid">
+        <!-- Left panel: Form editor -->
+        <div class="fb-editor">
+            <div class="form-group">
+                <label for="fbFormName">Form Name *</label>
+                <input id="fbFormName" type="text" class="form-control" @bind="FormDef.Name" placeholder="e.g., Customer Feedback" />
+            </div>
+
+            <div class="form-group">
+                <label for="fbFormDescription">Description</label>
+                <textarea id="fbFormDescription" class="form-control" @bind="FormDef.Description" rows="2" placeholder="Optional description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="fbSubmitBtnText">Submit Button Text</label>
+                <input id="fbSubmitBtnText" type="text" class="form-control" @bind="FormDef.SubmitButtonText" placeholder="Submit" />
+            </div>
+
+            <div class="form-group">
+                <label for="fbSuccessMessage">Success Message</label>
+                <textarea id="fbSuccessMessage" class="form-control" @bind="FormDef.SuccessMessage" rows="2" placeholder="Message shown after submission"></textarea>
+            </div>
+
+            <hr />
+
+            <div class="fb-fields-section">
+                <div class="fb-fields-header">
+                    <h4>Form Fields</h4>
+                    <button type="button" class="btn btn-sm btn-success" @onclick="AddField">+ Add Field</button>
+                </div>
+
+                @if (FormDef.Fields == null || FormDef.Fields.Count == 0)
+                {
+                    <div class="alert alert-info">No fields yet. Click "Add Field" to get started.</div>
+                }
+                else
+                {
+                    <div class="field-list">
+                        @foreach (var field in FormDef.Fields.OrderBy(f => f.Order))
+                        {
+                            <div class="field-item card mb-2">
+                                <div class="card-body p-3">
+                                    <div class="field-item-header d-flex justify-content-between align-items-start mb-2">
+                                        <div class="flex-grow-1">
+                                            <strong>@(string.IsNullOrEmpty(field.Label) ? "(No Label)" : field.Label)</strong>
+                                            <small class="text-muted ms-2">@field.FieldType</small>
+                                        </div>
+                                        <div class="field-item-actions">
+                                            <button type="button" class="btn btn-sm btn-link" @onclick="() => EditField(field)">Edit</button>
+                                            <button type="button" class="btn btn-sm btn-link text-danger" @onclick="() => DeleteField(field)">Delete</button>
+                                        </div>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(field.HelpText))
+                                    {
+                                        <small class="text-muted">@field.HelpText</small>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right panel: Field editor modal -->
+        <div class="fb-field-editor">
+            @if (_selectedField != null)
+            {
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Field Properties</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Field Label *</label>
+                            <input type="text" class="form-control" @bind="_selectedField.Label" placeholder="e.g., Email Address" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Field Type</label>
+                            <select class="form-select" @bind="_selectedField.FieldType">
+                                @foreach (var type in Enum.GetValues(typeof(FormFieldType)).Cast<FormFieldType>())
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Help Text</label>
+                            <input type="text" class="form-control" @bind="_selectedField.HelpText" placeholder="Optional guidance for the user" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Placeholder Text</label>
+                            <input type="text" class="form-control" @bind="_selectedField.PlaceholderText" />
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isRequired" @bind="_selectedField.IsRequired" />
+                            <label class="form-check-label" for="isRequired">Required</label>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label>Default Value</label>
+                            <input type="text" class="form-control" @bind="_selectedField.DefaultValue" />
+                        </div>
+
+                        <!-- Options for Select/Radio/Checkbox -->
+                        @if (IsOptionField(_selectedField.FieldType))
+                        {
+                            <div class="form-group mt-3">
+                                <label>Options</label>
+                                <small class="d-block text-muted mb-2">Format: key|label (one per line)</small>
+                                <textarea class="form-control" rows="4" @onchange="@((ChangeEventArgs e) => UpdateOptions(e.Value?.ToString()))">@OptionsToString()</textarea>
+                            </div>
+                        }
+
+                        <div class="form-group mt-3">
+                            <button type="button" class="btn btn-primary w-100" @onclick="SaveField">Save Field</button>
+                            <button type="button" class="btn btn-secondary w-100 mt-2" @onclick="ClearSelection">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary">Select or add a field to edit its properties</div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.form-builder-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.fb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.fb-header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.fb-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    padding: 0 1rem 1rem 1rem;
+    flex: 1;
+    overflow: hidden;
+}
+
+.fb-editor {
+    overflow-y: auto;
+}
+
+.fb-field-editor {
+    position: sticky;
+    top: 0;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.fb-fields-section {
+    margin-top: 1.5rem;
+}
+
+.fb-fields-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.fb-fields-header h5 {
+    margin: 0;
+}
+
+.field-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.field-item {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.field-item:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.field-item-header {
+    font-weight: 500;
+}
+
+.field-item-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.field-item-actions .btn {
+    padding: 0;
+    font-size: 0.875rem;
+}
+
+@@media (max-width: 1200px) {
+    .fb-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fb-field-editor {
+        position: static;
+        max-height: none;
+    }
+}
+</style>
+
+@code {
+    private FormDefinition FormDef = new();
+    private FormField? _selectedField;
+    private bool IsEditMode { get; set; }
+
+    [Parameter]
+    public Guid FormId { get; set; }
+
+    [Parameter]
+    public Guid TenantId { get; set; }
+
+    [Parameter]
+    public EventCallback<FormDefinition> OnSaved { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (FormId != Guid.Empty)
+        {
+            var form = await FormService.GetFormDefinition(FormId);
+            if (form != null)
+            {
+                FormDef = form;
+                IsEditMode = true;
+            }
+        }
+        else
+        {
+            FormDef = new FormDefinition { TenantId = TenantId };
+        }
+    }
+
+    private void AddField()
+    {
+        _selectedField = new FormField();
+        if (FormDef.Fields == null)
+            FormDef.Fields = new();
+    }
+
+    private void EditField(FormField field)
+    {
+        _selectedField = field;
+    }
+
+    private void DeleteField(FormField field)
+    {
+        FormDef.Fields?.Remove(field);
+        ClearSelection();
+    }
+
+    private void SaveField()
+    {
+        if (_selectedField == null || string.IsNullOrWhiteSpace(_selectedField.Label))
+            return;
+
+        if (FormDef.Fields == null)
+            FormDef.Fields = new();
+
+        if (!FormDef.Fields.Contains(_selectedField))
+            FormDef.Fields.Add(_selectedField);
+
+        ClearSelection();
+    }
+
+    private void ClearSelection()
+    {
+        _selectedField = null;
+    }
+
+    private async Task SaveForm()
+    {
+        if (string.IsNullOrWhiteSpace(FormDef.Name))
+            return;
+
+        var saved = await FormService.SaveFormDefinition(FormDef);
+        await OnSaved.InvokeAsync(saved);
+    }
+
+    private void ResetForm()
+    {
+        FormDef = new FormDefinition { TenantId = TenantId };
+        ClearSelection();
+        IsEditMode = false;
+    }
+
+    private bool IsOptionField(FormFieldType type)
+    {
+        return type is FormFieldType.Select or FormFieldType.Radio or FormFieldType.Checkbox or FormFieldType.Multiselect;
+    }
+
+    private string OptionsToString()
+    {
+        if (_selectedField?.Options == null || _selectedField.Options.Count == 0)
+            return string.Empty;
+
+        return string.Join("\n", _selectedField.Options.Select(o => $"{o.key}|{o.label}"));
+    }
+
+    private void UpdateOptions(string? text)
+    {
+        if (_selectedField?.Options == null)
+            return;
+
+        _selectedField.Options.Clear();
+
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        foreach (var line in text.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                _selectedField.Options.Add((parts[0].Trim(), parts[1].Trim()));
+            }
+        }
+    }
+}

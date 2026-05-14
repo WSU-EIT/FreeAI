@@ -1,0 +1,27 @@
+@page "/showcase/timeline/v2"
+@using FreeBlazorExtended.Timeline
+
+<div class="container-fluid py-4">
+    <h1>Order Timeline With Actors</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <Timeline Events="_events"
+                      ShowTimestamps="true"
+                      ShowConnectorLine="true"
+                      TimestampFormat="ddd MMM d - h:mm tt"
+                      Class="bg-light p-3 rounded" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<Timeline.TimelineEvent> _events = new()
+    {
+        new() { Id = "1", Title = "Order placed", Timestamp = DateTime.Now.AddMinutes(-90), State = Timeline.TimelineEventState.Completed, Actor = "Customer", Description = "The order was submitted successfully." },
+        new() { Id = "2", Title = "Kitchen accepted", Timestamp = DateTime.Now.AddMinutes(-75), State = Timeline.TimelineEventState.Completed, Actor = "Kitchen Staff", Description = "Prep started for the order." },
+        new() { Id = "3", Title = "Courier assigned", Timestamp = DateTime.Now.AddMinutes(-30), State = Timeline.TimelineEventState.Completed, Actor = "Dispatcher", Description = "Driver Mike picked up the route." },
+        new() { Id = "4", Title = "Out for delivery", Timestamp = DateTime.Now.AddMinutes(-10), State = Timeline.TimelineEventState.InProgress, Actor = "Driver Mike", Description = "The package is on the road." },
+        new() { Id = "5", Title = "Delivered", Timestamp = default, State = Timeline.TimelineEventState.Pending, Actor = "", Description = "Awaiting final confirmation." },
+    };
+}

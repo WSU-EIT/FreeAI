@@ -1,0 +1,171 @@
+# 📄 Page Scan Report
+
+> **URL:** https://wsu.edu/about/statewide-impact/  
+> **Captured:** 2026-02-19 02:09:11 UTC  
+> **Status:** ✅ 200  
+
+---
+
+## 📑 Contents
+
+- [Summary](#-summary)
+- [Screenshots](#-screenshots)
+- [Page Images](#-page-images)
+- [JavaScript Errors](#-javascript-errors)
+- [Accessibility](#-accessibility)
+- [Actions](#-actions)
+- [Files](#-files)
+
+---
+
+## 📋 Summary
+
+| Field | Value |
+|-------|-------|
+| URL | https://wsu.edu/about/statewide-impact/ |
+| Title | Statewide Impact | Washington State University | Washington State University |
+| Status | ✅ 200 |
+| HTML Size | 103.9 KB |
+| Screenshots | 1 (434.5 KB) |
+| Images | 2 (referenced by URL) |
+| Images Missing Alt | ⚠️ 2 |
+| JS Errors | 🔴 1 |
+| JS Warnings | 0 |
+| A11y Violations | ⚠️ 7 |
+| 🔴 Critical | 0 |
+| 🟠 Serious | 7 |
+| 🟡 Moderate | 0 |
+| 🔵 Minor | 0 |
+| Tools Run | axe, htmlcheck |
+| Auth | none |
+| Captured | 2026-02-19T02:09:11.9284947Z |
+
+## 🔴 JavaScript Errors
+
+<details>
+<summary><strong>1 error(s) detected</strong></summary>
+
+```
+Failed to load resource: net::ERR_TOO_MANY_REDIRECTS
+```
+
+</details>
+
+## 🔧 Actions
+
+<details>
+<summary><strong>4 action(s) performed</strong></summary>
+
+- Screenshot #1: page-loaded (434.5 KB)
+- Cataloged 2 images by URL (no download)
+- axe-core: 2 violations (331ms)
+- htmlcheck: 5 violations (17ms)
+
+</details>
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="01-page-loaded.jpg">
+<img src="01-page-loaded.jpg" width="400" alt="page-loaded" />
+</a>
+<br /><strong>1. page-loaded</strong>
+<br /><sub>434.5 KB</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+## 🖼️ Page Images (2)
+
+<details open>
+<summary><strong>📋 Image Index</strong> — 2 images (referenced by URL)</summary>
+
+| # | Source URL | Alt Text |
+|--:|-----------|----------|
+| 1 | https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-5-792x535.jpg | ⚠️ *(missing)* |
+| 2 | https://s3.wp.wsu.edu/uploads/sites/625/2022/12/Statewide-Spokane-792x622-1.jpg | ⚠️ *(missing)* |
+
+</details>
+
+<details open>
+<summary><strong>🖼️ Gallery</strong></summary>
+
+<table>
+<tr>
+<td align="center" width="33%">
+<a href="https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-5-792x535.jpg">
+<img src="https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-5-792x535.jpg" width="200" alt="https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-5-792x535.jpg" />
+</a>
+<br /><sub>https://s3.wp.wsu.edu/uploads/sites/625/2022/07... ⚠️</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://s3.wp.wsu.edu/uploads/sites/625/2022/12/Statewide-Spokane-792x622-1.jpg">
+<img src="https://s3.wp.wsu.edu/uploads/sites/625/2022/12/Statewide-Spokane-792x622-1.jpg" width="200" alt="https://s3.wp.wsu.edu/uploads/sites/625/2022/12/Statewide-Spokane-792x622-1.jpg" />
+</a>
+<br /><sub>https://s3.wp.wsu.edu/uploads/sites/625/2022/12... ⚠️</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary>⚠️ <strong>Images Missing Alt Text</strong> (2)</summary>
+
+| # | Source URL |
+|--:|-----------|
+| 1 | https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Mask-group-5-792x535.jpg |
+| 2 | https://s3.wp.wsu.edu/uploads/sites/625/2022/12/Statewide-Spokane-792x622-1.jpg |
+
+</details>
+
+## ♿ Accessibility
+
+### Summary
+
+| Severity | axe | htmlcheck |
+|----------|:---:|:---:|
+| 🔴 critical | 0 | 0 |
+| 🟠 serious | 2 | 5 |
+| 🟡 moderate | 0 | 0 |
+| 🔵 minor | 0 | 0 |
+| **Total** | **2** | **5** |
+
+### Violations by Confidence
+
+<details open>
+<summary><strong>4 rule(s) violated</strong></summary>
+
+| # | Rule | Sev | Confidence | axe | htmlcheck | Example |
+|--:|------|:---:|:----------:|:---:|:---:|---------|
+| 1 | [color-contrast](../../a11y-rules.md#color-contrast) | 🟠 | 🟢 1/1 | ⚠️ | — | `<strong>Serving</strong>` |
+| 2 | [image-alt](../../a11y-rules.md#image-alt) | 🟠 | 🟡 1/2 | ✅ | ⚠️ | `<img height="1" width="1" style="display:none" src="https...` |
+| 3 | [label](../../a11y-rules.md#label) | 🟠 | 🟡 1/2 | ✅ | ⚠️ | `<input class="wsu-search__input" type="text" aria-lable="...` |
+| 4 | [button-name](../../a11y-rules.md#button-name) | 🟠 | 🟡 1/2 | ✅ | ⚠️ | `<button class="wsu-search__submit" aria-lable="Submit Sea...` |
+
+</details>
+
+> **Note:** Automated scanning catches ~30-60% of WCAG issues. Manual keyboard and screen reader testing is still required for full compliance.
+
+## 📁 Files
+
+| File | Description |
+|------|-------------|
+| `01-page-loaded.jpg` | page-loaded (434.5 KB) |
+| `page.html` | Rendered HTML content |
+| `metadata.json` | Machine-readable scan data |
+| `errors.log` | JavaScript console errors |
+| `warnings.log` | JavaScript console warnings |
+| `info.log` | Navigation and timing details |
+| `actions.log` | Interactions performed |
+| `a11y-axe.json` | axe accessibility results |
+| `a11y-htmlcheck.json` | htmlcheck accessibility results |
+| `a11y-summary.json` | Merged cross-tool accessibility summary |
+
+---
+
+*Generated by AccessibilityScanner (FreeTools) v1.0*

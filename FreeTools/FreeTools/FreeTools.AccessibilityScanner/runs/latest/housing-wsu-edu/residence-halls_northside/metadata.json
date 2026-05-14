@@ -1,0 +1,151 @@
+{
+  "PagePath": "/residence-halls/northside/",
+  "Url": "https://housing.wsu.edu/residence-halls/northside/",
+  "FinalUrl": null,
+  "Title": "Northside",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 134530,
+  "ScreenshotSizeBytes": 317901,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 9,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 317901
+    }
+  ],
+  "ImageCount": 21,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vd2nsz1m/northside-single.jpg",
+      "AltText": "Northside Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/21ndwbtv/northside-pool-banner.jpg",
+      "AltText": "Northside Pool Banner"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/m35b2s3r/northside-active-lounge.jpg",
+      "AltText": "Northside Active Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/yr1jkk1h/northside-closet.jpg",
+      "AltText": "Northside Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ifxiorky/northside-double-bathroo.jpg",
+      "AltText": "Northside Double Bathroo"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dkmpwpet/northside-double.jpg",
+      "AltText": "Northside Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hs2n5yfn/northside-lounge.jpg",
+      "AltText": "Northside Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mebkqojg/northside-ra-meeting.jpg",
+      "AltText": "Northside RA Meeting"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dh3e0gl1/northside-room-side.jpg",
+      "AltText": "Northside Room Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/b1jliuq2/northside-side-set-up.jpg",
+      "AltText": "Northside Side Set Up"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mi1nse52/kyle.jpg",
+      "AltText": "Kyle Morgan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/botbsrrd/northside-student-6.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/quheasky/northside-lounge.jpg",
+      "AltText": "Quick Facts"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/04kh4cux/north-campus-dog.png",
+      "AltText": "Neighborhood: North Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/fcbn4btg/northside-entrance.png",
+      "AltText": "Northside Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qvgflteq/src-student-2.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vkqlhsfy/1stfloor-northside.jpg",
+      "AltText": "Northside first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pflgslpq/floor-plan-northside-floor-2.png",
+      "AltText": "Northside second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wnvmg0hi/floor-plan-northside-floor-3.png",
+      "AltText": "Northside third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hi0dxnrd/floor-plan-northside-floor-4.png",
+      "AltText": "Northside fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/usthjznc/floor-plan-northside-floor-5.png",
+      "AltText": "Northside fifth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 6,
+    "Serious": 1,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:15:16 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:15:17.2437119Z"
+}

@@ -1,0 +1,131 @@
+{
+  "PagePath": "/apartments/steptoe-village/",
+  "Url": "https://housing.wsu.edu/apartments/steptoe-village/",
+  "FinalUrl": null,
+  "Title": "Steptoe Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 127362,
+  "ScreenshotSizeBytes": 259035,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 9,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 259035
+    }
+  ],
+  "ImageCount": 16,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0h5dding/steptoe-exterior.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/clxdyv4f/steptoe-exterior.jpg",
+      "AltText": "Steptoe Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wrdbtm0x/steptoe-one-bedroom-bedroom-window.png",
+      "AltText": "Steptoe One Bedroom Bedroom Window"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/iefnkdbq/steptoe-one-bedroom-bedroom.png",
+      "AltText": "Steptoe One Bedroom Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/f5ecc02m/steptoe-one-bedroom-living-room.png",
+      "AltText": "Steptoe One Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jhildpym/steptoe-one-bedroom-flat-kitchen.png",
+      "AltText": "Steptoe One Bedroom Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hpdlkhpo/steptoe-two-bedroom-bedroom-a.png",
+      "AltText": "Steptoe Two Bedroom Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/homc52mg/steptoe-two-bedroom-bedroom-b.png",
+      "AltText": "Steptoe Two Bedroom Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cwpn2buk/steptoe-two-bedroom-living-room-storage.png",
+      "AltText": "Steptoe Two Bedroom Living Room Storage"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kxxn1ywm/steptoe-two-bedroom-living-room.png",
+      "AltText": "Steptoe Two Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0ioo4huh/steptoe-two-bedroom-flat-bathroom.png",
+      "AltText": "Steptoe Two Bedroom Flat Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/l2zhle5b/steptoe-two-bedroom-flat-kitchen.png",
+      "AltText": "Steptoe Two Bedroom Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/df1hticz/steptoe-two-bedroom-townhouse.jpg",
+      "AltText": "Steptoe Two Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ifrpu5st/steptoe-one-bedroom.jpg",
+      "AltText": "Steptoe One Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bryddayz/steptoe-three-bedroom-flat.jpg",
+      "AltText": "Steptoe Three Bedroom Flat"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qvxpbxie/steptoe-two-bedroom-flat.jpg",
+      "AltText": "Steptoe Two Bedroom Flat"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:22 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:10:22.6052375Z"
+}

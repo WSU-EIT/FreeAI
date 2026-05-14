@@ -1,0 +1,57 @@
+{
+  "PagePath": "/proofing/historical/",
+  "Url": "https://registrar.schedule.wsu.edu/proofing/historical/",
+  "FinalUrl": null,
+  "Title": "Historical | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 685661,
+  "ScreenshotSizeBytes": 150585,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 13,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 150585
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:34:17.5598963Z"
+}

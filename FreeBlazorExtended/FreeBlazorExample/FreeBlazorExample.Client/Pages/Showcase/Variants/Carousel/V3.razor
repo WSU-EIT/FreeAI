@@ -1,0 +1,53 @@
+@page "/showcase/carousel/v3"
+@using FreeBlazorExtended.Carousel
+
+<div class="container-fluid py-4">
+    <h1>Carousel - Programmatic Control Via Ref</h1>
+
+    <div class="btn-group flex-wrap mb-3" role="group" aria-label="Carousel controls">
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="PrevSlide">Prev</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="NextSlide">Next</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => GoToSlide(0)">Go to 1</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => GoToSlide(1)">Go to 2</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => GoToSlide(2)">Go to 3</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => GoToSlide(3)">Go to 4</button>
+        <button type="button" class="btn btn-outline-success btn-sm" @onclick="StartAutoplay">Start Autoplay</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="StopAutoplay">Stop Autoplay</button>
+    </div>
+
+    <Carousel @ref="_carouselRef"
+              Slides="_slides"
+              ShowArrows="false"
+              ShowDots="false"
+              ShowFilmstrip="true"
+              AutoPlay="false"
+              Loop="true"
+              OnSlideChanged="HandleSlideChanged" />
+
+    <p class="mt-3 mb-0"><strong>Active:</strong> @(_activeIndex + 1) - @_slides[_activeIndex].Title</p>
+</div>
+
+@code {
+    private readonly List<Carousel.CarouselSlide> _slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/prog1/1200/600", Title = "Overview", Caption = "High-level view" },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/prog2/1200/600", Title = "Details", Caption = "Detailed perspective" },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/prog3/1200/600", Title = "Activity", Caption = "Operational activity" },
+        new() { Id = "4", ImageUrl = "https://picsum.photos/seed/prog4/1200/600", Title = "Summary", Caption = "Final summary" },
+    };
+
+    private FreeBlazorExtended.Carousel.Carousel? _carouselRef;
+    private int _activeIndex;
+
+    private void PrevSlide() => _carouselRef?.Prev();
+    private void NextSlide() => _carouselRef?.Next();
+    private void GoToSlide(int index) => _carouselRef?.GoTo(index);
+    private void StartAutoplay() => _carouselRef?.StartAutoPlay();
+    private void StopAutoplay() => _carouselRef?.StopAutoPlay();
+
+    private Task HandleSlideChanged(int index)
+    {
+        _activeIndex = index;
+        return Task.CompletedTask;
+    }
+}

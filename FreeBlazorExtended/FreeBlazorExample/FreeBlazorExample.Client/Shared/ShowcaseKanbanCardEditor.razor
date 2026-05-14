@@ -1,0 +1,445 @@
+@using FreeBlazorExtended.KanbanBoard
+
+<div class="card shadow-sm h-100">
+    <div class="card-body d-flex flex-column gap-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div>
+                <h2 class="h5 mb-1">Card Workspace</h2>
+                <p class="text-muted small mb-0">@Subtitle</p>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="StartNewCard">
+                <i class="fa-solid fa-plus me-1" aria-hidden="true"></i>New card
+            </button>
+        </div>
+
+        @if (_draft is null) {
+            <div class="alert alert-light border mb-0" role="status">
+                @EmptyStateMessage
+            </div>
+        } else {
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="border rounded p-2 h-100 bg-light-subtle">
+                        <div class="text-muted small text-uppercase">Status</div>
+                        <div class="fw-semibold">@SelectedColumnTitle()</div>
+                        <div class="small text-muted">@ColumnLoadSummary()</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border rounded p-2 h-100 bg-light-subtle">
+                        <div class="text-muted small text-uppercase">Due</div>
+                        <div class="fw-semibold">@DueSummary()</div>
+                        <div class="small text-muted">@(string.IsNullOrWhiteSpace(_draft.Priority) ? "Priority not set" : $"Priority: {_draft.Priority}")</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border rounded p-2 h-100 bg-light-subtle">
+                        <div class="text-muted small text-uppercase">Assignee</div>
+                        <div class="fw-semibold">@(string.IsNullOrWhiteSpace(_draft.Assignee) ? "Unassigned" : _draft.Assignee)</div>
+                        <div class="small text-muted">Card ID: @_draft.Id</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border rounded p-2 h-100 bg-light-subtle">
+                        <div class="text-muted small text-uppercase">Labels</div>
+                        <div class="fw-semibold">@LabelCountSummary()</div>
+                        <div class="small text-muted">Comma-separated tags</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label" for="@($"{_idPrefix}-title")">Title</label>
+                    <input id="@($"{_idPrefix}-title")" class="form-control" @bind="_draft.Title" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="@($"{_idPrefix}-description")">Description</label>
+                    <textarea id="@($"{_idPrefix}-description")" class="form-control" rows="4" @bind="_draft.Description"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="@($"{_idPrefix}-assignee")">Assignee</label>
+                    <input id="@($"{_idPrefix}-assignee")" class="form-control" @bind="_draft.Assignee" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="@($"{_idPrefix}-priority")">Priority</label>
+                    <select id="@($"{_idPrefix}-priority")" class="form-select" @bind="_draft.Priority">
+                        <option value="">Select priority</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="@($"{_idPrefix}-status")">Column</label>
+                    <select id="@($"{_idPrefix}-status")" class="form-select" @bind="_draft.ColumnId">
+                        @foreach (var column in OrderedColumns()) {
+                            <option value="@column.Id">@column.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="@($"{_idPrefix}-due")">Due date</label>
+                    <input id="@($"{_idPrefix}-due")"
+                           type="date"
+                           class="form-control"
+                           value="@FormatDateInput(_draft.DueDate)"
+                           @onchange="HandleDueDateChanged" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="@($"{_idPrefix}-labels")">Labels</label>
+                    <input id="@($"{_idPrefix}-labels")" class="form-control" @bind="_labelsText" />
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 pt-3 border-top">
+                <button type="button" class="btn btn-primary btn-sm" @onclick="SaveChanges" disabled="@(!CanSave)">
+                    <i class="fa-regular fa-floppy-disk me-1" aria-hidden="true"></i>Save changes
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetDraft">
+                    <i class="fa-solid fa-rotate-left me-1" aria-hidden="true"></i>Reset
+                </button>
+                @if (_isNewCard) {
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="CancelNewCard">
+                        Cancel
+                    </button>
+                } else {
+                    <button type="button" class="btn btn-outline-primary btn-sm" @onclick="DuplicateCard">
+                        <i class="fa-regular fa-copy me-1" aria-hidden="true"></i>Duplicate
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" @onclick="DeleteCard">
+                        <i class="fa-regular fa-trash-can me-1" aria-hidden="true"></i>Delete
+                    </button>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public List<KanbanBoard.KanbanCard> Cards { get; set; } = new();
+    [Parameter, EditorRequired] public List<KanbanBoard.KanbanColumn> Columns { get; set; } = new();
+    [Parameter] public KanbanBoard.KanbanCard? SelectedCard { get; set; }
+    [Parameter] public EventCallback<KanbanBoard.KanbanCard?> SelectedCardChanged { get; set; }
+    [Parameter] public string Subtitle { get; set; } = "Open a card to update its content, status, labels, and due date.";
+    [Parameter] public string EmptyStateMessage { get; set; } = "Click a card on the board to open its editor.";
+
+    private readonly string _idPrefix = $"kanban-card-editor-{Guid.NewGuid():N}";
+    private CardDraft? _draft;
+    private bool _isNewCard;
+    private string _loadedCardId = string.Empty;
+    private string _labelsText = string.Empty;
+
+    private bool CanSave => _draft != null
+        && !string.IsNullOrWhiteSpace(_draft.Title)
+        && !string.IsNullOrWhiteSpace(_draft.ColumnId);
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedCard is null) {
+            if (!_isNewCard) {
+                ClearDraft();
+            }
+
+            return;
+        }
+
+        if (!string.Equals(_loadedCardId, SelectedCard.Id, StringComparison.Ordinal)) {
+            LoadDraft(SelectedCard, false);
+        }
+    }
+
+    private async Task StartNewCard()
+    {
+        var columnId = DetermineDefaultColumnId();
+
+        _draft = new CardDraft {
+            Id = CreateCardId(),
+            ColumnId = columnId,
+            Priority = "medium",
+            DueDate = DateTime.Today.AddDays(2),
+        };
+
+        _labelsText = string.Empty;
+        _loadedCardId = _draft.Id;
+        _isNewCard = true;
+
+        await SelectedCardChanged.InvokeAsync(null);
+    }
+
+    private async Task SaveChanges()
+    {
+        if (!CanSave || _draft is null) {
+            return;
+        }
+
+        if (_isNewCard) {
+            var newCard = new KanbanBoard.KanbanCard {
+                Id = _draft.Id,
+                ColumnId = _draft.ColumnId,
+                Title = _draft.Title.Trim(),
+                Description = NormalizeText(_draft.Description),
+                Assignee = NormalizeText(_draft.Assignee),
+                Priority = NormalizeText(_draft.Priority),
+                Labels = ParseLabels(_labelsText),
+                DueDate = _draft.DueDate,
+                SortOrder = Cards.Count(card => string.Equals(card.ColumnId, _draft.ColumnId, StringComparison.OrdinalIgnoreCase)),
+            };
+
+            Cards.Add(newCard);
+            NormalizeColumn(newCard.ColumnId);
+
+            _isNewCard = false;
+            LoadDraft(newCard, false);
+            await SelectedCardChanged.InvokeAsync(newCard);
+            return;
+        }
+
+        var target = Cards.FirstOrDefault(card => card.Id == _draft.Id);
+        if (target is null) {
+            return;
+        }
+
+        var originalColumnId = target.ColumnId;
+        target.Title = _draft.Title.Trim();
+        target.Description = NormalizeText(_draft.Description);
+        target.Assignee = NormalizeText(_draft.Assignee);
+        target.Priority = NormalizeText(_draft.Priority);
+        target.Labels = ParseLabels(_labelsText);
+        target.DueDate = _draft.DueDate;
+
+        if (!string.Equals(originalColumnId, _draft.ColumnId, StringComparison.OrdinalIgnoreCase)) {
+            target.ColumnId = _draft.ColumnId;
+            target.SortOrder = Cards.Count(card => card.Id != target.Id && string.Equals(card.ColumnId, target.ColumnId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        NormalizeColumn(originalColumnId);
+        NormalizeColumn(target.ColumnId);
+        LoadDraft(target, false);
+        await SelectedCardChanged.InvokeAsync(target);
+    }
+
+    private Task ResetDraft()
+    {
+        if (_isNewCard) {
+            _draft = new CardDraft {
+                Id = CreateCardId(),
+                ColumnId = DetermineDefaultColumnId(),
+                Priority = "medium",
+                DueDate = DateTime.Today.AddDays(2),
+            };
+            _labelsText = string.Empty;
+            _loadedCardId = _draft.Id;
+            return Task.CompletedTask;
+        }
+
+        if (SelectedCard != null) {
+            LoadDraft(SelectedCard, false);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task CancelNewCard()
+    {
+        _isNewCard = false;
+        ClearDraft();
+        await SelectedCardChanged.InvokeAsync(null);
+    }
+
+    private async Task DuplicateCard()
+    {
+        if (_draft is null || _isNewCard) {
+            return;
+        }
+
+        var duplicate = new KanbanBoard.KanbanCard {
+            Id = CreateCardId(),
+            ColumnId = _draft.ColumnId,
+            Title = string.IsNullOrWhiteSpace(_draft.Title) ? "Copied card" : $"{_draft.Title.Trim()} copy",
+            Description = NormalizeText(_draft.Description),
+            Assignee = NormalizeText(_draft.Assignee),
+            Priority = NormalizeText(_draft.Priority),
+            Labels = ParseLabels(_labelsText),
+            DueDate = _draft.DueDate,
+            SortOrder = Cards.Count(card => string.Equals(card.ColumnId, _draft.ColumnId, StringComparison.OrdinalIgnoreCase)),
+        };
+
+        Cards.Add(duplicate);
+        NormalizeColumn(duplicate.ColumnId);
+        LoadDraft(duplicate, false);
+        await SelectedCardChanged.InvokeAsync(duplicate);
+    }
+
+    private async Task DeleteCard()
+    {
+        if (_draft is null || _isNewCard) {
+            return;
+        }
+
+        var removed = Cards.FirstOrDefault(card => card.Id == _draft.Id);
+        if (removed is null) {
+            return;
+        }
+
+        Cards.Remove(removed);
+        NormalizeColumn(removed.ColumnId);
+
+        _isNewCard = false;
+        ClearDraft();
+        await SelectedCardChanged.InvokeAsync(null);
+    }
+
+    private void HandleDueDateChanged(ChangeEventArgs args)
+    {
+        if (_draft is null) {
+            return;
+        }
+
+        var value = Convert.ToString(args.Value);
+        if (string.IsNullOrWhiteSpace(value)) {
+            _draft.DueDate = null;
+            return;
+        }
+
+        if (DateTime.TryParseExact(value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var parsedDate)) {
+            _draft.DueDate = parsedDate;
+        }
+    }
+
+    private void LoadDraft(KanbanBoard.KanbanCard card, bool isNewCard)
+    {
+        _draft = new CardDraft {
+            Id = card.Id,
+            ColumnId = card.ColumnId,
+            Title = card.Title,
+            Description = card.Description,
+            Assignee = card.Assignee,
+            Priority = card.Priority,
+            DueDate = card.DueDate,
+        };
+
+        _labelsText = string.Join(", ", card.Labels);
+        _loadedCardId = card.Id;
+        _isNewCard = isNewCard;
+    }
+
+    private void ClearDraft()
+    {
+        _draft = null;
+        _labelsText = string.Empty;
+        _loadedCardId = string.Empty;
+    }
+
+    private string DetermineDefaultColumnId()
+    {
+        if (SelectedCard != null && !string.IsNullOrWhiteSpace(SelectedCard.ColumnId)) {
+            return SelectedCard.ColumnId;
+        }
+
+        return OrderedColumns().FirstOrDefault()?.Id ?? string.Empty;
+    }
+
+    private IEnumerable<KanbanBoard.KanbanColumn> OrderedColumns() =>
+        Columns.OrderBy(column => column.SortOrder).ThenBy(column => column.Title);
+
+    private void NormalizeColumn(string? columnId)
+    {
+        if (string.IsNullOrWhiteSpace(columnId)) {
+            return;
+        }
+
+        var ordered = Cards
+            .Where(card => string.Equals(card.ColumnId, columnId, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(card => card.SortOrder)
+            .ThenBy(card => card.Title)
+            .ToList();
+
+        for (int index = 0; index < ordered.Count; index++) {
+            ordered[index].SortOrder = index;
+        }
+    }
+
+    private string SelectedColumnTitle()
+    {
+        if (_draft is null || string.IsNullOrWhiteSpace(_draft.ColumnId)) {
+            return "No status";
+        }
+
+        return Columns.FirstOrDefault(column => string.Equals(column.Id, _draft.ColumnId, StringComparison.OrdinalIgnoreCase))?.Title ?? _draft.ColumnId;
+    }
+
+    private string ColumnLoadSummary()
+    {
+        if (_draft is null || string.IsNullOrWhiteSpace(_draft.ColumnId)) {
+            return "No column selected";
+        }
+
+        var column = Columns.FirstOrDefault(item => string.Equals(item.Id, _draft.ColumnId, StringComparison.OrdinalIgnoreCase));
+        var cardCount = Cards.Count(card => string.Equals(card.ColumnId, _draft.ColumnId, StringComparison.OrdinalIgnoreCase));
+
+        if (_isNewCard) {
+            cardCount += 1;
+        }
+
+        if (column?.CardLimit is int limit) {
+            return $"{cardCount} cards in column, limit {limit}";
+        }
+
+        return $"{cardCount} cards in column";
+    }
+
+    private string DueSummary()
+    {
+        if (_draft?.DueDate is not DateTime dueDate) {
+            return "No due date";
+        }
+
+        var today = DateTime.Today;
+        if (dueDate.Date < today) {
+            return $"Overdue since {dueDate:M/d}";
+        }
+
+        if (dueDate.Date == today) {
+            return "Due today";
+        }
+
+        return $"Due {dueDate:M/d}";
+    }
+
+    private string LabelCountSummary()
+    {
+        var count = ParseLabels(_labelsText).Count;
+        return count == 1 ? "1 label" : $"{count} labels";
+    }
+
+    private static string FormatDateInput(DateTime? dueDate) => dueDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+
+    private static string? NormalizeText(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) {
+            return null;
+        }
+
+        return input.Trim();
+    }
+
+    private static List<string> ParseLabels(string? input) => (input ?? string.Empty)
+        .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
+
+    private static string CreateCardId() => Guid.NewGuid().ToString("N")[..8];
+
+    private sealed class CardDraft
+    {
+        public string Id { get; set; } = string.Empty;
+        public string ColumnId { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Assignee { get; set; }
+        public string? Priority { get; set; }
+        public DateTime? DueDate { get; set; }
+    }
+}

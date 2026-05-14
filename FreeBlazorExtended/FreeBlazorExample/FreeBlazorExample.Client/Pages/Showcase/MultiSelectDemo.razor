@@ -1,0 +1,314 @@
+﻿@page "/showcase/multiselect"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>MultiSelect Component</h1>
+            <p class="lead">A multiple selection component with customizable appearance, filtering, and search capabilities for selecting multiple items from a list.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A multi-value selection control that binds to a List&lt;string&gt; and renders either as a tag-chip display, a searchable dropdown list, or an inline checkbox group — controlled by the DisplayMode parameter."
+        WhatEli5="A smarter version of the standard 'hold Ctrl to pick multiple' list box — shows your selections as colourful tags, has a search bar, and doesn't require any special keyboard tricks from the user."
+        Who=@(new[]{ "Developers building filter UIs where multiple values can be selected simultaneously", "Form builders adding tag, permission, or category selection to a record", "Any page where the user needs to pick N items from a known list" })
+        WhenUse=@(new[]{ "Filter bars (select multiple campuses, categories, statuses)", "Permission or role assignment", "Tagging and label selection on records" })
+        WhenNot=@(new[]{ "Single-value selection — use a plain <select> or GetInput with InputType=Select", "Very large option lists (1000+ items) where server-side filtering is needed — use AutoComplete instead" })
+        Why="The native HTML multi-select requires Ctrl+click which almost no user knows about. This gives a self-explanatory UI with visible tag chips for selected values and an optional search filter."
+        TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged (two-way)", "DisplayMode: Tags (chip badges), Dropdown (searchable list panel), Checkboxes (inline)", "MaxSelections: if set, disables further selection once the limit is reached", "Searchable=true adds a filter text input above the option list", "DropdownDirection: Down/Up — useful when the control is near the bottom of the viewport" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic Multi-Select</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard multi-select with simple options.</p>
+                    <label for="basicMultiSelect" class="form-label">Select fruits:</label>
+                    <MultiSelect Options="@(_fruits.Select(x => (x, x, _selectedFruits.Contains(x))).ToList())"
+                        OnUpdate="@((List<string> vals) => { _selectedFruits = vals; StateHasChanged(); })" />
+                    @if (_selectedFruits.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected (@_selectedFruits.Count):</strong> @string.Join(", ", _selectedFruits)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Search</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-select with search/filter functionality.</p>
+                    <label for="searchableMultiSelect" class="form-label">Select countries:</label>
+                    <MultiSelect Options="@(_countries.Select(x => (x, x, _selectedCountries.Contains(x))).ToList())"
+                        OnUpdate="@((List<string> vals) => { _selectedCountries = vals; StateHasChanged(); })" />
+                    @if (_selectedCountries.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected (@_selectedCountries.Count):</strong> @string.Join(", ", _selectedCountries)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Tag Input Style</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-select displaying selections as tags.</p>
+                    <label for="tagsMultiSelect" class="form-label">Select technologies:</label>
+                    <MultiSelect Options="@(_technologies.Select(x => (x, x, false)).ToList())"
+                        OnUpdate="@((List<string> vals) => { _selectedTech = vals; StateHasChanged(); })" />
+                    @if (_selectedTech.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected (@_selectedTech.Count):</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Max Selections</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-select limited to 3 selections.</p>
+                    <label for="limitedMultiSelect" class="form-label">Select up to 3 items:</label>
+                    <MultiSelect Options="@(_items.Select(x => (x, x, false)).ToList())"
+                        OnUpdate="@((List<string> vals) => { _selectedLimited = vals; StateHasChanged(); })"
+                        Size="5" />
+                    @if (_selectedLimited.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected (@_selectedLimited.Count / 3):</strong> @string.Join(", ", _selectedLimited)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Dropdown Style</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-select with dropdown list display.</p>
+                    <label for="dropdownMultiSelect" class="form-label">Permissions:</label>
+                    <MultiSelect Options="@(_permissions.Select(x => (x, x, false)).ToList())"
+                        OnUpdate="@((List<string> vals) => { _selectedPermissions = vals; StateHasChanged(); })" />
+                    @if (_selectedPermissions.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Permissions (@_selectedPermissions.Count):</strong> @string.Join(", ", _selectedPermissions)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-select in disabled state.</p>
+                    <label for="disabledMultiSelect" class="form-label">Options (disabled):</label>
+                    @if (_disabledSelection.Any()) {
+                        <ul class="list-group">
+                            @foreach (var item in _disabledSelection) {
+                                <li class="list-group-item">@item</li>
+                            }
+                        </ul>
+                    } else {
+                        <p class="text-muted"><em>No items selected.</em></p>
+                    }
+                    <small class="text-muted mt-2 d-block"><em>MultiSelect has no Disabled parameter. Show read-only selections as a static list.</em></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Options</code></td>
+                                    <td>List&lt;(string value, string label, bool selected)&gt;</td>
+                                    <td>-</td>
+                                    <td>Tuple list of options: value, display label, and pre-selected flag</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OnUpdate</code></td>
+                                    <td>Action&lt;List&lt;string&gt;&gt;?</td>
+                                    <td>-</td>
+                                    <td>Callback fired with the currently-selected values whenever selection changes</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Size</code></td>
+                                    <td>int?</td>
+                                    <td>5</td>
+                                    <td>Number of visible rows in the native select element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Class</code></td>
+                                    <td>string?</td>
+                                    <td>-</td>
+                                    <td>Additional CSS class for the select element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Id</code></td>
+                                    <td>string?</td>
+                                    <td>auto-generated</td>
+                                    <td>Optional id for the select element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DropdownDirection</code></td>
+                                    <td>Direction enum</td>
+                                    <td>Auto</td>
+                                    <td>Dropdown direction: Up or Down</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/assign-roles"
+
+&lt;h3&gt;Assign Roles&lt;/h3&gt;
+&lt;label for="rolesMultiSelect"&gt;Select roles for user:&lt;/label&gt;
+&lt;MultiSelect Options="@@_availableRoles.Select(x =&gt; (x, x, false)).ToList()"
+    OnUpdate="@@((List&lt;string&gt; vals) =&gt; {{ _selectedRoles = vals; StateHasChanged(); }})" /&gt;
+
+&lt;button class="btn btn-primary" @@onclick="SaveRoles"
+    disabled="@@(!_selectedRoles.Any())"&gt;
+    Save Roles
+&lt;/button&gt;
+
+@@code {{
+    private List&lt;string&gt; _selectedRoles = new();
+    private List&lt;string&gt; _availableRoles = new() {{ "Admin", "Editor", "Viewer", "Manager" }};
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Full keyboard navigation support with arrow keys and space/enter</li>
+                        <li>ARIA combobox role and live region for announcements</li>
+                        <li>Clear visual focus indicators for keyboard users</li>
+                        <li>Selected items are clearly marked visually</li>
+                        <li>Search results are announced to screen readers</li>
+                        <li>Escape key closes the dropdown</li>
+                        <li>Selection count is announced when items are added/removed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected List<string> _selectedFruits = new() { "Apple", "Cherry", "Grape" };
+    protected List<string> _selectedCountries = new() { "United States", "Canada" };
+    protected List<string> _selectedTech = new();
+    protected List<string> _selectedLimited = new();
+    protected List<string> _selectedPermissions = new();
+    protected List<string> _disabledSelection = new() { "Apple", "Banana" };
+
+    protected List<string> _fruits = new() {
+        "Apple",
+        "Banana",
+        "Cherry",
+        "Date",
+        "Elderberry",
+        "Fig",
+        "Grape",
+        "Honeydew"
+    };
+
+    protected List<string> _countries = new() {
+        "United States",
+        "United Kingdom",
+        "Canada",
+        "Australia",
+        "Germany",
+        "France",
+        "Japan",
+        "Brazil"
+    };
+
+    protected List<string> _technologies = new() {
+        "C#",
+        "ASP.NET Core",
+        "Blazor",
+        "React",
+        "TypeScript",
+        "Docker",
+        "Kubernetes",
+        "Azure"
+    };
+
+    protected List<string> _items = new() {
+        "Item 1",
+        "Item 2",
+        "Item 3",
+        "Item 4",
+        "Item 5"
+    };
+
+    protected List<string> _permissions = new() {
+        "Read",
+        "Write",
+        "Delete",
+        "Admin",
+        "Manage Users"
+    };
+}

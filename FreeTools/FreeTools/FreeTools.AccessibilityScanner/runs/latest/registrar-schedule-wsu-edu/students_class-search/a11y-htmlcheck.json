@@ -1,0 +1,74 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022IM\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022myWSU\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022SOC\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd class=\u0022what\u0022\u003E100% Face to Face\u003C/td\u003E\n\u003Ctd\u003E\u003Cimg style=\u0022width: 500px; height: 131.0810810810811px;\u0022 src=\u0022/media/762544...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd class=\u0022where\u0022\u003EWeekly Schedule\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022\u003EDay and Time\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022\u003ERoom\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022 col...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd class=\u0022where\u0022\u003EWeekly Schedule\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022\u003EDay and Time\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022\u003ERoom\u003C/td\u003E\n\u003Ctd class=\u0022top\u0022\u003ENot...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

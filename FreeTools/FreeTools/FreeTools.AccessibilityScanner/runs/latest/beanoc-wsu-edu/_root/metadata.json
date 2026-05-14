@@ -1,0 +1,74 @@
+{
+  "PagePath": "/",
+  "Url": "https://beanoc.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "Be An Orientation Leader",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 648724,
+  "ScreenshotSizeBytes": 165795,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 165795
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/1qsjtxtz/509191248_1147273304101180_5220109878984119044_n.jpg?rmode=max\u0026width=500",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/3jbdetsz/532029249_1193739626121214_5354046549888847219_n.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/gbnkrvhd/535789947_1196088222553021_1512933447628367525_n.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/250c3zp2/509434509_1147272527434591_2624082848169958114_n.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:07:18.4867242Z"
+}

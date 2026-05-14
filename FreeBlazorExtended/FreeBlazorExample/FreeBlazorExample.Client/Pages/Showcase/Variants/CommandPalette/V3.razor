@@ -1,0 +1,87 @@
+@page "/showcase/commandpalette/v3"
+@using FreeBlazorExtended.CommandPalette
+@inject NavigationManager NavigationManager
+
+<div class="container-fluid py-4">
+    <h1>Programmatic Command Palette With Action Log</h1>
+
+    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="OpenPalette">Open Palette</button>
+        <span class="badge bg-secondary">Palette: @(_palette?.IsOpen == true ? "Open" : "Closed")</span>
+        <span class="badge @(_darkAccent ? "bg-dark" : "bg-light text-dark border")">Theme Accent: @(_darkAccent ? "Dark" : "Light")</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Counter</h2>
+                    <div class="display-6 mb-0">@_counter</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Action Log</h2>
+                    <ul class="small mb-0 ps-3">
+                        @foreach (var item in _actionLog) {
+                            <li>@item</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <CommandPalette @ref="_palette"
+                    Commands="_commands"
+                    TriggerHotkey="k"
+                    PlaceholderText="Run a command..."
+                    OnCommandInvoked="HandleCommand" />
+</div>
+
+@code {
+    private readonly List<CommandPalette.CommandItem> _commands = new()
+    {
+        new() { Id = "increment-counter", Label = "Increment Counter", Category = "Actions", Icon = "fa-solid fa-plus", Description = "Add one to the visible counter." },
+        new() { Id = "toggle-theme", Label = "Toggle Theme Accent", Category = "Actions", Icon = "fa-solid fa-circle-half-stroke" },
+        new() { Id = "clear-log", Label = "Clear Action Log", Category = "Actions", Icon = "fa-solid fa-broom" },
+        new() { Id = "goto-showcase", Label = "Go to Showcase", Category = "Navigation", Icon = "fa-solid fa-table-cells" },
+        new() { Id = "goto-catalog", Label = "Go to Catalog", Category = "Navigation", Icon = "fa-solid fa-list" },
+        new() { Id = "open-help", Label = "Open Help", Category = "Help", Icon = "fa-solid fa-circle-question" },
+    };
+
+    private FreeBlazorExtended.CommandPalette.CommandPalette? _palette;
+    private int _counter;
+    private bool _darkAccent;
+    private List<string> _actionLog = new() { "No actions yet." };
+
+    private void OpenPalette()
+    {
+        _palette?.Open();
+        StateHasChanged();
+    }
+
+    private Task HandleCommand(CommandPalette.CommandItem item)
+    {
+        if (item.Id == "increment-counter") {
+            _counter++;
+        } else if (item.Id == "toggle-theme") {
+            _darkAccent = !_darkAccent;
+        } else if (item.Id == "clear-log") {
+            _actionLog.Clear();
+        } else if (item.Id == "goto-showcase") {
+            NavigationManager.NavigateTo("/showcase");
+        } else if (item.Id == "goto-catalog") {
+            NavigationManager.NavigateTo("/showcase/catalog");
+        }
+
+        _actionLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — {item.Id}");
+        if (_actionLog.Count > 10) {
+            _actionLog = _actionLog.Take(10).ToList();
+        }
+
+        return Task.CompletedTask;
+    }
+}

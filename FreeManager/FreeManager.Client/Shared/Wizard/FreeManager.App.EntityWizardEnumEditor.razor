@@ -1,0 +1,159 @@
+@* EntityWizardEnumEditor.App.razor - Modal for adding/editing enums *@
+
+@if (IsOpen) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-list me-2"></i>
+                        @(EnumDef.Id == Guid.Empty ? "Add Enum" : "Edit Enum")
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Enum Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control @Helpers.MissingValue(EnumDef.Name)"
+                               @bind="EnumDef.Name" @bind:event="oninput"
+                               placeholder="TaskStatus" />
+                        <div class="form-text">
+                            Must be a valid C# identifier. Usually ends with "Type" or "Status".
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Values <span class="text-danger">*</span>
+                        </label>
+                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                            @for (int i = 0; i < EnumDef.Values.Count; i++) {
+                                var index = i;
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="text" class="form-control"
+                                           value="@EnumDef.Values[index]"
+                                           @oninput="@(e => UpdateValue(index, e.Value?.ToString()))"
+                                           placeholder="Value" />
+                                    @if (EnumDef.Values.Count > 1) {
+                                        <button class="btn btn-outline-danger" type="button"
+                                                @onclick="@(() => RemoveValue(index))">
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2" @onclick="AddValue">
+                            <i class="fa-solid fa-plus me-1"></i>
+                            Add Value
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Default Value</label>
+                        <select class="form-select" @bind="EnumDef.DefaultValue">
+                            @foreach (var val in EnumDef.Values.Where(v => !string.IsNullOrWhiteSpace(v))) {
+                                <option value="@val">@val</option>
+                            }
+                        </select>
+                        <div class="form-text">
+                            The default value when creating new records.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info small mb-0">
+                        <i class="fa-solid fa-info-circle me-1"></i>
+                        <strong>How enums work:</strong>
+                        <ul class="mb-0 mt-1">
+                            <li>Stored as <code>string</code> in the database</li>
+                            <li>Converted to C# <code>enum</code> in DataObjects</li>
+                            <li>Displayed as dropdown in UI</li>
+                            <li>Filterable in list pages</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Cancel</button>
+                    <button type="button" class="btn btn-info text-white"
+                            @onclick="Save"
+                            disabled="@(!CanSave())">
+                        <i class="fa-solid fa-save me-1"></i>
+                        Save Enum
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    [Parameter] public DataObjects.EnumDefinition EnumDef { get; set; } = new();
+    [Parameter] public EventCallback<DataObjects.EnumDefinition> EnumDefChanged { get; set; }
+
+    [Parameter] public EventCallback<DataObjects.EnumDefinition> OnSave { get; set; }
+
+    protected override void OnParametersSet() {
+        if (IsOpen && EnumDef != null) {
+            // Ensure at least one value slot
+            if (EnumDef.Values.Count == 0) {
+                EnumDef.Values.Add("");
+            }
+        }
+    }
+
+    private bool CanSave() {
+        if (string.IsNullOrWhiteSpace(EnumDef.Name)) return false;
+        if (!System.Text.RegularExpressions.Regex.IsMatch(EnumDef.Name, @"^[A-Za-z][A-Za-z0-9]*$")) return false;
+        if (!EnumDef.Values.Any(v => !string.IsNullOrWhiteSpace(v))) return false;
+        return true;
+    }
+
+    private void AddValue() {
+        EnumDef.Values.Add("");
+    }
+
+    private void RemoveValue(int index) {
+        if (index >= 0 && index < EnumDef.Values.Count) {
+            EnumDef.Values.RemoveAt(index);
+        }
+    }
+
+    private void UpdateValue(int index, string? value) {
+        // Clean value - only allow valid C# identifiers
+        value = System.Text.RegularExpressions.Regex.Replace(value ?? "", @"[^A-Za-z0-9]", "");
+
+        if (index >= 0 && index < EnumDef.Values.Count) {
+            EnumDef.Values[index] = value;
+        }
+    }
+
+    private async Task Save() {
+        if (!CanSave()) return;
+
+        // Clean up empty values
+        EnumDef.Values = EnumDef.Values
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        // Ensure ID
+        if (EnumDef.Id == Guid.Empty) {
+            EnumDef.Id = Guid.NewGuid();
+        }
+
+        // Set default if not set
+        if (string.IsNullOrWhiteSpace(EnumDef.DefaultValue) && EnumDef.Values.Count > 0) {
+            EnumDef.DefaultValue = EnumDef.Values[0];
+        }
+
+        await OnSave.InvokeAsync(EnumDef);
+    }
+
+    private async Task Close() {
+        await IsOpenChanged.InvokeAsync(false);
+    }
+}

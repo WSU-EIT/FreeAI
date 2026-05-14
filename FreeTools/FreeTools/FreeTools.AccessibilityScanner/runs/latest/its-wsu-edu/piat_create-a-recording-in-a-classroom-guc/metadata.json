@@ -1,0 +1,114 @@
+{
+  "PagePath": "/piat/create-a-recording-in-a-classroom-guc/",
+  "Url": "https://its.wsu.edu/piat/create-a-recording-in-a-classroom-guc/",
+  "FinalUrl": null,
+  "Title": "Create a Recording in a Classroom (GUC) | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 240360,
+  "ScreenshotSizeBytes": 429807,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 429807
+    }
+  ],
+  "ImageCount": 11,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Panopto-Video-Menu-396x172.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Create-Button-396x80.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Panopto-for-Windows-396x436.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Launch-Panopto-396x248.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Open-Panopto-Recorder-396x139.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Panopto-Recorder-1-396x310.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Session-Settings-396x71.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Primanry-Sources.jpg",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Seconday-Sources.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/record-stop-pause.png",
+      "AltText": "alt=\u0022\u0022)"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3067/2021/08/Recording-Complete-396x448.png",
+      "AltText": "alt=\u0022\u0022)"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:21:43 GMT",
+    "etag": "\u00224a8f491d0373fa43b5dcd2e7f9d83565\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:21:43 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/8778\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=8778\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:21:42.8879432Z"
+}

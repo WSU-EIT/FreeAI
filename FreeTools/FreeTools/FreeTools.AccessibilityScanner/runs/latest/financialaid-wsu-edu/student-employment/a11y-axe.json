@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 272,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[rel=\u0022noreferrer noopener\u0022]",
+      "Snippet": "\u003Ca rel=\u0022noreferrer noopener\u0022 target=\u0022_blank\u0022 href=\u0022https://wsu.wd5.myworkdayjobs.com/en-US/WSU_Jobs/job/Assistant-Director---State-Aid---Packaging_R-1...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

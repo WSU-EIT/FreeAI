@@ -1,0 +1,99 @@
+{
+  "PagePath": "/recognition/quarter-century-club/",
+  "Url": "https://hrs.wsu.edu/recognition/quarter-century-club/",
+  "FinalUrl": null,
+  "Title": "Quarter Century Club \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 86473,
+  "ScreenshotSizeBytes": 314338,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 314338
+    }
+  ],
+  "ImageCount": 8,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6858-1180x787.jpg",
+      "AltText": "Scott Frasure and Provost Riley-Tillman at the 92nd Annual Quarter Century Club Celebration."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/2025-Quarter-Century-Club_6948-1-1-1180x725.jpg",
+      "AltText": "2025 Quarter Century Club New Inductees"
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6969-1180x787.jpg",
+      "AltText": "Lael Gray, 2025 QCC Inductee"
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6822-1180x787.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6844-1180x787.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6974-1180x787.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/09/DSC_6684-1180x787.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/02/QCC-25yr-Coin-HRS.png",
+      "AltText": "QCC logo with the words: Celebrating 25 years."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:26:25 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:26:25 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/11011\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=11011\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:26:25.1213787Z"
+}

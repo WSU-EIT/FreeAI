@@ -1,0 +1,74 @@
+{
+  "PagePath": "/instructions/lab-sections/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/lab-sections/",
+  "FinalUrl": null,
+  "Title": "Add a Lab Section | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 687091,
+  "ScreenshotSizeBytes": 259397,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 259397
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756456/add-a-lab-section-plus-sign.jpg?width=649\u0026height=170",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756452/add-a-lab-section-save.jpg?width=645\u0026height=666",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756455/add-a-lab-section-non-enroll-message.jpg?width=648\u0026height=223",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/756453/add-a-lab-section-associated-class-box.jpg?width=644\u0026height=664",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:21:28.5734794Z"
+}

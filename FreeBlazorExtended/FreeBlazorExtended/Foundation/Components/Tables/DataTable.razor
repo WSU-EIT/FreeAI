@@ -1,0 +1,452 @@
+﻿@*
+    DataTable<TItem> — Foundation searchable, sortable, paged data table.
+
+    Renders any strongly-typed list with opt-in features: column definitions added at
+    runtime via AddColumn(), a search bar, click-to-sort headers, Bootstrap pagination,
+    row selection with checkboxes, and a caller-supplied action toolbar fragment.
+
+    Required host setup:
+        1. Add the component with an item type: <DataTable TItem="MyModel" Items="_rows" />
+        2. Add columns in OnAfterRenderAsync (first render only):
+               tableRef.AddColumn("Name", nameof(MyModel.Name));
+               tableRef.AddColumn("Status", nameof(MyModel.Status));
+        3. For custom cell rendering, pass a RenderFragment<TItem> as the template argument.
+
+    Required parameters:
+        Items — List<TItem> of records to display.
+
+    Optional parameters:
+        ShowSearch        — search box above the table (default true)
+        ShowPagination    — pagination bar beneath the table (default true)
+        PageSize          — rows per page (default 10)
+        AllowSort         — click-to-sort column headers (default true)
+        Selectable        — checkbox column for multi-row selection (default false)
+        OnSelectionChanged — EventCallback<List<TItem>> fired when selection changes
+        TableClass        — Bootstrap table modifier classes (default "table-striped table-hover")
+        EmptyMessage      — text shown when Items is empty
+        AriaLabel         — accessible label for the <table> element
+        ChildContent      — toolbar RenderFragment rendered above the table
+*@
+@namespace FreeBlazorExtended.Components
+@typeparam TItem
+
+@if (Items?.Any() == true) {
+    <div class="datatable-container">
+        <div class="datatable-toolbar" role="toolbar" aria-label="Table controls">
+            @if (ShowSearch) {
+                <div class="datatable-search">
+                    <input type="text" class="form-control form-control-sm"
+                        placeholder="Search..."
+                        @bind="_searchTerm"
+                        @bind:event="oninput"
+                        aria-label="Search table" />
+                </div>
+            }
+            @if (ChildContent != null) {
+                <div class="datatable-actions">
+                    @ChildContent
+                </div>
+            }
+        </div>
+
+        <div class="table-responsive">
+            <table class="@_tableClass" role="grid" aria-label="@(String.IsNullOrWhiteSpace(AriaLabel) ? "Data table" : AriaLabel)">
+                <thead>
+                    <tr role="row">
+                        @if (Selectable) {
+                            <th scope="col" class="datatable-checkbox-col" role="columnheader">
+                                <input type="checkbox"
+                                    @onchange="@((ChangeEventArgs e) => SelectAllToggled(e))"
+                                    aria-label="Select all rows" />
+                            </th>
+                        }
+                        @foreach (var column in _columns) {
+                            <th scope="col"
+                                class="@GetColumnHeaderClass(column)"
+                                role="columnheader"
+                                @onclick="@(() => SortColumn(column.PropertyName))"
+                                style="@(AllowSort && column.Sortable ? "cursor: pointer;" : "")">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span>@column.Header</span>
+                                    @if (AllowSort && column.Sortable && _sortColumn == column.PropertyName) {
+                                        <i class="@(_sortDescending ? "fas fa-sort-down" : "fas fa-sort-up")" aria-hidden="true"></i>
+                                    }
+                                </div>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in _displayedItems) {
+                        <tr role="row" class="datatable-row">
+                            @if (Selectable) {
+                                <td class="datatable-checkbox-col">
+                                    <input type="checkbox"
+                                        @onchange="@((ChangeEventArgs e) => RowToggled(item, e))"
+                                        @key="item"
+                                        aria-label="Select row" />
+                                </td>
+                            }
+                            @foreach (var column in _columns) {
+                                <td role="gridcell">
+                                    @if (column.Template != null) {
+                                        @column.Template(item)
+                                    } else {
+                                        @GetPropertyValue(item, column.PropertyName)
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowPagination && _totalPages > 1) {
+            <nav aria-label="Table pagination">
+                <ul class="pagination justify-content-end mb-0">
+                    <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="PreviousPage" aria-label="Previous page">Previous</button>
+                    </li>
+                    @for (int i = 1; i <= _totalPages; i++) {
+                        int pageNum = i;
+                        <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                            <button class="page-link" @onclick="@(() => GoToPage(pageNum))" aria-label="Go to page @pageNum">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="NextPage" aria-label="Next page">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+} else {
+    <div class="alert alert-info" role="status">
+        <i class="fas fa-info-circle me-2"></i>
+        @(String.IsNullOrWhiteSpace(EmptyMessage) ? "No data available" : EmptyMessage)
+    </div>
+}
+
+<style>
+    .datatable-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .datatable-toolbar {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .datatable-search {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .datatable-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .table-responsive {
+        border-radius: 0.375rem;
+        border: 1px solid var(--bs-border-color);
+    }
+
+    .datatable-table {
+        margin-bottom: 0;
+        background-color: var(--bs-body-bg);
+    }
+
+    .datatable-table thead th {
+        background-color: var(--bs-light);
+        border-color: var(--bs-border-color);
+        font-weight: 600;
+        color: var(--bs-body-color);
+        user-select: none;
+    }
+
+    .datatable-table tbody td {
+        border-color: var(--bs-border-color);
+        vertical-align: middle;
+    }
+
+    .datatable-table tbody tr:hover {
+        background-color: var(--bs-light);
+    }
+
+    .datatable-checkbox-col {
+        width: 40px;
+        text-align: center;
+    }
+
+    .pagination {
+        margin-top: 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .datatable-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .datatable-search {
+            min-width: 100%;
+        }
+    }
+</style>
+
+@code {
+    public class ColumnDefinition {
+        public string Header { get; set; } = "";
+        public string PropertyName { get; set; } = "";
+        public bool Sortable { get; set; } = true;
+        public RenderFragment<TItem>? Template { get; set; }
+    }
+
+    private List<ColumnDefinition> _columns = new();
+    private List<TItem> _displayedItems = new();
+    private List<TItem> _selectedItems = new();
+    private string _searchTerm = "";
+    private string _sortColumn = "";
+    private bool _sortDescending = false;
+    private int _currentPage = 1;
+    private int _totalPages = 1;
+    private string _tableClass = "table datatable-table";
+
+    /// <summary>
+    /// Records to display in the table.
+    /// <para><b>Required.</b> Replace (do not mutate) to trigger a re-render.
+    /// An empty list displays <see cref="EmptyMessage"/>.</para>
+    /// </summary>
+    [Parameter]
+    public List<TItem> Items { get; set; } = new();
+
+    /// <summary>
+    /// Fired whenever the checkbox selection set changes.
+    /// The argument is the full current list of selected items.
+    /// Only raised when <see cref="Selectable"/> is <c>true</c>.
+    /// </summary>
+    [Parameter]
+    public EventCallback<List<TItem>> OnSelectionChanged { get; set; }
+
+    /// <summary>
+    /// When <c>true</c> (default), adds a leading checkbox column and enables
+    /// multi-row selection. Wire <see cref="OnSelectionChanged"/> to receive updates.
+    /// </summary>
+    [Parameter]
+    public bool Selectable { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a search input above the table that
+    /// filters rows across all visible string columns.
+    /// </summary>
+    [Parameter]
+    public bool ShowSearch { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a Bootstrap pagination bar beneath
+    /// the table. Controlled by <see cref="PageSize"/>.
+    /// </summary>
+    [Parameter]
+    public bool ShowPagination { get; set; } = true;
+
+    /// <summary>
+    /// Number of rows per page when <see cref="ShowPagination"/> is <c>true</c>.
+    /// Default: <c>10</c>. Common values: <c>5</c>, <c>10</c>, <c>25</c>, <c>50</c>.
+    /// </summary>
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>
+    /// When <c>true</c> (default), clicking a column header sorts the table by
+    /// that column. A second click reverses the sort direction.
+    /// </summary>
+    [Parameter]
+    public bool AllowSort { get; set; } = true;
+
+    /// <summary>
+    /// Bootstrap table modifier class(es) applied after <c>"table"</c>.
+    /// Default: <c>"table-striped table-hover"</c>.
+    /// Example: <c>"table-bordered table-sm"</c>.
+    /// </summary>
+    [Parameter]
+    public string TableClass { get; set; } = "table-striped table-hover";
+
+    /// <summary>
+    /// Text displayed in a centred cell span when <see cref="Items"/> is empty.
+    /// Defaults to the component's built-in empty-state row when left blank.
+    /// </summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "";
+
+    /// <summary>
+    /// Accessible label for the <c>&lt;table&gt;</c> element (<c>aria-label</c>).
+    /// Defaults to <c>"Data table"</c> when omitted.
+    /// </summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "";
+
+    /// <summary>
+    /// Optional toolbar <see cref="RenderFragment"/> rendered in the control bar
+    /// above the table (alongside the search input). Use for action buttons,
+    /// bulk-action triggers, or export controls.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+        RefreshDisplay();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _tableClass = $"table datatable-table {TableClass ?? ""}".Trim();
+    }
+
+    protected void RefreshDisplay()
+    {
+        List<TItem> filtered = Items ?? new();
+
+        if (!String.IsNullOrWhiteSpace(_searchTerm)) {
+            filtered = FilterItems(filtered, _searchTerm);
+        }
+
+        if (!String.IsNullOrWhiteSpace(_sortColumn)) {
+            filtered = SortItems(filtered, _sortColumn, _sortDescending);
+        }
+
+        _totalPages = (int)Math.Ceiling((double)filtered.Count / PageSize);
+        if (_currentPage > _totalPages && _totalPages > 0) {
+            _currentPage = _totalPages;
+        }
+        if (_currentPage < 1) {
+            _currentPage = 1;
+        }
+
+        int skip = (_currentPage - 1) * PageSize;
+        _displayedItems = filtered.Skip(skip).Take(PageSize).ToList();
+    }
+
+    protected List<TItem> FilterItems(List<TItem> items, string searchTerm)
+    {
+        string lowerSearch = searchTerm.ToLower();
+        return items.Where(item => {
+            foreach (var prop in typeof(TItem).GetProperties()) {
+                string? value = prop.GetValue(item)?.ToString();
+                if (!String.IsNullOrWhiteSpace(value) && value.ToLower().Contains(lowerSearch)) {
+                    return true;
+                }
+            }
+            return false;
+        }).ToList();
+    }
+
+    protected List<TItem> SortItems(List<TItem> items, string propertyName, bool descending)
+    {
+        var prop = typeof(TItem).GetProperty(propertyName);
+        if (prop == null) return items;
+
+        return descending
+            ? items.OrderByDescending(x => prop.GetValue(x)).ToList()
+            : items.OrderBy(x => prop.GetValue(x)).ToList();
+    }
+
+    protected void SortColumn(string propertyName)
+    {
+        if (!AllowSort) return;
+
+        if (_sortColumn == propertyName) {
+            _sortDescending = !_sortDescending;
+        } else {
+            _sortColumn = propertyName;
+            _sortDescending = false;
+        }
+        _currentPage = 1;
+        RefreshDisplay();
+    }
+
+    protected void RowToggled(TItem item, ChangeEventArgs e)
+    {
+        bool isChecked = (bool)e.Value!;
+        if (isChecked) {
+            _selectedItems.Add(item);
+        } else {
+            _selectedItems.Remove(item);
+        }
+        OnSelectionChanged.InvokeAsync(_selectedItems);
+    }
+
+    protected void SelectAllToggled(ChangeEventArgs e)
+    {
+        bool isChecked = (bool)e.Value!;
+        _selectedItems.Clear();
+        if (isChecked) {
+            _selectedItems.AddRange(_displayedItems);
+        }
+        OnSelectionChanged.InvokeAsync(_selectedItems);
+    }
+
+    protected void NextPage()
+    {
+        if (_currentPage < _totalPages) {
+            _currentPage++;
+            RefreshDisplay();
+        }
+    }
+
+    protected void PreviousPage()
+    {
+        if (_currentPage > 1) {
+            _currentPage--;
+            RefreshDisplay();
+        }
+    }
+
+    protected void GoToPage(int pageNumber)
+    {
+        _currentPage = pageNumber;
+        RefreshDisplay();
+    }
+
+    protected string GetColumnHeaderClass(ColumnDefinition column)
+    {
+        if (!AllowSort || !column.Sortable) return "";
+        return _sortColumn == column.PropertyName ? "sorted" : "";
+    }
+
+    protected object? GetPropertyValue(TItem item, string propertyName)
+    {
+        var prop = typeof(TItem).GetProperty(propertyName);
+        return prop?.GetValue(item);
+    }
+
+    public void AddColumn(string header, string propertyName, bool sortable = true, RenderFragment<TItem>? template = null)
+    {
+        _columns.Add(new ColumnDefinition {
+            Header = header,
+            PropertyName = propertyName,
+            Sortable = sortable,
+            Template = template
+        });
+    }
+
+    public List<TItem> GetSelectedItems() => _selectedItems;
+
+    public void ClearSelection()
+    {
+        _selectedItems.Clear();
+        OnSelectionChanged.InvokeAsync(_selectedItems);
+    }
+}

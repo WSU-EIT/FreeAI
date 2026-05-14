@@ -1,0 +1,70 @@
+@page "/showcase/generic-git"
+@using FreeBlazorExtended.Components
+@using FreeBlazorExtended.GitRepoBrowser
+
+<PageTitle>Generic Git Repo Browser — FreeBlazorExtended</PageTitle>
+
+<h2 class="mb-1">Generic Git Repo Browser</h2>
+<p class="text-muted mb-3">
+    Browse any Git repository hosted on GitHub, GitLab, Bitbucket, Gitea, or Azure DevOps.
+    The platform is auto-detected from the URL; credentials are held only in memory for the session.
+</p>
+
+<div class="alert alert-info mb-3">
+    <strong>Supported platforms</strong>
+    <ul class="mb-0 mt-1">
+        <li><strong>GitHub</strong> — public repos work anonymously; private repos require a
+            <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">Personal Access Token</a>
+            with <code>repo</code> scope.</li>
+        <li><strong>GitLab</strong> — public repos work anonymously; private repos need a
+            <a href="https://gitlab.com/-/profile/personal_access_tokens" target="_blank" rel="noopener">PAT</a>
+            with <code>read_repository</code> scope.</li>
+        <li><strong>Bitbucket</strong> — public repos work anonymously; private repos need
+            an App Password (username + password).</li>
+        <li><strong>Gitea / self-hosted</strong> — select <em>Gitea</em> in the platform override dropdown.</li>
+        <li><strong>Azure DevOps</strong> — use a URL like
+            <code>https://dev.azure.com/org/project/_git/repo</code> and a PAT with
+            <em>Code (Read)</em> permission.</li>
+    </ul>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-semibold">Live Browser</div>
+    <div class="card-body p-3">
+        <GenericGitRepoBrowser ShowUrlInput="true" ShowCredentialFields="true" MaxFileSizeBytes="@(512 * 1024)" />
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header fw-semibold">Component Parameters</div>
+    <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+            <thead class="table-light">
+                <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>ShowUrlInput</code></td><td>bool</td><td>true</td><td>Shows the URL + platform-override bar at the top.</td></tr>
+                <tr><td><code>ShowCredentialFields</code></td><td>bool</td><td>true</td><td>Shows the token / username+password credential panel.</td></tr>
+                <tr><td><code>Username</code></td><td>string?</td><td>—</td><td>Pre-fills the username credential field.</td></tr>
+                <tr><td><code>Password</code></td><td>string?</td><td>—</td><td>Pre-fills the password/token field (use only for dev scenarios).</td></tr>
+                <tr><td><code>Branch</code></td><td>string?</td><td>—</td><td>Pre-selects a specific branch instead of the default.</td></tr>
+                <tr><td><code>MaxFileSizeBytes</code></td><td>long</td><td>524 288</td><td>Files larger than this value are refused with a friendly message.</td></tr>
+                <tr><td><code>OnFileSelected</code></td><td>EventCallback&lt;GitTreeNode&gt;</td><td>—</td><td>Raised when the user clicks a file in the tree.</td></tr>
+                <tr><td><code>OnBranchChanged</code></td><td>EventCallback&lt;GitBranch&gt;</td><td>—</td><td>Raised when the active branch changes.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header fw-semibold">Usage Example</div>
+    <div class="card-body">
+        <pre class="bg-light rounded p-3"><code>@(@"@using FreeBlazorExtended.Components
+
+<GenericGitRepoBrowser
+    ShowUrlInput=""true""
+    ShowCredentialFields=""true""
+    MaxFileSizeBytes=""@(512 * 1024)""
+    OnFileSelected=""@((GitTreeNode node) => Console.WriteLine(node.Path))"" />")</code></pre>
+    </div>
+</div>

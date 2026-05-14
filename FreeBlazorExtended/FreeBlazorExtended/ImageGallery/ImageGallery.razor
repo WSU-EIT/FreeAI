@@ -1,0 +1,229 @@
+﻿@*
+    ImageGallery — Responsive thumbnail grid with an optional full-screen lightbox overlay.
+
+    Renders images in a Bootstrap responsive column grid. Clicking a thumbnail opens a
+    centred dark overlay with the full-size image, left/right navigation arrows, and a
+    filmstrip of all thumbnails at the bottom. Keyboard arrows and Escape also work.
+    Pure Blazor — no JavaScript sidecar.
+
+    Required parameters:
+        Images — List<GalleryImage>; each item needs at least a Url.
+
+    Optional parameters:
+        ColumnCount    — grid columns (1–6, responsive; default 3)
+        EnableLightbox — fullscreen overlay on thumbnail click (default true)
+        ThumbnailClass — extra CSS class on the grid wrapper div
+        OnImageClick   — EventCallback<GalleryImage> fired on thumbnail click
+                         (fires before the lightbox opens)
+
+    GalleryImage shape:
+        Url          — full-size image src. Required.
+        ThumbnailUrl — thumbnail src; falls back to Url when omitted.
+        Alt          — alt text for accessibility.
+        Caption      — shown beneath the image in the lightbox.
+        Category     — reserved for future group/filter support.
+*@
+
+@if (Images is not null && Images.Count > 0) {
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-@_responsiveCols g-3 @ThumbnailClass">
+        @for (int i = 0; i < Images.Count; i++) {
+            int idx = i;
+            var item = Images[i];
+            <div class="col">
+                <div class="card border-0 shadow-sm h-100" role="button" @onclick="@(() => HandleThumbnailClick(idx))">
+                    <img src="@(item.ThumbnailUrl ?? item.Url)"
+                         alt="@(item.Alt ?? item.Caption ?? "")"
+                         class="card-img-top"
+                         style="height:180px; object-fit:cover;" />
+                    @if (!string.IsNullOrWhiteSpace(item.Caption) || !string.IsNullOrWhiteSpace(item.Category)) {
+                        <div class="card-body py-2">
+                            @if (!string.IsNullOrWhiteSpace(item.Caption)) {
+                                <div class="small fw-semibold">@item.Caption</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.Category)) {
+                                <div class="small text-muted">@item.Category</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (EnableLightbox && _lightboxOpen && _lightboxIndex >= 0 && _lightboxIndex < Images.Count) {
+        var current = Images[_lightboxIndex];
+
+        <div class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column"
+             style="z-index:2055; background:rgba(0,0,0,0.92);"
+             @onclick="CloseLightbox"
+             @onkeydown="HandleLightboxKeydown"
+             tabindex="0"
+             @ref="_overlayRef">
+
+            @* Top bar *@
+            <div class="d-flex justify-content-between align-items-center p-3" @onclick:stopPropagation>
+                <span class="text-white small">
+                    @if (!string.IsNullOrWhiteSpace(current.Caption)) {
+                        <strong>@current.Caption</strong>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(current.Category)) {
+                        <span class="opacity-75"> — @current.Category</span>
+                    }
+                </span>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-white small opacity-75">@(_lightboxIndex + 1) of @Images.Count</span>
+                    <button class="btn btn-sm btn-outline-light" @onclick="CloseLightbox" @onclick:stopPropagation title="Close (Esc)" aria-label="Close">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            @* Main image area with prev/next *@
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center position-relative" @onclick:stopPropagation>
+                @if (Images.Count > 1) {
+                    <button class="btn btn-outline-light btn-lg position-absolute start-0 ms-3"
+                            @onclick="PrevImage" @onclick:stopPropagation
+                            aria-label="Previous image">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                }
+
+                <img src="@current.Url"
+                     alt="@(current.Alt ?? current.Caption ?? "")"
+                     class="rounded shadow-lg"
+                     style="max-width:90vw; max-height:80vh; object-fit:contain;" />
+
+                @if (Images.Count > 1) {
+                    <button class="btn btn-outline-light btn-lg position-absolute end-0 me-3"
+                            @onclick="NextImage" @onclick:stopPropagation
+                            aria-label="Next image">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                }
+            </div>
+
+            @* Thumbnail strip *@
+            @if (Images.Count > 1) {
+                <div class="d-flex justify-content-center gap-2 p-3 overflow-auto" @onclick:stopPropagation>
+                    @for (int i = 0; i < Images.Count; i++) {
+                        int thumbIdx = i;
+                        var thumb = Images[i];
+                        <img src="@(thumb.ThumbnailUrl ?? thumb.Url)"
+                             alt="@(thumb.Alt ?? "")"
+                             class="rounded @(thumbIdx == _lightboxIndex ? "border border-2 border-white" : "opacity-50")"
+                             style="width:48px; height:48px; min-width:48px; object-fit:cover; cursor:pointer;"
+                             @onclick="@(() => _lightboxIndex = thumbIdx)" @onclick:stopPropagation />
+                    }
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    /// <summary>
+    /// Images to display as tiles. Each item needs at minimum a <see cref="GalleryImage.Url"/>.
+    /// <para><b>Required.</b> An empty list renders nothing.</para>
+    /// </summary>
+    [Parameter] public List<GalleryImage> Images { get; set; } = new();
+
+    /// <summary>
+    /// Number of columns in the Bootstrap responsive grid. Clamped to 1–6.
+    /// Default: <c>3</c>. The grid is also responsive below that count via Bootstrap
+    /// breakpoint classes (<c>row-cols-1 row-cols-sm-2 row-cols-md-N</c>).
+    /// </summary>
+    [Parameter] public int ColumnCount { get; set; } = 3;
+
+    /// <summary>
+    /// When <c>true</c> (default), clicking any thumbnail opens the full-screen
+    /// lightbox overlay with navigation and a filmstrip.
+    /// Set to <c>false</c> to use only the <see cref="OnImageClick"/> callback.
+    /// </summary>
+    [Parameter] public bool EnableLightbox { get; set; } = true;
+
+    /// <summary>
+    /// Additional CSS class(es) applied to the outer grid <c>&lt;div&gt;</c>.
+    /// Use for custom theming or spacing overrides.
+    /// </summary>
+    [Parameter] public string ThumbnailClass { get; set; } = "";
+
+    /// <summary>
+    /// Fired when the user clicks a thumbnail, before the lightbox opens.
+    /// Receives the clicked <see cref="GalleryImage"/>. Use to load high-res data
+    /// on demand or to navigate to a detail page instead of opening the lightbox.
+    /// </summary>
+    [Parameter] public EventCallback<GalleryImage> OnImageClick { get; set; }
+
+    private bool _lightboxOpen = false;
+    private int _lightboxIndex = 0;
+    private ElementReference _overlayRef;
+    private bool _shouldFocusOverlay = false;
+
+    private int _responsiveCols => ColumnCount switch {
+        <= 1 => 1,
+        2 => 2,
+        3 => 3,
+        4 => 4,
+        5 => 5,
+        _ => 6
+    };
+
+    private async Task HandleThumbnailClick(int index)
+    {
+        if (OnImageClick.HasDelegate) {
+            await OnImageClick.InvokeAsync(Images[index]);
+            if (!EnableLightbox) return;
+        }
+        if (EnableLightbox) {
+            _lightboxIndex = index;
+            _lightboxOpen = true;
+            _shouldFocusOverlay = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_shouldFocusOverlay && _lightboxOpen) {
+            _shouldFocusOverlay = false;
+            try { await _overlayRef.FocusAsync(); } catch { /* element may not be ready */ }
+        }
+    }
+
+    private void CloseLightbox() => _lightboxOpen = false;
+
+    private void NextImage()
+    {
+        if (Images.Count == 0) return;
+        _lightboxIndex = (_lightboxIndex + 1) % Images.Count;
+    }
+
+    private void PrevImage()
+    {
+        if (Images.Count == 0) return;
+        _lightboxIndex = (_lightboxIndex - 1 + Images.Count) % Images.Count;
+    }
+
+    private void HandleLightboxKeydown(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowRight") NextImage();
+        else if (e.Key == "ArrowLeft") PrevImage();
+        else if (e.Key == "Escape") CloseLightbox();
+    }
+
+    /// <summary>Describes a single image displayed in the gallery grid and lightbox.</summary>
+    public class GalleryImage
+    {
+        /// <summary>Unique identifier. Used for keying; can be a filename or database id.</summary>
+        public string Id { get; set; } = "";
+        /// <summary>Full-size image URL used in the lightbox. <b>Required.</b></summary>
+        public string Url { get; set; } = "";
+        /// <summary>Thumbnail URL shown in the grid. Falls back to <see cref="Url"/> when omitted.</summary>
+        public string? ThumbnailUrl { get; set; }
+        /// <summary>Alt text for screen readers. Defaults to the empty string when omitted.</summary>
+        public string? Alt { get; set; }
+        /// <summary>Caption displayed beneath the image inside the lightbox overlay.</summary>
+        public string? Caption { get; set; }
+        /// <summary>Category label; reserved for future group/filter support.</summary>
+        public string? Category { get; set; }
+    }
+}

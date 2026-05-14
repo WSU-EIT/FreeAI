@@ -1,0 +1,110 @@
+@*
+    Purpose: Recursive tree-node renderer for GenericGitRepoBrowser.
+    Renders one node and, when expanded, recurses into its children.
+    Used by: GenericGitRepoBrowser (calls itself for recursive subdirectory rendering).
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.GitRepoBrowser
+
+<li class="git-tree-item list-unstyled mb-0">
+    <div class="d-flex align-items-center gap-1 git-tree-row px-2 py-1 rounded @(IsSelected ? "git-tree-selected" : "")"
+         style="cursor: pointer; user-select: none;"
+         @onclick="HandleClickAsync">
+
+        @* Indent placeholder for files; expand arrow for directories *@
+        @if (Node.Type == GitNodeType.Directory)
+        {
+            <span class="git-tree-arrow" aria-hidden="true">@(Node.IsExpanded ? "▾" : "▸")</span>
+        }
+        else
+        {
+            <span class="git-tree-arrow-placeholder" aria-hidden="true">&nbsp;</span>
+        }
+
+        @* Icon *@
+        <span class="git-tree-icon" aria-hidden="true">
+            @switch (Node.Type)
+            {
+                case GitNodeType.Directory:
+                    @(Node.IsExpanded ? "📂" : "📁")
+                    break;
+                case GitNodeType.Symlink:
+                    @("🔗")
+                    break;
+                case GitNodeType.Submodule:
+                    @("📦")
+                    break;
+                default:
+                    @("📄")
+                    break;
+            }
+        </span>
+
+        <span class="git-tree-name small text-truncate flex-grow-1" title="@Node.Name">@Node.Name</span>
+
+        @if (Node.Type == GitNodeType.Symlink)
+        {
+            <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">link</span>
+        }
+        @if (Node.Type == GitNodeType.Submodule)
+        {
+            <span class="badge bg-info text-dark ms-1" style="font-size: 0.6rem;">sub</span>
+        }
+        @if (Node.Type == GitNodeType.File && Node.Size.HasValue)
+        {
+            <span class="text-muted ms-1" style="font-size: 0.65rem; white-space: nowrap;">@FormatSize(Node.Size.Value)</span>
+        }
+    </div>
+
+    @* Lazy-loaded children — rendered only when expanded *@
+    @if (Node.IsExpanded && Node.Children != null)
+    {
+        <ul class="list-unstyled ms-3 mb-0">
+            @foreach (var child in Node.Children
+                          .OrderBy(c => c.Type != GitNodeType.Directory)
+                          .ThenBy(c => c.Name))
+            {
+                <GitTreeNodeItem Node="child"
+                                 SelectedPath="SelectedPath"
+                                 OnExpand="OnExpand"
+                                 OnSelect="OnSelect" />
+            }
+        </ul>
+    }
+    @* Spinner while loading children *@
+    @if (Node.IsExpanded && Node.Children == null)
+    {
+        <div class="ms-4 small text-muted py-1">
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Loading…
+        </div>
+    }
+</li>
+
+@code {
+    [Parameter, EditorRequired] public GitTreeNode Node { get; set; } = null!;
+
+    /// <summary>Path of the currently selected file — used to apply the highlight style.</summary>
+    [Parameter] public string? SelectedPath { get; set; }
+
+    /// <summary>Raised when the user clicks a directory node to expand or collapse it.</summary>
+    [Parameter] public EventCallback<GitTreeNode> OnExpand { get; set; }
+
+    /// <summary>Raised when the user clicks a file (or symlink) node to view it.</summary>
+    [Parameter] public EventCallback<GitTreeNode> OnSelect { get; set; }
+
+    private bool IsSelected =>
+        Node.Type != GitNodeType.Directory && Node.Path == SelectedPath;
+
+    private Task HandleClickAsync() =>
+        Node.Type == GitNodeType.Directory
+            ? OnExpand.InvokeAsync(Node)
+            : OnSelect.InvokeAsync(Node);
+
+    private static string FormatSize(long bytes) => bytes switch
+    {
+        < 1024           => $"{bytes} B",
+        < 1024 * 1024    => $"{bytes / 1024.0:0.0} KB",
+        _                => $"{bytes / (1024.0 * 1024.0):0.00} MB"
+    };
+}

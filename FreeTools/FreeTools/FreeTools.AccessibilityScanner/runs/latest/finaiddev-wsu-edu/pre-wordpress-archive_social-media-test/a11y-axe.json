@@ -1,0 +1,85 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 237,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".contactitem:nth-child(1) \u003E .icon \u003E .no-border",
+      "Snippet": "\u003Ca href=\u0022http://www.surveygizmo.com/s3/1477036/FinAid-General-Follow-Up\u0022 class=\u0022no-border\u0022\u003E\u003Cimg src=\u0022/media/2443/check.png\u0022 alt=\u0022\u0022 width=\u002260\u0022 height=\u0022...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".no-border[href$=\u0022cougcompass.wsu.edu/\u0022]",
+      "Snippet": "\u003Ca href=\u0022http://cougcompass.wsu.edu/\u0022 class=\u0022no-border\u0022\u003E\u003Cimg src=\u0022/media/3071/compass-tiny.png\u0022 alt=\u0022\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".contactitem:nth-child(3) \u003E .icon \u003E .no-border",
+      "Snippet": "\u003Ca href=\u0022https://osfaappserver.french.wsu.edu/scheduler\u0022 class=\u0022no-border\u0022\u003E\u003Cimg src=\u0022/media/2506/paw_small.png\u0022 alt=\u0022\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".no-border[href$=\u0022contact-us/\u0022]",
+      "Snippet": "\u003Ca href=\u0022/about-sfs/contact-us/\u0022 class=\u0022no-border\u0022\u003E \u003Cimg src=\u0022/media/2535/phoneicon.png\u0022 alt=\u0022\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href$=\u0022contact-us\u0022]",
+      "Snippet": "\u003Ca href=\u0022/about/contact-us\u0022\u003E\u003Cbr\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".no-border[href$=\u0022submitsfsdocs.wsu.edu/\u0022]",
+      "Snippet": "\u003Ca href=\u0022https://submitsfsdocs.wsu.edu/\u0022 class=\u0022no-border\u0022\u003E\u003Cimg src=\u0022/media/2450/submitsfsdocs.png\u0022 alt=\u0022\u0022 width=\u002260\u0022 height=\u002260\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+/* Scoped styles for SmartsheetViewer */
+
+.ss-table-container {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.ss-sheet-name {
+    font-weight: 600;
+}

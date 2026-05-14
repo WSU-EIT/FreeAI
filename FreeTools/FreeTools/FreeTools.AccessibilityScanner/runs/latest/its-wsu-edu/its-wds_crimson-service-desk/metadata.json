@@ -1,0 +1,83 @@
+{
+  "PagePath": "/its-wds/crimson-service-desk/",
+  "Url": "https://its.wsu.edu/its-wds/crimson-service-desk/",
+  "FinalUrl": "https://its.wsu.edu/crimson-service-desk/",
+  "Title": "Crimson Service Desk | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 1482789,
+  "ScreenshotSizeBytes": 344389,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 344389
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/10/Bryan123_9700.jpg",
+      "AltText": "Bryan Clock Tower"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/07/send_FILL0_wght400_GRAD0_opsz48.png",
+      "AltText": "Icon link to the Crimson Service Desk https://jira.esg.wsu.edu/plugins/servlet/desk"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/07/quick_reference_all_FILL0_wght400_GRAD0_opsz48.png",
+      "AltText": "View Your Tickets https://jira.esg.wsu.edu/plugins/servlet/desk"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/07/lightbulb_FILL0_wght400_GRAD0_opsz48.png",
+      "AltText": "Icon representing a lightbulb, symbolizing knowledge and the WSU Knowledge Base"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 0,
+    "Serious": 8,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 7,
+        "Critical": 0,
+        "Serious": 7,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:19:33 GMT",
+    "etag": "\u0022d8068641f4552870d082dc54992af4a7\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:16:34 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/448\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=448\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding"
+  },
+  "CapturedAt": "2026-02-19T02:19:32.8431855Z"
+}

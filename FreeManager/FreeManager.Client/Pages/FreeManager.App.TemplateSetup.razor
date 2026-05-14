@@ -1,0 +1,337 @@
+@* FreeManager.App.TemplateSetup.razor - Configure project from selected template *@
+@page "/Templates/Setup"
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container py-4">
+        @* Breadcrumb *@
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="@Helpers.BuildUrl("Templates")">Templates</a>
+                </li>
+                <li class="breadcrumb-item active">@GetTemplateName(_templateId)</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            @* Left: Configuration Form *@
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fa-solid @GetTemplateIcon(_templateId) me-2"></i>
+                            Configure @GetTemplateName(_templateId)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @* Project Name *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-folder me-1"></i>
+                                Project Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg"
+                                   placeholder="e.g., MyInventory, AssetTracker"
+                                   @bind="_projectName" @bind:event="oninput" />
+                            <div class="form-text">
+                                Used for namespaces and file names. Letters and numbers only.
+                            </div>
+                            @if (!string.IsNullOrEmpty(_projectName) && !IsValidProjectName(_projectName)) {
+                                <div class="text-danger small mt-1">
+                                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                                    Must start with a letter and contain only letters/numbers
+                                </div>
+                            }
+                        </div>
+
+                        @* Display Name *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fa-solid fa-tag me-1"></i>
+                                Display Name
+                            </label>
+                            <input type="text" class="form-control"
+                                   placeholder="e.g., My Inventory System"
+                                   @bind="_displayName" />
+                            <div class="form-text">
+                                Human-readable name shown in the UI.
+                            </div>
+                        </div>
+
+                        @* Entity Customization (collapsible) *@
+                        <div class="mb-4">
+                            <button class="btn btn-link text-decoration-none p-0 mb-2"
+                                    @onclick="@(() => _showCustomization = !_showCustomization)">
+                                <i class="fa-solid @(_showCustomization ? "fa-chevron-down" : "fa-chevron-right") me-1"></i>
+                                Customize Entity Names (optional)
+                            </button>
+
+                            @if (_showCustomization) {
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        @foreach (var entity in _entityCustomizations) {
+                                            <div class="row mb-2 align-items-center">
+                                                <div class="col-5">
+                                                    <span class="text-muted">@entity.OriginalName →</span>
+                                                </div>
+                                                <div class="col-7">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                           @bind="entity.CustomName" placeholder="@entity.OriginalName" />
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="form-text">
+                                            Leave blank to use default names.
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @* Actions *@
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-lg flex-grow-1"
+                                    @onclick="GenerateProject"
+                                    disabled="@(!CanGenerate())">
+                                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                                Generate Project
+                            </button>
+                            <a href="@Helpers.BuildUrl("Templates")" class="btn btn-outline-secondary btn-lg">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Right: Template Preview *@
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fa-solid fa-eye me-2"></i>
+                            What You'll Get
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        @* Entities *@
+                        <h6 class="text-muted mb-3">
+                            <i class="fa-solid fa-cubes me-1"></i>
+                            Entities
+                        </h6>
+                        <div class="mb-4">
+                            @foreach (var entity in GetTemplateEntities(_templateId)) {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="entity-icon me-2">
+                                        <i class="fa-solid fa-cube text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <strong>@entity.Name</strong>
+                                        <span class="badge bg-light text-muted ms-2">@entity.Properties.Count props</span>
+                                        <br/>
+                                        <small class="text-muted">@entity.Description</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @* Generated Files *@
+                        <h6 class="text-muted mb-3">
+                            <i class="fa-solid fa-file-code me-1"></i>
+                            Generated Files
+                        </h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="list-unstyled small">
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> EF Models</li>
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> DataObjects (DTOs)</li>
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> DataAccess (CRUD)</li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-unstyled small">
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> Controllers</li>
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> List Pages</li>
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> Edit Modals</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        @* Template-specific features *@
+                        @{ var template = GetTemplate(_templateId); }
+                        @if (template != null && template.Features.Count > 0) {
+                            <hr />
+                            <h6 class="text-muted mb-3">
+                                <i class="fa-solid fa-star me-1"></i>
+                                Features
+                            </h6>
+                            <ul class="list-unstyled small">
+                                @foreach (var feature in template.Features) {
+                                    <li><i class="fa-solid fa-check text-success me-1"></i> @feature</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+
+                @* Entity Diagram *@
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fa-solid fa-project-diagram me-2"></i>
+                            Entity Relationships
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded small mb-0">@GetEntityDiagram(_templateId)</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .entity-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 6px;
+    }
+</style>
+
+@code {
+    private string _pageName = "templates-setup";
+    private string _templateId = "";
+    private string _projectName = "";
+    private string _displayName = "";
+    private bool _showCustomization = false;
+    private List<EntityCustomization> _entityCustomizations = new();
+
+    public void Dispose() {
+        Model.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+
+        // Get template from query string
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        _templateId = query["template"] ?? "freebase";
+
+        // Initialize entity customizations
+        InitializeEntityCustomizations();
+    }
+
+    private void InitializeEntityCustomizations() {
+        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
+        if (template != null) {
+            _entityCustomizations = template.Entities
+                .OrderBy(e => e.SortOrder)
+                .Select(e => new EntityCustomization { OriginalName = e.Name, CustomName = "" })
+                .ToList();
+        } else {
+            _entityCustomizations = new();
+        }
+    }
+
+    private bool IsValidProjectName(string name) {
+        return !string.IsNullOrWhiteSpace(name) &&
+               System.Text.RegularExpressions.Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$");
+    }
+
+    private bool CanGenerate() {
+        return IsValidProjectName(_projectName);
+    }
+
+    private async Task GenerateProject() {
+        if (!CanGenerate()) return;
+
+        try {
+            // Create the project using the Entity Wizard infrastructure
+            var state = CreateWizardState();
+
+            // Navigate to Entity Wizard with pre-populated state
+            // For now, we'll navigate to the wizard with the template
+            // In full implementation, this would directly create the project
+
+            var stateJson = System.Text.Json.JsonSerializer.Serialize(state);
+            var encodedState = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(stateJson));
+
+            NavigationManager.NavigateTo(
+                Helpers.BuildUrl($"AppBuilder/EntityWizard?templateState={encodedState}"));
+
+        } catch (Exception ex) {
+            Model.ErrorMessage($"Error generating project: {ex.Message}");
+        }
+    }
+
+    private DataObjects.EntityWizardState CreateWizardState() {
+        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
+        if (template == null) {
+            throw new InvalidOperationException($"Template '{_templateId}' not found");
+        }
+
+        // Build entity rename dictionary from customizations
+        var entityRenames = _entityCustomizations
+            .Where(c => !string.IsNullOrWhiteSpace(c.CustomName))
+            .ToDictionary(c => c.OriginalName, c => c.CustomName);
+
+        // Use the helper to convert template to wizard state
+        return DataObjects.ApplicationTemplates.ToWizardState(
+            template,
+            _projectName,
+            string.IsNullOrWhiteSpace(_displayName) ? _projectName : _displayName,
+            entityRenames.Count > 0 ? entityRenames : null);
+    }
+
+    private DataObjects.ApplicationTemplate? GetTemplate(string templateId) =>
+        DataObjects.ApplicationTemplates.GetById(templateId);
+
+    private string GetTemplateIcon(string templateId) =>
+        GetTemplate(templateId)?.Icon ?? "fa-cube";
+
+    private string GetTemplateName(string templateId) =>
+        GetTemplate(templateId)?.Name ?? "Template";
+
+    private List<DataObjects.EntityDefinition> GetTemplateEntities(string templateId) =>
+        GetTemplate(templateId)?.Entities.OrderBy(e => e.SortOrder).ToList() ?? new();
+
+    private string GetEntityDiagram(string template) => template switch {
+        "freebase" => @"Category
+   │
+   └──1:M──► Item",
+        "freetracker" => @"Category
+   │
+   └──1:M──► Item
+              │
+        ┌─────┼─────┐
+        │     │     │
+        ▼     ▼     ▼
+   Assignment │  Status
+              │
+        CheckoutRecord",
+        "freeaudit" => @"SourceSystem ──1:M──► AccessEvent
+                              │
+                              │
+                        DataSubject
+                              │
+                              ▼
+                     ComplianceReport",
+        _ => ""
+    };
+
+    private class EntityCustomization {
+        public string OriginalName { get; set; } = "";
+        public string CustomName { get; set; } = "";
+    }
+}

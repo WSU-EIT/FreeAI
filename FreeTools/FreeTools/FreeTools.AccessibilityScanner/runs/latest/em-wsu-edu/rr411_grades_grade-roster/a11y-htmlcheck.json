@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022navigation\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

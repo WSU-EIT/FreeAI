@@ -1,0 +1,37 @@
+@page "/showcase/smartsheet"
+@using FreeBlazorExtended.Components
+@using FreeBlazorExtended.Smartsheet
+
+<PageTitle>Smartsheet Viewer — FreeBlazorExtended Showcase</PageTitle>
+
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h1>Smartsheet Viewer</h1>
+            <p class="lead">
+                Browse Smartsheet sheets from your account using an API token.
+                Columns, rows, and cell types (checkboxes, dates, pick-lists) are rendered
+                automatically. Large sheets (500+ rows) are virtualized for smooth scrolling.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <strong>How to get an API token:</strong>
+                Log in to <a href="https://app.smartsheet.com" target="_blank" rel="noopener noreferrer">app.smartsheet.com</a>,
+                then go to <strong>Account &rarr; Apps &amp; Integrations &rarr; API Access</strong>
+                and generate a personal access token.
+                The token is used only in your browser and is never sent to any server other than
+                <code>api.smartsheet.com</code>.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <SmartsheetViewer />
+        </div>
+    </div>
+</div>

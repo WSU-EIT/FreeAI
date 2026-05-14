@@ -1,0 +1,250 @@
+@* FreeManager.App.Templates.razor - Main template selection landing page *@
+@* Users pick FreeBase, FreeTracker, or FreeAudit to start a new project *@
+@page "/Templates"
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject NavigationManager NavigationManager
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container py-5">
+        @* Header *@
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold mb-3">
+                What are you building?
+            </h1>
+            <p class="lead text-muted">
+                Choose a template to get started. Each builds on the previous.
+            </p>
+        </div>
+
+        @* Template Cards *@
+        <div class="row justify-content-center g-4 mb-5">
+            @* FreeBase *@
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 template-card @(_selectedTemplate == "freebase" ? "border-primary selected" : "")"
+                     @onclick="@(() => SelectTemplate("freebase"))"
+                     @ondblclick="@(() => UseTemplate("freebase"))">
+                    <div class="card-body text-center p-4">
+                        <div class="template-icon mb-3">
+                            <i class="fa-solid fa-box fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="card-title">FreeBase</h3>
+                        <p class="text-muted mb-3">Collection of things</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="fa-solid fa-check text-success me-2"></i>
+                                Items + Categories
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-check text-success me-2"></i>
+                                Basic CRUD operations
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-check text-success me-2"></i>
+                                List + Edit pages
+                            </li>
+                        </ul>
+                        <div class="text-muted small">
+                            <strong>Use for:</strong> Product catalog, contacts, inventory
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                        <span class="badge bg-success">Beginner</span>
+                        <span class="badge bg-light text-dark ms-1">2 entities</span>
+                    </div>
+                </div>
+            </div>
+
+            @* FreeTracker *@
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 template-card @(_selectedTemplate == "freetracker" ? "border-primary selected" : "")"
+                     @onclick="@(() => SelectTemplate("freetracker"))"
+                     @ondblclick="@(() => UseTemplate("freetracker"))">
+                    <div class="card-body text-center p-4">
+                        <div class="template-icon mb-3">
+                            <i class="fa-solid fa-clipboard-list fa-3x text-warning"></i>
+                        </div>
+                        <h3 class="card-title">FreeTracker</h3>
+                        <p class="text-muted mb-3">+ Assignment + Checkout</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="fa-solid fa-check text-success me-2"></i>
+                                Everything in FreeBase
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Assign items to users
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Checkout/return tracking
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Status workflow
+                            </li>
+                        </ul>
+                        <div class="text-muted small">
+                            <strong>Use for:</strong> Helpdesk, equipment loans, tasks
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                        <span class="badge bg-warning text-dark">Intermediate</span>
+                        <span class="badge bg-light text-dark ms-1">5 entities</span>
+                    </div>
+                </div>
+            </div>
+
+            @* FreeAudit *@
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 template-card @(_selectedTemplate == "freeaudit" ? "border-primary selected" : "")"
+                     @onclick="@(() => SelectTemplate("freeaudit"))"
+                     @ondblclick="@(() => UseTemplate("freeaudit"))">
+                    <div class="card-body text-center p-4">
+                        <div class="template-icon mb-3">
+                            <i class="fa-solid fa-shield-halved fa-3x text-danger"></i>
+                        </div>
+                        <h3 class="card-title">FreeAudit</h3>
+                        <p class="text-muted mb-3">+ Compliance + Logging</p>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="fa-solid fa-check text-success me-2"></i>
+                                External API endpoint
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Access event logging
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Compliance reports
+                            </li>
+                            <li class="mb-2">
+                                <i class="fa-solid fa-plus text-primary me-2"></i>
+                                Dashboard + charts
+                            </li>
+                        </ul>
+                        <div class="text-muted small">
+                            <strong>Use for:</strong> GLBA compliance, audit trails
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                        <span class="badge bg-danger">Advanced</span>
+                        <span class="badge bg-light text-dark ms-1">4 entities</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Selected Template Preview + Action *@
+        @if (!string.IsNullOrEmpty(_selectedTemplate)) {
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-primary">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">
+                                        <i class="fa-solid @GetTemplateIcon(_selectedTemplate) me-2"></i>
+                                        @GetTemplateName(_selectedTemplate)
+                                    </h5>
+                                    <p class="text-muted mb-0">@GetTemplateDescription(_selectedTemplate)</p>
+                                </div>
+                                <button class="btn btn-primary btn-lg" @onclick="@(() => UseTemplate(_selectedTemplate))">
+                                    <i class="fa-solid fa-arrow-right me-2"></i>
+                                    Use This Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @* Divider *@
+        <div class="text-center my-5">
+            <hr class="w-50 mx-auto" />
+            <span class="text-muted">or</span>
+        </div>
+
+        @* Entity Wizard Link *@
+        <div class="text-center">
+            <a href="@Helpers.BuildUrl("AppBuilder/EntityWizard")" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                Start from scratch with the Entity Wizard
+            </a>
+        </div>
+    </div>
+}
+
+<style>
+    .template-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+    .template-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border-color: var(--bs-primary);
+    }
+    .template-card.selected {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.2);
+    }
+    .template-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 50%;
+    }
+</style>
+
+@code {
+    private string _pageName = "templates";
+    private string _selectedTemplate = "";
+
+    public void Dispose() {
+        Model.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+    }
+
+    private void SelectTemplate(string template) {
+        _selectedTemplate = template;
+        StateHasChanged();
+    }
+
+    private void UseTemplate(string template) {
+        // Navigate to setup page with selected template
+        NavigationManager.NavigateTo(Helpers.BuildUrl($"Templates/Setup?template={template}"));
+    }
+
+    private string GetTemplateIcon(string template) => template switch {
+        "freebase" => "fa-box",
+        "freetracker" => "fa-clipboard-list",
+        "freeaudit" => "fa-shield-halved",
+        _ => "fa-cube"
+    };
+
+    private string GetTemplateName(string template) => template switch {
+        "freebase" => "FreeBase",
+        "freetracker" => "FreeTracker",
+        "freeaudit" => "FreeAudit",
+        _ => "Template"
+    };
+
+    private string GetTemplateDescription(string template) => template switch {
+        "freebase" => "Simple collection with items and categories. Perfect for catalogs, inventories, and contact lists.",
+        "freetracker" => "Track assignments, checkouts, and status workflows. Great for helpdesk, equipment loans, and task management.",
+        "freeaudit" => "Full compliance tracking with external API, event logging, and reports. Built for GLBA and audit trails.",
+        _ => ""
+    };
+}

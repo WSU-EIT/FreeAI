@@ -1,0 +1,162 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 326,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-header-utility-bar__cta",
+      "Snippet": "\u003Ca href=\u0022\u0022 class=\u0022wsu-header-utility-bar__cta\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(1) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(3) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(1) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(4) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(2) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(1) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(2) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(2) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(2) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(3) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(2) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(4) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(3) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(1) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(3) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(2) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(3) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(4) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(4) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(1) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(4) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(2) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-bottom--large.wsu-row.wsu-row--quarters:nth-child(4) \u003E .wsu-spacing-padding-right--none.wsu-column:nth-child(3) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[data-id=\u0022mailto:michael.walters@wsu.edu\u0022][href=\u0022mailto:michael.walters@wsu.edu\u0022][data-type=\u0022mailto\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-spacing-padding-right--none.wsu-column:nth-child(3) \u003E .wsu-card.cards-container.wsu-card--outline-shadow \u003E .wsu-card__content \u003E .wsu-card__content-custom \u003E .wsu-meta-email.wsu-meta--icon-crimson \u003E a[href=\u0022mailto:bryan.valley@wsu.edu\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:bryan.valley@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

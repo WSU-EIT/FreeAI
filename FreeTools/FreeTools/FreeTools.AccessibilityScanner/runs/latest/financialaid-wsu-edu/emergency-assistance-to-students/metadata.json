@@ -1,0 +1,109 @@
+{
+  "PagePath": "/emergency-assistance-to-students/",
+  "Url": "https://financialaid.wsu.edu/emergency-assistance-to-students/",
+  "FinalUrl": null,
+  "Title": "Emergency Assistance to Students | Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 255653,
+  "ScreenshotSizeBytes": 516094,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 516094
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/SelfiewithButch.jpg",
+      "AltText": "Two students poses outside on the grass with Butch T. Cougar."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/studentsinclass.jpg",
+      "AltText": "Two students work together in a lecture hall."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/studentongrass3.jpg",
+      "AltText": "A student studies outside on the grass."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/06/StudentatTable.jpg",
+      "AltText": "A student with a laptop sits at an outdoor table."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/apple-celebration-1024x682.jpg",
+      "AltText": "Students participate in the apple crisp celebration event at WSU Pullman"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/03/DRAFT-SITE-stock-photo.jpg",
+      "AltText": "Five WSU students outdoors on campus holding up a cougar head flag."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/washingtonstate-sign.jpg",
+      "AltText": "A Washington street sign."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/BikingCoug.jpg",
+      "AltText": "WSU student biking outdoors."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/11/group-hug-1024x694.jpg",
+      "AltText": "Students gather for a group hug in a classroom."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2025/04/gradstudentcougstatue.jpg",
+      "AltText": "A graduating student poses next to the cougar statue outside the WSU Alumni Center."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:09:46 GMT",
+    "etag": "\u0022a710ece0e1f24a5373dadaecf1230a41\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:27:57 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/702\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/?p=702\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:09:46.426035Z"
+}

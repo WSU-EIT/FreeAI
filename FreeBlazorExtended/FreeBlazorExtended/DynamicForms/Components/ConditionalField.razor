@@ -1,0 +1,136 @@
+﻿@*
+    ConditionalField — Lightweight animated wrapper that shows or hides child content
+    based on a caller-supplied predicate.
+
+    Used by the DynamicForms system to conditionally reveal fields based on other
+    field values, but it is fully generic and can be used wherever animated
+    show/hide is needed without writing custom CSS.
+
+    Required parameters:
+        Condition    — Func<bool> evaluated on every parameter change. Return true to
+                       show ChildContent; false to unmount it entirely.
+        ChildContent — the form field (or any Razor content) to conditionally render.
+
+    Optional parameters:
+        Animation — CSS entry animation. Accepted values:
+                     "fade" (default), "slide-down", "slide-up", "none".
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (_shouldRender) {
+    <div class="conditional-field @_fieldClass">
+        @if (ChildContent != null) {
+            @ChildContent
+        }
+    </div>
+}
+
+<style>
+    .conditional-field {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .conditional-field.fade-in-out {
+        animation: fadeInOut 0.3s ease-in-out;
+    }
+
+    .conditional-field.slide-down {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .conditional-field.slide-up {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideDown {
+        from {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+@code {
+    protected bool _shouldRender = false;
+    protected string _fieldClass = "";
+
+    /// <summary>
+    /// Predicate evaluated on every parameter change. When it returns <c>true</c>,
+    /// <see cref="ChildContent"/> is rendered with the chosen entrance animation;
+    /// when it returns <c>false</c>, the content is completely unmounted.
+    /// <para><b>Required.</b></para>
+    /// Example: <c>Condition="@(() => _form.HasFeature)"</c>
+    /// </summary>
+    [Parameter] public Func<bool> Condition { get; set; } = () => false;
+
+    /// <summary>
+    /// CSS entrance animation applied to the wrapper div when the field becomes visible.
+    /// Accepted values: <c>"fade"</c> (default), <c>"slide-down"</c>, <c>"slide-up"</c>,
+    /// <c>"none"</c> (instant, no animation).
+    /// </summary>
+    [Parameter] public string Animation { get; set; } = "fade";
+
+    /// <summary>
+    /// The field or content to conditionally show or hide.
+    /// <para><b>Required</b> for the component to render anything.</para>
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        bool shouldShow = Condition?.Invoke() ?? false;
+        _shouldRender = shouldShow;
+
+        string animation = (Animation ?? "fade").ToLower();
+        _fieldClass = animation switch
+        {
+            "slide-down" => "slide-down",
+            "slide-up" => "slide-up",
+            "none" => "",
+            _ => "fade-in-out"
+        };
+    }
+}

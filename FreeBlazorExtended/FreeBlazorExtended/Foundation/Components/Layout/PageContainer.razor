@@ -1,0 +1,278 @@
+﻿@*
+    PageContainer — Foundation page shell that supplies structured header, main, and footer regions.
+
+    Use this as the outermost wrapper for a routed page. It handles consistent padding,
+    max-width centering, sticky header/footer behaviour, and responsive collapse — so each
+    individual page only needs to supply its actual content.
+
+    Required parameters: none — use MainContent at minimum for a useful shell.
+
+    Optional parameters:
+        Title          — h1 rendered inside the default header (ignored when HeaderContent is set)
+        Subtitle       — muted description line below the title
+        HeaderBehavior — "default" | "sticky" (sticks the header to the top on scroll)
+        AddPadding     — adds 2 rem padding to the container itself
+        ConstrainWidth — caps the container at 1200 px and centres it
+        StickyFooter   — makes the footer stick to the bottom of the viewport
+        HeaderContent  — fully custom header render fragment (replaces title/subtitle)
+        MainContent    — the page body (required for anything to appear)
+        FooterContent  — footer render fragment (omit to hide the footer)
+
+    Example:
+        <PageContainer Title="Invoices"
+                       Subtitle="Manage your billing documents"
+                       HeaderBehavior="sticky"
+                       ConstrainWidth="true">
+            <MainContent>
+                <InvoiceTable />
+            </MainContent>
+        </PageContainer>
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="page-container @_containerClass">
+    @if (!String.IsNullOrWhiteSpace(Title) || HeaderContent != null) {
+        <header class="page-header @_headerClass">
+            @if (HeaderContent != null) {
+                @HeaderContent
+            } else if (!String.IsNullOrWhiteSpace(Title)) {
+                <div class="page-header-content">
+                    <h1 class="page-title">@Title</h1>
+                    @if (!String.IsNullOrWhiteSpace(Subtitle)) {
+                        <p class="page-subtitle">@Subtitle</p>
+                    }
+                </div>
+            }
+        </header>
+    }
+
+    <main class="page-content">
+        @if (MainContent != null) {
+            @MainContent
+        }
+    </main>
+
+    @if (FooterContent != null) {
+        <footer class="page-footer @_footerClass">
+            @FooterContent
+        </footer>
+    }
+</div>
+
+<style>
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+    }
+
+    .page-container.with-padding {
+        padding: 2rem;
+    }
+
+    .page-container.with-max-width {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .page-header {
+        border-bottom: 1px solid var(--bs-border-color);
+        padding: 2rem;
+        background-color: var(--bs-light);
+    }
+
+    .page-header.sticky {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .page-header-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--bs-body-color);
+    }
+
+    .page-subtitle {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--bs-secondary);
+    }
+
+    .page-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .page-content.no-padding {
+        padding: 0;
+    }
+
+    .page-footer {
+        border-top: 1px solid var(--bs-border-color);
+        padding: 2rem;
+        background-color: var(--bs-light);
+        margin-top: auto;
+    }
+
+    .page-footer.sticky-bottom {
+        position: sticky;
+        bottom: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .page-container.with-padding {
+            padding: 1rem;
+        }
+
+        .page-header {
+            padding: 1.5rem;
+        }
+
+        .page-content {
+            padding: 1.5rem;
+        }
+
+        .page-footer {
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .page-container.with-padding {
+            padding: 0.75rem;
+        }
+
+        .page-header {
+            padding: 1rem;
+        }
+
+        .page-content {
+            padding: 1rem;
+        }
+
+        .page-footer {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+
+@code {
+    protected string _containerClass = "";
+    protected string _headerClass = "";
+    protected string _footerClass = "";
+
+    /// <summary>
+    /// Page title rendered as an <c>&lt;h1&gt;</c> inside the default header block.
+    /// Ignored when <see cref="HeaderContent"/> is provided.
+    /// Optional — omit to hide the built-in title bar entirely.
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Muted subtitle rendered below <see cref="Title"/> in the default header block.
+    /// Optional — use for section context (e.g. <c>"Manage your billing documents"</c>).
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// Controls whether the header sticks to the top of the viewport on scroll.
+    /// Accepted values: <c>"default"</c> (scrolls with content), <c>"sticky"</c> (stays at top).
+    /// Default: <c>"default"</c>.
+    /// </summary>
+    [Parameter] public string HeaderBehavior { get; set; } = "default";
+
+    /// <summary>
+    /// When <c>true</c>, adds 2 rem padding around the entire container.
+    /// Use when the host layout does not supply its own page padding. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool AddPadding { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c>, caps the container width at 1200 px and auto-centres it.
+    /// Suitable for wide-screen dashboards where full-bleed layouts are unwanted.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ConstrainWidth { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c>, the footer sticks to the bottom of the viewport.
+    /// Useful for persistent action bars (Save / Cancel). Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool StickyFooter { get; set; } = false;
+
+    /// <summary>
+    /// Fully custom header render fragment. When provided, replaces the built-in
+    /// <see cref="Title"/> / <see cref="Subtitle"/> block entirely.
+    /// Use for headers that need breadcrumbs, action buttons, or tabs.
+    /// </summary>
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
+
+    /// <summary>
+    /// The main page body rendered inside the scrollable <c>&lt;main&gt;</c> element.
+    /// <para>This is the primary slot — supply at least this fragment for the page to be useful.</para>
+    /// </summary>
+    [Parameter] public RenderFragment? MainContent { get; set; }
+
+    /// <summary>
+    /// Footer render fragment. Omit to hide the footer bar entirely.
+    /// Pair with <see cref="StickyFooter"/> for a persistent action bar.
+    /// </summary>
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _containerClass = "";
+
+        if (AddPadding) {
+            _containerClass += "with-padding ";
+        }
+
+        if (ConstrainWidth) {
+            _containerClass += "with-max-width ";
+        }
+
+        _containerClass = _containerClass.Trim();
+
+        // Header behavior
+        string behavior = (HeaderBehavior ?? "default").ToLower();
+        _headerClass = behavior == "sticky" ? "sticky" : "";
+
+        // Footer behavior
+        _footerClass = StickyFooter ? "sticky-bottom" : "";
+    }
+}

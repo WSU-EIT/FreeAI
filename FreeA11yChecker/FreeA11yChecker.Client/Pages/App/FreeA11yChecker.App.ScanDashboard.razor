@@ -1,0 +1,639 @@
+﻿@page "/Compliance"
+@page "/{TenantCode}/Compliance"
+@page "/Scans"
+@page "/{TenantCode}/Scans"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="ComplianceDashboard" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="ComplianceDashboard" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+        </div>
+
+        <FreeA11yChecker_App_AboutSection Title="About the Compliance Dashboard">
+            <p><Language Tag="ComplianceDashboardAboutText" /></p>
+        </FreeA11yChecker_App_AboutSection>
+
+        @* ── WCAG Compliance Guide ── *@
+        <div class="card mb-3 border-0 bg-light">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center mb-2 cursor-pointer" @onclick="() => _showWcagGuide = !_showWcagGuide" role="button">
+                    <i class="fas fa-universal-access text-primary me-2 fs-5"></i>
+                    <strong class="me-auto">WCAG Compliance Levels</strong>
+                    <i class="fas @(_showWcagGuide ? "fa-chevron-up" : "fa-chevron-down") text-muted"></i>
+                </div>
+                @if (_showWcagGuide) {
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title text-success mb-1"><i class="fas fa-check-circle me-1"></i> Level A <span class="badge bg-success ms-1">Minimum</span></h6>
+                                    <p class="small mb-1">Basic accessibility. Without this, some users <strong>cannot use the site at all</strong>.</p>
+                                    <ul class="small mb-0 ps-3">
+                                        <li>Images have alt text</li>
+                                        <li>Form fields have labels</li>
+                                        <li>Pages have titles</li>
+                                        <li>No keyboard traps</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title text-primary mb-1"><i class="fas fa-balance-scale me-1"></i> Level AA <span class="badge bg-primary ms-1">Required</span></h6>
+                                    <p class="small mb-1"><strong>Legal standard</strong> for most organizations (Section 508, ADA, EU EN 301 549).</p>
+                                    <ul class="small mb-0 ps-3">
+                                        <li>Color contrast ≥ 4.5:1</li>
+                                        <li>Text resizable to 200%</li>
+                                        <li>Consistent navigation</li>
+                                        <li>Error identification &amp; suggestion</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-secondary">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title text-secondary mb-1"><i class="fas fa-star me-1"></i> Level AAA <span class="badge bg-secondary ms-1">Aspirational</span></h6>
+                                    <p class="small mb-1">Highest level. Not required by law but recommended where feasible.</p>
+                                    <ul class="small mb-0 ps-3">
+                                        <li>Enhanced contrast ≥ 7:1</li>
+                                        <li>Sign language for media</li>
+                                        <li>No timing limits</li>
+                                        <li>Context-sensitive help</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-primary mt-3 mb-0 py-2 small">
+                        <i class="fas fa-gavel me-1"></i>
+                        <strong>Our obligation:</strong> WCAG 2.1 Level AA compliance. All Level A and AA violations must be remediated.
+                        Level AAA is best-effort. This scanner tests against <strong>WCAG 2.1 AA</strong> criteria.
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (_sites.Any()) {
+            var lastScan = _sites.Where(x => x.LastScanAt.HasValue).OrderByDescending(x => x.LastScanAt).FirstOrDefault();
+            int cleanCount = _sites.Count(x => x.LastScanAt.HasValue && x.LastViolationCount == 0);
+            int warningCount = _sites.Count(x => x.LastViolationCount > 0 && x.LastCriticalCount == 0);
+            int criticalCount = _sites.Count(x => x.LastCriticalCount > 0);
+            var latestNonNull = _latestScans.Values.Where(s => s != null).ToList();
+            int totalViolations = latestNonNull.Sum(s => s!.TotalViolations);
+            int totalCritical = latestNonNull.Sum(s => s!.CriticalCount);
+            int totalSerious = latestNonNull.Sum(s => s!.SeriousCount);
+            int totalModerate = latestNonNull.Sum(s => s!.ModerateCount);
+            int totalMinor = latestNonNull.Sum(s => s!.MinorCount);
+            int totalPages = latestNonNull.Sum(s => s!.TotalPages);
+            int scannedSiteCount = _sites.Count(x => x.LastScanAt.HasValue);
+
+            @* ── Summary Badges ── *@
+            <div class="row mb-3">
+                <div class="col-auto">
+                    <span class="badge bg-secondary fs-6">@_sites.Count <Language Tag="TotalSites" /></span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-success fs-6">@cleanCount <Language Tag="Clean" /></span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-warning text-dark fs-6">@warningCount <Language Tag="Warnings" /></span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-danger fs-6">@criticalCount <Language Tag="Critical" /></span>
+                </div>
+                @if (lastScan != null && lastScan.LastScanAt.HasValue) {
+                    <div class="col-auto text-muted">
+                        <Language Tag="LastScanRun" />: @lastScan.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                }
+            </div>
+
+            @* ── Aggregate Violation Summary ── *@
+            @if (totalViolations > 0) {
+                <div class="card mb-3">
+                    <div class="card-body py-3">
+                        <h6 class="mb-2"><i class="fas fa-chart-bar me-1"></i> Violation Summary Across All Sites</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-1">
+                                        <span class="badge bg-dark me-2" style="min-width:60px;">@totalViolations.ToString("N0")</span>
+                                        Total violations across <strong>@scannedSiteCount</strong> sites (@totalPages.ToString("N0") pages)
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-danger me-2" style="min-width:60px;">@totalCritical.ToString("N0")</span>
+                                        <strong>Critical</strong> &mdash; prevents access for some users
+                                        <span class="badge bg-primary ms-1" style="font-size:0.65rem;">A / AA</span>
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-warning text-dark me-2" style="min-width:60px;">@totalSerious.ToString("N0")</span>
+                                        <strong>Serious</strong> &mdash; significant barriers to access
+                                        <span class="badge bg-primary ms-1" style="font-size:0.65rem;">A / AA</span>
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-info text-dark me-2" style="min-width:60px;">@totalModerate.ToString("N0")</span>
+                                        <strong>Moderate</strong> &mdash; causes difficulty for some users
+                                    </li>
+                                    <li class="mb-1">
+                                        <span class="badge bg-secondary me-2" style="min-width:60px;">@totalMinor.ToString("N0")</span>
+                                        <strong>Minor</strong> &mdash; cosmetic or best-practice issues
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                @* Severity breakdown bar *@
+                                @if (totalViolations > 0) {
+                                    int critPctAll = (int)(100.0 * totalCritical / totalViolations);
+                                    int serPctAll = (int)(100.0 * totalSerious / totalViolations);
+                                    int modPctAll = (int)(100.0 * totalModerate / totalViolations);
+                                    int minPctAll = 100 - critPctAll - serPctAll - modPctAll;
+                                    <div class="mb-2">
+                                        <small class="text-muted">Severity distribution</small>
+                                        <div class="progress" style="height: 20px;">
+                                            @if (critPctAll > 0) {
+                                                <div class="progress-bar bg-danger" style="width: @(critPctAll)%;" title="@totalCritical Critical">@(critPctAll)%</div>
+                                            }
+                                            @if (serPctAll > 0) {
+                                                <div class="progress-bar bg-warning text-dark" style="width: @(serPctAll)%;" title="@totalSerious Serious">@(serPctAll)%</div>
+                                            }
+                                            @if (modPctAll > 0) {
+                                                <div class="progress-bar bg-info" style="width: @(modPctAll)%;" title="@totalModerate Moderate">@(modPctAll)%</div>
+                                            }
+                                            @if (minPctAll > 0) {
+                                                <div class="progress-bar bg-secondary" style="width: @(minPctAll)%;" title="@totalMinor Minor">@(minPctAll)%</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @* Common violation types from live systems *@
+                                <div class="mt-2">
+                                    <small class="text-muted d-block mb-1">Common violations seen in live systems:</small>
+                                    <ul class="small mb-0 ps-3">
+                                        <li><strong>color-contrast</strong> &mdash; Text doesn't meet 4.5:1 contrast ratio <span class="badge bg-primary" style="font-size:0.6rem;">AA</span></li>
+                                        <li><strong>image-alt</strong> &mdash; Images missing alt text <span class="badge bg-success" style="font-size:0.6rem;">A</span></li>
+                                        <li><strong>link-name</strong> &mdash; Links have no discernible text <span class="badge bg-success" style="font-size:0.6rem;">A</span></li>
+                                        <li><strong>label</strong> &mdash; Form elements without labels <span class="badge bg-success" style="font-size:0.6rem;">A</span></li>
+                                        <li><strong>heading-order</strong> &mdash; Headings skip levels <span class="badge bg-secondary" style="font-size:0.6rem;">Best Practice</span></li>
+                                        <li><strong>landmark-one-main</strong> &mdash; No main landmark <span class="badge bg-secondary" style="font-size:0.6rem;">Best Practice</span></li>
+                                        <li><strong>aria-allowed-attr</strong> &mdash; Invalid ARIA attributes <span class="badge bg-success" style="font-size:0.6rem;">A</span></li>
+                                        <li><strong>document-title</strong> &mdash; Page has no title element <span class="badge bg-success" style="font-size:0.6rem;">A</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <input type="text" class="form-control form-control-sm" style="width:200px;" placeholder="Search site name or URL..."
+                           @bind="_searchText" @bind:event="oninput" />
+                    <select class="form-select form-select-sm" style="width:140px;" @bind="_statusFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="scanning">Scanning</option>
+                        <option value="critical">Critical</option>
+                        <option value="violations">Violations</option>
+                        <option value="clean">Clean</option>
+                        <option value="notscanned">Not Scanned</option>
+                    </select>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="View mode">
+                    <button type="button" class="btn @(_viewMode == "card" ? "btn-primary" : "btn-outline-primary")" @onclick='() => _viewMode = "card"' title="Card View">
+                        <i class="fas fa-th-large me-1"></i> Cards
+                    </button>
+                    <button type="button" class="btn @(_viewMode == "table" ? "btn-primary" : "btn-outline-primary")" @onclick='() => _viewMode = "table"' title="Table View">
+                        <i class="fas fa-list me-1"></i> Table
+                    </button>
+                </div>
+            </div>
+
+            @if (_viewMode == "card") {
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                @foreach (var site in GetFilteredSites()) {
+                    string borderClass = GetCardBorder(site);
+                    <div @key="site.SiteId" class="col">
+                        <a href="@GetSiteDetailUrl(site)" class="text-decoration-none">
+                            <div class="card compliance-card h-100 @borderClass">
+                                <div class="card-body">
+                                        <h6 class="card-title text-truncate" title="@site.Name">@site.Name</h6>
+                                        @if (_scanProgress.ContainsKey(site.SiteId)) {
+                                            var p = _scanProgress[site.SiteId];
+                                            int pct = p.TotalPages > 0 ? (int)(100.0 * p.CurrentPage / p.TotalPages) : 0;
+                                            <div class="mb-1">
+                                                <span class="badge bg-info">
+                                                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                                    Scanning
+                                                </span>
+                                            </div>
+                                            <div class="progress mb-1" style="height: 6px;">
+                                                <div class="progress-bar bg-info" role="progressbar"
+                                                     style="width: @(pct)%" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">@p.CurrentPage / @p.TotalPages pages</small>
+                                        } else {
+                                            <div class="mb-1">
+                                                @((MarkupString)GetStatusBadge(site))
+                                            </div>
+                                            <div class="compliance-stat">
+                                                <span class="text-dark">@site.LastViolationCount</span> <Language Tag="Violations" />
+                                            </div>
+                                            @if (site.LastCriticalCount > 0) {
+                                                <div class="compliance-stat text-danger">
+                                                    @site.LastCriticalCount <Language Tag="Critical" />
+                                                </div>
+                                            }
+                                            @((MarkupString)GetSeverityBar(site))
+                                            <div class="compliance-trend">
+                                                @((MarkupString)GetTrendArrow(site))
+                                            </div>
+                                            @if (site.LastScanAt.HasValue) {
+                                                <div class="compliance-date text-muted">
+                                                    <small>@site.LastScanAt.Value.ToString("yyyy-MM-dd")</small>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            } else {
+            @* ── Table View ── *@
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th role="button" @onclick='() => ToggleSort("name")' class="cursor-pointer">
+                                Site @((MarkupString)GetSortIcon("name"))
+                            </th>
+                            <th role="button" @onclick='() => ToggleSort("status")' class="text-center cursor-pointer">
+                                Status @((MarkupString)GetSortIcon("status"))
+                            </th>
+                            <th role="button" @onclick='() => ToggleSort("violations")' class="text-center cursor-pointer">
+                                Violations @((MarkupString)GetSortIcon("violations"))
+                            </th>
+                            <th role="button" @onclick='() => ToggleSort("critical")' class="text-center cursor-pointer">
+                                Critical @((MarkupString)GetSortIcon("critical"))
+                            </th>
+                            <th role="button" @onclick='() => ToggleSort("lastscan")' class="text-center cursor-pointer">
+                                Last Scan @((MarkupString)GetSortIcon("lastscan"))
+                            </th>
+                            <th class="text-center">Trend</th>
+                            <th class="text-center" style="width:100px;">Reports</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var site in GetFilteredSites()) {
+                            <tr @key="site.SiteId" class="scan-table-row">
+                                <td><a href="@GetSiteDetailUrl(site)"><strong>@site.Name</strong></a><br/><small class="text-muted">@site.BaseUrl</small></td>
+                                <td class="text-center">@((MarkupString)GetStatusBadge(site))</td>
+                                <td class="text-center">@site.LastViolationCount</td>
+                                <td class="text-center">
+                                    @if (site.LastCriticalCount > 0) {
+                                        <span class="badge bg-danger">@site.LastCriticalCount</span>
+                                    } else {
+                                        <span class="text-muted">0</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (site.LastScanAt.HasValue) {
+                                        <small>@site.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                                    } else {
+                                        <small class="text-muted">Never</small>
+                                    }
+                                </td>
+                                <td class="text-center">@((MarkupString)GetTrendArrow(site))</td>
+                                <td class="text-center">
+                                    @if (site.LastScanAt.HasValue) {
+                                        <a href="@(Helpers.BuildUrl("Compliance/Status/" + site.SiteId))" class="btn btn-xs btn-outline-primary me-1" title="Compliance Status">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </a>
+                                        <a href="@(Helpers.BuildUrl("Reports/Audit/" + site.SiteId))" class="btn btn-xs btn-outline-secondary" title="Audit Report">
+                                            <i class="fas fa-file-alt"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        } else {
+            <Language Tag="NoItemsToShow" />
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private string _pageName = "compliance";
+    private bool _showWcagGuide = false;
+    private string _viewMode = "card";
+    private string _searchText = "";
+    private string _statusFilter = "all";
+    private string _sortColumn = "name";
+    private bool _sortAscending = true;
+
+    private List<DataObjects.Site> _sites = new();
+    private Dictionary<Guid, DataObjects.ScanRun?> _previousScans = new();
+    private Dictionary<Guid, DataObjects.ScanRun?> _latestScans = new();
+    private Dictionary<Guid, DataObjects.ScanProgress> _scanProgress = new();
+    private System.Threading.Timer? _renderTimer;
+    private bool _renderPending = false;
+    private const int RenderThrottleMs = 300;
+
+    public void Dispose()
+    {
+        _renderTimer?.Dispose();
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
+        if (result != null) {
+            _sites = result;
+
+            // Load scan history for each site to compute trend arrows and severity bars
+            foreach (var site in _sites.Where(x => x.LastScanAt.HasValue)) {
+                var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
+                    new { SiteId = site.SiteId, Count = 2 });
+                if (history != null && history.Any()) {
+                    _latestScans[site.SiteId] = history[0]; // most recent
+                    if (history.Count > 1) {
+                        _previousScans[site.SiteId] = history[1]; // second most recent
+                    }
+                }
+            }
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private string GetCardBorder(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) {
+            return "border-info";
+        }
+        if (!site.LastScanAt.HasValue) return "border-secondary";
+        if (site.LastCriticalCount > 0) return "border-danger";
+        if (site.LastViolationCount > 0) return "border-warning";
+        return "border-success";
+    }
+
+    private IEnumerable<DataObjects.Site> GetFilteredSites()
+    {
+        var results = _sites.AsEnumerable();
+
+        // Text search
+        if (!String.IsNullOrWhiteSpace(_searchText)) {
+            string search = _searchText.Trim().ToLower();
+            results = results.Where(x =>
+                x.Name.ToLower().Contains(search) ||
+                x.BaseUrl.ToLower().Contains(search));
+        }
+
+        // Status filter
+        if (_statusFilter != "all") {
+            results = _statusFilter switch {
+                "scanning" => results.Where(x => String.Equals(x.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+                    || String.Equals(x.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)),
+                "critical" => results.Where(x => x.LastCriticalCount > 0),
+                "violations" => results.Where(x => x.LastViolationCount > 0 && x.LastCriticalCount == 0),
+                "clean" => results.Where(x => x.LastScanAt.HasValue && x.LastViolationCount == 0
+                    && !String.Equals(x.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+                    && !String.Equals(x.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)
+                    && !String.IsNullOrWhiteSpace(x.LastScanStatus)
+                    && !String.Equals(x.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)),
+                "notscanned" => results.Where(x => !x.LastScanAt.HasValue
+                    || String.IsNullOrWhiteSpace(x.LastScanStatus)
+                    || String.Equals(x.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)),
+                _ => results,
+            };
+        }
+
+        // Sort
+        results = (_sortColumn, _sortAscending) switch {
+            ("name", true) => results.OrderBy(x => x.Name),
+            ("name", false) => results.OrderByDescending(x => x.Name),
+            ("status", true) => results.OrderBy(x => GetStatusOrder(x)),
+            ("status", false) => results.OrderByDescending(x => GetStatusOrder(x)),
+            ("violations", true) => results.OrderBy(x => x.LastViolationCount),
+            ("violations", false) => results.OrderByDescending(x => x.LastViolationCount),
+            ("critical", true) => results.OrderBy(x => x.LastCriticalCount),
+            ("critical", false) => results.OrderByDescending(x => x.LastCriticalCount),
+            ("lastscan", true) => results.OrderBy(x => x.LastScanAt ?? DateTime.MinValue),
+            ("lastscan", false) => results.OrderByDescending(x => x.LastScanAt ?? DateTime.MinValue),
+            _ => results.OrderBy(x => x.Name),
+        };
+
+        return results;
+    }
+
+    private int GetStatusOrder(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) return -1; // Scanning at top
+        if (site.LastCriticalCount > 0) return 0; // Critical
+        if (site.LastViolationCount > 0) return 1;
+        if (site.LastScanAt.HasValue
+            && !String.IsNullOrWhiteSpace(site.LastScanStatus)
+            && !String.Equals(site.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)) return 2; // Clean
+        return 3; // Not scanned
+    }
+
+    private void ToggleSort(string column)
+    {
+        if (_sortColumn == column) {
+            _sortAscending = !_sortAscending;
+        } else {
+            _sortColumn = column;
+            _sortAscending = column == "name"; // Default ascending for name, descending for others
+        }
+    }
+
+    private string GetSortIcon(string column)
+    {
+        if (_sortColumn != column) return "<i class=\"fas fa-sort text-muted ms-1\" style=\"opacity:0.4;\"></i>";
+        return _sortAscending
+            ? "<i class=\"fas fa-sort-up ms-1\"></i>"
+            : "<i class=\"fas fa-sort-down ms-1\"></i>";
+    }
+
+    private string GetStatusBadge(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) {
+            return "<span class=\"badge bg-info\">Scanning</span>";
+        }
+        if (!site.LastScanAt.HasValue
+            || String.IsNullOrWhiteSpace(site.LastScanStatus)
+            || String.Equals(site.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)) {
+            return "<span class=\"badge bg-secondary\">Not Scanned</span>";
+        }
+        if (site.LastCriticalCount > 0) {
+            return "<span class=\"badge bg-danger\">Critical</span>";
+        }
+        if (site.LastViolationCount > 0) {
+            return "<span class=\"badge bg-warning text-dark\">Violations</span>";
+        }
+        return "<span class=\"badge bg-success\">Clean</span>";
+    }
+
+    private string GetTrendArrow(DataObjects.Site site)
+    {
+        if (!_previousScans.ContainsKey(site.SiteId) || _previousScans[site.SiteId] == null) {
+            return "<span class=\"text-muted\">&mdash;</span>";
+        }
+
+        var prev = _previousScans[site.SiteId]!;
+
+        if (site.LastViolationCount < prev.TotalViolations) {
+            return "<span class=\"text-success\"><i class=\"fas fa-arrow-down\"></i> Improving</span>";
+        }
+        if (site.LastViolationCount > prev.TotalViolations) {
+            return "<span class=\"text-danger\"><i class=\"fas fa-arrow-up\"></i> Worsening</span>";
+        }
+        return "<span class=\"text-muted\">&mdash; No Change</span>";
+    }
+
+    private string GetSiteDetailUrl(DataObjects.Site site)
+    {
+        if (site.LastScanRunId.HasValue) {
+            return Helpers.BuildUrl("Compliance/" + site.SiteId + "/" + site.LastScanRunId);
+        }
+        return Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId);
+    }
+
+    private string GetSeverityBar(DataObjects.Site site)
+    {
+        if (!_latestScans.ContainsKey(site.SiteId) || _latestScans[site.SiteId] == null) {
+            return "";
+        }
+        var scan = _latestScans[site.SiteId]!;
+        int total = scan.CriticalCount + scan.SeriousCount + scan.ModerateCount + scan.MinorCount;
+        if (total == 0) return "";
+
+        int critPct = (int)(100.0 * scan.CriticalCount / total);
+        int serPct = (int)(100.0 * scan.SeriousCount / total);
+        int modPct = (int)(100.0 * scan.ModerateCount / total);
+        int minPct = 100 - critPct - serPct - modPct;
+
+        return $"<div class=\"progress mb-1\" style=\"height:6px;\">" +
+            (critPct > 0 ? $"<div class=\"progress-bar bg-danger\" style=\"width:{critPct}%\" title=\"{scan.CriticalCount} Critical\"></div>" : "") +
+            (serPct > 0 ? $"<div class=\"progress-bar bg-warning\" style=\"width:{serPct}%\" title=\"{scan.SeriousCount} Serious\"></div>" : "") +
+            (modPct > 0 ? $"<div class=\"progress-bar bg-info\" style=\"width:{modPct}%\" title=\"{scan.ModerateCount} Moderate\"></div>" : "") +
+            (minPct > 0 ? $"<div class=\"progress-bar bg-secondary\" style=\"width:{minPct}%\" title=\"{scan.MinorCount} Minor\"></div>" : "") +
+            "</div>";
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName) { return; }
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (progress != null) {
+                    _scanProgress[progress.SiteId] = progress;
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+                   update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (scanRun != null) {
+                    _scanProgress.Remove(scanRun.SiteId);
+
+                    // Update just the affected site's summary from the event payload.
+                    var site = _sites.FirstOrDefault(s => s.SiteId == scanRun.SiteId);
+                    if (site != null) {
+                        site.LastScanAt = scanRun.StartedAt;
+                        site.LastScanStatus = scanRun.Status;
+                        site.LastViolationCount = scanRun.TotalViolations;
+                        site.LastCriticalCount = scanRun.CriticalCount;
+                        site.LastScanRunId = scanRun.ScanRunId;
+
+                        // Update trend data for this site.
+                        if (_latestScans.ContainsKey(scanRun.SiteId)) {
+                            _previousScans[scanRun.SiteId] = _latestScans[scanRun.SiteId];
+                        }
+                        _latestScans[scanRun.SiteId] = scanRun;
+                    }
+
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        }
+    }
+
+    private void RequestThrottledRender()
+    {
+        if (_renderPending) return;
+        _renderPending = true;
+        _renderTimer?.Dispose();
+        _renderTimer = new System.Threading.Timer(_ => {
+            _renderPending = false;
+            InvokeAsync(StateHasChanged);
+        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
+    }
+}

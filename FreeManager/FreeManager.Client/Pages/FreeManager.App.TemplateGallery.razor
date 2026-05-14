@@ -1,0 +1,341 @@
+@* FMTemplateGallery.App.razor - Browse all available code generation templates *@
+@page "/fm/templates"
+@inject NavigationManager Navigation
+
+<PageTitle>Template Gallery - FreeManager</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>
+                <i class="fa-solid fa-book-open me-2"></i>
+                Template Gallery
+            </h2>
+            <p class="text-muted">
+                Browse all available code generation templates. See what each template generates,
+                required inputs, and preview the raw output.
+            </p>
+        </div>
+    </div>
+
+    @* Category Filter Tabs + Search *@
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <ul class="nav nav-tabs mb-0">
+                    <li class="nav-item">
+                        <button class="nav-link @(_selectedCategory == "all" ? "active" : "")"
+                                @onclick="@(() => SelectCategory("all"))">
+                            <i class="fa-solid fa-layer-group me-1"></i>
+                            All
+                            <span class="badge bg-secondary ms-1">@GetCategoryCount("all")</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(_selectedCategory == "entity" ? "active" : "")"
+                                @onclick="@(() => SelectCategory("entity"))">
+                            <i class="fa-solid fa-database me-1"></i>
+                            Entity
+                            <span class="badge bg-secondary ms-1">@GetCategoryCount("entity")</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(_selectedCategory == "page" ? "active" : "")"
+                                @onclick="@(() => SelectCategory("page"))">
+                            <i class="fa-solid fa-file-code me-1"></i>
+                            Page Patterns
+                            <span class="badge bg-secondary ms-1">@GetCategoryCount("page")</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(_selectedCategory == "snippet" ? "active" : "")"
+                                @onclick="@(() => SelectCategory("snippet"))">
+                            <i class="fa-solid fa-puzzle-piece me-1"></i>
+                            Snippets
+                            <span class="badge bg-secondary ms-1">@GetCategoryCount("snippet")</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link @(_selectedCategory == "wizard" ? "active" : "")"
+                                @onclick="@(() => SelectCategory("wizard"))">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                            Wizard
+                            <span class="badge bg-secondary ms-1">@GetCategoryCount("wizard")</span>
+                        </button>
+                    </li>
+                </ul>
+
+                @* Search Box *@
+                <div class="search-box">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="fa-solid fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search templates..."
+                               @bind="_searchText" @bind:event="oninput" style="min-width: 200px;" />
+                        @if (!string.IsNullOrEmpty(_searchText))
+                        {
+                            <button class="btn btn-outline-secondary" @onclick="ClearSearch" title="Clear search">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Search Results Info *@
+    @if (!string.IsNullOrEmpty(_searchText))
+    {
+        <div class="row mb-3">
+            <div class="col">
+                <div class="alert alert-info py-2 mb-0">
+                    <i class="fa-solid fa-filter me-1"></i>
+                    Showing @GetFilteredTemplates().Count results for "<strong>@_searchText</strong>"
+                    <button class="btn btn-sm btn-link p-0 ms-2" @onclick="ClearSearch">Clear</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Template Grid + Preview *@
+    <div class="row">
+        @* Left Panel: Template Cards *@
+        <div class="col-lg-5">
+            <div class="template-cards" style="max-height: calc(100vh - 250px); overflow-y: auto;">
+                @{var filteredTemplates = GetFilteredTemplates();}
+                @if (!filteredTemplates.Any())
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="fa-solid fa-search fa-3x mb-3 opacity-50"></i>
+                        <p>No templates found matching "<strong>@_searchText</strong>"</p>
+                        <button class="btn btn-outline-primary btn-sm" @onclick="ClearSearch">Clear Search</button>
+                    </div>
+                }
+                @foreach (var template in filteredTemplates)
+                {
+                    <div class="card mb-3 template-card @(_selectedTemplate?.Id == template.Id ? "border-primary" : "")"
+                         @onclick="@(() => SelectTemplate(template))"
+                         style="cursor: pointer;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="template-icon me-3">
+                                    <i class="fa-solid @template.Icon fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1">
+                                        @HighlightMatch(template.Name)
+                                        @if (!template.IsImplemented)
+                                        {
+                                            <span class="badge bg-warning ms-2">Coming Soon</span>
+                                        }
+                                    </h6>
+                                    <p class="card-text text-muted small mb-2">@HighlightMatch(template.Description)</p>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fa-solid fa-layer-group me-1"></i>@template.CategoryDisplay
+                                        </span>
+                                        <span class="badge @GetComplexityBadgeClass(template.Complexity)">@template.Complexity</span>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fa-solid fa-file-export me-1"></i>@template.Outputs.Count file(s)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Right Panel: Preview *@
+        <div class="col-lg-7">
+            @if (_selectedTemplate != null)
+            {
+                <div class="card sticky-top" style="top: 1rem;">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid @_selectedTemplate.Icon me-2"></i>@_selectedTemplate.Name</span>
+                        @if (_selectedTemplate.IsImplemented)
+                        {
+                            <button class="btn btn-light btn-sm" @onclick="UseTemplate">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Use This Template
+                            </button>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6><i class="fa-solid fa-lightbulb me-1 text-warning"></i> When to Use</h6>
+                            <p class="text-muted">@_selectedTemplate.UseCase</p>
+                        </div>
+
+                        @if (_selectedTemplate.Inputs.Any())
+                        {
+                            <div class="mb-4">
+                                <h6><i class="fa-solid fa-keyboard me-1 text-info"></i> Required Inputs</h6>
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr><th>Input</th><th>Type</th><th>Description</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var input in _selectedTemplate.Inputs)
+                                        {
+                                            <tr>
+                                                <td><code>@input.Name</code>@if (input.IsRequired){<span class="text-danger">*</span>}</td>
+                                                <td><small class="text-muted">@input.Type</small></td>
+                                                <td>@input.Description @if (!string.IsNullOrEmpty(input.Example)){<br/><small class="text-muted">e.g., <code>@input.Example</code></small>}</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        <div class="mb-4">
+                            <h6><i class="fa-solid fa-file-export me-1 text-success"></i> Generated Output</h6>
+                            <ul class="list-unstyled">
+                                @foreach (var output in _selectedTemplate.Outputs)
+                                {
+                                    <li><i class="fa-solid @GetFileIcon(output) me-2 text-muted"></i><code>@output</code></li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0"><i class="fa-solid fa-code me-1 text-primary"></i> Template Preview</h6>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-secondary" @onclick="ToggleWrap" title="Toggle word wrap">
+                                        <i class="fa-solid fa-text-width"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <pre class="code-preview" style="@(_wordWrap ? "white-space: pre-wrap;" : "")"><code>@((MarkupString)GetSyntaxHighlightedCode(_selectedTemplate.PreviewCode, _selectedTemplate.PreviewLanguage))</code></pre>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center text-muted py-5">
+                        <i class="fa-solid fa-hand-pointer fa-3x mb-3 opacity-50"></i>
+                        <p>Select a template to see details and preview</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .template-card:hover { border-color: var(--bs-primary) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .template-card.border-primary { box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25); }
+    .template-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(13, 110, 253, 0.1); border-radius: 8px; }
+    .code-preview { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 0.375rem; max-height: 400px; overflow: auto; font-size: 0.8rem; font-family: Consolas, Monaco, monospace; }
+    .code-preview .keyword { color: #569cd6; }
+    .code-preview .type { color: #4ec9b0; }
+    .code-preview .string { color: #ce9178; }
+    .code-preview .comment { color: #6a9955; }
+    .code-preview .number { color: #b5cea8; }
+    .code-preview .attribute { color: #9cdcfe; }
+    .code-preview .placeholder { color: #dcdcaa; background: rgba(220, 220, 170, 0.1); padding: 0 2px; border-radius: 2px; }
+    .search-highlight { background-color: #fff3cd; padding: 0 2px; border-radius: 2px; }
+</style>
+
+@code {
+    private string _selectedCategory = "all";
+    private string _searchText = "";
+    private DataObjects.GalleryTemplate? _selectedTemplate = null;
+    private List<DataObjects.GalleryTemplate> _allTemplates = new();
+    private bool _wordWrap = false;
+
+    protected override void OnInitialized()
+    {
+        _allTemplates = DataObjects.GalleryTemplates.All;
+        if (_allTemplates.Any()) _selectedTemplate = _allTemplates.First();
+    }
+
+    private void SelectCategory(string category)
+    {
+        _selectedCategory = category;
+        _selectedTemplate = GetFilteredTemplates().FirstOrDefault();
+    }
+
+    private void SelectTemplate(DataObjects.GalleryTemplate template) => _selectedTemplate = template;
+    private void ClearSearch() { _searchText = ""; _selectedTemplate = GetFilteredTemplates().FirstOrDefault(); }
+    private void ToggleWrap() => _wordWrap = !_wordWrap;
+
+    private int GetCategoryCount(string category)
+    {
+        var templates = category switch {
+            "entity" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.Entity),
+            "page" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.PagePattern),
+            "snippet" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.PropertySnippet),
+            "wizard" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.Wizard),
+            _ => _allTemplates
+        };
+        if (!string.IsNullOrWhiteSpace(_searchText)) templates = templates.Where(MatchesSearch);
+        return templates.Count();
+    }
+
+    private bool MatchesSearch(DataObjects.GalleryTemplate t)
+    {
+        if (string.IsNullOrWhiteSpace(_searchText)) return true;
+        var s = _searchText.ToLowerInvariant();
+        return t.Name.ToLowerInvariant().Contains(s) || t.Description.ToLowerInvariant().Contains(s)
+            || t.UseCase.ToLowerInvariant().Contains(s) || t.Outputs.Any(o => o.ToLowerInvariant().Contains(s));
+    }
+
+    private List<DataObjects.GalleryTemplate> GetFilteredTemplates()
+    {
+        var templates = _selectedCategory switch {
+            "entity" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.Entity),
+            "page" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.PagePattern),
+            "snippet" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.PropertySnippet),
+            "wizard" => _allTemplates.Where(t => t.Category == DataObjects.GalleryTemplateCategory.Wizard),
+            _ => _allTemplates.AsEnumerable()
+        };
+        if (!string.IsNullOrWhiteSpace(_searchText)) templates = templates.Where(MatchesSearch);
+        return templates.ToList();
+    }
+
+    private MarkupString HighlightMatch(string text)
+    {
+        if (string.IsNullOrWhiteSpace(_searchText) || string.IsNullOrWhiteSpace(text))
+            return new MarkupString(System.Web.HttpUtility.HtmlEncode(text));
+        var escaped = System.Web.HttpUtility.HtmlEncode(text);
+        var pattern = System.Text.RegularExpressions.Regex.Escape(System.Web.HttpUtility.HtmlEncode(_searchText));
+        return new MarkupString(System.Text.RegularExpressions.Regex.Replace(escaped, pattern,
+            m => $"<span class=\"search-highlight\">{m.Value}</span>", System.Text.RegularExpressions.RegexOptions.IgnoreCase));
+    }
+
+    private string GetComplexityBadgeClass(string c) => c switch { "Low" => "bg-success", "Medium" => "bg-warning text-dark", "High" => "bg-danger", _ => "bg-secondary" };
+    private string GetFileIcon(string f) => f.EndsWith(".cs") ? "fa-file-code" : f.EndsWith(".razor") ? "fa-file-lines" : "fa-file";
+
+    private void UseTemplate()
+    {
+        if (_selectedTemplate == null || !_selectedTemplate.IsImplemented) return;
+        var dest = _selectedTemplate.Category switch {
+            DataObjects.GalleryTemplateCategory.Wizard => "/AppBuilder/SetupWizard",
+            _ => "/AppBuilder/EntityWizard"
+        };
+        Navigation.NavigateTo($"{dest}?template={_selectedTemplate.Id}");
+    }
+
+    private string GetSyntaxHighlightedCode(string code, string lang)
+    {
+        if (string.IsNullOrWhiteSpace(code)) return "";
+        var c = System.Web.HttpUtility.HtmlEncode(code);
+        c = System.Text.RegularExpressions.Regex.Replace(c, @"(//.*?)$", "<span class=\"comment\">$1</span>", System.Text.RegularExpressions.RegexOptions.Multiline);
+        c = System.Text.RegularExpressions.Regex.Replace(c, @"(&quot;.*?&quot;)", "<span class=\"string\">$1</span>");
+        c = System.Text.RegularExpressions.Regex.Replace(c, @"\[([^\]]+)\]", "<span class=\"attribute\">[$1]</span>");
+        c = System.Text.RegularExpressions.Regex.Replace(c, @"(\{\{[^}]+\}\})", "<span class=\"placeholder\">$1</span>");
+        foreach (var kw in new[]{"public","private","class","namespace","using","static","readonly","new","return","if","else","foreach","async","await","partial","get","set","var","null","true","false","void"})
+            c = System.Text.RegularExpressions.Regex.Replace(c, $@"\b({kw})\b", "<span class=\"keyword\">$1</span>");
+        foreach (var t in new[]{"string","int","bool","Guid","DateTime","List","Task"})
+            c = System.Text.RegularExpressions.Regex.Replace(c, $@"\b({t})\b", "<span class=\"type\">$1</span>");
+        c = System.Text.RegularExpressions.Regex.Replace(c, @"\b(\d+)\b", "<span class=\"number\">$1</span>");
+        return c;
+    }
+}

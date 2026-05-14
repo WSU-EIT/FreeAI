@@ -1,0 +1,85 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 1,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 widt...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022wsu\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca href=\u0022https://bsky.app/intent/compose?text=FAFSA \u0026amp; WASFA Changes%20https://financialaid.wsu.edu/2024/06/06/fafsa-wasfa-changes/\u0022 title=\u0022share o...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca href=\u0022https://bsky.app/intent/compose?text=FAFSA \u0026amp; WASFA Changes%20https://financialaid.wsu.edu/2024/06/06/fafsa-wasfa-changes/\u0022 title=\u0022share o...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

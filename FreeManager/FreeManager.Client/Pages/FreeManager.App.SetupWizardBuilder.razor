@@ -1,0 +1,490 @@
+@page "/AppBuilder/SetupWizardBuilder"
+@page "/AppBuilder/SetupWizardBuilder/{WizardId:guid}"
+@implements IDisposable
+@inject BlazorDataModel Model
+
+@* FMSetupWizardBuilder.App.razor - Builder for creating onboarding/setup wizards *@
+@* Generates multi-step wizard flows with state persistence and completion tracking *@
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        @* Page Header *@
+        <div class="@Model.StickyMenuClass">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0">
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                    Setup Wizard Builder
+                </h1>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary" @onclick="Preview" disabled="@(!IsValid)">
+                        <i class="fa-solid fa-eye me-1"></i>
+                        Preview
+                    </button>
+                    <button class="btn btn-primary" @onclick="SaveWizard" disabled="@(!IsValid || _saving)">
+                        @if (_saving) {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                        } else {
+                            <i class="fa-solid fa-save me-1"></i>
+                        }
+                        Save Wizard
+                    </button>
+                </div>
+            </div>
+            <div class="text-muted small mt-1">
+                Create multi-step setup wizards with progress tracking and state persistence.
+            </div>
+        </div>
+
+        <div class="row">
+            @* Left Column: Wizard Settings *@
+            <div class="col-lg-4">
+                @* Wizard Info Card *@
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fa-solid fa-info-circle me-1"></i>
+                        Wizard Information
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Wizard Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   @bind="_wizard.Name"
+                                   placeholder="e.g., Tenant Onboarding" />
+                            @if (!string.IsNullOrWhiteSpace(_wizard.Name) && !IsValidName(_wizard.Name)) {
+                                <div class="text-danger small mt-1">Name must be PascalCase (e.g., TenantOnboarding)</div>
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" rows="2"
+                                      @bind="_wizard.Description"
+                                      placeholder="Brief description of this wizard's purpose"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Icon</label>
+                            <div class="d-flex gap-2 flex-wrap">
+                                @foreach (var icon in _iconOptions) {
+                                    <button type="button"
+                                            class="btn @(_wizard.Icon == icon ? "btn-primary" : "btn-outline-secondary")"
+                                            @onclick="@(() => _wizard.Icon = icon)">
+                                        <i class="fa-solid @icon"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Options Card *@
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fa-solid fa-cog me-1"></i>
+                        Options
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="opt-completion"
+                                   @bind="_wizard.TrackCompletion" />
+                            <label class="form-check-label" for="opt-completion">
+                                <strong>Track Completion</strong>
+                                <div class="text-muted small">Record when users complete the wizard</div>
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="opt-skip"
+                                   @bind="_wizard.AllowSkip" />
+                            <label class="form-check-label" for="opt-skip">
+                                <strong>Allow Skip</strong>
+                                <div class="text-muted small">Let users skip optional steps</div>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="opt-persist"
+                                   @bind="_wizard.PersistStateAcrossSessions" />
+                            <label class="form-check-label" for="opt-persist">
+                                <strong>Persist State</strong>
+                                <div class="text-muted small">Save progress if user leaves</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                @* Generated Files Preview *@
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <i class="fa-solid fa-file-code me-1"></i>
+                        Generated Files
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="fa-solid fa-file-lines text-primary me-2"></i>@(_wizard.Name)State.cs</span>
+                                <span class="badge bg-secondary">DTO</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="fa-solid fa-file-lines text-success me-2"></i>@(_wizard.Name)Service.cs</span>
+                                <span class="badge bg-secondary">Service</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="fa-solid fa-file-code text-warning me-2"></i>@(_wizard.Name)Container.razor</span>
+                                <span class="badge bg-secondary">Blazor</span>
+                            </li>
+                            @foreach (var step in _wizard.Steps.OrderBy(s => s.Order)) {
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span><i class="fa-solid fa-file-code text-warning me-2"></i>@(_wizard.Name)Step@(step.Order + 1).razor</span>
+                                    <span class="badge bg-secondary">Step</span>
+                                </li>
+                            }
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="fa-solid fa-file-code text-warning me-2"></i>@(_wizard.Name)Complete.razor</span>
+                                <span class="badge bg-secondary">Done</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span><i class="fa-solid fa-file-lines text-danger me-2"></i>@(_wizard.Name)Validator.cs</span>
+                                <span class="badge bg-secondary">Validation</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            @* Right Column: Steps *@
+            <div class="col-lg-8">
+                @* Steps Card *@
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fa-solid fa-list-ol me-1"></i>
+                            Steps (@_wizard.Steps.Count)
+                        </span>
+                        <button class="btn btn-success btn-sm" @onclick="AddStep">
+                            <i class="fa-solid fa-plus me-1"></i>
+                            Add Step
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        @if (_wizard.Steps.Count == 0) {
+                            <div class="text-center text-muted py-4">
+                                <i class="fa-solid fa-layer-group fa-3x mb-3 opacity-50"></i>
+                                <div>No steps defined yet.</div>
+                                <button class="btn btn-outline-primary mt-2" @onclick="AddStep">
+                                    <i class="fa-solid fa-plus me-1"></i>
+                                    Add First Step
+                                </button>
+                            </div>
+                        } else {
+                            <div class="step-list">
+                                @foreach (var step in _wizard.Steps.OrderBy(s => s.Order)) {
+                                    var isExpanded = _expandedStepId == step.StepId;
+                                    <div class="card mb-2 @(isExpanded ? "border-primary" : "")">
+                                        <div class="card-header d-flex justify-content-between align-items-center py-2 cursor-pointer"
+                                             @onclick="@(() => ToggleStep(step.StepId))">
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-primary me-2">@(step.Order + 1)</span>
+                                                <i class="fa-solid @step.Icon text-muted me-2"></i>
+                                                <strong>@(string.IsNullOrWhiteSpace(step.Name) ? "(Unnamed Step)" : step.Name)</strong>
+                                                @if (step.IsOptional) {
+                                                    <span class="badge bg-light text-dark ms-2">Optional</span>
+                                                }
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-secondary">@step.Fields.Count fields</span>
+                                                <i class="fa-solid @(isExpanded ? "fa-chevron-up" : "fa-chevron-down") text-muted"></i>
+                                            </div>
+                                        </div>
+                                        @if (isExpanded) {
+                                            <div class="card-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Step Name <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" @bind="step.Name"
+                                                               placeholder="e.g., Organization Details" />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Short Name</label>
+                                                        <input type="text" class="form-control" @bind="step.ShortName"
+                                                               placeholder="e.g., Org" />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">Icon</label>
+                                                        <select class="form-select" @bind="step.Icon">
+                                                            @foreach (var icon in _stepIconOptions) {
+                                                                <option value="@icon">@icon</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-9">
+                                                        <label class="form-label">Description</label>
+                                                        <input type="text" class="form-control" @bind="step.Description"
+                                                               placeholder="Brief description shown to users" />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label">&nbsp;</label>
+                                                        <div class="form-check mt-2">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                   id="step-optional-@step.StepId"
+                                                                   @bind="step.IsOptional" />
+                                                            <label class="form-check-label" for="step-optional-@step.StepId">
+                                                                Optional
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                @* Step Fields *@
+                                                <div class="mb-3">
+                                                    <label class="form-label d-flex justify-content-between">
+                                                        <span>Fields (@step.Fields.Count)</span>
+                                                        <button class="btn btn-sm btn-outline-primary" @onclick="@(() => AddFieldToStep(step))">
+                                                            <i class="fa-solid fa-plus me-1"></i>
+                                                            Add Field
+                                                        </button>
+                                                    </label>
+                                                    @if (step.Fields.Any()) {
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-bordered mb-0">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Name</th>
+                                                                        <th style="width: 100px;">Type</th>
+                                                                        <th style="width: 60px;">Req</th>
+                                                                        <th style="width: 60px;"></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var field in step.Fields) {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <input type="text" class="form-control form-control-sm"
+                                                                                       @bind="field.Name" placeholder="FieldName" />
+                                                                            </td>
+                                                                            <td>
+                                                                                <select class="form-select form-select-sm" @bind="field.Type">
+                                                                                    <option value="string">string</option>
+                                                                                    <option value="int">int</option>
+                                                                                    <option value="bool">bool</option>
+                                                                                    <option value="DateTime">DateTime</option>
+                                                                                    <option value="Guid">Guid</option>
+                                                                                </select>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <input type="checkbox" class="form-check-input" @bind="field.IsRequired" />
+                                                                            </td>
+                                                                            <td>
+                                                                                <button class="btn btn-sm btn-outline-danger"
+                                                                                        @onclick="@(() => RemoveFieldFromStep(step, field))">
+                                                                                    <i class="fa-solid fa-trash"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    } else {
+                                                        <div class="text-muted small">No fields defined for this step.</div>
+                                                    }
+                                                </div>
+
+                                                @* Step Actions *@
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-secondary"
+                                                                @onclick="@(() => MoveStepUp(step))"
+                                                                disabled="@(step.Order == 0)">
+                                                            <i class="fa-solid fa-arrow-up"></i>
+                                                        </button>
+                                                        <button class="btn btn-outline-secondary"
+                                                                @onclick="@(() => MoveStepDown(step))"
+                                                                disabled="@(step.Order == _wizard.Steps.Count - 1)">
+                                                            <i class="fa-solid fa-arrow-down"></i>
+                                                        </button>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-danger" @onclick="@(() => RemoveStep(step))">
+                                                        <i class="fa-solid fa-trash me-1"></i>
+                                                        Remove Step
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Back Link *@
+        <div class="mt-3">
+            <a href="@(Helpers.BuildUrl("AppBuilder"))" class="btn btn-link text-muted">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Back to App Builder
+            </a>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid? WizardId { get; set; }
+
+    private string _pageName = "appbuilder-setup-wizard-builder";
+    private bool _loadedData = false;
+    private bool _saving = false;
+
+    private DataObjects.SetupWizardDefinition _wizard = new();
+    private Guid? _expandedStepId = null;
+
+    private readonly string[] _iconOptions = {
+        "fa-wand-magic-sparkles", "fa-rocket", "fa-flag-checkered", "fa-play",
+        "fa-user-plus", "fa-building", "fa-cog", "fa-list-check"
+    };
+
+    private readonly string[] _stepIconOptions = {
+        "fa-circle", "fa-user", "fa-building", "fa-cog", "fa-list",
+        "fa-envelope", "fa-lock", "fa-check", "fa-star", "fa-flag"
+    };
+
+    private bool IsValid => !string.IsNullOrWhiteSpace(_wizard.Name) &&
+                            IsValidName(_wizard.Name) &&
+                            _wizard.Steps.Count > 0 &&
+                            _wizard.Steps.All(s => !string.IsNullOrWhiteSpace(s.Name));
+
+    public void Dispose() {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += OnDataModelUpdated;
+
+        if (WizardId.HasValue) {
+            // Load existing wizard (in production)
+        } else {
+            InitializeNewWizard();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (Model.Loaded && Model.LoggedIn && !_loadedData) {
+            _loadedData = true;
+            StateHasChanged();
+        }
+        await Task.CompletedTask;
+    }
+
+    private void OnDataModelUpdated() {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private void InitializeNewWizard() {
+        _wizard = new DataObjects.SetupWizardDefinition {
+            Name = "Onboarding",
+            Description = "Initial setup wizard",
+            Icon = "fa-wand-magic-sparkles",
+            TrackCompletion = true,
+            AllowSkip = true,
+            PersistStateAcrossSessions = true
+        };
+    }
+
+    private bool IsValidName(string name) {
+        return System.Text.RegularExpressions.Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$");
+    }
+
+    // ============================================================
+    // STEP MANAGEMENT
+    // ============================================================
+
+    private void AddStep() {
+        var newStep = new DataObjects.SetupWizardStepDefinition {
+            Order = _wizard.Steps.Count,
+            Name = $"Step {_wizard.Steps.Count + 1}",
+            ShortName = $"S{_wizard.Steps.Count + 1}",
+            Icon = "fa-circle"
+        };
+        _wizard.Steps.Add(newStep);
+        _expandedStepId = newStep.StepId;
+    }
+
+    private void RemoveStep(DataObjects.SetupWizardStepDefinition step) {
+        _wizard.Steps.Remove(step);
+        ReorderSteps();
+        if (_expandedStepId == step.StepId) {
+            _expandedStepId = null;
+        }
+    }
+
+    private void ToggleStep(Guid stepId) {
+        _expandedStepId = _expandedStepId == stepId ? null : stepId;
+    }
+
+    private void MoveStepUp(DataObjects.SetupWizardStepDefinition step) {
+        if (step.Order > 0) {
+            var other = _wizard.Steps.First(s => s.Order == step.Order - 1);
+            other.Order = step.Order;
+            step.Order--;
+        }
+    }
+
+    private void MoveStepDown(DataObjects.SetupWizardStepDefinition step) {
+        if (step.Order < _wizard.Steps.Count - 1) {
+            var other = _wizard.Steps.First(s => s.Order == step.Order + 1);
+            other.Order = step.Order;
+            step.Order++;
+        }
+    }
+
+    private void ReorderSteps() {
+        var ordered = _wizard.Steps.OrderBy(s => s.Order).ToList();
+        for (int i = 0; i < ordered.Count; i++) {
+            ordered[i].Order = i;
+        }
+    }
+
+    // ============================================================
+    // FIELD MANAGEMENT
+    // ============================================================
+
+    private void AddFieldToStep(DataObjects.SetupWizardStepDefinition step) {
+        step.Fields.Add(new DataObjects.PropertyDefinition {
+            Name = "",
+            Type = "string",
+            IsRequired = false
+        });
+    }
+
+    private void RemoveFieldFromStep(DataObjects.SetupWizardStepDefinition step, DataObjects.PropertyDefinition field) {
+        step.Fields.Remove(field);
+    }
+
+    // ============================================================
+    // ACTIONS
+    // ============================================================
+
+    private void Preview() {
+        // Would open preview modal
+        Model.AddMessage("Preview not yet implemented", MessageType.Info);
+    }
+
+    private async Task SaveWizard() {
+        _saving = true;
+        StateHasChanged();
+
+        try {
+            // In production, would save to server
+            await Task.Delay(500);
+            Model.AddMessage($"Wizard '{_wizard.Name}' saved successfully!", MessageType.Success);
+        } catch (Exception ex) {
+            Model.ErrorMessage($"Error saving wizard: {ex.Message}");
+        }
+
+        _saving = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,128 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 10,
+  "Critical": 1,
+  "Serious": 9,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 1,
+      "Serious": 2,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 7,
+      "Critical": 0,
+      "Serious": 7,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Ca href=\u0022tel:5095535450\u0022\u003E509-553-5450\u003C/a\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput class=\u0022wsu-search__input\u0022 type=\u0022text\u0022 aria-lable=\u0022Search input\u0022 placeholder=\u0022Search\u0022 name=\u0022s\u0022 style=\u0022\u0022\u003E"
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Link has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Ca href=\u0022https://admission.wsu.edu?s=\u0022 class=\u0022wsu-button-ui-search\u0022 title=\u0022Search WSU\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 6,
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Button has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Cbutton class=\u0022wsu-search__submit\u0022 aria-lable=\u0022Submit Search\u0022\u003E\u003C/button\u003E"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+﻿@page "/showcase/stringlist"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>StringList Component</h1>
+            <p class="lead">A component for managing lists of strings with add, edit, delete, and reordering capabilities.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A bound List&lt;string&gt; editor that renders the current items with per-item edit and delete buttons, an add-new text input at the bottom, and optional drag-to-reorder — all backed by a two-way Value/ValueChanged binding."
+        WhatEli5="A simple component that lets users manage a list of text entries — add new ones, edit or delete existing ones, and drag to reorder — without writing any list-management code yourself."
+        Who=@(new[]{ "Form builders adding open-ended list fields (required skills, allowed domains, tags)", "Config screens where an admin maintains a list of values (email allowlists, keywords, menu items)", "Developers who would otherwise write add/remove/edit list logic inline on every page it's needed" })
+        WhenUse=@(new[]{ "Any form field that holds a variable-length list of strings", "Settings screens for maintaining lists of values (IP allowlists, email recipients, categories)", "Content editors where items need to be reordered" })
+        WhenNot=@(new[]{ "Selecting from a fixed option set — use MultiSelect", "Structured list items with multiple fields (not just a string) — build a dedicated list component" })
+        Why="Every project eventually needs a 'manage a list of strings' UI. Building add/edit/delete/reorder from scratch each time is boilerplate. This packages the pattern once with consistent keyboard and accessibility behaviour."
+        TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged; internal copy is maintained, parent notified on every mutation", "AllowEdit=false hides the per-item edit button; AllowDelete=false hides delete; AllowSort=false hides drag handles", "MaxItems caps the list length; the add input is disabled once the cap is reached", "MinLength/MaxLength enforce per-item string validation before the item is committed to the list", "FocusFirst() and FocusLast() public methods allow programmatic focus from the parent page" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic String List</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Simple list for adding and removing items.</p>
+                    <label for="basicStringList" class="form-label">Tags:</label>
+                    <StringList @bind-Value="@_basicList" />
+                    @if (_basicList.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Items: @_basicList.Count</strong> - @string.Join(", ", _basicList)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Email List</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Managing a list of email addresses.</p>
+                    <label for="emailStringList" class="form-label">Recipients:</label>
+                    <StringList @bind-Value="@_emailList" />
+                    @if (_emailList.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Recipients: @_emailList.Count</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Project Skills</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Skills required for a project.</p>
+                    <label for="skillsList" class="form-label">Required Skills:</label>
+                    <StringList @bind-Value="@_skillsList" />
+                    @if (_skillsList.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>@_skillsList.Count skills required</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Predefined Items</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">List initialized with predefined items.</p>
+                    <label for="predefinedStringList" class="form-label">Features:</label>
+                    <StringList @bind-Value="@_featuresList" />
+                    @if (_featuresList.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>@_featuresList.Count features</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Read-only string list.</p>
+                    <label for="disabledStringList" class="form-label">Read-only items:</label>
+                    <ul class="list-group">
+                        @foreach (var item in _readOnlyList) {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @item
+                                <span class="badge bg-secondary">read-only</span>
+                            </li>
+                        }
+                    </ul>
+                    <small class="text-muted mt-2 d-block"><em>StringList has no Disabled parameter. Show read-only lists as static HTML.</em></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Notes/Comments</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Larger input for notes or comments.</p>
+                    <label for="notesList" class="form-label">Notes:</label>
+                    <StringList @bind-Value="@_notesList" />
+                    @if (_notesList.Any()) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>@_notesList.Count notes</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Value</code></td>
+                                    <td>List&lt;string&gt;</td>
+                                    <td>-</td>
+                                    <td>The list of strings (use @@bind-Value for two-way binding)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AriaLabelForInputItem</code></td>
+                                    <td>string</td>
+                                    <td>"Item"</td>
+                                    <td>ARIA label for each input item (accessibility)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>RemoveButtonClass</code></td>
+                                    <td>string</td>
+                                    <td>"btn btn-danger btn-sm"</td>
+                                    <td>CSS class for the remove button on each item</td>
+                                </tr>
+                                <tr>
+                                    <td><code>RemoveIcon</code></td>
+                                    <td>string</td>
+                                    <td>fa-xmark icon</td>
+                                    <td>Icon HTML for the remove button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>RemoveText</code></td>
+                                    <td>string</td>
+                                    <td>""</td>
+                                    <td>Optional text label on the remove button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>RemoveTooltip</code></td>
+                                    <td>string</td>
+                                    <td>"Remove this item"</td>
+                                    <td>Tooltip shown on the remove button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Id</code></td>
+                                    <td>string</td>
+                                    <td>""</td>
+                                    <td>Optional id for the wrapper element</td>
+                                    <td>Minimum characters per item</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MaxLength</code></td>
+                                    <td>int</td>
+                                    <td>-</td>
+                                    <td>Maximum characters per item</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/demo"
+
+&lt;h3&gt;Manage Tags&lt;/h3&gt;
+&lt;StringList @@bind-Value="@@_tags" /&gt;
+
+&lt;p&gt;Tags: @@string.Join(", ", _tags)&lt;/p&gt;
+
+@@code {{
+    private List&lt;string&gt; _tags = new();
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Each item has associated edit and delete buttons with clear labels</li>
+                        <li>Keyboard navigation support for all interactive elements</li>
+                        <li>ARIA labels for screen readers to understand item management</li>
+                        <li>Clear visual feedback for hover, focus, and active states</li>
+                        <li>Deletion can be confirmed to prevent accidental removal</li>
+                        <li>List items are announced when added or removed</li>
+                        <li>Drag-and-drop for reordering includes keyboard alternative</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected List<string> _basicList = new();
+    protected List<string> _emailList = new();
+    protected List<string> _skillsList = new();
+    protected List<string> _featuresList = new() { "User Authentication", "Dashboard", "Reports" };
+    protected List<string> _readOnlyList = new() { "Item 1", "Item 2", "Item 3" };
+    protected List<string> _notesList = new();
+}

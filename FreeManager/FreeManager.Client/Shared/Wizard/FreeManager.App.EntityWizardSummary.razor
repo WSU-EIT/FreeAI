@@ -1,0 +1,29 @@
+﻿@* EntityWizardSummary.App.razor - Displays previous wizard selections as badges *@
+@* Based on FreeCICD SelectionSummary pattern *@
+
+@if (Selections.Any(s => !string.IsNullOrWhiteSpace(s.Value))) {
+    <div class="alert alert-info py-1 px-2 mb-2 small">
+        <div class="d-flex flex-wrap gap-1 align-items-center">
+            <i class="fa-solid fa-clipboard-list me-1"></i>
+            @foreach (var selection in Selections.Where(s => !string.IsNullOrWhiteSpace(s.Value))) {
+                <span class="badge bg-white text-dark border py-1 px-2" title="@selection.Value">
+                    @if (!string.IsNullOrWhiteSpace(selection.Icon)) {
+                        <i class="@selection.Icon me-1 text-primary"></i>
+                    }
+                    <span class="text-primary">@selection.Label:</span>
+                    <span class="ms-1">@TruncateText(selection.Value, 30)</span>
+                </span>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public List<DataObjects.WizardSelectionItem> Selections { get; set; } = new();
+
+    private string TruncateText(string text, int maxLength) {
+        if (string.IsNullOrEmpty(text)) return "";
+        if (text.Length <= maxLength) return text;
+        return text.Substring(0, maxLength - 3) + "...";
+    }
+}

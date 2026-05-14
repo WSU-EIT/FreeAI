@@ -1,0 +1,449 @@
+{
+  "PagePath": "/resources/hr-source-newsletter/",
+  "Url": "https://hrs.wsu.edu/resources/hr-source-newsletter/",
+  "FinalUrl": null,
+  "Title": "HR Source Newsletter \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 136956,
+  "ScreenshotSizeBytes": 117139,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 117139
+    }
+  ],
+  "ImageCount": 96,
+  "ImagesMissingAlt": 96,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/12/HR-Source-December-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/11/HR-Source-November-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/10/HR-Source-October-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/09/HR-Source-September-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/08/HR-Source-August-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/07/HR-Source-July-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/06/HR-Source-June-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/HR-Source-May-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/04/HR-Source-April-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/03/HR-Source-March-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/02/HR-Source-February-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/01/HR-Source-January-2023-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/12/HR-Source-December-2022-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/11/HR-Source-November-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/10/HR-Source-October-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/09/HR-Source-September-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/08/HR-Source-August-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/07/HR-Source-July-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/06/HR-Source-June-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/05/HR-Source-May-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/04/HR-Source-April-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/03/HR-Source-March-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/01/HR-Source-February-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/01/HR-Source-January-2022-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/11/HR-Source-December-2021-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/10/HR-Source-November-2021-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/10/October-2021-HRS-Source-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/09/September-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/07/August-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/06/July-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/05/June-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/04/May-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/03/April-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/02/March-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/01/Febuary-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/01/January-2021-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/11/December-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/10/November-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/09/October-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/08/September-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/07/August-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/06/July-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/05/June-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/05/May-2020-HR-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/03/April-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/02/March-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/01/Febuary-2020-HRS-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/12/January-2020-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/11/December-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/12/November-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/09/october-2019-hrs-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/08/September-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/07/August-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/06/July-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/05/June-2019-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/04/May-2019-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/03/April-2019-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/02/March-2019-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/February-2019-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/January-2019-HRS-newsletter-2-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/11/December-2018-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/10/November-2018-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/10/October-2018-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/08/HRS-newsletter-September-2018-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/07/August-2018-HRS-newsletter-2-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/06/July-2018-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/05/June-2018-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/04/May-2018-HR-Source-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/03/April-2018-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/March-2018-HRS-newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/February-2018-HRS-newsletter-final-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/January-2018-HRS-newsletter-final-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/December-2017-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/November-2017-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/October-2017-HRS-newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/September-2017-HR-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/August-2017-HR-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/July-HR-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/June-2017-HRSource-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/May-2017-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/April-2017-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/March-2017-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/February-2017-HRS-Source-Newsletter-New-Layout-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/January-2017-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/December-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/November-2016-HRS-Source-Newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/October-2016-HRS-Source-Newsletter2-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/September-2016-HRS-Source-Newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/August-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/July-2016-HRS-Source-Newsletter-1-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/June-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/May-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/April-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/March-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/February-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/02/January-2016-HRS-Source-Newsletter-pdf-116x150.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:28:16 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/879\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=879\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:28:16.0954583Z"
+}

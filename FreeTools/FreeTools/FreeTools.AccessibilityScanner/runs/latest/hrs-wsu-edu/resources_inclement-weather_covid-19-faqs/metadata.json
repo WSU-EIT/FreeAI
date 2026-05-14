@@ -1,0 +1,113 @@
+{
+  "PagePath": "/resources/inclement-weather/covid-19-faqs/",
+  "Url": "https://hrs.wsu.edu/resources/inclement-weather/covid-19-faqs/",
+  "FinalUrl": "https://news.wsu.edu/news/2021/12/10/covid-19-booster-clinic-for-wsu-faculty-and-staff-happening-dec-15/",
+  "Title": "COVID\u201119 booster clinic for WSU\u00A0faculty and staff happening Dec.\u00A015 | WSU Insider | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 259309,
+  "ScreenshotSizeBytes": 426359,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 426359
+    }
+  ],
+  "ImageCount": 11,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2021/11/generic-system-logo1-1024x676.jpg",
+      "AltText": "Washington State University logo."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2024/09/generic-system-logo-gray-angled-lines-1024x676.jpg",
+      "AltText": "Washington State University logo."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/smartphone-and-ar-menu-displaying-food-1024x676.jpg",
+      "AltText": "A smartphone app displays food at a restaurant."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/assisting-dead-car-battery-with-jumper-cables-1024x676.jpg",
+      "AltText": "A man reaching towards a car battery with jumper cables as a woman thanks him."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2024/09/generic-system-logo-crimson-song-lyrics-1024x676.jpg",
+      "AltText": "Washington State University logo."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/USA-map-with-Coug-logo-and-WA-state-1024x676.jpg",
+      "AltText": "A map of the United States of America made up of interconnected lines and large, glowing points. The state of Washington is filled with a solid background and a WSU Cougars logo in the upper left corner of the map."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/Robbie-Shone-Adventures-in-Caving-1024x676.jpg",
+      "AltText": "Composite featuring a closeup of Robbie Shone and Shone hanging from a climbing rope inside a cave."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/basketball-hoop-ball-and-hands-in-huddle-1024x676.jpg",
+      "AltText": "Composite featuring a basketball going through the net of a hoop and a closeup of hands joining together to symbolize teamwork."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/Michael-Neff-and-Lee-Gilliam-on-Ask-This-Old-House-set-1024x676.jpg",
+      "AltText": "Michael Neff talking with \u0022Ask This Old House\u0022 co-host Lee Gilliam during filming at a grass seed field in Washington."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/Angelica-Bautista-1024x676.jpg",
+      "AltText": "Closeup of Anjelica Bautista holding a cat."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2022/05/podcast-icon.png",
+      "AltText": "A microphone and a pair of headphones."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 13,
+    "Critical": 0,
+    "Serious": 13,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 13,
+        "Critical": 0,
+        "Serious": 13,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:28:32 GMT",
+    "etag": "\u00223499a0f7dd614ea637bd3a7ab3f13d78\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:28:32 GMT",
+    "link": "\u003Chttps://news.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://news.wsu.edu/wp-json/wp/v2/news_article/222053\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://news.wsu.edu/?p=222053\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:28:31.6614584Z"
+}

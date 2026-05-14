@@ -1,0 +1,63 @@
+{
+  "PagePath": "/",
+  "Url": "https://sfsapps.em.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "403 - Forbidden: Access is denied.",
+  "StatusCode": 403,
+  "Success": false,
+  "HtmlSizeBytes": 1201,
+  "ScreenshotSizeBytes": 22730,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 22730
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 2,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-length": "1233",
+    "content-type": "text/html",
+    "date": "Thu, 19 Feb 2026 02:10:21 GMT",
+    "server": "Microsoft-IIS/10.0",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:10:21.7322995Z"
+}

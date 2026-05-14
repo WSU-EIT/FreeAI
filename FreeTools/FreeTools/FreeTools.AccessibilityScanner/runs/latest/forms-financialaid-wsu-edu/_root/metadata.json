@@ -1,0 +1,109 @@
+{
+  "PagePath": "/",
+  "Url": "https://forms.financialaid.wsu.edu/",
+  "FinalUrl": "https://financialaid.wsu.edu/",
+  "Title": "Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 260571,
+  "ScreenshotSizeBytes": 440887,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 440887
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/12/Thompson-Hall.jpg",
+      "AltText": "A full view of WSU Pullman\u0027s Thompson Hall in late spring with blooming tree flowers in the foreground."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/CougsatPlayfair.jpg",
+      "AltText": "A group of students gathers on the grass to relax during the WSU playfair."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/StudentwithFlag.jpg",
+      "AltText": "Student outdoors waives the WSU flag."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/03/DRAFT-SITE-stock-photo.jpg",
+      "AltText": "Five WSU students outdoors on campus holding up a cougar head flag."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/ButchonFootballField.jpg",
+      "AltText": "Washington State mascot Butch T. Cougar cheers with the marching band before a WSU football game."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/StudentGroupHandshake.jpg",
+      "AltText": "An overhead shot of a group of students all putting their hands in for a cheer."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/ButchwithFlag-1024x683.jpg",
+      "AltText": "WSU mascot Butch T. Cougar running across the playing field holding the WSU flag."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/SmilingGradStudentonGrass-1024x683.jpg",
+      "AltText": "A WSU graduate student listens to music while sitting on the grass outside Bryan Hall."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/SororityReadingonGrass.jpg",
+      "AltText": "A WSU sorority student reads a textbook outside on the lawn."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2025/11/US-capitol-1024x682.jpg",
+      "AltText": "An exterior shot of the US Capitol building on an overcast day."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:07:56 GMT",
+    "etag": "\u002262ff7c95ed290d7941df08a279277d07\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:50:30 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/10\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "HIT",
+    "x-cache-status": "HIT"
+  },
+  "CapturedAt": "2026-02-19T02:07:56.1416188Z"
+}

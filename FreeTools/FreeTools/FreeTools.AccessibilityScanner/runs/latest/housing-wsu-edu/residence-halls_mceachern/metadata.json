@@ -1,0 +1,139 @@
+{
+  "PagePath": "/residence-halls/mceachern/",
+  "Url": "https://housing.wsu.edu/residence-halls/mceachern/",
+  "FinalUrl": null,
+  "Title": "McEachern",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 110321,
+  "ScreenshotSizeBytes": 347389,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 6,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 347389
+    }
+  ],
+  "ImageCount": 18,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/en0gxxv0/mceachern-south-door.jpg",
+      "AltText": "Mceachern South Door"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5dbcposb/mceachern-south.jpg",
+      "AltText": "Mceachern South"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tn3pgbv4/mceachern-east-exterior.jpg",
+      "AltText": "Mceachern East Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/c5gee1na/mceachern-east.jpg",
+      "AltText": "Mceachern East"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wegfwvbp/mceachern-kitchen.jpg",
+      "AltText": "Mceachern Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/udylysxn/mceachern-main-lounge.jpg",
+      "AltText": "Mceachern Main Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kjfpi4jm/mceachern-north.jpg",
+      "AltText": "Mceachern North"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/shrju5q4/_q6a2649.png",
+      "AltText": "Megan Marshall"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/phlp3aja/southside-students-eating-3.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rgggnwsm/southside-exterior.png",
+      "AltText": "Neighborhood: South Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/siolpm0l/gg-exterior-bball-court.jpg",
+      "AltText": "Gannon/Goldsworthy Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/revp5u3h/stephenson-student-1.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/13addtfg/floor-plan-mceachern-805n-2nd-floor.png",
+      "AltText": "McEachern north second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vw0lxmgi/floor-plan-mceachern-805n-3rd-floor.png",
+      "AltText": "McEachern third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/awkmy31q/floor-plan-mceachern-805n-4th-floor.png",
+      "AltText": "North fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/s1xjb2dq/floor-plan-mceachern-805n-5th-floor.png",
+      "AltText": "McEachern north fifth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tsohdijp/floor-plan-mceachern-805s-3rd-floors.png",
+      "AltText": "McEachern south"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tfvltte4/mceacherneast_june2014.png",
+      "AltText": "McEachern east layout"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:15:08 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:15:08.7039961Z"
+}

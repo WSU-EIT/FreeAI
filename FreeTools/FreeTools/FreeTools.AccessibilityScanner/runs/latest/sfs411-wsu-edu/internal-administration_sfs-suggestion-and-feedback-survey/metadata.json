@@ -1,0 +1,57 @@
+{
+  "PagePath": "/internal-administration/sfs-suggestion-and-feedback-survey/",
+  "Url": "https://sfs411.wsu.edu/internal-administration/sfs-suggestion-and-feedback-survey/",
+  "FinalUrl": null,
+  "Title": "SFS Suggestion and Feedback Survey | Student Financial Services 411",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 658223,
+  "ScreenshotSizeBytes": 49591,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 49591
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:15:43.0959419Z"
+}

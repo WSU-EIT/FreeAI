@@ -1,0 +1,102 @@
+{
+  "PagePath": "/eit/meet-our-staff/",
+  "Url": "https://em.wsu.edu/eit/meet-our-staff/",
+  "FinalUrl": null,
+  "Title": "Meet Our Staff | Enrollment IT",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 662340,
+  "ScreenshotSizeBytes": 188864,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 188864
+    }
+  ],
+  "ImageCount": 11,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1058/sallytexter.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1055/kathycross.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/754393/lyledallas.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1062/chipflisher.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/754910/kylehirayama.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/hdhjwtsq/alfiakhalioullina.png",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1085/bobloftus.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1070/danielpepka.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/754888/mattspencer.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/1077/jamesthornton.jpg",
+      "AltText": "Staff Image"
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/754898/bradwickett.jpg",
+      "AltText": "Staff Image"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:11:27.4807929Z"
+}

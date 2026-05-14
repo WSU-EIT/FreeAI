@@ -1,0 +1,62 @@
+{
+  "PagePath": "/resources/",
+  "Url": "https://va.wsu.edu/resources/",
+  "FinalUrl": null,
+  "Title": "Resources | WSU Veterans \u0026 Military Affiliated Student Services",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 659377,
+  "ScreenshotSizeBytes": 272599,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 272599
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://va.wsu.edu/media/1136/services.png",
+      "AltText": "Student in casual wear speaking with student veteran"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:19:35.8884374Z"
+}

@@ -1,0 +1,204 @@
+﻿@* EntityWizardStepEntity.App.razor - Step 2: Entity Definition *@
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <label for="entity-name" class="form-label">
+                Entity Name (Singular) <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="entity-name"
+                   class="form-control form-control-lg @Helpers.MissingValue(EntityName)"
+                   value="@EntityName"
+                   @oninput="OnEntityNameInput"
+                   placeholder="Task" />
+            <div class="form-text">
+                The singular name of your entity (e.g., Task, Customer, Order).
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_nameError)) {
+                <div class="text-danger small mt-1">
+                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                    @_nameError
+                </div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="plural-name" class="form-label">
+                Plural Name <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="plural-name"
+                   class="form-control @Helpers.MissingValue(PluralName)"
+                   value="@PluralName"
+                   @oninput="OnPluralNameInput"
+                   placeholder="Tasks" />
+            <div class="form-text">
+                Used for table names, collection properties, and API endpoints.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="table-name" class="form-label">
+                Database Table Name
+            </label>
+            <input type="text" id="table-name"
+                   class="form-control"
+                   value="@TableName"
+                   @oninput="OnTableNameInput"
+                   placeholder="@(string.IsNullOrWhiteSpace(PluralName) ? "Tasks" : PluralName)" />
+            <div class="form-text">
+                Leave blank to use the plural name.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                Primary Key Type <span class="text-danger">*</span>
+            </label>
+            <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="pk-type" id="pk-guid" 
+                       checked="@(PrimaryKeyType == "Guid")" 
+                       @onchange="@(e => OnPkTypeChange("Guid"))" />
+                <label class="btn btn-outline-primary" for="pk-guid">
+                    <i class="fa-solid fa-fingerprint me-1"></i>
+                    Guid <span class="text-muted small">(recommended)</span>
+                </label>
+
+                <input type="radio" class="btn-check" name="pk-type" id="pk-int"
+                       checked="@(PrimaryKeyType == "int")"
+                       @onchange="@(e => OnPkTypeChange("int"))" />
+                <label class="btn btn-outline-primary" for="pk-int">
+                    <i class="fa-solid fa-hashtag me-1"></i>
+                    int
+                </label>
+
+                <input type="radio" class="btn-check" name="pk-type" id="pk-long"
+                       checked="@(PrimaryKeyType == "long")"
+                       @onchange="@(e => OnPkTypeChange("long"))" />
+                <label class="btn btn-outline-primary" for="pk-long">
+                    <i class="fa-solid fa-hashtag me-1"></i>
+                    long
+                </label>
+            </div>
+            <div class="form-text">
+                <strong>Guid</strong> is recommended for distributed systems and multi-tenant apps.
+                <strong>int/long</strong> are more compact but require database-generated values.
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fa-solid fa-eye text-info me-1"></i>
+                    Preview
+                </h6>
+                <div class="small">
+                    <div class="mb-2">
+                        <span class="text-muted">EF Model:</span><br/>
+                        <code>@(string.IsNullOrWhiteSpace(EntityName) ? "Entity" : EntityName)Item.cs</code>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted">Primary Key:</span><br/>
+                        <code>@(string.IsNullOrWhiteSpace(EntityName) ? "Entity" : EntityName)Id</code> (@PrimaryKeyType)
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted">Table:</span><br/>
+                        <code>[@(string.IsNullOrWhiteSpace(TableName) ? (string.IsNullOrWhiteSpace(PluralName) ? "Entities" : PluralName) : TableName)]</code>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted">DbSet:</span><br/>
+                        <code>data.@(string.IsNullOrWhiteSpace(PluralName) ? "Entities" : PluralName)</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                    Naming Tips
+                </h6>
+                <ul class="small mb-0">
+                    <li>Use PascalCase</li>
+                    <li>Entity = singular noun</li>
+                    <li>Avoid abbreviations</li>
+                    <li>Examples:
+                        <ul>
+                            <li>Task → Tasks</li>
+                            <li>Customer → Customers</li>
+                            <li>OrderItem → OrderItems</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string EntityName { get; set; } = "";
+    [Parameter] public EventCallback<string> EntityNameChanged { get; set; }
+
+    [Parameter] public string PluralName { get; set; } = "";
+    [Parameter] public EventCallback<string> PluralNameChanged { get; set; }
+
+    [Parameter] public string TableName { get; set; } = "";
+    [Parameter] public EventCallback<string> TableNameChanged { get; set; }
+
+    [Parameter] public string PrimaryKeyType { get; set; } = "Guid";
+    [Parameter] public EventCallback<string> PrimaryKeyTypeChanged { get; set; }
+
+    private string _nameError = "";
+
+    private async Task OnEntityNameInput(ChangeEventArgs e) {
+        var value = e.Value?.ToString() ?? "";
+        
+        // Remove invalid characters
+        value = System.Text.RegularExpressions.Regex.Replace(value, @"[^A-Za-z0-9]", "");
+        
+        // Validate
+        _nameError = "";
+        if (!string.IsNullOrWhiteSpace(value) && !char.IsLetter(value[0])) {
+            _nameError = "Must start with a letter";
+        }
+
+        await EntityNameChanged.InvokeAsync(value);
+
+        // Auto-set plural name
+        if (!string.IsNullOrWhiteSpace(value)) {
+            var plural = Pluralize(value);
+            await PluralNameChanged.InvokeAsync(plural);
+        }
+    }
+
+    private async Task OnPluralNameInput(ChangeEventArgs e) {
+        var value = e.Value?.ToString() ?? "";
+        value = System.Text.RegularExpressions.Regex.Replace(value, @"[^A-Za-z0-9]", "");
+        await PluralNameChanged.InvokeAsync(value);
+    }
+
+    private async Task OnTableNameInput(ChangeEventArgs e) {
+        await TableNameChanged.InvokeAsync(e.Value?.ToString() ?? "");
+    }
+
+    private async Task OnPkTypeChange(string type) {
+        await PrimaryKeyTypeChanged.InvokeAsync(type);
+    }
+
+    private string Pluralize(string singular) {
+        if (string.IsNullOrWhiteSpace(singular)) return "";
+        
+        // Simple pluralization rules
+        if (singular.EndsWith("y") && singular.Length > 1 && !IsVowel(singular[^2])) {
+            return singular[..^1] + "ies";
+        }
+        if (singular.EndsWith("s") || singular.EndsWith("x") || singular.EndsWith("ch") || singular.EndsWith("sh")) {
+            return singular + "es";
+        }
+        return singular + "s";
+    }
+
+    private bool IsVowel(char c) => "aeiouAEIOU".Contains(c);
+}

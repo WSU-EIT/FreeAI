@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 608,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "iframe[width=\u0022600\u0022]",
+      "Snippet": "\u003Ciframe src=\u0022https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2734.748191395851!2d-117.1605026229617!3d46.7304279480687!2m3!1f0!2f0!3f0!3m2!1i102...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022leaving\u0022 name=\u0022leaving\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022Checkout\u0022 name=\u0022Checkout\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca id=\u0022Cleaning\u0022 name=\u0022Cleaning\u0022 class=\u0022break\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

@@ -1,0 +1,612 @@
+@page "/Settings/ScanMonitor"
+@page "/{TenantCode}/Settings/ScanMonitor"
+@implements IDisposable
+@using Blazored.LocalStorage
+@using Humanizer
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <i class="fas fa-desktop me-2"></i> Scan Monitor
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <i class="fas fa-desktop me-2"></i> Scan Monitor
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                    <i class="fas fa-globe me-1"></i> Sites
+                </a>
+                <button type="button" class="btn btn-outline-secondary" @onclick="LoadData">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        @* ── Summary Badges ── *@
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-primary fs-6 scan-monitor-badge">
+                <i class="fas fa-spinner fa-spin me-1"></i> @_activeRuns.Count Running
+            </span>
+            <span class="badge bg-info text-dark fs-6 scan-monitor-badge">
+                <i class="fas fa-clock me-1"></i> @_queuedRuns.Count Queued
+            </span>
+            <span class="badge bg-secondary fs-6 scan-monitor-badge">
+                <i class="fas fa-check me-1"></i> @_filteredRecent.Count Recent
+            </span>
+        </div>
+
+        @* ── Search / Filter Bar ── *@
+        <div class="row g-2 mb-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm" placeholder="Search by site name..."
+                       aria-label="Search scans" @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm" @bind="_statusFilter" @bind:after="ApplyFilters" aria-label="Filter by status">
+                    <option value="all">All statuses</option>
+                    <option value="running">Running</option>
+                    <option value="queued">Queued</option>
+                    <option value="complete">Complete</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm" @bind="_sortBy" @bind:after="ApplyFilters" aria-label="Sort by">
+                    <option value="recent">Most recent first</option>
+                    <option value="violations">Most violations first</option>
+                    <option value="name">Site name A-Z</option>
+                    <option value="duration">Longest duration first</option>
+                </select>
+            </div>
+            <div class="col-md-2 text-end">
+                <span class="text-muted small align-middle">@_filteredRecent.Count of @_recentRuns.Count</span>
+            </div>
+        </div>
+
+        @* ── Currently Running Scans ── *@
+        @if (_activeRuns.Any()) {
+            <h5 class="mb-2 scan-section-header"><i class="fas fa-play-circle text-primary me-1"></i> Currently Running</h5>
+            @foreach (var run in _activeRuns) {
+                string siteName = GetSiteName(run.SiteId);
+                DataObjects.ScanProgress? progress = null;
+                Model.ScanStatuses.TryGetValue(run.SiteId, out progress);
+                List<DataObjects.ScanLogEntry> runLogs = _logsBySiteId.ContainsKey(run.SiteId) ? _logsBySiteId[run.SiteId] : new();
+
+                <div @key="run.ScanRunId" class="card mb-3 border-primary scan-monitor-card">
+                    <div class="card-header bg-primary text-white d-flex align-items-center py-2">
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <strong class="me-auto">@siteName</strong>
+                        @if (progress != null) {
+                            <span class="badge bg-light text-dark me-2">Page @progress.CurrentPage / @progress.TotalPages</span>
+                        }
+                        <span class="text-white-50 small">Started @run.StartedAt.Humanize()</span>
+                    </div>
+                    <div class="card-body p-2">
+                        @if (progress != null) {
+                            <div class="progress mb-2" style="height: 6px;">
+                                @{
+                                    int pct = progress.TotalPages > 0 ? (int)(progress.CurrentPage * 100.0 / progress.TotalPages) : 0;
+                                }
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                     style="width: @(pct)%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 small mb-2">
+                                @if (progress.TotalViolations > 0) {
+                                    <span class="badge bg-dark">@progress.TotalViolations violations</span>
+                                }
+                                @if (progress.CriticalCount > 0) {
+                                    <span class="badge bg-danger">@progress.CriticalCount critical</span>
+                                }
+                                @if (progress.SeriousCount > 0) {
+                                    <span class="badge bg-warning text-dark">@progress.SeriousCount serious</span>
+                                }
+                                @if (!String.IsNullOrWhiteSpace(progress.CurrentUrl)) {
+                                    <span class="text-muted"><i class="fas fa-link me-1"></i>@progress.CurrentUrl</span>
+                                }
+                            </div>
+                        }
+
+                        @* ── Live Log ── *@
+                        @if (runLogs.Any()) {
+                            <div class="scan-log-container" id="scan-log-@run.ScanRunId" style="max-height:250px; overflow-y:auto; font-family:'Cascadia Code','Fira Code','Consolas',monospace; font-size:0.75rem; background:#1e1e1e; color:#d4d4d4; padding:0.5rem; border-radius:4px;">
+                                @foreach (var entry in GetVisibleLogs(runLogs)) {
+                                    <div class="@GetLogLineClass(entry)" style="white-space:pre-wrap; line-height:1.5;">@FormatLogTimestamp(entry.Timestamp) @entry.Message</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer py-1 small text-muted">
+                        <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + run.SiteId))">
+                            <i class="fas fa-external-link-alt me-1"></i> View Site Runs
+                        </a>
+                        @if (!String.IsNullOrWhiteSpace(run.TriggeredBy)) {
+                            <span class="ms-3"><i class="fas fa-user me-1"></i>@run.TriggeredBy</span>
+                        } else {
+                            <span class="ms-3"><i class="fas fa-clock me-1"></i>Scheduled</span>
+                        }
+                    </div>
+                </div>
+            }
+        } else {
+            <div class="card mb-3 scan-monitor-card">
+                <div class="card-body text-center text-muted py-3">
+                    <i class="fas fa-check-circle fa-2x mb-2 d-block"></i>
+                    No scans currently running.
+                </div>
+            </div>
+        }
+
+        @* ── Queued / Pending Scans ── *@
+        @if (_queuedRuns.Any()) {
+            <h5 class="mb-2 mt-4 scan-section-header"><i class="fas fa-hourglass-half text-info me-1"></i> Queued <span class="badge bg-info text-dark ms-1">@_queuedRuns.Count</span></h5>
+            <div class="list-group mb-3">
+                @{ int queuePos = 1; }
+                @foreach (var run in _queuedRuns.OrderBy(r => r.StartedAt)) {
+                    string siteName = GetSiteName(run.SiteId);
+                    <div @key="run.ScanRunId" class="list-group-item d-flex align-items-center scan-queue-item @(queuePos == 1 ? "list-group-item-info" : "")">
+                        <span class="badge rounded-pill @(queuePos == 1 ? "bg-primary" : "bg-secondary") me-3" style="min-width:28px;">@queuePos</span>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center">
+                                <strong class="me-2">@siteName</strong>
+                                @if (queuePos == 1) {
+                                    <span class="badge bg-primary">Next up</span>
+                                }
+                            </div>
+                            <div class="small text-muted">
+                                Queued @run.StartedAt.Humanize()
+                                @if (!String.IsNullOrWhiteSpace(run.TriggeredBy)) {
+                                    <span class="ms-2"><i class="fas fa-user me-1"></i>@run.TriggeredBy</span>
+                                }
+                            </div>
+                        </div>
+                        <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + run.SiteId))" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                    queuePos++;
+                }
+            </div>
+        }
+
+        @* ── Recent Completed Scans ── *@
+        @if (_filteredRecent.Any()) {
+            <h5 class="mb-2 mt-4 scan-section-header"><i class="fas fa-history text-secondary me-1"></i> Recent Scans</h5>
+            <div class="list-group mb-3">
+                @foreach (var run in _filteredRecent) {
+                    string siteName = GetSiteName(run.SiteId);
+                    string borderClass = GetRunBorderClass(run);
+                    <a @key="run.ScanRunId" href="@(Helpers.BuildUrl("Scans/" + run.ScanRunId))" class="list-group-item list-group-item-action scan-recent-item @borderClass">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                @((MarkupString)GetRunStatusIcon(run.Status))
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong class="me-2">@siteName</strong>
+                                    <span class="text-muted small me-2">@run.StartedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                                    @if (!String.IsNullOrWhiteSpace(run.TriggeredBy)) {
+                                        <span class="text-muted small me-2">
+                                            <i class="fas fa-user me-1"></i>@run.TriggeredBy
+                                        </span>
+                                    } else {
+                                        <span class="text-muted small me-2">
+                                            <i class="fas fa-clock me-1"></i>Scheduled
+                                        </span>
+                                    }
+                                </div>
+                                <div class="d-flex align-items-center small">
+                                    @((MarkupString)GetRunStatusBadge(run.Status))
+                                    @if (run.Status == "Complete" || run.Status == "Completed") {
+                                        <span class="ms-2">
+                                            <span class="badge bg-dark">@run.TotalViolations violations</span>
+                                            @if (run.CriticalCount > 0) {
+                                                <span class="badge bg-danger ms-1">@run.CriticalCount critical</span>
+                                            }
+                                            @if (run.SeriousCount > 0) {
+                                                <span class="badge bg-warning text-dark ms-1">@run.SeriousCount serious</span>
+                                            }
+                                        </span>
+                                        <span class="text-muted ms-2">@run.TotalPages pages</span>
+                                    }
+                                    @if (run.CompletedAt.HasValue) {
+                                        var duration = run.CompletedAt.Value - run.StartedAt;
+                                        <span class="text-muted ms-2"><i class="fas fa-stopwatch me-1"></i>@duration.Humanize()</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _validatedUrl = false;
+    private string _pageName = "scanmonitor";
+    private bool _showDetailLogs = false;
+    private string _searchText = "";
+    private string _statusFilter = "all";
+    private string _sortBy = "recent";
+
+    private List<DataObjects.ScanRun> _allRuns = new();
+    private List<DataObjects.ScanRun> _activeRuns = new();
+    private List<DataObjects.ScanRun> _queuedRuns = new();
+    private List<DataObjects.ScanRun> _recentRuns = new();
+    private List<DataObjects.ScanRun> _filteredRecent = new();
+    private Dictionary<Guid, string> _siteNameMap = new();
+    private Dictionary<Guid, List<DataObjects.ScanLogEntry>> _logsBySiteId = new();
+
+    // Render throttle — prevent flashing from rapid SignalR updates.
+    private System.Threading.Timer? _renderTimer;
+    private bool _renderPending = false;
+    private const int RenderThrottleMs = 300;
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+        _renderTimer?.Dispose();
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+
+        // Auto-scroll all live log containers in a single JS call to reduce interop overhead.
+        var activeSnapshot = _activeRuns.ToList();
+        if (activeSnapshot.Any()) {
+            var ids = string.Join(",", activeSnapshot.Select(r => "'" + r.ScanRunId + "'"));
+            try {
+                await jsRuntime.InvokeVoidAsync("eval",
+                    "[" + ids + "].forEach(function(id){var el=document.getElementById('scan-log-'+id);if(el)el.scrollTop=el.scrollHeight;});");
+            } catch { }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        // Build site name map from the data model's SiteList.
+        _siteNameMap.Clear();
+        foreach (var site in Model.SiteList) {
+            _siteNameMap[site.SiteId] = site.Name;
+        }
+
+        // Load all scan runs (no SiteId filter).
+        var runs = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetScanRuns",
+            new { Ids = new List<Guid>(), SiteId = (Guid?)null });
+        if (runs != null) {
+            _allRuns = runs.OrderByDescending(x => x.StartedAt).ToList();
+        } else {
+            _allRuns = new();
+        }
+
+        CategorizeRuns();
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void CategorizeRuns()
+    {
+        // Trust the DB Status field — the background service updates it transactionally
+        // when a scan transitions Queued -> Running -> Complete/Failed.
+        _activeRuns = _allRuns.Where(r => r.Status == "Running").ToList();
+        _queuedRuns = _allRuns.Where(r => r.Status == "Queued").ToList();
+
+        // Recent = last 50 completed or failed scans.
+        _recentRuns = _allRuns
+            .Where(r => r.Status == "Complete" || r.Status == "Completed" || r.Status == "Failed")
+            .Take(50)
+            .ToList();
+
+        // Fill site names from ScanRun.SiteName where available.
+        foreach (var run in _allRuns) {
+            if (!String.IsNullOrWhiteSpace(run.SiteName) && !_siteNameMap.ContainsKey(run.SiteId)) {
+                _siteNameMap[run.SiteId] = run.SiteName;
+            }
+        }
+
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        var results = _recentRuns.AsEnumerable();
+
+        // Status filter.
+        if (_statusFilter != "all") {
+            results = _statusFilter switch {
+                "running" => _activeRuns.AsEnumerable(),
+                "queued" => _queuedRuns.AsEnumerable(),
+                "complete" => results.Where(r => r.Status == "Complete" || r.Status == "Completed"),
+                "failed" => results.Where(r => r.Status == "Failed"),
+                _ => results,
+            };
+        }
+
+        // Text search.
+        if (!String.IsNullOrWhiteSpace(_searchText)) {
+            string search = _searchText.Trim().ToLower();
+            results = results.Where(r => {
+                string name = GetSiteName(r.SiteId).ToLower();
+                return name.Contains(search)
+                    || (r.TriggeredBy != null && r.TriggeredBy.ToLower().Contains(search));
+            });
+        }
+
+        // Sort.
+        results = _sortBy switch {
+            "violations" => results.OrderByDescending(r => r.TotalViolations),
+            "name" => results.OrderBy(r => GetSiteName(r.SiteId)),
+            "duration" => results.OrderByDescending(r => r.CompletedAt.HasValue ? (r.CompletedAt.Value - r.StartedAt).TotalSeconds : 0),
+            _ => results.OrderByDescending(r => r.StartedAt),
+        };
+
+        _filteredRecent = results.ToList();
+    }
+
+    private string GetSiteName(Guid siteId)
+    {
+        if (_siteNameMap.TryGetValue(siteId, out string? name)) {
+            return name;
+        }
+        return siteId.ToString()[..8] + "...";
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName) { return; }
+
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanLog && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var logEntry = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanLogEntry>(json, jsonOptions);
+                if (logEntry != null) {
+                    if (!_logsBySiteId.ContainsKey(logEntry.SiteId)) {
+                        _logsBySiteId[logEntry.SiteId] = new List<DataObjects.ScanLogEntry>();
+                    }
+                    _logsBySiteId[logEntry.SiteId].Add(logEntry);
+
+                    // Cap log entries per site to prevent memory growth.
+                    if (_logsBySiteId[logEntry.SiteId].Count > 500) {
+                        _logsBySiteId[logEntry.SiteId].RemoveRange(0, 100);
+                    }
+
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json, jsonOptions);
+                if (progress != null) {
+                    // Ensure this scan appears in active runs.
+                    // Use new list instances to avoid collection-modified-during-enumeration.
+                    if (!_activeRuns.Any(r => r.ScanRunId == progress.ScanRunId)) {
+                        var matchingRun = _allRuns.FirstOrDefault(r => r.ScanRunId == progress.ScanRunId);
+                        if (matchingRun != null) {
+                            _activeRuns = _activeRuns.Append(matchingRun).ToList();
+                            _queuedRuns = _queuedRuns.Where(r => r.ScanRunId != matchingRun.ScanRunId).ToList();
+                        }
+                    }
+
+                    // Update site name map from progress.
+                    if (!String.IsNullOrWhiteSpace(progress.SiteName)) {
+                        _siteNameMap[progress.SiteId] = progress.SiteName;
+                    }
+
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanQueued && update.Object != null) {
+            // New scan queued (waiting for the background service to pick it up).
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null && !_allRuns.Any(r => r.ScanRunId == scanRun.ScanRunId)) {
+                    _allRuns.Insert(0, scanRun);
+                    if (!String.IsNullOrWhiteSpace(scanRun.SiteName)) {
+                        _siteNameMap[scanRun.SiteId] = scanRun.SiteName;
+                    }
+                    CategorizeRuns();
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanStarted && update.Object != null) {
+            // Scan transitioned Queued -> Running. Update the existing entry's status if present.
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    var existing = _allRuns.FirstOrDefault(r => r.ScanRunId == scanRun.ScanRunId);
+                    if (existing != null) {
+                        existing.Status = "Running";
+                    } else {
+                        _allRuns.Insert(0, scanRun);
+                    }
+                    if (!String.IsNullOrWhiteSpace(scanRun.SiteName)) {
+                        _siteNameMap[scanRun.SiteId] = scanRun.SiteName;
+                    }
+                    CategorizeRuns();
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    // Update the run in-place with final data.
+                    var existing = _allRuns.FirstOrDefault(r => r.ScanRunId == scanRun.ScanRunId);
+                    if (existing != null) {
+                        existing.Status = scanRun.Status;
+                        existing.CompletedAt = scanRun.CompletedAt;
+                        existing.TotalPages = scanRun.TotalPages;
+                        existing.PagesScanned = scanRun.PagesScanned;
+                        existing.TotalViolations = scanRun.TotalViolations;
+                        existing.CriticalCount = scanRun.CriticalCount;
+                        existing.SeriousCount = scanRun.SeriousCount;
+                        existing.ModerateCount = scanRun.ModerateCount;
+                        existing.MinorCount = scanRun.MinorCount;
+                    } else {
+                        _allRuns.Insert(0, scanRun);
+                    }
+                    _activeRuns = _activeRuns.Where(r => r.ScanRunId != scanRun.ScanRunId).ToList();
+                    _queuedRuns = _queuedRuns.Where(r => r.ScanRunId != scanRun.ScanRunId).ToList();
+                    _logsBySiteId.Remove(scanRun.SiteId);
+                    CategorizeRuns();
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    var existing = _allRuns.FirstOrDefault(r => r.ScanRunId == scanRun.ScanRunId);
+                    if (existing != null) {
+                        existing.Status = scanRun.Status;
+                        existing.CompletedAt = scanRun.CompletedAt;
+                        existing.TotalPages = scanRun.TotalPages;
+                        existing.PagesScanned = scanRun.PagesScanned;
+                        existing.TotalViolations = scanRun.TotalViolations;
+                        existing.CriticalCount = scanRun.CriticalCount;
+                        existing.SeriousCount = scanRun.SeriousCount;
+                        existing.ModerateCount = scanRun.ModerateCount;
+                        existing.MinorCount = scanRun.MinorCount;
+                    } else {
+                        _allRuns.Insert(0, scanRun);
+                    }
+                    _activeRuns = _activeRuns.Where(r => r.ScanRunId != scanRun.ScanRunId).ToList();
+                    _queuedRuns = _queuedRuns.Where(r => r.ScanRunId != scanRun.ScanRunId).ToList();
+                    _logsBySiteId.Remove(scanRun.SiteId);
+                    CategorizeRuns();
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        }
+    }
+
+    /// <summary>
+    /// Throttles render requests to at most once per RenderThrottleMs (300ms).
+    /// Prevents UI flashing when dozens of SignalR updates arrive per second.
+    /// </summary>
+    private void RequestThrottledRender()
+    {
+        if (_renderPending) return;
+        _renderPending = true;
+
+        _renderTimer?.Dispose();
+        _renderTimer = new System.Threading.Timer(_ => {
+            _renderPending = false;
+            InvokeAsync(StateHasChanged);
+        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
+    }
+
+    private List<DataObjects.ScanLogEntry> GetVisibleLogs(List<DataObjects.ScanLogEntry> logs)
+    {
+        if (_showDetailLogs) return logs;
+        return logs.Where(e => e.Level != "detail").ToList();
+    }
+
+    private string GetLogLineClass(DataObjects.ScanLogEntry entry)
+    {
+        return entry.Level switch {
+            "error" => "text-danger",
+            "warning" => "text-warning",
+            "success" => "text-success",
+            "detail" => "text-secondary",
+            _ => "",
+        };
+    }
+
+    private string FormatLogTimestamp(DateTime timestamp)
+    {
+        return "[" + timestamp.ToString("HH:mm:ss") + "] ";
+    }
+
+    private string GetRunBorderClass(DataObjects.ScanRun run)
+    {
+        return run.Status switch {
+            "Complete" or "Completed" when run.CriticalCount > 0 => "border-start border-danger border-3",
+            "Complete" or "Completed" when run.TotalViolations > 0 => "border-start border-warning border-3",
+            "Complete" or "Completed" => "border-start border-success border-3",
+            "Running" => "border-start border-primary border-3",
+            "Queued" => "border-start border-info border-3",
+            "Failed" => "border-start border-danger border-3",
+            _ => "",
+        };
+    }
+
+    private string GetRunStatusIcon(string? status)
+    {
+        return status switch {
+            "Complete" or "Completed" => "<i class=\"fas fa-check-circle text-success fa-lg\"></i>",
+            "Running" => "<span class=\"spinner-border spinner-border-sm text-primary\" role=\"status\"></span>",
+            "Queued" => "<i class=\"fas fa-clock text-info fa-lg\"></i>",
+            "Failed" => "<i class=\"fas fa-times-circle text-danger fa-lg\"></i>",
+            _ => "<i class=\"fas fa-circle text-secondary fa-lg\"></i>",
+        };
+    }
+
+    private string GetRunStatusBadge(string? status)
+    {
+        return status switch {
+            "Complete" or "Completed" => "<span class=\"badge bg-success\">Complete</span>",
+            "Running" => "<span class=\"badge bg-primary\">Running</span>",
+            "Queued" => "<span class=\"badge bg-info text-dark\">Queued</span>",
+            "Failed" => "<span class=\"badge bg-danger\">Failed</span>",
+            _ => "<span class=\"badge bg-secondary\">" + (status ?? "Unknown") + "</span>",
+        };
+    }
+}

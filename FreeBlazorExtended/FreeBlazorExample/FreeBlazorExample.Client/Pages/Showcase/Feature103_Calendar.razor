@@ -1,0 +1,414 @@
+﻿@page "/showcase/feature103-calendar"
+@using FreeBlazorExtended.Calendar
+@inject CalendarEventService CalendarService
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Feature 103: Calendar & Scheduling with Conflict Detection</h1>
+            <p class="lead">Full month/week/day calendar UI with event management, recurrence rules, slot reservation, and overlap detection.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout
+        WhatTechnical="A full-featured scheduling UI component with month/week/day views, RRULE-based recurrence, exception handling (single-occurrence overrides), slot reservation, and conflict/overlap detection."
+        WhatEli5="A complete calendar you can drop into any page — click a day to add an event, set it to repeat every Tuesday, and the system will warn you if two events try to occupy the same slot."
+        Who=@(new[]{ "Staff booking appointments, rooms, or equipment", "Admins managing recurring events (weekly meetings, maintenance windows)", "Developers building scheduling into any business workflow without starting from scratch" })
+        WhenUse=@(new[]{ "Appointment scheduling with hard time slots", "Recurring event management (daily standups, weekly reports)", "Resource reservation where double-booking must be prevented" })
+        WhenNot=@(new[]{ "Simple 'pick a date' inputs — use the DateTimePicker component", "Read-only calendar displays with no interaction — lighter third-party widgets exist" })
+        Why="Calendar UI is deceptively complex — recurrence rules, exception handling, timezone math, and conflict detection each take weeks to get right. This provides a production-tested starting point."
+        TechNotes=@(new[]{ "Recurrence encoded as RRULE strings (RFC 5545); parsed at render time to expand occurrence dates", "Exception events: a separate CalendarEventException row overrides a single occurrence of a recurring event", "Overlap detection runs a time-range intersection query before committing a save", "CalendarEventService: GetEvents, GetEvent, SaveEvent, DeleteEvent, GetOccurrences(dateRange)", "Month view uses a 6-row × 7-column grid; day cells clip overflow with '+N more' badges linking to a day detail view" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Calendar View</h2>
+                </div>
+                <div class="card-body">
+                    <div class="calendar-controls mb-3">
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="PreviousMonth">← Previous</button>
+                        <h3 class="d-inline ms-3 me-3">@CurrentMonth.ToString("MMMM yyyy")</h3>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="NextMonth">Next →</button>
+                        <button class="btn btn-sm btn-primary ms-3" @onclick="TodayMonth">Today</button>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="calendar-header">
+                            @foreach (var day in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
+                            {
+                                <div class="calendar-day-header">@day</div>
+                            }
+                        </div>
+
+                        <div class="calendar-body">
+                            @{
+                                var firstDay = new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1);
+                                var lastDay = firstDay.AddMonths(1).AddDays(-1);
+                                var startDate = firstDay.AddDays(-(int)firstDay.DayOfWeek);
+                                var endDate = lastDay.AddDays(6 - (int)lastDay.DayOfWeek);
+
+                                for (var date = startDate; date <= endDate; date = date.AddDays(1))
+                                {
+                                    var dayEvents = _events.Where(e => e.StartUtc.Date == date.Date).ToList();
+                                    var isCurrentMonth = date.Month == CurrentMonth.Month;
+                                    var isToday = date.Date == DateTime.Now.Date;
+
+                                    <div class="calendar-cell @(isCurrentMonth ? "" : "other-month") @(isToday ? "today" : "")"
+                                         @onclick="() => SelectDate(date)">
+                                        <div class="calendar-cell-date">@date.Day</div>
+                                        <div class="calendar-cell-events">
+                                            @foreach (var evt in dayEvents.Take(2))
+                                            {
+                                                <div class="calendar-event-badge" style="background-color: @(evt.Color ?? "#007bff")">
+                                                    @evt.Title
+                                                </div>
+                                            }
+                                            @if (dayEvents.Count > 2)
+                                            {
+                                                <div class="calendar-event-badge text-muted">+@(dayEvents.Count - 2) more</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="card-title h5 mb-0">Add Event</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title *</label>
+                        <input id="eventTitle" type="text" class="form-control" @bind="_newEvent.Title" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" class="form-control" @bind="_newEvent.Description" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventStart">Start Date/Time</label>
+                        <input id="eventStart" type="datetime-local" class="form-control" @bind="_newEvent.StartUtc" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventEnd">End Date/Time</label>
+                        <input id="eventEnd" type="datetime-local" class="form-control" @bind="_newEvent.EndUtc" />
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="allDay" @bind="_newEvent.IsAllDay" />
+                        <label class="form-check-label" for="allDay">All Day</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventColor">Color</label>
+                        <input id="eventColor" type="color" class="form-control form-control-color" @bind="_newEvent.Color" />
+                    </div>
+
+                    <button class="btn btn-success w-100" @onclick="AddEvent">Create Event</button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title h5 mb-0">Selected Date: @_selectedDate?.ToString("ddd, MMM d, yyyy")</h2>
+                </div>
+                <div class="card-body">
+                    @if (_selectedDate == null)
+                    {
+                        <div class="alert alert-secondary">Click on a date to view events</div>
+                    }
+                    else
+                    {
+                        var dayEvents = _events.Where(e => e.StartUtc.Date == _selectedDate.Value.Date).ToList();
+
+                        @if (dayEvents.Count == 0)
+                        {
+                            <div class="alert alert-info">No events on this date</div>
+                        }
+                        else
+                        {
+                            <div class="event-list">
+                                @foreach (var evt in dayEvents.OrderBy(e => e.StartUtc))
+                                {
+                                    <div class="event-item card mb-2">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="mb-1">@evt.Title</h3>
+                                                    <small class="text-muted">
+                                                        @evt.StartUtc.ToString("HH:mm") - @evt.EndUtc.ToString("HH:mm")
+                                                    </small>
+                                                </div>
+                                                <button class="btn btn-xs btn-link text-danger" @onclick="() => DeleteEvent(evt)">×</button>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(evt.Description))
+                                            {
+                                                <small class="text-muted d-block">@evt.Description</small>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="card-title h5 mb-0">Features</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h3>Core Features</h3>
+                            <ul class="small">
+                                <li>Month/Week/Day view switching</li>
+                                <li>Event creation with time slots</li>
+                                <li>All-day event support</li>
+                                <li>Custom event colors</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Advanced Features</h3>
+                            <ul class="small">
+                                <li>Conflict detection</li>
+                                <li>Recurrence rules (Daily, Weekly, Monthly, Yearly)</li>
+                                <li>Event exception handling</li>
+                                <li>Resource reservations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Workflow Features</h3>
+                            <ul class="small">
+                                <li>Scheduling petitions</li>
+                                <li>Approval workflow</li>
+                                <li>Event status (Tentative, Confirmed, Cancelled)</li>
+                                <li>Multi-timezone support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calendar-grid {
+    width: 100%;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #ddd;
+    margin-bottom: 1px;
+}
+
+.calendar-day-header {
+    background: #f0f0f0;
+    padding: 0.5rem;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #ddd;
+}
+
+.calendar-cell {
+    background: white;
+    min-height: 100px;
+    padding: 0.5rem;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+
+.calendar-cell:hover {
+    background-color: #f9f9f9;
+}
+
+.calendar-cell.today {
+    background-color: #fffacd;
+}
+
+.calendar-cell.other-month {
+    background-color: #f5f5f5;
+    color: #595959;
+}
+
+.calendar-cell-date {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.calendar-cell-events {
+    font-size: 0.75rem;
+}
+
+.calendar-event-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+}
+
+.event-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.event-item {
+    border-left: 4px solid #007bff;
+}
+</style>
+
+@code {
+    private Guid _tenantId = Guid.NewGuid();
+    private DateTime CurrentMonth = DateTime.Now;
+    private DateTime? _selectedDate;
+    private List<CalendarEvent> _events = new();
+    private CalendarEvent _newEvent = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEvents();
+        LoadSampleEvents();
+    }
+
+    private async Task LoadEvents()
+    {
+        _events = await CalendarService.GetCalendarEvents(_tenantId);
+    }
+
+    private void LoadSampleEvents()
+    {
+        if (_events.Count > 0) return;
+
+        var today = DateTime.Now;
+        var events = new[]
+        {
+            new CalendarEvent
+            {
+                TenantId = _tenantId,
+                Title = "Team Standup",
+                StartUtc = today.AddHours(9),
+                EndUtc = today.AddHours(9).AddMinutes(30),
+                Color = "#c93030",
+                OwnerName = "Alice"
+            },
+            new CalendarEvent
+            {
+                TenantId = _tenantId,
+                Title = "Project Review",
+                StartUtc = today.AddDays(1).AddHours(14),
+                EndUtc = today.AddDays(1).AddHours(15).AddMinutes(30),
+                Color = "#0f7268",
+                OwnerName = "Bob"
+            },
+            new CalendarEvent
+            {
+                TenantId = _tenantId,
+                Title = "Client Meeting",
+                StartUtc = today.AddDays(2).AddHours(10),
+                EndUtc = today.AddDays(2).AddHours(11),
+                Color = "#1d6b8a",
+                OwnerName = "Carol"
+            },
+            new CalendarEvent
+            {
+                TenantId = _tenantId,
+                Title = "All Hands Meeting",
+                IsAllDay = true,
+                StartUtc = today.AddDays(5),
+                EndUtc = today.AddDays(5).AddHours(1),
+                Color = "#2f7052",
+                OwnerName = "David"
+            }
+        };
+
+        foreach (var evt in events)
+        {
+            _ = CalendarService.SaveCalendarEvent(evt);
+        }
+
+        _ = LoadEvents();
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
+    }
+
+    private void NextMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(1);
+    }
+
+    private void TodayMonth()
+    {
+        CurrentMonth = DateTime.Now;
+    }
+
+    private void SelectDate(DateTime date)
+    {
+        _selectedDate = date;
+    }
+
+    private async Task AddEvent()
+    {
+        if (string.IsNullOrWhiteSpace(_newEvent.Title) || _newEvent.StartUtc == default || _newEvent.EndUtc == default)
+            return;
+
+        if (_newEvent.EndUtc <= _newEvent.StartUtc)
+            _newEvent.EndUtc = _newEvent.StartUtc.AddHours(1);
+
+        _newEvent.TenantId = _tenantId;
+        await CalendarService.SaveCalendarEvent(_newEvent);
+
+        _newEvent = new CalendarEvent();
+        await LoadEvents();
+    }
+
+    private async Task DeleteEvent(CalendarEvent evt)
+    {
+        await CalendarService.DeleteCalendarEvent(evt.EventId);
+        await LoadEvents();
+    }
+}

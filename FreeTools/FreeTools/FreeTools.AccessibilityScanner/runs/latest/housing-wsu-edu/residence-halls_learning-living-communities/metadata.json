@@ -1,0 +1,87 @@
+{
+  "PagePath": "/residence-halls/learning-living-communities/",
+  "Url": "https://housing.wsu.edu/residence-halls/learning-living-communities/",
+  "FinalUrl": null,
+  "Title": "Learning Living Communities",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 64718,
+  "ScreenshotSizeBytes": 117886,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 117886
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/sjte5pat/streit-perham-exterior-banner.jpg",
+      "AltText": "exterior of Streit Perham residence hall"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/w0db4iqy/olympia-exterior-banner.jpg",
+      "AltText": "Olympia residence hall front exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4vbb1phv/mccroskey-exterior-side.jpg",
+      "AltText": "McCroskey Residence Hall"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mo5nab5z/scott-coman-exterior.jpg",
+      "AltText": "Scott Coman Residence Hall"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/alyaa5k5/gg-exterior-banner.jpg",
+      "AltText": "exterior of Gannon Goldsworthy residence hall"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:14:53 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:14:53.5250205Z"
+}

@@ -1,0 +1,86 @@
+{
+  "PagePath": "/software-site-licenses/",
+  "Url": "https://its.wsu.edu/software-site-licenses/",
+  "FinalUrl": "https://confluence.esg.wsu.edu/spaces/ITSERVICES/pages/297830273/Software\u002BSite\u002BLicenses",
+  "Title": "Software Site Licenses - WSU Technology Service Catalog - WSU - Confluence",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 360649,
+  "ScreenshotSizeBytes": 576395,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 156,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 576395
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://confluence.esg.wsu.edu/download/attachments/655361/atl.site.dark.logo?version=1\u0026modificationDate=1755194767507\u0026api=v2",
+      "AltText": "WSU - Confluence"
+    },
+    {
+      "SourceUrl": "https://confluence.esg.wsu.edu/download/attachments/290983209/ITSERVICES?version=1\u0026modificationDate=1738189238807\u0026api=v2",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 2,
+    "Serious": 2,
+    "Moderate": 7,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 4,
+        "Critical": 2,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 7,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 7,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.wsu.edu;",
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:22:36 GMT",
+    "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+    "keep-alive": "timeout=300",
+    "strict-transport-security": "max-age=31536000",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding",
+    "x-accel-buffering": "no",
+    "x-confluence-cluster-node": "545dccf8",
+    "x-confluence-cluster-node-name": "confluence-p2n2",
+    "x-confluence-request-time": "1771467756329",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:22:36.0797302Z"
+}

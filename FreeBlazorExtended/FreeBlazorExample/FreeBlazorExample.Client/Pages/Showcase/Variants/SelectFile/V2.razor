@@ -1,0 +1,83 @@
+@page "/showcase/selectfile/v2"
+@using FreeBlazorExtended.SelectFile
+
+<div class="container-fluid py-4">
+    <h1>SelectFile - With Cancel, Refresh, and Loading Toggle</h1>
+
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+        <div class="form-check">
+            <input id="forceEmpty" class="form-check-input" type="checkbox" @bind="_forceEmpty" />
+            <label class="form-check-label" for="forceEmpty">Force empty</label>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ReopenPicker">Reopen picker</button>
+    </div>
+
+    @if (_pickerVisible) {
+        <SelectFile Files="CurrentFiles"
+                    OnFileSelected="HandleSelected"
+                    ShowCancelButton="true"
+                    CancelButtonText="Close picker"
+                    OnCancel="HandleCancel"
+                    ShowRefreshButton="true"
+                    RefreshButtonText="Reload"
+                    OnRefresh="HandleRefresh"
+                    Loading="@_loading"
+                    EmptyText="No files match - try refreshing." />
+    } else {
+        <div class="alert alert-secondary" role="status">Picker closed.</div>
+    }
+
+    <div class="mt-3 text-muted">Selected: @(_selectedFileName ?? "(none)")</div>
+</div>
+
+@code {
+    private List<FileItem> _files = BuildFiles();
+    private bool _loading;
+    private bool _pickerVisible = true;
+    private bool _forceEmpty;
+    private string? _selectedFileName;
+
+    private List<FileItem> CurrentFiles => _forceEmpty ? new List<FileItem>() : _files;
+
+    private Task HandleSelected(FileItem file)
+    {
+        _selectedFileName = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleCancel()
+    {
+        _pickerVisible = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleRefresh()
+    {
+        _loading = true;
+        await Task.Delay(700);
+        _files = BuildFiles();
+        _loading = false;
+    }
+
+    private void ReopenPicker()
+    {
+        _pickerVisible = true;
+    }
+
+    private static List<FileItem> BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "gallery.png", Extension = ".png", Bytes = 1100, RemoteImageUrl = "https://picsum.photos/seed/sfv21/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "sunset.jpg", Extension = ".jpg", Bytes = 610000, RemoteImageUrl = "https://picsum.photos/seed/sfv22/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "icon.svg", Extension = ".svg", Bytes = 320, Value = InlineSvgBytes() },
+            new() { FileId = Guid.NewGuid(), FileName = "notes.pdf", Extension = ".pdf", Bytes = 1789000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "contract.docx", Extension = ".docx", Bytes = 93400, ThumbnailIcon = "fa-solid fa-file-word" },
+        };
+    }
+
+    private static byte[] InlineSvgBytes()
+    {
+        return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#0d6efd'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+}

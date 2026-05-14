@@ -1,0 +1,49 @@
+@page "/showcase/infotip/v3"
+@using FreeBlazorExtended.InfoTip
+
+<div class="container-fluid py-4">
+    <h1>InfoTips In A Form</h1>
+    <p class="text-muted">Open tips across the row to exercise left and right alignment in a realistic form layout.</p>
+
+    <form>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <label for="tenantName" class="form-label fw-semibold">
+                    Tenant Name
+                    <InfoTip Title="Tenant name"
+                             Description="A tenant name is the friendly label used to identify an environment or customer space throughout the UI." />
+                </label>
+                <input id="tenantName" class="form-control" value="Contoso West" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="region" class="form-label fw-semibold">
+                    Region
+                    <InfoTip Title="Deployment region"
+                             Description="Choose the geographic region that should host this tenant's primary services and data residency footprint."
+                             Code="us-east-1 | us-west-2 | eu-central-1" />
+                </label>
+                <input id="region" class="form-control" value="US-East" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="retention" class="form-label fw-semibold">
+                    Retention
+                    <InfoTip Title="Retention policy"
+                             Description="Retention controls how long audit records, exports, and operational traces stay available before archival or deletion." />
+                </label>
+                <input id="retention" class="form-control" value="365 days" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="apiUrl" class="form-label fw-semibold">
+                    API Endpoint
+                    <InfoTip Title="Base endpoint"
+                             Description="This is the base URL clients use for API requests. Right-edge placement helps demonstrate the popover's alternate alignment mode."
+                             Code="https://api.contoso.example/v1" />
+                </label>
+                <input id="apiUrl" class="form-control" value="https://api.contoso.example/v1" />
+            </div>
+        </div>
+    </form>
+</div>

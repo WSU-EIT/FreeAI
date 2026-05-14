@@ -1,0 +1,61 @@
+@page "/showcase/renderfiles/v3"
+@using FreeBlazorExtended.RenderFiles
+@using FreeBlazorExtended.SelectFile
+
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Mixed File Types and Inline Bytes</h1>
+    <p class="small text-muted">Legend: inline SVG, remote PNG, remote JPG, PDF, Word, Excel, ZIP, and generic fallback.</p>
+
+    <RenderFiles Files="_files"
+                 OnClick="OpenFile"
+                 OnDelete="DeleteFile"
+                 UseDeleteConfirmation="false"
+                 DeleteText="Delete"
+                 EmptyText="No files." />
+
+    <p class="text-muted mt-3 mb-2">Last opened: @_lastOpened</p>
+    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetFiles">Reset</button>
+</div>
+
+@code {
+    private List<FileItem> _files = BuildFiles();
+    private string _lastOpened = "(none)";
+
+    private Task OpenFile(FileItem file)
+    {
+        _lastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteFile(FileItem file)
+    {
+        _files = _files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private void ResetFiles()
+    {
+        _files = BuildFiles();
+        _lastOpened = "(none)";
+    }
+
+    private static List<FileItem> BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "inline.svg", Extension = ".svg", Bytes = 320, Value = InlineSvgBytes() },
+            new() { FileId = Guid.NewGuid(), FileName = "remote.png", Extension = ".png", Bytes = 780000, RemoteImageUrl = "https://picsum.photos/seed/rfv31/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "remote.jpg", Extension = ".jpg", Bytes = 1040000, RemoteImageUrl = "https://picsum.photos/seed/rfv32/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2400000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "proposal.docx", Extension = ".docx", Bytes = 101000, ThumbnailIcon = "fa-solid fa-file-word" },
+            new() { FileId = Guid.NewGuid(), FileName = "forecast.xlsx", Extension = ".xlsx", Bytes = 132000, ThumbnailIcon = "fa-solid fa-file-excel" },
+            new() { FileId = Guid.NewGuid(), FileName = "assets.zip", Extension = ".zip", Bytes = 3100000, ThumbnailIcon = "fa-solid fa-file-zipper" },
+            new() { FileId = Guid.NewGuid(), FileName = "notes.bin", Extension = ".bin", Bytes = 4096 },
+        };
+    }
+
+    private static byte[] InlineSvgBytes()
+    {
+        return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#dc3545'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+}

@@ -1,0 +1,115 @@
+{
+  "PagePath": "/residence-halls/rogers/",
+  "Url": "https://housing.wsu.edu/residence-halls/rogers/",
+  "FinalUrl": null,
+  "Title": "Rogers",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 96084,
+  "ScreenshotSizeBytes": 312341,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 4,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 312341
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hdwpzitg/rogers-exterior.jpg",
+      "AltText": "Rogers Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zzybi0el/rogers-double-wide.jpg",
+      "AltText": "Rogers Double Wide"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cfkpwxsn/rogers-double.jpg",
+      "AltText": "Rogers Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dcmmtqrd/rogers-room-side.jpg",
+      "AltText": "Rogers Room Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u1dlvm1q/rogers-foosball.jpg",
+      "AltText": "Rogers Foosball"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hselcibf/brandon-trueswell.jpg",
+      "AltText": "Brandon Trueswell"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/v2aluwcu/southside-cafe-exterior.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xaphic1j/rogers-lounge-program.jpg",
+      "AltText": "Quick Facts"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4z4pmjbd/southside-towers-square.jpg",
+      "AltText": "Neighborhood: South Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/elbfi15c/gg-exterior-side.jpg",
+      "AltText": "Gannon/Goldsworthy Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/revp5u3h/stephenson-student-1.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/fivfec5d/floor-plan-rogers-2-through-11.png",
+      "AltText": "Rogers floors 2-11"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:15:59 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:15:59.0108475Z"
+}

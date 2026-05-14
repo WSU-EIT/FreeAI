@@ -1,0 +1,18 @@
+@page "/showcase/timeline/v1"
+@using FreeBlazorExtended.Timeline
+
+<div class="container-fluid py-4">
+    <h1>Default Timeline</h1>
+
+    <Timeline Events="_events" />
+</div>
+
+@code {
+    private readonly List<Timeline.TimelineEvent> _events = new()
+    {
+        new() { Id = "1", Title = "Order Placed", State = Timeline.TimelineEventState.Completed },
+        new() { Id = "2", Title = "Preparing", State = Timeline.TimelineEventState.Completed },
+        new() { Id = "3", Title = "Out for Delivery", State = Timeline.TimelineEventState.InProgress },
+        new() { Id = "4", Title = "Delivered", State = Timeline.TimelineEventState.Pending },
+    };
+}

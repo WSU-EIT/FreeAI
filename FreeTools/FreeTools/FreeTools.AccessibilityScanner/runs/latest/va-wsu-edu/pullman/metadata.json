@@ -1,0 +1,62 @@
+{
+  "PagePath": "/pullman",
+  "Url": "https://va.wsu.edu/pullman",
+  "FinalUrl": null,
+  "Title": "Pullman Veterans \u0026 Military Affiliated Student Services",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 666045,
+  "ScreenshotSizeBytes": 347037,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 347037
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://va.wsu.edu/media/wuybkwfs/showmark-digital-plaque.jpg?rmode=max\u0026height=500",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 1,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:17:49.6580097Z"
+}

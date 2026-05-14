@@ -1,0 +1,425 @@
+@page "/Compliance/Status/{SiteId}"
+@page "/{TenantCode}/Compliance/Status/{SiteId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="ComplianceStatus" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="ComplianceStatus" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + SiteId))" class="btn btn-dark">
+                    <Language Tag="Back" IncludeIcon="true" />
+                </a>
+                <a href="@(Helpers.BuildUrl("Reports/Audit/" + SiteId))" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-alt me-1"></i><Language Tag="AuditReport" />
+                </a>
+            </div>
+        </div>
+
+        @* ── Site Header ── *@
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@_site.Name</h5>
+                <div class="text-muted mb-1">@_site.BaseUrl</div>
+                @if (_site.LastScanAt.HasValue) {
+                    <div class="text-muted">
+                        <Language Tag="LastScan" />: @_site.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* ── Summary ── *@
+        <div class="row mb-3 g-2">
+            <div class="col-auto">
+                <select class="form-select form-select-sm" aria-label="Filter by WCAG level" @bind="_wcagLevelFilter" @bind:after="RecalculateSummary">
+                    <option value="all">All WCAG Levels</option>
+                    <option value="a">Level A only</option>
+                    <option value="aa">Level AA (A + AA)</option>
+                    <option value="aaa">Level AAA (A + AA + AAA)</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-auto">
+                <span class="badge bg-secondary fs-6">@_evaluatedCount / @_filteredCriteriaCount <Language Tag="CriteriaEvaluated" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-success fs-6">@_supportsCount <Language Tag="Supports" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-warning text-dark fs-6">@_partialCount <Language Tag="PartiallySupports" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-danger fs-6">@_doesNotSupportCount <Language Tag="DoesNotSupport" /></span>
+            </div>
+        </div>
+
+        @* ── Color Legend ── *@
+        <div class="mb-3 d-flex gap-3 flex-wrap">
+            <span><span class="badge bg-success">&nbsp;&nbsp;</span> Supports</span>
+            <span><span class="badge bg-warning text-dark">&nbsp;&nbsp;</span> Partially Supports</span>
+            <span><span class="badge bg-danger">&nbsp;&nbsp;</span> Does Not Support</span>
+            <span><span class="badge bg-secondary">&nbsp;&nbsp;</span> Not Evaluated</span>
+        </div>
+
+        @* ── WCAG 2.2 AA Criteria Grid by Principle ── *@
+        @foreach (var principle in _principles) {
+            var principleCriteria = GetFilteredCriteria(principle);
+            @if (principleCriteria.Any()) {
+            <h4 class="mt-4 mb-2">@principle</h4>
+            <table class="table table-sm">
+                <thead>
+                    <tr class="table-dark">
+                        <th style="width:80px;"><Language Tag="Criterion" ReplaceSpaces="true" /></th>
+                        <th><Language Tag="Name" ReplaceSpaces="true" /></th>
+                        <th style="width:80px;"><Language Tag="Level" ReplaceSpaces="true" /></th>
+                        <th style="width:180px;"><Language Tag="ConformanceStatus" ReplaceSpaces="true" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in principleCriteria) {
+                        var status = GetConformanceStatus(item.Number);
+                        string rowClass = GetRowClass(status);
+                        <tr class="@rowClass">
+                            <td>@item.Number</td>
+                            <td>@item.Name</td>
+                            <td><span class="badge bg-dark">@item.Level</span></td>
+                            <td>@((MarkupString)GetStatusBadge(status))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            }
+        }
+    }
+}
+@code {
+    [Parameter] public string? SiteId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private string _pageName = "compliancestatus";
+
+    private DataObjects.Site _site = new DataObjects.Site();
+    private List<WcagCriterion> _criteria = new();
+    private Dictionary<string, string> _conformanceMap = new();
+    private string _wcagLevelFilter = "aa";
+
+    private int _filteredCriteriaCount = 0;
+    private int _evaluatedCount = 0;
+    private int _supportsCount = 0;
+    private int _partialCount = 0;
+    private int _doesNotSupportCount = 0;
+
+    private static readonly List<string> _principles = new() {
+        "Perceivable", "Operable", "Understandable", "Robust"
+    };
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        _criteria = GetWcagCriteria();
+
+        Guid siteGuid = Guid.Parse(SiteId!);
+
+        // Use public endpoints (AllowAnonymous data)
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
+        if (sites != null) {
+            var match = sites.FirstOrDefault(x => x.SiteId == siteGuid);
+            if (match != null) {
+                _site = match;
+            }
+        }
+
+        // Load manual checks via public endpoint
+        var checks = await Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/GetManualChecks", new { Ids = new List<Guid>(), SiteId = siteGuid });
+        List<DataObjects.ManualCheckResult> manualChecks = checks ?? new();
+
+        // Load automated violations from the latest public scan
+        List<DataObjects.A11yViolation> violations = new();
+        if (_site.LastScanAt.HasValue) {
+            // Get scan history to find latest scan run ID
+            var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
+                new { SiteId = siteGuid, Count = 1 });
+            if (history != null && history.Any()) {
+                var latestScan = history.First();
+                var viols = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolationsByRule",
+                    new { ScanRunId = latestScan.ScanRunId, CanonicalRuleId = (string?)null });
+                if (viols != null) {
+                    violations = viols;
+                }
+            }
+        }
+
+        BuildConformanceMap(manualChecks, violations);
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void BuildConformanceMap(List<DataObjects.ManualCheckResult> manualChecks, List<DataObjects.A11yViolation> violations)
+    {
+        _conformanceMap.Clear();
+
+        // Map automated violations to WCAG criteria
+        foreach (var violation in violations) {
+            if (!String.IsNullOrWhiteSpace(violation.WcagCriteria)) {
+                var criteriaList = violation.WcagCriteria.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                foreach (var criterion in criteriaList) {
+                    string normalized = NormalizeCriterion(criterion);
+                    if (_criteria.Any(c => c.Number == normalized)) {
+                        _conformanceMap[normalized] = "Does Not Support";
+                    }
+                }
+            }
+        }
+
+        // Layer manual checks on top
+        foreach (var check in manualChecks) {
+            if (!String.IsNullOrWhiteSpace(check.Status) && check.Status != "Not Tested") {
+                string normalized = check.WcagCriterion ?? "";
+                if (check.Status == "Pass") {
+                    _conformanceMap[normalized] = "Supports";
+                } else if (check.Status == "Fail") {
+                    _conformanceMap[normalized] = "Does Not Support";
+                } else if (check.Status == "N/A") {
+                    _conformanceMap[normalized] = "Not Applicable";
+                }
+            }
+        }
+
+        // For automatable criteria with no violations, mark as Supports
+        foreach (var c in _criteria.Where(x => x.Automatable)) {
+            if (!_conformanceMap.ContainsKey(c.Number)) {
+                if (_site.LastScanAt.HasValue) {
+                    _conformanceMap[c.Number] = "Supports";
+                }
+            }
+        }
+
+        _evaluatedCount = _conformanceMap.Count;
+        _filteredCriteriaCount = _criteria.Count;
+        _supportsCount = _conformanceMap.Count(x => x.Value == "Supports");
+        _partialCount = _conformanceMap.Count(x => x.Value == "Partially Supports");
+        _doesNotSupportCount = _conformanceMap.Count(x => x.Value == "Does Not Support");
+
+        RecalculateSummary();
+    }
+
+    private void RecalculateSummary()
+    {
+        var allowedLevels = _wcagLevelFilter switch {
+            "a" => new HashSet<string> { "A" },
+            "aa" => new HashSet<string> { "A", "AA" },
+            "aaa" => new HashSet<string> { "A", "AA", "AAA" },
+            _ => null
+        };
+        if (allowedLevels != null) {
+            var filtered = _criteria.Where(c => allowedLevels.Contains(c.Level)).Select(c => c.Number).ToHashSet();
+            var filteredMap = _conformanceMap.Where(x => filtered.Contains(x.Key));
+            _filteredCriteriaCount = filtered.Count;
+            _evaluatedCount = filteredMap.Count();
+            _supportsCount = filteredMap.Count(x => x.Value == "Supports");
+            _partialCount = filteredMap.Count(x => x.Value == "Partially Supports");
+            _doesNotSupportCount = filteredMap.Count(x => x.Value == "Does Not Support");
+        } else {
+            _filteredCriteriaCount = _criteria.Count;
+            _evaluatedCount = _conformanceMap.Count;
+            _supportsCount = _conformanceMap.Count(x => x.Value == "Supports");
+            _partialCount = _conformanceMap.Count(x => x.Value == "Partially Supports");
+            _doesNotSupportCount = _conformanceMap.Count(x => x.Value == "Does Not Support");
+        }
+    }
+
+    private string GetConformanceStatus(string criterion)
+    {
+        return _conformanceMap.ContainsKey(criterion) ? _conformanceMap[criterion] : "Not Evaluated";
+    }
+
+    private List<WcagCriterion> GetFilteredCriteria(string principle)
+    {
+        var allowedLevels = _wcagLevelFilter switch {
+            "a" => new HashSet<string> { "A" },
+            "aa" => new HashSet<string> { "A", "AA" },
+            "aaa" => new HashSet<string> { "A", "AA", "AAA" },
+            _ => null
+        };
+        var items = _criteria.Where(x => x.Principle == principle);
+        if (allowedLevels != null) {
+            items = items.Where(x => allowedLevels.Contains(x.Level));
+        }
+        return items.OrderBy(x => x.Number).ToList();
+    }
+
+    private string GetStatusBadge(string status)
+    {
+        return status switch {
+            "Supports" => "<span class=\"badge bg-success\">Supports</span>",
+            "Does Not Support" => "<span class=\"badge bg-danger\">Does Not Support</span>",
+            "Partially Supports" => "<span class=\"badge bg-warning text-dark\">Partially Supports</span>",
+            "Not Applicable" => "<span class=\"badge bg-info\">Not Applicable</span>",
+            _ => "<span class=\"badge bg-secondary\">Not Evaluated</span>",
+        };
+    }
+
+    private string GetRowClass(string status)
+    {
+        return status switch {
+            "Supports" => "table-success",
+            "Does Not Support" => "table-danger",
+            "Partially Supports" => "table-warning",
+            _ => "",
+        };
+    }
+
+    private static string NormalizeCriterion(string raw)
+    {
+        string cleaned = raw.Trim().ToLower()
+            .Replace("wcag", "").Replace("sc", "").Replace("-", ".").Replace("_", ".").Trim('.');
+
+        var match = System.Text.RegularExpressions.Regex.Match(cleaned, @"(\d+)\.?(\d+)\.?(\d+)");
+        if (match.Success) {
+            return match.Groups[1].Value + "." + match.Groups[2].Value + "." + match.Groups[3].Value;
+        }
+        return raw.Trim();
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _site.SiteId == Guid.Empty) { return; }
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+            update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object != null) {
+                try {
+                    var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                    var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (scanRun != null && scanRun.SiteId == _site.SiteId) {
+                        InvokeAsync(async () => { await LoadData(); });
+                    }
+                } catch { }
+            }
+        }
+    }
+
+    // ── Static WCAG 2.2 AA Criteria ──
+
+    private class WcagCriterion
+    {
+        public string Number { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Principle { get; set; } = "";
+        public string Level { get; set; } = "";
+        public bool Automatable { get; set; }
+    }
+
+    private static List<WcagCriterion> GetWcagCriteria()
+    {
+        return new List<WcagCriterion> {
+            // Perceivable
+            new() { Number = "1.1.1", Name = "Non-text Content", Principle = "Perceivable", Level = "A", Automatable = true },
+            new() { Number = "1.2.1", Name = "Audio-only and Video-only", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.2.2", Name = "Captions (Prerecorded)", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.2.3", Name = "Audio Description or Media Alternative", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.2.5", Name = "Audio Description (Prerecorded)", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.3.1", Name = "Info and Relationships", Principle = "Perceivable", Level = "A", Automatable = true },
+            new() { Number = "1.3.2", Name = "Meaningful Sequence", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.3.3", Name = "Sensory Characteristics", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.3.4", Name = "Orientation", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.3.5", Name = "Identify Input Purpose", Principle = "Perceivable", Level = "AA", Automatable = true },
+            new() { Number = "1.4.1", Name = "Use of Color", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.4.2", Name = "Audio Control", Principle = "Perceivable", Level = "A", Automatable = false },
+            new() { Number = "1.4.3", Name = "Contrast (Minimum)", Principle = "Perceivable", Level = "AA", Automatable = true },
+            new() { Number = "1.4.4", Name = "Resize Text", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.4.5", Name = "Images of Text", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.4.10", Name = "Reflow", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.4.11", Name = "Non-text Contrast", Principle = "Perceivable", Level = "AA", Automatable = true },
+            new() { Number = "1.4.12", Name = "Text Spacing", Principle = "Perceivable", Level = "AA", Automatable = false },
+            new() { Number = "1.4.13", Name = "Content on Hover or Focus", Principle = "Perceivable", Level = "AA", Automatable = false },
+            // Operable
+            new() { Number = "2.1.1", Name = "Keyboard", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.1.2", Name = "No Keyboard Trap", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.1.4", Name = "Character Key Shortcuts", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.2.1", Name = "Timing Adjustable", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.2.2", Name = "Pause, Stop, Hide", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.3.1", Name = "Three Flashes or Below Threshold", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.4.1", Name = "Bypass Blocks", Principle = "Operable", Level = "A", Automatable = true },
+            new() { Number = "2.4.2", Name = "Page Titled", Principle = "Operable", Level = "A", Automatable = true },
+            new() { Number = "2.4.3", Name = "Focus Order", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.4.4", Name = "Link Purpose (In Context)", Principle = "Operable", Level = "A", Automatable = true },
+            new() { Number = "2.4.5", Name = "Multiple Ways", Principle = "Operable", Level = "AA", Automatable = false },
+            new() { Number = "2.4.6", Name = "Headings and Labels", Principle = "Operable", Level = "AA", Automatable = true },
+            new() { Number = "2.4.7", Name = "Focus Visible", Principle = "Operable", Level = "AA", Automatable = false },
+            new() { Number = "2.4.11", Name = "Focus Not Obscured (Minimum)", Principle = "Operable", Level = "AA", Automatable = false },
+            new() { Number = "2.5.1", Name = "Pointer Gestures", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.5.2", Name = "Pointer Cancellation", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.5.3", Name = "Label in Name", Principle = "Operable", Level = "A", Automatable = true },
+            new() { Number = "2.5.4", Name = "Motion Actuation", Principle = "Operable", Level = "A", Automatable = false },
+            new() { Number = "2.5.7", Name = "Dragging Movements", Principle = "Operable", Level = "AA", Automatable = false },
+            new() { Number = "2.5.8", Name = "Target Size (Minimum)", Principle = "Operable", Level = "AA", Automatable = true },
+            // Understandable
+            new() { Number = "3.1.1", Name = "Language of Page", Principle = "Understandable", Level = "A", Automatable = true },
+            new() { Number = "3.1.2", Name = "Language of Parts", Principle = "Understandable", Level = "AA", Automatable = true },
+            new() { Number = "3.2.1", Name = "On Focus", Principle = "Understandable", Level = "A", Automatable = false },
+            new() { Number = "3.2.2", Name = "On Input", Principle = "Understandable", Level = "A", Automatable = false },
+            new() { Number = "3.2.6", Name = "Consistent Help", Principle = "Understandable", Level = "A", Automatable = false },
+            new() { Number = "3.3.1", Name = "Error Identification", Principle = "Understandable", Level = "A", Automatable = false },
+            new() { Number = "3.3.2", Name = "Labels or Instructions", Principle = "Understandable", Level = "A", Automatable = true },
+            new() { Number = "3.3.3", Name = "Error Suggestion", Principle = "Understandable", Level = "AA", Automatable = false },
+            new() { Number = "3.3.4", Name = "Error Prevention (Legal, Financial, Data)", Principle = "Understandable", Level = "AA", Automatable = false },
+            new() { Number = "3.3.7", Name = "Redundant Entry", Principle = "Understandable", Level = "A", Automatable = false },
+            // Robust
+            new() { Number = "4.1.2", Name = "Name, Role, Value", Principle = "Robust", Level = "A", Automatable = true },
+            new() { Number = "4.1.3", Name = "Status Messages", Principle = "Robust", Level = "AA", Automatable = false },
+        };
+    }
+}

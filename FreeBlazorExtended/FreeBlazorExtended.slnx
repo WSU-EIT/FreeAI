@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/FreeBlazorExtended/">
+    <Project Path="FreeBlazorExtended\FreeBlazorExtended.csproj" />
+  </Folder>
+  <Folder Name="/FreeBlazorExtended.Agent/">
+    <Project Path="FreeBlazorExtended.Agent\FreeBlazorExtended.Agent.csproj" />
+  </Folder>
+  <Folder Name="/FreeBlazorExample/">
+    <Project Path="FreeBlazorExample\FreeBlazorExample\FreeBlazorExample.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.Client\FreeBlazorExample.Client.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.DataAccess\FreeBlazorExample.DataAccess.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.DataObjects\FreeBlazorExample.DataObjects.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.EFModels\FreeBlazorExample.EFModels.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.Plugins\FreeBlazorExample.Plugins.csproj" />
+    <Project Path="FreeBlazorExample\FreeBlazorExample.ShowcaseTool\FreeBlazorExample.ShowcaseTool.csproj" />
+  </Folder>
+</Solution>

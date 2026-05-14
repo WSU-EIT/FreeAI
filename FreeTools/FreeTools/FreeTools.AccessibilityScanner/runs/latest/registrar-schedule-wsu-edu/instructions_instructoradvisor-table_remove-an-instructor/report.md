@@ -1,0 +1,195 @@
+# 📄 Page Scan Report
+
+> **URL:** https://registrar.schedule.wsu.edu/instructions/instructoradvisor-table/remove-an-instructor/  
+> **Captured:** 2026-02-19 02:19:41 UTC  
+> **Status:** ❌ 0  
+
+---
+
+## 📑 Contents
+
+- [Summary](#-summary)
+- [Screenshots](#-screenshots)
+- [Page Images](#-page-images)
+- [Accessibility](#-accessibility)
+- [Actions](#-actions)
+- [Files](#-files)
+
+---
+
+## 📋 Summary
+
+| Field | Value |
+|-------|-------|
+| URL | https://registrar.schedule.wsu.edu/instructions/instructoradvisor-table/remove-an-instructor/ |
+| Title | Remove a Subject from an Existing Instructor | Academic Room Scheduling |
+| Status | ❌ 0 |
+| HTML Size | 672.9 KB |
+| Screenshots | 1 (279.8 KB) |
+| Images | 7 (referenced by URL) |
+| Images Missing Alt | ⚠️ 1 |
+| JS Errors | ✅ 0 |
+| JS Warnings | 1 |
+| A11y Violations | ⚠️ 1 |
+| 🔴 Critical | 1 |
+| 🟠 Serious | 0 |
+| 🟡 Moderate | 0 |
+| 🔵 Minor | 0 |
+| Tools Run | axe, htmlcheck |
+| Auth | none |
+| Captured | 2026-02-19T02:19:41.7948020Z |
+
+## 🔧 Actions
+
+<details>
+<summary><strong>4 action(s) performed</strong></summary>
+
+- Screenshot #1: page-loaded (279.8 KB)
+- Cataloged 7 images by URL (no download)
+- axe-core: 1 violations (478ms)
+- htmlcheck: 0 violations (0ms)
+
+</details>
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="01-page-loaded.jpg">
+<img src="01-page-loaded.jpg" width="400" alt="page-loaded" />
+</a>
+<br /><strong>1. page-loaded</strong>
+<br /><sub>279.8 KB</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+## 🖼️ Page Images (7)
+
+<details open>
+<summary><strong>📋 Image Index</strong> — 7 images (referenced by URL)</summary>
+
+| # | Source URL | Alt Text |
+|--:|-----------|----------|
+| 1 | https://registrar.schedule.wsu.edu/media/kz4k2djl/instructortablesearch.png?r... | Instructor Advisor Table Search |
+| 2 | https://registrar.schedule.wsu.edu/media/mo4mgmeh/instructortablenoaccess.png... | Instructor Advisor Table New Row |
+| 3 | https://registrar.schedule.wsu.edu/media/hwmnq0fc/instructortabledelete.png?r... | ⚠️ *(missing)* |
+| 4 | https://registrar.schedule.wsu.edu/media/vxrgsndl/instructortablenorows.png?r... | Instructor Advisor Table without access |
+| 5 | https://registrar.schedule.wsu.edu/media/ujmbikzc/relatedcontent.png?rmode=ma... | Related Content dropdown |
+| 6 | https://registrar.schedule.wsu.edu/media/aakahw0s/relatedcontentoptions.png?r... | Related Content Options |
+| 7 | https://registrar.schedule.wsu.edu/media/eesgoota/relatedcontentinstructortab... | Related Content Instructor Advisor Table |
+
+</details>
+
+<details open>
+<summary><strong>🖼️ Gallery</strong></summary>
+
+<table>
+<tr>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/kz4k2djl/instructortablesearch.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/kz4k2djl/instructortablesearch.png?rmode=max&width=500" width="200" alt="Instructor Advisor Table Search" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/kz4k2d...</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/mo4mgmeh/instructortablenoaccess.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/mo4mgmeh/instructortablenoaccess.png?rmode=max&width=500" width="200" alt="Instructor Advisor Table New Row" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/mo4mgm...</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/hwmnq0fc/instructortabledelete.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/hwmnq0fc/instructortabledelete.png?rmode=max&width=500" width="200" alt="https://registrar.schedule.wsu.edu/media/hwmnq0fc/instructortabledelete.png?rmode=max&width=500" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/hwmnq0... ⚠️</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/vxrgsndl/instructortablenorows.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/vxrgsndl/instructortablenorows.png?rmode=max&width=500" width="200" alt="Instructor Advisor Table without access" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/vxrgsn...</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/ujmbikzc/relatedcontent.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/ujmbikzc/relatedcontent.png?rmode=max&width=500" width="200" alt="Related Content dropdown" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/ujmbik...</sub>
+</td>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/aakahw0s/relatedcontentoptions.png?rmode=max&width=249&height=199">
+<img src="https://registrar.schedule.wsu.edu/media/aakahw0s/relatedcontentoptions.png?rmode=max&width=249&height=199" width="200" alt="Related Content Options" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/aakahw...</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+<a href="https://registrar.schedule.wsu.edu/media/eesgoota/relatedcontentinstructortable.png?rmode=max&width=500">
+<img src="https://registrar.schedule.wsu.edu/media/eesgoota/relatedcontentinstructortable.png?rmode=max&width=500" width="200" alt="Related Content Instructor Advisor Table" />
+</a>
+<br /><sub>https://registrar.schedule.wsu.edu/media/eesgoo...</sub>
+</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary>⚠️ <strong>Images Missing Alt Text</strong> (1)</summary>
+
+| # | Source URL |
+|--:|-----------|
+| 1 | https://registrar.schedule.wsu.edu/media/hwmnq0fc/instructortabledelete.png?r... |
+
+</details>
+
+## ♿ Accessibility
+
+### Summary
+
+| Severity | axe | htmlcheck |
+|----------|:---:|:---:|
+| 🔴 critical | 1 | 0 |
+| 🟠 serious | 0 | 0 |
+| 🟡 moderate | 0 | 0 |
+| 🔵 minor | 0 | 0 |
+| **Total** | **1** | **0** |
+
+### Violations by Confidence
+
+<details open>
+<summary><strong>1 rule(s) violated</strong></summary>
+
+| # | Rule | Sev | Confidence | axe | htmlcheck | Example |
+|--:|------|:---:|:----------:|:---:|:---:|---------|
+| 1 | [aria-allowed-attr](../../a11y-rules.md#aria-allowed-attr) | 🔴 | 🟢 1/1 | ⚠️ | — | `<div id="wsu-navigation-vertical" class="wsu-slide-in-pan...` |
+
+</details>
+
+> **Note:** Automated scanning catches ~30-60% of WCAG issues. Manual keyboard and screen reader testing is still required for full compliance.
+
+## 📁 Files
+
+| File | Description |
+|------|-------------|
+| `01-page-loaded.jpg` | page-loaded (279.8 KB) |
+| `page.html` | Rendered HTML content |
+| `metadata.json` | Machine-readable scan data |
+| `errors.log` | JavaScript console errors |
+| `warnings.log` | JavaScript console warnings |
+| `info.log` | Navigation and timing details |
+| `actions.log` | Interactions performed |
+| `a11y-axe.json` | axe accessibility results |
+| `a11y-htmlcheck.json` | htmlcheck accessibility results |
+| `a11y-summary.json` | Merged cross-tool accessibility summary |
+
+---
+
+*Generated by AccessibilityScanner (FreeTools) v1.0*

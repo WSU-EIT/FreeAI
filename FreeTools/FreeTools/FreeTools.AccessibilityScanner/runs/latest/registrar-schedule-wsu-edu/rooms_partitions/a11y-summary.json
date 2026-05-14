@@ -1,0 +1,80 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 3,
+  "Critical": 1,
+  "Serious": 2,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 2,
+      "Critical": 1,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Frames must have an accessible name",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ciframe src=\u0022https://app.smartsheet.com/b/publish?EQBCT=982ccea2420d4aac8cf66817a5b17f01\u0022 style=\u0022border-width:0; width:800px; height:1500px;\u0022 width=\u00228..."
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Link has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Ca href=\u0022/media/0aqbletr/gucmap2019_partitions2023.pdf\u0022 title=\u0022GUC map 2019 with Partitions starting 2023\u0022\u003E\u003C/a\u003E"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "PagePath": "/resources/employee-assistance-program/",
+  "Url": "https://diversityeducation.wsu.edu/resources/employee-assistance-program/",
+  "FinalUrl": "https://hrs.wsu.edu/",
+  "Title": "Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 94222,
+  "ScreenshotSizeBytes": 288805,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 288805
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 5,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/02/all-campus-homepage-header_1386x260.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/02/calculator-385506_1920-e1579117519523-792x594-1-720x540.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/course-updates-720x540.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/LOD-Highlights-720x540.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/06/flagpicture-e1593015279940-720x539.jpg",
+      "AltText": "A close-up of a flag with the WSU logo on it."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/retirement-dollars-720x540.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=179, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:13:42 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:11:41 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/32849\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:13:42.5746572Z"
+}

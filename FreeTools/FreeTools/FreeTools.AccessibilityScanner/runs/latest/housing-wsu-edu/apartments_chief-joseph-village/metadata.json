@@ -1,0 +1,171 @@
+{
+  "PagePath": "/apartments/chief-joseph-village/",
+  "Url": "https://housing.wsu.edu/apartments/chief-joseph-village/",
+  "FinalUrl": null,
+  "Title": "Chief Joseph Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 103971,
+  "ScreenshotSizeBytes": 219791,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 219791
+    }
+  ],
+  "ImageCount": 26,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mqrfxksz/chief-joseph-banner.png",
+      "AltText": "Chief Joseph"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2nbd5op1/chief-jo-unfurnished-5.png",
+      "AltText": "Chief Jo Unfurnished Renovated Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xmrbushl/chief-jo-renovated-furnished-1.png",
+      "AltText": "Chief Joseph Renovated Furnished Kitchen/Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ixwpj3nb/chief-jo-renovated-furnished-2.png",
+      "AltText": "Chief Jo Renovated Furnished Back Deck"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/e0rfkwbv/chief-jo-renovated-furnished-3.png",
+      "AltText": "Chief Jo Renovated Furnished Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ccwam00r/chief-jo-renovated-furnished-4.png",
+      "AltText": "Chief Jo Renovated Furnished Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/i4kfdvst/chief-jo-renovated-furnished-5.png",
+      "AltText": "Chief Jo Renovated Furnished Dining Area"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pmfpf4rx/chief-jo-renovated-furnished-6.png",
+      "AltText": "Chief Jo Renovated Furnished Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/crklx0tz/chief-jo-unfurnished-1.png",
+      "AltText": "Chief Jo Unfurnished Renovated Kitchen/Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hr2derox/chief-jo-unfurnished-2.png",
+      "AltText": "Chief Jo Unfurnished Renovated Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/r2fj5zii/chief-jo-unfurnished-3.png",
+      "AltText": "Chief Jo Unfurnished Renovated Living Room/Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/z2ven00s/chief-jo-unfurnished-4.png",
+      "AltText": "Chief Jo Unfurnished Renovated Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vlfnztkg/cjv-bldg-e-floor-3.jpg",
+      "AltText": "Chief Joseph Building E Floor 3"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/100peoay/chief-jo-building-b-floor-0.png",
+      "AltText": "Chief Joseph Building B Floor 0"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bdifw5ot/chief-jo-building-b-floor-1.png",
+      "AltText": "Chief Joseph Building B Floor 1"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3r2fzygb/chief-jo-building-b-floor-2.png",
+      "AltText": "Chief Joseph Building B Floor 2"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wa3fwtfp/chief-jo-building-c-floor-0.png",
+      "AltText": "Chief Joseph Building C Floor 0"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/em3ftguo/chief-jo-building-c-floor-1.png",
+      "AltText": "Chief Joseph Building C Floor 1"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xa3lmppy/chief-jo-building-c-floor-2.png",
+      "AltText": "Chief Joseph Building C Floor 2"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/m4ipetsq/chief-jo-building-d-floor-2.png",
+      "AltText": "Chief Joseph Building D Floor 2"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vufjeejx/chief-jo-building-d-floor-3.png",
+      "AltText": "Chief Joseph Building D Floor 3"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/15nhlbtg/chief-jo-building-f-floor-2.png",
+      "AltText": "Chief Joseph Building F Floor 2"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mnvhfpk2/chief-jo-building-f-floor-3.png",
+      "AltText": "Chief Joseph Building F Floor 3"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5fkfhjhc/chief-jo-building-f.png",
+      "AltText": "Chief Joseph Building F"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lcqbxro2/cjv-bldg-e-floor-1.jpg",
+      "AltText": "Chief Joseph Building E Floor 1"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tcllqsi2/cjv-bldg-e-floor-2.jpg",
+      "AltText": "Chief Joseph Building E Floor 2"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 0,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:25 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:09:26.0824434Z"
+}

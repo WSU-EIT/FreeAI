@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=flex-dev.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "C05149E56220408DB85952599CBC525CECCA8BBE",
+  "SerialNumber": "00F02F67F1A482A40F29A3EFCA95DB4D01",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "flex-dev.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "flex-dev.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

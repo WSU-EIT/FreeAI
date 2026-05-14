@@ -1,0 +1,74 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 604,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "section:nth-child(2) \u003E .wsu-section__inner.wsu-width--content \u003E .wsu-row--sidebar-left.wsu-row \u003E .wsu-column:nth-child(2) \u003E figure \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/bH5xUj528GA?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".wsu-spacing-after--large.wsu-row--sidebar-left.wsu-row:nth-child(3) \u003E .wsu-column:nth-child(2) \u003E figure \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/h5Qa-fjJ8zw?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "section:nth-child(4) \u003E .wsu-section__inner.wsu-width--content \u003E .wsu-row--sidebar-left.wsu-row \u003E .wsu-column:nth-child(2) \u003E figure \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/a96713rxAr4?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".wsu-spacing-after--large.wsu-row--sidebar-left.wsu-row:nth-child(5) \u003E .wsu-column:nth-child(2) \u003E figure \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/LCkZ2WJqnA8?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "section:nth-child(6) \u003E .wsu-section__inner.wsu-width--content \u003E .wsu-row--sidebar-left.wsu-row \u003E .wsu-column:nth-child(2) \u003E figure \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/F7JfCyyjRd8?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-header-utility-bar__cta",
+      "Snippet": "\u003Ca href=\u0022\u0022 class=\u0022wsu-header-utility-bar__cta\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

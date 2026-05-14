@@ -1,0 +1,324 @@
+﻿@*
+    CommandPalette — Keyboard-first command search and execution modal.
+
+    Opens as a centred modal overlay. The user types to filter commands; results are
+    grouped by Category and highlighted. Keyboard navigation (↑↓), Enter to select, and
+    Esc to close are handled natively. A recent-commands list is shown when the search
+    field is empty.
+
+    Global hotkey registration happens automatically via JS interop on first render.
+    The default hotkey is Ctrl+K / Cmd+K; override with <see cref="TriggerHotkey"/>.
+
+    Required host setup:
+        1. Build a List<CommandPalette.CommandItem> with your application commands.
+        2. Pass the list via the Commands parameter.
+        3. Handle OnCommandInvoked to execute the chosen command.
+        4. Add a @ref binding if you need to open/close programmatically.
+
+    Minimal example:
+        <CommandPalette @ref="_palette"
+                        Commands="_commands"
+                        OnCommandInvoked="ExecuteCommand" />
+
+        <button @onclick="_palette!.Open">Open palette</button>
+*@
+@implements IAsyncDisposable
+@inject IJSRuntime jsRuntime
+
+@if (_open) {
+    <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center"
+         style="z-index:1055; background:rgba(0,0,0,0.5); padding-top:10vh;"
+         @onclick="Close">
+
+        <div class="bg-white rounded-3 shadow-lg d-flex flex-column"
+             style="width:min(600px, 90vw); max-height:70vh;"
+             @onclick:stopPropagation>
+
+            @* Search Input *@
+            <div class="p-3 border-bottom">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control form-control-lg border-start-0"
+                           placeholder="@PlaceholderText"
+                           @bind="_searchTerm"
+                           @bind:event="oninput"
+                           @bind:after="OnSearchInput"
+                           @onkeydown="HandleKeydown"
+                           @ref="_searchInput"
+                           autofocus />
+                </div>
+            </div>
+
+            @* Results *@
+            <div class="flex-grow-1 overflow-auto">
+                @if (_grouped.Any()) {
+                    int globalIdx = 0;
+                    @foreach (var group in _grouped) {
+                        <div class="px-3 py-1 bg-light border-bottom">
+                            <span class="small fw-semibold text-muted text-uppercase" style="font-size:0.65rem;">
+                                @group.Key
+                                <span class="badge bg-secondary rounded-pill ms-1" style="font-size:0.55rem;">@group.Count()</span>
+                            </span>
+                        </div>
+                        @foreach (var item in group) {
+                            int idx = globalIdx++;
+                            <div class="px-3 py-2 d-flex align-items-center border-bottom @(idx == _highlightIndex ? "bg-primary bg-opacity-10" : "")"
+                                 role="button" @onclick="@(() => Select(item))">
+                                <i class="@(string.IsNullOrWhiteSpace(item.Icon) ? "fa-solid fa-terminal" : item.Icon) text-muted me-2"></i>
+                                <div class="flex-grow-1">
+                                    <span class="small fw-semibold">@((MarkupString)HighlightMatch(item.Label, _searchTerm))</span>
+                                    @if (!string.IsNullOrWhiteSpace(item.Description)) {
+                                        <div class="small text-muted" style="font-size:0.75rem;">@item.Description</div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                } else if (string.IsNullOrWhiteSpace(_searchTerm) && _history.Any()) {
+                    <div class="px-3 py-1 bg-light border-bottom">
+                        <span class="small fw-semibold text-muted text-uppercase" style="font-size:0.65rem;">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Recent
+                        </span>
+                    </div>
+                    int hIdx = 0;
+                    @foreach (var item in _history) {
+                        int idx = hIdx++;
+                        <div class="px-3 py-2 d-flex align-items-center border-bottom @(idx == _highlightIndex ? "bg-primary bg-opacity-10" : "")"
+                             role="button" @onclick="@(() => Select(item))">
+                            <i class="@(string.IsNullOrWhiteSpace(item.Icon) ? "fa-solid fa-clock-rotate-left" : item.Icon) text-muted me-2"></i>
+                            <div class="flex-grow-1">
+                                <span class="small fw-semibold">@item.Label</span>
+                                @if (!string.IsNullOrWhiteSpace(item.Category)) {
+                                    <span class="badge bg-light text-dark border ms-2" style="font-size:0.55rem;">@item.Category</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                } else if (!string.IsNullOrWhiteSpace(_searchTerm)) {
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-folder-open fa-2x text-muted opacity-25 mb-2"></i>
+                        <div class="text-muted small">No commands match "<strong>@_searchTerm</strong>"</div>
+                    </div>
+                } else {
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-magnifying-glass fa-2x text-muted opacity-25 mb-2"></i>
+                        <div class="text-muted small">Type to search commands</div>
+                    </div>
+                }
+            </div>
+
+            @* Footer *@
+            <div class="px-3 py-2 border-top bg-light d-flex justify-content-between">
+                <div class="d-flex gap-3 small text-muted">
+                    <span><kbd>↑↓</kbd> Navigate</span>
+                    <span><kbd>Enter</kbd> Select</span>
+                    <span><kbd>Esc</kbd> Close</span>
+                </div>
+                <span class="small text-muted">@_flat.Count results</span>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The full catalogue of commands exposed in the palette.
+    /// Each <see cref="CommandItem"/> should at minimum have a <see cref="CommandItem.Label"/>.
+    /// <para><b>Required.</b> Pass an empty list to show only the history pane.</para>
+    /// </summary>
+    [Parameter] public List<CommandItem> Commands { get; set; } = new();
+
+    /// <summary>
+    /// Fires when the user selects a command (mouse click or <kbd>Enter</kbd>).
+    /// The <see cref="CommandItem"/> that was chosen is passed as the event argument.
+    /// <para><b>Required</b> if you want anything to happen on selection.</para>
+    /// </summary>
+    [Parameter] public EventCallback<CommandItem> OnCommandInvoked { get; set; }
+
+    /// <summary>
+    /// Single character (case-insensitive) that, combined with Ctrl (Windows/Linux) or
+    /// Cmd (macOS), opens and closes the palette globally. Default <c>"k"</c> (Ctrl+K).
+    /// Set to an empty string to disable the JS hotkey listener entirely.
+    /// </summary>
+    [Parameter] public string TriggerHotkey { get; set; } = "k";
+
+    /// <summary>
+    /// Placeholder text inside the search input. Default <c>"Type a command…"</c>.
+    /// </summary>
+    [Parameter] public string PlaceholderText { get; set; } = "Type a command…";
+
+    /// <summary>
+    /// Maximum number of recently-invoked commands to remember and surface when the
+    /// palette opens with an empty search field. Default <c>5</c>. Set to <c>0</c> to
+    /// disable the history feature.
+    /// </summary>
+    [Parameter] public int HistorySize { get; set; } = 5;
+
+    private bool _open = false;
+    private string _searchTerm = "";
+    private int _highlightIndex = -1;
+    private List<CommandItem> _flat = new();
+    private IEnumerable<IGrouping<string, CommandItem>> _grouped = Enumerable.Empty<IGrouping<string, CommandItem>>();
+    private List<CommandItem> _history = new();
+    private ElementReference _searchInput;
+
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<CommandPalette>? _dotNetRef;
+
+    public bool IsOpen => _open;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrWhiteSpace(TriggerHotkey)) {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _jsModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import",
+                "./_content/FreeBlazorExtended/CommandPalette/CommandPalette.razor.js");
+            await _jsModule.InvokeVoidAsync("init", _dotNetRef, TriggerHotkey);
+        }
+
+        if (_open) {
+            try { await _searchInput.FocusAsync(); } catch { /* element may not be ready */ }
+        }
+    }
+
+    /// <summary>Open the palette programmatically.</summary>
+    public void Open()
+    {
+        _open = true;
+        _searchTerm = "";
+        _flat.Clear();
+        _grouped = Enumerable.Empty<IGrouping<string, CommandItem>>();
+        _highlightIndex = -1;
+        StateHasChanged();
+    }
+
+    /// <summary>Close the palette programmatically.</summary>
+    public void Close()
+    {
+        _open = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Invoked from JS when the global hotkey fires. Toggles open/closed.
+    /// </summary>
+    [JSInvokable]
+    public Task HandleHotkey()
+    {
+        if (_open) Close(); else Open();
+        return Task.CompletedTask;
+    }
+
+    private void OnSearchInput()
+    {
+        _highlightIndex = -1;
+        string term = _searchTerm?.Trim().ToLowerInvariant() ?? "";
+
+        if (string.IsNullOrEmpty(term)) {
+            _flat.Clear();
+            _grouped = Enumerable.Empty<IGrouping<string, CommandItem>>();
+            return;
+        }
+
+        _flat = Commands
+            .Where(c =>
+                (c.Label?.ToLowerInvariant().Contains(term) == true) ||
+                (c.Description?.ToLowerInvariant().Contains(term) == true) ||
+                (c.Category?.ToLowerInvariant().Contains(term) == true))
+            .OrderBy(c => c.Category ?? "")
+            .ThenBy(c => c.Label)
+            .ToList();
+
+        _grouped = _flat.GroupBy(c => c.Category ?? "Other").OrderBy(g => g.Key);
+    }
+
+    private async Task HandleKeydown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape") {
+            Close();
+            return;
+        }
+
+        var visible = string.IsNullOrWhiteSpace(_searchTerm) ? _history : _flat;
+        if (!visible.Any()) return;
+
+        if (e.Key == "ArrowDown") {
+            _highlightIndex = Math.Min(_highlightIndex + 1, visible.Count - 1);
+        } else if (e.Key == "ArrowUp") {
+            _highlightIndex = Math.Max(_highlightIndex - 1, 0);
+        } else if (e.Key == "Enter" && _highlightIndex >= 0 && _highlightIndex < visible.Count) {
+            await Select(visible[_highlightIndex]);
+        }
+    }
+
+    private async Task Select(CommandItem item)
+    {
+        // Update history (most-recent-first, dedup by Id when present, else by Label)
+        _history.RemoveAll(h => SameItem(h, item));
+        _history.Insert(0, item);
+        if (HistorySize > 0 && _history.Count > HistorySize) {
+            _history.RemoveRange(HistorySize, _history.Count - HistorySize);
+        }
+
+        Close();
+        await OnCommandInvoked.InvokeAsync(item);
+    }
+
+    private static bool SameItem(CommandItem a, CommandItem b)
+    {
+        if (!string.IsNullOrEmpty(a.Id) && !string.IsNullOrEmpty(b.Id)) return a.Id == b.Id;
+        return string.Equals(a.Label, b.Label, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string HighlightMatch(string text, string? term)
+    {
+        if (string.IsNullOrWhiteSpace(term) || string.IsNullOrWhiteSpace(text)) return text ?? "";
+        int idx = text.IndexOf(term, StringComparison.OrdinalIgnoreCase);
+        if (idx < 0) return text;
+        return text[..idx] + "<strong>" + text[idx..(idx + term.Length)] + "</strong>" + text[(idx + term.Length)..];
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try {
+            if (_jsModule is not null) {
+                await _jsModule.InvokeVoidAsync("dispose");
+                await _jsModule.DisposeAsync();
+            }
+        } catch { /* page already torn down */ }
+        _dotNetRef?.Dispose();
+    }
+
+    /// <summary>
+    /// Describes a single entry in the command palette.
+    /// Build these in the host and pass them via <see cref="Commands"/>.
+    /// </summary>
+    public class CommandItem
+    {
+        /// <summary>
+        /// Stable unique identifier. Used for history deduplication and equality checks.
+        /// Optional, but strongly recommended when the same label may appear in multiple categories.
+        /// </summary>
+        public string Id { get; set; } = "";
+
+        /// <summary>Human-readable command name displayed in bold in the result list. <b>Required.</b></summary>
+        public string Label { get; set; } = "";
+
+        /// <summary>
+        /// Group name shown as a section header above matching commands.
+        /// Commands without a category fall under <c>"Other"</c>.
+        /// </summary>
+        public string? Category { get; set; }
+
+        /// <summary>
+        /// Font Awesome CSS class for the icon rendered to the left of the label.
+        /// Example: <c>"fa-solid fa-gear"</c>. Defaults to <c>fa-solid fa-terminal</c> when omitted.
+        /// </summary>
+        public string? Icon { get; set; }
+
+        /// <summary>Optional secondary line of text beneath the label to clarify the command's effect.</summary>
+        public string? Description { get; set; }
+    }
+}

@@ -1,0 +1,65 @@
+{
+  "PagePath": "/",
+  "Url": "https://purchasing.em.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 8851,
+  "ScreenshotSizeBytes": 6157,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 199,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 6157
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 1,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "blazor-enhanced-nav": "allow",
+    "cache-control": "no-cache, no-store",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:08:57 GMT",
+    "pragma": "no-cache",
+    "server": "Microsoft-IIS/10.0",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:08:55.5392177Z"
+}

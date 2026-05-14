@@ -1,0 +1,106 @@
+{
+  "PagePath": "/instructions/maintain-schedule-of-classes/basic-data-tab/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/maintain-schedule-of-classes/basic-data-tab/",
+  "FinalUrl": null,
+  "Title": "Basic Data tab | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 701792,
+  "ScreenshotSizeBytes": 846825,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 846825
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 10,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759615/basic-data-tab.jpg?width=544\u0026height=434\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759620/basic-data-tab-session.jpg?width=688\u0026height=117\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759621/basic-data-tab-section.jpg?width=694\u0026height=118\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759617/basic-data-tab-component-class-type.jpg?width=694\u0026height=118\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759623/basic-data-tab-associated-class.jpg?width=694\u0026height=118\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759624/basic-data-tab-location-instruction-mode.jpg?width=686\u0026height=258\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759627/basic-data-tab-approved-section.jpg?width=688\u0026height=99\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759628/basic-data-tab-schedule-print.jpg?width=691\u0026height=159\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761548/classattribute.png?width=500\u0026height=91.95402298850574",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/nbxf2eqv/relatedcontent2022.png?rmode=max\u0026width=372\u0026height=154",
+      "AltText": "Related content"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/duoj3nka/mscmeetings2022.png?rmode=max\u0026width=500",
+      "AltText": "Meetings tab"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759563/meetings-tab-combined-section.jpg?width=843\u0026height=118\u0026mode=max",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 5,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 7,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 5,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:23:15.1745907Z"
+}

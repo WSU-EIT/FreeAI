@@ -1,0 +1,80 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 0,
+  "Serious": 6,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 5,
+      "Critical": 0,
+      "Serious": 5,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Frames must have an accessible name",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ciframe src=\u0022https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2734.748191395851!2d-117.1605026229617!3d46.7304279480687!2m3!1f0!2f0!3f0!3m2!1i102..."
+    }
+  ]
+}

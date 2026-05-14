@@ -1,0 +1,135 @@
+@* EntityWizardEntityCard.App.razor - Card view for a single entity in the dashboard *@
+
+<div class="card h-100 @(IsSelected ? "border-primary border-2" : "") entity-card">
+    <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <div class="form-check mb-0">
+            <input type="checkbox" class="form-check-input"
+                   checked="@IsSelected"
+                   @onchange="@((e) => OnSelect.InvokeAsync((bool)(e.Value ?? false)))" />
+        </div>
+        <span class="badge @GetStatusBadgeClass(Entity.Status)">@Entity.Status</span>
+    </div>
+    <div class="card-body">
+        <div class="d-flex align-items-start mb-2">
+            <div class="entity-icon me-3">
+                <i class="fa-solid fa-cube fa-2x text-primary"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+                <h6 class="card-title mb-1 text-truncate" title="@Entity.Name">
+                    @Entity.Name
+                </h6>
+                <div class="text-muted small text-truncate" title="@Entity.PluralName">
+                    @Entity.PluralName
+                </div>
+            </div>
+        </div>
+
+        @* Stats Row *@
+        <div class="d-flex gap-3 mb-2">
+            <div class="text-center">
+                <div class="fw-bold text-primary">@Entity.PropertyCount</div>
+                <div class="text-muted small">Props</div>
+            </div>
+            @if (Entity.EnumCount > 0) {
+                <div class="text-center">
+                    <div class="fw-bold text-danger">@Entity.EnumCount</div>
+                    <div class="text-muted small">Enums</div>
+                </div>
+            }
+        </div>
+
+        @* Feature Badges *@
+        <div class="d-flex flex-wrap gap-1 mb-2">
+            @if (Entity.HasAuditFields) {
+                <span class="badge bg-light text-dark border" title="Has Audit Fields">
+                    <i class="fa-solid fa-clock text-info"></i> Audit
+                </span>
+            }
+            @if (Entity.HasSoftDelete) {
+                <span class="badge bg-light text-dark border" title="Has Soft Delete">
+                    <i class="fa-solid fa-trash-can text-warning"></i> SoftDel
+                </span>
+            }
+            @if (Entity.IsReadOnly) {
+                <span class="badge bg-light text-dark border" title="Read-Only">
+                    <i class="fa-solid fa-lock text-secondary"></i> ReadOnly
+                </span>
+            }
+        </div>
+
+        @* Project *@
+        <div class="small text-muted mb-2">
+            <i class="fa-solid fa-folder me-1"></i>
+            @Entity.ProjectName
+        </div>
+    </div>
+    <div class="card-footer bg-transparent py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted" title="@Entity.CreatedAt.ToString("f")">
+                @GetRelativeTime(Entity.CreatedAt)
+            </small>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" @onclick="@(() => OnEdit.InvokeAsync())" title="Edit">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="@(() => OnRegenerate.InvokeAsync())" title="Regenerate">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button class="btn btn-outline-danger" @onclick="@(() => OnDelete.InvokeAsync())" title="Delete">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .entity-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .entity-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .entity-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border-radius: 12px;
+    }
+
+    .min-width-0 {
+        min-width: 0;
+    }
+</style>
+
+@code {
+    [Parameter] public DataObjects.EntityListItem Entity { get; set; } = new();
+    [Parameter] public bool IsSelected { get; set; }
+    [Parameter] public EventCallback<bool> OnSelect { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback OnRegenerate { get; set; }
+
+    private string GetStatusBadgeClass(string status) => status switch {
+        "Active" => "bg-success",
+        "Draft" => "bg-warning text-dark",
+        "Archived" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+
+    private string GetRelativeTime(DateTime timestamp) {
+        var diff = DateTime.UtcNow - timestamp;
+
+        if (diff.TotalMinutes < 1) return "just now";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
+        return timestamp.ToString("MMM d");
+    }
+}

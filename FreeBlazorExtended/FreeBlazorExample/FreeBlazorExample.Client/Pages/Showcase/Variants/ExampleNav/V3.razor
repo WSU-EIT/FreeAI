@@ -1,0 +1,40 @@
+@page "/showcase/examplenav/v3"
+@using FreeBlazorExtended.ExampleNav
+
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Meta Demo Linking Carousel Variant Pages</h1>
+
+    <div class="d-flex flex-wrap gap-3 mb-3">
+        <div class="form-check">
+            <input id="showCrumbs" class="form-check-input" type="checkbox" @bind="_showCrumbs" />
+            <label class="form-check-label" for="showCrumbs">Show breadcrumbs</label>
+        </div>
+        <div class="form-check">
+            <input id="showPrevNext" class="form-check-input" type="checkbox" @bind="_showPrevNext" />
+            <label class="form-check-label" for="showPrevNext">Show Prev/Next</label>
+        </div>
+    </div>
+
+    <ExampleNav Pages="_pages"
+                CurrentRoute="/showcase/examplenav/v3"
+                HomeUrl="/showcase"
+                HomeLabel="Showcase"
+                HomeIcon="fa-solid fa-house"
+                ShowBreadcrumbs="@_showCrumbs"
+                ShowPrevNext="@_showPrevNext" />
+
+    <p class="text-muted mt-3 mb-0">The previous and next links here point at the real Carousel variant routes created in this tier.</p>
+</div>
+
+@code {
+    private bool _showCrumbs = true;
+    private bool _showPrevNext = true;
+
+    private readonly List<ExampleNav.NavPage> _pages = new()
+    {
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v1", Title = "Carousel V1", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v2", Title = "Carousel V2", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v3", Title = "Carousel V3", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/examplenav/v3", Title = "ExampleNav V3" },
+    };
+}

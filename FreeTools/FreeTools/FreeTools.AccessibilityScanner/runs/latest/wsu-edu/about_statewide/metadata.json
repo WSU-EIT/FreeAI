@@ -1,0 +1,120 @@
+{
+  "PagePath": "/about/statewide/",
+  "Url": "https://wsu.edu/about/statewide/",
+  "FinalUrl": "https://wsu.edu/campuses/",
+  "Title": "WSU Campuses | Washington State University | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 143859,
+  "ScreenshotSizeBytes": 1325429,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 1325429
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 6,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Happy-Cougar-Crowd_3423.jpg",
+      "AltText": "WSU Cougar fans cheer at the WSU vs Oregon football game on the campus of Washington State University, Saturday, October, 20  2018."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Spokane_1336.jpg",
+      "AltText": "Students enjoy time outside to collaborate on projects on the Spokane campus of Washington State University, Wednesday, May 29, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/WSU-Everett-spring-2022_8014.jpg",
+      "AltText": "Two people walking down a flight of stairs in a WSU Everett academic building."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/WSU-TriCities-spring-2022_0066.jpg",
+      "AltText": "Two students talk as they walk around WSU Tri-Cities."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/WSU-Vancouver-spring-2022_8518.jpg",
+      "AltText": "Two smiling students talk while sitting on a fountain at WSU Vancouver."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/WA_Topographic-ISO-01-1-2-792x338.png",
+      "AltText": "A physical map of Washington state with a pin for each campus location, Pullman, Spokane, Tri-Cities, Vancouver, Everett, and Global."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Campus-photo-4.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-5.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-6.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-7.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-8.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/07/Campus-photo-9.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 10,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 5,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 10,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 5,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=104, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:09:02 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:00:46 GMT",
+    "link": "\u003Chttps://wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/wp-json/wp/v2/pages/17\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:09:02.4654595Z"
+}

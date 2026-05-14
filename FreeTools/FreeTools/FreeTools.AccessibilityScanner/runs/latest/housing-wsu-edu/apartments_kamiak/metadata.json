@@ -1,0 +1,123 @@
+{
+  "PagePath": "/apartments/kamiak/",
+  "Url": "https://housing.wsu.edu/apartments/kamiak/",
+  "FinalUrl": null,
+  "Title": "Kamiak",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 115160,
+  "ScreenshotSizeBytes": 226229,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 7,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 226229
+    }
+  ],
+  "ImageCount": 14,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/i14d43v3/kamiak-exterior-banner.png",
+      "AltText": "Kamiak exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/psbbwbse/kamiak-two-bedroom-living-room.png",
+      "AltText": "Kamiak Two Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vecdsikz/kamiak-one-bedroom-bedroom-closet.png",
+      "AltText": "Kamiak One Bedroom Bedroom Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1nlbpn54/kamiak-one-bedroom-bedroom.png",
+      "AltText": "Kamiak One Bedroom Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rrijktxs/kamiak-one-bedroom-kitchen.png",
+      "AltText": "Kamiak One Bedroom Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lb1hm1aw/kamiak-one-bedroom-kitchen.png",
+      "AltText": "Kamiak One Bedroom Kitchen (1)"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ciunbcg5/kamiak-one-bedroom-living-room.png",
+      "AltText": "Kamiak One Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ieclryig/kamiak-two-bedroom-bathroom.png",
+      "AltText": "Kamiak Two Bedroom Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gxillrjf/kamiak-two-bedroom-bedroom-a.png",
+      "AltText": "Kamiak Two Bedroom Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/10alhpps/kamiak-two-bedroom-bedroom-b.png",
+      "AltText": "Kamiak Two Bedroom Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hovp5qch/kamiak-two-bedroom-kitchen.png",
+      "AltText": "Kamiak Two Bedroom Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0jrdbly3/kamiak-2-bedroom.jpg",
+      "AltText": "Kamiak Two Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/i2kmwyce/kamiak-one-bedroom.jpg",
+      "AltText": "Kamiak One Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/blndryr4/kamiak-exterior-banner.png",
+      "AltText": "Kamiak exterior"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:55 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:09:55.1656902Z"
+}

@@ -1,0 +1,17 @@
+@page "/showcase/wizard/v1"
+@using FreeBlazorExtended.Wizard
+
+<div class="container-fluid py-4">
+    <h1>Default Wizard Stepper</h1>
+
+    <WizardStepper Steps="_steps" CurrentStep="1" />
+</div>
+
+@code {
+    private readonly List<WizardStepper.WizardStepInfo> _steps = new()
+    {
+        new() { Name = "Choose" },
+        new() { Name = "Configure" },
+        new() { Name = "Review" },
+    };
+}

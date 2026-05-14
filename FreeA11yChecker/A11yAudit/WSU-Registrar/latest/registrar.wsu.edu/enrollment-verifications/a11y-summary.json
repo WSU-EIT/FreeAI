@@ -1,0 +1,204 @@
+{
+  "TotalViolations": 8,
+  "CriticalCount": 1,
+  "SeriousCount": 3,
+  "ModerateCount": 4,
+  "MinorCount": 0,
+  "AxeCount": 1,
+  "HtmlCheckCount": 0,
+  "HtmlCsCount": 0,
+  "IbmCount": 7,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "aria-allowed-attr",
+          "CanonicalRuleId": "aria-allowed-attr",
+          "Severity": "critical",
+          "Message": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\u0022true\u0022",
+          "Selector": "#wsu-navigation-vertical",
+          "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none wsu-slide-in-panel--position-left wsu-slide-in-panel--width-vertical-nav wsu-slide-in-panel--style-crimson-mark\u0022 aria-expanded=\u0022true\u0022 aria-haspopup=\u0022true\u0022 aria-label=\u0022Site menu\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-site wsu-header-site--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "label_name_visible",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca aria-label=\u0022Go to Washington State University Homepage\u0022 href=\u0022https://wsu.edu\u0022 class=\u0022wsu-wordmark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/ul[1]",
+          "Snippet": "\u003Cul class=\u0022wsu-menu wsu-menu--primary-vertical\u0022 id=\u0022wsu-site-menu\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_landmark_name_unique",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-site wsu-header-site--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

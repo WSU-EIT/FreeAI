@@ -1,0 +1,64 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 6,
+  "Serious": 0,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 6,
+      "Critical": 6,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 0,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 5,
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/prospective-students/\u0022 aria-label=\u0022Prospective Students\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EProspective Student..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Certain ARIA roles must contain particular children",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cul id=\u0022mainNav\u0022 class=\u0022dropdown menu\u0022 aria-label=\u0022Main Navigation\u0022 data-dropdown-menu=\u0022lkpxn7-dropdown-menu\u0022 role=\u0022menubar\u0022\u003E"
+    }
+  ]
+}

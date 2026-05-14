@@ -1,0 +1,129 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 32,
+  "Critical": 0,
+  "Serious": 28,
+  "Moderate": 3,
+  "Minor": 1,
+  "ByTool": {
+    "axe": {
+      "Total": 27,
+      "Critical": 0,
+      "Serious": 27,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 5,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 3,
+      "Minor": 1
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 26,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Ca accesskey=\u0022I\u0022 href=\u0022/genindex.html\u0022 title=\u0022General Index\u0022\u003Eindex\u003C/a\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Chtml\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Heading level skipped: \u003Ch1\u003E to \u003Ch4\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Ch4\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 6,
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

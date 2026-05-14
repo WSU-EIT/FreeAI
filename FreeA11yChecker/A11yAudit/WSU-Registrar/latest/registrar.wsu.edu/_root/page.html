@@ -1,0 +1,1002 @@
+<!DOCTYPE html><html lang="en-US" class="wsu-has-js wsu-reduce-motion"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+    
+    
+    <title>Office of the Registrar</title>
+    <link rel="stylesheet" href="_content/FreeBlazor/styles.css">
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css">
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
+    <link rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" id="wsu_design_system_normalize-css" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" id="wsu_design_system_icons-css" media="all" href="https://cdn.web.wsu.edu/designsystem/1.x/wsu-icons/dist/wsu-icons.bundle.css">
+    <link rel="stylesheet" id="wsu_design_system_css-css" media="all" href="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.css">
+    <script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-2SK9Y0XXMP&amp;cx=c&amp;gtm=4e65b1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-CFV4Y78L3N&amp;cx=c&amp;gtm=4e65b1"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-T266HC2L"></script><script id="wsu_design_system_js_init-js" src="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.init.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/wsuStyles.css?v=460cdf94c09d4fcaaeb2b90f671e1fd5">
+    <script crossorigin="anonymous" src="https://kit.fontawesome.com/da9cb2f29a.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/scripts/colorbox/colorbox.css">
+    <link rel="stylesheet" type="text/css" href="/scripts/fancybox/jquery.fancybox.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css?v=460cdf94c09d4fcaaeb2b90f671e1fd5">
+    <link rel="stylesheet" type="text/css" href="/css/print.css">    
+    <script integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/scripts/colorbox/jquery.colorbox.js"></script>
+    <script type="text/javascript" src="/scripts/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript" src="/scripts/common.js"></script>
+    <script integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T266HC2L');</script>
+    <!-- End Google Tag Manager -->
+
+    
+    <style type="text/css">
+      footer.wsu-g-footer {
+           float: left;
+      }
+      .card-borders {
+         border-right: solid .5px #d7dadb;
+         border-left: solid .5px #d7dadb;
+      }
+      .card_bullets li {
+         margin-bottom: 0px;
+         text-align: left;
+         font-size: 85%;
+      }
+      .bg-crimson {
+         background-color: #dbdbdb;
+      }
+      .wsu-c-button__wrapper {
+         text-align: center;
+         margin-bottom: 1em;
+      }
+      .content_centered {
+         text-align: center;
+         padding: 10px;
+      }
+      .card-body {
+         text-align: center;
+      }
+      .ro_announcement_title {
+         font-weight: 700;
+         font-size: 18px;
+      }
+      .wsu-button_wrapper {
+      margin: 0 0 15px 0;
+      }
+      h4 {
+         font-weight: 700;
+      }
+      /* Gray box for content */
+      .gray-box {
+         margin: 0 30px 20px 30px;
+         background-color: #f1f1f1;
+         padding: 10px 10px 1px 20px;
+      }
+      /* Green border for content */
+      .green-border {
+          border: 5px solid #AADC24;
+         padding: 10px;
+         text-align: center;
+         margin-bottom: 12px;
+      }
+      body.dark .gray-box {
+        background-color:#555;
+        color:#fff;
+      }
+      /*Fix top */
+      .wsu-g-container {
+         padding-top: 30px;
+      }
+      /*Footer updates */
+      .wsu-s-footer__sub-menu {
+         line-height: .5;
+      }
+      /* Top sliding announcement */
+      .carousel {
+          border: 5px solid #AADC24;
+         padding: 10px;
+         text-align: center;
+         margin-bottom: 12px;
+      }
+      /* FreeForm styling 
+      label, .freeform-field-label {
+         font-family: "Open Sans", "Segoe UI", sans-serif;
+      }
+      .freeform-section-label {
+         font-family: "Open Sans", "Segoe UI", sans-serif;
+      }*/
+      /*Color Changing Hover Link
+      main a {
+        text-decoration: none;
+        border-bottom:  1.5px solid #ddd; /*underline color*/
+        box-shadow: inset 0 -5px 0 #ddd;
+        color: #981e32; /*text color*/
+      }
+      /*Rollover (Hover or Focus) link*/
+      main a:hover, main a:focus{
+        text-decoration: none;
+        border-bottom:  none; /*underline color*/
+        /*font-weight: 700;*/
+        box-shadow: none;
+        color: #981e32; /*text color*/
+      }
+      */
+      /* Custom Header */
+      #custom-header {
+        background-color: #fff;
+        border-bottom: solid 6px #eff0f1;
+        margin: 0 0 0 -100%;
+        padding: 0 0 .5em 100%;
+        z-index: 2;
+        width:100%;
+        height:75px;
+        max-height:100px;
+        overflow:hidden;
+        position:relative;
+        display:block;
+        vertical-align: baseline;
+        box-sizing:content-box;
+      }
+      #custom-header-title-wrapper {
+        height:120px;
+        line-height:100px;
+        display:block;
+        padding-left:20px;
+        color:#981e32;
+        font-weight; 800;
+        font-size:3em;
+        font-weight:normal;
+      }
+      #custom-header-title {
+        display:block;
+      }
+      label {font-weight:normal;}
+      /* Hide the Page Title */
+      h1.pagetitle {display:none;}
+      /* Quotes*/
+      .quotecontainer {
+        width: 100%;
+        max-width: 900px;
+        min-width: 320px;
+        padding: 1em;
+        background: #fff;
+      }
+       .quote-by {
+        display: block;
+        padding-right: 10px;
+        text-align: right;
+        color: #8d959a;
+      }
+      div.freeform-checkbox input[type=checkbox],
+      div.freeform-radio input[type=radio] {
+      	position: absolute;
+      	vertical-align: 25px;
+      }
+      div.freeform-checkbox label,
+      div.freeform-radio label {
+      	padding-left:25px;
+      }
+      /*Rollover (Hover or Focus) link*/
+      div.wsu-c-container a:hover, div.wsu-c-container a:focus{
+        text-decoration: none;
+        border-bottom:  none; /*underline color*/
+        /*font-weight: 700;*/
+        box-shadow: none;
+        color: #981e32; /*text color*/
+      }
+
+    </style>
+    <script type="text/javascript">
+      function loadScript(url, callback)
+      { 
+           var scriptElement = document.createElement('script'); 
+           scriptElement.type = 'text/javascript'; 
+           scriptElement.setAttribute('src', url); 
+           scriptElement.onreadystatechange = callback; 
+           scriptElement.onload = callback; 
+           var head = document.getElementsByTagName('head')[0]; 
+           head.appendChild(scriptElement, head); 
+      } 
+    </script>
+
+    <script type="text/javascript">
+        var loadedStyleSheetSelectors = [];
+        window.ajaxBase = "https://cms.em.wsu.edu/Ajax";
+        window.baseUrl = "https://registrar.wsu.edu";
+        window.cookieDomain = ".wsu.edu";
+
+        $(document).ready(function () {
+            $("a:has(img)").addClass("no-border");
+            FixAnchorLinks();
+            GetAllStylesheetSelectors();
+            SetupRemoteContentLinks();
+            //UpdateTheme();
+
+            //var bootstrapButton = $.fn.button.noConflict()
+            //$.fn.bootstrapBtn = bootstrapButton;
+        });
+
+        function FixAnchorLinks() {
+            var currentUrl = document.location.href;
+            if (currentUrl.indexOf("#") > -1) {
+                currentUrl = currentUrl.substring(0, currentUrl.indexOf("#"));
+            }
+
+            var baseHref = document.querySelector("base").href;
+            //console.log("baseHref", baseHref);
+
+            document.querySelectorAll("a[href*='#']").forEach(function (current) {
+                var anchorLink = current.hash;
+                var currentHref = current.href;
+
+                var remoteLink = false;
+                if(currentHref != null && currentHref != undefined){
+                    remoteLink = currentHref.toLowerCase().indexOf(window.baseUrl.toLowerCase()) == -1;
+                }
+
+                //console.log(remoteLink, currentUrl, currentHref);
+
+                if (remoteLink) {
+                    // Don't fix this URL
+                }else{
+                    if (anchorLink != undefined && anchorLink != "" && anchorLink.indexOf("#") == 0) {
+                        // Only update these if they are the base url + #.
+                        if (current.href.indexOf(baseHref + "#") > -1) {
+                            //console.log("Update:", current.href, "to", currentUrl + anchorLink);
+
+                            current.href = currentUrl + anchorLink;
+                        }
+                    }
+                }
+
+                //console.log(remoteLink, anchorLink, currentHref, currentUrl);
+            });
+        }
+
+        function GetAllStylesheetSelectors() {
+            loadedStyleSheetSelectors = [];
+            for (var i = 0; i < document.styleSheets.length; i++) {
+                var css = document.styleSheets[i];
+                try {
+                    if (css.rules || css.cssRules) {
+                        var rules = css.rules || css.cssRules;
+                        for (var x in rules) {
+                            if (typeof rules[x].selectorText == 'string') {
+                                loadedStyleSheetSelectors.push(rules[x].selectorText);
+                            }
+                        }
+                    }
+                } catch (error) { }
+            }
+        }
+
+        function SetupRemoteContentLinks() {
+            $(".remote-content").each(function () {
+                $(this).on('click', function (e) {
+                    var href = $(this).attr("href");
+                    var title = $(this).attr("title");
+                    if (title == undefined || title == null || title == "") {
+                        title = $(this).attr("alt");
+                        if (title == undefined || title == null || title == "") {
+                            title = "Info";
+                        }
+                    }
+
+                    var contentURL = "https://cms.em.wsu.edu/Ajax?Action=RemoteContent&URL=" + encodeURI(href);
+                    var umbracoPageId = $(this).attr("rel");
+                    if (umbracoPageId != undefined && umbracoPageId != null && umbracoPageId != "") {
+                        contentURL = "https://cms.em.wsu.edu/Ajax?Action=RenderPage&PageId=" + umbracoPageId;
+                    }
+
+                    if (href != undefined && href != null && href != "") {
+                        // Load the remote content
+                        e.preventDefault();
+                        $.ajax({
+                            url: contentURL,
+                            type: 'GET',
+                            success: (data) => {
+                                $("<div>" + data + "</div>").dialog({
+                                    height: "auto",
+                                    width: "98%",
+                                    modal: true,
+                                    title: title,
+                                    buttons: {
+                                        Close: function () {
+                                            $(this).dialog("close");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function LoadScriptResource(url, eval, callback) {
+            if (eval != undefined && eval != null && eval == true) {
+                if (callback != undefined && callback != null) {
+                    callback();
+                }
+                return;
+            }
+
+            var head = document.getElementsByTagName('head')[0];
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = url;
+            if (callback != undefined && callback != null) {
+                script.onload = callback;
+            }
+            head.appendChild(script);
+        }
+
+        function FileNameFromUrl(url) {
+            var output = url;
+            if (url != undefined && url != null && url != "") {
+                var lastSlash = url.lastIndexOf("/");
+                if (lastSlash > -1) {
+                    output = url.substring(lastSlash + 1);
+                }
+            }
+            return output;
+        }
+
+        function LoadCssResource(url, existingClass, callback) {
+            // Only load if the existingClass to test for is not found
+            var exists = false;
+
+            if (existingClass != undefined && existingClass != null && existingClass != "") {
+                if (loadedStyleSheetSelectors != null && loadedStyleSheetSelectors.length > 0) {
+                    for (var i = 0; i < loadedStyleSheetSelectors.length; i++) {
+                        if (loadedStyleSheetSelectors[i] == existingClass) {
+                            exists = true;
+                        }
+                    }
+                }
+            } else {
+                // Instead of checking for an existing class, just check to see if this script is already loaded.
+                var scriptName = FileNameFromUrl(url);
+                if (scriptName != undefined && scriptName != null && scriptName != "") {
+                    // Check to see if this script is already loaded.
+                    $("script").each(function () {
+                        var source = $(this).attr("src");
+                        if (source != undefined && source != null && source != "") {
+                            var sourceScriptName = FileNameFromUrl(source);
+                            if (sourceScriptName != undefined && sourceScriptName != null && sourceScriptName != "") {
+                                if (scriptName.toLowerCase() == sourceScriptName.toLowerCase()) {
+                                    exists = true;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (exists) {
+                if (callback != undefined && callback != null) {
+                    callback();
+                }
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement("link");
+                link.href = url;
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                if (callback != undefined && callback != null) {
+                    link.onload = callback;
+                }
+                head.appendChild(link);
+            }
+        }
+
+        function ssoSetRequestHeaders(xhr) {
+        }
+    </script>
+<style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+<body id="body-element" data-bs-theme="">
+    <div class="wsu-wrapper-global">
+        <a class="wsu-skip-to-main" href="#wsu-site-menu">Skip to menu</a>
+        <a class="wsu-skip-to-main" href="#wsu-content">Skip to content</a>
+            <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T266HC2L" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+        <!-- Global Header -->
+        <header class="wsu-header-global">
+            <div class="wsu-header-global__content">
+                <a class="wsu-wordmark" href="https://wsu.edu" aria-label="Go to Washington State University Homepage">
+                    <span class="wsu-coug-head-boxed">
+                        <svg role="img" aria-label="WSU Cougar Head" class="wsu-coug-head-boxed__icon" enable-background="new 0 0 70.2 69.6" version="1.1" viewBox="0 0 70.2 69.6" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                        <title>WSU Cougar Head</title>
+                        <path class="st0" d="m42.8 69.6s3.6-1.5 5.5-7.4c1 2.3 1.5 4.8 1.3 7.3-2.3 0.1-4.5 0.2-6.8 0.1zm14.9-11.8c-10.4 1.4-12.2-20.3-12.2-20.3s3.5 11.1 10.9 10.7c7.7-0.4 5.5-12.2 5.5-12.2s7.5 20.2-4.2 21.8zm-47.7-5c-3.3 1-6.6 1.8-10 2.4 0 0 5.9-4.5 10.3-18.3l4.3 3.9-0.8 2.6c1.1 1.5 1.9 3.1 2.5 4.9 1.6-3.6 1.5-7.7-0.3-11.2l-0.5 1.6-1.7-1.5-2.8-2.7c1.2-3.6 3-7 5.3-10.1l0.4 0.4 3.3 3.8-1 1.7c1.5 1.7 2.9 3.4 4.2 5.3 0.6-3.4 0.4-6.8-0.4-10.1l-1.5 1.4-3.6-4.2c4.5-4.7 10-8.2 16.2-10.3-0.4 0.4-0.7 0.8-1 1.3-2 2.9-4.1 8.1-2.4 16.4 0.3 1.3 0.7 3.2 1.1 5.1 0.9 3.8 1.9 8.2 2.2 10.9 0.7 5.7 0.1 9.4-1.8 11.4-1.3 1.4-3.5 2-6.4 1.9v-1.4c0-2.4-0.3-4.8-0.8-7.2l-0.8-2.7-1.2 2.6c-1.9 4.1-8.6 14.1-17.2 16.1 2.6-4.2 4.1-9 4.4-14zm25.4 16.4h-0.5-0.1-0.3c-0.5 0-0.8-0.1-1.2-0.1-0.7-0.1-1.6-0.2-2.6-0.4-6.4-1.1-12.9-1.7-19.4-2 6.2-3.6 10.4-9.9 12-12.5 0.2 1.3 0.3 2.5 0.3 3.8 0 0.8 0 1.6-0.1 2.2l-0.1 1.1 1.1 0.1c0.7 0.1 1.3 0.1 1.9 0.1 3.3 0 5.7-0.8 7.3-2.5 2.4-2.5 3.1-6.7 2.3-13.1-0.4-2.9-1.4-7.4-2.3-11.1-0.5-2-0.9-3.8-1.1-5-1.5-7.6 0.3-12.3 2.1-14.8 1.3-1.9 3.2-3.4 5.5-4.2h0.1l3.3-10.8h1.1l-2.3 10.3c0.7-0.1 1.2-0.2 1.7-0.3l3-9.5h1.1l-2 9.2c2.9-0.4 6.1-0.7 10.3-1 0.8 0.4 1.4 1.1 1.8 1.9l9.8-3 0.4 1.1-9.5 3.7c0.1 0.2 0.2 0.4 0.2 0.6l10.3-1.3 0.2 1.1-10 2c0 0.2 0.1 0.4 0.1 0.6l10.4 0.3v1.1l-10.2 0.4c0 1.2-0.2 2.4-0.5 3.6 0.6 2.1 0.7 4.3 0.3 6.5-1.7-3.9-3-5.1-3-5.1-1.4-0.7-2.9-1-4.5-1-2.5 0-4.8 1.1-6.4 2.9-2.3 2.6-3.5 6-3.3 9.5 0.2 2.4 0.7 5.1 1.4 8.6 0.7 3.6 1.6 8.1 2.3 13.5 0.6 4.1-0.1 7.3-1.8 9.7-1.6 2.1-4 3.4-6.5 3.8h-0.1-0.2-0.1-2.2zm10.4-51.5c-2.1-0.1-4.2 0.4-6 1.3-1.5 1-2.5 2.7-2.6 4.5-0.1 0.6-0.1 1.2 0 1.8 0.8-1.5 2-2.8 3.3-3.9 2.4-1.5 5.1-2.3 7.9-2.4h0.9 0.3c0.4 0 0.7-0.1 0.8-0.2 0-0.1-0.1-0.3-0.4-0.4-1.3-0.5-2.7-0.8-4.2-0.7z"></path>
+                                </svg>
+                    </span>
+                    <span class="wsu-wordmark__title">
+                        Washington State University
+                    </span>
+                    <span class="wsu-wordmark__title-mobile">
+                        WSU
+                    </span>
+                </a>
+                <nav class="wsu-header-global__navigation" aria-label="WSU header menu">
+                    <div class="wsu-header-global__quick-links">
+                        <button class="wsu-button-ui-more-horizontal wsu-menu-expand--toggle" aria-label="Open Header Menu"></button>
+                        <ul class="wsu-menu-admin wsu-menu-admin--tablet-dropdown" aria-label="WSU header menu">
+                            <li>
+                                <a href="https://foundation.wsu.edu/">Give</a>
+                            </li>
+                            <li>
+                                <a href="https://admission.wsu.edu/apply/as/find-your-application/">Apply</a>
+                            </li>
+                            <li>
+                                <a href="https://wsu.edu/about/statewide/">Locations</a>
+                            </li>
+                            <li>
+                                <a href="https://mywsu.wsu.edu/">My WSU</a>
+                            </li>
+                            <li class="wsu-g-header__nav-item" id="wsu-header-print-icon">
+                                <a class="wsu-g-header__nav-link" href="javascript:window.print();">
+                                    Print
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="mobile-menu">
+                    <button class="wsu-button-menu wsu-slide-in-panel--open" data-panel="wsu-navigation-mobile" aria-label="Open Site Menu">Menu</button>
+                </div>
+            </div>
+        </header>
+        <!-- TOP HEADER:END -->
+        
+        <!-- NAVIGATION MENU: START -->
+        <!-- Mobile Navigation Menu -->
+        <nav id="wsu-navigation-mobile" class="wsu-slide-in-panel wsu-navigation-mobile wsu-slide-in-panel--style-crimson-mark" aria-expanded="false" aria-haspopup="true" aria-label="Demo menu">
+            <button class="wsu-slide-in-panel__overlay wsu-slide-in-panel--close">Close Demo</button>
+            <div class="wsu-slide-in-panel__panel ">
+                <div class="wsu-slide-in-panel__panel-inner">
+                    <div class="wsu-navigation-mobile__close">
+                        <button class="wsu-button wsu-button--style-action wsu-slide-in-panel--close">Close Menu</button>
+                    </div>
+                    <div class="wsu-navigation-mobile__search">
+                        <button data-panel="wsu-quicklinks-panel" class="wsu-navigation-mobile__search-button wsu-slide-in-panel--close-this wsu-slide-in-panel--open">Search/Quicklinks</button>
+                    </div>
+                    <div class="wsu-navigation-mobile__menu">
+                            
+                          <ul id="wsu-site-menu" class="wsu-menu wsu-menu--primary-vertical">
+                            <li class="wsu-navigation-item wsu-menu-item--current"> 
+                              <a href="/" aria-current="page">Registrar Home</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/academic-calendar/">Academic Calendar</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/sessions/">Academic Calendar: Session Deadlines</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/academic-regulations/">Academic Regulations</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/contact-us/">Contact Us</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://curriculumchange.registrar.wsu.edu/">Curriculum Change</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://ferpa.em.wsu.edu/student-data-request/">Data Request</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://enrollmentverification.em.wsu.edu/">Enrollment Verification</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://ferpa.em.wsu.edu">FERPA Privacy</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/staff-forms/">Forms: Staff</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/student-forms/">Forms: Student</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://graduations.wsu.edu/">Graduations</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/how-to-videos/">How To Videos</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://va.wsu.edu/pullman">Military Affiliated Students</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/petitions/">Petition a missed deadline</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://em.wsu.edu/re411/">Registration &amp; Enrollment 411</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://residency.wsu.edu/">Residency</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/term-withdrawal/">Term Withdrawal</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://transcripts.wsu.edu/">Transcript Request</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/tuition-adjustments/">Tuition Adjustments</a>
+                            </li>
+                          </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Standard Navigation Menu -->
+        <div id="wsu-navigation-vertical" class="wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none wsu-slide-in-panel--position-left wsu-slide-in-panel--width-vertical-nav wsu-slide-in-panel--style-crimson-mark" aria-expanded="true" aria-haspopup="true" aria-label="Site menu">
+            <div class="wsu-slide-in-panel__panel ">
+                <div class="wsu-slide-in-panel__panel-inner" style="padding-top: 60px;">
+                    <div class="wsu-navigation-vertical__menu-wrapper">
+                            
+                          <ul id="wsu-site-menu" class="wsu-menu wsu-menu--primary-vertical">
+                            <li class="wsu-navigation-item wsu-menu-item--current"> 
+                              <a href="/" aria-current="page">Registrar Home</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/academic-calendar/">Academic Calendar</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/sessions/">Academic Calendar: Session Deadlines</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/academic-regulations/">Academic Regulations</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/contact-us/">Contact Us</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://curriculumchange.registrar.wsu.edu/">Curriculum Change</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://ferpa.em.wsu.edu/student-data-request/">Data Request</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://enrollmentverification.em.wsu.edu/">Enrollment Verification</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://ferpa.em.wsu.edu">FERPA Privacy</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/staff-forms/">Forms: Staff</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/student-forms/">Forms: Student</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://graduations.wsu.edu/">Graduations</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/how-to-videos/">How To Videos</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://va.wsu.edu/pullman">Military Affiliated Students</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/petitions/">Petition a missed deadline</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://em.wsu.edu/re411/">Registration &amp; Enrollment 411</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://residency.wsu.edu/">Residency</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/term-withdrawal/">Term Withdrawal</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://transcripts.wsu.edu/">Transcript Request</a>
+                            </li>
+                            <li class="wsu-navigation-item"> 
+                              <a href="https://registrar.wsu.edu/tuition-adjustments/">Tuition Adjustments</a>
+                            </li>
+                          </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- NAVIGATION MENU: END -->
+
+        <!-- SITE WRAPPER:START -->
+        <div class="wsu-wrapper-site">
+            <!-- Site Header -->
+            
+            <div class="wsu-wrapper-content">
+                <main role="main" id="wsu-content" class="wsu-wrapper-main" tabindex="-1">
+                    <!-- BEGIN UMBRACO MAIN CONTENT -->
+                    
+                        
+        <div class="row">
+            <div class="col col-8 col-sm-12 col-xs-12 col-md-8 col-lg-8 col-xl-8"><h1>Office of the Registrar</h1>
+<div class="green-border">
+<h2>Hold on your account?</h2>
+<div>Contact the office responsible for the hold to remove it. Some holds prevent you from enrolling in classes; other holds do not. You can view the hold in myWSU &gt; Tasks &gt; Holds, details (click on the "&gt;" symbol)</div>
+</div>
+<div class="card">
+<h2 class="card-header">Pullman Campus only</h2>
+<div class="card-body">
+<div class="row">
+<div class="col-sm-4">
+<h3>Enrollment Verifications</h3>
+<p>Verify current enrollment, Good Student Discount certificates, check loan deferment requests at NSC.</p>
+<div class="wsu-button_wrapper"><a href="https://www.ronet.wsu.edu/nsc/login.asp" title="https://www.ronet.wsu.edu/nsc/login.asp" class="wsu-button--style-action"> National Student Clearinghouse </a></div>
+<div class="wsu-button_wrapper"><a href="https://enrollmentverification.em.wsu.edu/#verification/" title="https://enrollmentverification.em.wsu.edu/#verification/" class="wsu-button--style-action">Other enrollment verification options.</a></div>
+</div>
+<div class="col-sm-4 card-borders">
+<h3>Enrollment Questions</h3>
+<p>Student enrollment questions and more. <a href="mailto:wsu.registration@wsu.edu" title="wsu.registration@wsu.edu"> Email WSU Registration</a></p>
+<h3>Hold on Your Account?</h3>
+<p>Contact the office responsible for the hold to remove it. <strong>View the hold in</strong> <a href="https://my.wsu.edu" title="https://my.wsu.edu" data-anchor="?client_id=okta.2b1959c8-bcc0-56eb-a589-cfcfb7422f26&amp;code_challenge=m18SWfw3Y2WnnzbL2gHScznU7iIY1bvntliSfxDDIEM&amp;code_challenge_method=S256&amp;nonce=vFrZriv5eLNKTl7vkKZIF4LTS4L1sA26JwySkH31PNMVbQUjbiEFFtBoTGpErQcN&amp;redirect_uri=https%3A%2F%2Flogin.wsu.edu%2Fenduser%2Fcallback&amp;response_type=code&amp;state=GJtgQAGBYVnOEsznHqj9qhLlAU7s8nGNzEynn47OI0isxtBSkGh9YlnGGgRN8uPq&amp;scope=openid%20profile%20email%20okta.users.read.self%20okta.users.manage.self%20okta.internal.enduser.read%20okta.internal.enduser.manage%20okta.enduser.dashboard.read%20okta.enduser.dashboard.manage%20okta.myAccount.sessions.manage">myWSU</a> &gt; Tasks &gt; Holds, details.</p>
+</div>
+<div class="col-sm-4">
+<h3>UI/WSU Co-op Program</h3>
+<p>Co-op Program applications, information, course lists, and more information about the UI/WSU Co-op program.</p>
+<div class="wsu-button_wrapper"><a href="http://schedules.wsu.edu/Coop/" title="http://schedules.wsu.edu/Coop/" class="wsu-button--style-action"> UI/WSU Co-op Program</a></div>
+</div>
+</div>
+<hr>
+<div class="row">
+<div class="col-sm-4">
+<h3>Academic Deadline Petitions</h3>
+<p>Undergraduation &amp; Professional student who have missed an academic deadline.&nbsp;<a href="mailto:undergrad.petitions@wsu.edu" title="undergrad.petitions@wsu.edu">Email Petitions. </a>Graduate students email the <a href="mailto:grad.school@wsu.edu" title="grad.school@wsu.edu">Graduate School</a>.</p>
+<div class="wsu-button_wrapper"><a href="/petitions/" title="https://registrar.wsu.edu/petitions/" class="wsu-button--style-action"> Petition Information</a></div>
+</div>
+<div class="col-sm-4 card-borders">
+<h3>Upon Completion Letters</h3>
+<p>Current semester Undergraduate students who have applied for graduation.</p>
+<div class="wsu-button_wrapper"><a href="https://enrollmentverification.em.wsu.edu/ofsr-form-do-not-delete/" title="https://enrollmentverification.em.wsu.edu/ofsr-form-do-not-delete/" class="wsu-button--style-action">Employer Letter: Only for UGRD who have applied for graduation</a></div>
+</div>
+<div class="col-sm-4">
+<h3>Forms, Requests, Information</h3>
+<p>Forms &amp; information about Change of campus, change degree, Enrollment, Grading, Omit Test Credit.</p>
+<div class="wsu-button_wrapper"><a href="/student-forms/" title="https://registrar.wsu.edu/student-forms" class="wsu-button--style-action">Go to Student forms</a></div>
+<div class="wsu-button_wrapper"><a href="/term-withdrawal/" title="https://registrar.wsu.edu/term-withdrawal" class="wsu-button--style-action">Term Withdrawal</a></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<h2 class="card-header">All Campuses</h2>
+<div class="card-body">
+<div class="row">
+<div class="col-sm-4">
+<h3>Official Transcripts</h3>
+<p>The fastest way to obtain your Official Transcript is to order it online. More information about transcripts, official and unofficial is available on our website.</p>
+<div class="wsu-button_wrapper"><a href="https://transcripts.wsu.edu/" title="Transcript Requests" class="wsu-button--style-action">Transcripts website</a></div>
+<div class="wsu-button_wrapper"><a href="mailto:official.transcripts@wsu.edu" title="Email Transcripts">official.transcripts@wsu.edu</a></div>
+<a href="mailto:official.transcripts@wsu.edu" title="Email Transcripts"> </a></div>
+<div class="col-sm-4 card-borders">
+<h3>Graduation &amp; Commencement</h3>
+<p>Information about completing program requirements and degree conferral. <a href="mailto:wsu.graduations@wsu.edu" title="wsu.graduations@wsu.edu">Email Graduations </a></p>
+<div class="wsu-button_wrapper"><a href="https://graduations.wsu.edu" title="https://graduations.wsu.edu" class="wsu-button--style-action">Graduation Information</a></div>
+<p><a href="mailto:commencement@wsu.edu" title="commencement@wsu.edu">Email Commencement</a> for information about the graduation ceremony.</p>
+</div>
+<div class="col-sm-4">
+<h3>Diplomas</h3>
+<p>Order a copy of your Undergraduate or Professional Diploma or an eDiploma through our online Diploma Services (contracted through Michael Sutter Company).</p>
+<p><em>Please type out your student ID with a zero as the first digit</em>.</p>
+<div class="wsu-button_wrapper"><a href="https://www.michaelsutter.com/wsu" title="https://www.michaelsutter.com/wsu" class="wsu-button--style-action">WSU Diploma Services</a></div>
+</div>
+</div>
+<hr>
+<div class="row">
+<div class="col-sm-4">
+<h3>Resident Tuition: Residency</h3>
+<p>How to apply for resident tuition.&nbsp;<a href="mailto:residency@wsu.edu" title="residency@wsu.edu">Email Residency</a></p>
+<div class="wsu-button_wrapper"><a href="https://residency.wsu.edu" title="https://residency.wsu.edu" class="wsu-button--style-action">Residency for tuition purposes</a></div>
+</div>
+<div class="col-sm-4 card-borders">
+<h3>Change of Campus</h3>
+<h4>Graduate Students</h4>
+<div class="wsu-button_wrapper"><a href="https://gradschool.wsu.edu" title="https://gradschool.wsu.edu" class="wsu-button--style-action">GRAD: Change Campus</a></div>
+<h4>Undergraduate Students</h4>
+<div class="wsu-button_wrapper"><a href="/change-of-campus/" title="https://registrar.wsu.edu/change-of-campus" class="wsu-button--style-action">UGRD: Change Campus</a></div>
+</div>
+<div class="col-sm-4">
+<h3>Term Withdrawal</h3>
+<p>How to drop all of your classes for the current term or a future term.</p>
+<div class="wsu-button_wrapper"><a href="/term-withdrawal/" title="https://registrar.wsu.edu/term-withdrawal" class="wsu-button--style-action">Term Withdrawal Information</a></div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+
+<div class="ro_announcements">
+There are currently no announcements.
+</div>
+
+</div></div>
+            <div class="col col-4 col-sm-12 col-xs-12 col-md-4 col-lg-4 col-xl-4"><h2>Academics</h2>
+<ul>
+<li><a href="https://registrar.schedule.wsu.edu/students/" title="https://registar.schedule.wsu.edu/students">For Students</a></li>
+<li><a href="https://catalog.wsu.edu/AcademicCalendar" title="https://catalog.wsu.edu/AcademicCalendar">Academic Calendar</a></li>
+<li><a href="https://registrar.schedule.wsu.edu/" title="https://registrar.schedule.wsu.edu">Academic Scheduling</a></li>
+<li><a href="https://registrar.schedule.wsu.edu/event-scheduling/" title="https://registar.schedule.wsu.edu/event-scheduling">Meeting/Event Scheduling</a></li>
+<li><a href="https://registrar.schedule.wsu.edu/exams/final-exams/" title="https://registrar.scheduled.wsu.edu/exams/final-exams">Final Exam Schedules</a></li>
+<li><a href="/grades-and-gpa/" title="https://registar.wsu.edu/grades-and-gpa">Grades &amp; GPA</a></li>
+<li><a href="https://schedules.wsu.edu/" title="https://schedules.wsu.edu">Schedule of Classes</a></li>
+<li><a href="/special-enrollment/" title="https://registrar.wsu.edu/special-enrollment">Special Enrollment Request</a></li>
+</ul>
+<h2>Catalog</h2>
+<ul>
+<li><a href="https://curriculum.registrar.wsu.edu/" title="https://curriculum.registrar.wsu.edu">Curriculum Change</a></li>
+<li><a href="https://catalog.wsu.edu/" title="https://catalog.wsu.edu/">University Catalog</a></li>
+</ul>
+<h2>Registration &amp; Enrollment</h2>
+<ul>
+<li><a href="https://em.wsu.edu/rr411/" title="https://em.wsu.edu/rr411/">Registration &amp; Enrollment 411</a> Help for Advisors &amp; Department Coordinators</li>
+</ul>
+<h2>Academic Events</h2>
+
+<div class="ro_events">
+  <div class="ro_event_section">
+    <span class="ro_event_date">Wed, May 13, 2026</span>
+    <ul>
+      <li>Commencement (Everett Campus)</li>
+      <li>Final Grades available. Students may select "Grades" under the academics tab via myWSU. Students may also order an official transcript at www.transcripts.wsu.edu.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+        </div>
+
+                        
+
+
+                    <!-- END UMBRACO MAIN CONTENT -->
+                </main>
+            </div>
+
+
+        </div>
+        <!-- SITE WRAPPER:END -->
+
+        <!-- Global Footer -->
+        <footer class="wsu-footer-global">
+            <div class="wsu-footer-global__copyright">
+                © Washington State University 2026
+            </div>
+            <nav class="wsu-footer-global__navigation">
+                <ul class="wsu-menu-tertiary">
+                    <li>
+                        <a href="https://access.wsu.edu/">Access</a>
+                    </li>
+                    <li>
+                        <a href="https://policies.wsu.edu/">Policies</a>
+                    </li>
+                    <li>
+                        <a href="https://portal.wsu.edu/">MyWSU</a>
+                    </li>
+                    <li>
+                        <a href="https://socialmedia.wsu.edu/">Follow&nbsp;WSU</a>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+
+        <div style="display:none;">
+            <div id="Umbraco_Page_Title">Registrar Home Page</div>
+            <div id="Umbraco_Site_Name">Office of the Registrar</div>
+        </div>
+
+        <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+        <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+        <script src="/_framework/blazor.server.js"></script>
+
+        <script type="text/javascript">
+            function ConsoleLog(message, objects) {
+                if (objects != undefined && objects != null) {
+                    if (message != undefined && message != null && message != "") {
+                        console.log(message, objects);
+                    } else {
+                        console.log(objects);
+                    }
+                } else if (message != undefined && message != null && message != "") {
+                    console.log(message);
+                }
+            }
+
+            function CookieRead(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+
+                return "";
+            }
+
+            function CookieWrite(name, value, days) {
+                var expires;
+
+                if (days == undefined || days == null || days < 1) {
+                    days = 14;
+                }
+
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toGMTString();
+                } else {
+                    expires = "";
+                }
+
+                var setDomain = "";
+                if (window.cookieDomain != "") {
+                    setDomain = "; domain=" + window.cookieDomain;
+                }
+
+                document.cookie = name + "=" + value + expires + setDomain + "; path=/";
+            }
+
+            function CopyToClipboard(value) {
+                navigator.clipboard.writeText(value);
+            }
+
+            function DelayedFocus(element) {
+                setTimeout(() => DelayedFocusInternal(element, 0), 100);
+            }
+
+            function DelayedFocusInternal(element, safety) {
+                if (safety > 20) { return; }
+                safety++;
+
+                if ($("#" + element).is(":visible") == true) {
+                    // See if the element is a <div>. If so, find the first child that is an input.
+                    if ($("#" + element).is("div")) {
+                        var input = $("#" + element).find('input,textarea,select').filter(":visible:first");
+                        if (input != null) {
+                            input.trigger("focus");
+                        }
+                    } else {
+                        $("#" + element).trigger("focus");
+                    }
+                } else {
+                    setTimeout(() => DelayedFocusInternal(element, safety), 20);
+                }
+            }
+
+            function DelayedSelect(element) {
+                setTimeout(() => DelayedSelectInternal(element, 0), 100);
+            }
+
+            function DelayedSelectInternal(element, safety) {
+                if (safety > 20) { return; }
+                safety++;
+
+                if ($("#" + element).is(":visible") == true) {
+                    $("#" + element).trigger("select");
+                } else {
+                    setTimeout(() => DelayedSelectInternal(element, safety), 20);
+                }
+            }
+
+            async function DownloadFileFromStream(fileName, contentStreamReference) {
+                const arrayBuffer = await contentStreamReference.arrayBuffer();
+                const blob = new Blob([arrayBuffer]);
+                const url = URL.createObjectURL(blob);
+                const anchorElement = document.createElement('a');
+                anchorElement.href = url;
+                anchorElement.download = fileName ?? '';
+                anchorElement.click();
+                anchorElement.remove();
+                URL.revokeObjectURL(url);
+            }
+
+            function GetAjaxBase() {
+                var output = "";
+
+                if (window.ajaxBase != undefined && window.ajaxBase != null) {
+                    output += window.ajaxBase;
+                }
+
+                return output;
+            }
+
+            function HighlightElementByClass(c) {
+                $("." + c).off("click");
+                $("." + c).on("click", function () {
+                    RemoveElementHighlightByClass(c);
+                });
+                $("." + c).addClass("highlight");
+
+                $("." + c).fadeOut(200)
+                    .fadeIn(200)
+                    .fadeOut(200)
+                    .fadeIn(200)
+                    .fadeOut(200)
+                    .fadeIn(200);
+            }
+
+            function NavigateTo(url) {
+                window.location.href = url;
+            }
+
+            function ReloadCurrentPage() {
+                window.location.href = window.location.href;
+            }
+
+            function RemoveElementHighlightByClass(c) {
+                $("." + c).off("click");
+                $("." + c).removeClass("highlight");
+            }
+
+            function SetElementValue(id, value) {
+                $("#" + id).val(value);
+            }
+
+            function SetTheme(theme){
+                $("#main-theme-icon").removeClass();
+
+                switch(theme){
+                    case "light":
+                        $("#main-theme-icon").addClass("fa-regular fa-sun");
+                        CookieWrite("umbraco-wsu-spine-theme", "light");
+                        break;
+
+                    case "dark":
+                        $("#main-theme-icon").addClass("fa-solid fa-moon");
+                        CookieWrite("umbraco-wsu-spine-theme", "dark");
+                        break;
+
+                    default:
+                        $("#main-theme-icon").addClass("fa-solid fa-circle-half-stroke");
+                        CookieWrite("umbraco-wsu-spine-theme", "auto");
+                        break;
+                }
+
+                UpdateTheme();
+            }
+
+            function UpdateTheme(){
+                var theme = CookieRead("umbraco-wsu-spine-theme");
+
+                if(theme == "" || theme == "auto"){
+                    var colorScheme = getComputedStyle(document.body, ':after').content;
+                    theme = colorScheme.indexOf("dark") > -1 ? "dark" : "light";
+                }
+
+                if(theme == "dark"){
+                    $("#body-element").attr("data-bs-theme", "dark");
+                    $("#body-element").addClass("dark");
+                }else{
+                    $("#body-element").attr("data-bs-theme", "");
+                    $("#body-element").removeClass();
+                }
+
+                $("#body-element").removeClass("loading");
+            }
+        </script>
+    </div>
+    <script id="wsu_design_system_js-js" src="https://cdn.web.wsu.edu/designsystem/2.x/dist/bundles/wsu-design-system.js?ver=1.11.0-1.31.6"></script>
+
+
+</body></html>

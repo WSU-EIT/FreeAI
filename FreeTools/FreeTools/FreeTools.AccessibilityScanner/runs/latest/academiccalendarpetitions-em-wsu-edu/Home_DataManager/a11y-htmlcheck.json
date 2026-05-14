@@ -1,0 +1,30 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-nav",
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+@page "/Settings/Suppressions"
+@page "/{TenantCode}/Settings/Suppressions"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-shield-alt me-2"></i>Violation Suppressions
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-success" @onclick="StartAdd">
+                <i class="fas fa-plus me-1"></i>New suppression
+            </button>
+        </div>
+    </div>
+
+    <FreeA11yChecker_App_AboutSection Title="About Violation Suppressions">
+        <p>Suppressions let you flag specific accessibility rules — typically those caused by third-party widgets or platforms you can't modify (e.g. WSU Spine) — as known issues. Suppressed violations are downgraded to <strong>minor</strong> severity and tagged with your reason, so they no longer block your AA compliance reporting but stay visible for audit.</p>
+        <p class="mb-0">A suppression matches a violation when the rule ID matches AND the CSS selector matches (exact or glob with <code>*</code> wildcards). Site-scoped suppressions only apply to one site; tenant-wide suppressions apply across all sites.</p>
+    </FreeA11yChecker_App_AboutSection>
+
+    @if (_loading) {
+        <LoadingMessage />
+    } else {
+        @if (_editing != null) {
+            <div class="card mb-3 border-primary">
+                <div class="card-header bg-primary text-white">
+                    @(_editing.ViolationSuppressionId == Guid.Empty ? "New suppression" : "Edit suppression")
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Rule ID <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" @bind="_editing.RuleId"
+                               placeholder="e.g. aria-allowed-attr" />
+                        <div class="form-text small">The exact RuleId (or CanonicalRuleId) reported by the scanner.</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">CSS selector pattern</label>
+                        <input type="text" class="form-control form-control-sm" @bind="_editing.SelectorPattern"
+                               placeholder="e.g. #wsu-navigation-vertical (blank = match any selector)" />
+                        <div class="form-text small">Use <code>*</code> as a wildcard. Leave blank to match every occurrence of the rule.</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control form-control-sm" rows="2" @bind="_editing.Reason"
+                                  placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold">Scope</label>
+                        <select class="form-select form-select-sm" @bind="_scopeMode">
+                            <option value="tenant">All sites in this tenant</option>
+                            <option value="site">Specific site only</option>
+                        </select>
+                        @if (_scopeMode == "site") {
+                            <select class="form-select form-select-sm mt-1" @bind="_selectedSiteId">
+                                <option value="">— pick a site —</option>
+                                @foreach (var s in _sites.OrderBy(x => x.Name)) {
+                                    <option value="@s.SiteId">@s.Name</option>
+                                }
+                            </select>
+                        }
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="enabledCheck" @bind="_editing.Enabled" />
+                        <label class="form-check-label" for="enabledCheck">
+                            <strong>Enabled</strong> &mdash; downgrade matching violations to <span class="badge bg-secondary">minor</span>
+                        </label>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" @onclick="Save" disabled="@(!CanSave())">
+                            <i class="fas fa-save me-1"></i>Save
+                        </button>
+                        <button class="btn btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (!_suppressions.Any()) {
+            <div class="alert alert-info"><i class="fas fa-info-circle me-1"></i>No suppressions configured yet. Click <strong>New suppression</strong> above, or use the &quot;Suppress this rule&quot; button on any violation.</div>
+        } else {
+            <table class="table table-sm table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:40px;"></th>
+                        <th>Rule ID</th>
+                        <th>Selector pattern</th>
+                        <th>Reason</th>
+                        <th>Scope</th>
+                        <th>Last modified</th>
+                        <th style="width:110px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in _suppressions) {
+                        <tr @key="s.ViolationSuppressionId" class="@(s.Enabled ? "" : "table-secondary text-muted")">
+                            <td>
+                                @if (s.Enabled) {
+                                    <i class="fas fa-shield-alt text-success" title="Enabled"></i>
+                                } else {
+                                    <i class="far fa-circle text-muted" title="Disabled"></i>
+                                }
+                            </td>
+                            <td><code>@s.RuleId</code></td>
+                            <td><code>@(String.IsNullOrWhiteSpace(s.SelectorPattern) ? "(any)" : s.SelectorPattern)</code></td>
+                            <td class="small">@s.Reason</td>
+                            <td class="small">
+                                @if (s.SiteId.HasValue) {
+                                    var site = _sites.FirstOrDefault(x => x.SiteId == s.SiteId.Value);
+                                    <span class="badge bg-info text-dark">@(site?.Name ?? "site")</span>
+                                } else {
+                                    <span class="badge bg-dark">tenant-wide</span>
+                                }
+                            </td>
+                            <td class="small text-muted">
+                                @s.LastModified.ToString("yyyy-MM-dd HH:mm")
+                                @if (!String.IsNullOrWhiteSpace(s.LastModifiedBy)) {
+                                    <br /><span>by @s.LastModifiedBy</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-xs btn-outline-secondary me-1" @onclick="() => StartEdit(s)" title="Edit">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="btn btn-xs btn-outline-danger" @onclick="() => Delete(s)" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "suppressions";
+    private bool _validatedUrl = false;
+    private bool _loadedData = false;
+    private bool _loading = true;
+
+    private List<DataObjects.ViolationSuppression> _suppressions = new();
+    private List<DataObjects.Site> _sites = new();
+    private DataObjects.ViolationSuppression? _editing;
+    private string _scopeMode = "tenant";
+    private string _selectedSiteId = "";
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_validatedUrl) { _validatedUrl = true; await Helpers.ValidateUrl(TenantCode); }
+            if (!_loadedData) { _loadedData = true; await LoadData(); }
+        }
+    }
+
+    private void OnDataModelUpdated() { if (Model.View == _pageName) StateHasChanged(); }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+        _sites = sites?.Where(x => !x.Deleted).ToList() ?? new();
+        var sups = await Helpers.GetOrPost<List<DataObjects.ViolationSuppression>>("api/Data/GetViolationSuppressions", new { });
+        _suppressions = sups ?? new();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void StartAdd()
+    {
+        _editing = new DataObjects.ViolationSuppression {
+            ViolationSuppressionId = Guid.Empty,
+            Enabled = true,
+            Reason = "",
+            RuleId = "",
+        };
+        _scopeMode = "tenant";
+        _selectedSiteId = "";
+        StateHasChanged();
+    }
+
+    private void StartEdit(DataObjects.ViolationSuppression s)
+    {
+        _editing = new DataObjects.ViolationSuppression {
+            ViolationSuppressionId = s.ViolationSuppressionId,
+            TenantId = s.TenantId,
+            RuleId = s.RuleId,
+            SelectorPattern = s.SelectorPattern,
+            SiteId = s.SiteId,
+            Reason = s.Reason,
+            Enabled = s.Enabled,
+            Added = s.Added,
+            AddedBy = s.AddedBy,
+        };
+        _scopeMode = s.SiteId.HasValue ? "site" : "tenant";
+        _selectedSiteId = s.SiteId?.ToString() ?? "";
+        StateHasChanged();
+    }
+
+    private void CancelEdit() { _editing = null; StateHasChanged(); }
+
+    private bool CanSave() => _editing != null
+        && !String.IsNullOrWhiteSpace(_editing.RuleId)
+        && !String.IsNullOrWhiteSpace(_editing.Reason)
+        && (_scopeMode != "site" || Guid.TryParse(_selectedSiteId, out _));
+
+    private async Task Save()
+    {
+        if (_editing == null || !CanSave()) return;
+        _editing.SiteId = _scopeMode == "site" && Guid.TryParse(_selectedSiteId, out var g) ? g : (Guid?)null;
+        var saved = await Helpers.GetOrPost<DataObjects.ViolationSuppression>("api/Data/SaveViolationSuppression", _editing);
+        if (saved != null && saved.ActionResponse?.Result == true) {
+            _editing = null;
+            await LoadData();
+        } else {
+            Model.ErrorMessages(saved?.ActionResponse?.Messages ?? new List<string> { "Save failed" });
+        }
+    }
+
+    private async Task Delete(DataObjects.ViolationSuppression s)
+    {
+        var ok = await Helpers.GetOrPost<bool>("api/Data/DeleteViolationSuppression", s.ViolationSuppressionId);
+        if (ok) await LoadData();
+    }
+}

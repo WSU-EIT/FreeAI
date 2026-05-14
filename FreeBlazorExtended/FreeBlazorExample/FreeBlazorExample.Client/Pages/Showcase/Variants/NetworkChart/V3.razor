@@ -1,0 +1,135 @@
+@page "/showcase/networkchart/v3"
+@using FreeBlazorExtended.NetworkChart
+
+<div class="container-fluid py-4">
+    <h1>Interactive Network: Selection, Randomize, Switch Solver</h1>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            @if (_loadFailed) {
+                <div class="alert alert-danger" role="alert">The vis.js dependency did not load for this chart.</div>
+            }
+
+            <NetworkChart @ref="_chartRef"
+                          Nodes="_nodes"
+                          Relationships="_relationships"
+                          NetworkSolver="@_currentSolver"
+                          Seed="@_currentSeed"
+                          OnElementSelected="@(new Action<string>(OnNodeClicked))"
+                          OnRelationshipSelected="@(new Action<string>(OnEdgeClicked))"
+                          OnLoadFailed="@(new Action(HandleLoadFailed))"
+                          ElementId="interactive-net"
+                          StartNodeId="hub" />
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h2 class="h5">Controls</h2>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="RandomizeLayout">Randomize Layout</button>
+                    </div>
+
+                    <label for="solverSelect" class="form-label">Solver</label>
+                    <select id="solverSelect" class="form-select form-select-sm mb-3" value="@_currentSolver" @onchange="OnSolverChanged">
+                        <option value="repulsion">repulsion</option>
+                        <option value="barnesHut">barnesHut</option>
+                    </select>
+
+                    <p class="small mb-1"><strong>Current seed:</strong> @_currentSeed</p>
+                    <p class="small mb-0"><strong>Selected node:</strong> @(_selectedNode ?? "(none)")</p>
+                    <p class="small mb-0"><strong>Selected edge:</strong> @(_selectedEdge ?? "(none)")</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Selection Details</h2>
+                    <p class="small mb-1"><strong>Node label:</strong> @SelectedNodeLabel()</p>
+                    <p class="small mb-0"><strong>Edge label:</strong> @SelectedEdgeLabel()</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<NetworkChart.NetworkNode> _nodes = new()
+    {
+        new() { id = "hub", label = "Gateway", title = "Gateway", icon = new() { code = "f0ec", color = "#0d6efd", size = 60 } },
+        new() { id = "svc-a", label = "Service A", title = "Service A", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-b", label = "Service B", title = "Service B", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-c", label = "Service C", title = "Service C", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "db", label = "Database", title = "Database", icon = new() { code = "f1c0", color = "#6f42c1" } },
+        new() { id = "cache", label = "Cache", title = "Cache", icon = new() { code = "f1c0", color = "#fd7e14" } },
+        new() { id = "queue", label = "Queue", title = "Queue", icon = new() { code = "f07c", color = "#20c997" } },
+        new() { id = "worker", label = "Worker", title = "Worker", icon = new() { code = "f085", color = "#6610f2" } },
+        new() { id = "admin", label = "Admin UI", title = "Admin UI", icon = new() { code = "f3cd", color = "#dc3545" } },
+        new() { id = "audit", label = "Audit", title = "Audit store", icon = new() { code = "f15c", color = "#6c757d" } },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _relationships = new()
+    {
+        new() { id = "r1", from = "hub", to = "svc-a", label = "routes" },
+        new() { id = "r2", from = "hub", to = "svc-b", label = "routes" },
+        new() { id = "r3", from = "hub", to = "svc-c", label = "routes" },
+        new() { id = "r4", from = "svc-a", to = "db", label = "reads" },
+        new() { id = "r5", from = "svc-b", to = "cache", label = "caches", dashes = true },
+        new() { id = "r6", from = "svc-c", to = "queue", label = "publishes" },
+        new() { id = "r7", from = "queue", to = "worker", label = "drives" },
+        new() { id = "r8", from = "worker", to = "db", label = "writes" },
+        new() { id = "r9", from = "admin", to = "hub", label = "manages", color = "#dc3545" },
+        new() { id = "r10", from = "worker", to = "audit", label = "audits", dashes = true },
+        new() { id = "r11", from = "svc-b", to = "audit", label = "logs" },
+        new() { id = "r12", from = "svc-a", to = "cache", label = "warms" },
+        new() { id = "r13", from = "admin", to = "audit", label = "reviews", dashes = true },
+        new() { id = "r14", from = "hub", to = "admin", label = "serves" },
+    };
+
+    private FreeBlazorExtended.NetworkChart.NetworkChart? _chartRef;
+    private string _currentSeed = "0";
+    private string _currentSolver = "repulsion";
+    private string? _selectedNode;
+    private string? _selectedEdge;
+    private bool _loadFailed;
+
+    private void OnNodeClicked(string id)
+    {
+        _selectedNode = id;
+    }
+
+    private void OnEdgeClicked(string id)
+    {
+        _selectedEdge = id;
+    }
+
+    private void HandleLoadFailed()
+    {
+        _loadFailed = true;
+    }
+
+    private async Task RandomizeLayout()
+    {
+        if (_chartRef is not null) {
+            _currentSeed = await _chartRef.RandomizeLayout();
+        }
+    }
+
+    private async Task OnSolverChanged(ChangeEventArgs args)
+    {
+        _currentSolver = args.Value?.ToString() ?? "repulsion";
+        if (_chartRef is not null) {
+            await _chartRef.UpdateNetworkSolver(_currentSolver);
+        }
+    }
+
+    private string SelectedNodeLabel()
+    {
+        return _nodes.FirstOrDefault(node => node.id == _selectedNode)?.label ?? "(none)";
+    }
+
+    private string SelectedEdgeLabel()
+    {
+        return _relationships.FirstOrDefault(edge => edge.id == _selectedEdge)?.label ?? "(none)";
+    }
+}

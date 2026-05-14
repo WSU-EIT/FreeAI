@@ -1,0 +1,336 @@
+﻿@page "/showcase/getinput"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>GetInput Component</h1>
+            <p class="lead">A versatile input component supporting text, textarea, select, multiselect, radio, checkbox, password, and confirmation input types with validation and custom formatting.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A single Blazor component that renders any of 9 input types — text, textarea, select, multi-select, radio, checkbox, password, email, number — based on the InputType parameter, with a uniform Value/OnChange binding contract."
+        WhatEli5="One component that can be any kind of input box — text field, dropdown, checkboxes, password, number — just by changing one parameter. No need to remember different markup for each type."
+        Who=@(new[]{ "Developers building inline edit UX or quick-input dialogs where the field type varies", "Form generators that need to map a field type enum to a rendered input without a giant switch statement", "Any page that needs a consistent label + input + validation layout regardless of input type" })
+        WhenUse=@(new[]{ "Inline edit controls where the type is determined at runtime", "Modal dialogs asking for a single value (GetInput in a dialog pattern)", "Dynamic form sections where field types come from configuration" })
+        WhenNot=@(new[]{ "Full structured forms with many fields — use individual form controls for readability", "The FeatureDynamicForms builder, which already uses this internally" })
+        Why="Switching input types across a form requires memorising different HTML elements and Blazor binding patterns. This unifies them under one component so adding a new field type is a one-parameter change."
+        TechNotes=@(new[]{ "InputType enum: Text, Textarea, Select, MultiSelect, Radio, Checkbox, Password, Email, Number", "Options parameter (List<string>) used by Select, MultiSelect, Radio, Checkbox — ignored by scalar types", "Value is always string; multi-value types serialize to comma-separated strings", "Rows parameter only applied when InputType=Textarea", "Required parameter adds the native HTML required attribute and a visual RequiredIndicator marker" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Text Input</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard text input field.</p>
+                    <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="Enter your name..."
+                        Instructions="Full Name" OnInputAccepted="@((Action<string>)(val => { _textInput = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_textInput)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>You entered:</strong> @_textInput
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Textarea Input</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-line text input for longer content.</p>
+                    <GetInput UserInputType="GetInput.InputType.Textarea" PlaceholderText="Enter your message..."
+                        Instructions="Message" MultiselectRows="4"
+                        OnInputAccepted="@((Action<string>)(val => { _textareaInput = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_textareaInput)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Message length:</strong> @_textareaInput.Length characters
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Select Dropdown</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Single select dropdown with predefined options.</p>
+                    <GetInput UserInputType="GetInput.InputType.Select" Instructions="Choose an option"
+                        UserInputOptions="@_optionsDict"
+                        OnInputAccepted="@((Action<string>)(val => { _selectedOption = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_selectedOption)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_selectedOption
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Multiselect</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Select multiple options at once.</p>
+                    <GetInput UserInputType="GetInput.InputType.Multiselect" Instructions="Choose items"
+                        UserInputOptions="@_optionsDict" MultiselectRows="4"
+                        OnInputAccepted="@((Action<List<string>>)(vals => { _multiSelectValue = string.Join(", ", vals); StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_multiSelectValue)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected items:</strong> @_multiSelectValue
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Radio Buttons</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Single choice from multiple radio options.</p>
+                    <GetInput UserInputType="GetInput.InputType.Radio" Instructions="Select one"
+                        UserInputOptions="@_radioOptionsDict"
+                        OnInputAccepted="@((Action<string>)(val => { _radioValue = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_radioValue)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_radioValue
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Checkboxes</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multiple checkbox selections.</p>
+                    <GetInput UserInputType="GetInput.InputType.Checkbox" Instructions="Select items"
+                        UserInputOptions="@_checkboxOptionsDict"
+                        OnInputAccepted="@((Action<List<string>>)(vals => { _checkboxValue = string.Join(", ", vals); StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_checkboxValue)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected:</strong> @_checkboxValue
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Email Input</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Email field with browser validation.</p>
+                    <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="user@example.com"
+                        Instructions="Email Address"
+                        OnInputAccepted="@((Action<string>)(val => { _emailInput = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_emailInput)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Email:</strong> @_emailInput
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Number Input</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Numeric input field.</p>
+                    <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="0"
+                        Instructions="Enter a number"
+                        OnInputAccepted="@((Action<string>)(val => { _numberInput = val; StateHasChanged(); }))" />
+                    @if (!string.IsNullOrEmpty(_numberInput)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Number:</strong> @_numberInput
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>UserInputType</code></td>
+                                    <td>GetInput.InputType?</td>
+                                    <td>Text</td>
+                                    <td>Type of input: Text, Textarea, Select, Multiselect, Radio, Checkbox, Confirmation</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Instructions</code></td>
+                                    <td>string?</td>
+                                    <td>-</td>
+                                    <td>HTML rendered above the input as a label/instruction</td>
+                                </tr>
+                                <tr>
+                                    <td><code>PlaceholderText</code></td>
+                                    <td>string?</td>
+                                    <td>-</td>
+                                    <td>Placeholder text for text/textarea/select inputs</td>
+                                </tr>
+                                <tr>
+                                    <td><code>UserInputOptions</code></td>
+                                    <td>Dictionary&lt;string,string&gt;?</td>
+                                    <td>-</td>
+                                    <td>Options for select/multiselect/radio/checkbox (key=value, value=label)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DefaultValue</code></td>
+                                    <td>string?</td>
+                                    <td>-</td>
+                                    <td>Pre-fills the input with this value on initialisation</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MultiselectRows</code></td>
+                                    <td>int?</td>
+                                    <td>5</td>
+                                    <td>Number of visible rows for Multiselect and Textarea types</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OnInputAccepted</code></td>
+                                    <td>Delegate?</td>
+                                    <td>-</td>
+                                    <td>Called with the current value (string or List&lt;string&gt; or bool depending on type)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Placeholder</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>Placeholder text for text inputs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/demo"
+
+&lt;GetInput UserInputType="GetInput.InputType.Text"
+          PlaceholderText="Enter your name..."
+          Instructions="Full Name"
+          OnInputAccepted="@@((Action&lt;string&gt;)(val =&gt; {{ _value = val; StateHasChanged(); }}))" /&gt;
+
+&lt;GetInput UserInputType="GetInput.InputType.Select"
+          Instructions="Choose Option"
+          UserInputOptions="@@_optionsDict" /&gt;
+
+@@code {{
+    private string _value = "";
+    private Dictionary&lt;string, string&gt; _optionsDict = new() {{
+        {{ "opt1", "Option 1" }},
+        {{ "opt2", "Option 2" }},
+        {{ "opt3", "Option 3" }}
+    }};
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>All inputs include associated &lt;label&gt; elements for screen readers</li>
+                        <li>Supports keyboard navigation for all input types</li>
+                        <li>Required fields are marked with asterisk (*) and aria-required attribute</li>
+                        <li>Validation messages are announced to screen readers</li>
+                        <li>Color is never the only indicator of required or error states</li>
+                        <li>All form controls have sufficient color contrast</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected string _textInput = "";
+    protected string _textareaInput = "";
+    protected string _selectedOption = "";
+    protected string _multiSelectValue = "";
+    protected string _radioValue = "";
+    protected string _checkboxValue = "";
+    protected string _emailInput = "";
+    protected string _numberInput = "";
+
+    protected Dictionary<string, string> _optionsDict = new() {
+        { "opt1", "Option 1" },
+        { "opt2", "Option 2" },
+        { "opt3", "Option 3" },
+        { "opt4", "Option 4" }
+    };
+
+    protected Dictionary<string, string> _radioOptionsDict = new() {
+        { "choice_a", "Choice A" },
+        { "choice_b", "Choice B" },
+        { "choice_c", "Choice C" }
+    };
+
+    protected Dictionary<string, string> _checkboxOptionsDict = new() {
+        { "item1", "Item 1" },
+        { "item2", "Item 2" },
+        { "item3", "Item 3" },
+        { "item4", "Item 4" }
+    };
+}

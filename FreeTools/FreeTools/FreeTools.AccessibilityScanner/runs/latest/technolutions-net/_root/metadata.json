@@ -1,0 +1,98 @@
+{
+  "PagePath": "/",
+  "Url": "https://technolutions.net/",
+  "FinalUrl": "https://technolutions.com/",
+  "Title": "Technolutions",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 273620,
+  "ScreenshotSizeBytes": 423047,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 7,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 423047
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://images.squarespace-cdn.com/content/v1/641f3e24b36a211ec50bf362/cc1ae647-386c-4a2e-963c-f09cce557826/technolutions-logo-png-output.png?format=1500w",
+      "AltText": "Technolutions"
+    },
+    {
+      "SourceUrl": "https://images.squarespace-cdn.com/content/v1/641f3e24b36a211ec50bf362/509d1d06-9a69-4c62-8cbc-0da3ee293e0c/logo_Slate-white-resized.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://images.squarespace-cdn.com/content/v1/641f3e24b36a211ec50bf362/feb5b2fc-e2bc-4c6f-a22f-50239ff4f64b/Alexander\u002BHamilton\u002BAdvancement\u002BRecord.png",
+      "AltText": "Example of a Person Record within Slate"
+    },
+    {
+      "SourceUrl": "https://images.squarespace-cdn.com/content/v1/641f3e24b36a211ec50bf362/13ba6d5b-19bc-439b-9525-688bf2492269/Mobile\u002BSlate\u002Bwith\u002BDarkTwighlight\u002BMode.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://images.squarespace-cdn.com/content/v1/641f3e24b36a211ec50bf362/69c742e7-d920-4bc4-b337-ca45d31fcb4c/Technolutions",
+      "AltText": "Technolutions"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 10,
+    "Critical": 0,
+    "Serious": 8,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 7,
+        "Critical": 0,
+        "Serious": 7,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "accept-ranges": "bytes",
+    "age": "20086",
+    "alt-svc": "h3=\u0022:443\u0022; ma=86400",
+    "content-encoding": "gzip",
+    "content-length": "42061",
+    "content-type": "text/html;charset=utf-8",
+    "date": "Wed, 18 Feb 2026 20:34:03 GMT",
+    "etag": "W/\u0022e5e4f1f7d8c624a1686dc7f7a77d6b8a--gzip\u0022",
+    "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+    "server": "Squarespace",
+    "strict-transport-security": "max-age=15552000",
+    "vary": "Accept-Encoding",
+    "via": "1.1 089b3269dce4de39b2453c90ce8c9410.cloudfront.net (CloudFront)",
+    "x-amz-cf-id": "6l2PTxrmcRiGYMO1kjwYj_uU21-vc6UkzXAjqqLT2FpsA5gltfJ_ng==",
+    "x-amz-cf-pop": "SEA900-P5",
+    "x-cache": "RefreshHit from cloudfront",
+    "x-content-type-options": "nosniff",
+    "x-contextid": "ov9rxXUI/xDgrpe7u",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "CapturedAt": "2026-02-19T02:12:06.7564619Z"
+}

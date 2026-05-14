@@ -1,0 +1,155 @@
+{
+  "PagePath": "/residence-halls/global-scholars-hall/",
+  "Url": "https://housing.wsu.edu/residence-halls/global-scholars-hall/",
+  "FinalUrl": null,
+  "Title": "Global Scholars Hall",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 183365,
+  "ScreenshotSizeBytes": 329242,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 11,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 329242
+    }
+  ],
+  "ImageCount": 22,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ucgnwxnb/gsh-single.jpg",
+      "AltText": "GSH Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cxtplxl1/gsh-study-room.jpg",
+      "AltText": "GSH Study Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cenjr1c5/gsh-apartment-kitchen.jpg",
+      "AltText": "GSH Apartment Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bpolkmbu/gsh-double-bath.jpg",
+      "AltText": "GSH Double Bath"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dq2pwky5/gsh-double-wide.jpg",
+      "AltText": "GSH Double Wide"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ak4nfu13/gsh-double.jpg",
+      "AltText": "GSH Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/im4dlkjr/gsh-exterior-winter.jpg",
+      "AltText": "GSH Exterior Winter"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/urrkph3v/gsh-lobby-pool.jpg",
+      "AltText": "GSH Lobby Pool"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wjwlnzf2/gsh-quiet-lounge.jpg",
+      "AltText": "GSH Quiet Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zihdmig2/gsh-single-bath.jpg",
+      "AltText": "GSH Single Bath"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/iflcciz5/gsh-single-closet.jpg",
+      "AltText": "GSH Single Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ee1bezen/gsh-single-sink.jpg",
+      "AltText": "GSH Single Sink"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eitb35aq/valeria-perez.jpg",
+      "AltText": "Valeria Perez"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/312liiel/northside-student-eating-1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/isildobq/northside-students-outside.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mzjlgv24/northside-area-desk-interior.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/yttnkbcr/chinook-student-3.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zhqny2rj/gsh-floor-1.jpg",
+      "AltText": "Global scholars first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1jndeu3g/gsh-floor-2.jpg",
+      "AltText": "Global Scholars second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bcknr0kf/gsh-floor-3.jpg",
+      "AltText": "Global Scholars third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/aykj5ou0/gsh-floor-4.jpg",
+      "AltText": "Global Scholars fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2lzbnop3/gsh-floor-5.jpg",
+      "AltText": "Global Scholars fifth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:14:43 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:14:43.5905884Z"
+}

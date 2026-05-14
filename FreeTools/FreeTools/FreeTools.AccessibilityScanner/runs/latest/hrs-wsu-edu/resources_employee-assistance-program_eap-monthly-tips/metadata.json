@@ -1,0 +1,75 @@
+{
+  "PagePath": "/resources/employee-assistance-program/eap-monthly-tips/",
+  "Url": "https://hrs.wsu.edu/resources/employee-assistance-program/eap-monthly-tips/",
+  "FinalUrl": null,
+  "Title": "EAP Monthly Tips \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 79618,
+  "ScreenshotSizeBytes": 140693,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 140693
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2017/01/helpful-TIPs.png",
+      "AltText": "A yellow post-it note with the text: Helpful Tips."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/workplace-conflict-poster.jpg",
+      "AltText": "A poster featuring two people pointing their fingers at each other and yelling. The heading is: Workplace Conflict? And the poster encouraging trying mediation."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:27:17 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:27:17 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/11816\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=11816\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:27:16.9288872Z"
+}

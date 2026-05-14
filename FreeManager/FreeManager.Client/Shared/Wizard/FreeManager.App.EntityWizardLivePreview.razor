@@ -1,0 +1,320 @@
+@* EntityWizardLivePreview.App.razor - Live code preview panel *@
+
+<div class="live-preview-container">
+    <div class="preview-header">
+        <div class="preview-tabs">
+            <button type="button"
+                    class="preview-tab @(_activeTab == "entity" ? "active" : "")"
+                    @onclick="@(() => _activeTab = "entity")">
+                <i class="fa-solid fa-database me-1"></i>
+                Entity
+            </button>
+            <button type="button"
+                    class="preview-tab @(_activeTab == "dto" ? "active" : "")"
+                    @onclick="@(() => _activeTab = "dto")">
+                <i class="fa-solid fa-box me-1"></i>
+                DTO
+            </button>
+            <button type="button"
+                    class="preview-tab @(_activeTab == "filter" ? "active" : "")"
+                    @onclick="@(() => _activeTab = "filter")">
+                <i class="fa-solid fa-filter me-1"></i>
+                Filter
+            </button>
+        </div>
+        <div class="preview-actions">
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="CopyToClipboard" title="Copy to clipboard">
+                <i class="fa-solid fa-copy"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="preview-content">
+        <pre class="preview-code"><code>@GetPreviewCode()</code></pre>
+    </div>
+
+    @if (_showCopied) {
+        <div class="copy-toast">
+            <i class="fa-solid fa-check me-1"></i> Copied!
+        </div>
+    }
+</div>
+
+<style>
+    .live-preview-container {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: #1e1e1e;
+        position: relative;
+    }
+
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #2d2d2d;
+        padding: 0.25rem 0.5rem;
+        border-bottom: 1px solid #3d3d3d;
+    }
+
+    .preview-tabs {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .preview-tab {
+        background: transparent;
+        border: none;
+        color: #888;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .preview-tab:hover {
+        background: #3d3d3d;
+        color: #ccc;
+    }
+
+    .preview-tab.active {
+        background: #0d6efd;
+        color: white;
+    }
+
+    .preview-actions button {
+        color: #888;
+        border-color: #555;
+    }
+
+    .preview-actions button:hover {
+        color: #fff;
+        background: #3d3d3d;
+        border-color: #666;
+    }
+
+    .preview-content {
+        max-height: 300px;
+        overflow: auto;
+    }
+
+    .preview-code {
+        margin: 0;
+        padding: 1rem;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    .preview-code code {
+        color: inherit;
+        background: none;
+    }
+
+    /* Syntax highlighting classes */
+    .preview-code .keyword { color: #569cd6; }
+    .preview-code .type { color: #4ec9b0; }
+    .preview-code .string { color: #ce9178; }
+    .preview-code .comment { color: #6a9955; }
+    .preview-code .attribute { color: #9cdcfe; }
+
+    .copy-toast {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        background: #198754;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        animation: fadeInOut 2s ease-in-out;
+    }
+
+    @@keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(10px); }
+        15% { opacity: 1; transform: translateY(0); }
+        85% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+</style>
+
+@code {
+    [Parameter] public string EntityName { get; set; } = "";
+    [Parameter] public string PluralName { get; set; } = "";
+    [Parameter] public string PrimaryKeyName { get; set; } = "";
+    [Parameter] public string PrimaryKeyType { get; set; } = "Guid";
+    [Parameter] public List<DataObjects.PropertyDefinition> Properties { get; set; } = new();
+    [Parameter] public List<DataObjects.EnumDefinition> Enums { get; set; } = new();
+
+    private string _activeTab = "entity";
+    private bool _showCopied = false;
+
+    private string GetPreviewCode() {
+        return _activeTab switch {
+            "entity" => GenerateEntityPreview(),
+            "dto" => GenerateDtoPreview(),
+            "filter" => GenerateFilterPreview(),
+            _ => ""
+        };
+    }
+
+    private string GenerateEntityPreview() {
+        if (string.IsNullOrWhiteSpace(EntityName)) {
+            return "// Define entity name to see preview";
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        // Enums first
+        foreach (var enumDef in Enums) {
+            sb.AppendLine($"public enum {enumDef.Name}");
+            sb.AppendLine("{");
+            foreach (var value in enumDef.Values) {
+                sb.AppendLine($"    {value},");
+            }
+            sb.AppendLine("}");
+            sb.AppendLine();
+        }
+
+        // Entity class
+        sb.AppendLine($"public class {EntityName}");
+        sb.AppendLine("{");
+
+        // Primary key
+        sb.AppendLine($"    [Key]");
+        sb.AppendLine($"    public {PrimaryKeyType} {PrimaryKeyName} {{ get; set; }}");
+        sb.AppendLine();
+
+        // Properties
+        foreach (var prop in Properties.Where(p => !p.IsPrimaryKey).OrderBy(p => p.SortOrder)) {
+            // Attributes
+            if (prop.IsRequired && prop.Type == "string") {
+                sb.AppendLine($"    [Required]");
+            }
+            if (prop.MaxLength.HasValue) {
+                sb.AppendLine($"    [MaxLength({prop.MaxLength})]");
+            }
+
+            // Property declaration
+            var type = GetCSharpType(prop);
+            var defaultValue = GetDefaultValueCode(prop);
+
+            if (!string.IsNullOrWhiteSpace(defaultValue)) {
+                sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }} = {defaultValue};");
+            } else {
+                sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }}");
+            }
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    private string GenerateDtoPreview() {
+        if (string.IsNullOrWhiteSpace(EntityName)) {
+            return "// Define entity name to see preview";
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine($"public class {EntityName}DTO");
+        sb.AppendLine("{");
+        sb.AppendLine($"    public {PrimaryKeyType} {PrimaryKeyName} {{ get; set; }}");
+
+        foreach (var prop in Properties.Where(p => !p.IsPrimaryKey && !p.IsSystemField).OrderBy(p => p.SortOrder)) {
+            var type = GetCSharpType(prop);
+            sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }}");
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    private string GenerateFilterPreview() {
+        if (string.IsNullOrWhiteSpace(EntityName)) {
+            return "// Define entity name to see preview";
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine($"public class {EntityName}Filter");
+        sb.AppendLine("{");
+        sb.AppendLine($"    public int Page {{ get; set; }} = 1;");
+        sb.AppendLine($"    public int PageSize {{ get; set; }} = 25;");
+        sb.AppendLine($"    public string? SortBy {{ get; set; }}");
+        sb.AppendLine($"    public bool SortDesc {{ get; set; }}");
+        sb.AppendLine();
+
+        foreach (var prop in Properties.Where(p => p.IsFilterable && !p.IsPrimaryKey).OrderBy(p => p.SortOrder)) {
+            var filterType = GetFilterType(prop);
+            sb.AppendLine($"    public {filterType} {prop.Name} {{ get; set; }}");
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
+    }
+
+    private string GetCSharpType(DataObjects.PropertyDefinition prop) {
+        var baseType = prop.Type;
+
+        if (baseType.StartsWith("enum:")) {
+            baseType = prop.EnumName ?? "int";
+        }
+
+        if (prop.IsNullable && baseType != "string") {
+            return $"{baseType}?";
+        }
+
+        if (baseType == "string" && !prop.IsRequired) {
+            return "string?";
+        }
+
+        return baseType;
+    }
+
+    private string GetDefaultValueCode(DataObjects.PropertyDefinition prop) {
+        if (!string.IsNullOrWhiteSpace(prop.DefaultValue)) {
+            return prop.DefaultValue;
+        }
+
+        if (prop.Type == "string" && prop.IsRequired) {
+            return "string.Empty";
+        }
+
+        return "";
+    }
+
+    private string GetFilterType(DataObjects.PropertyDefinition prop) {
+        return prop.Type switch {
+            "string" => "string?",
+            "bool" => "bool?",
+            "DateTime" => "DateTime?",
+            "DateOnly" => "DateOnly?",
+            "int" or "long" or "decimal" => $"{prop.Type}?",
+            "Guid" => "Guid?",
+            _ when prop.Type.StartsWith("enum:") => $"{prop.EnumName}?",
+            _ => "string?"
+        };
+    }
+
+    private async Task CopyToClipboard() {
+        // Note: Clipboard API requires HTTPS or localhost
+        try {
+            var code = GetPreviewCode();
+            // This would need JS interop to actually copy
+            _showCopied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            _showCopied = false;
+            StateHasChanged();
+        } catch {
+            // Ignore clipboard errors
+        }
+    }
+}

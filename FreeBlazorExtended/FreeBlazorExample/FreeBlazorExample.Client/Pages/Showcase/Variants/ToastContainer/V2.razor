@@ -1,0 +1,56 @@
+@page "/showcase/toastcontainer/v2"
+@using FreeBlazorExtended.Toast
+@inject FreeBlazorExtended.Foundation.Services.NotificationService Notifications
+
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Top-End With Timestamp &amp; Progress Bar</h1>
+    <p class="text-muted mb-4">
+        Same <code>NotificationService</code>, different <code>Position</code> and display options.
+        Timestamps and the draining progress bar are both enabled.
+    </p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">Fire Notifications</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-success btn-sm" @onclick='() => Notifications.ShowSuccess("Invoice #1042 was emailed.", "Invoice Sent")'>
+                        <i class="fas fa-envelope me-1"></i> Invoice Sent
+                    </button>
+                    <button class="btn btn-danger btn-sm" @onclick='() => Notifications.ShowError("Payment gateway timed out. Please retry.", "Payment Failed")'>
+                        <i class="fas fa-credit-card me-1"></i> Payment Failed
+                    </button>
+                    <button class="btn btn-warning btn-sm" @onclick='() => Notifications.ShowWarning("Quota at 90%. Upgrade your plan soon.", "Quota Warning")'>
+                        <i class="fas fa-gauge me-1"></i> Quota Warning
+                    </button>
+                    <button class="btn btn-primary btn-sm" @onclick='() => Notifications.ShowInfo("Background sync completed (42 records).", "Sync Done")'>
+                        <i class="fas fa-rotate me-1"></i> Sync Done
+                    </button>
+                    <button class="btn btn-secondary btn-sm" @onclick="() => Notifications.ClearAll()">
+                        <i class="fas fa-trash me-1"></i> Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header">Component Parameters Used</div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>Position</code></td><td><code>ToastPosition.TopEnd</code></td></tr>
+                            <tr><td><code>ShowTimestamp</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>ShowProgressBar</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>ShowDismissButton</code></td><td><code>true</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ToastContainer Position="ToastPosition.TopEnd"
+                    ShowTimestamp="true"
+                    ShowProgressBar="true" />
+</div>

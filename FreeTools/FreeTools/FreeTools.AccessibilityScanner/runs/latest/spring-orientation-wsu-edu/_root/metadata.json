@@ -1,0 +1,89 @@
+{
+  "PagePath": "/",
+  "Url": "https://spring-orientation.wsu.edu/",
+  "FinalUrl": "https://orientation.wsu.edu/",
+  "Title": "New Coug Orientation | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 73101,
+  "ScreenshotSizeBytes": 505311,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 505311
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3200/2020/04/Aerial_9405-e1588261556665.jpg",
+      "AltText": "WSU Pullman Campus"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3200/2024/09/OC-Carlos-792x541.jpg",
+      "AltText": "OC Carlos helps new Cougs register for class"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3200/2024/09/Spring-NCO-1-792x528.jpg",
+      "AltText": "Students sitting at Spring Orientation Welcome"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3200/2023/01/Global-Scholars-Inaugural-Move-in-_-3129-e1674143454352-792x749.jpg",
+      "AltText": "Student\u0027s father proudly displaying WSU DAD t-shirt"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-wpsites/uploads/sites/3200/2024/03/LaB-792x635.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:07:54 GMT",
+    "etag": "\u00223a6b4057dc38e70a16dfbaaa3b16101c\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:03:38 GMT",
+    "link": "\u003Chttps://orientation.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://orientation.wsu.edu/wp-json/wp/v2/pages/3048\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://orientation.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "HIT",
+    "x-cache-status": "HIT"
+  },
+  "CapturedAt": "2026-02-19T02:07:54.2721957Z"
+}

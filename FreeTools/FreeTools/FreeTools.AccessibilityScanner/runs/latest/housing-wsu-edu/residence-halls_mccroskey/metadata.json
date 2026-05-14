@@ -1,0 +1,127 @@
+{
+  "PagePath": "/residence-halls/mccroskey/",
+  "Url": "https://housing.wsu.edu/residence-halls/mccroskey/",
+  "FinalUrl": null,
+  "Title": "McCroskey",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 106215,
+  "ScreenshotSizeBytes": 335461,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 335461
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 5,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3flm5wbh/mccroskey-single.jpg",
+      "AltText": "Mccroskey Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zxiopcjb/mccroskey-student-room.jpg",
+      "AltText": "Mccroskey Student Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/q2kaskgp/mccroskey-double.jpg",
+      "AltText": "Mccroskey Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2xvhmjnf/mccroskey-exterior-side.jpg",
+      "AltText": "Mccroskey Exterior Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/etsbz3mr/mccroskey-room-side.jpg",
+      "AltText": "Mccroskey Room Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/oevb3ys4/mccroskey-single-wide.jpg",
+      "AltText": "Mccroskey Single Wide"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zzelvta2/kelly-chege-2.jpg",
+      "AltText": "Kelly Chege"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cwhn2uss/hillside-students-eating-2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vfthoszu/mccroskey-student.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rvtl4xwf/central-campus-2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mcbn4kjv/hillside-area-desk.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ncwdnjte/chinook-student-5.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/nq3i1aqj/mccroskey-first-floor.png",
+      "AltText": "McCroskey first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/otknwv30/floor-plan-mccroskey-2nd-floor.png",
+      "AltText": "McCroskey second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gllnltfe/floor-plan-mccroskey-3rd-floor.png",
+      "AltText": "McCroskey third floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:15:00 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:15:00.0805576Z"
+}

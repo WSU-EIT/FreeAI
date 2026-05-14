@@ -1,0 +1,119 @@
+{
+  "PagePath": "/training/training-frequently-asked-questions/",
+  "Url": "https://hrs.wsu.edu/training/training-frequently-asked-questions/",
+  "FinalUrl": "https://hrs.wsu.edu/training/skillsoft-percipio/percipio-faqs/",
+  "Title": "Percipio Frequently Asked Questions \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 138182,
+  "ScreenshotSizeBytes": 1906916,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 1906916
+    }
+  ],
+  "ImageCount": 13,
+  "ImagesMissingAlt": 13,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/07/rn_jul1202-mylearning.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/08/new-exp-assignment.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/01/Screenshot-2024-01-05-095146.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/01/Screenshot-2024-01-05-101734.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/07/MYLearning_activity1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/08/Screenshot-2024-08-06-100423.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/07/MYLearning_achievements2-1180x849.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/08/1b-certificate-1180x582.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/04/Screenshot-2024-04-05-090136.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/04/waitlist-withdraw-1180x305.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/07/MYLearning_live-learning-1180x746.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/04/new-course-notification-1180x355.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/05/course-progress-w.w_o-complete-modules-1.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:31:11 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:31:11 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/42569\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=42569\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:31:10.9561321Z"
+}

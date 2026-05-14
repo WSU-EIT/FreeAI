@@ -1,0 +1,390 @@
+﻿@*
+    Reusable single-focus Carousel / Slideshow component.
+
+    One large slide at a time with optional Prev/Next arrows, an optional
+    horizontal filmstrip of mini-thumbnails, optional dot indicators, and
+    optional auto-play. Pure server-side: uses System.Timers.Timer — no
+    JavaScript interop, no host-app dependencies.
+
+    Source pattern adapted from
+    FreeExamples/Pages/Examples/FreeExamples.App.Pages.Carousel.razor.
+    Distinct from ImageGallery (grid + lightbox); this one is the
+    product-page / hero-slider pattern.
+*@
+
+@implements IDisposable
+
+<div class="carousel-component @Class"
+     role="region"
+     aria-roledescription="carousel"
+     aria-label="@(AriaLabel ?? "Image carousel")"
+     @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave"
+     @onkeydown="HandleKeydown"
+     tabindex="0">
+
+    @if (Slides is null || Slides.Count == 0) {
+        <div class="alert alert-secondary mb-0" role="status">
+            <i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>
+            No slides to display.
+        </div>
+    } else {
+        var slide = Slides[_currentIndex];
+        bool atStart = _currentIndex == 0;
+        bool atEnd = _currentIndex == Slides.Count - 1;
+        bool prevDisabled = !Loop && atStart;
+        bool nextDisabled = !Loop && atEnd;
+        bool hasOverlay = !string.IsNullOrWhiteSpace(slide.Title)
+                          || !string.IsNullOrWhiteSpace(slide.Caption);
+
+        <div class="card shadow-sm border-0 position-relative carousel-focus"
+             aria-roledescription="slide"
+             aria-label="@($"Slide {_currentIndex + 1} of {Slides.Count}")">
+
+            @* Focus image (or LinkUrl click-through) *@
+            @if (!string.IsNullOrWhiteSpace(slide.LinkUrl)) {
+                <a href="@slide.LinkUrl" class="d-block">
+                    <img src="@slide.ImageUrl"
+                         alt="@(slide.Alt ?? slide.Title ?? "")"
+                         class="w-100 rounded-top"
+                         style="@FocusStyle" />
+                </a>
+            } else {
+                <img src="@slide.ImageUrl"
+                     alt="@(slide.Alt ?? slide.Title ?? "")"
+                     class="w-100 rounded-top"
+                     style="@FocusStyle" />
+            }
+
+            @* Caption overlay *@
+            @if (hasOverlay) {
+                <div class="position-absolute bottom-0 start-0 end-0 px-3 py-2 text-white"
+                     style="background: rgba(0,0,0,0.55);">
+                    @if (!string.IsNullOrWhiteSpace(slide.Title)) {
+                        <div class="fw-semibold">@slide.Title</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(slide.Caption)) {
+                        <div class="small opacity-75">@slide.Caption</div>
+                    }
+                </div>
+            }
+
+            @* Prev / Next arrows *@
+            @if (ShowArrows && Slides.Count > 1) {
+                <button type="button"
+                        class="btn btn-dark btn-lg position-absolute top-50 start-0 translate-middle-y ms-2 opacity-75"
+                        @onclick="Prev"
+                        disabled="@prevDisabled"
+                        aria-label="Previous slide">
+                    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button"
+                        class="btn btn-dark btn-lg position-absolute top-50 end-0 translate-middle-y me-2 opacity-75"
+                        @onclick="Next"
+                        disabled="@nextDisabled"
+                        aria-label="Next slide">
+                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </button>
+            }
+
+            @* Counter badge *@
+            <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-dark bg-opacity-75">
+                    @(_currentIndex + 1) / @Slides.Count
+                </span>
+            </div>
+        </div>
+
+        @* Dot indicators (alternative to filmstrip) *@
+        @if (ShowDots && Slides.Count > 1) {
+            <div class="d-flex justify-content-center gap-2 mt-2" role="tablist" aria-label="Slide indicators">
+                @for (int i = 0; i < Slides.Count; i++) {
+                    int idx = i;
+                    bool isCurrent = idx == _currentIndex;
+                    <button type="button"
+                            class="btn p-0 rounded-circle border-0 @(isCurrent ? "bg-primary" : "bg-secondary opacity-50")"
+                            style="width:12px; height:12px;"
+                            role="tab"
+                            aria-selected="@(isCurrent ? "true" : "false")"
+                            aria-label="@($"Go to slide {idx + 1}")"
+                            @onclick="@(() => GoTo(idx))"></button>
+                }
+            </div>
+        }
+
+        @* Filmstrip thumbnails *@
+        @if (ShowFilmstrip && Slides.Count > 1) {
+            <div class="card shadow-sm border-0 mt-2">
+                <div class="card-body py-2 d-flex gap-2 overflow-auto" role="tablist" aria-label="Slide thumbnails">
+                    @for (int i = 0; i < Slides.Count; i++) {
+                        int idx = i;
+                        var thumb = Slides[i];
+                        bool isCurrent = idx == _currentIndex;
+                        string thumbSrc = !string.IsNullOrWhiteSpace(thumb.ThumbnailUrl)
+                            ? thumb.ThumbnailUrl!
+                            : thumb.ImageUrl;
+                        <button type="button"
+                                class="btn p-0 border-0 flex-shrink-0 @(isCurrent ? "border border-3 border-primary shadow" : "opacity-50")"
+                                style="width:80px; height:60px;"
+                                role="tab"
+                                aria-selected="@(isCurrent ? "true" : "false")"
+                                title="@(thumb.Title ?? $"Slide {idx + 1}")"
+                                @onclick="@(() => GoTo(idx))">
+                            <img src="@thumbSrc"
+                                 alt="@(thumb.Alt ?? thumb.Title ?? "")"
+                                 class="w-100 h-100 rounded"
+                                 style="object-fit:cover;" />
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Additional CSS class(es) applied to the outer wrapper <c>&lt;div&gt;</c>.
+    /// </summary>
+    [Parameter] public string Class { get; set; } = "";
+
+    /// <summary>Accessible label for the outer carousel <c>region</c> landmark.</summary>
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>
+    /// The slides to cycle through.
+    /// <para><b>Required.</b> Each <see cref="CarouselSlide"/> must have at least an
+    /// <see cref="CarouselSlide.ImageUrl"/>.</para>
+    /// </summary>
+    [Parameter] public List<CarouselSlide> Slides { get; set; } = new();
+
+    /// <summary>
+    /// Zero-based index of the slide displayed on first render.
+    /// Clamped into [0, Slides.Count−1]. Default <c>0</c>.
+    /// </summary>
+    [Parameter] public int InitialSlideIndex { get; set; } = 0;
+
+    /// <summary>
+    /// When <c>true</c>, start auto-advancing slides immediately on initialization.
+    /// Pairs with <see cref="AutoPlayInterval"/> and <see cref="PauseOnHover"/>.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool AutoPlay { get; set; } = false;
+
+    /// <summary>
+    /// Time between auto-play advances. Default <c>5 seconds</c>.
+    /// Minimum enforced at 100 ms.
+    /// </summary>
+    [Parameter] public TimeSpan AutoPlayInterval { get; set; } = TimeSpan.FromSeconds(5);
+
+    /// <summary>
+    /// When <c>true</c> (default), pauses auto-play while the mouse cursor is over
+    /// the carousel and resumes when it leaves.
+    /// </summary>
+    [Parameter] public bool PauseOnHover { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a horizontal filmstrip of 80×60px
+    /// thumbnail buttons beneath the main slide. Clicking a thumbnail navigates
+    /// directly to that slide.
+    /// </summary>
+    [Parameter] public bool ShowFilmstrip { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders Previous and Next arrow buttons
+    /// overlaid on the left and right edges of the main slide.
+    /// </summary>
+    [Parameter] public bool ShowArrows { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, renders small dot indicator buttons below the main slide
+    /// (can be used alongside or instead of the filmstrip). Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ShowDots { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c> (default), wraps from the last slide back to the first
+    /// (and vice versa) on navigation and auto-play.
+    /// When <c>false</c>, auto-play stops at the last slide.
+    /// </summary>
+    [Parameter] public bool Loop { get; set; } = true;
+
+    /// <summary>
+    /// Inline style applied to the main focus <c>&lt;img&gt;</c> element.
+    /// Default: <c>"height:400px; object-fit:cover;"</c>.
+    /// Override to change the hero height or fit mode.
+    /// </summary>
+    [Parameter] public string FocusStyle { get; set; } = "height:400px; object-fit:cover;";
+
+    /// <summary>
+    /// Fired whenever the active slide changes (auto-play advance, arrow click, or
+    /// filmstrip click). The argument is the new zero-based slide index.
+    /// </summary>
+    [Parameter] public EventCallback<int> OnSlideChanged { get; set; }
+
+    private int _currentIndex;
+    private System.Timers.Timer? _autoPlayTimer;
+    private bool _autoPlayRunning;
+    private bool _hoverPaused;
+    private bool _disposed;
+
+    protected override void OnInitialized()
+    {
+        _currentIndex = ClampIndex(InitialSlideIndex);
+
+        if (AutoPlay && Slides is { Count: > 1 }) {
+            StartAutoPlay();
+        }
+    }
+
+    private int ClampIndex(int value)
+    {
+        if (Slides is null || Slides.Count == 0) return 0;
+        if (value < 0) return 0;
+        if (value >= Slides.Count) return Slides.Count - 1;
+        return value;
+    }
+
+    // ── Navigation ──────────────────────────────────────────────────
+
+    /// <summary>Advance to the next slide. Wraps if Loop=true; stops auto-play at end if Loop=false.</summary>
+    public void Next()
+    {
+        if (Slides is null || Slides.Count == 0) return;
+
+        if (_currentIndex >= Slides.Count - 1) {
+            if (Loop) {
+                SetIndex(0);
+            } else {
+                // Reached end, no loop — stop auto-play if running.
+                StopAutoPlay();
+            }
+            return;
+        }
+
+        SetIndex(_currentIndex + 1);
+    }
+
+    /// <summary>Go to the previous slide. Wraps if Loop=true.</summary>
+    public void Prev()
+    {
+        if (Slides is null || Slides.Count == 0) return;
+
+        if (_currentIndex <= 0) {
+            if (Loop) {
+                SetIndex(Slides.Count - 1);
+            }
+            return;
+        }
+
+        SetIndex(_currentIndex - 1);
+    }
+
+    /// <summary>Jump to a specific slide index.</summary>
+    public void GoTo(int index)
+    {
+        if (Slides is null || Slides.Count == 0) return;
+        SetIndex(ClampIndex(index));
+    }
+
+    private void SetIndex(int newIndex)
+    {
+        if (newIndex == _currentIndex) return;
+        _currentIndex = newIndex;
+        if (OnSlideChanged.HasDelegate) {
+            _ = OnSlideChanged.InvokeAsync(_currentIndex);
+        }
+        StateHasChanged();
+    }
+
+    private void HandleKeydown(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowRight") Next();
+        else if (e.Key == "ArrowLeft") Prev();
+    }
+
+    // ── Auto-play ───────────────────────────────────────────────────
+
+    /// <summary>Begin auto-advancing slides on the AutoPlayInterval cadence.</summary>
+    public void StartAutoPlay()
+    {
+        if (_disposed || _autoPlayRunning) return;
+        if (Slides is null || Slides.Count <= 1) return;
+
+        _autoPlayTimer ??= CreateTimer();
+        _autoPlayTimer.Interval = Math.Max(100, AutoPlayInterval.TotalMilliseconds);
+        _autoPlayTimer.Start();
+        _autoPlayRunning = true;
+    }
+
+    /// <summary>Stop auto-advance.</summary>
+    public void StopAutoPlay()
+    {
+        _autoPlayRunning = false;
+        _autoPlayTimer?.Stop();
+    }
+
+    private System.Timers.Timer CreateTimer()
+    {
+        var t = new System.Timers.Timer { AutoReset = true };
+        t.Elapsed += OnAutoPlayElapsed;
+        return t;
+    }
+
+    private async void OnAutoPlayElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (_disposed) return;
+        try {
+            await InvokeAsync(() => {
+                if (_disposed) return;
+                if (!_autoPlayRunning) return;
+                if (_hoverPaused) return;
+                Next();
+            });
+        } catch (ObjectDisposedException) {
+            // Component disposed mid-callback; safe to ignore.
+        }
+    }
+
+    private void HandleMouseEnter()
+    {
+        if (PauseOnHover) _hoverPaused = true;
+    }
+
+    private void HandleMouseLeave()
+    {
+        if (PauseOnHover) _hoverPaused = false;
+    }
+
+    // ── Lifecycle ───────────────────────────────────────────────────
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _autoPlayRunning = false;
+        if (_autoPlayTimer is not null) {
+            _autoPlayTimer.Elapsed -= OnAutoPlayElapsed;
+            _autoPlayTimer.Stop();
+            _autoPlayTimer.Dispose();
+            _autoPlayTimer = null;
+        }
+    }
+
+    // ── Public nested type ─────────────────────────────────────────
+
+    /// <summary>A single slide in the carousel.</summary>
+    public class CarouselSlide
+    {
+        public string Id { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        /// <summary>OPTIONAL: separate (smaller) thumbnail for the filmstrip. Falls back to ImageUrl.</summary>
+        public string? ThumbnailUrl { get; set; }
+        public string? Title { get; set; }
+        public string? Caption { get; set; }
+        /// <summary>OPTIONAL: alt text. Falls back to Title.</summary>
+        public string? Alt { get; set; }
+        /// <summary>OPTIONAL: clicking the focus image navigates here.</summary>
+        public string? LinkUrl { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "axe",
+    "RuleId": "link-name",
+    "CanonicalRuleId": "link-name",
+    "Severity": "serious",
+    "Message": "Fix all of the following:\n  Element is in tab order and does not have accessible text\n\nFix any of the following:\n  Element does not have text that is visible to screen readers\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute",
+    "Selector": ".wsu-column.wsu-color-background--white:nth-child(1) \u003E .wsu-color-background--white.wsu-card.wsu-border-top--color-crimson \u003E .wsu-card__content \u003E h3 \u003E a:nth-child(1)",
+    "Snippet": "\u003Ca href=\u0022https://its.wsu.edu/msdata-storage/\u0022\u003E\t\t\t\t\u003C/a\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+    "WcagCriteria": "wcag2a, wcag244, wcag412",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

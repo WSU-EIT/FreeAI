@@ -1,0 +1,122 @@
+@page "/showcase/kanbanboard/v3"
+@using FreeBlazorExtended.KanbanBoard
+
+<div class="container-fluid py-4">
+    <h1>KanbanBoard - Controlled Component Pattern and Move Log</h1>
+
+    <div class="form-check mb-3">
+        <input id="readOnlyToggle" class="form-check-input" type="checkbox" @bind="_readOnly" />
+        <label class="form-check-label" for="readOnlyToggle">Read-only</label>
+    </div>
+    <p class="text-muted">Drag-and-drop moves still feed the log below, and the selected card now opens in a full editor workspace.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <KanbanBoard Columns="_columns"
+                         Cards="_cards"
+                         OnCardMoved="HandleMoved"
+                         OnCardClick="HandleClick"
+                         SelectedCardId="@_selectedCard?.Id"
+                         EnableSearch="true"
+                         ReadOnly="@_readOnly" />
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h2 class="h5">Move Log</h2>
+                    <ul class="small mb-0 ps-3">
+                        @foreach (var entry in _moveLog) {
+                            <li>@entry</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <ShowcaseKanbanCardEditor Cards="_cards"
+                                      Columns="_columns"
+                                      SelectedCard="_selectedCard"
+                                      SelectedCardChanged="HandleSelectionChanged"
+                                      Subtitle="Inspect the selected card, update its content, or add a new item while the move log keeps tracking drag/drop changes." />
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<KanbanBoard.KanbanColumn> _columns = new()
+    {
+        new() { Id = "todo", Title = "To Do", Color = "secondary", SortOrder = 0 },
+        new() { Id = "doing", Title = "Doing", Color = "primary", SortOrder = 1 },
+        new() { Id = "done", Title = "Done", Color = "success", SortOrder = 2 },
+    };
+
+    private readonly List<KanbanBoard.KanbanCard> _cards = new()
+    {
+        new() { Id = "1", ColumnId = "todo", Title = "Refactor forms", Description = "Move repeated form sections into shared helpers.", Assignee = "Dana Cole", Priority = "high", Labels = new() { "forms", "refactor" }, DueDate = DateTime.Today.AddDays(1), SortOrder = 0 },
+        new() { Id = "2", ColumnId = "todo", Title = "Review aria", Description = "Check the new pages for aria labels and relationships.", Assignee = "Jamie Lee", Priority = "medium", Labels = new() { "a11y" }, DueDate = DateTime.Today.AddDays(2), SortOrder = 1 },
+        new() { Id = "3", ColumnId = "doing", Title = "Build variants", Description = "Create focused variant demo pages.", Assignee = "Morgan Shaw", Priority = "critical", Labels = new() { "demo", "pages" }, DueDate = DateTime.Today, SortOrder = 0 },
+        new() { Id = "4", ColumnId = "doing", Title = "Sync docs", Description = "Align docs with implementation.", Assignee = "Casey Frost", Priority = "medium", Labels = new() { "docs" }, DueDate = DateTime.Today.AddDays(3), SortOrder = 1 },
+        new() { Id = "5", ColumnId = "done", Title = "Extract library", Description = "Move reusable pieces into FreeBlazorExtended.", Assignee = "Sam Green", Priority = "low", Labels = new() { "library" }, DueDate = DateTime.Today.AddDays(-2), SortOrder = 0 },
+        new() { Id = "6", ColumnId = "done", Title = "Verify routes", Description = "Ensure planned routes match file paths.", Assignee = "Robin Diaz", Priority = "low", Labels = new() { "routing" }, DueDate = DateTime.Today.AddDays(-1), SortOrder = 1 },
+    };
+
+    private bool _readOnly;
+    private KanbanBoard.KanbanCard? _selectedCard;
+    private List<string> _moveLog = new() { "No card moves yet." };
+
+    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        var moving = _cards.FirstOrDefault(card => card.Id == args.CardId);
+        if (moving is null) {
+            return Task.CompletedTask;
+        }
+
+        var targetCards = _cards
+            .Where(card => card.ColumnId == args.ToColumnId && card.Id != moving.Id)
+            .OrderBy(card => card.SortOrder)
+            .ToList();
+
+        var insertIndex = Math.Clamp(args.NewSortOrder, 0, targetCards.Count);
+        targetCards.Insert(insertIndex, moving);
+
+        for (int i = 0; i < targetCards.Count; i++) {
+            targetCards[i].ColumnId = args.ToColumnId;
+            targetCards[i].SortOrder = i;
+        }
+
+        if (!string.Equals(args.FromColumnId, args.ToColumnId, StringComparison.OrdinalIgnoreCase)) {
+            var sourceCards = _cards
+                .Where(card => card.ColumnId == args.FromColumnId && card.Id != moving.Id)
+                .OrderBy(card => card.SortOrder)
+                .ToList();
+
+            for (int i = 0; i < sourceCards.Count; i++) {
+                sourceCards[i].SortOrder = i;
+            }
+        }
+
+        if (_moveLog.Count == 1 && _moveLog[0] == "No card moves yet.") {
+            _moveLog.Clear();
+        }
+
+        _moveLog.Insert(0, $"#{moving.Id} {moving.Title}: {args.FromColumnId} -> {args.ToColumnId} @ slot {insertIndex}");
+        if (_moveLog.Count > 8) {
+            _moveLog = _moveLog.Take(8).ToList();
+        }
+
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+}

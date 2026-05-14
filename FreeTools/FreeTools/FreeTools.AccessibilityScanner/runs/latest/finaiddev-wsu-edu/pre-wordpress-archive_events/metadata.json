@@ -1,0 +1,57 @@
+{
+  "PagePath": "/pre-wordpress-archive/events/",
+  "Url": "https://finaiddev.wsu.edu/pre-wordpress-archive/events/",
+  "FinalUrl": null,
+  "Title": "Events | Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 674103,
+  "ScreenshotSizeBytes": 59216,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 3,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 59216
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 12,
+    "Critical": 3,
+    "Serious": 2,
+    "Moderate": 7,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 3,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 9,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 7,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:16:42.7195263Z"
+}

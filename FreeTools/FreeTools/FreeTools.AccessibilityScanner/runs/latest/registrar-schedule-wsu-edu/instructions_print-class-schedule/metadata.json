@@ -1,0 +1,94 @@
+{
+  "PagePath": "/instructions/print-class-schedule/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/print-class-schedule/",
+  "FinalUrl": null,
+  "Title": "Print Class Schedule | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 690726,
+  "ScreenshotSizeBytes": 346090,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 346090
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 9,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754977/print-class-schedule-run-control.jpg?width=500\u0026height=190.12944983818772",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754978/print-class-schedule-add-new-value.jpg?width=500\u0026height=144.69453376205786",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754979/print-class-schedule-tab.jpg?width=500\u0026height=327.9483037156704",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754980/print-class-schedule-report-options-tab.jpg?width=500\u0026height=285.59870550161816",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754981/print-class-schedule-run-ok.jpg?width=500\u0026height=209.7560975609756",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754982/print-class-schedule-process-monitor.jpg?width=500\u0026height=284.789644012945",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754983/print-class-schedule-run-status.jpg?width=500\u0026height=164.23948220064725",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754984/print-class-schedule-report-manager.jpg?width=500\u0026height=283.9607201309329",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/754985/print-class-schedule-administration.jpg?width=500\u0026height=130.99041533546327",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:27:59.7560999Z"
+}

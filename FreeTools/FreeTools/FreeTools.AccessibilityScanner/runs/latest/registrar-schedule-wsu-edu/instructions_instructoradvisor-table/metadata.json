@@ -1,0 +1,70 @@
+{
+  "PagePath": "/instructions/instructoradvisor-table/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/instructoradvisor-table/",
+  "FinalUrl": null,
+  "Title": "Instructor/Advisor Table | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 687293,
+  "ScreenshotSizeBytes": 113835,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 113835
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/ujmbikzc/relatedcontent.png?rmode=max\u0026width=500",
+      "AltText": "Location of Related Content dropdown in Maintain Schedule of Classes"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/aakahw0s/relatedcontentoptions.png?rmode=max\u0026width=249\u0026height=199",
+      "AltText": "Available options using Related Content include Instructor/Advisor Table"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/eesgoota/relatedcontentinstructortable.png?rmode=max\u0026width=500",
+      "AltText": "Related Content opens the Instructor/Advisor Table below Maintain Schedule of Classes"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:17:55.3603818Z"
+}

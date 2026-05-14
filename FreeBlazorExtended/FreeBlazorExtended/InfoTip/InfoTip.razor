@@ -1,0 +1,96 @@
+﻿@*
+    InfoTip — Inline ⓘ icon that opens an explanation popover on click.
+
+    Drop this next to any label, heading, or form field to provide contextual help without
+    leaving the page. The popover auto-aligns left or right based on available viewport space
+    (via JS interop) and dismisses when the user clicks the × button.
+
+    Required parameters:
+        Title       — the popover heading (also used as the aria-label fallback)
+        Description — the body explanation text
+
+    Optional parameters:
+        Code — a code snippet rendered in a scrollable dark pre/code block below the description
+              (HTML-encode angle brackets: use &lt; and &gt;)
+
+    Example (next to a form label):
+        <label>Upload Files</label>
+        <InfoTip Title="Drag-and-Drop Upload"
+                 Description="Users can drag files and drop them onto this area."
+                 Code="&lt;UploadFile OnUploadComplete=&quot;@@handler&quot; /&gt;" />
+*@
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<span class="infotip-container d-inline-block position-relative">
+    <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-info infotip-trigger"
+            @ref="_btnRef"
+            @onclick="Toggle" @onclick:stopPropagation="true"
+            aria-label="More info: @Title"
+            title="Click for more info">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    </button>
+
+    @if (_open) {
+        <div class="infotip-popover card shadow border-info position-absolute" style="z-index:1050; width:340px; top:100%; @(_alignRight ? "right:0;" : "left:0;") margin-top:4px;">
+            <div class="card-header bg-info bg-opacity-10 py-1 px-2 d-flex justify-content-between align-items-center">
+                <strong class="small"><i class="fa-solid fa-graduation-cap me-1"></i>@Title</strong>
+                <button type="button" class="btn-close btn-close-sm" @onclick="Close" @onclick:stopPropagation="true" aria-label="Close"></button>
+            </div>
+            <div class="card-body py-2 px-2">
+                <p class="small mb-0">@Description</p>
+                @if (!string.IsNullOrWhiteSpace(Code)) {
+                    <pre class="bg-dark text-light p-2 rounded small mt-2 mb-0" style="white-space:pre-wrap; word-break:break-all; max-height:160px; overflow-y:auto;"><code>@Code</code></pre>
+                }
+            </div>
+        </div>
+    }
+</span>
+
+@code {
+    /// <summary>
+    /// Heading displayed in the popover header bar.
+    /// <para><b>Required.</b> Also used as the screen-reader <c>aria-label</c> for the trigger button.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Explanatory body text displayed inside the popover.
+    /// <para><b>Required.</b> Keep to 2–4 sentences; longer explanations should link to documentation.</para>
+    /// </summary>
+    [Parameter] public string Description { get; set; } = "";
+
+    /// <summary>
+    /// Optional code snippet rendered in a scrollable <c>&lt;pre&gt;&lt;code&gt;</c> block below
+    /// <see cref="Description"/>. HTML-encode angle brackets with <c>&amp;lt;</c> and <c>&amp;gt;</c>.
+    /// Omit to show only the description text.
+    /// </summary>
+    [Parameter] public string Code { get; set; } = "";
+
+    private ElementReference _btnRef;
+    private IJSObjectReference? _jsModule;
+    private bool _open;
+    private bool _alignRight;
+
+    private async Task Toggle()
+    {
+        _open = !_open;
+        if (_open) {
+            try {
+                _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/FreeBlazorExtended/InfoTip/InfoTip.razor.js");
+                _alignRight = await _jsModule.InvokeAsync<bool>("shouldAlignRight", _btnRef, 340);
+            } catch {
+                _alignRight = false;
+            }
+        }
+    }
+
+    private void Close() => _open = false;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null) {
+            try { await _jsModule.DisposeAsync(); } catch { }
+        }
+    }
+}

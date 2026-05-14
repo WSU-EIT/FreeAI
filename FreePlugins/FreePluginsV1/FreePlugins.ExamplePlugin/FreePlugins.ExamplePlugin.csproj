@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    
+    <!-- NuGet Package Configuration -->
+    <PackageId>FreePlugins.ExamplePlugin</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>WSU EIT</Authors>
+    <Company>WSU EIT</Company>
+    <Description>A comprehensive example compiled plugin demonstrating all prompt types, button callbacks, dynamic prompt loading, and conditional field visibility. Use this as a template for creating your own compiled plugins.</Description>
+    <PackageTags>plugins;freeplugins;example;prompts</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreePlugins.Abstractions\FreePlugins.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,105 @@
+@* EntityWizardSmartSuggestion.App.razor - Shows smart type suggestions based on property name *@
+
+@if (_suggestion != null && _suggestion.Confidence >= MinConfidence && !_dismissed) {
+    <div class="smart-suggestion alert alert-info d-flex align-items-start py-2 px-3 mb-3" role="alert">
+        <div class="suggestion-icon me-2">
+            <i class="fa-solid fa-lightbulb text-warning"></i>
+        </div>
+        <div class="suggestion-content flex-grow-1">
+            <div class="suggestion-text">
+                <strong>💡 Suggestion:</strong> @_suggestion.Reason
+            </div>
+            <div class="suggestion-details mt-1">
+                @if (_suggestion.SuggestedType == "enum") {
+                    <span class="badge bg-danger me-1">
+                        <i class="fa-solid fa-list me-1"></i>Enum
+                    </span>
+                    <small class="text-muted">Consider creating an enum for predefined choices</small>
+                } else {
+                    <span class="badge bg-primary me-1">@_suggestion.SuggestedType</span>
+                    @if (_suggestion.SuggestedDefault != null) {
+                        <span class="badge bg-secondary me-1">default: @_suggestion.SuggestedDefault</span>
+                    }
+                    @if (_suggestion.SuggestMaxLength.HasValue) {
+                        <span class="badge bg-secondary me-1">max: @_suggestion.SuggestMaxLength</span>
+                    }
+                    @if (_suggestion.SuggestSystemField) {
+                        <span class="badge bg-dark me-1">system field</span>
+                    }
+                    @if (_suggestion.SuggestRequired) {
+                        <span class="badge bg-warning text-dark">required</span>
+                    }
+                }
+            </div>
+        </div>
+        <div class="suggestion-actions ms-2">
+            <button type="button" class="btn btn-sm btn-outline-primary me-1" @onclick="ApplySuggestion">
+                <i class="fa-solid fa-check me-1"></i>Apply
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="Dismiss">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+    </div>
+}
+
+<style>
+    .smart-suggestion {
+        border-left: 4px solid #0d6efd;
+        background: linear-gradient(135deg, #e7f1ff 0%, #f8f9fa 100%);
+    }
+
+    .suggestion-icon {
+        font-size: 1.25rem;
+    }
+
+    .suggestion-text {
+        font-size: 0.9rem;
+    }
+
+    .suggestion-details {
+        font-size: 0.8rem;
+    }
+</style>
+
+@code {
+    [Parameter] public string PropertyName { get; set; } = string.Empty;
+    [Parameter] public string CurrentType { get; set; } = string.Empty;
+    [Parameter] public float MinConfidence { get; set; } = 0.6f;
+
+    [Parameter] public EventCallback<DataObjects.SmartNameSuggestion> OnApply { get; set; }
+
+    private DataObjects.SmartNameSuggestion? _suggestion;
+    private bool _dismissed = false;
+    private string _lastAnalyzedName = string.Empty;
+
+    protected override void OnParametersSet() {
+        // Re-analyze when property name changes
+        if (PropertyName != _lastAnalyzedName) {
+            _lastAnalyzedName = PropertyName;
+            _dismissed = false;
+
+            if (!string.IsNullOrWhiteSpace(PropertyName)) {
+                _suggestion = DataObjects.SmartNameDetection.Analyze(PropertyName);
+
+                // Don't show suggestion if user already picked the suggested type
+                if (_suggestion.SuggestedType == CurrentType) {
+                    _dismissed = true;
+                }
+            } else {
+                _suggestion = null;
+            }
+        }
+    }
+
+    private async Task ApplySuggestion() {
+        if (_suggestion != null) {
+            await OnApply.InvokeAsync(_suggestion);
+            _dismissed = true;
+        }
+    }
+
+    private void Dismiss() {
+        _dismissed = true;
+    }
+}

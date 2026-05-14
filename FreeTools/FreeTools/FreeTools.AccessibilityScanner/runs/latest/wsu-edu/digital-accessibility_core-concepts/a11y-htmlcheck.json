@@ -1,0 +1,118 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 5,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 widt...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022wsu-card__link\u0022 href=\u0022https://wsu.edu/digital-accessibility/core-concepts/headings/\u0022 aria-hidden=\u0022true\u0022 tabindex=\u0022-1\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

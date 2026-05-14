@@ -1,0 +1,130 @@
+{
+  "PagePath": "/about-its/its-leadership-team/",
+  "Url": "https://its.wsu.edu/about-its/its-leadership-team/",
+  "FinalUrl": null,
+  "Title": "ITS Leadership Team | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 261140,
+  "ScreenshotSizeBytes": 243400,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 243400
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/tony-opheim.jpg",
+      "AltText": "Photo of Tony Opheim Vice President \u0026 Chief Information Officer Information Technology Services"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/Sue_Gilchrist.jpg",
+      "AltText": "Photo of Sue Gilchrist Assistant to VP \u0026 CIO"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/Michael_Walters.jpg",
+      "AltText": "Photo of Michael Walters Interim CISO/Information Security Services (ISS)"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/08/Justin-Hughes-0824.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/Coug-GREY-photo-place-holder-768x849-1.png",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/07/karen-v3_2024.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2025/01/Gerik2022-1152x1536-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/08/Anden-Lewis-0824.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2025/02/Greg_Neunherz_2025.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/08/Gary-Saunders-0824.jpg",
+      "AltText": "Gary Saunders"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/07/JS_v2_2024.jpg",
+      "AltText": "Photo of Jacqueline Southwick Director Systems Communication \u0026 Customer Experience"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2025/02/Bryan_Valley_2025.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/08/Dave-Whelchel-0824.jpg",
+      "AltText": "Cougar Head Logo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/Carrie_Johnson.jpg",
+      "AltText": "Photo of Carrie Johnson Executive Director Administration \u0026 Financial Services"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/06/Gunjan-Sinha_24v2.jpg",
+      "AltText": "Cougar Head Logo"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 45,
+    "Critical": 0,
+    "Serious": 45,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 14,
+        "Critical": 0,
+        "Serious": 14,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 31,
+        "Critical": 0,
+        "Serious": 31,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:16:03 GMT",
+    "etag": "\u0022f8e23424845e0fa3243ad21271d8cedd\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:16:03 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/352\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=352\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:16:03.6072201Z"
+}

@@ -1,0 +1,62 @@
+{
+  "PagePath": "/",
+  "Url": "https://curriculum.registrar.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "Registrar Curriculum",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 650719,
+  "ScreenshotSizeBytes": 111209,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 111209
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://curriculum.registrar.wsu.edu/media/756369/students_studying_in_the_cub_horizontal.jpg?width=682\u0026height=274\u0026mode=max",
+      "AltText": "Students studying in Compton Union Building"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:07:33.0839167Z"
+}

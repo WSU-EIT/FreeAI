@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=www.smartsheet.com",
+  "Issuer": "CN=R13, O=Let\u0027s Encrypt, C=US",
+  "Thumbprint": "2B86D5A893752045D7BEF675BC959E0AB0187E59",
+  "SerialNumber": "068A2EE2448FDC2D2D89322E875D5131751B",
+  "NotBefore": "2026-02-01T12:42:49-08:00",
+  "NotAfter": "2026-05-02T13:42:48-07:00",
+  "DaysUntilExpiry": 72,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "www.smartsheet.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "www.smartsheet.com"
+  ],
+  "ErrorMessage": null
+}

@@ -1,0 +1,18 @@
+@page "/showcase/renderfiles/v1"
+@using FreeBlazorExtended.RenderFiles
+@using FreeBlazorExtended.SelectFile
+
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Default</h1>
+
+    <RenderFiles Files="_files" />
+</div>
+
+@code {
+    private readonly List<FileItem> _files = new()
+    {
+        new() { FileId = Guid.NewGuid(), FileName = "sunrise.png", Extension = ".png", Bytes = 820000, RemoteImageUrl = "https://picsum.photos/seed/rf1/300/200" },
+        new() { FileId = Guid.NewGuid(), FileName = "forest.jpg", Extension = ".jpg", Bytes = 1240000, RemoteImageUrl = "https://picsum.photos/seed/rf2/300/200" },
+        new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2340000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+    };
+}

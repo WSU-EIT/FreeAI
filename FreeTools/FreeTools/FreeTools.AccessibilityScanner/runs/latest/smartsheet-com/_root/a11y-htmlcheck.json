@@ -1,0 +1,140 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 4,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=328191634591680\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://t.co/i/adsct?bci=3\u0026amp;dv=America%2FLos_Angeles%26en-US%26Google%20Inc.%26Win32%26255%261280%26720%2624%2624%261280%26720%260%26na\u0026a...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://analytics.twitter.com/i/adsct?bci=3\u0026amp;dv=America%2FLos_Angeles%26en-US%26Google%20Inc.%26Win32%26255%261280%26720%2624%2624%261280...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://www.googleadservices.com/pagead/conversion/744256365/?label=HmeoCJyY9OUDEO3m8eIC\u0026amp;guid=ON\u0026amp;script=0\u0022 height=\u00221\u0022 width=\u00221\u0022 styl...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput type=\u0022search\u0022 id=\u0022search-query-1577869465\u0022 name=\u0022search_api_fulltext\u0022 class=\u0022form-text\u0022 placeholder=\u0022What can we help you find?\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca class=\u0022privacy-choices\u0022 href=\u0022#\u0022 onclick=\u0022semaphore.push([\u0027showPreferences\u0027, {showOverviewTab: false, showRightsTab: false}]);\u0022\u003E\n              \u003Cp\u003E\n...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton title=\u0022Scroll left\u0022 class=\u0022arrow \u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton title=\u0022Scroll right\u0022 class=\u0022arrow \u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton class=\u0022slide-nav arrow-backward\u0022\u003E\n              \u003Csvg width=\u002221\u0022 height=\u002221\u0022 viewBox=\u00220 0 21 21\u0022 fill=\u0022none\u0022 xmlns=\u0022http://www.w3.org/2000/svg\u0022...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton class=\u0022arrow-play-pause\u0022\u003E\n              \u003Csvg width=\u002224\u0022 height=\u002224\u0022 viewBox=\u00220 0 24 24\u0022 fill=\u0022none\u0022 id=\u0022media-play\u0022\u003E\n\u003Cpath fill-rule=\u0022evenodd\u0022...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton class=\u0022slide-nav arrow-forward\u0022\u003E\n              \u003Csvg width=\u002221\u0022 height=\u002221\u0022 viewBox=\u00220 0 21 21\u0022 fill=\u0022none\u0022 xmlns=\u0022http://www.w3.org/2000/svg\u0022\u003E...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    }
+  ]
+}

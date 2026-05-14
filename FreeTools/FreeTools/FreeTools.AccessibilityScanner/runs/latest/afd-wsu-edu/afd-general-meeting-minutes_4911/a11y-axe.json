@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 300,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-prohibited-attr",
+      "CanonicalRuleId": "aria-prohibited-attr",
+      "Severity": "serious",
+      "Message": "Elements must only use permitted ARIA attributes",
+      "Selector": "span[aria-label=\u00224:00 to 5:00\u0022]",
+      "Snippet": "\u003Cspan aria-label=\u00224:00 to 5:00\u0022\u003E\u003Cspan aria-hidden=\u0022true\u0022\u003E4:00-5:00\u003C/span\u003E\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-prohibited-attr?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

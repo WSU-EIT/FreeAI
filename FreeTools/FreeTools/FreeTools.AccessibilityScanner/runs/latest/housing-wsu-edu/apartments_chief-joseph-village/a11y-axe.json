@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 610,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".umb-block-grid__area[data-area-alias=\u0022left\u0022][data-area-col-span=\u00226\u0022] \u003E .umb-block-grid__layout-container \u003E .umb-block-grid__layout-item[data-content-element-type-alias=\u0022youTubeVideo\u0022][data-col-span=\u00226\u0022] \u003E iframe",
+      "Snippet": "\u003Ciframe aria-label=\u0022\u0022 class=\u0022YouTubeVideo\u0022 width=\u0022100%\u0022 height=\u0022auto\u0022 src=\u0022https://www.youtube-nocookie.com/embed/B3EutLRTXzk?rel=0\u0022 title=\u0022\u0022\u003E\n    \u003C/i...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".umb-block-grid__area[data-area-alias=\u0022right\u0022][data-area-col-span=\u00226\u0022] \u003E .umb-block-grid__layout-container \u003E .umb-block-grid__layout-item[data-content-element-type-alias=\u0022youTubeVideo\u0022][data-col-span=\u00226\u0022] \u003E iframe",
+      "Snippet": "\u003Ciframe aria-label=\u0022\u0022 class=\u0022YouTubeVideo\u0022 width=\u0022100%\u0022 height=\u0022auto\u0022 src=\u0022https://www.youtube-nocookie.com/embed/Hn-oYdvCyS4?rel=0\u0022 title=\u0022\u0022\u003E\n    \u003C/i...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

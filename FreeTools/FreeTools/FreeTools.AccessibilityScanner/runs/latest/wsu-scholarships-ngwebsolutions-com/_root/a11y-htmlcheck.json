@@ -1,0 +1,41 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg class=\u0022img-responsive\u0022 border=\u00220\u0022 src=\u0022https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsu_header.jpg\u0022 style=\u0022height:130px\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg class=\u0022img-responsive\u0022 src=\u0022https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsufooter.png\u0022 style=\u0022margin-top:40px;\u0022 border=\u00220\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 123,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-g-header__search-icon-link",
+      "Snippet": "\u003Ca b-xdsraqo0e2=\u0022\u0022 class=\u0022wsu-g-header__search-icon-link\u0022 href=\u0022https://search.wsu.edu/\u0022 aria-haspopup=\u0022true\u0022 aria-expanded=\u0022true\u0022\u003E\n\t\t\t\t\t\t\u003Cspan b-xdsr...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "PagePath": "/nsc-instructions/",
+  "Url": "https://enrollmentverification.em.wsu.edu/nsc-instructions/",
+  "FinalUrl": null,
+  "Title": "Instructions: NSC | Enrollment Verification",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 651548,
+  "ScreenshotSizeBytes": 235110,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 235110
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://enrollmentverification.em.wsu.edu/media/761882/nsc_numbered.png?width=745\u0026height=274\u0026mode=max",
+      "AltText": "NSC Homepage"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:34.5175937Z"
+}

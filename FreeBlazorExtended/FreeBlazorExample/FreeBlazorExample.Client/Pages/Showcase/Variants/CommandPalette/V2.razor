@@ -1,0 +1,30 @@
+@page "/showcase/commandpalette/v2"
+@using FreeBlazorExtended.CommandPalette
+
+<div class="container-fluid py-4">
+    <h1>Categorized Command Palette</h1>
+    <p class="text-muted">This variant uses Ctrl+J, richer labels, categories, icons, and a larger recent-command history.</p>
+
+    <CommandPalette Commands="_commands"
+                    TriggerHotkey="j"
+                    PlaceholderText="What do you want to do?"
+                    HistorySize="8" />
+</div>
+
+@code {
+    private readonly List<CommandPalette.CommandItem> _commands = new()
+    {
+        new() { Id = "new-file", Label = "New File", Category = "File", Icon = "fa-solid fa-file-circle-plus", Description = "Create a new workspace file." },
+        new() { Id = "open-file", Label = "Open File", Category = "File", Icon = "fa-solid fa-folder-open", Description = "Open an existing file." },
+        new() { Id = "save", Label = "Save", Category = "File", Icon = "fa-solid fa-floppy-disk", Description = "Save the current document." },
+        new() { Id = "toggle-sidebar", Label = "Toggle Sidebar", Category = "View", Icon = "fa-solid fa-panels-left" },
+        new() { Id = "zen-mode", Label = "Zen Mode", Category = "View", Icon = "fa-solid fa-expand" },
+        new() { Id = "goto-dashboard", Label = "Go to Dashboard", Category = "Navigation", Icon = "fa-solid fa-gauge-high", Description = "Jump to the main dashboard." },
+        new() { Id = "goto-showcase", Label = "Go to Showcase", Category = "Navigation", Icon = "fa-solid fa-table-cells" },
+        new() { Id = "goto-settings", Label = "Open Settings", Category = "Navigation", Icon = "fa-solid fa-gear" },
+        new() { Id = "profile", Label = "Profile", Category = "Account", Icon = "fa-solid fa-user" },
+        new() { Id = "billing", Label = "Billing", Category = "Account", Icon = "fa-solid fa-credit-card", Description = "Manage subscriptions and invoices." },
+        new() { Id = "sign-out", Label = "Sign Out", Category = "Account", Icon = "fa-solid fa-right-from-bracket" },
+        new() { Id = "support", Label = "Contact Support", Category = "Account", Icon = "fa-solid fa-life-ring" },
+    };
+}

@@ -1,0 +1,24 @@
+@* Cross-site triage view switcher — links between the 5 compliance triage views.
+   Pass Active = "search" / "tree" / "rules" / "scorecard" / "ruledetail" to highlight the active page. *@
+
+<div class="btn-group btn-group-sm mb-2 flex-wrap" role="group" aria-label="Triage view switcher">
+    <a href="@(Helpers.BuildUrl("Compliance/Scorecard"))" class="btn @(Active == "scorecard" ? "btn-primary" : "btn-outline-primary")" title="Tenant grid: every site, worst-first">
+        <i class="fas fa-table me-1"></i>Scorecard
+    </a>
+    <a href="@(Helpers.BuildUrl("Compliance/Search"))" class="btn @(Active == "search" ? "btn-primary" : "btn-outline-primary")" title="URL-pattern search across all sites">
+        <i class="fas fa-search me-1"></i>URL Search
+    </a>
+    <a href="@(Helpers.BuildUrl("Compliance/Tree"))" class="btn @(Active == "tree" ? "btn-primary" : "btn-outline-primary")" title="Tree by domain &rarr; subdomain &rarr; path">
+        <i class="fas fa-sitemap me-1"></i>Domain Tree
+    </a>
+    <a href="@(Helpers.BuildUrl("Compliance/Rules"))" class="btn @(Active == "rules" ? "btn-primary" : "btn-outline-primary")" title="Rules sorted by impact across all sites">
+        <i class="fas fa-list-ol me-1"></i>Rule Hotlist
+    </a>
+    @if (Active == "ruledetail") {
+        <span class="btn btn-primary disabled"><i class="fas fa-bug me-1"></i>Rule Detail</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string Active { get; set; } = "";
+}

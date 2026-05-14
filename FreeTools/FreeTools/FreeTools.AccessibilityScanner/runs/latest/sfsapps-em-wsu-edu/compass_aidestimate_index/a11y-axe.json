@@ -1,0 +1,74 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 253,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "ul:nth-child(3) \u003E li:nth-child(2) \u003E .text-warning",
+      "Snippet": "\u003Cspan class=\u0022text-warning\u0022\u003E\u003Cstrong\u003ENote:\u003C/strong\u003E Do not enter commas or decimal points\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "ul:nth-child(3) \u003E li:nth-child(2) \u003E .text-warning \u003E strong",
+      "Snippet": "\u003Cstrong\u003ENote:\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "ul:nth-child(14) \u003E li:nth-child(2) \u003E ul \u003E li \u003E .text-warning",
+      "Snippet": "\u003Cspan class=\u0022text-warning\u0022\u003E\u003Cstrong\u003ENote:\u003C/strong\u003E Do not enter commas or decimal points\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "ul:nth-child(14) \u003E li:nth-child(2) \u003E ul \u003E li \u003E .text-warning \u003E strong",
+      "Snippet": "\u003Cstrong\u003ENote:\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "input[value=\u0022Submit\u0022]",
+      "Snippet": "\u003Cinput type=\u0022submit\u0022 value=\u0022Submit\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href$=\u0022#spine-sitenav\u0022]",
+      "Snippet": "\u003Ca href=\u0022#spine-sitenav\u0022 role=\u0022navigation\u0022 class=\u0022screen-reader-shortcut\u0022\u003ESkip to navigation\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

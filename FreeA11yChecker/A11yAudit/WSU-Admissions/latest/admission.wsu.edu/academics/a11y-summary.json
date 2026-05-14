@@ -1,0 +1,322 @@
+{
+  "TotalViolations": 13,
+  "CriticalCount": 0,
+  "SeriousCount": 6,
+  "ModerateCount": 7,
+  "MinorCount": 0,
+  "AxeCount": 2,
+  "HtmlCheckCount": 4,
+  "HtmlCsCount": 0,
+  "IbmCount": 7,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "target-size",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 1,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "target-size",
+          "CanonicalRuleId": "target-size",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Target has insufficient size (12px by 2px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px.",
+          "Selector": ".wsu-degree-finder__degrees-grid-control-grid",
+          "Snippet": "\u003Cbutton class=\u0022wsu-degree-finder__degrees-grid-control-grid\u0022 role=\u0022radio\u0022 aria-checked=\u0022true\u0022 aria-label=\u0022Change degree list layout to a grid\u0022\u003E\u003Ci class=\u0022fa-sharp fa-solid fa-grid fa-2xl\u0022\u003E\u003C/i\u003E\u003C/button\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/target-size?application=axeAPI",
+          "WcagCriteria": "wcag22aa, wcag258",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "target-size",
+          "CanonicalRuleId": "target-size",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Target has insufficient size (12px by 2px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px.",
+          "Selector": ".wsu-degree-finder__degrees-grid-control-list",
+          "Snippet": "\u003Cbutton class=\u0022wsu-degree-finder__degrees-grid-control-list\u0022 role=\u0022radio\u0022 aria-checked=\u0022false\u0022 aria-label=\u0022Change degree list layout to a list\u0022\u003E\u003Ci class=\u0022fa-sharp fa-solid fa-list fa-2xl\u0022\u003E\u003C/i\u003E\u003C/button\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/target-size?application=axeAPI",
+          "WcagCriteria": "wcag22aa, wcag258",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_single",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader aria-label=\u0022WSU system\u0022 class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-content\u0022 class=\u0022wsu-skip-to-main\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/button[1]",
+          "Snippet": "\u003Cbutton id=\u0022open-modal\u0022 data-panel=\u0022wsu-quicklinks-panel\u0022 class=\u0022wsu-header-utility-bar__quicklinks wsu-slide-in-panel--open\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_child_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_child_valid",
+          "CanonicalRuleId": "aria_child_valid",
+          "Severity": "moderate",
+          "Message": "The element with role \u0022radiogroup\u0022 owns the child element with the role \u0022heading\u0022 that is not one of the allowed role(s): \u0022radio\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[2]/div[1]/div[2]",
+          "Snippet": "\u003Cdiv aria-labelledby=\u0022degreeControlLabel\u0022 role=\u0022radiogroup\u0022 class=\u0022wsu-degree-finder__degrees-grid-controls\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_child_valid",
+          "CanonicalRuleId": "aria_child_valid",
+          "Severity": "moderate",
+          "Message": "The element with role \u0022list\u0022 does not own any child element with any of the following role(s): \u0022listitem\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/ul[1]",
+          "Snippet": "\u003Cul class=\u0022wsu-social-icons\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-suspicious",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-suspicious",
+          "CanonicalRuleId": "link-suspicious",
+          "Severity": "moderate",
+          "Message": "Suspicious link text (not descriptive)",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://futurecoug.wsu.edu/register/form?id=4ce22d6e-d886-44cf-be68-c808578f4285\u0022\u003Ehere\u003C/a\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "element_tabbable_role_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element does not have a valid widget role",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/label[1]",
+          "Snippet": "\u003Clabel tabindex=\u00220\u0022 class=\u0022wsu-degree-finder__filter-search-submit\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "figure_label_exists",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/div[3]/div[4]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-image--style-inset-outline wsu-notch--small\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

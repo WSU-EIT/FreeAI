@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 285,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".wsu-header-utility-bar__cta",
+      "Snippet": "\u003Ca href=\u0022\u0022 class=\u0022wsu-header-utility-bar__cta\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href=\u0022mailto:michael.walters@wsu.edu\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:michael.walters@wsu.edu\u0022 data-type=\u0022mailto\u0022 data-id=\u0022mailto:michael.walters@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

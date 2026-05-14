@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.46ein0sx1k.css">
+    <link rel="stylesheet" href="app.khy4lop6wu.css">
+    <link rel="stylesheet" href="BlazorApp1.hwo04cdlyf.styles.css">
+    <script type="importmap">{
+  "imports": {
+    "./Components/Account/Shared/PasskeySubmit.razor.js": "./Components/Account/Shared/PasskeySubmit.pr21mg9rrw.razor.js",
+    "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",
+    "./_framework/blazor.server.js": "./_framework/blazor.server.2tj1sjhksk.js",
+    "./_framework/blazor.web.js": "./_framework/blazor.web.b9228eflpl.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.5la21gne8m.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.mx9wzm9o5h.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.2zl32tp6ah.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.js": "./lib/bootstrap/dist/js/bootstrap.bundle.6cfz1n2cew.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.min.js": "./lib/bootstrap/dist/js/bootstrap.bundle.min.493y06b0oq.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.min.js": "./lib/bootstrap/dist/js/bootstrap.esm.min.jj8uyg4cgr.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.js": "./lib/bootstrap/dist/js/bootstrap.esm.vr1egmr9el.js",
+    "./lib/bootstrap/dist/js/bootstrap.min.js": "./lib/bootstrap/dist/js/bootstrap.min.63fj8s7r0e.js",
+    "./lib/bootstrap/dist/js/bootstrap.js": "./lib/bootstrap/dist/js/bootstrap.notf2xhcfb.js",
+    "_framework/resource-collection.js": "./_framework/resource-collection.wI8Db.js",
+    "_framework/resource-collection.js.gz": "./_framework/resource-collection.wI8Db.js.gz"
+  },
+  "integrity": {
+    "./_framework/resource-collection.wI8Db.js": "sha256-vU1v2s29CXE/Iaz/Ac9bDtNGc7u0J3nbhSjB5bdzbpI=",
+    "./_framework/resource-collection.wI8Db.js.gz": "sha256-vU1v2s29CXE/Iaz/Ac9bDtNGc7u0J3nbhSjB5bdzbpI="
+  }
+}</script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Change password</title><style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+
+<body><div class="page" b-qig53hgue4=""><div class="sidebar" b-qig53hgue4=""><div class="top-row ps-3 navbar navbar-dark" b-qa4lg9le9h=""><div class="container-fluid" b-qa4lg9le9h=""><a class="navbar-brand" href="" b-qa4lg9le9h="">BlazorApp1</a></div></div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" b-qa4lg9le9h="" style="">
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()" b-qa4lg9le9h=""><nav class="nav flex-column" b-qa4lg9le9h=""><div class="nav-item px-3" b-qa4lg9le9h=""><a href="" class="nav-link"><span class="bi bi-house-door-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Home
+            </a></div>
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><a href="counter" class="nav-link"><span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Counter
+            </a></div>
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><a href="weather" class="nav-link"><span class="bi bi-list-nested-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Weather
+            </a></div>
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><a href="auth" class="nav-link"><span class="bi bi-lock-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Auth Required
+            </a></div>
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><a href="Account/Manage" class="nav-link active" aria-current="page"><span class="bi bi-person-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> admin@example.com</a></div>
+                <div class="nav-item px-3" b-qa4lg9le9h=""><form action="Account/Logout" method="post" b-qa4lg9le9h=""><input type="hidden" name="__RequestVerificationToken" value="CfDJ8EnaDGRwO5pFsWAy6QmiZNl4y3YFWIl05RWUH1ldzrUkLpvdlap8dS3l_fXHcsVYMDmlPT67NlCAtXAxFfK1QKYquGLiH2zRqlS6SY2oWuhgSBnGUeomwiWHIJ6U1PiSbWqqYYi3nFgULVu7USLyoLTZgozFNkdGWBd1gcoXyVViGL0CTYHfyglZf0LRvlw36Q" style="">
+                        <input type="hidden" name="ReturnUrl" value="Account/Manage/ChangePassword" b-qa4lg9le9h="" style="">
+                        <button type="submit" class="nav-link" b-qa4lg9le9h=""><span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Logout
+                        </button></form></div></nav></div></div>
+
+    <main b-qig53hgue4=""><div class="top-row px-4" b-qig53hgue4=""><a href="https://learn.microsoft.com/aspnet/core/" target="_blank" b-qig53hgue4="">About</a></div>
+
+        <article class="content px-4" b-qig53hgue4=""><h1 tabindex="-1">Manage your account</h1>
+
+<div><h2>Change your account settings</h2>
+    <hr>
+    <div class="row"><div class="col-lg-3"><ul class="nav nav-pills flex-column"><li class="nav-item"><a href="Account/Manage" class="nav-link">Profile</a></li>
+    <li class="nav-item"><a href="Account/Manage/Email" class="nav-link">Email</a></li>
+    <li class="nav-item"><a href="Account/Manage/ChangePassword" class="nav-link active" aria-current="page">Password</a></li><li class="nav-item"><a href="Account/Manage/TwoFactorAuthentication" class="nav-link">Two-factor authentication</a></li>
+    <li class="nav-item"><a href="Account/Manage/Passkeys" class="nav-link">Passkeys</a></li>
+    <li class="nav-item"><a href="Account/Manage/PersonalData" class="nav-link">Personal data</a></li></ul></div>
+        <div class="col-lg-9">
+
+<h3>Change password</h3>
+
+<div class="row"><div class="col-xl-6"><form method="post" action="/Account/Manage/ChangePassword"><input type="hidden" name="_handler" value="change-password" style=""><input type="hidden" name="__RequestVerificationToken" value="CfDJ8EnaDGRwO5pFsWAy6QmiZNl4y3YFWIl05RWUH1ldzrUkLpvdlap8dS3l_fXHcsVYMDmlPT67NlCAtXAxFfK1QKYquGLiH2zRqlS6SY2oWuhgSBnGUeomwiWHIJ6U1PiSbWqqYYi3nFgULVu7USLyoLTZgozFNkdGWBd1gcoXyVViGL0CTYHfyglZf0LRvlw36Q" style="">
+            
+            <div class="form-floating mb-3"><input type="password" id="Input.OldPassword" autocomplete="current-password" aria-required="true" placeholder="Enter the old password" name="Input.OldPassword" class="form-control valid" value="" style="">
+                <label for="Input.OldPassword" class="form-label">Old password</label>
+                </div>
+            <div class="form-floating mb-3"><input type="password" id="Input.NewPassword" autocomplete="new-password" aria-required="true" placeholder="Enter the new password" name="Input.NewPassword" class="form-control valid" value="" style="">
+                <label for="Input.NewPassword" class="form-label">New password</label>
+                </div>
+            <div class="form-floating mb-3"><input type="password" id="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="Enter the new password" name="Input.ConfirmPassword" class="form-control valid" value="" style="">
+                <label for="Input.ConfirmPassword" class="form-label">Confirm password</label>
+                </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Update password</button></form></div></div></div></div></div></article></main></div>
+
+<div id="blazor-error-ui" data-nosnippet="" b-qig53hgue4="">
+    An unhandled error has occurred.
+    <a href="." class="reload" b-qig53hgue4="">Reload</a>
+    <span class="dismiss" b-qig53hgue4="">🗙</span></div>
+        <blazor-focus-on-navigate selector="h1"></blazor-focus-on-navigate>
+    <script src="_framework/blazor.web.b9228eflpl.js"></script>
+    <script src="Components/Account/Shared/PasskeySubmit.pr21mg9rrw.razor.js" type="module"></script></body></html>

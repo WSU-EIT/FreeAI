@@ -1,0 +1,128 @@
+{
+  "PagePath": "/athletics/",
+  "Url": "https://wsu.edu/athletics/",
+  "FinalUrl": null,
+  "Title": "WSU Athletics | Washington State University | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 121177,
+  "ScreenshotSizeBytes": 684206,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 684206
+    }
+  ],
+  "ImageCount": 14,
+  "ImagesMissingAlt": 8,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Baseball-vs-Gonzaga-2020-_-Butch-in-Crowd-_-3108.jpg",
+      "AltText": "Washington State mascot Butch T. Cougar \u201Chelps\u201D a student with her homework while she and friends attend a baseball game vs Gonzaga in a non-conference NCAA college baseball game Tuesday, March 10, 2020 at Bailey-Brayton Field in Pullman."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Bike-Trail_0146-scaled.jpg",
+      "AltText": "WSU students ride bikes on the Bill Chipman Palouse Trail near the campus of Washington State University, Tuesday, July 10, 2018."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Chinook-Outdoor-Workout_1135.jpg",
+      "AltText": "A WSU student gets in a good workout at the Chinook outside workout area on a warm spring day on the campus of Washington State University, Monday, April 22, 2019."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Football_Homecoming_2015_Atmosphere_0226.jpg",
+      "AltText": "Fans and atmosphere during the Cougars Homecoming win over the Oregon State Beavers on Saturday, October 17, 2015, at Martin Stadium in Pullman."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/Soccer-Fans-_-4854.jpg",
+      "AltText": "A group of Washington State University student-athletes laugh at a joke during a break while watching the first soccer match of the season, Saturday, Aug. 28, 2021, at Lower Soccer Field in Pullman, Wash."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/08/WSU-Mens-Basketball-Atmosphere-sh_9204.jpg",
+      "AltText": "Fans celebrate during the WSU Men\u0027s Basketball vs Arizona on the campus of Washington State University, Saturday, February, 1, 2020."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-7-792x363.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-8.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-9.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-10.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-11-792x686.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-12.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-13-792x495.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/625/2022/06/Mask-group-14.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=381, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:10:12 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:06:33 GMT",
+    "link": "\u003Chttps://wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/wp-json/wp/v2/pages/19\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:10:12.8217744Z"
+}

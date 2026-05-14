@@ -1,0 +1,86 @@
+{
+  "PagePath": "/demo/index.html",
+  "Url": "https://sunapsis.iu.edu/demo/index.html",
+  "FinalUrl": null,
+  "Title": "Demo: sunapsis: Indiana University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 74099,
+  "ScreenshotSizeBytes": 99392,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 99392
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://assets.iu.edu/brand/3.x/trident-large.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/search/3.x/search.png",
+      "AltText": "Open Search"
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/web/3.x/css/img/search.png",
+      "AltText": "Search"
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/libs/able-player/latest/button-icons/white/pipe.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/brand/3.3.x/iu-sig-formal.svg",
+      "AltText": "Indiana University"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "access-control-allow-origin": "*",
+    "content-encoding": "gzip",
+    "content-length": "4605",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:12:37 GMT",
+    "vary": "Accept-Encoding",
+    "x-frame-options": "DENY"
+  },
+  "CapturedAt": "2026-02-19T02:12:37.1439235Z"
+}

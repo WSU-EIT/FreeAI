@@ -1,0 +1,107 @@
+{
+  "PagePath": "/hrs-units/training-development/",
+  "Url": "https://hrs.wsu.edu/hrs-units/training-development/",
+  "FinalUrl": null,
+  "Title": "Training \u0026 Development \u2013 HRS Units \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 96190,
+  "ScreenshotSizeBytes": 322033,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 322033
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 10,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/course-updates-990x743.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/LOD-Highlights.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/HRSource-Add-ins-for-WP-169-396x223.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/12/94a7e492-ddea-3935-c619-7bb971b213d3-396x245.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/12/Blog-post-sizing-1200-x-900-px-396x297.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/04/mentor-396x263.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/11/EP15-396x297.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/11/6006a11a-6f7b-6e44-6898-6772e76b968d-396x210.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/10/HR-Source-Header-Instagram-Post2-396x396.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2025/10/Sof-listening-396x396.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:18:45 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:18:45 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/hrs_unit/21\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:18:45.1072146Z"
+}

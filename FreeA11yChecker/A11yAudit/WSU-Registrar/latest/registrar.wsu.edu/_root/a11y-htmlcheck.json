@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "htmlcheck",
+    "RuleId": "link-empty",
+    "CanonicalRuleId": "link-name",
+    "Severity": "serious",
+    "Message": "Link has no text content",
+    "Selector": "",
+    "Snippet": "\u003Ca href=\u0022mailto:official.transcripts@wsu.edu\u0022 title=\u0022Email Transcripts\u0022\u003E \u003C/a\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

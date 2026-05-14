@@ -1,0 +1,56 @@
+﻿@*
+    WizardSummary — read-only badge strip that echoes the user's previous wizard
+    selections above the current step.
+
+    Render one instance at the top of each wizard step body (inside the card, below
+    the WizardStepHeader). Pass the full Selections list every render cycle; the
+    component filters out blank values automatically and hides itself completely when
+    nothing is filled in yet.
+
+    Required parameters:
+        Selections — list of SelectionItem records describing completed step values.
+                     Each item has a Label (step name) and a Value (chosen option).
+                     Items with an empty Value are silently skipped.
+
+    SelectionItem shape:
+        Label  — the step label displayed as the bold prefix in each badge.
+        Value  — the chosen value; values longer than 40 characters are truncated with ellipsis.
+
+    Usage example:
+        <WizardSummary Selections="@(new List<WizardSummary.SelectionItem> {
+            new() { Label = "Environment", Value = selectedEnv },
+            new() { Label = "Region",      Value = selectedRegion }
+        })" />
+*@
+
+@if (Selections.Any(s => !string.IsNullOrWhiteSpace(s.Value))) {
+    <div class="alert alert-info py-2 px-3 mb-3" role="status" aria-label="Your current selections">
+        <div class="d-flex align-items-center mb-2 pb-2 border-bottom border-info border-opacity-25">
+            <i class="fa fa-clipboard-list me-2" aria-hidden="true"></i>
+            <span class="small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Your Selections</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var selection in Selections.Where(s => !string.IsNullOrWhiteSpace(s.Value))) {
+                <span class="badge bg-white text-dark border shadow-sm py-2 px-3" title="@selection.Label: @selection.Value">
+                    <span class="text-primary fw-semibold">@selection.Label:</span>
+                    <span class="ms-1">@TruncateText(selection.Value, 40)</span>
+                </span>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public List<SelectionItem> Selections { get; set; } = new();
+
+    public class SelectionItem {
+        public string Label { get; set; } = "";
+        public string Value { get; set; } = "";
+    }
+
+    private string TruncateText(string text, int maxLength) {
+        if (string.IsNullOrEmpty(text)) return "";
+        if (text.Length <= maxLength) return text;
+        return text[..(maxLength - 3)] + "...";
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca href=\u0022https://app.smartsheet.com/reports/rW5GmJvhc6HwG78J83WjJFG4rGvGRMXfmCRPJ641?view=grid\u0022 title=\u0022Chair \u0026amp; Dean report\u0022 data-anchor=\u0022?view=gri...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

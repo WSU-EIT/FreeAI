@@ -1,0 +1,339 @@
+﻿@*
+    DynamicFormRenderer — Runtime renderer for schema-driven dynamic form definitions.
+
+    Evaluates field visibility rules as the user types, renders the correct input control
+    per field type (text, select, radio, checkbox, textarea, date, email, tel, url), and
+    submits collected values through a typed EventCallback.
+
+    Required host setup:
+        1. Register in DI: builder.Services.AddScoped<FormService>();
+        2. Build or load a FormDefinition (see DynamicForms/FormDefinition.cs).
+        3. Render the form:
+               <DynamicFormRenderer FormDef="_form" OnSubmit="HandleSubmit" />
+
+    Required parameters:
+        FormDef  — the FormDefinition that describes the fields, validation, and schema.
+
+    Optional parameters:
+        OnSubmit — EventCallback<Dictionary<Guid, string?>> fired with the collected field
+                   values keyed by FieldId after passing validation. Wire this to persist
+                   or process the submission.
+        OnCancel — EventCallback fired when the user clicks the Cancel button.
+                   Omit to hide the Cancel button.
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.DynamicForms
+@using FreeBlazorExtended.DynamicForms
+@inject FormService FormService
+
+@if (FormDef != null)
+{
+    <div class="dynamic-form-container">
+        <form @onsubmit="HandleSubmit">
+            @foreach (var field in FormDef.Fields.OrderBy(f => f.Order))
+            {
+                @if (_visibleFields.Contains(field.FieldId))
+                {
+                    <div class="form-group mb-3">
+                        <label for="field-@field.FieldId" class="form-label">
+                            @field.Label
+                            @if (field.IsRequired)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+
+                        @if (!string.IsNullOrEmpty(field.HelpText))
+                        {
+                            <small class="form-text text-muted d-block mb-2">@field.HelpText</small>
+                        }
+
+                        @switch (field.FieldType)
+                        {
+                            case FormFieldType.Text:
+                            case FormFieldType.Email:
+                            case FormFieldType.Telephone:
+                            case FormFieldType.Url:
+                                <input type="@GetInputType(field.FieldType)"
+                                       id="field-@field.FieldId"
+                                       class="form-control"
+                                       placeholder="@field.PlaceholderText"
+                                       value="@GetFieldValue(field.FieldId)"
+                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                       required="@field.IsRequired" />
+                                break;
+
+                            case FormFieldType.Textarea:
+                                <textarea id="field-@field.FieldId"
+                                          class="form-control"
+                                          placeholder="@field.PlaceholderText"
+                                          rows="4"
+                                          required="@field.IsRequired"
+                                          @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))">@GetFieldValue(field.FieldId)</textarea>
+                                break;
+
+                            case FormFieldType.Select:
+                                <select id="field-@field.FieldId"
+                                        class="form-select"
+                                        required="@field.IsRequired"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))">
+                                    <option value="">-- Select --</option>
+                                    @foreach (var (key, label) in field.Options)
+                                    {
+                                        <option value="@key" selected="@(GetFieldValue(field.FieldId) == key)">@label</option>
+                                    }
+                                </select>
+                                break;
+
+                            case FormFieldType.Radio:
+                                @foreach (var (key, label) in field.Options)
+                                {
+                                    <div class="form-check">
+                                        <input type="radio"
+                                               id="field-@field.FieldId-@key"
+                                               name="field-@field.FieldId"
+                                               class="form-check-input"
+                                               value="@key"
+                                               checked="@(GetFieldValue(field.FieldId) == key)"
+                                               @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                               required="@field.IsRequired" />
+                                        <label class="form-check-label" for="field-@field.FieldId-@key">
+                                            @label
+                                        </label>
+                                    </div>
+                                }
+                                break;
+
+                            case FormFieldType.Checkbox:
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           id="field-@field.FieldId"
+                                           class="form-check-input"
+                                           checked="@(GetFieldValue(field.FieldId) == "true")"
+                                           @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))" />
+                                    <label class="form-check-label" for="field-@field.FieldId">
+                                        @(field.Label)
+                                    </label>
+                                </div>
+                                break;
+
+                            case FormFieldType.Date:
+                                <input type="date"
+                                       id="field-@field.FieldId"
+                                       class="form-control"
+                                       value="@GetFieldValue(field.FieldId)"
+                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                       required="@field.IsRequired" />
+                                break;
+
+                            case FormFieldType.DateTime:
+                                <input type="datetime-local"
+                                       id="field-@field.FieldId"
+                                       class="form-control"
+                                       value="@GetFieldValue(field.FieldId)"
+                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                       required="@field.IsRequired" />
+                                break;
+
+                            case FormFieldType.Number:
+                                <input type="number"
+                                       id="field-@field.FieldId"
+                                       class="form-control"
+                                       placeholder="@field.PlaceholderText"
+                                       value="@GetFieldValue(field.FieldId)"
+                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                       required="@field.IsRequired" />
+                                break;
+
+                            case FormFieldType.Confirmation:
+                                <div class="form-check form-check-lg">
+                                    <input type="checkbox"
+                                           id="field-@field.FieldId"
+                                           class="form-check-input"
+                                           checked="@(GetFieldValue(field.FieldId) == "true")"
+                                           @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))"
+                                           required="@field.IsRequired" />
+                                    <label class="form-check-label fw-bold" for="field-@field.FieldId">
+                                        @field.Label
+                                    </label>
+                                </div>
+                                break;
+                        }
+
+                        @if (_errors.ContainsKey(field.FieldId))
+                        {
+                            <div class="text-danger small mt-2">@_errors[field.FieldId]</div>
+                        }
+                    </div>
+                }
+            }
+
+            @if (!string.IsNullOrEmpty(_globalError))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @_globalError
+                </div>
+            }
+
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                    @if (_isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    }
+                    @FormDef.SubmitButtonText
+                </button>
+                @if (OnCancel.HasDelegate)
+                {
+                    <button type="button" class="btn btn-secondary ms-2" @onclick="@(async () => await OnCancel.InvokeAsync())" disabled="@_isSubmitting">
+                        Cancel
+                    </button>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_successMessage))
+            {
+                <div class="alert alert-success mt-3" role="alert">
+                    @_successMessage
+                </div>
+            }
+        </form>
+    </div>
+}
+
+<style>
+.dynamic-form-container {
+    max-width: 600px;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+</style>
+
+@code {
+    private Dictionary<Guid, string?> _currentValues = new();
+    private Dictionary<Guid, string> _errors = new();
+    private HashSet<Guid> _visibleFields = new();
+    private bool _isSubmitting;
+    private string? _globalError;
+    private string? _successMessage;
+
+    /// <summary>
+    /// The form schema to render.
+    /// <para><b>Required.</b> Assign a <see cref="FormDefinition"/> loaded from <see cref="FormService"/> or
+    /// constructed directly. When this parameter changes, the renderer resets all field values to
+    /// their declared defaults and recalculates visibility rules.</para>
+    /// </summary>
+    [Parameter]
+    public FormDefinition? FormDef { get; set; }
+
+    /// <summary>
+    /// Fired after successful validation when the user submits the form.
+    /// The argument is a dictionary mapping each <see cref="FormField.FieldId"/> to the
+    /// user-entered string value (or <c>null</c> if the field was left blank).
+    /// </summary>
+    [Parameter]
+    public EventCallback<Dictionary<Guid, string?>> OnSubmit { get; set; }
+
+    /// <summary>
+    /// Fired when the user clicks Cancel. Omit to suppress the Cancel button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (FormDef != null)
+        {
+            _currentValues.Clear();
+            _errors.Clear();
+            _successMessage = null;
+            _globalError = null;
+
+            // Initialize with default values
+            foreach (var field in FormDef.Fields)
+            {
+                _currentValues[field.FieldId] = field.DefaultValue;
+            }
+
+            // Recalculate visible fields
+            await UpdateVisibleFieldsAsync();
+        }
+    }
+
+    private async Task UpdateVisibleFieldsAsync()
+    {
+        if (FormDef == null) return;
+
+        _visibleFields.Clear();
+        foreach (var field in FormDef.Fields)
+        {
+            var isVisible = await FormService.IsFieldVisible(field, _currentValues);
+            if (isVisible)
+                _visibleFields.Add(field.FieldId);
+        }
+    }
+
+    private async Task UpdateValue(Guid fieldId, string? value)
+    {
+        _currentValues[fieldId] = value;
+        _errors.Remove(fieldId);
+        await UpdateVisibleFieldsAsync();
+    }
+
+    private string GetFieldValue(Guid fieldId)
+    {
+        return _currentValues.ContainsKey(fieldId) ? (_currentValues[fieldId] ?? string.Empty) : string.Empty;
+    }
+
+    private string GetInputType(FormFieldType fieldType)
+    {
+        return fieldType switch
+        {
+            FormFieldType.Email => "email",
+            FormFieldType.Telephone => "tel",
+            FormFieldType.Url => "url",
+            _ => "text"
+        };
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (FormDef == null) return;
+
+        _isSubmitting = true;
+        _errors.Clear();
+        _globalError = null;
+        _successMessage = null;
+
+        try
+        {
+            // Validate
+            var validationErrors = await FormService.ValidateSubmission(FormDef, _currentValues);
+            if (validationErrors.Any())
+            {
+                _globalError = "Please correct the errors below.";
+                // Set errors for each field
+                // (In a real implementation, you'd map validation errors to specific fields)
+                return;
+            }
+
+            // Submit
+            await OnSubmit.InvokeAsync(_currentValues);
+            _successMessage = FormDef.SuccessMessage ?? "Form submitted successfully!";
+            _currentValues.Clear();
+            await UpdateVisibleFieldsAsync();
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

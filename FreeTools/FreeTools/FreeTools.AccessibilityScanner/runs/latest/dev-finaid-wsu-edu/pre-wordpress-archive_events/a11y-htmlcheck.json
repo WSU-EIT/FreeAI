@@ -1,0 +1,107 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 class=\u0022fc-prev-button ui-button ui-state-default ui-corner-left\u0022\u003E\u003Cspan class=\u0022ui-icon ui-icon-circle-triangle-w\u0022\u003E\u003C/span\u003E\u003C/button...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 class=\u0022fc-next-button ui-button ui-state-default ui-corner-right\u0022\u003E\u003Cspan class=\u0022ui-icon ui-icon-circle-triangle-e\u0022\u003E\u003C/span\u003E\u003C/butto...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-past\u0022 data-date=\u00222026-02-01\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-mon fc-past\u0022 ...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-past\u0022 data-date=\u00222026-02-08\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-mon fc-past\u0022 ...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-past\u0022 data-date=\u00222026-02-15\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-mon fc-past\u0022 ...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-future\u0022 data-date=\u00222026-02-22\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-mon fc-futu...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-other-month fc-future\u0022 data-date=\u00222026-03-01\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-other-month fc-future\u0022 data-date=\u00222026-03-08\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022 cellpadding=\u00222\u0022 cellspacing=\u00220\u0022 width=\u0022100%\u0022 style=\u0022width:100%;\u0022 class=\u0022fc-event-details\u0022\u003E\n\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd style=\u0022width:1%;\u0022 valign=\u0022...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

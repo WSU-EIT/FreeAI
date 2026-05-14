@@ -1,0 +1,95 @@
+{
+  "PagePath": "/wellness-tips/",
+  "Url": "https://hrs.wsu.edu/wellness-tips/",
+  "FinalUrl": "https://hrs.wsu.edu/employees/wellcoug/wellness-tips/",
+  "Title": "Wellness Tips \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 80466,
+  "ScreenshotSizeBytes": 121744,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 121744
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "http://hrs.wsu.edu/wp-content/uploads/2016/03/WellCoug-logo-page-001-300x86.jpg",
+      "AltText": "WellCoug logo-page-001"
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/Rainbow-Carrots-150x150.png",
+      "AltText": "Several carrots in a variety of colors."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/French-Ad-Stairs-150x150.jpg",
+      "AltText": "A flight of stairs."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/publicdomainq-0006201xttemk-300px-1-150x150.png",
+      "AltText": "A pair of hands under running water faucet."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/busy-300px-150x150.png",
+      "AltText": "Cartoon of a frazzled person at a desk."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/first_responder_06_doctor-300px-150x150.png",
+      "AltText": "Cartoon of a doctor."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2018/01/9ffaf216da24a1bfe425273dbfe36caf-150x150.png",
+      "AltText": "No smoking sign."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:32:03 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:32:03 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/3425\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=3425\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:32:03.3056902Z"
+}

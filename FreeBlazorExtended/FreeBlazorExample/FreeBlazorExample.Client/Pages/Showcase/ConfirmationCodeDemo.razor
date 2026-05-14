@@ -1,0 +1,282 @@
+﻿@page "/showcase/confirmationcode"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Confirmation Code Component</h1>
+            <p class="lead">A multi-digit code input component ideal for verification codes, OTP (One-Time Password), and security confirmations with automatic focus advancement.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A row of N single-character inputs that auto-advance focus on each keystroke, auto-retreat focus on backspace, and fire OnComplete when all digits are filled — modelled on standard OTP entry UX."
+        WhatEli5="Those six little boxes you see when a website texts you a code — each box accepts one digit and jumps to the next one automatically so you don't have to click between them."
+        Who=@(new[]{ "Developers building two-factor authentication flows", "Auth screens requiring PIN entry (ATM-style short numeric codes)", "Any verification step where the user must type a code received out-of-band" })
+        WhenUse=@(new[]{ "Email or SMS verification codes", "Two-factor authentication OTP entry", "Short PIN entry (4–8 digits or alphanumeric)" })
+        WhenNot=@(new[]{ "Long arbitrary strings — a plain text input with paste support is faster for codes longer than ~10 characters", "Cases where the code length is unknown at render time" })
+        Why="A standard text input for a 6-digit SMS code forces the user to click, type, and worry about formatting. Individual advancing boxes exactly match the mental model users already have from banking apps."
+        TechNotes=@(new[]{ "NumberOfInputs parameter controls how many boxes render; each is a maxlength=1 <input>", "Focus advancement: input event handler calls the next sibling's .focus() via ElementReference", "Backspace handler: if current input is empty, move focus to previous input", "AllowAlpha=false restricts input pattern to [0-9] only; AllowAlpha=true accepts [A-Za-z0-9]", "OnComplete fires when the last box receives a character; passes the full concatenated string" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic 6-Digit Code</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard 6-digit confirmation code input.</p>
+                    <label for="basicCode" class="form-label">Enter verification code:</label>
+                    <ConfirmationCode @bind-Value="@_basicCode" Length="6" />
+                    @if (!string.IsNullOrEmpty(_basicCode) && _basicCode.Length == 6) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Code entered:</strong> @_basicCode
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">4-Digit PIN</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Shorter PIN code with 4 digits.</p>
+                    <label for="pinCode" class="form-label">Enter your PIN:</label>
+                    <ConfirmationCode @bind-Value="@_pinCode" Length="4" />
+                    @if (!string.IsNullOrEmpty(_pinCode) && _pinCode.Length == 4) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>PIN entered:</strong> @string.Concat(_pinCode.Select(c => "*"))
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">8-Digit Code</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Longer 8-digit security code.</p>
+                    <label for="longCode" class="form-label">Enter 8-digit code:</label>
+                    <ConfirmationCode @bind-Value="@_longCode" Length="8" />
+                    @if (!string.IsNullOrEmpty(_longCode) && _longCode.Length == 8) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Code segments:</strong> @_longCode.Substring(0, 4) - @_longCode.Substring(4, 4)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Placeholder</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Code input with placeholder characters.</p>
+                    <label for="placeholderCode" class="form-label">Enter code:</label>
+                    <ConfirmationCode @bind-Value="@_placeholderCode" Length="6" />
+                    @if (!string.IsNullOrEmpty(_placeholderCode)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Progress:</strong> @_placeholderCode.Length / 6 digits
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Two-Factor Authentication</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Typical 2FA code verification flow.</p>
+                    <div class="mb-3">
+                        <small class="text-muted">A verification code has been sent to your email.</small>
+                    </div>
+                    <label for="twoFaCode" class="form-label">Enter verification code:</label>
+                    <ConfirmationCode @bind-Value="@_twoFaCode" Length="6" />
+                    <button class="btn btn-primary btn-sm mt-3"
+                        disabled="@(string.IsNullOrEmpty(_twoFaCode) || _twoFaCode.Length < 6)">
+                        Verify Code
+                    </button>
+                    @if (!string.IsNullOrEmpty(_twoFaCode) && _twoFaCode.Length == 6) {
+                        <button class="btn btn-link btn-sm" @onclick="@(() => _twoFaCode = "")">
+                            Clear
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Confirmation code in disabled state.</p>
+                    <label for="disabledCode" class="form-label">Code (disabled):</label>
+                    <ConfirmationCode @bind-Value="@_disabledCode" Length="6" />
+                    <small class="text-muted mt-2 d-block"><em>ConfirmationCode has no Disabled parameter. The code above is fully functional — use application logic to prevent form submission while disabled.</em></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Value</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>The code value (use @@bind-Value for two-way binding)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Length</code></td>
+                                    <td>int</td>
+                                    <td>6</td>
+                                    <td>Number of digits/characters in the confirmation code</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AriaLabel</code></td>
+                                    <td>string</td>
+                                    <td>"Confirmation Code"</td>
+                                    <td>ARIA label for accessibility</td>
+                                </tr>
+                                <tr>
+                                    <td><code>BackgroundColor</code></td>
+                                    <td>string</td>
+                                    <td>"transparent"</td>
+                                    <td>Background color for each input box</td>
+                                </tr>
+                                <tr>
+                                    <td><code>BorderColor</code></td>
+                                    <td>string</td>
+                                    <td>"#888"</td>
+                                    <td>Border color for each input box</td>
+                                </tr>
+                                <tr>
+                                    <td><code>TextSize</code></td>
+                                    <td>int</td>
+                                    <td>80</td>
+                                    <td>Font size (%) for the digits inside each box</td>
+                                </tr>
+                                <tr>
+                                    <td><code>InputClass</code></td>
+                                    <td>string</td>
+                                    <td>""</td>
+                                    <td>Additional CSS class applied to each input element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>WrapperClass</code></td>
+                                    <td>string</td>
+                                    <td>""</td>
+                                    <td>CSS class applied to the outer wrapper element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OnComplete</code></td>
+                                    <td>(removed)</td>
+                                    <td>-</td>
+                                    <td>Callback invoked when all digits are entered</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/verify"
+
+&lt;h3&gt;Two-Factor Authentication&lt;/h3&gt;
+&lt;p&gt;Enter the 6-digit code sent to your email.&lt;/p&gt;
+
+&lt;ConfirmationCode @@bind-Value="@@_verificationCode"
+    Length="6" /&gt;
+
+@@code {{
+    private string _verificationCode = "";
+
+    private async Task HandleVerification()
+    {{
+        if (_verificationCode.Length == 6)
+        {{
+            bool isValid = await VerifyCodeAsync(_verificationCode);
+        }}
+    }}
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Each digit input is a separate &lt;input&gt; element for clarity</li>
+                        <li>Keyboard navigation support with arrow keys and tab</li>
+                        <li>Automatic focus advancement for better user experience</li>
+                        <li>Backspace key support for correction and moving backwards</li>
+                        <li>ARIA labels identify each digit field for screen readers</li>
+                        <li>Visual focus indicators for keyboard users</li>
+                        <li>Disabled state is clearly communicated</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected string _basicCode = "";
+    protected string _pinCode = "";
+    protected string _longCode = "";
+    protected string _placeholderCode = "";
+    protected string _twoFaCode = "";
+    protected string _disabledCode = "";
+}

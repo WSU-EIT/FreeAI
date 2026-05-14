@@ -1,0 +1,129 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 1110,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "label",
+      "CanonicalRuleId": "label",
+      "Severity": "critical",
+      "Message": "Form elements must have labels",
+      "Selector": "#ROARSearch",
+      "Snippet": "\u003Cinput type=\u0022text\u0022 name=\u0022ROARSearch\u0022 id=\u0022ROARSearch\u0022 value=\u0022\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/label?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "list",
+      "CanonicalRuleId": "list",
+      "Severity": "serious",
+      "Message": "\u003Cul\u003E and \u003Col\u003E must only directly contain \u003Cli\u003E, \u003Cscript\u003E or \u003Ctemplate\u003E elements",
+      "Selector": ".ro_acad_reg_narrative:nth-child(95) \u003E ol",
+      "Snippet": "\u003Col\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(4)",
+      "Snippet": "\u003Cli\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(5)",
+      "Snippet": "\u003Cli\u003EFor grades on individual assignments, the concern should be emailed to the instructor in a timely way (typically within a week of receiving the gr...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(6)",
+      "Snippet": "\u003Cli\u003EFor final grades, the concern must be emailed to the instructor within 10 business days of the final grading deadline and posting to the transcrip...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(7)",
+      "Snippet": "\u003Cli\u003EFor any other concerns about instruction that arise during the course, the student should email the instructor to attempt to resolve the issue.\u0026nb...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(15)",
+      "Snippet": "\u003Cli\u003Edescribe the concern,\u0026nbsp;\u003C/li\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(16)",
+      "Snippet": "\u003Cli\u003Eprovide supporting evidence of how the student has attempted to resolve the concern,\u003C/li\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(17)",
+      "Snippet": "\u003Cli\u003Eindicate how the issue affects the student, and\u0026nbsp;\u003C/li\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "listitem",
+      "CanonicalRuleId": "listitem",
+      "Severity": "serious",
+      "Message": "\u003Cli\u003E elements must be contained in a \u003Cul\u003E or \u003Col\u003E",
+      "Selector": ".ro_acad_reg_narrative:nth-child(139) \u003E li:nth-child(18)",
+      "Snippet": "\u003Cli\u003Estate the remedy sought from the college dean.\u0026nbsp;\u003C/li\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/listitem?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

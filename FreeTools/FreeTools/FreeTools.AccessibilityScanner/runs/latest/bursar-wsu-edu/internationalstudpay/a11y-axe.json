@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 444,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "figure \u003E a[target=\u0022_blank\u0022][rel=\u0022noreferrer noopener\u0022]",
+      "Snippet": "\u003Ca href=\u0022https://www.flywire.com/school/wsu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003Cimg decoding=\u0022async\u0022 src=\u0022https://s3.wp.wsu.edu/uploads/sites/...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

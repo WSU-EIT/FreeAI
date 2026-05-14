@@ -1,0 +1,384 @@
+﻿@page "/showcase/feature102-multi-view-sync"
+@using FreeBlazorExtended.MultiViewSync
+@inject RealtimeSyncService SyncService
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Feature 102: Multi-View Real-Time Synchronization</h1>
+            <p class="lead">Master controller + multiple slave views (tablet, projection screen) kept in sync via SignalR. Each view has different read/write capabilities.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout
+        WhatTechnical="A SignalR-backed session model where one master client controls shared state and any number of slave clients mirror it in real time, each with its own read/write permission profile."
+        WhatEli5="Think of a TV remote and the TV — one device is in control, and whatever it does instantly appears on every screen in the room, all without anyone pressing refresh."
+        Who=@(new[]{ "Presenters who run guided walkthroughs on a projector while controlling from a tablet", "Kiosk operators pushing content to displays", "Developers building shared-screen collaboration flows (e.g., co-browsing support tools)" })
+        WhenUse=@(new[]{ "Live presentations where a handheld device drives a wall screen", "Multi-screen kiosks where a back-office admin pushes content to public displays", "Step-by-step guided workflows where a rep controls what a customer sees" })
+        WhenNot=@(new[]{ "Persistent multi-user collaboration that needs conflict resolution — use a proper CRDT or OT approach", "Simple data sync that just needs a database poll — SignalR overhead isn't worth it" })
+        Why="The gap between 'I control from my phone' and 'it shows on the big screen' used to require native apps or complex WebSocket wiring. This collapses that into a reusable session abstraction."
+        TechNotes=@(new[]{ "RealtimeSyncService manages named sessions; each session has one master connection ID and N slave IDs", "SignalR hub group per session — master calls hub method, hub broadcasts to group", "Slave views receive a strongly-typed SyncPayload and re-render; they never call hub methods unless granted write permission", "Session state is in-memory only — no DB persistence; sessions vanish on server restart", "Controller page uses @implements IAsyncDisposable to clean up the hub connection" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI + SignalR hub", ["Persisted"] = "No — in-memory session only", ["Real-time"] = "SignalR (push)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title h5 mb-0">Presentation Session Manager</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="newSessionName" class="visually-hidden">Session name</label>
+                            <input id="newSessionName" type="text" class="form-control" @bind="_newSessionName" placeholder="Enter session name..." aria-label="Session name" />
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-success w-100" @onclick="CreateSession">+ Create New Session</button>
+                        </div>
+                    </div>
+
+                    @if (_sessions.Count == 0)
+                    {
+                        <div class="alert alert-info">No sessions created yet.</div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Session Name</th>
+                                        <th>Items</th>
+                                        <th>Active</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var session in _sessions)
+                                    {
+                                        <tr>
+                                            <td><strong>@session.Name</strong></td>
+                                            <td>@session.Items.Count items</td>
+                                            <td>
+                                                @if (session.ActiveItemId.HasValue)
+                                                {
+                                                    var active = session.Items.FirstOrDefault(i => i.ItemId == session.ActiveItemId);
+                                                    <span>@(active?.TitleOrPayload ?? "Unknown")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">None</span>
+                                                }
+                                            </td>
+                                            <td>@session.CreatedAt.ToString("g")</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => SelectSession(session)">Edit</button>
+                                                <button class="btn btn-sm btn-outline-info" @onclick="() => ViewAsController(session)">Controller</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (_selectedSession != null)
+    {
+        <div class="row mt-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h2 class="card-title h5 mb-0">Edit Session: @_selectedSession.Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h3>Session Items</h3>
+                            @if (_selectedSession.Items.Count == 0)
+                            {
+                                <div class="alert alert-info">No items in this session yet.</div>
+                            }
+                            else
+                            {
+                                <div class="list-group">
+                                    @foreach (var item in _selectedSession.Items.OrderBy(i => i.Order))
+                                    {
+                                        var isActive = item.ItemId == _selectedSession.ActiveItemId;
+                                        <div class="list-group-item @(isActive ? "active" : "")">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h3 class="mb-1">@item.TitleOrPayload</h3>
+                                                    <small class="text-muted">Type: @item.Type | Order: @item.Order</small>
+                                                </div>
+                                                <div>
+                                                    @if (!isActive)
+                                                    {
+                                                        <button class="btn btn-sm btn-outline-success" @onclick="() => SetActiveItem(item)">Make Active</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success">Active</span>
+                                                    }
+                                                    <button class="btn btn-sm btn-outline-danger ms-2" @onclick="() => RemoveItem(item)">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <hr />
+
+                        <div class="mb-3">
+                            <h3>Add New Item</h3>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="newItemType" class="visually-hidden">Item type</label>
+                                    <select id="newItemType" class="form-select" @bind="_newItemType" aria-label="Item type">
+                                        <option value="text">Text Slide</option>
+                                        <option value="image">Image</option>
+                                        <option value="html">HTML Content</option>
+                                        <option value="countdown">Countdown Timer</option>
+                                        <option value="message">Message Overlay</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="newItemPayload" class="visually-hidden">Item content</label>
+                                    <input id="newItemPayload" type="text" class="form-control" @bind="_newItemPayload" placeholder="Enter content..." aria-label="Item content" />
+                                </div>
+                            </div>
+                            <button class="btn btn-info mt-2" @onclick="AddItem">+ Add Item</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h2 class="card-title h5 mb-0">Session Controls</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h3>Display State</h3>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="blanked" @bind="_selectedSession.IsBlanked" @bind:after="SaveSession" />
+                                <label class="form-check-label" for="blanked">
+                                    Blank Screen (hide all content)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="textHidden" @bind="_selectedSession.IsTextHidden" @bind:after="SaveSession" />
+                                <label class="form-check-label" for="textHidden">
+                                    Hide Text (show backgrounds only)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h3>View Links</h3>
+                            <div class="input-group mb-2">
+                                <label for="controllerUrl" class="visually-hidden">Controller URL</label>
+                                <input id="controllerUrl" type="text" class="form-control" value="@GetControllerUrl()" readonly aria-label="Controller URL" />
+                                <button class="btn btn-outline-secondary" @onclick="CopyToClipboard" aria-label="Copy controller URL">Copy</button>
+                            </div>
+                            <small class="text-muted">Controller view (full control)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <h3>Active Viewers</h3>
+                            <p>@_activeViewers active clients</p>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" @onclick="SaveSession">Save Changes</button>
+                            <button class="btn btn-secondary" @onclick="ClearSelection">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h2 class="card-title h5 mb-0">View Types & Capabilities</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h3>Controller View</h3>
+                            <div class="list-group list-group-sm">
+                                <div class="list-group-item active">Full CRUD</div>
+                                <div class="list-group-item">Create items</div>
+                                <div class="list-group-item">Delete items</div>
+                                <div class="list-group-item">Set active slide</div>
+                                <div class="list-group-item">Blank/hide text</div>
+                                <div class="list-group-item">Reorder slides</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Tablet View</h3>
+                            <div class="list-group list-group-sm">
+                                <div class="list-group-item">Read state</div>
+                                <div class="list-group-item">User preferences</div>
+                                <div class="list-group-item">Zoom/scale</div>
+                                <div class="list-group-item">Hide elements</div>
+                                <div class="list-group-item">Note-taking mode</div>
+                                <div class="list-group-item">Offline support</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Screen View</h3>
+                            <div class="list-group list-group-sm">
+                                <div class="list-group-item">Read-only display</div>
+                                <div class="list-group-item">Full-screen capable</div>
+                                <div class="list-group-item">High-contrast mode</div>
+                                <div class="list-group-item">Message overlays</div>
+                                <div class="list-group-item">Timer/countdown</div>
+                                <div class="list-group-item">Auto-advance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="card-title h5 mb-0">Use Cases</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h3>Classroom Teaching</h3>
+                            <ul class="small">
+                                <li>Instructor controls slides</li>
+                                <li>Students on tablets see notes</li>
+                                <li>Projection screen shows presentation</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Conference / Church</h3>
+                            <ul class="small">
+                                <li>Speaker controls content</li>
+                                <li>Projection on main screen</li>
+                                <li>Confidence monitor view</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>Trading Floor / Command Center</h3>
+                            <ul class="small">
+                                <li>Control station broadcasts data</li>
+                                <li>Multiple monitor views</li>
+                                <li>Real-time synchronization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Guid _tenantId = Guid.NewGuid();
+    private List<PresentationSession> _sessions = new();
+    private PresentationSession? _selectedSession;
+    private string _newSessionName = string.Empty;
+    private string _newItemType = "text";
+    private string _newItemPayload = string.Empty;
+    private int _activeViewers = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSessions();
+    }
+
+    private async Task LoadSessions()
+    {
+        _sessions = await SyncService.GetPresentationSessions(_tenantId);
+    }
+
+    private async Task CreateSession()
+    {
+        if (string.IsNullOrWhiteSpace(_newSessionName))
+            return;
+
+        var session = await SyncService.CreateSession(_tenantId, _newSessionName);
+        _sessions.Add(session);
+        _newSessionName = string.Empty;
+    }
+
+    private void SelectSession(PresentationSession session)
+    {
+        _selectedSession = session;
+        _activeViewers = Random.Shared.Next(1, 10); // Simulated
+    }
+
+    private void ViewAsController(PresentationSession session)
+    {
+        SelectSession(session);
+        // In a real app, would navigate to /presentation/controller/{sessionId}
+    }
+
+    private void ClearSelection()
+    {
+        _selectedSession = null;
+    }
+
+    private async Task SaveSession()
+    {
+        if (_selectedSession != null)
+        {
+            await SyncService.SaveSession(_selectedSession);
+        }
+    }
+
+    private async Task AddItem()
+    {
+        if (_selectedSession == null || string.IsNullOrWhiteSpace(_newItemPayload))
+            return;
+
+        _selectedSession = await SyncService.AddSessionItem(_selectedSession.SessionId, _newItemType, _newItemPayload);
+        _newItemPayload = string.Empty;
+        _newItemType = "text";
+    }
+
+    private async Task SetActiveItem(SessionItem item)
+    {
+        if (_selectedSession == null)
+            return;
+
+        await SyncService.SetActiveItem(_selectedSession.SessionId, item.ItemId);
+        _selectedSession.ActiveItemId = item.ItemId;
+    }
+
+    private async Task RemoveItem(SessionItem item)
+    {
+        if (_selectedSession == null)
+            return;
+
+        _selectedSession = await SyncService.RemoveSessionItem(_selectedSession.SessionId, item.ItemId);
+    }
+
+    private string GetControllerUrl()
+    {
+        return $"/presentation/controller/{_selectedSession?.SessionId}";
+    }
+
+    private void CopyToClipboard()
+    {
+        // In a real app, would use JS interop to copy
+    }
+}

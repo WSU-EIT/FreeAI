@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 194,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-children",
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must contain particular children",
+      "Selector": "#mainNav",
+      "Snippet": "\u003Cul id=\u0022mainNav\u0022 class=\u0022dropdown menu\u0022 aria-label=\u0022Main Navigation\u0022 data-dropdown-menu=\u0022c9qb63-dropdown-menu\u0022 role=\u0022menubar\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022Resources\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/resources/\u0022 aria-label=\u0022Resources\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EResources\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "div[data-equalizer=\u00225cyu8m-equalizer\u0022] \u003E .umb-block-grid__area-container \u003E .umb-block-grid__area[data-area-alias=\u0022right\u0022][data-area-col-span=\u00224\u0022] \u003E .umb-block-grid__layout-container \u003E .umb-block-grid__layout-item[data-content-element-type-alias=\u0022contentCard\u0022][data-col-span=\u00224\u0022] \u003E .wsu-c-card__wrapper \u003E .wsu-c-card__container \u003E .wsu-c-card__content \u003E .studentAffairs_cardBottom \u003E .cardLinkButton.button",
+      "Snippet": "\u003Ca id=\u0022cardLinkButton\u0022 class=\u0022button cardLinkButton\u0022 href=\u0022/helping-my-coug/transfer-student/\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

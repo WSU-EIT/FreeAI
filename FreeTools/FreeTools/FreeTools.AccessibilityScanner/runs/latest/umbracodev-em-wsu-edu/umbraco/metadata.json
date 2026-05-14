@@ -1,0 +1,50 @@
+{
+  "PagePath": "/umbraco",
+  "Url": "https://umbracodev.em.wsu.edu/umbraco",
+  "FinalUrl": null,
+  "Title": "Umbraco",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 20022,
+  "ScreenshotSizeBytes": 132105,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 132105
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "axe",
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:14:21.6398692Z"
+}

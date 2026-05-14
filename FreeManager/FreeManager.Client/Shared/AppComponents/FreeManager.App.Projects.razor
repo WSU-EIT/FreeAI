@@ -1,0 +1,281 @@
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="fa-solid fa-cubes me-2"></i>
+                    App Builder
+                </h1>
+                <p class="text-muted mb-0">Create and manage your entity projects</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" @onclick="StartEntityWizard">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                    Entity Wizard
+                </button>
+                <button class="btn btn-outline-primary" @onclick="ShowNewProjectDialog">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    Blank Project
+                </button>
+            </div>
+        </div>
+
+        @if (_loading) {
+            <LoadingMessage />
+        } else if (_projects.Count == 0) {
+            <div class="text-center py-5">
+                <i class="fa-solid fa-folder-open fa-4x mb-3 opacity-25"></i>
+                <h4>No projects yet</h4>
+                <p class="text-muted">Create your first entity project with the wizard or start a blank project.</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <button class="btn btn-primary" @onclick="StartEntityWizard">
+                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                        Start Entity Wizard
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="ShowNewProjectDialog">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Blank Project
+                    </button>
+                </div>
+            </div>
+        } else {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var project in _projects) {
+                    var p = project;
+                    <div class="col">
+                        <div class="card h-100 shadow-sm project-card">
+                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">
+                                        <i class="fa-solid fa-cube text-primary me-2"></i>
+                                        @project.DisplayName
+                                    </h5>
+                                    @if (!string.IsNullOrEmpty(project.Name) && project.Name != project.DisplayName)
+                                    {
+                                        <small class="text-muted">@project.Name</small>
+                                    }
+                                </div>
+                                <span class="badge @GetStatusBadgeClass(project.Status)">@project.Status</span>
+                            </div>
+                            <div class="card-body">
+                                @if (!string.IsNullOrWhiteSpace(project.Description)) {
+                                    <p class="card-text small text-muted mb-3">@project.Description</p>
+                                }
+
+                                @* Stats Row *@
+                                <div class="row text-center mb-3 g-2">
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="fs-5 fw-bold text-primary">@project.EntityCount</div>
+                                            <small class="text-muted">Entities</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="fs-5 fw-bold text-info">@project.RelationshipCount</div>
+                                            <small class="text-muted">Relations</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2 bg-light rounded">
+                                            <div class="fs-5 fw-bold text-success">@project.FileCount</div>
+                                            <small class="text-muted">Files</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @* Last Updated *@
+                                <div class="small text-muted">
+                                    <i class="fa-solid fa-clock me-1"></i>
+                                    Updated @project.UpdatedAt.ToString("MMM d, yyyy h:mm tt")
+                                </div>
+
+                                @* Build Status *@
+                                @if (project.LastBuild != null) {
+                                    <div class="mt-2 small">
+                                        <span class="text-muted">Build:</span>
+                                        @switch (project.LastBuild.Status) {
+                                            case "Succeeded":
+                                                <span class="text-success"><i class="fa-solid fa-check me-1"></i>Success</span>
+                                                break;
+                                            case "Failed":
+                                                <span class="text-danger"><i class="fa-solid fa-times me-1"></i>Failed</span>
+                                                break;
+                                            case "Running":
+                                                <span class="text-info"><i class="fa-solid fa-spinner fa-spin me-1"></i>Running</span>
+                                                break;
+                                            default:
+                                                <span class="text-warning"><i class="fa-solid fa-clock me-1"></i>@project.LastBuild.Status</span>
+                                                break;
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex gap-2">
+                                    @* Primary action: Edit with Wizard if has entities, otherwise Edit Files *@
+                                    @if (project.EntityCount > 0)
+                                    {
+                                        <button class="btn btn-primary btn-sm flex-grow-1" @onclick="@(() => EditWithWizard(p))" title="Edit entities and regenerate code">
+                                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                                            Wizard
+                                        </button>
+                                    }
+
+                                    @if (project.FileCount > 0)
+                                    {
+                                        <a href="@(Helpers.BuildUrl($"AppBuilder/Edit/{project.Id}"))" class="btn @(project.EntityCount > 0 ? "btn-outline-secondary" : "btn-primary") btn-sm flex-grow-1" title="Edit generated files directly">
+                                            <i class="fa-solid fa-code me-1"></i>
+                                            Files
+                                        </a>
+                                    }
+
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="@(() => DownloadProject(p))" title="Download ZIP">
+                                        <i class="fa-solid fa-download"></i>
+                                    </button>
+
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="@(() => DeleteProject(p))" title="Delete project">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .project-card { transition: all 0.2s ease; }
+    .project-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important; }
+</style>
+
+@code {
+    protected bool _loadedData = false;
+    protected bool _loading = true;
+    protected string _pageName = "appbuilder";
+    protected List<DataObjects.FMProjectInfo> _projects = new();
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected async Task LoadData()
+    {
+        try {
+            _projects = await Http.GetFromJsonAsync<List<DataObjects.FMProjectInfo>>(
+                DataObjects.Endpoints.FreeManager.GetProjects) ?? new();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading projects: {ex.Message}");
+            _projects = new();
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private string GetStatusBadgeClass(string status) => status switch
+    {
+        "Active" => "bg-success",
+        "Draft" => "bg-secondary",
+        "Archived" => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
+
+    protected void StartEntityWizard()
+    {
+        NavigationManager.NavigateTo(Helpers.BuildUrl("AppBuilder/EntityWizard"));
+    }
+
+    protected void ShowNewProjectDialog()
+    {
+        Helpers.NavigateTo("AppBuilder/New");
+    }
+
+    protected void EditWithWizard(DataObjects.FMProjectInfo project)
+    {
+        NavigationManager.NavigateTo(Helpers.BuildUrl($"AppBuilder/EntityWizard?projectId={project.Id}"));
+    }
+
+    protected async Task DownloadProject(DataObjects.FMProjectInfo project)
+    {
+        Model.ClearMessages();
+        Model.AddMessage("Preparing download...", MessageType.Info);
+
+        try {
+            var response = await Helpers.GetOrPost<DataObjects.FMProjectZipResponse>(
+                $"{DataObjects.Endpoints.FreeManager.DownloadProjectZip}?projectId={project.Id}", null);
+
+            Model.ClearMessages();
+
+            if (response != null && response.Success && !string.IsNullOrEmpty(response.Base64Content)) {
+                var bytes = Convert.FromBase64String(response.Base64Content);
+                await Helpers.DownloadFileToBrowser(response.FileName, bytes);
+                Model.AddMessage($"Downloaded {response.FileCount} files", MessageType.Success);
+            } else {
+                Model.ErrorMessage(response?.ErrorMessage ?? "Failed to download project");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error downloading project: {ex.Message}");
+            Model.ErrorMessage("Failed to download project");
+        }
+    }
+
+    protected async Task DeleteProject(DataObjects.FMProjectInfo project)
+    {
+        Model.ClearMessages();
+        Model.Message_Deleting();
+
+        try {
+            string url = $"{DataObjects.Endpoints.FreeManager.DeleteProject}?projectId={project.Id}";
+            DataObjects.BooleanResponse? response = await Helpers.GetOrPost<DataObjects.BooleanResponse>(url);
+
+            Model.ClearMessages();
+
+            if (response != null && response.Result) {
+                _projects.RemoveAll(p => p.Id == project.Id);
+                Model.AddMessage($"Project '{project.DisplayName}' deleted", MessageType.Success);
+                StateHasChanged();
+            } else {
+                if (response != null) {
+                    Model.ErrorMessages(response.Messages);
+                } else {
+                    Model.UnknownError();
+                }
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error deleting project: {ex.Message}");
+            Model.UnknownError();
+        }
+    }
+}

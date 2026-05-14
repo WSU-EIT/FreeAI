@@ -1,0 +1,224 @@
+﻿@*
+    Timer — Reusable countdown timer component.
+
+    Displays remaining time as large monospace text with an optional Bootstrap progress bar
+    (turns red in the final 10% of the duration) and Start / Pause / Reset controls.
+    Pure server-side: uses System.Timers.Timer at a 1-second interval — no JS interop,
+    no host-app dependencies.
+
+    Required parameters:
+        Duration — TimeSpan defining the full countdown length (default 5 minutes).
+
+    Optional parameters:
+        AutoStart       — begin counting immediately on initialization (default false)
+        ShowProgressBar — render the draining progress bar (default true)
+        ShowControls    — render Start / Pause / Reset buttons (default true)
+        DisplayFormat   — TimeSpan format string for the big display (default @"mm\:ss")
+        Class           — extra CSS class on the outer wrapper div
+        OnElapsed       — EventCallback fired once when time reaches zero
+        OnTick          — EventCallback<TimeSpan> fired every second with remaining time
+
+    Programmatic control (requires @ref):
+        timerRef.Start()  — begin or resume
+        timerRef.Pause()  — pause without resetting
+        timerRef.Reset()  — return to Duration and stop
+
+    Source pattern adapted from FreeExamples TimerDemo.razor.
+*@
+
+@implements IDisposable
+
+<div class="timer-component @Class" role="region" aria-label="Countdown timer">
+    <div class="timer-display mb-2"
+         style="font-size:3em; font-family:monospace; text-align:center;"
+         aria-live="polite" aria-atomic="true" role="timer">
+        @_remaining.ToString(DisplayFormat)
+    </div>
+
+    @if (ShowProgressBar) {
+        double pct = Duration.TotalSeconds <= 0
+            ? 0
+            : (_remaining.TotalSeconds / Duration.TotalSeconds) * 100.0;
+        string barClass = "progress-bar"
+            + (pct <= 10 ? " bg-danger" : "")
+            + (_running ? " progress-bar-animated progress-bar-striped" : "");
+        <div class="progress mb-2" style="height:24px;"
+             role="progressbar"
+             aria-valuenow="@((int)_remaining.TotalSeconds)"
+             aria-valuemin="0"
+             aria-valuemax="@((int)Duration.TotalSeconds)"
+             aria-label="Countdown progress">
+            <div class="@barClass" style="width:@(pct.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%">
+                @_remaining.ToString(DisplayFormat)
+            </div>
+        </div>
+    }
+
+    @if (ShowControls) {
+        <div class="btn-group" role="group" aria-label="Timer controls">
+            <button type="button" class="btn btn-sm btn-success"
+                    @onclick="Start"
+                    disabled="@(_running || _remaining <= TimeSpan.Zero)">
+                <i class="fa-solid fa-play me-1"></i>Start
+            </button>
+            <button type="button" class="btn btn-sm btn-warning"
+                    @onclick="Pause"
+                    disabled="@(!_running)">
+                <i class="fa-solid fa-pause me-1"></i>Pause
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary"
+                    @onclick="Reset">
+                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Additional CSS class(es) applied to the outer <c>&lt;div&gt;</c> wrapper.
+    /// Use to control width, margin, or theming from the host component.
+    /// </summary>
+    [Parameter] public string Class { get; set; } = "";
+
+    /// <summary>
+    /// Full countdown duration. <see cref="Reset"/> returns the timer to this value.
+    /// <para>Default: <c>TimeSpan.FromMinutes(5)</c>.</para>
+    /// Example: <c>Duration="TimeSpan.FromSeconds(90)"</c>
+    /// </summary>
+    [Parameter] public TimeSpan Duration { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a Bootstrap progress bar beneath the time display.
+    /// The bar animates while running and turns red when less than 10% of the time remains.
+    /// </summary>
+    [Parameter] public bool ShowProgressBar { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders the Start / Pause / Reset button group.
+    /// Set to <c>false</c> when you want to drive the timer entirely via code using
+    /// a <c>@ref</c> binding and the <see cref="Start"/>, <see cref="Pause"/>, and <see cref="Reset"/> methods.
+    /// </summary>
+    [Parameter] public bool ShowControls { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, the countdown begins automatically during <c>OnInitialized</c>.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool AutoStart { get; set; } = false;
+
+    /// <summary>
+    /// Fired exactly once when remaining time reaches zero. Use this to trigger game-over
+    /// logic, submit a form, or show a completion message.
+    /// </summary>
+    [Parameter] public EventCallback OnElapsed { get; set; }
+
+    /// <summary>
+    /// Fired every second with the current remaining <see cref="TimeSpan"/>.
+    /// Useful for logging, custom progress indicators, or syncing external state.
+    /// </summary>
+    [Parameter] public EventCallback<TimeSpan> OnTick { get; set; }
+
+    /// <summary>
+    /// <see cref="TimeSpan.ToString(string)"/> format string applied to the large display
+    /// and the text inside the progress bar. Default: <c>@"mm\:ss"</c>.
+    /// Use <c>@"hh\:mm\:ss"</c> for durations over an hour.
+    /// </summary>
+    [Parameter] public string DisplayFormat { get; set; } = @"mm\:ss";
+
+    private System.Timers.Timer? _timer;
+    private TimeSpan _remaining;
+    private bool _running;
+    private bool _elapsedFired;
+    private bool _disposed;
+
+    protected override void OnInitialized()
+    {
+        _remaining = Duration;
+        _timer = new System.Timers.Timer(1000) { AutoReset = true };
+        _timer.Elapsed += OnTimerElapsed;
+
+        if (AutoStart) {
+            Start();
+        }
+    }
+
+    private async void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (_disposed) return;
+
+        _remaining = _remaining.Subtract(TimeSpan.FromSeconds(1));
+        if (_remaining < TimeSpan.Zero) _remaining = TimeSpan.Zero;
+
+        try {
+            await InvokeAsync(async () => {
+                if (_disposed) return;
+
+                if (OnTick.HasDelegate) {
+                    await OnTick.InvokeAsync(_remaining);
+                }
+
+                if (_remaining <= TimeSpan.Zero) {
+                    _timer?.Stop();
+                    _running = false;
+                    if (!_elapsedFired) {
+                        _elapsedFired = true;
+                        if (OnElapsed.HasDelegate) {
+                            await OnElapsed.InvokeAsync();
+                        }
+                    }
+                }
+
+                StateHasChanged();
+            });
+        } catch (ObjectDisposedException) {
+            // Component disposed mid-callback; safe to ignore.
+        }
+    }
+
+    /// <summary>Begin (or resume) the countdown. No-op if already running or remaining is zero.</summary>
+    public void Start()
+    {
+        if (_disposed || _running || _timer is null) return;
+        if (_remaining <= TimeSpan.Zero) return;
+        _elapsedFired = false;
+        _timer.Start();
+        _running = true;
+        StateHasChanged();
+    }
+
+    /// <summary>Pause the countdown without changing remaining time. Resumable via Start().</summary>
+    public void Pause()
+    {
+        if (_disposed || _timer is null) return;
+        _timer.Stop();
+        _running = false;
+        StateHasChanged();
+    }
+
+    /// <summary>Stop the countdown. Equivalent to Pause() for this component.</summary>
+    public void Stop() => Pause();
+
+    /// <summary>Reset remaining time to Duration. Does NOT auto-start.</summary>
+    public void Reset()
+    {
+        if (_disposed) return;
+        _timer?.Stop();
+        _running = false;
+        _elapsedFired = false;
+        _remaining = Duration;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        if (_timer is not null) {
+            _timer.Elapsed -= OnTimerElapsed;
+            _timer.Stop();
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 4,
+  "Critical": 0,
+  "Serious": 2,
+  "Moderate": 2,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 3,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 2,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022https://web.archive.org/web/20240915060807/mailto:sunaplic@indiana.edu\u0022 class=\u0022external\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Ctable style=\u0022width: 751px;\u0022\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd style=\u0022width: 225px;\u0022\u003E\u003Cstrong\u003ENumber of active records\u003C/strong\u003E\u003C/td\u003E\u003Ctd style=\u0022width: 107px;\u0022\u003E\u003Cstrong\u003EUp t..."
+    }
+  ]
+}

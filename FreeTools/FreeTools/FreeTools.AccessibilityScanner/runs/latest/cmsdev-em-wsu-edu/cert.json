@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=cmsdev.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "C9928C4AFBBE247E6DD759E568FC10919932C238",
+  "SerialNumber": "092F7D1BE2E5A576460C588B01896DF5",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "cmsdev.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "cmsdev.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

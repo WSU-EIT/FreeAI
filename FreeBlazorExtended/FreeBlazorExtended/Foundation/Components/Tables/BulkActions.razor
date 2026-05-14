@@ -1,0 +1,284 @@
+﻿@*
+    BulkActions — Foundation contextual toolbar that appears when one or more table rows are selected.
+
+    Add actions at runtime by calling AddAction(), AddDeleteAction(), AddExportAction(), or
+    AddArchiveAction() from the parent component after obtaining a reference to this component.
+    Actions that RequireConfirmation display an inline confirmation panel before executing.
+
+    The toolbar is completely hidden when ShowToolbar is false or SelectedCount is 0, so it
+    is safe to render unconditionally inside a table wrapper.
+
+    Required parameters:
+        SelectedCount — number of currently selected rows (toolbar hides when 0)
+        ShowToolbar   — must also be true for the toolbar to render
+
+    Optional parameters:
+        IsLoading     — disables all action buttons while an operation is in progress
+        AriaLabel     — accessible label for the toolbar <div role="toolbar">
+        OnClearSelection — EventCallback invoked when the user clicks Clear
+        ChildContent  — additional custom buttons rendered alongside the registered actions
+
+    Runtime action registration (call from parent @code):
+        @ref="_bulkActions"
+        protected override void OnInitialized()
+        {
+            _bulkActions.AddDeleteAction(DeleteSelectedAsync);
+            _bulkActions.AddExportAction(ExportSelectedAsync, "Export CSV");
+        }
+
+    Example:
+        <BulkActions @ref="_bulkActions"
+                     SelectedCount="@_selectedIds.Count"
+                     ShowToolbar="@(_selectedIds.Count > 0)"
+                     OnClearSelection="ClearSelection" />
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (_showToolbar) {
+    <div class="bulk-actions-container" role="toolbar" aria-label="@(String.IsNullOrWhiteSpace(AriaLabel) ? "Bulk actions" : AriaLabel)">
+        <div class="bulk-actions-info">
+            <span class="badge bg-info text-dark">@SelectedCount selected</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary ms-2"
+                @onclick="ClearSelection"
+                aria-label="Clear selection">
+                Clear
+            </button>
+        </div>
+
+        <div class="bulk-actions-buttons" role="group">
+            @foreach (var action in _actions) {
+                <button type="button"
+                    class="@action.ButtonClass"
+                    @onclick="@(() => ExecuteAction(action))"
+                    disabled="@(!_canExecuteActions)"
+                    aria-label="@action.Label">
+                    @if (!String.IsNullOrWhiteSpace(action.Icon)) {
+                        <i class="@action.Icon me-2" aria-hidden="true"></i>
+                    }
+                    @action.Label
+                </button>
+            }
+            @ChildContent
+        </div>
+
+        @if (_showConfirmation) {
+            <div class="bulk-actions-confirmation alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Confirm Action:</strong> @_confirmationMessage
+                <div class="mt-2">
+                    <button type="button" class="btn btn-sm btn-warning me-2" @onclick="ConfirmAction">Confirm</button>
+                    <button type="button" class="btn btn-sm btn-secondary" @onclick="CancelAction">Cancel</button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .bulk-actions-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.375rem;
+        flex-wrap: wrap;
+    }
+
+    .bulk-actions-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .bulk-actions-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .bulk-actions-buttons .btn {
+        white-space: nowrap;
+    }
+
+    .bulk-actions-confirmation {
+        width: 100%;
+        margin-top: 0.5rem;
+        order: 3;
+    }
+
+    @@media (max-width: 768px) {
+        .bulk-actions-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .bulk-actions-info,
+        .bulk-actions-buttons {
+            justify-content: center;
+        }
+    }
+</style>
+
+@code {
+    public class BulkAction {
+        public string Label { get; set; } = "";
+        public string Icon { get; set; } = "";
+        public string ButtonClass { get; set; } = "btn btn-sm btn-primary";
+        public bool RequireConfirmation { get; set; } = false;
+        public string ConfirmationMessage { get; set; } = "Are you sure?";
+        public Func<Task>? OnExecute { get; set; }
+    }
+
+    private List<BulkAction> _actions = new();
+    private bool _showToolbar = false;
+    private bool _canExecuteActions = true;
+    private bool _showConfirmation = false;
+    private string _confirmationMessage = "";
+    private BulkAction? _pendingAction = null;
+
+    /// <summary>
+    /// Number of currently selected rows. The toolbar is hidden when this is 0,
+    /// even if <see cref="ShowToolbar"/> is true.
+    /// <para><b>Required.</b> Bind to your selection-set count.</para>
+    /// </summary>
+    [Parameter]
+    public int SelectedCount { get; set; } = 0;
+
+    /// <summary>
+    /// Master visibility toggle. Set to <c>true</c> when the selection is non-empty.
+    /// Evaluated together with <see cref="SelectedCount"/> — both must be satisfied
+    /// for the toolbar to render. Default: <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool ShowToolbar { get; set; } = false;
+
+    /// <summary>
+    /// Invoked when the user clicks the built-in <em>Clear</em> button.
+    /// Use to deselect all rows and reset your selection set:
+    /// <code>OnClearSelection="() => { _selectedIds.Clear(); }"</code>.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClearSelection { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, disables all action buttons to prevent re-entrancy while
+    /// a bulk operation is executing. Default: <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool IsLoading { get; set; } = false;
+
+    /// <summary>
+    /// Accessible label for the <c>&lt;div role="toolbar"&gt;</c> element.
+    /// Default: <c>"Bulk actions"</c>. Override when multiple toolbars exist on one page.
+    /// </summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "";
+
+    /// <summary>
+    /// Optional render fragment for additional custom buttons appended after the registered actions.
+    /// Use for domain-specific actions that do not fit the standard AddAction() pattern.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _showToolbar = ShowToolbar && SelectedCount > 0;
+        _canExecuteActions = !IsLoading && SelectedCount > 0;
+    }
+
+    public void AddAction(string label, Func<Task> onExecute, string? icon = null, string? buttonClass = null, bool requireConfirmation = false, string? confirmationMessage = null)
+    {
+        _actions.Add(new BulkAction {
+            Label = label,
+            Icon = icon ?? "",
+            ButtonClass = buttonClass ?? "btn btn-sm btn-primary",
+            RequireConfirmation = requireConfirmation,
+            ConfirmationMessage = confirmationMessage ?? "Are you sure?",
+            OnExecute = onExecute
+        });
+    }
+
+    public void AddDeleteAction(Func<Task> onExecute, string? customLabel = null)
+    {
+        AddAction(
+            customLabel ?? "Delete",
+            onExecute,
+            "fas fa-trash",
+            "btn btn-sm btn-danger",
+            true,
+            "Delete selected items? This action cannot be undone."
+        );
+    }
+
+    public void AddExportAction(Func<Task> onExecute, string? customLabel = null)
+    {
+        AddAction(
+            customLabel ?? "Export",
+            onExecute,
+            "fas fa-download",
+            "btn btn-sm btn-info"
+        );
+    }
+
+    public void AddArchiveAction(Func<Task> onExecute, string? customLabel = null)
+    {
+        AddAction(
+            customLabel ?? "Archive",
+            onExecute,
+            "fas fa-archive",
+            "btn btn-sm btn-secondary"
+        );
+    }
+
+    public void ClearActions()
+    {
+        _actions.Clear();
+    }
+
+    protected async Task ExecuteAction(BulkAction action)
+    {
+        if (action.RequireConfirmation) {
+            _pendingAction = action;
+            _confirmationMessage = action.ConfirmationMessage;
+            _showConfirmation = true;
+        } else {
+            if (action.OnExecute != null) {
+                await action.OnExecute();
+            }
+        }
+    }
+
+    protected async Task ConfirmAction()
+    {
+        _showConfirmation = false;
+        if (_pendingAction?.OnExecute != null) {
+            await _pendingAction.OnExecute();
+        }
+        _pendingAction = null;
+    }
+
+    protected void CancelAction()
+    {
+        _showConfirmation = false;
+        _pendingAction = null;
+    }
+
+    protected async Task ClearSelection()
+    {
+        await OnClearSelection.InvokeAsync();
+        _actions.Clear();
+    }
+}

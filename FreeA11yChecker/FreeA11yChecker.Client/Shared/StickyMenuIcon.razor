@@ -1,0 +1,28 @@
+﻿@inject BlazorDataModel Model
+<button type="button" class="@IconClass" @onclick="ToggleStickyMenus"
+        title="@Helpers.Text("ToggleStickyMenus")"
+        aria-label="@Helpers.Text("ToggleStickyMenus")"
+        aria-pressed="@(Model.User.UserPreferences.StickyMenus.ToString().ToLower())"
+        style="background:transparent; border:0; padding:0; line-height:1;">
+    <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+</button>
+
+@code {
+    protected string IconClass {
+        get {
+            string output = "sticky-menu-icon";
+
+            if (Model.User.UserPreferences.StickyMenus) {
+                output += " sticky";
+            }
+
+            return output;
+        }
+    }
+
+    protected void ToggleStickyMenus()
+    {
+        Model.User.UserPreferences.StickyMenus = !Model.User.UserPreferences.StickyMenus;
+        Model.TriggerUpdate();
+    }
+}

@@ -1,0 +1,107 @@
+{
+  "PagePath": "/benefits/",
+  "Url": "https://hrs.wsu.edu/benefits/",
+  "FinalUrl": "https://hrs.wsu.edu/employees/benefits/",
+  "Title": "Benefits \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 89577,
+  "ScreenshotSizeBytes": 247974,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 247974
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/form.jpg",
+      "AltText": "A red clipboard icon."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/bank.jpg",
+      "AltText": "Red icon of a bank."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/business.jpg",
+      "AltText": "Red briefcase icon."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/spa.jpg",
+      "AltText": "A stylized icon representing a spa."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/person.jpg",
+      "AltText": "An icon representing a person."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/flower.jpg",
+      "AltText": "A red outline of a flower."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/02/calculator-385506_1920-e1579117519523-792x594-1-720x540.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/06/flagpicture-e1593015279940-720x539.jpg",
+      "AltText": "A close-up of a flag with the WSU logo on it."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/retirement-dollars-720x540.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2026/01/EAP-Stress-Mng-720x540.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:08:31 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:08:31 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/88\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=88\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:08:31.0899121Z"
+}

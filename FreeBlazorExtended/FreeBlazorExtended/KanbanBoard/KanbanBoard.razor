@@ -1,0 +1,409 @@
+﻿@*
+    KanbanBoard — Trello / Jira / Azure Boards-style drag-and-drop swimlane board.
+
+    Fully CONTROLLED component (React-style): the caller owns the Columns and Cards
+    lists. The board never mutates them directly. When the user drags a card, OnCardMoved
+    fires with the source column, target column, and new sort order; the caller updates
+    its own state and re-passes the updated lists as parameters.
+
+    This also means real-time external moves (SignalR, etc.) are trivial: just update
+    the Cards list from the server push and the board re-renders automatically.
+
+    Required parameters:
+        Columns      — ordered List<KanbanColumn> defining the swimlanes.
+        Cards        — List<KanbanCard> assigned to columns via KanbanCard.ColumnId.
+        OnCardMoved  — EventCallback<KanbanCardMovedEventArgs> fired on every drag-drop.
+
+    Optional parameters:
+        OnCardClick       — EventCallback<KanbanCard> fired when the user clicks a card.
+        CardTemplate      — RenderFragment<KanbanCard> for custom card rendering.
+        EnableSearch      — search bar above the board (default true).
+        SearchPlaceholder — placeholder text for the search input.
+        ReadOnly          — when true, disables all drag interactions (default false).
+        SelectedCardId    — highlights the card with this id (use @bind for two-way).
+
+    Extracted from FreeExamples.App.Pages.KanbanBoard.razor.
+*@
+
+@namespace FreeBlazorExtended.KanbanBoard
+
+<div class="kanban-board-component">
+
+    @if (EnableSearch) {
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="input-group input-group-sm" style="max-width:260px;">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
+                <input type="text" class="form-control" placeholder="@SearchPlaceholder"
+                       @bind="_searchTerm" @bind:event="oninput" />
+                @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
+                    <button class="btn btn-outline-secondary" type="button" @onclick="ClearSearch">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                }
+            </div>
+            <span class="text-muted small ms-auto">
+                @FilteredCards().Count() / @Cards.Count cards
+            </span>
+        </div>
+    }
+
+    <div class="d-flex flex-wrap gap-2 align-items-start">
+        @foreach (var column in OrderedColumns()) {
+            var colCards = ColumnCards(column.Id);
+            var overLimit = column.CardLimit.HasValue && colCards.Count > column.CardLimit.Value;
+            var isDropTarget = _dragOverColumnId == column.Id;
+            var headerVariant = string.IsNullOrWhiteSpace(column.Color) ? "secondary" : column.Color;
+
+            <div class="card shadow-sm border-0 flex-fill"
+                 style="min-width:260px; max-width:340px; background:#f8f9fa;">
+
+                @* Column header *@
+                <div class="card-header text-white py-2 bg-@headerVariant">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">@column.Title</span>
+                        <span class="badge bg-white text-dark rounded-pill">
+                            @colCards.Count@(column.CardLimit.HasValue ? $" / {column.CardLimit.Value}" : "")
+                        </span>
+                    </div>
+                </div>
+
+                @* Drop zone (entire column body) *@
+                <div class="card-body p-2 @(isDropTarget ? "border border-2 border-primary" : "") @(overLimit ? "border border-2 border-danger" : "")"
+                     style="min-height:120px; transition: border-color 0.15s;"
+                     @ondragover="@(() => HandleColumnDragOver(column.Id))"
+                     @ondragover:preventDefault="true"
+                     @ondrop="@(() => HandleColumnDrop(column.Id))"
+                     @ondragleave="HandleColumnDragLeave">
+
+                    @if (!colCards.Any()) {
+                        <div class="text-center text-muted small py-3">
+                            <i class="fa-solid fa-inbox opacity-50 d-block mb-1"></i>
+                            No cards
+                        </div>
+                    }
+
+                    @for (var i = 0; i < colCards.Count; i++) {
+                        var card = colCards[i];
+                        var slotIndex = i;
+                        var isDragging = _draggedCardId == card.Id;
+                        var isSelected = string.Equals(SelectedCardId, card.Id, StringComparison.Ordinal);
+                        var cardIsOpenable = OnCardClick.HasDelegate;
+
+                        @* Drop slot above each card (lets caller drop at a specific position) *@
+                        <div class="kanban-drop-slot @(IsActiveSlot(column.Id, slotIndex) ? "bg-primary bg-opacity-25" : "")"
+                             style="height:6px; margin:2px 0; border-radius:3px; transition: background-color 0.15s;"
+                             @ondragover="@(() => HandleSlotDragOver(column.Id, slotIndex))"
+                             @ondragover:preventDefault="true"
+                             @ondrop="@(() => HandleSlotDrop(column.Id, slotIndex))"
+                             @ondragleave="HandleSlotDragLeave"></div>
+
+                        <div class="card mb-2 shadow-sm @(isDragging ? "opacity-50" : "") @(isSelected ? "border-primary border-2" : "")"
+                             draggable="@((!ReadOnly).ToString().ToLower())"
+                             style="@(ReadOnly ? "cursor: default;" : "cursor: grab;")"
+                             @ondragstart="@(() => HandleCardDragStart(card))"
+                             @ondragend="HandleCardDragEnd"
+                             role="@(cardIsOpenable ? "button" : null)"
+                             tabindex="@(cardIsOpenable ? 0 : -1)"
+                             aria-label="@(cardIsOpenable ? $"Open card {card.Title}" : null)"
+                             @onkeydown="@(e => HandleCardKeyDown(e, card))"
+                             @onkeydown:preventDefault="cardIsOpenable"
+                             @onclick="@(() => HandleCardClick(card))">
+                            <div class="card-body p-2">
+                                @if (CardTemplate != null) {
+                                    @CardTemplate(card)
+                                } else {
+                                    @DefaultCard(card)
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    @* Trailing drop slot (drop at end of column) *@
+                    <div class="kanban-drop-slot @(IsActiveSlot(column.Id, colCards.Count) ? "bg-primary bg-opacity-25" : "")"
+                         style="height:12px; margin-top:2px; border-radius:3px; transition: background-color 0.15s;"
+                         @ondragover="@(() => HandleSlotDragOver(column.Id, colCards.Count))"
+                         @ondragover:preventDefault="true"
+                         @ondrop="@(() => HandleSlotDrop(column.Id, colCards.Count))"
+                         @ondragleave="HandleSlotDragLeave"></div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Ordered list of swimlane columns. Each <see cref="KanbanColumn"/> must have a unique <c>Id</c>.
+    /// <para><b>Required.</b> Replace (do not mutate) to trigger a re-render.</para>
+    /// </summary>
+    [Parameter] public List<KanbanColumn> Columns { get; set; } = new();
+
+    /// <summary>
+    /// The full card catalogue. Cards are routed into columns via <see cref="KanbanCard.ColumnId"/>.
+    /// <para><b>Required.</b> The component does NOT mutate this list; update it in your
+    /// <see cref="OnCardMoved"/> handler and re-assign to trigger re-render.</para>
+    /// </summary>
+    [Parameter] public List<KanbanCard> Cards { get; set; } = new();
+
+    /// <summary>
+    /// Fired after the user drops a card onto a new position.
+    /// <para><b>Required</b> for drag-and-drop to have any effect.</para>
+    /// The <see cref="KanbanCardMovedEventArgs"/> contains
+    /// <c>CardId</c>, <c>FromColumnId</c>, <c>ToColumnId</c>, and <c>NewSortOrder</c>.
+    /// Update your state and re-pass the new <see cref="Cards"/> list.
+    /// </summary>
+    [Parameter] public EventCallback<KanbanCardMovedEventArgs> OnCardMoved { get; set; }
+
+    /// <summary>
+    /// Fired when the user clicks a card body. Use to open an edit dialog or detail view.
+    /// When this callback has no delegate, card bodies are not keyboard-focusable.
+    /// </summary>
+    [Parameter] public EventCallback<KanbanCard> OnCardClick { get; set; }
+
+    /// <summary>
+    /// When <c>true</c> (default), shows a search input above the board that filters
+    /// visible cards by title, description, assignee, priority, and labels.
+    /// </summary>
+    [Parameter] public bool EnableSearch { get; set; } = true;
+
+    /// <summary>Placeholder text for the search input. Default: <c>"Search cards…"</c>.</summary>
+    [Parameter] public string SearchPlaceholder { get; set; } = "Search cards…";
+
+    /// <summary>
+    /// Custom <see cref="RenderFragment{KanbanCard}"/> for card content. When omitted,
+    /// the default card layout (title, description, assignee badge, labels) is used.
+    /// </summary>
+    [Parameter] public RenderFragment<KanbanCard>? CardTemplate { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, dragging is disabled and the board renders in a view-only mode.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+    /// <summary>
+    /// Id of the currently selected/highlighted card. The matching card receives a
+    /// primary border accent. Use <c>@bind-SelectedCardId</c> for two-way binding.
+    /// </summary>
+    [Parameter] public string? SelectedCardId { get; set; }
+
+    private string _searchTerm = "";
+    private string? _draggedCardId;
+    private string? _dragOverColumnId;
+    private (string ColumnId, int Index)? _activeDropSlot;
+
+    // ── Filtering / ordering ──────────────────────────────────────────────────────────────────
+
+    private IEnumerable<KanbanCard> FilteredCards()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm)) return Cards;
+        var term = _searchTerm.ToLowerInvariant();
+        return Cards.Where(c =>
+            (c.Title?.ToLowerInvariant().Contains(term) == true) ||
+            (c.Description?.ToLowerInvariant().Contains(term) == true) ||
+            (c.Assignee?.ToLowerInvariant().Contains(term) == true) ||
+            (c.Priority?.ToLowerInvariant().Contains(term) == true) ||
+            c.Labels.Any(l => l.ToLowerInvariant().Contains(term)));
+    }
+
+    private IEnumerable<KanbanColumn> OrderedColumns() =>
+        Columns.OrderBy(c => c.SortOrder).ThenBy(c => c.Title);
+
+    private List<KanbanCard> ColumnCards(string columnId) =>
+        FilteredCards()
+            .Where(c => c.ColumnId == columnId)
+            .OrderBy(c => c.SortOrder)
+            .ToList();
+
+    private bool IsActiveSlot(string columnId, int index) =>
+        _activeDropSlot.HasValue
+        && _activeDropSlot.Value.ColumnId == columnId
+        && _activeDropSlot.Value.Index == index;
+
+    private void ClearSearch() => _searchTerm = "";
+
+    // ── Drag handlers ─────────────────────────────────────────────────────────────────────────
+
+    private void HandleCardDragStart(KanbanCard card)
+    {
+        if (ReadOnly) return;
+        _draggedCardId = card.Id;
+    }
+
+    private void HandleCardDragEnd()
+    {
+        _draggedCardId = null;
+        _dragOverColumnId = null;
+        _activeDropSlot = null;
+    }
+
+    private void HandleColumnDragOver(string columnId)
+    {
+        if (ReadOnly) return;
+        _dragOverColumnId = columnId;
+    }
+
+    private void HandleColumnDragLeave()
+    {
+        _dragOverColumnId = null;
+    }
+
+    private async Task HandleColumnDrop(string columnId)
+    {
+        if (ReadOnly) { ResetDragState(); return; }
+        if (_draggedCardId == null) return;
+
+        var card = Cards.FirstOrDefault(c => c.Id == _draggedCardId);
+        if (card == null) { ResetDragState(); return; }
+
+        // Drop on column body (no specific slot) → append to end of target column.
+        var targetCount = Cards.Count(c => c.ColumnId == columnId && c.Id != card.Id);
+        await FireMoved(card, columnId, targetCount);
+        ResetDragState();
+    }
+
+    private void HandleSlotDragOver(string columnId, int index)
+    {
+        if (ReadOnly) return;
+        _activeDropSlot = (columnId, index);
+        _dragOverColumnId = columnId;
+    }
+
+    private void HandleSlotDragLeave()
+    {
+        _activeDropSlot = null;
+    }
+
+    private async Task HandleSlotDrop(string columnId, int slotIndex)
+    {
+        if (ReadOnly) { ResetDragState(); return; }
+        if (_draggedCardId == null) return;
+
+        var card = Cards.FirstOrDefault(c => c.Id == _draggedCardId);
+        if (card == null) { ResetDragState(); return; }
+
+        await FireMoved(card, columnId, slotIndex);
+        ResetDragState();
+    }
+
+    private async Task FireMoved(KanbanCard card, string toColumnId, int newSortOrder)
+    {
+        // Don't suppress same-column same-position moves — let the caller decide.
+        // The component does NOT mutate Cards; the caller is the source of truth.
+        if (!OnCardMoved.HasDelegate) return;
+
+        await OnCardMoved.InvokeAsync(new KanbanCardMovedEventArgs {
+            CardId = card.Id,
+            FromColumnId = card.ColumnId,
+            ToColumnId = toColumnId,
+            NewSortOrder = newSortOrder,
+        });
+    }
+
+    private void ResetDragState()
+    {
+        _draggedCardId = null;
+        _dragOverColumnId = null;
+        _activeDropSlot = null;
+    }
+
+    private async Task HandleCardClick(KanbanCard card)
+    {
+        if (OnCardClick.HasDelegate) {
+            await OnCardClick.InvokeAsync(card);
+        }
+    }
+
+    private async Task HandleCardKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs args, KanbanCard card)
+    {
+        if (!OnCardClick.HasDelegate) {
+            return;
+        }
+
+        if (string.Equals(args.Key, "Enter", StringComparison.Ordinal)
+            || string.Equals(args.Key, " ", StringComparison.Ordinal)
+            || string.Equals(args.Key, "Space", StringComparison.Ordinal)
+            || string.Equals(args.Key, "Spacebar", StringComparison.Ordinal)) {
+            await HandleCardClick(card);
+        }
+    }
+
+    // ── Default card body (used when CardTemplate is not supplied) ───────────────────────────
+
+    private RenderFragment DefaultCard(KanbanCard card) => __builder =>
+    {
+        <div class="d-flex justify-content-between align-items-start mb-1">
+            <strong class="small">@card.Title</strong>
+            @if (!string.IsNullOrWhiteSpace(card.Priority)) {
+                <span class="badge @PriorityBadgeClass(card.Priority)">@card.Priority</span>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(card.Description)) {
+            <div class="small text-muted mb-1" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                @card.Description
+            </div>
+        }
+        @if (card.Labels.Any()) {
+            <div class="mb-1">
+                @foreach (var label in card.Labels) {
+                    <span class="badge bg-light text-dark border me-1" style="font-size:0.7rem;">@label</span>
+                }
+            </div>
+        }
+        <div class="d-flex justify-content-between align-items-center">
+            @if (!string.IsNullOrWhiteSpace(card.Assignee)) {
+                <span class="badge bg-secondary"><i class="fa-solid fa-user me-1"></i>@card.Assignee</span>
+            } else {
+                <span></span>
+            }
+            @if (card.DueDate.HasValue) {
+                <span class="small @(card.DueDate.Value < DateTime.Now ? "text-danger" : "text-muted")">
+                    <i class="fa-regular fa-calendar me-1"></i>@card.DueDate.Value.ToString("M/d")
+                </span>
+            }
+        </div>
+    };
+
+    private static string PriorityBadgeClass(string? priority) => (priority ?? "").ToLowerInvariant() switch {
+        "high" or "critical" or "urgent" => "bg-danger",
+        "medium" or "med" or "normal" => "bg-warning text-dark",
+        "low" => "bg-info",
+        _ => "bg-secondary",
+    };
+
+    // ── Public nested types ───────────────────────────────────────────────────────────────────
+
+    public class KanbanColumn
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        /// <summary>Bootstrap variant suffix: "primary", "success", "warning", "danger", etc.</summary>
+        public string? Color { get; set; }
+        /// <summary>WIP limit. When exceeded, the column body shows a red border.</summary>
+        public int? CardLimit { get; set; }
+        public int SortOrder { get; set; }
+    }
+
+    public class KanbanCard
+    {
+        public string Id { get; set; } = "";
+        public string ColumnId { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string? Description { get; set; }
+        public string? Assignee { get; set; }
+        /// <summary>Free-text or "low" / "medium" / "high".</summary>
+        public string? Priority { get; set; }
+        public List<string> Labels { get; set; } = new();
+        public DateTime? DueDate { get; set; }
+        public int SortOrder { get; set; }
+    }
+
+    public class KanbanCardMovedEventArgs
+    {
+        public string CardId { get; set; } = "";
+        public string FromColumnId { get; set; } = "";
+        public string ToColumnId { get; set; } = "";
+        /// <summary>Index within the destination column after the move.</summary>
+        public int NewSortOrder { get; set; }
+    }
+}

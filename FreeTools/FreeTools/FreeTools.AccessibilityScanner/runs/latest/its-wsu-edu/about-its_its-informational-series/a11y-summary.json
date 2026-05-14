@@ -1,0 +1,97 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 12,
+  "Critical": 0,
+  "Serious": 12,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 6,
+      "Critical": 0,
+      "Serious": 6,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 6,
+      "Critical": 0,
+      "Serious": 6,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022\u0022 class=\u0022wsu-header-utility-bar__cta\u0022\u003E\u003C/a\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 5,
+      "Message": "Frames must have an accessible name",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/bH5xUj528GA?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026a..."
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E"
+    }
+  ]
+}

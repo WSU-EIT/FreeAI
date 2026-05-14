@@ -1,0 +1,236 @@
+﻿@*
+    ThreeColumnLayout — Foundation three-column grid with independent left sidebar, main content,
+    and right sidebar regions.
+
+    Use this component for workspace-style pages such as file explorers, IDE-like panels, or
+    admin dashboards where navigation lives on the left and contextual detail lives on the right.
+    Either sidebar can be hidden by setting its position to <c>"hidden"</c>, which collapses the
+    grid to two columns automatically.
+
+    Required parameters: none — supply MainContent at minimum.
+
+    Optional parameters:
+        LeftSidebarPosition  — "sticky" (default) | "floating" | "hidden"
+        RightSidebarPosition — "sticky" (default) | "floating" | "hidden"
+        Variant              — "default" | "balanced" (equal thirds)
+        MainContent          — primary content render fragment
+        LeftSidebarContent   — left panel render fragment
+        RightSidebarContent  — right panel render fragment
+
+    Example (file browser style):
+        <ThreeColumnLayout LeftSidebarPosition="sticky" RightSidebarPosition="sticky">
+            <LeftSidebarContent><FolderTree /></LeftSidebarContent>
+            <MainContent><FileGrid /></MainContent>
+            <RightSidebarContent><FileDetails /></RightSidebarContent>
+        </ThreeColumnLayout>
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="three-column-layout @_layoutClass">
+    @if (!String.IsNullOrWhiteSpace(LeftSidebarPosition) && LeftSidebarPosition.ToLower() != "hidden") {
+        <aside class="layout-sidebar layout-left @_leftSidebarClass" role="complementary" aria-label="Left sidebar">
+            @if (LeftSidebarContent != null) {
+                @LeftSidebarContent
+            }
+        </aside>
+    }
+
+    <div class="layout-main">
+        @if (MainContent != null) {
+            @MainContent
+        }
+    </div>
+
+    @if (!String.IsNullOrWhiteSpace(RightSidebarPosition) && RightSidebarPosition.ToLower() != "hidden") {
+        <aside class="layout-sidebar layout-right @_rightSidebarClass" role="complementary" aria-label="Right sidebar">
+            @if (RightSidebarContent != null) {
+                @RightSidebarContent
+            }
+        </aside>
+    }
+</div>
+
+<style>
+    .three-column-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr 250px;
+        gap: 2rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    .three-column-layout.left-hidden {
+        grid-template-columns: 1fr 250px;
+    }
+
+    .three-column-layout.right-hidden {
+        grid-template-columns: 250px 1fr;
+    }
+
+    .three-column-layout.balanced {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .layout-sidebar {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.375rem;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 1rem;
+    }
+
+    .layout-sidebar.sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .layout-sidebar.floating {
+        position: fixed;
+        width: 250px;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        z-index: 50;
+    }
+
+    .layout-sidebar.layout-left.floating {
+        left: 1rem;
+    }
+
+    .layout-sidebar.layout-right.floating {
+        right: 1rem;
+    }
+
+    .layout-main {
+        min-width: 0;
+        overflow-y: auto;
+    }
+
+    @@media (max-width: 1200px) {
+        .three-column-layout {
+            grid-template-columns: 1fr 250px;
+            gap: 1.5rem;
+        }
+
+        .layout-sidebar.layout-left {
+            display: none;
+        }
+
+        .layout-sidebar {
+            padding: 1rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .three-column-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .layout-sidebar {
+            position: static;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--bs-border-color);
+            padding-top: 2rem;
+        }
+
+        .layout-sidebar.floating {
+            position: static;
+            width: 100%;
+            max-height: none;
+            left: auto;
+            right: auto;
+        }
+    }
+</style>
+
+@code {
+    protected string _layoutClass = "";
+    protected string _leftSidebarClass = "";
+    protected string _rightSidebarClass = "";
+
+    /// <summary>
+    /// Positioning behaviour of the left sidebar.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"sticky"</c> — panel sticks to the top of the viewport while content scrolls (default)</item>
+    ///   <item><c>"floating"</c> — fixed-position panel pinned to the left edge</item>
+    ///   <item><c>"hidden"</c> — left sidebar is not rendered and the grid collapses to two columns</item>
+    /// </list>
+    /// </summary>
+    [Parameter] public string LeftSidebarPosition { get; set; } = "sticky";
+
+    /// <summary>
+    /// Positioning behaviour of the right sidebar. Same accepted values as
+    /// <see cref="LeftSidebarPosition"/>. Default: <c>"sticky"</c>.
+    /// </summary>
+    [Parameter] public string RightSidebarPosition { get; set; } = "sticky";
+
+    /// <summary>
+    /// Layout column-width variant.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"default"</c> — 250 px sidebars with a fluid main column (default)</item>
+    ///   <item><c>"balanced"</c> — three equal <c>1fr</c> columns</item>
+    /// </list>
+    /// </summary>
+    [Parameter] public string Variant { get; set; } = "default";
+
+    /// <summary>The primary content rendered in the wide centre column.</summary>
+    [Parameter] public RenderFragment? MainContent { get; set; }
+
+    /// <summary>
+    /// Content rendered in the left sidebar. Hidden (and the column removed) when
+    /// <see cref="LeftSidebarPosition"/> is <c>"hidden"</c>.
+    /// </summary>
+    [Parameter] public RenderFragment? LeftSidebarContent { get; set; }
+
+    /// <summary>
+    /// Content rendered in the right sidebar. Hidden (and the column removed) when
+    /// <see cref="RightSidebarPosition"/> is <c>"hidden"</c>.
+    /// </summary>
+    [Parameter] public RenderFragment? RightSidebarContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        string left = (LeftSidebarPosition ?? "sticky").ToLower();
+        string right = (RightSidebarPosition ?? "sticky").ToLower();
+        string variant = (Variant ?? "default").ToLower();
+
+        // Determine layout class based on visibility
+        if (left == "hidden" && right != "hidden") {
+            _layoutClass = "right-hidden";
+        } else if (left != "hidden" && right == "hidden") {
+            _layoutClass = "left-hidden";
+        } else if (variant == "balanced") {
+            _layoutClass = "balanced";
+        }
+
+        _leftSidebarClass = left switch
+        {
+            "floating" => "floating",
+            _ => "sticky-top"
+        };
+
+        _rightSidebarClass = right switch
+        {
+            "floating" => "floating",
+            _ => "sticky-top"
+        };
+    }
+}

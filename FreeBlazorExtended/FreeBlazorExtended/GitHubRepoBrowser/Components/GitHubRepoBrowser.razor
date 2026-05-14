@@ -1,0 +1,590 @@
+@*
+    Purpose: GitHub repository file-tree browser with inline content viewer.
+    Key behaviors: Credential panel → browse → recursive tree expand/collapse → file viewer.
+    Dependencies: GitHubRepoService (injected), GitHubRepoBrowserState (private field).
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.GitHubRepoBrowser
+@using System.Net.Http.Json
+@inject HttpClient Http
+@implements IDisposable
+
+@* ── Credential panel ──────────────────────────────────────────────────────── *@
+@if (ShowCredentialPanel)
+{
+    <div class="card mb-3">
+        <div class="card-header fw-semibold">GitHub Repository Browser</div>
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label small mb-1">Owner</label>
+                    <input class="form-control form-control-sm"
+                           @bind="_state.Owner"
+                           placeholder="e.g. microsoft" />
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label small mb-1">Repository</label>
+                    <input class="form-control form-control-sm"
+                           @bind="_state.Repo"
+                           placeholder="e.g. blazor" />
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label small mb-1">Branch <span class="text-muted">(optional)</span></label>
+                    <input class="form-control form-control-sm"
+                           @bind="_state.Branch"
+                           placeholder="leave empty for default" />
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label small mb-1">PAT <span class="text-muted">(optional)</span></label>
+                    <input type="password"
+                           class="form-control form-control-sm"
+                           @bind="_state.Pat"
+                           placeholder="GitHub Personal Access Token"
+                           autocomplete="new-password" />
+                </div>
+                <div class="col-12 mt-1">
+                    <button class="btn btn-primary btn-sm"
+                            @onclick="BrowseAsync"
+                            disabled="@_state.IsLoadingTree">
+                        @if (_state.IsLoadingTree)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            <span>Loading…</span>
+                        }
+                        else
+                        {
+                            <span>Browse</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* ── Error alert ────────────────────────────────────────────────────────────── *@
+@if (_state.LastError != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
+        <strong>@_state.LastError.Kind:</strong> @_state.LastError.Message
+        @if (_state.LastError.HttpStatus.HasValue)
+        {
+            <span class="ms-1 text-muted small">(HTTP @_state.LastError.HttpStatus)</span>
+        }
+        <button type="button" class="btn-close btn-sm"
+                @onclick="() => _state.LastError = null"
+                aria-label="Close"></button>
+    </div>
+}
+
+@* ── Initial load spinner (before repo info arrives) ──────────────────────── *@
+@if (_state.IsLoadingTree && _state.CurrentRepo == null)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading repository…</span>
+        </div>
+        <div class="mt-2 text-muted small">Fetching repository info…</div>
+    </div>
+}
+
+@* ── Main browser UI ─────────────────────────────────────────────────────────*@
+@if (_state.CurrentRepo != null)
+{
+    @* Repo header + branch selector *@
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <a href="https://github.com/@_state.Owner/@_state.Repo"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="fw-bold text-decoration-none">
+            @_state.CurrentRepo.FullName
+        </a>
+        @if (!string.IsNullOrEmpty(_state.CurrentRepo.Language))
+        {
+            <span class="badge bg-secondary">@_state.CurrentRepo.Language</span>
+        }
+        <span class="text-muted small">⭐ @_state.CurrentRepo.Stars</span>
+        @if (_state.Branches.Count > 0)
+        {
+            <div class="d-flex align-items-center gap-1">
+                <label class="form-label mb-0 small text-nowrap">Branch:</label>
+                <select class="form-select form-select-sm"
+                        style="width: auto;"
+                        value="@_state.Branch"
+                        @onchange="OnBranchChangedAsync">
+                    @foreach (var b in _state.Branches)
+                    {
+                        <option value="@b.Name" selected="@(b.Name == _state.Branch)">@b.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    @if (_state.Tree?.Truncated == true)
+    {
+        <div class="alert alert-warning py-1 mb-2 small">
+            ⚠️ The repository tree is too large — GitHub returned only the first 100,000 entries.
+        </div>
+    }
+
+    @* Two-column layout *@
+    <div class="row g-0 border rounded overflow-hidden" style="min-height: 400px;">
+
+        @* ── Left: File tree ─────────────────────────────────────────────── *@
+        <div class="col-md-4 border-end" style="max-height: 70vh; overflow-y: auto;">
+            @if (_state.IsLoadingTree)
+            {
+                <div class="p-4 text-center">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading tree…</span>
+                    </div>
+                    <div class="mt-1 text-muted small">Loading tree…</div>
+                </div>
+            }
+            else if (_state.Tree == null)
+            {
+                <div class="p-3 text-muted small">No tree loaded.</div>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0 pt-1 pb-2 user-select-none">
+                    @foreach (var treeItem in GetVisibleItems())
+                    {
+                        var depth      = treeItem.Path.Count(c => c == '/');
+                        var leafName   = GetLeafName(treeItem.Path);
+                        var isDir      = treeItem.Type == "tree";
+                        var isExpanded = _state.ExpandedPaths.TryGetValue(treeItem.Path, out var exp) && exp;
+                        var isSelected = _state.SelectedItem?.Path == treeItem.Path;
+
+                        <li @key="@treeItem.Path"
+                            style="padding-left: @(depth * 14 + 4)px;">
+                            @if (isDir)
+                            {
+                                <button class="btn btn-link btn-sm p-0 px-1 text-start text-decoration-none text-body d-flex align-items-center w-100 gap-1"
+                                        style="line-height: 1.65;"
+                                        @onclick="() => ToggleDirectory(treeItem)">
+                                    <span class="text-muted" style="font-size: 0.65em; min-width: 0.8em;">@(isExpanded ? "▼" : "▶")</span>
+                                    <span>📁</span>
+                                    <span class="text-body-secondary">@leafName</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-link btn-sm p-0 px-1 text-start text-decoration-none d-flex align-items-center w-100 gap-1 @(isSelected ? "text-primary fw-semibold" : "text-body")"
+                                        style="line-height: 1.65;"
+                                        @onclick="() => SelectFileAsync(treeItem)">
+                                    <span style="min-width: 0.8em; font-size: 0.65em;"></span>
+                                    <span>@GetFileIcon(leafName)</span>
+                                    <span>@leafName</span>
+                                </button>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        @* ── Right: File viewer ───────────────────────────────────────────── *@
+        <div class="col-md-8" style="max-height: 70vh; overflow-y: auto;">
+            @if (_state.IsLoadingFile)
+            {
+                <div class="p-4 text-center">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading file…</span>
+                    </div>
+                    <div class="mt-1 text-muted small">Loading…</div>
+                </div>
+            }
+            else if (_state.SelectedItem == null)
+            {
+                <div class="p-5 text-center text-muted">
+                    <div class="mb-2" style="font-size: 2rem;">📂</div>
+                    <div class="small">Select a file from the tree to view its contents.</div>
+                </div>
+            }
+            else
+            {
+                @* File header bar *@
+                <div class="px-3 py-2 border-bottom bg-light d-flex align-items-center justify-content-between gap-2 sticky-top">
+                    <code class="small text-break">@_state.SelectedItem.Path</code>
+                    <div class="d-flex gap-1 flex-shrink-0">
+                        @if (_state.LoadedFile?.HtmlUrl != null)
+                        {
+                            <a href="@_state.LoadedFile.HtmlUrl"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-outline-secondary btn-sm py-0">View on GitHub</a>
+                        }
+                        @if (_state.LoadedFile?.DownloadUrl != null)
+                        {
+                            <a href="@_state.LoadedFile.DownloadUrl"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-outline-secondary btn-sm py-0">Raw</a>
+                        }
+                    </div>
+                </div>
+
+                @* Content body *@
+                @if (_state.SelectedItem.Size > 1_000_000)
+                {
+                    <div class="p-3">
+                        <div class="alert alert-warning mb-0">
+                            <strong>File too large</strong> — this file exceeds 1 MB
+                            (@((_state.SelectedItem.Size ?? 0).ToString("N0")) bytes) and cannot be displayed inline.
+                            @if (_state.LoadedFile?.DownloadUrl != null)
+                            {
+                                <a href="@_state.LoadedFile.DownloadUrl"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="ms-1">Download raw file</a>
+                            }
+                        </div>
+                    </div>
+                }
+                else if (_state.LoadedFile?.Type == "symlink")
+                {
+                    <div class="p-3">
+                        <div class="alert alert-info mb-0">
+                            🔗 <strong>Symbolic link</strong> → <code>@_state.LoadedFile.Target</code>
+                        </div>
+                    </div>
+                }
+                else if (IsBinaryFile(_state.SelectedItem, _state.DecodedContent))
+                {
+                    <div class="p-3">
+                        <div class="alert alert-secondary mb-0">
+                            <strong>Binary file</strong> — this file cannot be displayed as text.
+                            @if (_state.LoadedFile?.DownloadUrl != null)
+                            {
+                                <a href="@_state.LoadedFile.DownloadUrl"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="ms-1">Download</a>
+                            }
+                        </div>
+                    </div>
+                }
+                else if (_state.DecodedContent != null)
+                {
+                    <pre class="border-0 rounded-0 p-3 mb-0 @GitHubRepoService.GetLanguageClass(_state.SelectedItem.Path)"
+                         style="max-height: 60vh; overflow: auto; font-size: 0.78rem; white-space: pre; word-break: normal;">@_state.DecodedContent</pre>
+                }
+                else if (_state.LoadedFile != null && _state.LoadedFile.Content == null)
+                {
+                    <div class="p-3 text-muted small">Content not available from the API.</div>
+                }
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+    // ── Parameters ─────────────────────────────────────────────────────────────
+
+    [Parameter] public string Owner               { get; set; } = "";
+    [Parameter] public string Repo                { get; set; } = "";
+    [Parameter] public string Pat                 { get; set; } = "";
+    [Parameter] public string Branch              { get; set; } = "";
+    [Parameter] public bool   ShowCredentialPanel { get; set; } = true;
+    [Parameter] public EventCallback<GitHubBrowseError> OnError { get; set; }
+
+    // ── Private state ──────────────────────────────────────────────────────────
+
+    private readonly GitHubRepoBrowserState _state = new();
+    private CancellationTokenSource _cts = new();
+
+    // ── Lifecycle ──────────────────────────────────────────────────────────────
+
+    protected override void OnInitialized()
+    {
+        _state.Owner  = Owner;
+        _state.Repo   = Repo;
+        _state.Pat    = Pat;
+        _state.Branch = Branch;
+    }
+
+    // ── Event handlers ─────────────────────────────────────────────────────────
+
+    private async Task BrowseAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_state.Owner) || string.IsNullOrWhiteSpace(_state.Repo))
+        {
+            _state.LastError = new GitHubBrowseError(GitHubErrorKind.None, "Owner and Repository are required.", null);
+            return;
+        }
+
+        _state.Reset();
+        _state.IsLoadingTree = true;
+        StateHasChanged();
+
+        try
+        {
+            // POST credentials to server — PAT is cleared from state immediately after
+            var connectResp = await Http.PostAsJsonAsync(
+                "/api/Showcase/GitRepo/connect",
+                new { repoUrl = $"https://github.com/{_state.Owner}/{_state.Repo}", token = _state.Pat },
+                _cts.Token);
+
+            _state.Pat = "";  // Credential cleared from browser state
+
+            if (!connectResp.IsSuccessStatusCode)
+            {
+                var err = await connectResp.Content.ReadFromJsonAsync<ServerError>(_cts.Token);
+                var httpStatus = (int)connectResp.StatusCode;
+                var kind = httpStatus switch
+                {
+                    401 => GitHubErrorKind.Unauthorized,
+                    404 => GitHubErrorKind.NotFound,
+                    429 => GitHubErrorKind.RateLimited,
+                    _   => GitHubErrorKind.NetworkError
+                };
+                _state.LastError = new GitHubBrowseError(kind, err?.Error ?? $"HTTP {httpStatus}", httpStatus);
+                await OnError.InvokeAsync(_state.LastError);
+                return;
+            }
+
+            var info = await connectResp.Content.ReadFromJsonAsync<GitConnectResult>(_cts.Token);
+
+            _state.CurrentRepo = new GitHubRepo(
+                FullName:      $"{_state.Owner}/{_state.Repo}",
+                Name:          _state.Repo,
+                Description:   null,
+                DefaultBranch: info?.DefaultBranch ?? "",
+                Private:       false,
+                Stars:         0,
+                Language:      null);
+
+            if (string.IsNullOrEmpty(_state.Branch))
+                _state.Branch = info?.DefaultBranch ?? "";
+            StateHasChanged();
+
+            // GET branch list
+            var branchDtos = await Http.GetFromJsonAsync<List<BranchDto>>(
+                "/api/Showcase/GitRepo/branches", _cts.Token);
+            _state.Branches = branchDtos?
+                .Select(b => new GitHubBranch(b.Name ?? "", new GitHubBranchCommitRef(b.CommitSha ?? "")))
+                .ToArray() ?? [];
+            StateHasChanged();
+
+            // GET recursive tree
+            await RefreshTreeAsync();
+        }
+        catch (TaskCanceledException) { /* component disposed */ }
+        finally
+        {
+            _state.IsLoadingTree = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnBranchChangedAsync(ChangeEventArgs e)
+    {
+        var newBranch = e.Value?.ToString();
+        if (string.IsNullOrEmpty(newBranch) || newBranch == _state.Branch) return;
+
+        _state.Branch = newBranch;
+        _state.Reset();
+        _state.IsLoadingTree = true;
+        StateHasChanged();
+
+        try
+        {
+            await RefreshTreeAsync();
+        }
+        catch (TaskCanceledException) { }
+        finally
+        {
+            _state.IsLoadingTree = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>Fetches the flat tree for the current branch and updates state.</summary>
+    private async Task RefreshTreeAsync()
+    {
+        var treeDtos = await Http.GetFromJsonAsync<List<TreeNodeDto>>(
+            $"/api/Showcase/GitRepo/tree?path=&branch={Uri.EscapeDataString(_state.Branch)}",
+            _cts.Token);
+
+        var treeItems = (treeDtos ?? []).Select(n => new GitHubTreeItem(
+            Path: n.Path ?? "",
+            Mode: n.Type == "Directory" ? "040000" : "100644",
+            Type: n.Type == "Directory" ? "tree" : "blob",
+            Sha:  n.Sha,
+            Size: n.Size,
+            Url:  n.DownloadUrl
+        )).ToArray();
+
+        _state.Tree = new GitHubTreeResponse(Sha: "", Url: "", Tree: treeItems, Truncated: false);
+    }
+
+    private void ToggleDirectory(GitHubTreeItem item)
+    {
+        if (_state.ExpandedPaths.TryGetValue(item.Path, out var exp))
+            _state.ExpandedPaths[item.Path] = !exp;
+        else
+            _state.ExpandedPaths[item.Path] = true;
+        StateHasChanged();
+    }
+
+    private async Task SelectFileAsync(GitHubTreeItem item)
+    {
+        _state.SelectedItem   = item;
+        _state.LoadedFile     = null;
+        _state.DecodedContent = null;
+        _state.IsLoadingFile  = true;
+        StateHasChanged();
+
+        try
+        {
+            var fileDto = await Http.GetFromJsonAsync<FileDto>(
+                $"/api/Showcase/GitRepo/file?path={Uri.EscapeDataString(item.Path)}&branch={Uri.EscapeDataString(_state.Branch)}",
+                _cts.Token);
+
+            _state.LoadedFile = new GitHubFileContent(
+                Name:        GetLeafName(item.Path),
+                Path:        item.Path,
+                Sha:         item.Sha ?? "",
+                Size:        item.Size ?? 0,
+                Type:        "file",
+                Content:     null,
+                Encoding:    null,
+                Target:      null,
+                HtmlUrl:     null,
+                DownloadUrl: fileDto?.DownloadUrl);
+
+            _state.DecodedContent = (fileDto?.IsBinary == true) ? null : fileDto?.RawText;
+        }
+        catch (TaskCanceledException) { }
+        catch (Exception ex)
+        {
+            _state.LastError = new GitHubBrowseError(GitHubErrorKind.NetworkError, ex.Message, null);
+            await OnError.InvokeAsync(_state.LastError);
+        }
+        finally
+        {
+            _state.IsLoadingFile = false;
+            StateHasChanged();
+        }
+    }
+
+    // ── Tree helpers ───────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Performs a depth-first traversal of the flat GitHub tree list, yielding
+    /// only items whose parent directories are expanded. Directories appear before
+    /// files within the same parent, both sorted alphabetically.
+    /// </summary>
+    private IEnumerable<GitHubTreeItem> GetVisibleItems()
+    {
+        if (_state.Tree == null) return Enumerable.Empty<GitHubTreeItem>();
+
+        // Group items by their immediate parent path.
+        var byParent = _state.Tree.Tree
+            .GroupBy(item =>
+            {
+                var slash = item.Path.LastIndexOf('/');
+                return slash >= 0 ? item.Path[..slash] : string.Empty;
+            })
+            .ToDictionary(
+                g => g.Key,
+                g => g
+                    .OrderBy(x => x.Type == "tree" ? 0 : 1)
+                    .ThenBy(x => GetLeafName(x.Path), StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+            );
+
+        var result = new List<GitHubTreeItem>();
+        AddVisibleChildren(byParent, string.Empty, result);
+        return result;
+    }
+
+    private void AddVisibleChildren(
+        Dictionary<string, List<GitHubTreeItem>> byParent,
+        string parentPath,
+        List<GitHubTreeItem> result)
+    {
+        if (!byParent.TryGetValue(parentPath, out var children)) return;
+        foreach (var child in children)
+        {
+            result.Add(child);
+            if (child.Type == "tree"
+                && _state.ExpandedPaths.TryGetValue(child.Path, out var expanded)
+                && expanded)
+            {
+                AddVisibleChildren(byParent, child.Path, result);
+            }
+        }
+    }
+
+    private static string GetLeafName(string path)
+    {
+        var idx = path.LastIndexOf('/');
+        return idx >= 0 ? path[(idx + 1)..] : path;
+    }
+
+    private static string GetFileIcon(string name)
+    {
+        var ext = System.IO.Path.GetExtension(name).ToLowerInvariant();
+        return ext switch
+        {
+            ".cs" or ".razor" or ".vb" or ".fs" or ".fsx" => "📄",
+            ".js" or ".jsx" or ".ts" or ".tsx"             => "📜",
+            ".json"                                         => "{}",
+            ".xml" or ".csproj" or ".vbproj" or ".sln"    => "📋",
+            ".md" or ".mdx" or ".txt"                      => "📝",
+            ".css" or ".scss" or ".less"                   => "🎨",
+            ".html" or ".htm"                              => "🌐",
+            ".svg" or ".png" or ".jpg" or ".jpeg"
+                or ".gif" or ".ico" or ".webp"             => "🖼",
+            ".pdf"                                         => "📑",
+            ".zip" or ".tar" or ".gz" or ".bz2" or ".7z"  => "📦",
+            ".sh" or ".bash" or ".ps1" or ".bat" or ".cmd" => "⚙",
+            ".py"                                          => "🐍",
+            ".sql"                                         => "🗄",
+            ".yaml" or ".yml"                              => "📋",
+            ".gitignore" or ".gitattributes"               => "🔧",
+            _                                              => "📄"
+        };
+    }
+
+    private static bool IsBinaryFile(GitHubTreeItem item, string? decodedContent)
+    {
+        var leafName = GetLeafName(item.Path);
+        var ext = System.IO.Path.GetExtension(leafName).ToLowerInvariant();
+        bool knownBinaryExt = ext is
+            ".png" or ".jpg" or ".jpeg" or ".gif" or ".ico" or ".webp" or ".bmp" or ".tiff" or
+            ".pdf" or
+            ".zip" or ".tar" or ".gz" or ".bz2" or ".7z" or ".rar" or
+            ".exe" or ".dll" or ".so" or ".dylib" or ".lib" or ".obj" or
+            ".mp4" or ".mp3" or ".wav" or ".ogg" or ".avi" or ".mov" or ".mkv" or
+            ".woff" or ".woff2" or ".ttf" or ".otf" or ".eot" or
+            ".pyc" or ".class";
+
+        if (knownBinaryExt) return true;
+        if (decodedContent != null && decodedContent.Contains('\0')) return true;
+        return false;
+    }
+
+    // ── IDisposable ────────────────────────────────────────────────────────────
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+        _state.ClearPat();
+        // Best-effort: tell server to clear this session
+        _ = Http.DeleteAsync("/api/Showcase/GitRepo/disconnect");
+    }
+
+    // ── Server response DTOs ───────────────────────────────────────────────────
+
+    private record GitConnectResult(bool Connected, string? Owner, string? Repo, string? Platform, string? DefaultBranch);
+    private record BranchDto(string? Name, string? CommitSha, bool IsDefault);
+    private record TreeNodeDto(string? Name, string? Path, string? Type, string? Sha, long? Size, string? DownloadUrl);
+    private record FileDto(string? Path, string? RawText, bool IsBinary, long? Size, string? MimeTypeHint, string? DownloadUrl);
+    private record ServerError(string? Error);
+}

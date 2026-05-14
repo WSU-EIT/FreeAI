@@ -1,0 +1,85 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "img-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Message": "Image missing alt attribute",
+      "Selector": null,
+      "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 widt...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-order",
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Message": "Heading level skipped: \u003Ch2\u003E to \u003Ch4\u003E",
+      "Selector": null,
+      "Snippet": "\u003Ch4 class=\u0022wp-block-heading\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022wsu-search__input\u0022 type=\u0022text\u0022 aria-lable=\u0022Search input\u0022 placeholder=\u0022Search\u0022 name=\u0022s\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca href=\u0022https://admission.wsu.edu?s=\u0022 class=\u0022wsu-button-ui-search\u0022 title=\u0022Search WSU\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton class=\u0022wsu-search__submit\u0022 aria-lable=\u0022Submit Search\u0022\u003E\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    }
+  ]
+}

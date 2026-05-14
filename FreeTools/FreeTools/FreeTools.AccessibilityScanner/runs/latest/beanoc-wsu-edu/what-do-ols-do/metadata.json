@@ -1,0 +1,66 @@
+{
+  "PagePath": "/what-do-ols-do/",
+  "Url": "https://beanoc.wsu.edu/what-do-ols-do/",
+  "FinalUrl": null,
+  "Title": "What Do OL\u0027s Do? | Be An Orientation Leader",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 647921,
+  "ScreenshotSizeBytes": 199673,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 199673
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/ds1ikwxy/509022119_1147273197434524_8339159283981520375_n.jpg?rmode=max\u0026width=500",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/3mbp3z14/523260352_1177407341087776_2923532445777108852_n.jpg?rmode=max\u0026width=500",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:05.5303824Z"
+}

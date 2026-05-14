@@ -1,0 +1,82 @@
+{
+  "PagePath": "/faqs/basics/find-your-residency-status-in-mywsu/",
+  "Url": "https://residency.wsu.edu/faqs/basics/find-your-residency-status-in-mywsu/",
+  "FinalUrl": null,
+  "Title": "Find your residency status in myWSU | Residency for Tuition",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 661760,
+  "ScreenshotSizeBytes": 360263,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 360263
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/1s1gryd1/financial-aid-tile.png?rmode=max\u0026width=264\u0026height=210",
+      "AltText": "Financial Aid tile in myWSU"
+    },
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/ofbc215r/tuitionresidency2024.png?rmode=max\u0026width=500",
+      "AltText": "Financial aid tile in myWSU showing Tuition Residency field"
+    },
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/762621/shp-studenttiles.png?width=456.9209039548022\u0026height=500",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/762625/tuitionbillfullpage.png?width=607\u0026height=295\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/762623/tuitionbill.png?width=610\u0026height=94\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://residency.wsu.edu/media/762626/tuitionbillnrvetmed.png?width=607\u0026height=147\u0026mode=max",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:36.8074741Z"
+}

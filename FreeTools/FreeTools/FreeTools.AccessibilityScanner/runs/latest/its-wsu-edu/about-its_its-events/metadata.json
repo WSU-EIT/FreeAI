@@ -1,0 +1,98 @@
+{
+  "PagePath": "/about-its/its-events/",
+  "Url": "https://its.wsu.edu/about-its/its-events/",
+  "FinalUrl": null,
+  "Title": "ITS Events | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 242493,
+  "ScreenshotSizeBytes": 210785,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 210785
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/Cyber-security-events-2019.jpg",
+      "AltText": "Cyber Awareness Event 2017 Guests"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IT-Group_adjusted_23.jpg",
+      "AltText": "WSU ITS team photo"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1611.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/03/IMG_0086.jpg",
+      "AltText": "ITS Holiday Party 2019 Christmas tree"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/05/IMG_4782.jpg",
+      "AltText": "Hacktober winner 2018"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/05/group-2.jpg",
+      "AltText": "ITS Thank You Reception 2018"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/05/DSC_2063.jpg",
+      "AltText": "ISNOC Ribbon Cutting 2017"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 16,
+    "Critical": 0,
+    "Serious": 16,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 14,
+        "Critical": 0,
+        "Serious": 14,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:14:20 GMT",
+    "etag": "\u0022899b9cf57c090e4a150e6dce47387f38\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:14:20 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/369\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=369\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:14:20.1974746Z"
+}

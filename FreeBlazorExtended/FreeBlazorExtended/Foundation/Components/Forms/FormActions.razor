@@ -1,0 +1,247 @@
+﻿@*
+    FormActions — Foundation action bar that renders submit, cancel, and reset buttons with
+    built-in submitting state, alignment control, and layout variants.
+
+    Place this component at the bottom of a form or <FormSection> to provide consistent action
+    button placement across the application. When IsSubmitting is true, the submit button
+    displays an inline spinner and becomes disabled to prevent double-submissions.
+
+    If the built-in buttons do not match your needs, supply ChildContent with fully custom buttons.
+
+    Required parameters: none — SubmitText defaults to "Save" and CancelText defaults to "Cancel".
+
+    Optional parameters:
+        SubmitText   — label for the primary button (set empty to hide it)
+        CancelText   — label for the secondary button (set empty to hide it)
+        ResetText    — label for a reset button (hidden by default when empty)
+        Alignment    — "left" | "center" | "right" (default)
+        FullWidth    — stretches each button to fill its share of the row
+        Stacked      — stacks buttons vertically
+        Compact      — reduces padding and top margin
+        IsSubmitting — disables the submit button and shows an inline spinner
+        OnSubmit     — EventCallback fired when the submit button is clicked
+        OnCancel     — EventCallback fired when the cancel button is clicked
+        OnReset      — EventCallback fired when the reset button is clicked
+        ChildContent — replaces all built-in buttons with a custom render fragment
+
+    Example:
+        <FormActions SubmitText="Create Invoice"
+                     IsSubmitting="@_saving"
+                     OnSubmit="SaveAsync"
+                     OnCancel="NavigateBack" />
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="form-actions @_containerClass" role="group">
+    @if (ChildContent != null) {
+        @ChildContent
+    } else {
+        @if (!String.IsNullOrWhiteSpace(SubmitText)) {
+            <button type="submit" class="btn btn-primary" @onclick="OnSubmitClick" disabled="@IsSubmitting">
+                @if (IsSubmitting) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                }
+                @SubmitText
+            </button>
+        }
+
+        @if (!String.IsNullOrWhiteSpace(CancelText)) {
+            <button type="button" class="btn btn-secondary" @onclick="OnCancelClick">
+                @CancelText
+            </button>
+        }
+
+        @if (!String.IsNullOrWhiteSpace(ResetText)) {
+            <button type="reset" class="btn btn-outline-secondary" @onclick="OnResetClick">
+                @ResetText
+            </button>
+        }
+    }
+</div>
+
+<style>
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        padding: 1rem 0;
+        margin-top: 1.5rem;
+    }
+
+    .form-actions.center {
+        justify-content: center;
+    }
+
+    .form-actions.right {
+        justify-content: flex-end;
+    }
+
+    .form-actions.left {
+        justify-content: flex-start;
+    }
+
+    .form-actions.full-width button,
+    .form-actions.full-width input {
+        flex: 1;
+    }
+
+    .form-actions.stacked {
+        flex-direction: column;
+    }
+
+    .form-actions button,
+    .form-actions input {
+        min-width: 100px;
+    }
+
+    .form-actions.compact {
+        padding: 0.5rem 0;
+        margin-top: 1rem;
+    }
+
+    @@media (max-width: 576px) {
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions button,
+        .form-actions input {
+            width: 100%;
+        }
+    }
+</style>
+
+@code {
+    protected string _containerClass = "";
+
+    /// <summary>
+    /// Label on the primary submit button. Default: <c>"Save"</c>.
+    /// Set to empty string to hide the submit button entirely.
+    /// </summary>
+    [Parameter] public string SubmitText { get; set; } = "Save";
+
+    /// <summary>
+    /// Label on the secondary cancel button. Default: <c>"Cancel"</c>.
+    /// Set to empty string to hide the cancel button entirely.
+    /// </summary>
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+
+    /// <summary>
+    /// Label on the tertiary reset button. Default: empty (button hidden).
+    /// Renders a <c>type="reset"</c> button that also triggers <see cref="OnReset"/>
+    /// when non-empty.
+    /// </summary>
+    [Parameter] public string ResetText { get; set; } = "";
+
+    /// <summary>
+    /// Horizontal alignment of the button row.
+    /// Accepted values: <c>"left"</c>, <c>"center"</c>, <c>"right"</c> (default).
+    /// </summary>
+    [Parameter] public string Alignment { get; set; } = "right";
+
+    /// <summary>
+    /// When <c>true</c>, each button expands equally to fill the full row width.
+    /// Useful for mobile-first or modal footer layouts. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool FullWidth { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c>, stacks buttons vertically instead of horizontally.
+    /// Automatically applied on narrow viewports via CSS media query.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Stacked { get; set; } = false;
+
+    /// <summary>
+    /// Reduces top margin and padding for use inside compact panels or modals.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Compact { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c>, disables the submit button and overlays an inline Bootstrap spinner
+    /// to indicate that the form submission is in progress. Set this to your component's
+    /// saving/loading boolean to prevent double-submissions automatically.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool IsSubmitting { get; set; } = false;
+
+    /// <summary>
+    /// Invoked when the submit button is clicked (only if <see cref="IsSubmitting"/> is false).
+    /// Wire this to your save/submit handler: <code>OnSubmit="SaveAsync"</code>.
+    /// </summary>
+    [Parameter] public EventCallback OnSubmit { get; set; }
+
+    /// <summary>
+    /// Invoked when the cancel button is clicked.
+    /// Typically used to navigate back or reset state:
+    /// <code>OnCancel="NavigationManager.NavigateTo("/list")"</code>.
+    /// </summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    /// <summary>
+    /// Invoked when the reset button is clicked (only rendered when <see cref="ResetText"/> is non-empty).
+    /// Use to clear the form model or restore default values.
+    /// </summary>
+    [Parameter] public EventCallback OnReset { get; set; }
+
+    /// <summary>
+    /// When provided, <em>replaces all built-in buttons</em> with a fully custom render fragment.
+    /// The container div and its alignment/layout CSS classes are still applied.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _containerClass = "";
+
+        string alignment = (Alignment ?? "right").ToLower();
+        _containerClass = alignment switch
+        {
+            "left" => "left",
+            "center" => "center",
+            _ => "right"
+        };
+
+        if (FullWidth) {
+            _containerClass += " full-width";
+        }
+
+        if (Stacked) {
+            _containerClass += " stacked";
+        }
+
+        if (Compact) {
+            _containerClass += " compact";
+        }
+
+        _containerClass = _containerClass.Trim();
+    }
+
+    protected async Task OnSubmitClick()
+    {
+        if (!IsSubmitting) {
+            await OnSubmit.InvokeAsync();
+        }
+    }
+
+    protected async Task OnCancelClick()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    protected async Task OnResetClick()
+    {
+        await OnReset.InvokeAsync();
+    }
+}

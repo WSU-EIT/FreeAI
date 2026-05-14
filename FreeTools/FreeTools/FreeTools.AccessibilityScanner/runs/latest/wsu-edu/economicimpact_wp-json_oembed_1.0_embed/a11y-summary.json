@@ -1,0 +1,113 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 0,
+  "Serious": 3,
+  "Moderate": 2,
+  "Minor": 1,
+  "ByTool": {
+    "axe": {
+      "Total": 2,
+      "Critical": 0,
+      "Serious": 2,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 4,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 2,
+      "Minor": 1
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta name=\u0022color-scheme\u0022 content=\u0022light dark\u0022\u003E\u003Cmeta charset=\u0022utf-8\u0022\u003E\u003C/head\u003E\u003Cbody\u003E\u003Cpre\u003E{\u0022code\u0022:\u0022rest_missing_callback_param\u0022,\u0022message\u0022:\u0022Mi..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "document-title",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Documents must have \u003Ctitle\u003E element to aid in navigation",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta name=\u0022color-scheme\u0022 content=\u0022light dark\u0022\u003E\u003Cmeta charset=\u0022utf-8\u0022\u003E\u003C/head\u003E\u003Cbody\u003E\u003Cpre\u003E{\u0022code\u0022:\u0022rest_missing_callback_param\u0022,\u0022message\u0022:\u0022Mi..."
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

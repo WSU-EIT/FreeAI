@@ -1,0 +1,252 @@
+@page "/Compliance/Search"
+@page "/{TenantCode}/Compliance/Search"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-search me-2"></i>Cross-Site URL Search
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-outline-success" @onclick="ExportCsv" disabled="@(_exporting || !_results.Any())" title="Download filtered violations as CSV">
+                @if (_exporting) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                } else {
+                    <text><i class="fas fa-download me-1"></i>Export CSV</text>
+                }
+            </button>
+        </div>
+        <FreeA11yChecker_App_TriageNav Active="search" />
+    </div>
+
+    <FreeA11yChecker_App_AboutSection Title="About URL Search">
+        <p>Search violations across <strong>every site</strong> in your tenant by URL glob pattern. Use <code>*</code> for any segment and <code>**</code> for any path depth.</p>
+        <p class="mb-0">Examples: <code>*em.wsu.edu/*</code> matches em.wsu.edu and any subdomain &mdash; <code>*/news/**</code> matches every news section across all sites &mdash; leave blank to load every violation.</p>
+    </FreeA11yChecker_App_AboutSection>
+
+    @* ── Filter row ── *@
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-md-4">
+            <label class="form-label small mb-1">URL Pattern</label>
+            <input type="text" class="form-control form-control-sm" placeholder="*em.wsu.edu/*"
+                   @bind="_urlPattern" @bind:event="oninput" aria-label="URL pattern (glob)" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Severity</label>
+            <select class="form-select form-select-sm" @bind="_severity" aria-label="Filter by severity">
+                <option value="">All severities</option>
+                <option value="critical">Critical</option>
+                <option value="serious">Serious</option>
+                <option value="moderate">Moderate</option>
+                <option value="minor">Minor</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">WCAG</label>
+            <select class="form-select form-select-sm" @bind="_wcagLevel" aria-label="Filter by WCAG level">
+                <option value="all">All</option>
+                <option value="a">Level A only</option>
+                <option value="aa">A + AA</option>
+                <option value="aaa">A + AA + AAA</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1 d-block">Scans</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="latestOnly" @bind="_latestOnly" />
+                <label class="form-check-label small" for="latestOnly">Latest scan per site</label>
+            </div>
+        </div>
+        <div class="col-auto align-self-end">
+            <button class="btn btn-sm btn-primary" @onclick="Search" disabled="@_searching">
+                @if (_searching) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Searching</text>
+                } else {
+                    <text><i class="fas fa-search me-1"></i>Search</text>
+                }
+            </button>
+        </div>
+    </div>
+
+    @if (_searching) {
+        <LoadingMessage />
+    } else if (_searched) {
+        @* ── Result summary ── *@
+        var filtered = ApplyClientFilter(_results);
+        int totalSites = filtered.Select(v => v.SiteId).Distinct().Count();
+        int totalPages = filtered.Select(v => v.PageScanResultId).Distinct().Count();
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <span class="badge bg-dark fs-6">@filtered.Count violations</span>
+            <span class="badge bg-secondary fs-6">@totalPages pages</span>
+            <span class="badge bg-secondary fs-6">@totalSites sites</span>
+            @if (filtered.Count != _results.Count) {
+                <span class="text-muted small">(@_results.Count loaded, @(_results.Count - filtered.Count) hidden by WCAG filter)</span>
+            }
+        </div>
+
+        @if (filtered.Any()) {
+            <div style="max-height:70vh; overflow-y:auto;">
+                <table class="table table-sm table-hover table-striped">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th style="width:90px;">Severity</th>
+                            <th style="width:140px;">Site</th>
+                            <th>Page URL</th>
+                            <th style="width:140px;">Rule</th>
+                            <th>Message</th>
+                            <th style="width:90px;">WCAG</th>
+                            <th style="width:30px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var v in filtered.Take(_displayLimit)) {
+                            <tr @key="v.A11yViolationId">
+                                <td>@((MarkupString)SeverityBadge(v.Severity))</td>
+                                <td><a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + v.SiteId))" title="@v.SiteBaseUrl">@v.SiteName</a></td>
+                                <td class="small text-break">
+                                    <a href="@(Helpers.BuildUrl("Pages/" + v.PageScanResultId))">
+                                        @(String.IsNullOrWhiteSpace(v.PageTitle) ? v.PageUrl : v.PageTitle)
+                                    </a>
+                                    @if (!String.IsNullOrWhiteSpace(v.PageTitle)) {
+                                        <br /><span class="text-muted">@v.PageUrl</span>
+                                    }
+                                </td>
+                                <td class="small"><strong>@v.RuleId</strong> <span class="badge bg-secondary">@v.Tool</span></td>
+                                <td class="small">@v.Message</td>
+                                <td class="small">@v.WcagCriteria</td>
+                                <td>
+                                    @if (!String.IsNullOrWhiteSpace(v.HelpUrl)) {
+                                        <a href="@v.HelpUrl" target="_blank" rel="noopener" title="Fix guidance"><i class="fas fa-question-circle"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (filtered.Count > _displayLimit) {
+                <div class="d-flex align-items-center gap-2 mt-2">
+                    <span class="text-muted small">Showing @_displayLimit of @filtered.Count rows.</span>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => _displayLimit += 500">Show 500 more</button>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => _displayLimit = filtered.Count">Show all</button>
+                </div>
+            }
+        } else {
+            <div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>No violations match the current filters.</div>
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "crosssitesearch";
+    private bool _validatedUrl = false;
+    private bool _searching = false;
+    private bool _searched = false;
+    private bool _exporting = false;
+
+    private string _urlPattern = "";
+    private string _severity = "";
+    private string _wcagLevel = "aa";
+    private bool _latestOnly = true;
+    private int _displayLimit = 500;
+
+    private List<DataObjects.CrossSiteViolation> _results = new();
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+
+        if (Model.Loaded && Model.LoggedIn && !_validatedUrl) {
+            _validatedUrl = true;
+            await Helpers.ValidateUrl(TenantCode);
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) StateHasChanged();
+    }
+
+    private async Task Search()
+    {
+        _searching = true;
+        _searched = false;
+        StateHasChanged();
+
+        var filter = new {
+            SiteIds = (List<Guid>?)null,
+            UrlPattern = String.IsNullOrWhiteSpace(_urlPattern) ? null : _urlPattern,
+            Severity = String.IsNullOrWhiteSpace(_severity) ? null : _severity,
+            CanonicalRuleId = (string?)null,
+            LatestScanOnly = _latestOnly,
+        };
+        var results = await Helpers.GetOrPost<List<DataObjects.CrossSiteViolation>>("api/Data/GetCrossSiteViolations", filter);
+        _results = results ?? new();
+        _searching = false;
+        _searched = true;
+        _displayLimit = 500;
+        StateHasChanged();
+    }
+
+    private List<DataObjects.CrossSiteViolation> ApplyClientFilter(List<DataObjects.CrossSiteViolation> input)
+    {
+        var seq = input.AsEnumerable();
+        if (_wcagLevel != "all") {
+            seq = seq.Where(v => WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevel));
+        }
+        return seq.OrderBy(v => SeverityRank(v.Severity)).ThenBy(v => v.SiteName).ThenBy(v => v.PageUrl).ToList();
+    }
+
+    private async Task ExportCsv()
+    {
+        _exporting = true;
+        StateHasChanged();
+        try {
+            var rows = ApplyClientFilter(_results);
+            static string Esc(string? s) => "\"" + (s ?? "").Replace("\"", "\"\"") + "\"";
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Site,Site Base URL,Scan Date,Page URL,Page Title,Severity,Tool,WCAG Criteria,Rule ID,Message,CSS Selector,Help URL");
+            foreach (var v in rows) {
+                sb.AppendLine($"{Esc(v.SiteName)},{Esc(v.SiteBaseUrl)},{Esc(v.ScanDate.ToString("yyyy-MM-dd HH:mm"))},{Esc(v.PageUrl)},{Esc(v.PageTitle)},{Esc(v.Severity)},{Esc(v.Tool)},{Esc(v.WcagCriteria)},{Esc(v.RuleId)},{Esc(v.Message)},{Esc(v.Selector)},{Esc(v.HelpUrl)}");
+            }
+            var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+            string slug = String.IsNullOrWhiteSpace(_urlPattern)
+                ? "all-sites"
+                : System.Text.RegularExpressions.Regex.Replace(_urlPattern, @"[^a-zA-Z0-9_.-]", "_");
+            await jsRuntime.InvokeVoidAsync("eval",
+                $"var a=document.createElement('a');a.href='data:text/csv;base64,{b64}';a.download='violations-{slug}-{DateTime.Now:yyyy-MM-dd}.csv';a.click();");
+        } finally {
+            _exporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private static int SeverityRank(string s) => s.ToLower() switch {
+        "critical" => 0, "serious" => 1, "moderate" => 2, "minor" => 3, _ => 4
+    };
+
+    private static string SeverityBadge(string severity) => severity.ToLower() switch {
+        "critical" => "<span class=\"badge bg-danger\">Critical</span>",
+        "serious" => "<span class=\"badge bg-warning text-dark\">Serious</span>",
+        "moderate" => "<span class=\"badge bg-info text-dark\">Moderate</span>",
+        "minor" => "<span class=\"badge bg-secondary\">Minor</span>",
+        _ => "<span class=\"badge bg-secondary\">" + severity + "</span>",
+    };
+}

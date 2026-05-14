@@ -1,0 +1,96 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 728,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr-value",
+      "CanonicalRuleId": "aria-valid-attr-value",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid values",
+      "Selector": ".slider-active",
+      "Snippet": "\u003Cbutton class=\u0022slider-button slider-active\u0022 type=\u0022button\u0022 aria-label=\u0022Slide 1 of 5\u0022 aria-setsize=\u00225\u0022 aria-posinset=\u00221\u0022 role=\u0022tab\u0022 aria-controls=\u0022slide...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr-value?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511699",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511699\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u00220\u0022 aria-controls=\u0022code-tabpanel--9345...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511698",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511698\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511697",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511697\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511696",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511696\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511695",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511695\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511694",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511694\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "button-name",
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Message": "Buttons must have discernible text",
+      "Selector": "#code-tab--934511693",
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 role=\u0022tab\u0022 id=\u0022code-tab--934511693\u0022 class=\u0022code-snippet-button paragraph-medium\u0022 tabindex=\u0022-1\u0022 aria-controls=\u0022code-tabpanel--934...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

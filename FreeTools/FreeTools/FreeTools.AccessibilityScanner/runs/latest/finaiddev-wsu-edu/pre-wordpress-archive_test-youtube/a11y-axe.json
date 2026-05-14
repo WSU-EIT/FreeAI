@@ -1,0 +1,52 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 584,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".embed-responsive.embed-responsive-16by9:nth-child(1) \u003E .embed-responsive-item[webkitallowfullscreen=\u0022\u0022][mozallowfullscreen=\u0022\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022embed-responsive-item\u0022 src=\u0022//www.youtube.com/embed/AT3pm_d7ACE?rel=0\u0022 frameborder=\u00220\u0022 webkitallowfullscreen=\u0022\u0022 mozallowfullscreen=\u0022\u0022 a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": ".embed-responsive.embed-responsive-16by9:nth-child(13) \u003E .embed-responsive-item[webkitallowfullscreen=\u0022\u0022][mozallowfullscreen=\u0022\u0022]",
+      "Snippet": "\u003Ciframe class=\u0022embed-responsive-item\u0022 src=\u0022//www.youtube.com/embed/yen5rJWBXV4?rel=0\u0022 frameborder=\u00220\u0022 webkitallowfullscreen=\u0022\u0022 mozallowfullscreen=\u0022\u0022 a...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "frame-title",
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Message": "Frames must have an accessible name",
+      "Selector": "iframe[width=\u0022350\u0022]",
+      "Snippet": "\u003Ciframe width=\u0022350\u0022 height=\u0022200\u0022 src=\u0022https://www.youtube.com/embed/yen5rJWBXV4\u0022 frameborder=\u00220\u0022 allowfullscreen=\u0022\u0022\u003E\u003C/iframe\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

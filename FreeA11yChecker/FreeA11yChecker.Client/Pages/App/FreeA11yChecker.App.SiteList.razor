@@ -1,0 +1,1409 @@
+﻿@page "/Settings/Sites"
+@page "/{TenantCode}/Settings/Sites"
+@implements IDisposable
+@using Blazored.LocalStorage
+@using Humanizer
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="Sites" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="Sites" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/EditSite/new"))" role="button" class="btn btn-success">
+                    <Language Tag="AddNewSite" IncludeIcon="true" />
+                </a>
+                <button type="button" class="btn btn-outline-primary" @onclick="ScanAllEnabled" disabled="@_bulkScanning">
+                    @if (_bulkScanning) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                    <i class="fas fa-play me-1"></i>Queue All Enabled
+                </button>
+                <a href="@(Helpers.BuildUrl("Compliance/Scorecard"))" role="button" class="btn btn-outline-info" title="Cross-site triage views: scorecard, URL search, domain tree, rule hotlist">
+                    <i class="fas fa-bullseye me-1"></i>Triage Across Sites
+                </a>
+                <a href="@(Helpers.BuildUrl("Settings/Suppressions"))" role="button" class="btn btn-outline-warning" title="Manage rules suppressed for known third-party issues">
+                    <i class="fas fa-shield-alt me-1"></i>Suppressions
+                </a>
+            </div>
+        </div>
+
+        <FreeA11yChecker_App_AboutSection Title="About Sites">
+            <p><Language Tag="SitesAboutText" /></p>
+        </FreeA11yChecker_App_AboutSection>
+
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <label for="siteSearchInput" class="visually-hidden">Search sites</label>
+            <input type="text" id="siteSearchInput" class="form-control" placeholder="Search sites..."
+                   style="max-width:400px;"
+                   @bind="_searchText" @bind:event="oninput" />
+            <fieldset class="btn-group btn-group-sm m-0 p-0 border-0" style="display:inline-flex;">
+                <legend class="visually-hidden">Filter by enabled status</legend>
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterAll" autocomplete="off"
+                       checked="@(_enabledFilter == "all")" @onchange="@(() => SetEnabledFilter("all"))" />
+                <label class="btn btn-outline-secondary" for="enabledFilterAll">
+                    All <span class="badge bg-secondary ms-1">@_sites.Count</span>
+                </label>
+
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterEnabled" autocomplete="off"
+                       checked="@(_enabledFilter == "enabled")" @onchange="@(() => SetEnabledFilter("enabled"))" />
+                <label class="btn btn-outline-success" for="enabledFilterEnabled">
+                    Enabled only <span class="badge bg-success ms-1">@_sites.Count(s => s.Enabled)</span>
+                </label>
+
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterDisabled" autocomplete="off"
+                       checked="@(_enabledFilter == "disabled")" @onchange="@(() => SetEnabledFilter("disabled"))" />
+                <label class="btn btn-outline-secondary" for="enabledFilterDisabled">
+                    Disabled only <span class="badge bg-dark ms-1">@_sites.Count(s => !s.Enabled)</span>
+                </label>
+            </fieldset>
+        </div>
+
+        @* ── Bulk Edit Toolbar ── *@
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <button class="btn btn-sm @(_bulkMode ? "btn-primary" : "btn-outline-primary")"
+                    @onclick="ToggleBulkMode">
+                <i class="fas fa-check-double me-1"></i>Bulk Edit
+            </button>
+            @if (_bulkMode) {
+                int enabledCount = _sites.Count(s => s.Enabled);
+                int totalCount = _sites.Count;
+                <span class="badge bg-dark fs-6">@enabledCount / @totalCount enabled</span>
+
+                @* ── Selection group ── *@
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-success" @onclick="BulkEnableAll" title="Enable every site">
+                        <i class="fas fa-check-square me-1"></i>Enable All
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @onclick="BulkDisableAll" title="Disable every site">
+                        <i class="far fa-square me-1"></i>Disable All
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="BulkInvertAll" title="Flip enabled/disabled on every site">
+                        <i class="fas fa-exchange-alt me-1"></i>Invert
+                    </button>
+                </div>
+
+                @* ── Smart select dropdown ── *@
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-magic me-1"></i>Smart Select
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><h6 class="dropdown-header">Enable by status</h6></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_Enable(true)"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Enable sites with critical issues</button></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_EnableViolations()"><i class="fas fa-exclamation-circle text-warning me-2"></i>Enable sites with any violations</button></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_EnableClean()"><i class="fas fa-check-circle text-success me-2"></i>Enable only clean sites</button></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_EnableNotScanned()"><i class="fas fa-question-circle text-secondary me-2"></i>Enable unscanned sites</button></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><h6 class="dropdown-header">Disable by status</h6></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_DisableClean()"><i class="fas fa-check-circle text-success me-2"></i>Disable clean sites (focus on problems)</button></li>
+                        <li><button class="dropdown-item" @onclick="() => SelectByStatus_DisableNotScanned()"><i class="fas fa-question-circle text-secondary me-2"></i>Disable unscanned sites</button></li>
+                    </ul>
+                </div>
+
+                @* ── Actions ── *@
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" @onclick="ScanSelected" disabled="@(_bulkScanning || enabledCount == 0)"
+                            title="Queue scans for all enabled sites">
+                        @if (_bulkScanning) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                        <i class="fas fa-play me-1"></i>Queue Enabled (@enabledCount)
+                    </button>
+                    <button class="btn btn-sm btn-success" @onclick="BulkSave" disabled="@_bulkSaving"
+                            title="Save all enable/disable changes to the server">
+                        @if (_bulkSaving) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                        <i class="fas fa-save me-1"></i>Save Changes
+                    </button>
+                </div>
+
+                <button class="btn btn-sm btn-outline-dark" @onclick="ToggleBulkMode">
+                    <i class="fas fa-times me-1"></i>Exit Bulk
+                </button>
+            }
+        </div>
+
+        var treeRoots = BuildSiteTree();
+        if (treeRoots.Any()) {
+            <div class="d-flex align-items-center mb-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary me-2" @onclick="ExpandAllNodes" @onclick:preventDefault="true">
+                    <i class="fas fa-expand-alt me-1"></i>Expand All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="CollapseAllNodes" @onclick:preventDefault="true">
+                    <i class="fas fa-compress-alt me-1"></i>Collapse All
+                </button>
+            </div>
+            <div class="list-group">
+                @foreach (var node in treeRoots) {
+                    RenderTreeNode(node, 0);
+                }
+            </div>
+        } else {
+            <Language Tag="NoItemsToShow" />
+        }
+    }
+}
+
+@{ void RenderTreeNode(SiteTreeNode node, int depth) {
+    int indent = depth * 24;
+    if (node.Site != null) {
+        var site = node.Site;
+        string itemClass = "list-group-item d-flex align-items-center";
+        if (site.Deleted) {
+            itemClass += " list-group-item-secondary";
+        } else if (!site.Enabled) {
+            itemClass += " list-group-item-light text-muted";
+        }
+        bool hasChildren = node.Children.Any();
+        bool isExpanded = _expandedTreeNodes.Contains(node.Key);
+        <div class="@itemClass" style="padding-left: @(12 + indent)px;">
+            @if (hasChildren) {
+                <button type="button" class="btn btn-sm btn-link p-0 me-2 text-dark" style="width:24px; height:24px; z-index:2;"
+                        @onclick="() => ToggleTreeNode(node.Key)" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                        aria-label="@(isExpanded ? "Collapse " + site.Name : "Expand " + site.Name)"
+                        aria-expanded="@isExpanded.ToString().ToLower()">
+                    <i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right")" aria-hidden="true"></i>
+                </button>
+            } else {
+                <span style="width:20px; display:inline-block;" class="me-2" aria-hidden="true"></span>
+            }
+            @if (_bulkMode) {
+                <div class="me-2" @onclick:stopPropagation="true">
+                    @{var checkState = GetSiteCheckState(site);}
+                    <input type="checkbox" class="form-check-input" id="site-check-@site.SiteId"
+                           aria-label="@($"Select {site.Name}")"
+                           checked="@(checkState != "unchecked")"
+                           @onchange="@(e => ToggleSite(site, (bool)e.Value!))" />
+                </div>
+            }
+            <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId))" class="flex-grow-1 text-decoration-none text-reset">
+                <div class="d-flex align-items-center mb-1">
+                    <strong class="me-2">@site.Name</strong>
+                    @if (!site.Enabled) {
+                        <span class="badge bg-secondary me-1">Disabled</span>
+                    }
+                    @if (_scanningIds.Contains(site.SiteId)) {
+                        <span class="badge bg-info me-1">
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            @if (_scanProgress.ContainsKey(site.SiteId)) {
+                                var p = _scanProgress[site.SiteId];
+                                @($"Scanning {p.CurrentPage}/{p.TotalPages}")
+                            } else {
+                                @("Scanning")
+                            }
+                        </span>
+                    } else if (_queuedIds.Contains(site.SiteId)) {
+                        <span class="badge bg-warning text-dark me-1" title="Waiting in queue">
+                            <i class="fas fa-clock me-1"></i>Queued
+                        </span>
+                    } else {
+                        @((MarkupString)GetStatusBadge(site))
+                    }
+                </div>
+                <div class="d-flex align-items-center text-muted small">
+                    <span class="me-3">@site.BaseUrl</span>
+                    @if (site.LastScanAt.HasValue) {
+                        <span class="me-3"><i class="fas fa-clock me-1"></i>@site.LastScanAt.Value.Humanize()</span>
+                    }
+                    @if (site.LastViolationCount > 0 || site.LastCriticalCount > 0) {
+                        <span class="me-2">
+                            <span class="badge bg-dark badge-sm">@site.LastViolationCount violations</span>
+                            @if (site.LastCriticalCount > 0) {
+                                <span class="badge bg-danger badge-sm ms-1">@site.LastCriticalCount critical</span>
+                            }
+                        </span>
+                    }
+                    @{
+                        int pageCount = _sitePageCounts.ContainsKey(site.SiteId) ? _sitePageCounts[site.SiteId] : 0;
+                        bool pagesExpanded = _expandedSites.Contains(site.SiteId);
+                    }
+                    <button type="button" class="btn btn-sm btn-link p-0 me-2 text-decoration-none"
+                            @onclick="() => ToggleExpand(site.SiteId)"
+                            @onclick:stopPropagation="true" @onclick:preventDefault="true"
+                            aria-label="@(pagesExpanded ? "Collapse pages list" : "Expand pages list")"
+                            aria-expanded="@pagesExpanded.ToString().ToLower()"
+                            title="@(pagesExpanded ? "Hide pages" : "Show pages")">
+                        <i class="fas @(pagesExpanded ? "fa-chevron-down" : "fa-chevron-right") me-1" aria-hidden="true"></i>
+                        <i class="fas fa-file-alt me-1" aria-hidden="true"></i>@pageCount pages
+                    </button>
+                    @if (hasChildren) {
+                        <span class="badge bg-light text-dark border me-2">@CountDescendants(node) sub-sites</span>
+                    }
+                </div>
+            </a>
+            <div class="d-flex align-items-center ms-2" @onclick:stopPropagation="true">
+                @if (site.Enabled && !_scanningIds.Contains(site.SiteId) && !_queuedIds.Contains(site.SiteId)) {
+                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                            title="@($"Run scan: {site.Name}")"
+                            aria-label="@($"Run scan: {site.Name}")"
+                            @onclick="@(() => ScanNow(site.SiteId))">
+                        <i class="fas fa-play" aria-hidden="true"></i>
+                    </button>
+                }
+                @{ var parentSiteForDemote = FindSameHostParentSite(site); }
+                @if (parentSiteForDemote != null) {
+                    <button type="button" class="btn btn-sm btn-outline-warning me-1"
+                            @onclick="() => ConfirmConvertSiteToPage(site, parentSiteForDemote)"
+                            title="@($"Convert this Site into a page (and its sub-pages) of its parent: {parentSiteForDemote.Name}. Deletes this site's scan history.")"
+                            aria-label="@($"Convert site {site.Name} to a page of {parentSiteForDemote.Name}")">
+                        <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                    </button>
+                }
+                <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))" class="btn btn-sm btn-outline-secondary me-1"
+                   title="@($"Settings: {site.Name}")"
+                   aria-label="@($"Settings: {site.Name}")">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                </a>
+                <DeleteConfirmation OnConfirmed="@(() => DeleteSite(site.SiteId))"
+                                    CancelText="@Helpers.ConfirmButtonTextCancel"
+                                    DeleteText="@Helpers.ConfirmButtonTextDelete"
+                                    ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+            </div>
+        </div>
+        @if (_bulkMode && hasChildren && isExpanded) {
+            int childTotal = CountDescendants(node);
+            int childEnabled = CountEnabledDescendants(node);
+            <div class="list-group-item py-1 d-flex align-items-center" style="padding-left: @(36 + indent)px; background-color: #f8f9fa;">
+                <small class="text-muted me-2">@childEnabled / @childTotal sub-sites enabled</small>
+                <div class="btn-group" @onclick:stopPropagation="true">
+                    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.75rem;"
+                            @onclick="() => EnableSubSites(node)" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                            title="Enable all sub-sites under @site.Name">
+                        <i class="fas fa-check-square me-1"></i>Enable All Under
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.75rem;"
+                            @onclick="() => DisableSubSites(node)" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                            title="Disable all sub-sites under @site.Name">
+                        <i class="far fa-square me-1"></i>Disable All Under
+                    </button>
+                </div>
+            </div>
+        }
+        @if (_expandedSites.Contains(site.SiteId)) {
+            @if (_sitePages.ContainsKey(site.SiteId)) {
+                @if (!_sitePages[site.SiteId].Any()) {
+                    <div class="list-group-item py-2 text-muted small" style="padding-left: @(48 + indent)px;">
+                        <i class="fas fa-info-circle me-1"></i>No pages configured.
+                        <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))" class="ms-2">
+                            Add pages →
+                        </a>
+                    </div>
+                } else if (_bulkMode) {
+                    @* ── Bulk-edit mode: simple checkbox list for fast multi-select ── *@
+                    <div class="list-group-item py-2" style="padding-left: @(48 + indent)px; background-color: #f8f9fa;">
+                        @foreach (var page in _sitePages[site.SiteId].OrderBy(p => p.SortOrder)) {
+                            string pageCheckId = "page-check-" + page.SitePageId;
+                            <div @key="page.SitePageId" class="form-check mb-1">
+                                <input type="checkbox" class="form-check-input" id="@pageCheckId" @bind="page.Enabled" />
+                                <label class="form-check-label" for="@pageCheckId">
+                                    @(page.Path)
+                                    @if (!String.IsNullOrEmpty(page.Title)) {
+                                        <small class="text-muted">(@(page.Title))</small>
+                                    }
+                                </label>
+                            </div>
+                        }
+                    </div>
+                } else {
+                    @* ── Normal mode: full row per page, matching site row style ── *@
+                    @foreach (var page in _sitePages[site.SiteId].OrderBy(p => p.SortOrder)) {
+                        string pageRowClass = "list-group-item d-flex align-items-center";
+                        if (!page.Enabled) {
+                            pageRowClass += " list-group-item-light text-muted";
+                        }
+                        <div @key="page.SitePageId" class="@pageRowClass" style="padding-left: @(48 + indent)px;">
+                            <span style="width:20px; display:inline-block;" class="me-2" aria-hidden="true"></span>
+                            <i class="fas fa-file-alt me-2 text-muted" aria-hidden="true"></i>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center">
+                                    <code class="me-2">@(page.Path)</code>
+                                    @if (!page.Enabled) {
+                                        <span class="badge bg-secondary me-1">Disabled</span>
+                                    }
+                                    @if (page.RequiresAuth) {
+                                        <span class="badge bg-info text-dark me-1" title="Requires authentication">
+                                            <i class="fas fa-lock me-1"></i>Auth
+                                        </span>
+                                    }
+                                </div>
+                                @if (!String.IsNullOrEmpty(page.Title)) {
+                                    <div class="text-muted small">@(page.Title)</div>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-info me-1"
+                                    @onclick="() => PromotePageToSite(site, page)"
+                                    title="@($"Promote {page.Path} into its own Site (e.g. for a virtual sub-app that needs its own auth/schedule)")"
+                                    aria-label="@($"Promote page {page.Path} to a new Site")">
+                                <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                            </button>
+                            <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))"
+                               class="btn btn-sm btn-outline-secondary me-1"
+                               title="@($"Edit page: {page.Path}")"
+                               aria-label="@($"Edit page: {page.Path}")">
+                                <i class="fas fa-cog" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    }
+                }
+            } else {
+                <div class="list-group-item py-2 text-muted small" style="padding-left: @(48 + indent)px;">
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Loading pages...
+                </div>
+            }
+        }
+        @if (isExpanded) {
+            foreach (var child in node.Children.OrderBy(c => c.Label)) {
+                RenderTreeNode(child, depth + 1);
+            }
+        }
+    } else {
+        @* Group node (no site, just a label) — render as a collapsible header *@
+        bool isExpanded = _expandedTreeNodes.Contains(node.Key);
+        int groupTotal = CountDescendants(node);
+        int groupEnabled = CountEnabledDescendants(node);
+        <div class="list-group-item list-group-item-light d-flex align-items-center fw-bold"
+             style="padding-left: @(12 + indent)px;">
+            <button class="btn btn-sm btn-link p-0 me-2 text-dark" style="width:20px;"
+                    @onclick="() => ToggleTreeNode(node.Key)" @onclick:preventDefault="true"
+                    aria-label="@(isExpanded ? "Collapse " + node.Label : "Expand " + node.Label)"
+                    aria-expanded="@isExpanded.ToString().ToLower()">
+                <i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right")" aria-hidden="true"></i>
+            </button>
+            @if (_bulkMode) {
+                <div class="me-2" @onclick:stopPropagation="true">
+                    @{ bool groupAllEnabled = groupEnabled == groupTotal && groupTotal > 0;
+                       bool groupNoneEnabled = groupEnabled == 0; }
+                    <input type="checkbox" class="form-check-input" id="group-check-@node.Key"
+                           aria-label="@($"Select all sites under {node.Label}")"
+                           checked="@groupAllEnabled"
+                           @onchange="@(e => ToggleGroupNode(node, (bool)e.Value!))" />
+                </div>
+            }
+            <i class="fas fa-globe me-2 text-muted" role="button" @onclick="() => ToggleTreeNode(node.Key)"></i>
+            <span role="button" @onclick="() => ToggleTreeNode(node.Key)" class="me-auto">@node.Label</span>
+            <span class="badge bg-light text-dark border ms-2">@groupTotal</span>
+            @if (_bulkMode) {
+                <span class="badge @(groupEnabled == groupTotal ? "bg-success" : groupEnabled > 0 ? "bg-warning text-dark" : "bg-secondary") ms-1"
+                      style="font-size:0.7rem;">@groupEnabled enabled</span>
+                <div class="btn-group ms-2" @onclick:stopPropagation="true">
+                    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.7rem;"
+                            @onclick="() => SetGroupEnabled(node, true)" @onclick:preventDefault="true"
+                            title="Enable all @groupTotal sites under @node.Label">
+                        <i class="fas fa-check-square me-1"></i>All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.7rem;"
+                            @onclick="() => SetGroupEnabled(node, false)" @onclick:preventDefault="true"
+                            title="Disable all @groupTotal sites under @node.Label">
+                        <i class="far fa-square me-1"></i>None
+                    </button>
+                </div>
+            }
+        </div>
+        @if (isExpanded) {
+            foreach (var child in node.Children.OrderBy(c => c.Label)) {
+                RenderTreeNode(child, depth + 1);
+            }
+        }
+    }
+} }
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _validatedUrl = false;
+    private string _pageName = "sites";
+    private string _searchText = "";
+    private string _enabledFilter = "all"; // "all" | "enabled" | "disabled"
+
+    private void SetEnabledFilter(string value)
+    {
+        _enabledFilter = value;
+        StateHasChanged();
+    }
+    private List<DataObjects.Site> _sites = new();
+    private HashSet<Guid> _scanningIds = new();
+    private HashSet<Guid> _queuedIds = new();
+    private Dictionary<Guid, DataObjects.ScanProgress> _scanProgress = new();
+    private Dictionary<Guid, int> _sitePageCounts = new();
+    private Dictionary<Guid, List<DataObjects.SitePage>> _sitePages = new();
+    private HashSet<Guid> _expandedSites = new();
+    private HashSet<string> _expandedTreeNodes = new();
+    private List<SiteTreeNode> _lastTreeRoots = new();
+    private Dictionary<Guid, SiteTreeNode> _nodeMap = new();
+    private bool _treeInitialized = false;
+    private bool _bulkMode = false;
+    private bool _bulkSaving = false;
+    private bool _bulkScanning = false;
+    private System.Threading.Timer? _renderTimer;
+    private bool _renderPending = false;
+    private const int RenderThrottleMs = 300;
+
+    public void Dispose()
+    {
+        _renderTimer?.Dispose();
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+
+        if (_bulkMode) {
+            foreach (var site in _sites) {
+                var state = GetSiteCheckState(site);
+                if (state == "indeterminate") {
+                    // Cannot assign to an optional-chaining expression in JS — that's a
+                    // SyntaxError ("Invalid left-hand side in assignment") which Blazor
+                    // bubbles up as an unhandled component-render exception. Use the same
+                    // var-then-guard pattern as SetGroupIndeterminateState below.
+                    await jsRuntime.InvokeVoidAsync("eval",
+                        $"var el = document.getElementById('site-check-{site.SiteId}'); if (el) el.indeterminate = true;");
+                }
+            }
+            // Set indeterminate on group (domain) checkboxes.
+            foreach (var root in _lastTreeRoots) {
+                await SetGroupIndeterminateState(root);
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        _sitePages.Clear();
+        _expandedSites.Clear();
+        var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+        if (result != null) {
+            _sites = result;
+
+            // Load page counts for each site.
+            _sitePageCounts.Clear();
+            foreach (var site in _sites) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/GetSitePages",
+                    new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePageCounts[site.SiteId] = pages?.Count ?? 0;
+            }
+        }
+        _loading = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Reloads the Sites list and page counts in-place without toggling the page-level
+    /// loading spinner. Used after ScanComplete so newly-discovered disabled sub-sites
+    /// appear in the tree alongside the scan-completion summary update.
+    /// </summary>
+    private async Task RefreshSitesList()
+    {
+        try {
+            var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+            if (result == null) return;
+            _sites = result;
+            _sitePageCounts.Clear();
+            foreach (var site in _sites) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/GetSitePages",
+                    new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePageCounts[site.SiteId] = pages?.Count ?? 0;
+            }
+            _treeInitialized = false; // Force tree rebuild so new Sites appear in the right group.
+            StateHasChanged();
+        } catch { /* best-effort refresh — failures will self-correct on next manual reload */ }
+    }
+
+    private List<DataObjects.Site> GetFilteredSites()
+    {
+        IEnumerable<DataObjects.Site> seq = _sites;
+        if (_enabledFilter == "enabled") {
+            seq = seq.Where(x => x.Enabled);
+        } else if (_enabledFilter == "disabled") {
+            seq = seq.Where(x => !x.Enabled);
+        }
+        if (!String.IsNullOrWhiteSpace(_searchText)) {
+            string search = _searchText.Trim().ToLower();
+            seq = seq.Where(x => x.Name.ToLower().Contains(search) || x.BaseUrl.ToLower().Contains(search));
+        }
+        return seq.OrderBy(x => x.Name).ToList();
+    }
+
+    private void EditSite(Guid siteId)
+    {
+        Helpers.NavigateTo("Settings/EditSite/" + siteId.ToString());
+    }
+
+    private void ViewSiteRuns(Guid siteId)
+    {
+        Helpers.NavigateTo("Settings/SiteRuns/" + siteId.ToString());
+    }
+
+    private async Task DeleteSite(Guid siteId)
+    {
+        Model.ClearMessages();
+        Model.Message_Deleting();
+
+        var deleted = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSites", new List<Guid> { siteId });
+
+        Model.ClearMessages();
+
+        if (deleted != null) {
+            if (deleted.Result) {
+                _sites = _sites.Where(x => x.SiteId != siteId).ToList();
+                StateHasChanged();
+            } else {
+                Model.ErrorMessages(deleted.Messages);
+            }
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private string GetStatusBadge(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) {
+            return "<span class=\"badge bg-info\"><span class=\"spinner-border spinner-border-sm me-1\" role=\"status\"></span>Scanning</span>";
+        }
+        if (!site.LastScanAt.HasValue) {
+            return "<span class=\"badge bg-secondary\">Not Scanned</span>";
+        }
+        if (site.LastCriticalCount > 0) {
+            return "<span class=\"badge bg-danger\">Critical</span>";
+        }
+        if (site.LastViolationCount > 0) {
+            return "<span class=\"badge bg-warning text-dark\">Violations</span>";
+        }
+        return "<span class=\"badge bg-success\">Clean</span>";
+    }
+
+    private async Task ScanNow(Guid siteId)
+    {
+        // Optimistically show as Queued. The actual Scanning badge appears when the
+        // background service broadcasts ScanStarted (handled in SignalRUpdate).
+        _queuedIds.Add(siteId);
+        StateHasChanged();
+
+        var result = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/TriggerScan", siteId);
+        if (result != null && result.ActionResponse != null && !result.ActionResponse.Result) {
+            _queuedIds.Remove(siteId);
+            Model.ErrorMessages(result.ActionResponse.Messages);
+            StateHasChanged();
+        }
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName) { return; }
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanQueued && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _queuedIds.Add(scanRun.SiteId);
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanStarted && update.Object != null) {
+            // Background service picked up a queued scan and started running it.
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _queuedIds.Remove(scanRun.SiteId);
+                    _scanningIds.Add(scanRun.SiteId);
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json, jsonOptions);
+                if (progress != null) {
+                    _queuedIds.Remove(progress.SiteId);
+                    _scanningIds.Add(progress.SiteId);
+                    _scanProgress[progress.SiteId] = progress;
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+                   update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _scanningIds.Remove(scanRun.SiteId);
+                    _queuedIds.Remove(scanRun.SiteId);
+                    _scanProgress.Remove(scanRun.SiteId);
+
+                    // Update just the affected site's summary from the event payload.
+                    var site = _sites.FirstOrDefault(s => s.SiteId == scanRun.SiteId);
+                    if (site != null) {
+                        site.LastScanAt = scanRun.StartedAt;
+                        site.LastScanStatus = scanRun.Status;
+                        site.LastViolationCount = scanRun.TotalViolations;
+                        site.LastCriticalCount = scanRun.CriticalCount;
+                        site.LastScanRunId = scanRun.ScanRunId;
+                    }
+
+                    InvokeAsync(StateHasChanged);
+
+                    // The scan likely discovered new same-host links that became disabled
+                    // top-level Sites — and the page count for the scanned site may have grown.
+                    // Reload the full Sites list so they appear in the tree without manual refresh.
+                    InvokeAsync(async () => {
+                        await RefreshSitesList();
+                    });
+                }
+            } catch { }
+        }
+    }
+
+    private void RequestThrottledRender()
+    {
+        if (_renderPending) return;
+        _renderPending = true;
+        _renderTimer?.Dispose();
+        _renderTimer = new System.Threading.Timer(_ => {
+            _renderPending = false;
+            InvokeAsync(StateHasChanged);
+        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
+    }
+
+    private async Task ToggleExpand(Guid siteId)
+    {
+        if (_expandedSites.Contains(siteId)) {
+            _expandedSites.Remove(siteId);
+        } else {
+            _expandedSites.Add(siteId);
+            if (!_sitePages.ContainsKey(siteId)) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                    "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = siteId });
+                _sitePages[siteId] = pages ?? new();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds a Site that this site is a "same-host child of" — i.e. another site whose
+    /// BaseUrl is a strict URL prefix of this one (e.g. flex.em.wsu.edu is a parent of
+    /// flex.em.wsu.edu/Touchpoints). Returns null if no such parent exists. Used to
+    /// decide whether to show the "Convert to Page" button on a Site row.
+    /// </summary>
+    private DataObjects.Site? FindSameHostParentSite(DataObjects.Site site)
+    {
+        try {
+            Uri thisUri = new Uri(site.BaseUrl.TrimEnd('/'));
+            string thisNormalized = thisUri.AbsoluteUri.TrimEnd('/').ToLowerInvariant();
+
+            // Walk all sites to find the LONGEST prefix match — that's the closest parent.
+            DataObjects.Site? best = null;
+            int bestLen = -1;
+            foreach (var candidate in _sites) {
+                if (candidate.SiteId == site.SiteId) continue;
+                if (candidate.Deleted) continue;
+                string candNorm = candidate.BaseUrl.TrimEnd('/').ToLowerInvariant();
+                if (candNorm.Length >= thisNormalized.Length) continue;
+                // Must match host AND be a prefix terminating on a path boundary (or origin).
+                if (!thisNormalized.StartsWith(candNorm, StringComparison.OrdinalIgnoreCase)) continue;
+                char nextChar = thisNormalized[candNorm.Length];
+                if (nextChar != '/' && nextChar != '?' && nextChar != '#') continue;
+                if (candNorm.Length > bestLen) {
+                    best = candidate;
+                    bestLen = candNorm.Length;
+                }
+            }
+            return best;
+        } catch {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Promotes a SitePage into its own Site. Used when a discovered "page" is actually
+    /// a virtual sub-app that warrants its own auth/schedule/scan policy. The new Site
+    /// inherits the page's full URL (parent.BaseUrl + page.Path) as its BaseUrl. The
+    /// original SitePage is deleted from the parent.
+    /// </summary>
+    private async Task PromotePageToSite(DataObjects.Site parentSite, DataObjects.SitePage page)
+    {
+        try {
+            string fullUrl = (parentSite.BaseUrl.TrimEnd('/') + (page.Path.StartsWith("/") ? page.Path : "/" + page.Path)).TrimEnd('/');
+            string newName = string.IsNullOrWhiteSpace(page.Title)
+                ? parentSite.Name + " / " + page.Path.Trim('/').Split('/').LastOrDefault()
+                : page.Title;
+
+            var newSite = new DataObjects.Site {
+                SiteId = Guid.Empty,
+                TenantId = parentSite.TenantId,
+                Name = newName,
+                BaseUrl = fullUrl,
+                Enabled = page.Enabled,
+                PublicVisible = true,
+                MaxConcurrency = parentSite.MaxConcurrency > 0 ? parentSite.MaxConcurrency : 5,
+            };
+
+            var saved = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites",
+                new List<DataObjects.Site> { newSite });
+            if (saved == null || !saved.Any()) {
+                Model.UnknownError();
+                return;
+            }
+
+            // Delete the original page on the parent.
+            await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSitePages",
+                new List<Guid> { page.SitePageId });
+
+            // Refresh local state.
+            if (_sitePages.ContainsKey(parentSite.SiteId)) {
+                _sitePages[parentSite.SiteId].RemoveAll(p => p.SitePageId == page.SitePageId);
+                _sitePageCounts[parentSite.SiteId] = _sitePages[parentSite.SiteId].Count;
+            }
+            await LoadData();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog("PromotePageToSite failed: " + ex.Message);
+            Model.UnknownError();
+        }
+    }
+
+    /// <summary>
+    /// Confirmation wrapper around ConvertSiteToPage. Shows what will happen
+    /// (delete this site's scan history, move N pages over) before doing it.
+    /// </summary>
+    private async Task ConfirmConvertSiteToPage(DataObjects.Site site, DataObjects.Site parentSite)
+    {
+        int pageCount = _sitePageCounts.ContainsKey(site.SiteId) ? _sitePageCounts[site.SiteId] : 0;
+        string msg = $"Convert '{site.Name}' into a page of '{parentSite.Name}'?\n\n"
+            + $"• A new page will be created on '{parentSite.Name}' for this site's URL.\n"
+            + (pageCount > 0 ? $"• {pageCount} pages currently on '{site.Name}' will be moved to '{parentSite.Name}' (with paths re-rooted).\n" : "")
+            + $"• '{site.Name}' will be deleted, including any scan history.\n\n"
+            + $"Continue?";
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", msg);
+        if (!confirmed) return;
+        await ConvertSiteToPage(site, parentSite);
+    }
+
+    private async Task ConvertSiteToPage(DataObjects.Site site, DataObjects.Site parentSite)
+    {
+        try {
+            // The path-suffix that distinguishes this site from its parent.
+            string parentBase = parentSite.BaseUrl.TrimEnd('/');
+            string thisBase = site.BaseUrl.TrimEnd('/');
+            string suffix = "/";
+            if (thisBase.StartsWith(parentBase, StringComparison.OrdinalIgnoreCase)
+                && thisBase.Length > parentBase.Length) {
+                suffix = thisBase.Substring(parentBase.Length);
+                if (!suffix.StartsWith("/")) suffix = "/" + suffix;
+            }
+
+            // Load this site's existing pages so we can move them too.
+            if (!_sitePages.ContainsKey(site.SiteId)) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                    "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePages[site.SiteId] = pages ?? new();
+            }
+
+            // Load parent's existing pages for de-dup.
+            var parentPages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = parentSite.SiteId }) ?? new();
+            HashSet<string> existingPaths = new HashSet<string>(parentPages.Select(p => p.Path), StringComparer.OrdinalIgnoreCase);
+
+            int sortOrder = parentPages.Count;
+            List<DataObjects.SitePage> toAdd = new List<DataObjects.SitePage>();
+
+            // Add the site's BaseUrl itself as a page (e.g. "/Touchpoints").
+            if (!existingPaths.Contains(suffix)) {
+                sortOrder++;
+                toAdd.Add(new DataObjects.SitePage {
+                    SitePageId = Guid.Empty,
+                    SiteId = parentSite.SiteId,
+                    Path = suffix,
+                    Title = site.Name,
+                    Enabled = site.Enabled,
+                    RequiresAuth = false,
+                    SortOrder = sortOrder,
+                });
+                existingPaths.Add(suffix);
+            }
+
+            // Add each of the converted site's pages with paths re-rooted under the parent.
+            foreach (var p in _sitePages[site.SiteId]) {
+                string childPath = p.Path.StartsWith("/") ? p.Path : "/" + p.Path;
+                string newPath = (suffix.TrimEnd('/') + childPath);
+                if (string.IsNullOrEmpty(newPath)) newPath = "/";
+                if (existingPaths.Contains(newPath)) continue;
+                sortOrder++;
+                toAdd.Add(new DataObjects.SitePage {
+                    SitePageId = Guid.Empty,
+                    SiteId = parentSite.SiteId,
+                    Path = newPath,
+                    Title = p.Title,
+                    Enabled = p.Enabled,
+                    RequiresAuth = p.RequiresAuth,
+                    SortOrder = sortOrder,
+                });
+                existingPaths.Add(newPath);
+            }
+
+            if (toAdd.Any()) {
+                await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", toAdd);
+            }
+
+            // Delete the original site (cascades scan history per existing FKs).
+            await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSites",
+                new List<Guid> { site.SiteId });
+
+            await LoadData();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog("ConvertSiteToPage failed: " + ex.Message);
+            Model.UnknownError();
+        }
+    }
+
+    private void ToggleSite(DataObjects.Site site, bool enabled)
+    {
+        // Per-row toggle affects only this single site. Cascading to descendants
+        // is done via the "Enable All Under" / "Disable All Under" toolbar buttons.
+        SetSiteEnabled(site, enabled);
+    }
+
+    private void SetSiteEnabled(DataObjects.Site site, bool enabled)
+    {
+        site.Enabled = enabled;
+        if (_sitePages.ContainsKey(site.SiteId)) {
+            foreach (var page in _sitePages[site.SiteId]) {
+                page.Enabled = enabled;
+            }
+        }
+    }
+
+    private void SetDescendantsEnabled(SiteTreeNode node, bool enabled)
+    {
+        foreach (var child in node.Children) {
+            if (child.Site != null) {
+                SetSiteEnabled(child.Site, enabled);
+            }
+            SetDescendantsEnabled(child, enabled);
+        }
+    }
+
+    private void EnableSubSites(SiteTreeNode node)
+    {
+        SetDescendantsEnabled(node, true);
+    }
+
+    private void DisableSubSites(SiteTreeNode node)
+    {
+        SetDescendantsEnabled(node, false);
+    }
+
+    private string GetSiteCheckState(DataObjects.Site site)
+    {
+        if (!_sitePages.ContainsKey(site.SiteId)) {
+            return site.Enabled ? "checked" : "unchecked";
+        }
+        var pages = _sitePages[site.SiteId];
+        if (!pages.Any()) return site.Enabled ? "checked" : "unchecked";
+        bool allOn = site.Enabled && pages.All(p => p.Enabled);
+        bool allOff = !site.Enabled && pages.All(p => !p.Enabled);
+        if (allOn) return "checked";
+        if (allOff) return "unchecked";
+        return "indeterminate";
+    }
+
+    private async Task BulkSave()
+    {
+        _bulkSaving = true;
+        StateHasChanged();
+
+        await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites", _sites);
+
+        var allPages = _sitePages.Values.SelectMany(p => p).ToList();
+        if (allPages.Any()) {
+            await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", allPages);
+        }
+
+        _bulkSaving = false;
+        _bulkMode = false;
+        await LoadData();
+    }
+
+    private void BulkEnableAll()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = true;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = true;
+            }
+        }
+    }
+
+    private void BulkDisableAll()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = false;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = false;
+            }
+        }
+    }
+
+    private void BulkInvertAll()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = !site.Enabled;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void ToggleBulkMode()
+    {
+        _bulkMode = !_bulkMode;
+    }
+
+    private void ToggleGroupNode(SiteTreeNode groupNode, bool enabled)
+    {
+        SetGroupEnabled(groupNode, enabled);
+    }
+
+    private void SetGroupEnabled(SiteTreeNode groupNode, bool enabled)
+    {
+        // Enable/disable the group node's own site (if it has one).
+        if (groupNode.Site != null) {
+            SetSiteEnabled(groupNode.Site, enabled);
+        }
+        // Cascade to all descendants.
+        SetDescendantsEnabled(groupNode, enabled);
+    }
+
+    private int CountEnabledDescendants(SiteTreeNode node)
+    {
+        int count = 0;
+        foreach (var child in node.Children) {
+            if (child.Site != null && child.Site.Enabled) count++;
+            count += CountEnabledDescendants(child);
+        }
+        return count;
+    }
+
+    // ── Smart Select methods ──
+
+    private void SelectByStatus_Enable(bool criticalOnly)
+    {
+        foreach (var site in _sites) {
+            if (criticalOnly) {
+                site.Enabled = site.LastCriticalCount > 0;
+            }
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableViolations()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = site.LastViolationCount > 0;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableClean()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = site.LastScanAt.HasValue && site.LastViolationCount == 0;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableNotScanned()
+    {
+        foreach (var site in _sites) {
+            site.Enabled = !site.LastScanAt.HasValue;
+            if (_sitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in _sitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_DisableClean()
+    {
+        foreach (var site in _sites) {
+            if (site.LastScanAt.HasValue && site.LastViolationCount == 0) {
+                site.Enabled = false;
+                if (_sitePages.ContainsKey(site.SiteId)) {
+                    foreach (var page in _sitePages[site.SiteId]) page.Enabled = false;
+                }
+            }
+        }
+    }
+
+    private void SelectByStatus_DisableNotScanned()
+    {
+        foreach (var site in _sites) {
+            if (!site.LastScanAt.HasValue) {
+                site.Enabled = false;
+                if (_sitePages.ContainsKey(site.SiteId)) {
+                    foreach (var page in _sitePages[site.SiteId]) page.Enabled = false;
+                }
+            }
+        }
+    }
+
+    private async Task ScanAllEnabled()
+    {
+        _bulkScanning = true;
+        StateHasChanged();
+        var toScan = _sites.Where(s => s.Enabled
+            && !_scanningIds.Contains(s.SiteId)
+            && !_queuedIds.Contains(s.SiteId)).ToList();
+        // Optimistically mark all as queued so the UI shows the queued state immediately.
+        // The background service flips them to Scanning one-at-a-time via ScanStarted SignalR.
+        foreach (var site in toScan) {
+            _queuedIds.Add(site.SiteId);
+        }
+        StateHasChanged();
+        // Fire all queue requests concurrently — each creates a "Queued" ScanRun.
+        // The background service processes them one at a time.
+        var tasks = toScan.Select(site => QueueScan(site.SiteId)).ToList();
+        await Task.WhenAll(tasks);
+        _bulkScanning = false;
+        StateHasChanged();
+    }
+
+    private async Task ScanSelected()
+    {
+        _bulkScanning = true;
+        StateHasChanged();
+        var toScan = _sites.Where(s => s.Enabled
+            && !_scanningIds.Contains(s.SiteId)
+            && !_queuedIds.Contains(s.SiteId)).ToList();
+        foreach (var site in toScan) {
+            _queuedIds.Add(site.SiteId);
+        }
+        StateHasChanged();
+        var tasks = toScan.Select(site => QueueScan(site.SiteId)).ToList();
+        await Task.WhenAll(tasks);
+        _bulkScanning = false;
+        StateHasChanged();
+    }
+
+    private async Task QueueScan(Guid siteId)
+    {
+        var result = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/TriggerScan", siteId);
+        if (result != null && result.ActionResponse != null && !result.ActionResponse.Result) {
+            // Queue request rejected (e.g. already running) — clear the optimistic queued mark.
+            _queuedIds.Remove(siteId);
+        }
+    }
+
+    // ================================================================
+    // Tree model and building logic
+    // ================================================================
+
+    private class SiteTreeNode
+    {
+        public string Key { get; set; } = "";
+        public string Label { get; set; } = "";
+        public DataObjects.Site? Site { get; set; }
+        public List<SiteTreeNode> Children { get; set; } = new();
+    }
+
+    private void ToggleTreeNode(string key)
+    {
+        if (!_expandedTreeNodes.Remove(key)) {
+            _expandedTreeNodes.Add(key);
+        }
+    }
+
+    private void ExpandAllNodes()
+    {
+        CollectAllNodeKeys(_lastTreeRoots, _expandedTreeNodes);
+    }
+
+    private void CollapseAllNodes()
+    {
+        _expandedTreeNodes.Clear();
+    }
+
+    private void CollectAllNodeKeys(List<SiteTreeNode> nodes, HashSet<string> keys)
+    {
+        foreach (var node in nodes) {
+            if (node.Children.Any()) {
+                keys.Add(node.Key);
+                CollectAllNodeKeys(node.Children, keys);
+            }
+        }
+    }
+
+    private int CountDescendants(SiteTreeNode node)
+    {
+        int count = 0;
+        foreach (var child in node.Children) {
+            if (child.Site != null) count++;
+            count += CountDescendants(child);
+        }
+        return count;
+    }
+
+    private async Task SetGroupIndeterminateState(SiteTreeNode node)
+    {
+        if (node.Site == null && node.Children.Any()) {
+            int total = CountDescendants(node);
+            int enabled = CountEnabledDescendants(node);
+            if (enabled > 0 && enabled < total) {
+                await jsRuntime.InvokeVoidAsync("eval",
+                    $"var el = document.getElementById('group-check-{node.Key}'); if (el) el.indeterminate = true;");
+            }
+        }
+        foreach (var child in node.Children) {
+            await SetGroupIndeterminateState(child);
+        }
+    }
+
+    /// <summary>
+    /// Builds a hierarchical tree from the flat list of sites.
+    /// Sites are grouped by domain, then nested by URL path segments.
+    /// A site B is a child of site A if B's URL starts with A's URL.
+    /// Subdomain sites (e.g. edit.em.wsu.edu) are children of their parent domain site (em.wsu.edu).
+    /// </summary>
+    private List<SiteTreeNode> BuildSiteTree()
+    {
+        var filtered = GetFilteredSites();
+        if (!filtered.Any()) return new();
+
+        // Parse each site URL into parts for comparison.
+        var parsed = filtered.Select(s => {
+            try {
+                var uri = new Uri(s.BaseUrl.TrimEnd('/'));
+                return new { Site = s, Uri = uri, NormalizedUrl = uri.ToString().TrimEnd('/').ToLowerInvariant() };
+            } catch {
+                return new { Site = s, Uri = (Uri?)null, NormalizedUrl = s.BaseUrl.ToLowerInvariant() };
+            }
+        }).Where(x => x.Uri != null).ToList();
+
+        // Sort by URL length so parents come before children.
+        parsed.Sort((a, b) => a.NormalizedUrl!.Length.CompareTo(b.NormalizedUrl!.Length));
+
+        // Build a flat list of tree nodes, assigning each to its closest parent.
+        var nodeMap = new Dictionary<string, SiteTreeNode>(); // key = normalized URL
+        var roots = new List<SiteTreeNode>();
+
+        foreach (var item in parsed) {
+            var node = new SiteTreeNode {
+                Key = "site-" + item.Site.SiteId,
+                Label = item.Site.Name,
+                Site = item.Site,
+            };
+
+            // Find the closest ancestor.
+            SiteTreeNode? parent = null;
+
+            // 1. Check for path-based parent: same host, shorter path.
+            string host = item.Uri!.Host.ToLowerInvariant();
+            string path = item.Uri.AbsolutePath.TrimEnd('/');
+            if (!String.IsNullOrEmpty(path) && path != "/") {
+                // Walk up path segments to find a parent.
+                string[] segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                for (int i = segments.Length - 1; i >= 0; i--) {
+                    string parentPath = i == 0 ? "" : "/" + String.Join("/", segments.Take(i));
+                    string parentUrl = (item.Uri.Scheme + "://" + host + parentPath).ToLowerInvariant();
+                    if (nodeMap.TryGetValue(parentUrl, out var pathParent)) {
+                        parent = pathParent;
+                        break;
+                    }
+                }
+            }
+
+            // 2. If no path parent, check for subdomain parent.
+            if (parent == null) {
+                string[] hostParts = host.Split('.');
+                for (int i = 1; i < hostParts.Length - 1; i++) {
+                    string parentHost = String.Join(".", hostParts.Skip(i));
+                    // Try with scheme.
+                    string parentUrl = (item.Uri.Scheme + "://" + parentHost).ToLowerInvariant();
+                    if (nodeMap.TryGetValue(parentUrl, out var subParent)) {
+                        parent = subParent;
+                        break;
+                    }
+                    // Also try https specifically.
+                    parentUrl = ("https://" + parentHost).ToLowerInvariant();
+                    if (nodeMap.TryGetValue(parentUrl, out subParent)) {
+                        parent = subParent;
+                        break;
+                    }
+                }
+            }
+
+            if (parent != null) {
+                parent.Children.Add(node);
+            } else {
+                roots.Add(node);
+            }
+
+            nodeMap[item.NormalizedUrl!] = node;
+        }
+
+        // Post-process: group orphan root nodes by base domain.
+        // When multiple sites share a base domain (e.g. app.smartsheet.com,
+        // community.smartsheet.com) but the bare domain isn't a site, create
+        // a virtual grouping node so they appear nested together.
+        roots = GroupRootsByBaseDomain(roots);
+
+        // Build SiteId → node lookup for cascading.
+        _nodeMap.Clear();
+        BuildNodeMap(roots);
+
+        // Auto-expand root nodes on first build only.
+        if (!_treeInitialized) {
+            _treeInitialized = true;
+            foreach (var root in roots) {
+                if (root.Children.Any()) {
+                    _expandedTreeNodes.Add(root.Key);
+                }
+            }
+        }
+
+        _lastTreeRoots = roots.OrderBy(r => r.Label).ToList();
+        return _lastTreeRoots;
+    }
+
+    private void BuildNodeMap(List<SiteTreeNode> nodes)
+    {
+        foreach (var node in nodes) {
+            if (node.Site != null) {
+                _nodeMap[node.Site.SiteId] = node;
+            }
+            BuildNodeMap(node.Children);
+        }
+    }
+
+    /// <summary>
+    /// Groups root-level tree nodes by their registrable base domain.
+    /// If multiple roots share the same base domain, a virtual parent node is
+    /// created so they appear nested (e.g. app.smartsheet.com and
+    /// community.smartsheet.com → grouped under "smartsheet.com").
+    /// </summary>
+    private List<SiteTreeNode> GroupRootsByBaseDomain(List<SiteTreeNode> roots)
+    {
+        var grouped = new Dictionary<string, List<SiteTreeNode>>(StringComparer.OrdinalIgnoreCase);
+        var ungrouped = new List<SiteTreeNode>();
+
+        foreach (var root in roots) {
+            string baseDomain = "";
+            if (root.Site != null) {
+                try {
+                    var host = new Uri(root.Site.BaseUrl).Host.ToLowerInvariant();
+                    if (host.StartsWith("www.")) host = host.Substring(4);
+                    baseDomain = GetBaseDomain(host);
+                } catch { }
+            }
+
+            if (string.IsNullOrEmpty(baseDomain)) {
+                ungrouped.Add(root);
+            } else {
+                if (!grouped.ContainsKey(baseDomain))
+                    grouped[baseDomain] = new List<SiteTreeNode>();
+                grouped[baseDomain].Add(root);
+            }
+        }
+
+        var result = new List<SiteTreeNode>(ungrouped);
+        foreach (var kvp in grouped) {
+            if (kvp.Value.Count == 1) {
+                // Only one site for this domain — keep at root level.
+                result.Add(kvp.Value[0]);
+            } else {
+                // Multiple sites share the domain — create a virtual parent.
+                var virtualNode = new SiteTreeNode {
+                    Key = "domain-" + kvp.Key,
+                    Label = kvp.Key,
+                    Site = null,
+                    Children = kvp.Value.OrderBy(x => x.Label).ToList()
+                };
+                result.Add(virtualNode);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Extracts the registrable base domain from a hostname.
+    /// e.g. "app.smartsheet.com" → "smartsheet.com",
+    ///      "em.wsu.edu" → "wsu.edu",
+    ///      "foo.co.uk" → "foo.co.uk".
+    /// </summary>
+    private string GetBaseDomain(string host)
+    {
+        var parts = host.Split('.');
+        if (parts.Length <= 2) return host;
+
+        // Common multi-part TLD suffixes where the registrable domain
+        // includes one extra label (e.g. example.co.uk).
+        var multiPartTlds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+            "co.uk", "org.uk", "ac.uk", "gov.uk",
+            "com.au", "org.au", "edu.au",
+            "co.nz", "org.nz",
+            "co.jp", "or.jp", "ne.jp",
+            "com.br", "org.br",
+            "co.in", "org.in",
+            "co.za",
+        };
+
+        string lastTwo = parts[^2] + "." + parts[^1];
+        if (multiPartTlds.Contains(lastTwo) && parts.Length > 3) {
+            return parts[^3] + "." + lastTwo;
+        }
+
+        return parts[^2] + "." + parts[^1];
+    }
+}

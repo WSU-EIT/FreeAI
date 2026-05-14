@@ -1,0 +1,85 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 284,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Everett textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Everett textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://wsubookie.bncollege.com/course-material/course-finder\u0022\u003EEverett textbo...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Global campus textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Global campus textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://online.wsu.edu/currentStudent/courses/textbooks.aspx\u0022\u003EGlobal Ca...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Pullman textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Pullman textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://wsubookie.bncollege.com/webapp/wcs/stores/servlet/BNCBHomePage?storeI...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Spokane textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Spokane textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://spokane.wsu.edu/current/the-bookie/\u0022\u003ESpokane textbooks\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Tri-Cities textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Tri-Cities textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://wsubookie.bncollege.com/ \u0022\u003ETri-Cities textbooks\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-valid-attr",
+      "CanonicalRuleId": "aria-valid-attr",
+      "Severity": "critical",
+      "Message": "ARIA attributes must conform to valid names",
+      "Selector": "a[aria-lable=\u0022Vancouver textbooks\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-main\u0022 aria-lable=\u0022Vancouver textbooks\u0022 target=\u0022_blank\u0022 href=\u0022https://wsubookie.bncollege.com/\u0022\u003EVancouver textbooks\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-valid-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "select-name",
+      "CanonicalRuleId": "select-name",
+      "Severity": "critical",
+      "Message": "Select element must have an accessible name",
+      "Selector": "#OffCampusOrSiteBasedCourses",
+      "Snippet": "\u003Cselect id=\u0022OffCampusOrSiteBasedCourses\u0022 data-bind=\u0022options: siteTerms,\n\t\t\t\t\t\t   optionsText: \u0027label\u0027,\n\t\t\t\t\t\t   optionsValue: \u0027value\u0027,\n\t\t\t\t\t\t\toptionsB...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

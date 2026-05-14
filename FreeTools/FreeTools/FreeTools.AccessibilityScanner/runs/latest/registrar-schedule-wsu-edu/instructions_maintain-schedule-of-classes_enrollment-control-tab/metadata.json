@@ -1,0 +1,74 @@
+{
+  "PagePath": "/instructions/maintain-schedule-of-classes/enrollment-control-tab/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/maintain-schedule-of-classes/enrollment-control-tab/",
+  "FinalUrl": null,
+  "Title": "Enrollment Control tab | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 694132,
+  "ScreenshotSizeBytes": 127420,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 127420
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759546/enrollment-control-tab.jpg?width=714\u0026height=374\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/nbxf2eqv/relatedcontent2022.png?rmode=max\u0026width=372\u0026height=154",
+      "AltText": "Related content"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/duoj3nka/mscmeetings2022.png?rmode=max\u0026width=500",
+      "AltText": "Meetings tab"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759563/meetings-tab-combined-section.jpg?width=843\u0026height=118\u0026mode=max",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:24:26.4933945Z"
+}

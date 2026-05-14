@@ -1,0 +1,204 @@
+{
+  "TotalViolations": 8,
+  "CriticalCount": 0,
+  "SeriousCount": 4,
+  "ModerateCount": 4,
+  "MinorCount": 0,
+  "AxeCount": 0,
+  "HtmlCheckCount": 4,
+  "HtmlCsCount": 0,
+  "IbmCount": 4,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_single",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader aria-label=\u0022WSU system\u0022 class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main skip-to-menu-desktop\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/button[1]",
+          "Snippet": "\u003Cbutton id=\u0022open-modal\u0022 data-panel=\u0022wsu-quicklinks-panel\u0022 class=\u0022wsu-header-utility-bar__quicklinks wsu-slide-in-panel--open\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "fieldset-missing",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "fieldset-missing",
+          "CanonicalRuleId": "fieldset-missing",
+          "Severity": "moderate",
+          "Message": "Radio/checkbox group is not wrapped in a fieldset",
+          "Selector": "",
+          "Snippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_child_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_child_valid",
+          "CanonicalRuleId": "aria_child_valid",
+          "Severity": "moderate",
+          "Message": "The element with role \u0022list\u0022 does not own any child element with any of the following role(s): \u0022listitem\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/ul[2]",
+          "Snippet": "\u003Cul class=\u0022wsu-social-icons\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

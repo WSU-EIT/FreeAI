@@ -1,0 +1,378 @@
+﻿@implements IDisposable
+@using Humanizer
+@inject BlazorDataModel Model
+
+@{
+    // This component is used to display application-specific items on the about page.
+
+    <h1 class="page-title">
+        <Icon Name="About" />
+        About FreeA11yChecker
+    </h1>
+
+    <!-- Overview -->
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h5 mb-0">Overview</h2>
+        </div>
+        <div class="card-body">
+            <p>
+                <strong>FreeA11yChecker</strong> is a WCAG 2.2 AA accessibility compliance scanning
+                and reporting platform. It automates web accessibility auditing using multiple
+                independent scanning engines, generates visual evidence through screenshots and
+                simulations, and tracks compliance progress over time.
+            </p>
+            <p>
+                Built on <strong>.NET 10 and Blazor WebAssembly</strong>,
+                FreeA11yChecker provides both a web-based GUI for site management, scheduling,
+                and dashboards, and a standalone Console CLI scanner that shares the same engine.
+            </p>
+        </div>
+    </div>
+
+    <!-- Compliance Targets -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Compliance Targets</h2>
+        </div>
+        <div class="card-body">
+            <p>FreeA11yChecker is designed to demonstrate conformance under three overlapping mandates:</p>
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mandate</th>
+                        <th>Standard</th>
+                        <th>Deadline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Federal DOJ ADA Title II</td>
+                        <td>WCAG 2.1 AA</td>
+                        <td>April 24, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>WA State WATech USER-01</td>
+                        <td>WCAG 2.2 AA</td>
+                        <td>July 1, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>WSU UPPM 10.45</td>
+                        <td>WCAG 2.2 AA</td>
+                        <td>July 1, 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-muted mt-2 mb-0">
+                Targeting <strong>WCAG 2.2 AA</strong> satisfies all three mandates.
+            </p>
+        </div>
+    </div>
+
+    <!-- Scanning Engines -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Scanning Engines</h2>
+        </div>
+        <div class="card-body">
+            <p>
+                All engines are free and require no API keys. Each provides an independent perspective
+                on accessibility issues, and results are merged via cross-tool consensus scoring with
+                canonical rule mapping.
+            </p>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Engine</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>axe-core 4.10.2</strong></td>
+                        <td>JS injection via Playwright</td>
+                        <td>Industry-standard engine. Zero false positives philosophy. Full WCAG 2.0, 2.1, and 2.2 rule coverage.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HTML_CodeSniffer</strong></td>
+                        <td>JS injection via Playwright</td>
+                        <td>Pa11y's underlying engine. Provides a second independent rule set with complementary coverage.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>IBM Equal Access</strong></td>
+                        <td>JS injection via Playwright</td>
+                        <td>IBM's open-source accessibility checker. Offers a third perspective on compliance.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>QuickPeek Overlay</strong></td>
+                        <td>DOM query injection</td>
+                        <td>42 clean-room DOM query checks with categorized visual icons (errors, alerts, features, structural, ARIA).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>htmlcheck</strong></td>
+                        <td>Regex pattern analysis</td>
+                        <td>20 regex-based HTML pattern rules. Fast structural checks that don't require a live DOM.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mb-0">
+                Cross-tool <strong>consensus scoring</strong> normalizes vendor-specific rule IDs into
+                canonical identifiers and ranks findings by frequency and severity across all engines.
+            </p>
+        </div>
+    </div>
+
+    <!-- Screenshots & Simulations -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Screenshots and Simulations</h2>
+        </div>
+        <div class="card-body">
+            <p>Each scanned page produces <strong>15 screenshots</strong> for visual evidence and review:</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6">Page Capture</h3>
+                    <ul class="mb-3">
+                        <li>Page loaded (with content expanded)</li>
+                    </ul>
+                    <h3 class="h6">Tool Overlay Screenshots (5)</h3>
+                    <ul class="mb-3">
+                        <li>axe-core results overlay</li>
+                        <li>QuickPeek accessibility overlay</li>
+                        <li>HTML_CodeSniffer overlay</li>
+                        <li>IBM Equal Access overlay</li>
+                        <li>Structural elements overlay</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6">Color Blindness Simulations (7)</h3>
+                    <ul class="mb-3">
+                        <li>Protanopia (no red perception)</li>
+                        <li>Deuteranopia (no green perception)</li>
+                        <li>Tritanopia (no blue perception)</li>
+                        <li>Achromatopsia (total color blindness)</li>
+                        <li>Protanomaly (weak red perception)</li>
+                        <li>Deuteranomaly (weak green perception)</li>
+                        <li>Tritanomaly (weak blue perception)</li>
+                    </ul>
+                    <h3 class="h6">Assistive Technology Views</h3>
+                    <ul class="mb-0">
+                        <li>Screen reader text view</li>
+                        <li>Page structure/landmark view</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Features</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6">Public Compliance Dashboard</h3>
+                    <ul>
+                        <li>No login required — designed for auditors and stakeholders</li>
+                        <li>Per-site compliance status with violation counts</li>
+                        <li>Drill down to individual page results and screenshots</li>
+                    </ul>
+                    <h3 class="h6">Site Management</h3>
+                    <ul>
+                        <li>Add, configure, and manage sites with page-level granularity</li>
+                        <li>Scheduled scanning via cron expressions</li>
+                        <li>Manual scan triggering with real-time SignalR progress</li>
+                        <li>Encrypted credential storage (AES-256) for authenticated scanning</li>
+                    </ul>
+                    <h3 class="h6">Reporting</h3>
+                    <ul>
+                        <li>Trend reports with Highcharts (violations over time, severity breakdown)</li>
+                        <li>VPAT/ACR audit report generation</li>
+                        <li>Per-site WCAG criterion compliance grid (pass/fail/untested)</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6">Manual Testing Support</h3>
+                    <ul>
+                        <li>Manual WCAG checklist (ManualCheckWizard) for the 22 criteria that cannot be automated</li>
+                        <li>Per-criterion status tracking (Pass / Fail / Not Tested / N/A) with notes</li>
+                    </ul>
+                    <h3 class="h6">Standalone Console CLI</h3>
+                    <ul>
+                        <li>Same scanning engine, no web app required</li>
+                        <li>Command-line scanning for CI/CD pipelines and batch processing</li>
+                        <li>JSON and Markdown report output</li>
+                    </ul>
+                    <h3 class="h6">Screenshot Gallery</h3>
+                    <ul>
+                        <li>Reusable component displaying all 15 screenshots per page</li>
+                        <li>Lightbox zoom for detailed review</li>
+                        <li>Before/after snapshot comparison for remediation verification</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WCAG Coverage -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">WCAG 2.2 AA Coverage</h2>
+        </div>
+        <div class="card-body">
+            <p>
+                WCAG 2.2 defines <strong>50 criteria</strong> at Level A and AA. No automated tool
+                covers more than approximately 44% of these criteria — this is a well-known limitation
+                of automated accessibility testing.
+            </p>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="card border-success">
+                        <div class="card-body text-center py-3">
+                            <div class="h2 text-success mb-1">28</div>
+                            <div class="text-muted">criteria with automated coverage</div>
+                            <small class="text-muted">At least one engine provides full or partial testing</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-warning">
+                        <div class="card-body text-center py-3">
+                            <div class="h2 mb-1" style="color: #b38600;">22</div>
+                            <div class="text-muted">criteria require manual testing</div>
+                            <small class="text-muted">Tracked via the ManualCheckWizard</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Engine</th>
+                        <th>Full Coverage</th>
+                        <th>Partial Coverage</th>
+                        <th>No Coverage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>axe-core</td>
+                        <td>17</td>
+                        <td>5</td>
+                        <td>28</td>
+                    </tr>
+                    <tr>
+                        <td>HTML_CodeSniffer</td>
+                        <td>13</td>
+                        <td>10</td>
+                        <td>27</td>
+                    </tr>
+                    <tr>
+                        <td>IBM Equal Access</td>
+                        <td>16</td>
+                        <td>7</td>
+                        <td>27</td>
+                    </tr>
+                    <tr>
+                        <td>htmlcheck (custom)</td>
+                        <td>10</td>
+                        <td>3</td>
+                        <td>37</td>
+                    </tr>
+                    <tr>
+                        <td>QuickPeek overlay (custom)</td>
+                        <td>9</td>
+                        <td>2</td>
+                        <td>39</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Architecture</h2>
+        </div>
+        <div class="card-body">
+            <p>FreeA11yChecker is structured as a shared scanning library with two interfaces:</p>
+            <table class="table table-sm table-bordered mb-3">
+                <thead class="table-light">
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>FreeA11yChecker.Scanner</strong></td>
+                        <td>Shared library containing all scanning engines, screenshot capture, CVD simulation, consensus scoring, and report generation.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Console CLI</strong></td>
+                        <td>Command-line interface for direct scanning without the web application. Suitable for CI/CD pipelines and batch operations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Web Application</strong></td>
+                        <td>Full web GUI for site management, scan scheduling, real-time progress monitoring, dashboards, trend reporting, and audit export.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mb-0">
+                The web application exposes both <strong>authenticated endpoints</strong> (site management,
+                scan triggering, audit export) and <strong>public endpoints</strong> (compliance dashboard,
+                scan results, screenshots) accessible without login for auditor review.
+            </p>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Technology Stack</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6">Backend</h3>
+                    <ul>
+                        <li>.NET 10</li>
+                        <li>Entity Framework Core</li>
+                        <li>SignalR (real-time scan progress)</li>
+                        <li>Playwright (browser automation and JS injection)</li>
+                        <li>QuestPDF (audit report generation)</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6">Frontend</h3>
+                    <ul>
+                        <li>Blazor WebAssembly</li>
+                        <li>Bootstrap</li>
+                        <li>Highcharts (trend visualization)</li>
+                    </ul>
+                    <h3 class="h6">Scanning Engines (JS Injection)</h3>
+                    <ul>
+                        <li>axe-core</li>
+                        <li>HTML_CodeSniffer</li>
+                        <li>IBM Equal Access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    public void Dispose() {
+        Model.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += StateHasChanged;
+    }
+}

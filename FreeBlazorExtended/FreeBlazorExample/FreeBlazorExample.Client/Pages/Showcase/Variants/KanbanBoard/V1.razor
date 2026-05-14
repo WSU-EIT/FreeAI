@@ -1,0 +1,95 @@
+@page "/showcase/kanbanboard/v1"
+@using FreeBlazorExtended.KanbanBoard
+
+<div class="container-fluid py-4">
+    <h1>KanbanBoard - Default</h1>
+    <p class="text-muted">Drag cards between columns, then click any card to open the editor workspace.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <KanbanBoard Columns="_columns"
+                         Cards="_cards"
+                         OnCardMoved="HandleMoved"
+                         OnCardClick="HandleClick"
+                         SelectedCardId="@_selectedCard?.Id" />
+        </div>
+        <div class="col-lg-4">
+            <ShowcaseKanbanCardEditor Cards="_cards"
+                                      Columns="_columns"
+                                      SelectedCard="_selectedCard"
+                                      SelectedCardChanged="HandleSelectionChanged"
+                                      Subtitle="Use the default board, then open any card to edit its full details." />
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<KanbanBoard.KanbanColumn> _columns = new()
+    {
+        new() { Id = "todo", Title = "To Do", Color = "secondary", SortOrder = 0 },
+        new() { Id = "doing", Title = "Doing", Color = "primary", SortOrder = 1 },
+        new() { Id = "done", Title = "Done", Color = "success", SortOrder = 2 },
+    };
+
+    private readonly List<KanbanBoard.KanbanCard> _cards = new()
+    {
+        new() { Id = "1", ColumnId = "todo", Title = "Draft API docs", Description = "Write baseline API documentation.", Priority = "high", SortOrder = 0 },
+        new() { Id = "2", ColumnId = "todo", Title = "Review CSS", Description = "Align component spacing.", Priority = "medium", SortOrder = 1 },
+        new() { Id = "3", ColumnId = "doing", Title = "Refactor alerts", Description = "Normalize alert rendering.", Priority = "medium", SortOrder = 0 },
+        new() { Id = "4", ColumnId = "done", Title = "Ship icons", Description = "FontAwesome cleanup complete.", Priority = "low", SortOrder = 0 },
+        new() { Id = "5", ColumnId = "done", Title = "Update README", Description = "Document parameters and examples.", Priority = "low", SortOrder = 1 },
+    };
+
+    private KanbanBoard.KanbanCard? _selectedCard;
+
+    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        ApplyMove(_cards, args);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private static void ApplyMove(List<KanbanBoard.KanbanCard> cards, KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        var moving = cards.FirstOrDefault(card => card.Id == args.CardId);
+        if (moving is null) {
+            return;
+        }
+
+        var targetCards = cards
+            .Where(card => card.ColumnId == args.ToColumnId && card.Id != moving.Id)
+            .OrderBy(card => card.SortOrder)
+            .ToList();
+
+        var insertIndex = Math.Clamp(args.NewSortOrder, 0, targetCards.Count);
+        targetCards.Insert(insertIndex, moving);
+
+        for (int i = 0; i < targetCards.Count; i++) {
+            targetCards[i].ColumnId = args.ToColumnId;
+            targetCards[i].SortOrder = i;
+        }
+
+        if (!string.Equals(args.FromColumnId, args.ToColumnId, StringComparison.OrdinalIgnoreCase)) {
+            var sourceCards = cards
+                .Where(card => card.ColumnId == args.FromColumnId && card.Id != moving.Id)
+                .OrderBy(card => card.SortOrder)
+                .ToList();
+
+            for (int i = 0; i < sourceCards.Count; i++) {
+                sourceCards[i].SortOrder = i;
+            }
+        }
+    }
+}

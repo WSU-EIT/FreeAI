@@ -1,0 +1,74 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 1,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-order",
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Message": "Heading level skipped: \u003Ch3\u003E to \u003Ch6\u003E",
+      "Selector": null,
+      "Snippet": "\u003Ch6\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-missing-h1",
+      "CanonicalRuleId": "page-has-heading-one",
+      "Severity": "moderate",
+      "Message": "Page has headings but no \u003Ch1\u003E",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022 class=\u0022zebra\u0022 style=\u0022width: 100%;\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr bgcolor=\u0022#00a5bd\u0022\u003E\n\u003Ctd colspan=\u002212\u0022 style=\u0022color: #ffffff; text-align: center;\u0022\u003E\n\u003Ch3...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022 width=\u0022745\u0022 height=\u0022422\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd\u003E\n\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr bgcolor=\u0022#2b9940\u0022\u003E\n\u003Ctd colspan=\u002212\u0022 style=\u0022color: #ffffff...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr bgcolor=\u0022#2b9940\u0022\u003E\n\u003Ctd colspan=\u002212\u0022 style=\u0022color: #ffffff; text-align: center;\u0022\u003E\n\u003Ch3\u003E\u003Cstrong\u003EMandatory Fees Break Down\u003C...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr bgcolor=\u0022#2b9940\u0022\u003E\n\u003Ctd colspan=\u002212\u0022 style=\u0022color: #ffffff; text-align: center;\u0022\u003E\n\u003Ch3\u003E\u003Cstrong\u003ELiving at Home\u003C/strong\u003E\u003C/h...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

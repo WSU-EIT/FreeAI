@@ -1,0 +1,95 @@
+{
+  "PagePath": "/training/leadership-development-cohorts/",
+  "Url": "https://hrs.wsu.edu/training/leadership-development-cohorts/",
+  "FinalUrl": null,
+  "Title": "Thank you for your interest in the WSU Facilitated Leadership Development Network! \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 93240,
+  "ScreenshotSizeBytes": 360701,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 360701
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 5,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Untitled-design-9-1180x295.png",
+      "AltText": "Woman standing, speaking to a group of people"
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Elegant-Circle-Signature-Photography-Logo-350x350.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Elegant-Circle-Signature-Photography-Logo-1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Elegant-Circle-Signature-Photography-Logo-2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Elegant-Circle-Signature-Photography-Logo-4.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/03/WSU-Patterns-Crimson-1920x1080-1-1180x664.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2023/05/Copy-of-WSU-Training-for-Supervisors.png",
+      "AltText": "Woman smiling with arms crossed"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:30:32 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:30:32 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/45090\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=45090\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:30:32.5851313Z"
+}

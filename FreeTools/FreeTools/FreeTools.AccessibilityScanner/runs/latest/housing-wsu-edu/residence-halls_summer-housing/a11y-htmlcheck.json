@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022 class=\u0022pricetable\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd\u003E\n\u003Cp\u003ENorthside\u0026nbsp;Hall - Single Room\u003C/p\u003E\n\u003C/td\u003E\n\u003Ctd\u003E\n\u003Cp\u003E$43.00/night\u003C/p\u003E\n\u003C/td\u003E\n\u003C/tr\u003E\n\u003Ctr\u003E\n\u003Ctd\u003E\n...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

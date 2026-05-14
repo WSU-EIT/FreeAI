@@ -1,0 +1,91 @@
+{
+  "PagePath": "/prospective-students/transfer-students/",
+  "Url": "https://housing.wsu.edu/prospective-students/transfer-students/",
+  "FinalUrl": null,
+  "Title": "Transfer Students",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 67526,
+  "ScreenshotSizeBytes": 244080,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 244080
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4gnecmhx/mceachern-south.jpg",
+      "AltText": "McEachern"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/besfhfhk/orton-exterior.jpg",
+      "AltText": "Orton"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ro2pnjw0/chief-joseph-exterior.jpg",
+      "AltText": "Chief Joseph"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ep0ipbd1/chinook-exterior-3.png",
+      "AltText": "Chinook Village"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pxmnc3qm/columbia-exterior-3.png",
+      "AltText": "Columbia Village"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pwnhpjqm/nez-perce-6.png",
+      "AltText": "Nez Perce Village"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:13:42 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:13:43.5292855Z"
+}

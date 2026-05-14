@@ -1,0 +1,38 @@
+@page "/showcase/aboutsection/v2"
+@using FreeBlazorExtended.AboutSection
+
+<div class="container-fluid py-4">
+    <h1>Configured About Section</h1>
+
+    <AboutSection Title="What is this page?"
+                  Subtitle="A demonstration of AboutSection parameters"
+                  IconClass="fa-solid fa-graduation-cap"
+                  StartExpanded="true">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h6">Examples</h2>
+                        <p class="small mb-0">Use this pattern to frame a page with context, audience, and implementation notes without overwhelming the first screen.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h6">Why</h2>
+                        <p class="small mb-0">It keeps important explanatory content close to the UI while still letting the primary experience stay focused and uncluttered.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h6">Audience</h2>
+                        <p class="small mb-0">Great for product owners, implementers, and reviewers who need quick orientation before interacting with a page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </AboutSection>
+</div>

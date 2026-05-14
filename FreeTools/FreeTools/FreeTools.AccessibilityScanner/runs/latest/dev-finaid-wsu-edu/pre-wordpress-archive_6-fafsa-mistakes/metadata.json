@@ -1,0 +1,82 @@
+{
+  "PagePath": "/pre-wordpress-archive/6-fafsa-mistakes/",
+  "Url": "https://dev.finaid.wsu.edu/pre-wordpress-archive/6-fafsa-mistakes/",
+  "FinalUrl": null,
+  "Title": "6 FAFSA Mistakes | Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 666957,
+  "ScreenshotSizeBytes": 371803,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 371803
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755296/mistake_1.jpg?width=376.30890052356017\u0026height=500",
+      "AltText": "Mistake 1: Skipping Application"
+    },
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755295/mistake_2.jpg?width=500\u0026height=295.1388888888889",
+      "AltText": "Mistake 2"
+    },
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755298/mistake_3.jpg?width=500\u0026height=401.90972222222223",
+      "AltText": "Mistake 3: Saying no to Work Study"
+    },
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755297/mistake_4.jpg?width=500\u0026height=290.79861111111114",
+      "AltText": "Mistake 4: Failing to Double Check"
+    },
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755301/mistake_5.jpg?width=500\u0026height=273.4375",
+      "AltText": "Mistake 5: Too much information"
+    },
+    {
+      "SourceUrl": "https://dev.finaid.wsu.edu/media/755302/mistake_6.jpg?width=500\u0026height=276.90972222222223",
+      "AltText": "Mistake 6: Forgetting to sign"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:57.6237651Z"
+}

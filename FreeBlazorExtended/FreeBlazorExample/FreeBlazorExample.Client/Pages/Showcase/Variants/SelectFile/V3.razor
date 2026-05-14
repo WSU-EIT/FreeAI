@@ -1,0 +1,79 @@
+@page "/showcase/selectfile/v3"
+@using FreeBlazorExtended.SelectFile
+@using FreeBlazorExtended.RenderFiles
+
+<div class="container-fluid py-4">
+    <h1>SelectFile - Composed With RenderFiles</h1>
+
+    <h2 class="h5">Available Files</h2>
+    <SelectFile Files="_available"
+                OnFileSelected="AddAttachment"
+                ShowRefreshButton="true"
+                OnRefresh="ReloadAvailable" />
+
+    <h2 class="h5 mt-4">Selected Attachments</h2>
+    <p class="text-muted">Attachments: @_attachments.Count</p>
+    <RenderFiles Files="_attachments"
+                 OnDelete="RemoveAttachment"
+                 UseDeleteConfirmation="true"
+                 DeleteText="Remove" />
+</div>
+
+@code {
+    private List<FileItem> _available = BuildAvailableFiles();
+    private List<FileItem> _attachments = new();
+
+    private Task AddAttachment(FileItem file)
+    {
+        if (_attachments.Any(item => item.FileId == file.FileId)) {
+            return Task.CompletedTask;
+        }
+
+        _attachments.Add(Clone(file));
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveAttachment(FileItem file)
+    {
+        _attachments = _attachments.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private Task ReloadAvailable()
+    {
+        _available = BuildAvailableFiles();
+        return Task.CompletedTask;
+    }
+
+    private static List<FileItem> BuildAvailableFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "cover.png", Extension = ".png", Bytes = 1400, RemoteImageUrl = "https://picsum.photos/seed/av1/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "scene.jpg", Extension = ".jpg", Bytes = 550000, RemoteImageUrl = "https://picsum.photos/seed/av2/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "spec-sheet.pdf", Extension = ".pdf", Bytes = 2100000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "assets.zip", Extension = ".zip", Bytes = 3180000, ThumbnailIcon = "fa-solid fa-file-zipper" },
+            new() { FileId = Guid.NewGuid(), FileName = "proposal.docx", Extension = ".docx", Bytes = 94000, ThumbnailIcon = "fa-solid fa-file-word" },
+            new() { FileId = Guid.NewGuid(), FileName = "logo.svg", Extension = ".svg", Bytes = 320, Value = InlineSvgBytes() },
+        };
+    }
+
+    private static FileItem Clone(FileItem file)
+    {
+        return new FileItem
+        {
+            FileId = file.FileId,
+            FileName = file.FileName,
+            Extension = file.Extension,
+            Bytes = file.Bytes,
+            RemoteImageUrl = file.RemoteImageUrl,
+            ThumbnailIcon = file.ThumbnailIcon,
+            Value = file.Value,
+        };
+    }
+
+    private static byte[] InlineSvgBytes()
+    {
+        return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#198754'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+}

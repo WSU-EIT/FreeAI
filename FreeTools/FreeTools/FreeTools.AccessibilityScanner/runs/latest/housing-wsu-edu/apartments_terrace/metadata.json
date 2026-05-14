@@ -1,0 +1,135 @@
+{
+  "PagePath": "/apartments/terrace/",
+  "Url": "https://housing.wsu.edu/apartments/terrace/",
+  "FinalUrl": null,
+  "Title": "Terrace",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 128698,
+  "ScreenshotSizeBytes": 242364,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 5,
+  "ConsoleWarningCount": 9,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 242364
+    }
+  ],
+  "ImageCount": 17,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jc0ba0lg/terrace-banner.jpg",
+      "AltText": "Terrace apartments exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eqoj4230/terrace-exterior.jpg",
+      "AltText": "Terrace Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pplbghq4/terrace-one-bedroom-bedroom.png",
+      "AltText": "Terrace One Bedroom Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bc5aqmbp/terrace-one-bedroom-kitchen.png",
+      "AltText": "Terrace One Bedroom Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qvopyty4/terrace-one-bedroom-living-room.png",
+      "AltText": "Terrace One Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lscfifhc/terrace-studio-bathroom.png",
+      "AltText": "Terrace Studio Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ymya22z3/terrace-studio-bedroom.png",
+      "AltText": "Terrace Studio Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3iljtgvs/terrace-studio-kitchen-dining.png",
+      "AltText": "Terrace Studio Kitchen Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ly3dpyya/terrace-studio-wide-view.png",
+      "AltText": "Terrace Studio Wide View"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/thnfrcb5/terrace-two-bedroom-bedroom-a.png",
+      "AltText": "Terrace Two Bedroom Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lrdmum0b/terrace-two-bedroom-bedroom-b.png",
+      "AltText": "Terrace Two Bedroom Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/41xmzydb/terrace-two-bedroom-kitchen-dining.png",
+      "AltText": "Terrace Two Bedroom Kitchen Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cmumzmfi/terrace-two-bedroom-living-room.png",
+      "AltText": "Terrace Two Bedroom Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/c44cu0ev/terrace-two-bedroom.jpg",
+      "AltText": "Terrace Two Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dx2nmqjw/terrace-one-bedroom.jpg",
+      "AltText": "Terrace One Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uczhrt1u/terrace-studio.jpg",
+      "AltText": "Terrace Studio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jyifmjy0/terrace-three-bedroom.jpg",
+      "AltText": "Terrace Three Bedroom"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:38 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:10:39.1935772Z"
+}

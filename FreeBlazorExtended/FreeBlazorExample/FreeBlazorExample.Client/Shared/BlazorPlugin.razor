@@ -1,0 +1,29 @@
+@implements IDisposable
+@inject BlazorDataModel Model
+
+@* Blazor plugin compilation disabled - DynamicBlazorSupport module was removed. *@
+@if (Button) {
+    <button type="button" class="btn btn-outline-secondary" disabled>
+        @_compileMessage
+    </button>
+} else {
+    <span class="badge text-bg-secondary me-2">@_compileMessage</span>
+}
+
+@code {
+    [Parameter] public bool Button { get; set; }
+    [Parameter] public Plugins.Plugin Plugin { get; set; } = null!;
+    [Parameter] public Dictionary<string, object>? Parameters { get; set; }
+
+    protected string _compileMessage = "Blazor plugins disabled";
+
+    public void Dispose()
+    {
+        Model.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += StateHasChanged;
+    }
+}

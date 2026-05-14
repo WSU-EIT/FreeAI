@@ -1,0 +1,62 @@
+{
+  "PagePath": "/pre-wordpress-archive/pp-dev-alt/",
+  "Url": "https://finaiddev.wsu.edu/pre-wordpress-archive/pp-dev-alt/",
+  "FinalUrl": null,
+  "Title": "P\u0026P Dev Alt | Student Financial Services Test Site",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 6485,
+  "ScreenshotSizeBytes": 80096,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 80096
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 32,
+    "Critical": 0,
+    "Serious": 28,
+    "Moderate": 3,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 27,
+        "Critical": 0,
+        "Serious": 27,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 3,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:19:40 GMT",
+    "strict-transport-security": "max-age=31536000",
+    "x-content-type-options": "nosniff"
+  },
+  "CapturedAt": "2026-02-19T02:19:40.1985702Z"
+}

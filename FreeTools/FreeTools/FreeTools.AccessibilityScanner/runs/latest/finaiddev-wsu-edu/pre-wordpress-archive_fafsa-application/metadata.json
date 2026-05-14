@@ -1,0 +1,57 @@
+{
+  "PagePath": "/pre-wordpress-archive/fafsa-application/",
+  "Url": "https://finaiddev.wsu.edu/pre-wordpress-archive/fafsa-application/",
+  "FinalUrl": null,
+  "Title": "FAFSA Application | Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 668312,
+  "ScreenshotSizeBytes": 356312,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 20,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 356312
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 10,
+    "Critical": 1,
+    "Serious": 7,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 8,
+        "Critical": 1,
+        "Serious": 7,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:17:18.1235025Z"
+}

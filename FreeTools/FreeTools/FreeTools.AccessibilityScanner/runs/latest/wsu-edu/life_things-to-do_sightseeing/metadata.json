@@ -1,0 +1,120 @@
+{
+  "PagePath": "/life/things-to-do/sightseeing/",
+  "Url": "https://wsu.edu/life/things-to-do/sightseeing/",
+  "FinalUrl": "https://pullman.wsu.edu/community-life/",
+  "Title": "WSU Pullman Community Life | Pullman Campus | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 80915,
+  "ScreenshotSizeBytes": 719669,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 719669
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/library-road-e1605824401570.jpg",
+      "AltText": "Students walk up the Library Road"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Filipino-Cultural-Night-_8253-792x528.jpg",
+      "AltText": "Students laugh and smile at a video on their phone"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Bike-Trail_0006@2x-792x567.jpg",
+      "AltText": "A student rides her bike in Pullman"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/header_community1.png",
+      "AltText": "Students laugh and hold each other at a Greek event"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Pullman-from-Kamiakcrop_0421-1900x1288-1.jpg",
+      "AltText": "View of the across the Palouse from Kamiak Butte on the Palouse of Pullman. Washington State University, Wednesday, May 27, 2020."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Campus-photo-18-1.png",
+      "AltText": "Students play basketball at the University Recreation Center"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Shows-Main2-792x566.jpg",
+      "AltText": "Elton John performs at Beasley Coliseum"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/MuseumOfArt_5001-1900x1252-1-792x566.jpg",
+      "AltText": "The art building on campus reflects the CUB on its red glass design"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Football_Homecoming_2015_Atmosphere_0226-792x566.jpg",
+      "AltText": "WSU Cheer run onto the field, followed by the WSU football team"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/Shopping-Main1-792x566.jpg",
+      "AltText": "Students chat over lunch at a dining hall"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/mg_3072-1-792x566.jpg",
+      "AltText": "The Bookie in the Compton Union Building"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3165/2022/11/6q6a2530-1-792x566.png",
+      "AltText": "A student recieves a vision test at Cougar Health Services"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 1,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 1,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=249, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:19:18 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:13:27 GMT",
+    "link": "\u003Chttps://pullman.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://pullman.wsu.edu/wp-json/wp/v2/pages/63\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:19:18.3867402Z"
+}

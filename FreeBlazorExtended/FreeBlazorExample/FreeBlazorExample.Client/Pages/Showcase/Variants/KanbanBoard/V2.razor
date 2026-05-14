@@ -1,0 +1,153 @@
+@page "/showcase/kanbanboard/v2"
+@using FreeBlazorExtended.KanbanBoard
+
+<div class="container-fluid py-4">
+    <h1>KanbanBoard - WIP Limits and Custom Card Template</h1>
+    <p class="text-muted">Columns show configured WIP limits, and every custom card can now be opened and edited from the workspace panel.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <KanbanBoard Columns="_columns"
+                         Cards="_cards"
+                         OnCardMoved="HandleMoved"
+                         OnCardClick="HandleClick"
+                         SelectedCardId="@_selectedCard?.Id"
+                         EnableSearch="true"
+                         SearchPlaceholder="Filter by title, assignee, label..."
+                         ReadOnly="false">
+                <CardTemplate Context="card">
+                    <div class="d-flex flex-column gap-2" style="@($"border-left: 4px solid {PriorityColor(card.Priority)}; padding-left: 0.5rem;")">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <strong class="small">@card.Title</strong>
+                            @if (!string.IsNullOrWhiteSpace(card.Priority)) {
+                                <span class="badge bg-light text-dark border">@card.Priority</span>
+                            }
+                        </div>
+                        <div class="small text-muted">@card.Description</div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span class="badge bg-secondary">@Initials(card.Assignee)</span>
+                            <div>
+                                @foreach (var label in card.Labels) {
+                                    <span class="badge bg-light text-dark border me-1">@label</span>
+                                }
+                            </div>
+                        </div>
+                        @if (card.DueDate.HasValue) {
+                            <div class="small @(card.DueDate.Value < DateTime.Now ? "text-danger" : "text-muted")">
+                                Due @card.DueDate.Value.ToString("M/d")
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between align-items-center pt-1 border-top small text-muted">
+                            <span>Open workspace</span>
+                            <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </CardTemplate>
+            </KanbanBoard>
+        </div>
+        <div class="col-lg-4">
+            <ShowcaseKanbanCardEditor Cards="_cards"
+                                      Columns="_columns"
+                                      SelectedCard="_selectedCard"
+                                      SelectedCardChanged="HandleSelectionChanged"
+                                      Subtitle="Open any WIP card to adjust assignee, due date, priority, labels, or move it to a new column." />
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<KanbanBoard.KanbanColumn> _columns = new()
+    {
+        new() { Id = "backlog", Title = "Backlog", Color = "secondary", SortOrder = 0 },
+        new() { Id = "ready", Title = "Ready", Color = "info", CardLimit = 4, SortOrder = 1 },
+        new() { Id = "in-progress", Title = "In Progress", Color = "primary", CardLimit = 3, SortOrder = 2 },
+        new() { Id = "review", Title = "Review", Color = "warning", CardLimit = 2, SortOrder = 3 },
+        new() { Id = "done", Title = "Done", Color = "success", SortOrder = 4 },
+    };
+
+    private readonly List<KanbanBoard.KanbanCard> _cards = new()
+    {
+        new() { Id = "1", ColumnId = "backlog", Title = "Audit buttons", Description = "Review button semantics.", Assignee = "Dana Cole", Priority = "high", Labels = new() { "a11y", "ui" }, DueDate = DateTime.Today.AddDays(1), SortOrder = 0 },
+        new() { Id = "2", ColumnId = "backlog", Title = "Update docs", Description = "Refresh the component README.", Assignee = "Jamie Lee", Priority = "low", Labels = new() { "docs" }, DueDate = DateTime.Today.AddDays(4), SortOrder = 1 },
+        new() { Id = "3", ColumnId = "ready", Title = "Fix modal focus", Description = "Trap focus inside overlay.", Assignee = "Alex Kim", Priority = "high", Labels = new() { "a11y", "overlay" }, DueDate = DateTime.Today.AddDays(-1), SortOrder = 0 },
+        new() { Id = "4", ColumnId = "ready", Title = "Tune spacing", Description = "Match upstream layout rhythm.", Assignee = "Riley West", Priority = "medium", Labels = new() { "style" }, DueDate = DateTime.Today.AddDays(2), SortOrder = 1 },
+        new() { Id = "5", ColumnId = "in-progress", Title = "Wire sample data", Description = "Populate gallery examples.", Assignee = "Morgan Shaw", Priority = "medium", Labels = new() { "demo", "data" }, DueDate = DateTime.Today.AddDays(1), SortOrder = 0 },
+        new() { Id = "6", ColumnId = "in-progress", Title = "Verify labels", Description = "Add explicit labels to form controls.", Assignee = "Casey Frost", Priority = "high", Labels = new() { "forms", "a11y" }, DueDate = DateTime.Today.AddDays(1), SortOrder = 1 },
+        new() { Id = "7", ColumnId = "review", Title = "Compare with upstream", Description = "Check visual parity with Brad's demos.", Assignee = "Sam Green", Priority = "medium", Labels = new() { "review" }, DueDate = DateTime.Today.AddDays(3), SortOrder = 0 },
+        new() { Id = "8", ColumnId = "done", Title = "Extract component", Description = "Component folder moved to library.", Assignee = "Robin Diaz", Priority = "low", Labels = new() { "done" }, DueDate = DateTime.Today.AddDays(-2), SortOrder = 0 },
+        new() { Id = "9", ColumnId = "done", Title = "Write plan", Description = "Variant-page plan completed.", Assignee = "Taylor Reed", Priority = "low", Labels = new() { "planning" }, DueDate = DateTime.Today.AddDays(-3), SortOrder = 1 },
+        new() { Id = "10", ColumnId = "review", Title = "Check WIP", Description = "Ensure column badges reflect limits.", Assignee = "Alex Kim", Priority = "medium", Labels = new() { "ux" }, DueDate = DateTime.Today.AddDays(2), SortOrder = 1 },
+        new() { Id = "11", ColumnId = "ready", Title = "Prepare assets", Description = "Gather image placeholders.", Assignee = "Dana Cole", Priority = "low", Labels = new() { "assets" }, DueDate = DateTime.Today.AddDays(5), SortOrder = 2 },
+        new() { Id = "12", ColumnId = "in-progress", Title = "Review examples", Description = "Check variant pages for clarity.", Assignee = "Jamie Lee", Priority = "critical", Labels = new() { "review", "priority" }, DueDate = DateTime.Today.AddDays(-2), SortOrder = 2 },
+    };
+
+    private KanbanBoard.KanbanCard? _selectedCard;
+
+    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        ApplyMove(_cards, args);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private static void ApplyMove(List<KanbanBoard.KanbanCard> cards, KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        var moving = cards.FirstOrDefault(card => card.Id == args.CardId);
+        if (moving is null) {
+            return;
+        }
+
+        var targetCards = cards
+            .Where(card => card.ColumnId == args.ToColumnId && card.Id != moving.Id)
+            .OrderBy(card => card.SortOrder)
+            .ToList();
+
+        var insertIndex = Math.Clamp(args.NewSortOrder, 0, targetCards.Count);
+        targetCards.Insert(insertIndex, moving);
+
+        for (int i = 0; i < targetCards.Count; i++) {
+            targetCards[i].ColumnId = args.ToColumnId;
+            targetCards[i].SortOrder = i;
+        }
+
+        if (!string.Equals(args.FromColumnId, args.ToColumnId, StringComparison.OrdinalIgnoreCase)) {
+            var sourceCards = cards
+                .Where(card => card.ColumnId == args.FromColumnId && card.Id != moving.Id)
+                .OrderBy(card => card.SortOrder)
+                .ToList();
+
+            for (int i = 0; i < sourceCards.Count; i++) {
+                sourceCards[i].SortOrder = i;
+            }
+        }
+    }
+
+    private static string Initials(string? assignee)
+    {
+        if (string.IsNullOrWhiteSpace(assignee)) {
+            return "NA";
+        }
+
+        return string.Concat(assignee.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(part => char.ToUpperInvariant(part[0]))).PadRight(2).Substring(0, 2);
+    }
+
+    private static string PriorityColor(string? priority) => (priority ?? string.Empty).ToLowerInvariant() switch
+    {
+        "high" or "critical" or "urgent" => "#dc3545",
+        "medium" => "#fd7e14",
+        "low" => "#0dcaf0",
+        _ => "#6c757d",
+    };
+}

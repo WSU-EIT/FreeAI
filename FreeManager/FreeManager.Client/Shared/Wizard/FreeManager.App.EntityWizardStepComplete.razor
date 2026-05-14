@@ -1,0 +1,164 @@
+﻿@* EntityWizardStepComplete.App.razor - Step 6: Completion State *@
+
+@if (IsSaving) {
+    @* Saving state - show spinner *@
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">Creating project...</span>
+            </div>
+        </div>
+        <h4 class="text-primary">Creating Your Project</h4>
+        <p class="text-muted">
+            Generating files and setting up the project. Please wait...
+        </p>
+    </div>
+} else if (!string.IsNullOrWhiteSpace(ErrorMessage)) {
+    @* Error state *@
+    <div class="text-center py-4">
+        <div class="mb-3">
+            <i class="fa-solid fa-circle-exclamation text-danger" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="text-danger">Failed to Create Project</h4>
+        <div class="alert alert-danger mt-3 text-start" style="max-width: 600px; margin: 0 auto;">
+            <strong>Error:</strong> @ErrorMessage
+        </div>
+        <p class="text-muted mt-3">
+            You can go back to review your settings and try again.
+        </p>
+        <div class="mt-4">
+            <button class="btn btn-primary" @onclick="OnStartOver">
+                <i class="fa-solid fa-rotate-left me-1"></i>
+                Start Over
+            </button>
+        </div>
+    </div>
+} else if (IsComplete) {
+    @* Success state *@
+    <div class="text-center py-4">
+        <div class="mb-3">
+            <i class="fa-solid fa-circle-check text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="text-success">Project Created Successfully!</h4>
+        <p class="lead">
+            Your entity <strong>@State.Entity.Name</strong> has been scaffolded with all CRUD operations.
+        </p>
+
+        @* Files Created *@
+        <div class="mt-4 text-start" style="max-width: 700px; margin: 0 auto;">
+            <h5>
+                <i class="fa-solid fa-file-lines me-1"></i>
+                Files Created (@GeneratedFiles.Count)
+            </h5>
+            <ul class="list-group list-group-flush mb-4">
+                @foreach (var file in GeneratedFiles) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fa-solid @GetFileIcon(file.FileType) @GetFileIconColor(file.FileType) me-2"></i>
+                            <code>@file.FileName</code>
+                        </span>
+                        <span class="badge bg-secondary">@file.FileType</span>
+                    </li>
+                }
+            </ul>
+
+            @* Next Steps *@
+            <h5>
+                <i class="fa-solid fa-list-check me-1"></i>
+                Next Steps
+            </h5>
+            <ol class="mb-4">
+                <li class="mb-2">
+                    <strong>Export the project</strong> to your file system
+                </li>
+                <li class="mb-2">
+                    <strong>Run migrations</strong> to create the database table:
+                    <pre class="bg-dark text-light p-2 rounded mt-1 small"><code>dotnet ef migrations add Add@(State.Entity.Name)Table
+dotnet ef database update</code></pre>
+                </li>
+                <li class="mb-2">
+                    <strong>Add navigation</strong> to your menu in <code>NavMenu.App.razor</code>
+                </li>
+                <li>
+                    <strong>Customize</strong> the generated code as needed
+                </li>
+            </ol>
+
+            @* Action Buttons *@
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-success btn-lg" @onclick="OnViewProject">
+                    <i class="fa-solid fa-folder-open me-1"></i>
+                    View Project
+                </button>
+                <button class="btn btn-outline-primary btn-lg" @onclick="OnStartOver">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    Create Another
+                </button>
+            </div>
+        </div>
+    </div>
+} else {
+    @* Ready to create *@
+    <div class="text-center py-4">
+        <div class="mb-3">
+            <i class="fa-solid fa-rocket text-primary" style="font-size: 4rem;"></i>
+        </div>
+        <h4>Ready to Create</h4>
+        <p class="text-muted">
+            Click "Create Project" to generate all the files for your <strong>@State.Entity.Name</strong> entity.
+        </p>
+        
+        <div class="card mt-4" style="max-width: 500px; margin: 0 auto;">
+            <div class="card-body text-start">
+                <h6>Will create:</h6>
+                <ul class="mb-0 small">
+                    <li><strong>@GeneratedFiles.Count</strong> code files</li>
+                    <li><strong>@State.Entity.Properties.Count</strong> properties</li>
+                    @if (State.Entity.Enums.Count > 0) {
+                        <li><strong>@State.Entity.Enums.Count</strong> enums</li>
+                    }
+                    <li>Full CRUD operations</li>
+                    @if (State.Options.GenerateListPage) {
+                        <li>Paginated list page</li>
+                    }
+                    @if (State.Options.GenerateEditPage) {
+                        <li>Edit/create form</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
+    [Parameter] public List<DataObjects.GeneratedFileInfo> GeneratedFiles { get; set; } = new();
+    [Parameter] public bool IsSaving { get; set; }
+    [Parameter] public bool IsComplete { get; set; }
+    [Parameter] public string ErrorMessage { get; set; } = "";
+    [Parameter] public EventCallback OnStartOver { get; set; }
+    [Parameter] public EventCallback OnViewProject { get; set; }
+
+    private string GetFileIcon(string fileType) {
+        return fileType switch {
+            "EFModel" => "fa-database",
+            "DataObjects" => "fa-code",
+            "DataAccess" => "fa-cogs",
+            "Controller" => "fa-server",
+            "RazorPage" => "fa-file-code",
+            "RazorComponent" => "fa-puzzle-piece",
+            _ => "fa-file"
+        };
+    }
+
+    private string GetFileIconColor(string fileType) {
+        return fileType switch {
+            "EFModel" => "text-warning",
+            "DataObjects" => "text-info",
+            "DataAccess" => "text-success",
+            "Controller" => "text-primary",
+            "RazorPage" or "RazorComponent" => "text-danger",
+            _ => "text-secondary"
+        };
+    }
+}

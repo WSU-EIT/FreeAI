@@ -1,0 +1,123 @@
+{
+  "PagePath": "/residence-halls/scottcoman/",
+  "Url": "https://housing.wsu.edu/residence-halls/scottcoman/",
+  "FinalUrl": null,
+  "Title": "Scott/Coman",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 101171,
+  "ScreenshotSizeBytes": 301426,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 301426
+    }
+  ],
+  "ImageCount": 14,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uyzgonlb/scottcoman-kitchen.jpg",
+      "AltText": "Scottcoman Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xy3k0240/scottcoman-single.jpg",
+      "AltText": "Scottcoman Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/sgslnnni/scott-coman-double.jpg",
+      "AltText": "Scott Coman Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mo5nab5z/scott-coman-exterior.jpg",
+      "AltText": "Scott Coman Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/db3ezivs/scottcoman-couch.jpg",
+      "AltText": "Scottcoman Couch"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5xbhwgfw/mattie-updyke.jpg",
+      "AltText": "Mattie Updyke"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uupbqfmg/northside-students-eating-3.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xgpenuwu/student-on-north-campus.png",
+      "AltText": "Neighborhood: North Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/buudcqh3/northside-area-desk-student.png",
+      "AltText": "Northside Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u1yiog0l/src-student-1.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1sgdvnqr/floor-plan-scott-1st-floor.png",
+      "AltText": "Scott first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/x0lf4zmn/floor-plan-scott-2nd-floor.png",
+      "AltText": "Scott Coman second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/llqe2vde/floor-plan-scott-3rd-floor.png",
+      "AltText": "scott third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0lah3c5l/floor-plan-scott-4th-floor.png",
+      "AltText": "scott fourth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:16:06 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:16:06.8760208Z"
+}

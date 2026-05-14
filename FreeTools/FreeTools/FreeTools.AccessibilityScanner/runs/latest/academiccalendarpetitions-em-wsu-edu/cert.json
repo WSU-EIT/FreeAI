@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=academiccalendarpetitions.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "113BBF34BBDD469C5226DDD11C63546A53415DD7",
+  "SerialNumber": "5F0E6AA98C6A47F55CCCFC3567A6CB",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "academiccalendarpetitions.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "academiccalendarpetitions.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

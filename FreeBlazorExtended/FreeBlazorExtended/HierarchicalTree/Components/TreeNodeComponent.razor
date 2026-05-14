@@ -1,0 +1,158 @@
+﻿@*
+    Purpose: Recursive tree-node renderer for selection, expansion, and nested children.
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.HierarchicalTree
+@using FreeBlazorExtended.HierarchicalTree
+
+<div class="tree-node" style="margin-left: @(Depth * 20)px">
+    <div class="tree-node-content"
+         @onclick="@(async () => await OnNodeSelected.InvokeAsync(Node))"
+         style="@(IsSelected ? "background-color: #e7f3ff;" : "")">
+
+        @if (HasChildren)
+        {
+            <span class="tree-toggle" @onclick:stopPropagation @onclick="ToggleExpanded">
+                <i class="fa fa-chevron-@(IsExpanded ? "down" : "right")"></i>
+            </span>
+        }
+        else
+        {
+            <span class="tree-spacer"></span>
+        }
+
+        @if (!string.IsNullOrEmpty(Node.Icon))
+        {
+            <span class="tree-icon" style="color: @(Node.Color ?? "inherit")">
+                <i class="fa @Node.Icon"></i>
+            </span>
+        }
+
+        <span class="tree-label">@Node.Name</span>
+
+        @if (!string.IsNullOrEmpty(Node.NodeType))
+        {
+            <span class="badge bg-secondary ms-2">@Node.NodeType</span>
+        }
+    </div>
+
+    @if (IsExpanded && HasChildren)
+    {
+        @foreach (var child in Children)
+        {
+            <TreeNodeComponent Node="child"
+                               Depth="@(Depth + 1)"
+                               AllNodes="AllNodes"
+                               SelectedNode="SelectedNode"
+                               OnNodeSelected="OnNodeSelected"
+                               OnAddChild="OnAddChild"
+                               OnDelete="OnDelete"
+                               TreeService="TreeService" />
+        }
+    }
+</div>
+
+<style>
+.tree-node {
+    user-select: none;
+}
+
+.tree-node-content {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.tree-node-content:hover {
+    background-color: #f0f0f0;
+}
+
+.tree-toggle {
+    display: inline-flex;
+    width: 20px;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+}
+
+.tree-spacer {
+    display: inline-block;
+    width: 20px;
+}
+
+.tree-icon {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.tree-label {
+    flex: 1;
+    padding: 0 0.5rem;
+}
+</style>
+
+@code {
+    private List<TreeNode> Children { get; set; } = new();
+    private bool IsExpanded { get; set; }
+    private bool HasChildren => Children.Count > 0;
+    private bool IsSelected => SelectedNode?.TreeNodeId == Node.TreeNodeId;
+
+    [Parameter]
+    public TreeNode Node { get; set; } = new();
+
+    [Parameter]
+    public int Depth { get; set; } = 0;
+
+    [Parameter]
+    public List<TreeNode> AllNodes { get; set; } = new();
+
+    [Parameter]
+    public TreeNode? SelectedNode { get; set; }
+
+    [Parameter]
+    public EventCallback<TreeNode> OnNodeSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<TreeNode> OnAddChild { get; set; }
+
+    [Parameter]
+    public EventCallback<TreeNode> OnDelete { get; set; }
+
+    [Parameter]
+    public TreeService? TreeService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsExpanded = Node.IsExpanded;
+        await LoadChildrenAsync();
+    }
+
+    private async Task LoadChildrenAsync()
+    {
+        if (TreeService == null)
+        {
+            Children = AllNodes.Where(n => n.ParentNodeId == Node.TreeNodeId && !n.Deleted).ToList();
+        }
+        else
+        {
+            Children = await TreeService.GetTreeNodeChildren(Node.TreeNodeId);
+        }
+    }
+
+    private async Task ToggleExpanded()
+    {
+        IsExpanded = !IsExpanded;
+        Node.IsExpanded = IsExpanded;
+
+        if (IsExpanded && Children.Count == 0)
+        {
+            await LoadChildrenAsync();
+        }
+    }
+}

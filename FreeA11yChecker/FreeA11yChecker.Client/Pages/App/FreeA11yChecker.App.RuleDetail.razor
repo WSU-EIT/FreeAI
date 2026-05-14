@@ -1,0 +1,265 @@
+@page "/Compliance/Rule/{RuleId}"
+@page "/{TenantCode}/Compliance/Rule/{RuleId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-bug me-2"></i>Rule Detail
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Compliance/Rules"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-outline-success" @onclick="ExportCsv" disabled="@(_exporting || !_violations.Any())" title="Download every occurrence as CSV">
+                @if (_exporting) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                } else {
+                    <text><i class="fas fa-download me-1"></i>Export CSV</text>
+                }
+            </button>
+        </div>
+        <FreeA11yChecker_App_TriageNav Active="ruledetail" />
+    </div>
+
+    @if (_loading) {
+        <LoadingMessage />
+    } else {
+        string decodedRule = Uri.UnescapeDataString(RuleId ?? "");
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <strong>@decodedRule</strong>
+                    @if (_violations.Any()) {
+                        <span class="ms-2">@((MarkupString)SeverityBadge(_violations.First().Severity))</span>
+                        <span class="ms-1 badge bg-secondary">@_violations.First().Tool</span>
+                    }
+                </h5>
+                @if (_violations.Any()) {
+                    var first = _violations.First();
+                    <div class="text-muted small mb-2">@first.Message</div>
+                    <div class="row g-3">
+                        <div class="col-auto"><strong>Total occurrences:</strong> @_violations.Count</div>
+                        <div class="col-auto"><strong>Pages affected:</strong> @_violations.Select(v => v.PageScanResultId).Distinct().Count()</div>
+                        <div class="col-auto"><strong>Sites affected:</strong> @_violations.Select(v => v.SiteId).Distinct().Count()</div>
+                        @if (!String.IsNullOrWhiteSpace(first.WcagCriteria)) {
+                            <div class="col-auto"><strong>WCAG:</strong> @first.WcagCriteria</div>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(first.HelpUrl)) {
+                            <div class="col-auto">
+                                <a href="@first.HelpUrl" target="_blank" rel="noopener" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-external-link-alt me-1"></i>Fix guidance
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!_violations.Any()) {
+            <div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>No occurrences of this rule found across any site.</div>
+        } else {
+            @* Group by site, then by page within site *@
+            var bySite = _violations.GroupBy(v => v.SiteId)
+                .Select(g => new { SiteId = g.Key, SiteName = g.First().SiteName, Items = g.ToList() })
+                .OrderByDescending(g => g.Items.Count);
+
+            <div class="row g-2 align-items-center mb-3">
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Group by</label>
+                    <select class="form-select form-select-sm" @bind="_grouping" aria-label="Group by">
+                        <option value="site">Site</option>
+                        <option value="selector">CSS selector</option>
+                        <option value="flat">Flat list</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (_grouping == "site") {
+                foreach (var siteGroup in bySite) {
+                    <div class="card mb-2">
+                        <div class="card-header py-2 d-flex align-items-center">
+                            <strong>
+                                <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + siteGroup.SiteId))">@siteGroup.SiteName</a>
+                            </strong>
+                            <span class="ms-2 badge bg-dark">@siteGroup.Items.Count occurrences</span>
+                            <span class="ms-1 badge bg-secondary">@siteGroup.Items.Select(x => x.PageScanResultId).Distinct().Count() pages</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Page</th>
+                                        <th>CSS Selector</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pg in siteGroup.Items.GroupBy(v => v.PageScanResultId)) {
+                                        var sample = pg.First();
+                                        <tr @key="pg.Key">
+                                            <td class="small">
+                                                <a href="@(Helpers.BuildUrl("Pages/" + sample.PageScanResultId))">
+                                                    @(String.IsNullOrWhiteSpace(sample.PageTitle) ? sample.PageUrl : sample.PageTitle)
+                                                </a>
+                                                <br /><span class="text-muted">@sample.PageUrl</span>
+                                            </td>
+                                            <td class="small">
+                                                @foreach (var occ in pg) {
+                                                    <code class="d-block">@occ.Selector</code>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            } else if (_grouping == "selector") {
+                var bySelector = _violations
+                    .GroupBy(v => v.Selector ?? "(no selector)")
+                    .OrderByDescending(g => g.Count())
+                    .ToList();
+                <table class="table table-sm">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width:90px;">Count</th>
+                            <th>CSS Selector</th>
+                            <th>Sample pages</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var g in bySelector) {
+                            <tr @key="g.Key">
+                                <td><span class="badge bg-dark">@g.Count()</span></td>
+                                <td><code>@g.Key</code></td>
+                                <td class="small">
+                                    @foreach (var pageUrl in g.Select(v => v.PageUrl).Distinct().Take(3)) {
+                                        <div>@pageUrl</div>
+                                    }
+                                    @if (g.Select(v => v.PageUrl).Distinct().Count() > 3) {
+                                        <div class="text-muted">+ @(g.Select(v => v.PageUrl).Distinct().Count() - 3) more</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            } else {
+                <div style="max-height:70vh; overflow-y:auto;">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-dark sticky-top">
+                            <tr>
+                                <th style="width:140px;">Site</th>
+                                <th>Page URL</th>
+                                <th>CSS Selector</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var v in _violations) {
+                                <tr @key="v.A11yViolationId">
+                                    <td><a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + v.SiteId))">@v.SiteName</a></td>
+                                    <td class="small text-break">
+                                        <a href="@(Helpers.BuildUrl("Pages/" + v.PageScanResultId))">@v.PageUrl</a>
+                                    </td>
+                                    <td class="small"><code>@v.Selector</code></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+    [Parameter] public string? RuleId { get; set; }
+
+    private string _pageName = "ruledetail";
+    private bool _validatedUrl = false;
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _exporting = false;
+    private string _grouping = "site";
+
+    private List<DataObjects.CrossSiteViolation> _violations = new();
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_validatedUrl) { _validatedUrl = true; await Helpers.ValidateUrl(TenantCode); }
+            if (!_loadedData) { _loadedData = true; await LoadData(); }
+        }
+    }
+
+    private void OnDataModelUpdated() { if (Model.View == _pageName) StateHasChanged(); }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+        // Pull every violation matching this rule across all sites (latest scan only).
+        // The API endpoint filter uses CanonicalRuleId; pass the route param as both literal RuleId
+        // (we filter client-side) and CanonicalRuleId so the backend narrows what it returns.
+        string targetRule = Uri.UnescapeDataString(RuleId ?? "");
+        var filter = new {
+            SiteIds = (List<Guid>?)null,
+            UrlPattern = (string?)null,
+            Severity = (string?)null,
+            CanonicalRuleId = (string?)null, // filter client-side because RuleId may not match CanonicalRuleId
+            LatestScanOnly = true,
+        };
+        var results = await Helpers.GetOrPost<List<DataObjects.CrossSiteViolation>>("api/Data/GetCrossSiteViolations", filter);
+        _violations = (results ?? new())
+            .Where(v => v.RuleId == targetRule || v.CanonicalRuleId == targetRule)
+            .OrderBy(v => v.SiteName).ThenBy(v => v.PageUrl)
+            .ToList();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task ExportCsv()
+    {
+        _exporting = true;
+        StateHasChanged();
+        try {
+            static string Esc(string? s) => "\"" + (s ?? "").Replace("\"", "\"\"") + "\"";
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Site,Page URL,Page Title,CSS Selector,Message,WCAG Criteria,Help URL");
+            foreach (var v in _violations) {
+                sb.AppendLine($"{Esc(v.SiteName)},{Esc(v.PageUrl)},{Esc(v.PageTitle)},{Esc(v.Selector)},{Esc(v.Message)},{Esc(v.WcagCriteria)},{Esc(v.HelpUrl)}");
+            }
+            var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+            string slug = System.Text.RegularExpressions.Regex.Replace(Uri.UnescapeDataString(RuleId ?? "rule"), @"[^a-zA-Z0-9_.-]", "_");
+            await jsRuntime.InvokeVoidAsync("eval",
+                $"var a=document.createElement('a');a.href='data:text/csv;base64,{b64}';a.download='rule-{slug}-{DateTime.Now:yyyy-MM-dd}.csv';a.click();");
+        } finally {
+            _exporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private static string SeverityBadge(string severity) => severity.ToLower() switch {
+        "critical" => "<span class=\"badge bg-danger\">Critical</span>",
+        "serious" => "<span class=\"badge bg-warning text-dark\">Serious</span>",
+        "moderate" => "<span class=\"badge bg-info text-dark\">Moderate</span>",
+        "minor" => "<span class=\"badge bg-secondary\">Minor</span>",
+        _ => "<span class=\"badge bg-secondary\">" + severity + "</span>",
+    };
+}

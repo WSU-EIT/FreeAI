@@ -1,0 +1,118 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 480,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".hide-tablet",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a9791b:7b3bbc2a-0ff4-0a84-9350-676099aa341c\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".trust2",
+      "Snippet": "\u003Cdiv class=\u0022heading-style-h2 trust2\u0022\u003E2M\u003C/div\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".is-secondary.w-button[href$=\u0022showcase\u0022]",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e3286281a\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "#search-button",
+      "Snippet": "\u003Ca id=\u0022search-button\u0022 data-w-id=\u00223a806d1b-98d9-9b44-7d2e-843ef95dd38d\u0022 data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a9791b:3a806d1b-98d9-9b44...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_logo-link",
+      "Snippet": "\u003Ca href=\u0022#\u0022 data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e32862888\u0022 data-wf-ao-click-engagement-tracking=\u0022t...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_social-link.w-inline-block[target=\u0022_blank\u0022]:nth-child(1)",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e32862894\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_social-link.w-inline-block[target=\u0022_blank\u0022]:nth-child(2)",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e32862896\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_social-link.w-inline-block[target=\u0022_blank\u0022]:nth-child(3)",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e32862898\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_social-link.w-inline-block[target=\u0022_blank\u0022]:nth-child(4)",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e3286289a\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".footer14_social-link.w-inline-block[target=\u0022_blank\u0022]:nth-child(5)",
+      "Snippet": "\u003Ca data-wf-native-id-path=\u0022d6e6fa36-4fd6-7310-2767-820318a97920:0526aede-1d08-f262-4adf-a65e3286289c\u0022 data-wf-ao-click-engagement-tracking=\u0022true\u0022 data...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "axe",
+    "RuleId": "scrollable-region-focusable",
+    "CanonicalRuleId": "scrollable-region-focusable",
+    "Severity": "serious",
+    "Message": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable",
+    "Selector": "#tablepress-1 \u003E thead \u003E .row-1.odd",
+    "Snippet": "\u003Ctr class=\u0022row-1 odd\u0022 style=\u0022height: 0px;\u0022\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/scrollable-region-focusable?application=axeAPI",
+    "WcagCriteria": "wcag2a, wcag211, wcag213",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

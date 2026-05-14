@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "heading-order",
+      "CanonicalRuleId": "heading-order",
+      "Severity": "moderate",
+      "Message": "Heading level skipped: \u003Ch1\u003E to \u003Ch3\u003E",
+      "Selector": null,
+      "Snippet": "\u003Ch3 class=\u0022wsu-accordion__title\u0022 id=\u0022accordion_91056-91570-title\u0022 tabindex=\u0022-1\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "PagePath": "/",
+  "Url": "https://graduation.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "WSU Graduations",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 661888,
+  "ScreenshotSizeBytes": 317389,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 317389
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://graduation.wsu.edu/media/760122/grad-vs-walk.png?rmode=max\u0026width=821\u0026height=461",
+      "AltText": "Graphic depicting Graduation and Commencement steps"
+    },
+    {
+      "SourceUrl": "https://graduation.wsu.edu/media/760399/learn365-cap-left_488x89-space-right.png?width=488\u0026height=89",
+      "AltText": "Learn 365 page link"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 1,
+    "Serious": 3,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:08:06.9459774Z"
+}

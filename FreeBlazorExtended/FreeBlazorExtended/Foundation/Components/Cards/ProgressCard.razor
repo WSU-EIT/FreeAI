@@ -1,0 +1,287 @@
+﻿@*
+    ProgressCard — Foundation progress summary card with a labelled progress bar and optional metric rows.
+
+    Use this component to visualise task completion, quota consumption, or any measurable advance
+    toward a goal. Supply either a direct Percent value or a Current/Total pair — the component
+    calculates the displayed percentage automatically.
+
+    Required parameters:
+        Title   — the task or resource label (card is hidden when empty)
+
+    Optional parameters:
+        Percent       — completion percentage 0–100 (used when Current/Total are not set)
+        Current       — numerator of the completion ratio (overrides Percent when paired with Total)
+        Total         — denominator of the completion ratio
+        BarColor      — Bootstrap colour name: "primary" | "success" | "warning" | "danger" | "info"
+        ShowMetrics   — show the Current/Total row and RemainingText row below the bar (default true)
+        RemainingText — custom text for the "Remaining:" metric row
+        Subtitle      — secondary description below the title
+        ChildContent  — render fragment for footer content
+
+    Example (ratio mode):
+        <ProgressCard Title="Storage Used"
+                      Current="@usedGb"
+                      Total="@totalGb"
+                      BarColor="warning"
+                      RemainingText="@($"{totalGb - usedGb} GB free")" />
+
+    Example (percent mode):
+        <ProgressCard Title="Sprint Velocity" Percent="72" BarColor="success" />
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_title)) {
+    <div class="progress-card" role="region" aria-label="@_title progress">
+        <div class="progress-header">
+            <h3 class="progress-title">@_title</h3>
+            <span class="progress-percent" aria-label="Progress: @_displayPercent percent">@_displayPercent%</span>
+        </div>
+
+        @if (!String.IsNullOrWhiteSpace(Subtitle)) {
+            <p class="progress-subtitle">@Subtitle</p>
+        }
+
+        <div class="progress @_progressContainerClass" role="progressbar" aria-valuenow="@_displayPercent" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar @_progressBarClass" style="width: @_displayPercent%"></div>
+        </div>
+
+        @if (ShowMetrics) {
+            <div class="progress-metrics">
+                @if (Current.HasValue && Total.HasValue) {
+                    <div class="metric">
+                        <span class="label">Progress:</span>
+                        <span class="value">@_displayCurrent / @_displayTotal</span>
+                    </div>
+                }
+                @if (!String.IsNullOrWhiteSpace(RemainingText)) {
+                    <div class="metric">
+                        <span class="label">Remaining:</span>
+                        <span class="value">@RemainingText</span>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (ChildContent != null) {
+            <div class="progress-footer">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .progress-card {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .progress-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .progress-percent {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--bs-primary);
+    }
+
+    .progress-subtitle {
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+        color: var(--bs-secondary);
+    }
+
+    .progress-container {
+        height: 8px;
+        background-color: var(--bs-gray-200);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: var(--bs-primary);
+        transition: width 0.3s ease;
+        border-radius: 999px;
+    }
+
+    .progress-bar.success {
+        background-color: var(--bs-success);
+    }
+
+    .progress-bar.warning {
+        background-color: var(--bs-warning);
+    }
+
+    .progress-bar.danger {
+        background-color: var(--bs-danger);
+    }
+
+    .progress-bar.info {
+        background-color: var(--bs-info);
+    }
+
+    .progress-metrics {
+        display: flex;
+        gap: 2rem;
+        padding: 1rem 0;
+        border-top: 1px solid var(--bs-border-color);
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .progress-metrics .metric {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .progress-metrics .label {
+        color: var(--bs-secondary);
+        font-weight: 500;
+    }
+
+    .progress-metrics .value {
+        color: var(--bs-body-color);
+        font-weight: 600;
+    }
+
+    .progress-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    @@media (max-width: 576px) {
+        .progress-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .progress-metrics {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+
+@code {
+    protected string _title = "";
+    protected string _progressContainerClass = "progress-container";
+    protected string _progressBarClass = "";
+    protected int _displayPercent = 0;
+    protected int _displayCurrent = 0;
+    protected int _displayTotal = 0;
+
+    /// <summary>
+    /// The task or resource name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Secondary description displayed below the title in a muted font.
+    /// Optional — use for context such as a deadline or category.
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// Direct completion percentage in the range 0–100.
+    /// Ignored when both <see cref="Current"/> and <see cref="Total"/> are set
+    /// (the component calculates the percentage from those values instead).
+    /// Default: <c>0</c>.
+    /// </summary>
+    [Parameter] public decimal Percent { get; set; } = 0;
+
+    /// <summary>
+    /// The numerator of the completion ratio (e.g. bytes used, tasks done).
+    /// When paired with <see cref="Total"/>, the component derives <see cref="Percent"/>
+    /// automatically and displays a <c>Current / Total</c> metric row.
+    /// Optional — supply <see cref="Percent"/> directly when a ratio is not available.
+    /// </summary>
+    [Parameter] public int? Current { get; set; }
+
+    /// <summary>
+    /// The denominator of the completion ratio (e.g. total bytes, total tasks).
+    /// Required for ratio mode to work; ignored when <see cref="Current"/> is null.
+    /// </summary>
+    [Parameter] public int? Total { get; set; }
+
+    /// <summary>
+    /// Bootstrap contextual colour applied to the progress bar fill.
+    /// Accepted values: <c>"primary"</c> (default), <c>"success"</c>, <c>"warning"</c>,
+    /// <c>"danger"</c>, <c>"info"</c>.
+    /// Choose <c>"warning"</c> or <c>"danger"</c> when the metric is approaching a limit.
+    /// </summary>
+    [Parameter] public string BarColor { get; set; } = "primary";
+
+    /// <summary>
+    /// When <c>true</c> (default), renders metric rows below the bar showing the
+    /// <c>Current / Total</c> ratio and the <see cref="RemainingText"/>.
+    /// Set to <c>false</c> for a compact bar-only layout.
+    /// </summary>
+    [Parameter] public bool ShowMetrics { get; set; } = true;
+
+    /// <summary>
+    /// Custom text for the "Remaining:" metric row (e.g. <c>"3 GB free"</c>, <c>"4 days left"</c>).
+    /// Only visible when <see cref="ShowMetrics"/> is <c>true</c> and this value is non-empty.
+    /// Optional.
+    /// </summary>
+    [Parameter] public string RemainingText { get; set; } = "";
+
+    /// <summary>
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for action buttons or supplemental status information.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _title = Title ?? "";
+
+        // Calculate percent from Current/Total if provided
+        if (Current.HasValue && Total.HasValue && Total.Value > 0) {
+            _displayPercent = (int)((decimal)Current.Value / Total.Value * 100);
+            _displayCurrent = Current.Value;
+            _displayTotal = Total.Value;
+        } else {
+            _displayPercent = Math.Min(100, Math.Max(0, (int)Percent));
+        }
+
+        // Set progress bar color class
+        _progressBarClass = BarColor?.ToLower() switch
+        {
+            "success" => "success",
+            "warning" => "warning",
+            "danger" => "danger",
+            "info" => "info",
+            _ => ""
+        };
+    }
+}

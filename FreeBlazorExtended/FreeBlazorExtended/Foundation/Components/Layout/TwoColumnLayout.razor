@@ -1,0 +1,208 @@
+﻿@*
+    TwoColumnLayout — Foundation two-column grid with a primary content area and a sidebar.
+
+    Use this component for detail pages, settings screens, or any view that combines a wide
+    main panel with a narrower contextual or navigational sidebar. The sidebar collapses below
+    the main content on tablet and mobile viewports.
+
+    Required parameters: none — supply MainContent and SidebarContent at minimum.
+
+    Optional parameters:
+        SidebarPosition — "right" (default) | "left"
+        SidebarWidth    — "default" (300 px) | "narrow" (250 px) | "wide" (400 px)
+        SidebarBehavior — "sticky" (sidebar scrolls with, then pins at top) |
+                          "floating" (fixed position, overlaps content) |
+                          "default" (static)
+        MainContent     — the primary body render fragment
+        SidebarContent  — the sidebar render fragment
+
+    Example:
+        <TwoColumnLayout SidebarPosition="right" SidebarWidth="narrow">
+            <MainContent>
+                <ArticleBody Article="@_article" />
+            </MainContent>
+            <SidebarContent>
+                <TableOfContents Sections="@_sections" />
+            </SidebarContent>
+        </TwoColumnLayout>
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="two-column-layout @_layoutClass">
+    <div class="layout-main">
+        @if (MainContent != null) {
+            @MainContent
+        }
+    </div>
+
+    <aside class="layout-sidebar @_sidebarClass" role="complementary">
+        @if (SidebarContent != null) {
+            @SidebarContent
+        }
+    </aside>
+</div>
+
+<style>
+    .two-column-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    .two-column-layout.sidebar-right {
+        grid-template-columns: 1fr 300px;
+    }
+
+    .two-column-layout.sidebar-left {
+        grid-template-columns: 300px 1fr;
+    }
+
+    .two-column-layout.sidebar-narrow {
+        grid-template-columns: 1fr 250px;
+    }
+
+    .two-column-layout.sidebar-wide {
+        grid-template-columns: 1fr 400px;
+    }
+
+    .layout-main {
+        min-width: 0;
+        overflow-y: auto;
+    }
+
+    .layout-sidebar {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.375rem;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 1rem;
+    }
+
+    .layout-sidebar.sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .layout-sidebar.floating {
+        position: fixed;
+        right: 1rem;
+        top: 1rem;
+        width: 300px;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        z-index: 50;
+    }
+
+    @@media (max-width: 1024px) {
+        .two-column-layout {
+            grid-template-columns: 1fr 250px;
+            gap: 1.5rem;
+        }
+
+        .layout-sidebar {
+            padding: 1rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .two-column-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .layout-sidebar {
+            position: static;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--bs-border-color);
+            padding-top: 2rem;
+        }
+
+        .layout-sidebar.floating {
+            position: static;
+            width: 100%;
+            max-height: none;
+            right: auto;
+            top: auto;
+        }
+    }
+</style>
+
+@code {
+    protected string _layoutClass = "";
+    protected string _sidebarClass = "";
+
+    /// <summary>
+    /// Controls which side the sidebar occupies.
+    /// Accepted values: <c>"right"</c> (default), <c>"left"</c>.
+    /// On mobile the sidebar always stacks below the main content regardless of this setting.
+    /// </summary>
+    [Parameter] public string SidebarPosition { get; set; } = "right";
+
+    /// <summary>
+    /// Width of the sidebar column.
+    /// Accepted values: <c>"default"</c> (300 px), <c>"narrow"</c> (250 px), <c>"wide"</c> (400 px).
+    /// Default: <c>"default"</c>.
+    /// </summary>
+    [Parameter] public string SidebarWidth { get; set; } = "default";
+
+    /// <summary>
+    /// Positioning behaviour of the sidebar panel.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"sticky"</c> — the sidebar pins to the top of the viewport while the main content scrolls (default)</item>
+    ///   <item><c>"floating"</c> — fixed position over the page; useful for panels that must stay in frame</item>
+    ///   <item><c>"default"</c> or any other value — static positioning, scrolls with the page</item>
+    /// </list>
+    /// </summary>
+    [Parameter] public string SidebarBehavior { get; set; } = "sticky";
+
+    /// <summary>The primary page body content rendered in the wide main column.</summary>
+    [Parameter] public RenderFragment? MainContent { get; set; }
+
+    /// <summary>The contextual or navigational content rendered in the sidebar column.</summary>
+    [Parameter] public RenderFragment? SidebarContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        string position = (SidebarPosition ?? "right").ToLower();
+        string width = (SidebarWidth ?? "default").ToLower();
+        string behavior = (SidebarBehavior ?? "sticky").ToLower();
+
+        _layoutClass = position switch
+        {
+            "left" => "sidebar-left",
+            _ => "sidebar-right"
+        };
+
+        if (width == "narrow") {
+            _layoutClass += " sidebar-narrow";
+        } else if (width == "wide") {
+            _layoutClass += " sidebar-wide";
+        }
+
+        _sidebarClass = behavior switch
+        {
+            "floating" => "floating",
+            "sticky" => "sticky-top",
+            _ => ""
+        };
+    }
+}

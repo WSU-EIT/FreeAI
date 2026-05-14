@@ -1,0 +1,67 @@
+{
+  "PagePath": "/FreeCICD",
+  "Url": "https://prod.em.wsu.edu/FreeCICD",
+  "FinalUrl": "https://prod.em.wsu.edu/FreeCICD/Login",
+  "Title": "FreeCICD",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 158913,
+  "ScreenshotSizeBytes": 19705,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 19705
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "blazor-enhanced-nav": "allow",
+    "cache-control": "no-cache, no-store",
+    "content-security-policy": "frame-ancestors \u0027self\u0027 login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:36 GMT",
+    "pragma": "no-cache",
+    "server": "Microsoft-IIS/10.0",
+    "strict-transport-security": "max-age=2592000",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:09:36.5666314Z"
+}

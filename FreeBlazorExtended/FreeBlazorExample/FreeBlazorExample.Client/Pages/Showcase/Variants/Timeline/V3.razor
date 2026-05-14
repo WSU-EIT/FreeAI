@@ -1,0 +1,51 @@
+@page "/showcase/timeline/v3"
+@using FreeBlazorExtended.Timeline
+
+<div class="container-fluid py-4">
+    <h1>Deployment Timeline With Drill-In</h1>
+
+    <div class="row g-4">
+        <div class="col-md-7">
+            <Timeline Events="_events"
+                      TimestampFormat="HH:mm:ss"
+                      OnEventClick="HandleEventClick" />
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Selected Event</h2>
+                    @if (_selectedEvent is null) {
+                        <p class="text-muted mb-0">Click any event to inspect its details.</p>
+                    } else {
+                        <p class="small mb-1"><strong>Id:</strong> @_selectedEvent.Id</p>
+                        <p class="small mb-1"><strong>Title:</strong> @_selectedEvent.Title</p>
+                        <p class="small mb-1"><strong>Actor:</strong> @(_selectedEvent.Actor ?? "—")</p>
+                        <p class="small mb-1"><strong>Description:</strong> @(_selectedEvent.Description ?? "—")</p>
+                        <div class="small">@((MarkupString)(_selectedEvent.DetailHtml ?? "<em>No detail html.</em>"))</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<Timeline.TimelineEvent> _events = new()
+    {
+        new() { Id = "build", Title = "Build Started", Timestamp = DateTime.Now.AddMinutes(-18), State = Timeline.TimelineEventState.Completed, Actor = "CI", Description = "Compilation started on the release branch." },
+        new() { Id = "tests", Title = "Unit Tests", Timestamp = DateTime.Now.AddMinutes(-14), State = Timeline.TimelineEventState.Completed, Actor = "CI", Description = "Unit suite completed.", DetailHtml = "<code>342 passed</code> in <strong>4.2s</strong>" },
+        new() { Id = "lint", Title = "Lint", Timestamp = DateTime.Now.AddMinutes(-12), State = Timeline.TimelineEventState.Skipped, Actor = "CI", Description = "Lint was skipped for this hotfix run." },
+        new() { Id = "integration", Title = "Integration Tests", Timestamp = DateTime.Now.AddMinutes(-8), State = Timeline.TimelineEventState.Error, Actor = "CI", Description = "Integration tests reported failures.", DetailHtml = "<span class='text-danger'>2 failures detected</span> in checkout and webhook flows." },
+        new() { Id = "deploy", Title = "Deploy", Timestamp = DateTime.Now.AddMinutes(-2), State = Timeline.TimelineEventState.InProgress, Actor = "Release Bot", Description = "Deployment is currently running." },
+        new() { Id = "verify", Title = "Verify", Timestamp = default, State = Timeline.TimelineEventState.Pending, Actor = "Ops", Description = "Awaiting smoke verification." },
+    };
+
+    private Timeline.TimelineEvent? _selectedEvent;
+
+    private Task HandleEventClick(Timeline.TimelineEvent evt)
+    {
+        _selectedEvent = evt;
+        return Task.CompletedTask;
+    }
+}

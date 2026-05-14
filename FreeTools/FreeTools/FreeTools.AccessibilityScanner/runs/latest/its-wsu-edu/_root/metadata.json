@@ -1,0 +1,103 @@
+{
+  "PagePath": "/",
+  "Url": "https://its.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 254010,
+  "ScreenshotSizeBytes": 301906,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 301906
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2025/02/Preperation-Week-Fall-2023_7916-copy-2.jpg",
+      "AltText": "A person in the foreground is sitting on a gray couch, using an laptop. Other individuals are in the background, some working on laptops and others engaged in conversation."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2025/02/Classroom-Photography-March-2024-Phillip-Morgan-_-068-1900x1267-1.jpg",
+      "AltText": "A person sitting at a desk, holding a stylus and looking at a tablet screen displaying text and highlighted sections. A smartphone is placed on the desk next to the tablet."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/10/Bryan123_9700.jpg",
+      "AltText": "Bryan Clock Tower"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/02/2108_hp_zoom_375x250.jpg",
+      "AltText": "Cougar Pride bronze sculpture"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/05/wsu-its-ms-teams-project_1980x1138.jpg",
+      "AltText": "Coug head logo "
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/04/student-matlab-1.jpg",
+      "AltText": "Pullman Washington WSU campus"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/10/WSU-Visitor-23.jpg",
+      "AltText": "Blue heart Statue "
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2022/03/IMG_1614.jpg",
+      "AltText": "Security operations room"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2026/01/Prep-Week-in-CUB_2483-1900x1215-1.jpg",
+      "AltText": "Washington State University\u0027s 12-foot-tall painted bronze sculpture, The Technicolor Heart, is a blue beacon covered with everyday items like hammers, shoes, clamps, and flashlights."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 17,
+    "Critical": 0,
+    "Serious": 17,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 15,
+        "Critical": 0,
+        "Serious": 15,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:07:21 GMT",
+    "etag": "\u00228dad50d017fc8ffc3b7696a86c26130a\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:59:57 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/2\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding"
+  },
+  "CapturedAt": "2026-02-19T02:07:18.4861181Z"
+}

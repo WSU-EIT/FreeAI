@@ -1,0 +1,99 @@
+{
+  "PagePath": "/family-weekends/chosen-coug-awards/",
+  "Url": "https://family.wsu.edu/family-weekends/chosen-coug-awards/",
+  "FinalUrl": null,
+  "Title": "Chosen Coug Awards",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 53384,
+  "ScreenshotSizeBytes": 574115,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 574115
+    }
+  ],
+  "ImageCount": 8,
+  "ImagesMissingAlt": 6,
+  "Images": [
+    {
+      "SourceUrl": "https://family.wsu.edu/media/spsbwruk/chosen-coug-logo-2024.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/uwocusp5/52808596520_2109035ede_o.jpg",
+      "AltText": "Dr. Amy Roth McDuffie (right),  nominated by Johana Thomas Zapata (left)"
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/r4zeab2j/fall-2024-awardee.jpeg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/5dmlllea/chosencoug2024sp.jpg",
+      "AltText": "Anggri Pratama and family"
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/d21j35zh/20231104_091416.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/0n0oe3jk/68-1.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/fvlfa1vr/smith_-john-and-kimberly.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://family.wsu.edu/media/l2tp53wy/doty-2019.jpg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 2,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 2,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:11:49 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:11:50.3433859Z"
+}

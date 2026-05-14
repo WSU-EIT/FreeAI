@@ -1,0 +1,285 @@
+﻿@page "/showcase/deleteconfirmation"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Delete Confirmation Component</h1>
+            <p class="lead">A two-step confirmation component that prevents accidental deletions with customizable buttons, icons, and styling.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A two-stage UI control: an initial Delete button that transitions to a Confirm/Cancel pair on first click, preventing accidental data deletion with zero boilerplate inline logic on the calling page."
+        WhatEli5="A delete button that asks 'are you sure?' before actually deleting — so a misclick never wipes out real data."
+        Who=@(new[]{ "Any CRUD list or detail page that has a delete action", "Form builders who want safe delete without writing the two-step state logic themselves every time", "UX designers standardising destructive-action patterns across the app" })
+        WhenUse=@(new[]{ "List rows with a delete button next to each record", "Detail pages with a 'Delete this record' action", "Any destructive action where an accidental click would have lasting consequences" })
+        WhenNot=@(new[]{ "Bulk-delete scenarios — a confirmation modal dialog is better for 'delete 47 records'", "Non-destructive actions where undo is trivially available" })
+        Why="Single-click deletes cause support tickets and user frustration. Re-implementing the two-step state pattern on every page is repetitive and inconsistent. One component handles it everywhere."
+        TechNotes=@(new[]{ "Internal _confirming bool toggles between the initial button and the confirm/cancel pair", "OnConfirmed: EventCallback fired only after the second click — no value passed, just a signal", "All three button texts (DeleteText, CancelText, ConfirmDeleteText), icon classes, and CSS button classes are Parameters", "ButtonSize parameter maps to Bootstrap btn-sm/btn-lg; defaults to standard size", "Disabled parameter blocks the initial click entirely (useful during async operations)" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic Example</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard delete confirmation with default styling.</p>
+                    <DeleteConfirmation OnConfirmed="@(async () => await BasicDelete())" />
+                    @if (_basicDeleteConfirmed) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>Delete confirmed!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Custom Text</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Customized button text for domain-specific language.</p>
+                    <DeleteConfirmation
+                        OnConfirmed="@(async () => await CustomTextDelete())"
+                        DeleteText="Remove Record"
+                        CancelText="Keep It"
+                        ConfirmDeleteText="Yes, Remove It" />
+                    @if (_customTextDeleteConfirmed) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>Record removed successfully!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Large Button Size</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Using large button sizing for better visibility.</p>
+                    <DeleteConfirmation
+                        OnConfirmed="@(async () => await LargeDelete())"
+                        ButtonSize="large" />
+                    @if (_largeDeleteConfirmed) {
+                        <div class="alert alert-success mt-3 mb-0" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>Delete confirmed!
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Delete button disabled until conditions are met.</p>
+                    <DeleteConfirmation
+                        OnConfirmed="@(async () => await DisabledDelete())"
+                        Disabled="@(!_enableDelete)" />
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="enableDeleteCheck" @onchange="@((ChangeEventArgs e) => _enableDelete = (bool)e.Value!)" />
+                        <label class="form-check-label" for="enableDeleteCheck">
+                            Enable delete button
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>OnConfirmed</code></td>
+                                    <td>EventCallback</td>
+                                    <td>-</td>
+                                    <td>Callback invoked when the confirm delete button is clicked</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Disabled</code></td>
+                                    <td>bool</td>
+                                    <td>false</td>
+                                    <td>Disables the delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeleteText</code></td>
+                                    <td>string</td>
+                                    <td>"Delete"</td>
+                                    <td>Text for the initial delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>CancelText</code></td>
+                                    <td>string</td>
+                                    <td>"Cancel"</td>
+                                    <td>Text for the cancel button shown during confirmation</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ConfirmDeleteText</code></td>
+                                    <td>string</td>
+                                    <td>"Confirm Delete"</td>
+                                    <td>Text for the confirmation button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeleteIcon</code></td>
+                                    <td>string</td>
+                                    <td>FontAwesome trash</td>
+                                    <td>HTML icon for the delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>CancelIcon</code></td>
+                                    <td>string</td>
+                                    <td>FontAwesome times</td>
+                                    <td>HTML icon for the cancel button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ConfirmDeleteIcon</code></td>
+                                    <td>string</td>
+                                    <td>FontAwesome trash</td>
+                                    <td>HTML icon for the confirm delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DeleteButtonClass</code></td>
+                                    <td>string</td>
+                                    <td>"btn btn-danger"</td>
+                                    <td>CSS class for the delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>CancelButtonClass</code></td>
+                                    <td>string</td>
+                                    <td>"btn btn-dark"</td>
+                                    <td>CSS class for the cancel button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ConfirmDeleteButtonClass</code></td>
+                                    <td>string</td>
+                                    <td>"btn btn-danger"</td>
+                                    <td>CSS class for the confirm delete button</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ButtonSize</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>Button size: "xs", "small", "standard", or "large"</td>
+                                </tr>
+                                <tr>
+                                    <td><code>DefaultIconLibrary</code></td>
+                                    <td>string</td>
+                                    <td>"fontawesome"</td>
+                                    <td>Icon library: "fontawesome" or "google"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/demo"
+@@inject IJSRuntime jsRuntime
+
+&lt;DeleteConfirmation
+    OnConfirmed="@@HandleDelete"
+    DeleteText="Remove"
+    ButtonSize="large" /&gt;
+
+@@code {{
+    private async Task HandleDelete()
+    {{
+        // Handle the deletion
+        await jsRuntime.InvokeVoidAsync("console.log", "Item deleted");
+    }}
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Uses semantic HTML button elements for keyboard navigation</li>
+                        <li>Supports ARIA labels for screen readers via DeleteButtonAriaLabel, CancelButtonAriaLabel, and ConfirmDeleteButtonAriaLabel parameters</li>
+                        <li>Two-step confirmation prevents accidental deletions</li>
+                        <li>Clear visual feedback during confirmation state</li>
+                        <li>Supports icon libraries for visual clarity</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected bool _basicDeleteConfirmed = false;
+    protected bool _customTextDeleteConfirmed = false;
+    protected bool _largeDeleteConfirmed = false;
+    protected bool _enableDelete = false;
+
+    protected async Task BasicDelete()
+    {
+        _basicDeleteConfirmed = true;
+        await Task.Delay(2000);
+        _basicDeleteConfirmed = false;
+    }
+
+    protected async Task CustomTextDelete()
+    {
+        _customTextDeleteConfirmed = true;
+        await Task.Delay(2000);
+        _customTextDeleteConfirmed = false;
+    }
+
+    protected async Task LargeDelete()
+    {
+        _largeDeleteConfirmed = true;
+        await Task.Delay(2000);
+        _largeDeleteConfirmed = false;
+    }
+
+    protected async Task DisabledDelete()
+    {
+        await Task.CompletedTask;
+    }
+}

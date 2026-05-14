@@ -1,0 +1,96 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 449,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-column:nth-child(1) \u003E .wsu-heading--style-outline \u003E strong",
+      "Snippet": "\u003Cstrong\u003EREsearch\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--large.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(4) \u003E strong",
+      "Snippet": "\u003Cstrong\u003EFRIENDLY\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--large.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(6) \u003E strong",
+      "Snippet": "\u003Cstrong\u003EFRIENDLY\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--large.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(10) \u003E strong",
+      "Snippet": "\u003Cstrong\u003EFORWARD\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-max-width--xlarge \u003E .wsu-spacing-before--large.wsu-heading--style-outline.wsu-spacing-after--large \u003E strong",
+      "Snippet": "\u003Cstrong\u003EFUEL\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--xxlarge.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(14) \u003E strong",
+      "Snippet": "\u003Cstrong\u003E\u201Cbest value\u201D\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--xxlarge.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(16) \u003E strong",
+      "Snippet": "\u003Cstrong\u003Estudents\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".wsu-spacing-before--xxlarge.wsu-heading--style-outline.wsu-spacing-after--large:nth-child(18) \u003E strong",
+      "Snippet": "\u003Cstrong\u003Eoutstanding\u003C/strong\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

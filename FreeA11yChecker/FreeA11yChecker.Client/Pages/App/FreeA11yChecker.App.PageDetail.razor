@@ -1,0 +1,663 @@
+@page "/Compliance/Page/{PageResultId}"
+@page "/Pages/{PageResultId}"
+@page "/{TenantCode}/Pages/{PageResultId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="PageDetail" IncludeIcon="true" />
+        </h1>
+        <div class="text-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <div class="mt-2">@_loadingStatus</div>
+            <div class="progress mt-2" style="max-width: 400px; margin: auto;">
+                <div class="progress-bar" role="progressbar" style="width: @(_totalSteps > 0 ? _loadingStep * 100 / _totalSteps : 0)%" aria-valuenow="@(_totalSteps > 0 ? _loadingStep * 100 / _totalSteps : 0)" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="PageDetail" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                @if (_isPublic) {
+                    <a href="@(Helpers.BuildUrl("Compliance"))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                } else if (_pageResult != null) {
+                    <a href="@(Helpers.BuildUrl("Scans/" + _pageResult.ScanRunId))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                } else {
+                    <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                }
+            </div>
+        </div>
+
+        @if (_pageResult != null) {
+            @* ── Breadcrumb ── *@
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb">
+                    @if (_isPublic) {
+                        <li class="breadcrumb-item"><a href="@(Helpers.BuildUrl("Compliance"))"><Language Tag="ComplianceDashboard" /></a></li>
+                    }
+                    <li class="breadcrumb-item"><a href="@(Helpers.BuildUrl("Scans/" + _pageResult.ScanRunId))"><Language Tag="ScanDetail" /></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><Language Tag="PageDetail" /></li>
+                </ol>
+            </nav>
+
+            @* ── Page Header ── *@
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>@(String.IsNullOrWhiteSpace(_pageResult.PageTitle) ? _pageResult.Url : _pageResult.PageTitle)</h5>
+                            <div class="text-muted">@_pageResult.Url</div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-dark">@_pageResult.StatusCode</span>
+                            <span class="text-muted ms-2">@FormatSize(_pageResult.HtmlSizeBytes)</span>
+                            <span class="text-muted ms-2">@_pageResult.ScanDurationMs ms</span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <span class="badge bg-dark me-1">@_pageResult.TotalViolations <Language Tag="Violations" /></span>
+                            <span class="badge bg-danger me-1">@_pageResult.CriticalCount <Language Tag="Critical" /></span>
+                            <span class="badge bg-warning text-dark me-1">@_pageResult.SeriousCount <Language Tag="Serious" /></span>
+                            <span class="badge bg-info text-dark me-1">@_pageResult.ModerateCount <Language Tag="Moderate" /></span>
+                            <span class="badge bg-secondary me-1">@_pageResult.MinorCount <Language Tag="Minor" /></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* ── Screenshot Gallery ── *@
+            @if (_pageResult.PageScanResultId != Guid.Empty && String.IsNullOrWhiteSpace(_pageResult.ErrorMessage)) {
+                <h5 class="mb-2"><Language Tag="Screenshots" /></h5>
+                <FreeA11yChecker_App_ScreenshotGallery PageScanResultId="@_pageResult.PageScanResultId" />
+            }
+
+            @* ── Accessibility Health (per-tool pass/fail roll-up) ── *@
+            int axeFails = _violations.Count(v => v.Tool.Equals("axe", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+            int axeAxePassed = _pageResult.AxePassCount;
+            int axeIncomplete = _pageResult.AxeIncompleteCount;
+            int axeInapplicable = _pageResult.AxeInapplicableCount;
+            int axeTotal = axeFails + axeAxePassed + axeIncomplete + axeInapplicable;
+
+            int ibmFails = _violations.Count(v => v.Tool.Equals("ibm", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+            int ibmPassed = _pageResult.IbmPassCount;
+            int ibmPotential = _pageResult.IbmPotentialCount;
+            int ibmManual = _pageResult.IbmManualCount;
+            int ibmTotal = ibmFails + ibmPassed + ibmPotential + ibmManual;
+
+            int htmlCheckFails = _violations.Where(v => v.Tool.Equals("htmlcheck", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed)
+                .Select(v => v.RuleId).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            int htmlCheckTotal = _pageResult.HtmlCheckTotalChecks > 0 ? _pageResult.HtmlCheckTotalChecks : 0;
+            int htmlCheckPassed = _pageResult.HtmlCheckPassCount;
+
+            int htmlCsFails = _violations.Count(v => v.Tool.Equals("htmlcs", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+
+            int totalChecksPassed = axeAxePassed + ibmPassed + htmlCheckPassed;
+            int totalChecksFailed = axeFails + ibmFails + htmlCheckFails + htmlCsFails;
+            int totalChecksRun = totalChecksPassed + totalChecksFailed;
+            double overallPassRate = totalChecksRun > 0 ? 100.0 * totalChecksPassed / totalChecksRun : 0;
+            string passBarColor = overallPassRate >= 95 ? "bg-success" : overallPassRate >= 80 ? "bg-info" : overallPassRate >= 60 ? "bg-warning" : "bg-danger";
+            <div class="card mb-3">
+                <div class="card-header py-2 d-flex align-items-center">
+                    <strong><i class="fas fa-heartbeat me-1" aria-hidden="true"></i>Accessibility Health</strong>
+                    <span class="ms-3 text-muted small">@totalChecksPassed of @totalChecksRun rule checks passed</span>
+                    <span class="ms-auto badge fs-6 @passBarColor">@overallPassRate.ToString("F0")% pass rate</span>
+                </div>
+                <div class="card-body py-2">
+                    @if (totalChecksRun > 0) {
+                        <div class="progress mb-3" style="height:10px;" role="progressbar"
+                             aria-valuenow="@((int)overallPassRate)" aria-valuemin="0" aria-valuemax="100"
+                             aria-label="Overall rule pass rate">
+                            <div class="progress-bar @passBarColor" style="width:@overallPassRate.ToString("F0")%;"></div>
+                        </div>
+                    }
+                    <div class="row g-2 small">
+                        @* axe-core *@
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded p-2 h-100">
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong>axe-core</strong>
+                                    @if (axeTotal > 0) {
+                                        <span class="ms-auto text-muted">@axeTotal rules</span>
+                                    }
+                                </div>
+                                @if (axeAxePassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@axeAxePassed pass</span> }
+                                @if (axeFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@axeFails fail</span> }
+                                @if (axeIncomplete > 0) { <span class="badge bg-warning text-dark me-1" title="Could not auto-determine — needs review">@axeIncomplete incomplete</span> }
+                                @if (axeInapplicable > 0) { <span class="badge bg-light text-dark border" title="Rule does not apply to this page">@axeInapplicable n/a</span> }
+                                @if (axeTotal == 0) { <span class="text-muted">no data</span> }
+                            </div>
+                        </div>
+                        @* IBM Equal Access *@
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded p-2 h-100">
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong>IBM Equal Access</strong>
+                                    @if (ibmTotal > 0) {
+                                        <span class="ms-auto text-muted">@ibmTotal rules</span>
+                                    }
+                                </div>
+                                @if (ibmPassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@ibmPassed pass</span> }
+                                @if (ibmFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@ibmFails fail</span> }
+                                @if (ibmPotential > 0) { <span class="badge bg-warning text-dark me-1" title="Needs human review">@ibmPotential potential</span> }
+                                @if (ibmManual > 0) { <span class="badge bg-info text-dark me-1" title="Requires manual verification">@ibmManual manual</span> }
+                                @if (ibmTotal == 0) { <span class="text-muted">no data (CDN may be blocked)</span> }
+                            </div>
+                        </div>
+                        @* HtmlChecker *@
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded p-2 h-100">
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong>htmlcheck</strong>
+                                    @if (htmlCheckTotal > 0) {
+                                        <span class="ms-auto text-muted">@htmlCheckTotal rules</span>
+                                    }
+                                </div>
+                                @if (htmlCheckPassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@htmlCheckPassed pass</span> }
+                                @if (htmlCheckFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@htmlCheckFails fail</span> }
+                                @if (htmlCheckTotal == 0 && htmlCheckFails == 0) { <span class="text-muted">no data</span> }
+                            </div>
+                        </div>
+                        @* HTML_CodeSniffer (failures-only tool) *@
+                        <div class="col-md-6 col-lg-3">
+                            <div class="border rounded p-2 h-100">
+                                <div class="d-flex align-items-center mb-1">
+                                    <strong>HTML_CodeSniffer</strong>
+                                    <span class="ms-auto text-muted small" title="HTMLCS reports failures only — no rule total">issues only</span>
+                                </div>
+                                @if (htmlCsFails > 0) {
+                                    <span class="badge bg-danger me-1">@htmlCsFails issues</span>
+                                } else {
+                                    <span class="badge bg-success">clean</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* ── Violation Filters ── *@
+            <h5 class="mt-3 mb-2"><Language Tag="Violations" /></h5>
+            <div class="row mb-3 g-2">
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by severity" @bind="_severityFilter" @bind:after="ApplyFilters">
+                        <option value="all"><Language Tag="AllSeverities" /></option>
+                        <option value="critical"><Language Tag="Critical" /></option>
+                        <option value="serious"><Language Tag="Serious" /></option>
+                        <option value="moderate"><Language Tag="Moderate" /></option>
+                        <option value="minor"><Language Tag="Minor" /></option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by tool" @bind="_toolFilter" @bind:after="ApplyFilters">
+                        <option value="all"><Language Tag="AllTools" /></option>
+                        <option value="axe">axe-core</option>
+                        <option value="htmlcheck">htmlcheck</option>
+                        <option value="htmlcs">htmlcs</option>
+                        <option value="ibm">ibm</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by WCAG level" @bind="_wcagLevelFilter" @bind:after="ApplyFilters">
+                        <option value="all">All WCAG Levels</option>
+                        <option value="a">Level A only</option>
+                        <option value="aa">Level AA (A + AA)</option>
+                        <option value="aaa">Level AAA (A + AA + AAA)</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Sort violations" @bind="_sortOrder" @bind:after="ApplyFilters">
+                        <option value="severity-desc">Severity (High → Low)</option>
+                        <option value="severity-asc">Severity (Low → High)</option>
+                        <option value="rule">Rule ID (A→Z)</option>
+                        <option value="wcag">WCAG Criteria</option>
+                    </select>
+                </div>
+            </div>
+
+            @* ── Violation List ── *@
+            @if (_filteredViolations.Any()) {
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        Showing @((_currentPage - 1) * _pageSize + 1) to @(Math.Min(_currentPage * _pageSize, _filteredViolations.Count)) of @_filteredViolations.Count violations
+                    </div>
+                </div>
+
+                @foreach (var violation in _filteredViolations.Skip((_currentPage - 1) * _pageSize).Take(_pageSize)) {
+                    <div @key="violation.A11yViolationId" class="card mb-2 violation-card @(violation.IsSuppressed ? "border-warning" : "")">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-1 flex-wrap gap-1">
+                                @((MarkupString)GetSeverityBadge(violation.Severity))
+                                @if (violation.IsSuppressed) {
+                                    <span class="badge bg-warning text-dark" title="@violation.SuppressionReason">
+                                        <i class="fas fa-shield-alt me-1"></i>Suppressed
+                                        @if (!String.IsNullOrWhiteSpace(violation.OriginalSeverity)) {
+                                            <text> (was @violation.OriginalSeverity)</text>
+                                        }
+                                    </span>
+                                }
+                                <span class="badge bg-secondary ms-1">@violation.Tool</span>
+                                <strong class="ms-2">@violation.RuleId</strong>
+                                @if (!String.IsNullOrWhiteSpace(violation.CanonicalRuleId) && violation.CanonicalRuleId != violation.RuleId) {
+                                    <span class="text-muted ms-1">(@violation.CanonicalRuleId)</span>
+                                }
+                            </div>
+                            <p class="mb-1">@violation.Message</p>
+
+                            @if (violation.IsSuppressed && !String.IsNullOrWhiteSpace(violation.SuppressionReason)) {
+                                <div class="alert alert-warning py-1 px-2 small mb-2">
+                                    <i class="fas fa-info-circle me-1"></i><strong>Suppression reason:</strong> @violation.SuppressionReason
+                                </div>
+                            }
+
+                            @if (!String.IsNullOrWhiteSpace(violation.Selector)) {
+                                <div class="mb-1">
+                                    <strong><Language Tag="CSSSelector" />:</strong>
+                                    <code class="d-block bg-light p-1 mt-1 rounded">@violation.Selector</code>
+                                </div>
+                            }
+
+                            @if (!String.IsNullOrWhiteSpace(violation.HtmlSnippet)) {
+                                <div class="mb-1">
+                                    <strong><Language Tag="HTMLSnippet" />:</strong>
+                                    <pre class="bg-light p-2 mt-1 rounded"><code>@violation.HtmlSnippet</code></pre>
+                                </div>
+                            }
+
+                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                @if (!String.IsNullOrWhiteSpace(violation.WcagCriteria)) {
+                                    <span class="badge bg-light text-dark border">
+                                        WCAG @violation.WcagCriteria
+                                    </span>
+                                }
+                                @if (!String.IsNullOrWhiteSpace(violation.HelpUrl)) {
+                                    <a href="@violation.HelpUrl" target="_blank" rel="noopener" class="btn btn-xs btn-outline-primary">
+                                        <Language Tag="ViewFixGuidance" />
+                                    </a>
+                                }
+                                @if (violation.IsSuppressed) {
+                                    <a href="@(Helpers.BuildUrl("Settings/Suppressions"))" class="btn btn-xs btn-outline-warning">
+                                        <i class="fas fa-shield-alt me-1"></i>Manage suppression
+                                    </a>
+                                } else {
+                                    <button class="btn btn-xs btn-outline-warning" @onclick="() => StartSuppress(violation)">
+                                        <i class="fas fa-shield-alt me-1"></i>Suppress this rule
+                                    </button>
+                                }
+                            </div>
+
+                            @if (_suppressTarget != null && _suppressTarget.A11yViolationId == violation.A11yViolationId) {
+                                <div class="card mt-2 border-warning">
+                                    <div class="card-header bg-warning text-dark py-1 small">
+                                        <strong>Suppress this rule</strong> &mdash; downgrade to <span class="badge bg-secondary">minor</span> wherever it matches
+                                    </div>
+                                    <div class="card-body py-2">
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Rule ID</label>
+                                            <input type="text" class="form-control form-control-sm" @bind="_suppressForm.RuleId" />
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">CSS selector pattern (use <code>*</code> for wildcard, blank = match any)</label>
+                                            <input type="text" class="form-control form-control-sm" @bind="_suppressForm.SelectorPattern" />
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Reason <span class="text-danger">*</span></label>
+                                            <textarea class="form-control form-control-sm" rows="2" @bind="_suppressForm.Reason"
+                                                      placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="suppressTenantWide_@violation.A11yViolationId"
+                                                   @bind="_suppressApplyTenantWide" />
+                                            <label class="form-check-label small" for="suppressTenantWide_@violation.A11yViolationId">
+                                                <strong>Apply to all sites in this tenant</strong> (uncheck to scope to this site only)
+                                            </label>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-warning" @onclick="SaveSuppression"
+                                                    disabled="@(String.IsNullOrWhiteSpace(_suppressForm.Reason) || _savingSuppression)">
+                                                @if (_savingSuppression) {
+                                                    <text><span class="spinner-border spinner-border-sm me-1" role="status"></span>Saving</text>
+                                                } else {
+                                                    <text><i class="fas fa-save me-1"></i>Save suppression</text>
+                                                }
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" @onclick="CancelSuppress">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @* ── Pagination Controls ── *@
+                @if (GetTotalPages() > 1) {
+                    <nav aria-label="Violations pagination" class="mt-3">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => SetPage(_currentPage - 1)">Previous</button>
+                            </li>
+                            
+                            @for (int i = Math.Max(1, _currentPage - 5); i <= Math.Min(GetTotalPages(), _currentPage + 5); i++) {
+                                int pageNum = i;
+                                <li class="page-item @(_currentPage == pageNum ? "active" : "")">
+                                    <button class="page-link" @onclick="() => SetPage(pageNum)">@pageNum</button>
+                                </li>
+                            }
+
+                            <li class="page-item @(_currentPage == GetTotalPages() ? "disabled" : "")">
+                                <button class="page-link" @onclick="() => SetPage(_currentPage + 1)">Next</button>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            } else if (_violations.Any()) {
+                <div class="alert alert-warning d-flex align-items-center flex-wrap gap-2">
+                    <span><i class="fas fa-filter me-1"></i><strong>@_violations.Count violation@(_violations.Count == 1 ? "" : "s") on this page</strong> — all hidden by current filters.</span>
+                    <button class="btn btn-sm btn-outline-dark" @onclick="ResetViolationFilters">
+                        <i class="fas fa-times me-1"></i>Clear filters
+                    </button>
+                </div>
+            } else {
+                <div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>No violations found.</div>
+            }
+        }
+    }
+}
+@code {
+    [Parameter] public string? PageResultId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _validatedUrl = false;
+    private bool _isPublic = false;
+    private string _pageName = "pagedetail";
+
+    private string _loadingStatus = "";
+    private int _loadingStep = 0;
+    private int _totalSteps = 2;
+
+    private string _severityFilter = "all";
+    private string _toolFilter = "all";
+    private string _wcagLevelFilter = "aa";
+    private string _sortOrder = "severity-desc";
+
+    private int _currentPage = 1;
+    private int _pageSize = 25;
+
+    private DataObjects.PageScanResult? _pageResult;
+    private List<DataObjects.A11yViolation> _violations = new();
+    private List<DataObjects.A11yViolation> _filteredViolations = new();
+
+    private DataObjects.A11yViolation? _suppressTarget;
+    private DataObjects.ViolationSuppression _suppressForm = new();
+    private bool _suppressApplyTenantWide = true;
+    private bool _savingSuppression = false;
+
+    private void StartSuppress(DataObjects.A11yViolation v)
+    {
+        _suppressTarget = v;
+        _suppressForm = new DataObjects.ViolationSuppression {
+            ViolationSuppressionId = Guid.Empty,
+            RuleId = !String.IsNullOrWhiteSpace(v.CanonicalRuleId) ? v.CanonicalRuleId! : v.RuleId,
+            SelectorPattern = v.Selector,
+            Reason = "",
+            Enabled = true,
+        };
+        _suppressApplyTenantWide = true;
+        StateHasChanged();
+    }
+
+    private void CancelSuppress()
+    {
+        _suppressTarget = null;
+        StateHasChanged();
+    }
+
+    private async Task SaveSuppression()
+    {
+        if (_suppressTarget == null || String.IsNullOrWhiteSpace(_suppressForm.Reason)) return;
+        _savingSuppression = true;
+        StateHasChanged();
+        try {
+            // SiteId scope: tenant-wide if checkbox checked; otherwise scope to this page's site.
+            _suppressForm.SiteId = _suppressApplyTenantWide ? (Guid?)null : _pageResult?.ScanRunId; // ScanRunId is wrong here — we need SiteId
+            // PageScanResult doesn't carry SiteId directly; derive from ScanRun loaded earlier if available.
+            // Simplest fix: just always tenant-wide from this surface, mirror in Settings page if site-scoped needed.
+            if (!_suppressApplyTenantWide) {
+                // Look up the SiteId from the ScanRun that owns this PageScanResult.
+                var scanRunRes = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetScanRuns",
+                    new { Ids = new List<Guid> { _pageResult!.ScanRunId }, SiteId = (Guid?)null });
+                _suppressForm.SiteId = scanRunRes?.FirstOrDefault()?.SiteId;
+            }
+            var saved = await Helpers.GetOrPost<DataObjects.ViolationSuppression>("api/Data/SaveViolationSuppression", _suppressForm);
+            if (saved != null && saved.ActionResponse?.Result == true) {
+                _suppressTarget = null;
+                // Reload violations so suppression takes immediate effect.
+                if (_pageResult != null) {
+                    var reloaded = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolations",
+                        new { Ids = new List<Guid>(), PageScanResultId = _pageResult.PageScanResultId });
+                    if (reloaded != null) {
+                        _violations = reloaded;
+                        ApplyFilters();
+                    }
+                }
+            } else {
+                Model.ErrorMessages(saved?.ActionResponse?.Messages ?? new List<string> { "Save failed" });
+            }
+        } finally {
+            _savingSuppression = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            // Determine public by checking the current URL pattern
+            _isPublic = !Model.LoggedIn;
+
+            if (!_isPublic && !_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        if (!String.IsNullOrWhiteSpace(PageResultId)) {
+            Guid pageResultGuid = Guid.Parse(PageResultId);
+
+            if (_isPublic) {
+                _loadingStatus = "Loading page data...";
+                _loadingStep = 1;
+                _totalSteps = 1;
+                StateHasChanged();
+                await Task.Yield();
+
+                _pageResult = await Helpers.GetOrPost<DataObjects.PageScanResult>("api/Data/GetPublicPageDetail", pageResultGuid);
+                if (_pageResult != null) {
+                    _violations = _pageResult.Violations;
+                }
+            } else {
+                _loadingStatus = "Loading page data...";
+                _loadingStep = 1;
+                _totalSteps = 2;
+                StateHasChanged();
+                await Task.Yield();
+
+                var resultsTask = Helpers.GetOrPost<List<DataObjects.PageScanResult>>("api/Data/GetPageScanResults",
+                    new { Ids = new List<Guid> { pageResultGuid }, ScanRunId = (Guid?)null });
+                var violationsTask = Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolations",
+                    new { Ids = new List<Guid>(), PageScanResultId = pageResultGuid });
+
+                await Task.WhenAll(resultsTask, violationsTask);
+
+                var results = await resultsTask;
+                if (results != null && results.Any()) {
+                    _pageResult = results.First();
+                }
+
+                _loadingStatus = "Processing violations...";
+                _loadingStep = 2;
+                StateHasChanged();
+                await Task.Yield();
+
+                var violations = await violationsTask;
+                if (violations != null) {
+                    _violations = violations;
+                }
+            }
+        }
+
+        ApplyFilters();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void ResetViolationFilters()
+    {
+        _severityFilter = "all";
+        _toolFilter = "all";
+        _wcagLevelFilter = "all";
+        ApplyFilters();
+        StateHasChanged();
+    }
+
+    private void ApplyFilters()
+    {
+        var results = _violations.AsEnumerable();
+
+        if (_severityFilter != "all") {
+            results = results.Where(x => x.Severity.ToLower() == _severityFilter);
+        }
+
+        if (_toolFilter != "all") {
+            results = results.Where(x => x.Tool.ToLower() == _toolFilter);
+        }
+
+        if (_wcagLevelFilter != "all") {
+            results = results.Where(x => WcagLevelHelper.MatchesWcagLevel(x.WcagCriteria, _wcagLevelFilter));
+        }
+
+        int SeverityRank(string s) => s.ToLower() switch {
+            "critical" => 0, "serious" => 1, "moderate" => 2, "minor" => 3, _ => 4
+        };
+        results = _sortOrder switch {
+            "severity-asc"  => results.OrderByDescending(x => SeverityRank(x.Severity)),
+            "rule"          => results.OrderBy(x => x.RuleId),
+            "wcag"          => results.OrderBy(x => x.WcagCriteria),
+            _               => results.OrderBy(x => SeverityRank(x.Severity)),
+        };
+
+        _filteredViolations = results.ToList();
+        _currentPage = 1;
+    }
+
+    private void SetPage(int page)
+    {
+        if (page >= 1 && page <= GetTotalPages()) {
+            _currentPage = page;
+            StateHasChanged();
+        }
+    }
+
+    private int GetTotalPages()
+    {
+        if (_filteredViolations.Count == 0) return 1;
+        return (int)Math.Ceiling(_filteredViolations.Count / (double)_pageSize);
+    }
+
+    private void GoBack()
+    {
+        if (_isPublic) {
+            Helpers.NavigateTo("Compliance");
+        } else {
+            Helpers.NavigateTo("Settings/Sites");
+        }
+    }
+
+    private string GetSeverityBadge(string severity)
+    {
+        return severity.ToLower() switch {
+            "critical" => "<span class=\"badge bg-danger me-1\">Critical</span>",
+            "serious" => "<span class=\"badge bg-warning text-dark me-1\">Serious</span>",
+            "moderate" => "<span class=\"badge bg-info text-dark me-1\">Moderate</span>",
+            "minor" => "<span class=\"badge bg-secondary me-1\">Minor</span>",
+            _ => "<span class=\"badge bg-secondary me-1\">" + severity + "</span>",
+        };
+    }
+
+    private string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024.0).ToString("F1") + " KB";
+        return (bytes / (1024.0 * 1024.0)).ToString("F1") + " MB";
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _pageResult == null) { return; }
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+            update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object != null) {
+                try {
+                    var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                    var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (scanRun != null && scanRun.ScanRunId == _pageResult.ScanRunId) {
+                        InvokeAsync(async () => { await LoadData(); });
+                    }
+                } catch { }
+            }
+        }
+    }
+}

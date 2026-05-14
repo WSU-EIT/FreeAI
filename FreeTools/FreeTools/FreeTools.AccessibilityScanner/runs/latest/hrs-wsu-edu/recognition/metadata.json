@@ -1,0 +1,77 @@
+{
+  "PagePath": "/recognition/",
+  "Url": "https://hrs.wsu.edu/recognition/",
+  "FinalUrl": null,
+  "Title": "Recognition \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 83803,
+  "ScreenshotSizeBytes": 236958,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 236958
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/02/los-awards-logo.png",
+      "AltText": "Cougar head logo."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/01/Crimson-Spirit-Award-logo-300x300.jpg",
+      "AltText": "Crimson Spirit logo featuring a cougar head and the text Crimson Spirit."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/02/QCC-25yr-Coin-HRS.png",
+      "AltText": "QCC logo with the words: Celebrating 25 years."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:25:48 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/11001\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=11001\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:25:47.8232046Z"
+}

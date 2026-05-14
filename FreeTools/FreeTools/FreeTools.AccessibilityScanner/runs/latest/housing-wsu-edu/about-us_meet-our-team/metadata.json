@@ -1,0 +1,179 @@
+{
+  "PagePath": "/about-us/meet-our-team/",
+  "Url": "https://housing.wsu.edu/about-us/meet-our-team/",
+  "FinalUrl": null,
+  "Title": "Meet Our Team",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 109036,
+  "ScreenshotSizeBytes": 454094,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 454094
+    }
+  ],
+  "ImageCount": 28,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/i5hlpmpv/meg-autrey-square.png",
+      "AltText": "Meg Autrey"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kskhy51b/nichole-goodwin.png",
+      "AltText": "Nichole Goodwin"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pfwelffj/erik-sorensen-1.jpg",
+      "AltText": "Erik Sorensen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rrbl10xu/cougarheadlogo.jpg",
+      "AltText": "Manny Gomez"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/z24fh00u/6q6a5297.png",
+      "AltText": "Griffin Hogan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/bmhf3422/daniel-schenk.jpg",
+      "AltText": "Daniel Schenk (2)"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/yiqhtxnl/desiree.jpg",
+      "AltText": "Desiree  Valdez Chavez"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0bkbgjbb/jack-van-dam-square.png",
+      "AltText": "Jack Van Dam"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/im3isloc/belindarose-ane.jpg",
+      "AltText": "Belindarose Ane"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1mweluq2/tyler-bacon.jpg",
+      "AltText": "Tyler Bacon"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/urhf4oeb/seattle-2.jpg",
+      "AltText": "Seattle Bentley"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qhpl2r1z/dept-social-badge-800x800.jpg",
+      "AltText": "Mason Burns"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zzelvta2/kelly-chege-2.jpg",
+      "AltText": "Kelly Chege"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ltchnt2h/emily-davis-1.jpg",
+      "AltText": "Emily Davis"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/htfb32ta/sarah-hadaway.jpg",
+      "AltText": "Sarah Hadaway"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u5sh1pww/samuel-houle.jpg",
+      "AltText": "Sam Houle"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/shrju5q4/_q6a2649.png",
+      "AltText": "Megan Marshall"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5wriim04/toni-martin.jpg",
+      "AltText": "Toni Martin"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mi1nse52/kyle.jpg",
+      "AltText": "Kyle Morgan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4ohi4vxe/jillian-paxton.jpg",
+      "AltText": "Jillian Paxton"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eitb35aq/valeria-perez.jpg",
+      "AltText": "Valeria Perez"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qgedotf2/lindseyweaver.jpg",
+      "AltText": "Lindsey Weaver"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hselcibf/brandon-trueswell.jpg",
+      "AltText": "Brandon Trueswell"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5xbhwgfw/mattie-updyke.jpg",
+      "AltText": "Mattie Updyke"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ioumuv54/lisl-wiedemann.jpg",
+      "AltText": "Lisl Wiedemann"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/nkynzfqw/trey-collins.jpg",
+      "AltText": "Trey Collins"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3jsljguz/georgina-ramos-avalos-1.jpg",
+      "AltText": "Georgina Ramos Avalos"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3poocflf/sara-refsland.jpg",
+      "AltText": "Sara Refsland"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:08:42 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:08:42.5666321Z"
+}

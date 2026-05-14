@@ -1,0 +1,185 @@
+@* Dynamic screenshot gallery — fetches the actual screenshot list from the API and
+   renders any number of images per page, grouped by inferred category (Authentication,
+   Page Load Sequence, Page Expanded, Analysis Overlays, Color Vision, Screen Reader, Other).
+   Lightbox navigates across the full flat list. *@
+
+@if (PageScanResultId != Guid.Empty) {
+    @if (_loading) {
+        <div class="text-muted small"><i class="fas fa-spinner fa-spin me-1"></i>Loading screenshots...</div>
+    } else if (_flatList.Count == 0) {
+        <div class="text-muted small">No screenshots captured for this page.</div>
+    } else {
+        <div class="screenshot-gallery">
+            @foreach (var group in _grouped) {
+                <div class="screenshot-group mb-3">
+                    <h6 class="mb-2 text-muted">
+                        @group.Key
+                        <span class="badge bg-secondary ms-1">@group.Value.Count</span>
+                    </h6>
+                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-2">
+                        @foreach (var shot in group.Value) {
+                            int flatIndex = _flatList.IndexOf(shot);
+                            <div class="col">
+                                <div class="card h-100 screenshot-thumb" role="button" tabindex="0"
+                                     @onclick="@(() => OpenLightbox(flatIndex))"
+                                     @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") OpenLightbox(flatIndex); })">
+                                    @if (_brokenImages.Contains(flatIndex)) {
+                                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 100px;">
+                                            <small class="text-muted">Not available</small>
+                                        </div>
+                                    } else {
+                                        <img src="@GetImageUrl(shot)" alt="@shot.Label"
+                                             class="card-img-top" loading="lazy"
+                                             @onerror="@(() => { _brokenImages.Add(flatIndex); StateHasChanged(); })" />
+                                    }
+                                    <div class="card-body p-1">
+                                        <small class="text-muted text-truncate d-block" title="@shot.Label">@shot.Label</small>
+                                        @if (shot.SizeBytes > 0) {
+                                            <small class="text-muted d-block" style="font-size:0.7em;">@FormatSize(shot.SizeBytes)</small>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (_selectedImage != null) {
+            <div class="screenshot-lightbox-overlay" @onclick="CloseLightbox" @onkeydown="@(e => { if (e.Key == "Escape") CloseLightbox(); })">
+                <div class="screenshot-lightbox" @onclick:stopPropagation="true">
+                    <div class="lightbox-header d-flex justify-content-between align-items-center p-2">
+                        <span class="fw-semibold">@_selectedLabel</span>
+                        <button type="button" class="btn btn-sm btn-outline-light" @onclick="CloseLightbox">
+                            <Icon Name="fa-times" />
+                        </button>
+                    </div>
+                    <div class="lightbox-body text-center p-2">
+                        <button type="button" class="btn btn-sm btn-outline-light lightbox-nav lightbox-prev"
+                                @onclick="@(() => NavigateLightbox(-1))">
+                            <Icon Name="fa-chevron-left" />
+                        </button>
+                        <img src="@_selectedImage" alt="@_selectedLabel" class="img-fluid lightbox-image" />
+                        <button type="button" class="btn btn-sm btn-outline-light lightbox-nav lightbox-next"
+                                @onclick="@(() => NavigateLightbox(1))">
+                            <Icon Name="fa-chevron-right" />
+                        </button>
+                    </div>
+                    <div class="lightbox-footer text-center text-muted p-1">
+                        <small>@(_selectedIndex + 1) / @_flatList.Count</small>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+@code {
+    [Parameter] public Guid PageScanResultId { get; set; }
+
+    private bool _loading = true;
+    private List<DataObjects.ScanScreenshot> _flatList = new();
+    private Dictionary<string, List<DataObjects.ScanScreenshot>> _grouped = new();
+    private HashSet<int> _brokenImages = new();
+
+    private string? _selectedImage;
+    private string _selectedLabel = "";
+    private int _selectedIndex = 0;
+
+    private Guid _lastLoadedFor = Guid.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (PageScanResultId == Guid.Empty || PageScanResultId == _lastLoadedFor) return;
+        _lastLoadedFor = PageScanResultId;
+        _loading = true;
+        _brokenImages.Clear();
+        _flatList.Clear();
+        _grouped.Clear();
+        StateHasChanged();
+
+        try {
+            var list = await Helpers.GetOrPost<List<DataObjects.ScanScreenshot>>(
+                "api/Data/GetScreenshots", PageScanResultId);
+            if (list != null && list.Count > 0) {
+                // Sort by filename so chronological/numeric prefixes group naturally.
+                _flatList = list.OrderBy(s => System.IO.Path.GetFileName(s.Path), StringComparer.OrdinalIgnoreCase).ToList();
+                _grouped = GroupByCategory(_flatList);
+            }
+        } catch { /* leave gallery empty on fetch failure */ }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private static Dictionary<string, List<DataObjects.ScanScreenshot>> GroupByCategory(
+        List<DataObjects.ScanScreenshot> shots)
+    {
+        // Keep insertion order via Dictionary (.NET preserves insertion order in practice).
+        var result = new Dictionary<string, List<DataObjects.ScanScreenshot>>();
+        string[] categoryOrder = new[] {
+            "Authentication", "Page Load Sequence", "Page Expanded",
+            "Wireframe / Blueprint", "Analysis Overlays", "Color Vision Simulation",
+            "Screen Reader View", "Other",
+        };
+        foreach (var cat in categoryOrder) result[cat] = new List<DataObjects.ScanScreenshot>();
+
+        foreach (var s in shots) {
+            string filename = System.IO.Path.GetFileName(s.Path).ToLowerInvariant();
+            string category =
+                filename.StartsWith("00") || filename.Contains("login")        ? "Authentication" :
+                filename.StartsWith("01-page-load")                            ? "Page Load Sequence" :
+                filename.StartsWith("02-page-expanded")                        ? "Page Expanded" :
+                filename.Contains("wireframe")                                 ? "Wireframe / Blueprint" :
+                (filename.StartsWith("03-") || filename.StartsWith("04-") ||
+                 filename.StartsWith("05-") || filename.StartsWith("06-") ||
+                 filename.StartsWith("07-")) && filename.Contains("overlay")   ? "Analysis Overlays" :
+                filename.Contains("cvd-")                                      ? "Color Vision Simulation" :
+                filename.Contains("screenreader")                              ? "Screen Reader View" :
+                                                                                 "Other";
+            result[category].Add(s);
+        }
+
+        // Drop empty categories so we don't render empty headers.
+        foreach (var key in result.Keys.ToList()) {
+            if (result[key].Count == 0) result.Remove(key);
+        }
+        return result;
+    }
+
+    private string GetImageUrl(DataObjects.ScanScreenshot shot)
+    {
+        string filename = System.IO.Path.GetFileName(shot.Path);
+        return $"api/Data/ScanScreenshotFile/{PageScanResultId}/{filename}";
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024.0).ToString("F0") + " KB";
+        return (bytes / (1024.0 * 1024)).ToString("F1") + " MB";
+    }
+
+    private void OpenLightbox(int index)
+    {
+        if (index < 0 || index >= _flatList.Count) return;
+        _selectedIndex = index;
+        _selectedImage = GetImageUrl(_flatList[index]);
+        _selectedLabel = _flatList[index].Label ?? "";
+    }
+
+    private void CloseLightbox()
+    {
+        _selectedImage = null;
+    }
+
+    private void NavigateLightbox(int direction)
+    {
+        if (_flatList.Count == 0) return;
+        int newIndex = _selectedIndex + direction;
+        if (newIndex < 0) newIndex = _flatList.Count - 1;
+        if (newIndex >= _flatList.Count) newIndex = 0;
+        OpenLightbox(newIndex);
+    }
+}

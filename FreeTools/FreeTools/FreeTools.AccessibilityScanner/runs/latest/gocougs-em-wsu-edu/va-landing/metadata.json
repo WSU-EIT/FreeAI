@@ -1,0 +1,110 @@
+{
+  "PagePath": "/va-landing/",
+  "Url": "https://gocougs.em.wsu.edu/va-landing/",
+  "FinalUrl": null,
+  "Title": "WSU Veterans \u0026 Military Affiliated | gocougs.em.wsu.edu",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 671717,
+  "ScreenshotSizeBytes": 333244,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 333244
+    }
+  ],
+  "ImageCount": 13,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/fx3jbsmt/collage-2.jpg?width=2100\u0026height=272",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/txpmxpnm/global-campus.jpg?width=500\u0026height=auto",
+      "AltText": "Global WSU student taking classes on a laptop"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/kwfbrzmh/global-2.png?width=162\u0026height=113",
+      "AltText": "WSU logo on a globe"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/hcrltnr1/vancouver.jpg?width=400\u0026height=225",
+      "AltText": "WSU Vancouver campus buildings and fountain"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/u2ypxggb/vancouver.png?width=177\u0026height=123",
+      "AltText": "Vancouver campus on a map"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/bp2funfc/pullman.jpg?width=500\u0026height=281",
+      "AltText": "Bryan clock tower on the Pullman campus"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/ssllmdq0/pullman.png?width=162\u0026height=113",
+      "AltText": "Pullman campus on a map"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/0ldgd2qs/tricities.jpg?width=400\u0026height=225",
+      "AltText": "WSU Vancouver campus building at sunset"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/emwjb1ao/tricities.png?width=159\u0026height=111",
+      "AltText": "TriCities campus on a map"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/2upjs5rs/spokane.jpg?width=400\u0026height=225",
+      "AltText": "WSU Spokane campus lawn and trees view from building"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/xpvk2ewk/spokane.png?width=162\u0026height=113",
+      "AltText": "Spokane campus on a map"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/1oupktz5/everett.jpg?width=400\u0026height=225",
+      "AltText": "WSU Everett campus building with wheat in foreground"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/rxlberin/everett.png?width=162\u0026height=113",
+      "AltText": "Everett campus on a map"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:19:52.3487984Z"
+}

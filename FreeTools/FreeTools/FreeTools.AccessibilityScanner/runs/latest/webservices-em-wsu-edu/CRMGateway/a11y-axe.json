@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 94,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "html-has-lang",
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "Selector": "html",
+      "Snippet": "\u003Chtml\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "Subject": "CN=technolutions.com",
+  "Issuer": "CN=Amazon RSA 2048 M01, O=Amazon, C=US",
+  "Thumbprint": "19FC71B22135E15A2500675F927A345021F053B3",
+  "SerialNumber": "05725FD6932B691C29CE29ACE801E2A7",
+  "NotBefore": "2025-11-07T16:00:00-08:00",
+  "NotAfter": "2026-12-06T15:59:59-08:00",
+  "DaysUntilExpiry": 290,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "technolutions.com",
+    "www.technolutions.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "technolutions.com",
+    "www.technolutions.com"
+  ],
+  "ErrorMessage": null
+}

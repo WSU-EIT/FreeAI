@@ -1,0 +1,52 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "html-lang",
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Message": "\u003Chtml\u003E element missing lang attribute",
+      "Selector": null,
+      "Snippet": "\u003Chtml xmlns=\u0022http://www.w3.org/1999/xhtml\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "3.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-main",
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-nav",
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "PagePath": "/apartments/columbia-village/",
+  "Url": "https://housing.wsu.edu/apartments/columbia-village/",
+  "FinalUrl": null,
+  "Title": "Columbia Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 95780,
+  "ScreenshotSizeBytes": 225110,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 4,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 225110
+    }
+  ],
+  "ImageCount": 19,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qzvlimsn/columbia-exterior-banner.png",
+      "AltText": "Columbia village exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wi2piany/columbia-twobed-th-8.png",
+      "AltText": "Columbia Two Bed Townhouse Dining/Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dh1n2gr0/columbia-twobed-flat-1.png",
+      "AltText": "Columbia Two Bed Flat Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/t1epzgk4/columbia-twobed-flat-2.png",
+      "AltText": "Columbia Two Bed Flat Bedroom Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/l1pai4c5/columbia-twobed-flat-3.png",
+      "AltText": "Columbia Two Bed Flat Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/abmfd40c/columbia-twobed-flat-4.png",
+      "AltText": "Columbia Two Bed Flat Patio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pm3g12j4/columbia-twobed-flat-5.png",
+      "AltText": "Columbia Two Bed Flat Kitchen Pantry"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/n1vlr33s/columbia-twobed-flat-6.png",
+      "AltText": "Columbia Two Bed Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5whlveis/columbia-twobed-flat-7.png",
+      "AltText": "Columbia Two Bed Flat Living"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wsjmwu4r/columbia-twobed-flat-8.png",
+      "AltText": "Columbia Two Bed Flat Living/Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0ukl2v0i/columbia-twobed-th-1.png",
+      "AltText": "Columbia Two Bed Townhouse Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5enfjtw2/columbia-twobed-th-2.png",
+      "AltText": "Columbia Two Bed Townhouse Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lbnpt1m1/columbia-twobed-th-3.png",
+      "AltText": "Columbia Two Bed Townhouse Bath"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/h5lfbxy0/columbia-twobed-th-4.png",
+      "AltText": "Columbia Two Bed Townhouse Bedroom (1)"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/egqdeumu/columbia-twobed-th-5.png",
+      "AltText": "Columbia Two Bed Townhouse Balcony"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ypbcawsj/columbia-twobed-th-6.png",
+      "AltText": "Columbia Two Bed Townhouse Living/Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/runbi1ht/columbia-twobed-th-7.png",
+      "AltText": "Columbia Two Bed Townhouse Living"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/luvpffay/columbia-2-bedroom-townhouse-resized.png",
+      "AltText": "Columbia Two Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/s0igzwu5/columbia-2-bedroom-resized.png",
+      "AltText": "Columbia Two Bedroom Flat"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:45 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:09:44.9711181Z"
+}

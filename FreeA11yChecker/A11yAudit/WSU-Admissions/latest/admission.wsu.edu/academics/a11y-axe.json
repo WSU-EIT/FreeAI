@@ -1,0 +1,36 @@
+[
+  {
+    "Tool": "axe",
+    "RuleId": "target-size",
+    "CanonicalRuleId": "target-size",
+    "Severity": "serious",
+    "Message": "Fix any of the following:\n  Target has insufficient size (12px by 2px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px.",
+    "Selector": ".wsu-degree-finder__degrees-grid-control-grid",
+    "Snippet": "\u003Cbutton class=\u0022wsu-degree-finder__degrees-grid-control-grid\u0022 role=\u0022radio\u0022 aria-checked=\u0022true\u0022 aria-label=\u0022Change degree list layout to a grid\u0022\u003E\u003Ci class=\u0022fa-sharp fa-solid fa-grid fa-2xl\u0022\u003E\u003C/i\u003E\u003C/button\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/target-size?application=axeAPI",
+    "WcagCriteria": "wcag22aa, wcag258",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  },
+  {
+    "Tool": "axe",
+    "RuleId": "target-size",
+    "CanonicalRuleId": "target-size",
+    "Severity": "serious",
+    "Message": "Fix any of the following:\n  Target has insufficient size (12px by 2px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 16px instead of at least 24px.",
+    "Selector": ".wsu-degree-finder__degrees-grid-control-list",
+    "Snippet": "\u003Cbutton class=\u0022wsu-degree-finder__degrees-grid-control-list\u0022 role=\u0022radio\u0022 aria-checked=\u0022false\u0022 aria-label=\u0022Change degree list layout to a list\u0022\u003E\u003Ci class=\u0022fa-sharp fa-solid fa-list fa-2xl\u0022\u003E\u003C/i\u003E\u003C/button\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/target-size?application=axeAPI",
+    "WcagCriteria": "wcag22aa, wcag258",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

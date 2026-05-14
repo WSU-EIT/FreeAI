@@ -1,0 +1,66 @@
+{
+  "PagePath": "/job-requirements/",
+  "Url": "https://beanoc.wsu.edu/job-requirements/",
+  "FinalUrl": null,
+  "Title": "Job Requirements | Be An Orientation Leader",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 647157,
+  "ScreenshotSizeBytes": 139044,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 139044
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/gufjk2mf/508564401_1147272910767886_7147808485223220792_n.jpg?rmode=max\u0026width=500",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://beanoc.wsu.edu/media/cmyl0pva/523246195_1177407321087778_911629046434976618_n.jpg?rmode=max\u0026width=500",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:08:30.0232617Z"
+}

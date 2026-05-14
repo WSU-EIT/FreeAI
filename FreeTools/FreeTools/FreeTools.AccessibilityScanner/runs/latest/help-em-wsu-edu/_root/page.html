@@ -1,0 +1,379 @@
+<!DOCTYPE html><html lang="en" style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: &quot;100%&quot;;"><head><meta name="app:server" content="EM-AZ-DEVOPS-03">
+    <meta name="app:version" content="4.1.17">
+    <meta name="app:released" content="2/11/2026">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://help.em.wsu.edu/favicon.ico">
+    <base href="/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/_content/Blazor.Bootstrap/blazor.bootstrap.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/_content/FreeBlazor/styles.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/_content/MudBlazor/MudBlazor.min.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/_content/Radzen.Blazor/css/material-base.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/js/bootstrap/css/bootstrap.min.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/fontawesome/css/all.css?v=4.1.17">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/css/app.css?v=e40ea3f2141a44fc84cffc89d32f5085">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/css/themes.css?v=e40ea3f2141a44fc84cffc89d32f5085">
+    <link rel="stylesheet" href="https://help.em.wsu.edu/css/tags.css?v=4.1.17">
+    <!--!--><!--!--><!--!--><title>HelpDesk</title><!--!--><!--!--></head>
+
+<body id="body-element" data-bs-theme="" class="light"><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><div id="page-area" class=""><div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasQuickAction" aria-labelledby="offcanvasQuickActionLabel" role="dialog"><!--!--><div class="offcanvas-header"><h5 class="offcanvas-title" id="offcanvasQuickActionLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+        <div class="offcanvas-body"></div></div><!--!-->
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUserMenu" aria-labelledby="offcanvasUserMenuLabel" role="dialog"><!--!--><div class="offcanvas-header"><h5 class="offcanvas-title" id="offcanvasUserMenuLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+        <div class="offcanvas-body"><!--!--><hr>
+                <div class="version-and-copyright"><!--!-->
+                    v. <span>4.1.17</span><span> - <span>2/11/2026</span></span></div></div></div><header><nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3"><div class="container-fluid"><a class="navbar-brand" href="javascript:void('0');"><!--!--><i class="icon icon-fa fa-solid fa-home"></i><span class="icon-text">Requests</span></a><!--!-->
+                        <!--!--><button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                        <div class="navbar-collapse collapse" id="navBarToggler"><ul class="navbar-nav me-auto"></ul><!--!-->
+                            <form class="d-flex"><ul class="navbar-nav me-auto"><li class="nav-item dropdown" title="Theme"><a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><!--!--><i class="icon icon-fa fa-solid fa-circle-half-stroke"></i></a><!--!-->
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown"><li><a class="dropdown-item disabled" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-regular fa-sun"></i><span class="icon-text"><!--!-->Theme</span></a></li><!--!-->
+                                                <!--!--><li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-circle-half-stroke"></i><span class="icon-text"><!--!-->Auto (based on system settings)</span></a></li><!--!-->
+                                                <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-regular fa-sun"></i><span class="icon-text"><!--!-->Light</span></a></li><!--!-->
+                                                <li><a class="dropdown-item" href="javascript:void('0');"><!--!--><!--!--><i class="icon icon-fa fa-solid fa-moon"></i><span class="icon-text"><!--!-->Dark</span></a></li></ul></li><li class="nav-item"><a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvasUserMenu" role="button" aria-controls="offcanvasUserMenu"><!--!--><i class="icon icon-fa fa-solid fa-circle-info"></i></a></li></ul></form></div></div></nav></header><div class="container-fluid page-view"><div class="pb-3"><!--!--><div class="row"><!--!--><div class="col col-12 col-sm-12 col-md-2 col-lg-4"></div>
+        <div class="col col-12 col-sm-12 col-md-8 col-lg-4"><h1 class="page-title"><!--!--><i class=""><!--!-->Login Required</i></h1><div class="mb-2"><!--!-->Select a login option below:</div><!--!--><div class="mud-focus-trap outline-none" tabindex="-1" _bl_2=""><div class="fixed pointer-events-none" tabindex="0"></div><!--!-->
+
+    <div class="fixed pointer-events-none" tabindex="0" _bl_3=""></div><!--!-->
+
+    <div class="fixed pointer-events-none" tabindex="-1" _bl_4=""></div><!--!-->
+
+    <div class="mud-focus-trap-child-container outline-none" tabindex="-1"><div class="mb-2"><button type="button" id="login-button-local" class="btn btn-dark login-button"><!--!--><i class="icon icon-fa fa-solid fa-sign-in-alt"></i><!--!-->
+                                    <!--!--><i class=""><!--!-->Log in with a Local Account</i></button></div><div class="mb-2"><button type="button" id="login-button-openid" class="btn btn-danger login-button"><div class="login-button-contents"><div class="login-button-icon"><!--!--><img src="../images/Okta_256.png"></div><!--!-->
+                                        <div class="login-button-text"><!--!-->Log in with Okta Single Sign-On</div></div></button></div></div><!--!-->
+
+    <div class="fixed pointer-events-none" tabindex="0" _bl_5=""></div><!--!-->
+
+    <div class="fixed pointer-events-none" tabindex="0"></div></div></div><!--!-->
+        <div class="col col-12 col-sm-12 col-md-2 col-lg-4"></div></div></div></div><!--!-->
+
+    <div id="password-generator" style="display:none;"></div></div><!--!-->
+
+<!--!--><div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss"><i class="fa-solid fa-xmark"></i></a></div>
+
+<!--!--><!--!-->
+<!--!--><!--!-->
+        <!--!-->
+    <script src="https://help.em.wsu.edu/_framework/blazor.web.js?v=4.1.17"></script>
+    <script src="https://help.em.wsu.edu/_content/Blazor.Bootstrap/blazor.bootstrap.js?v=4.1.17"></script>
+    <script src="https://help.em.wsu.edu/_content/MudBlazor/MudBlazor.min.js?v=4.1.17"></script>
+    <script src="https://help.em.wsu.edu/_content/Radzen.Blazor/Radzen.Blazor.js?v=8.4.3.0"></script>
+    <script src="https://help.em.wsu.edu/js/jquery/jquery-3.7.0.min.js?v=4.1.17"></script>
+    <script src="https://help.em.wsu.edu/js/bootstrap/js/bootstrap.bundle.min.js?v=4.1.17"></script>
+
+    <script type="text/javascript">
+        let cookiePrefix = "helpdesk_";
+        var dotNetHelper;
+
+        $(function () {
+            SetPreferredColorScheme("");
+
+            window.addEventListener("keyup", function (event) {
+                if(dotNetHelper != undefined && dotNetHelper != null) {
+                    if (event.code != undefined && event.code != null){
+                        //console.log("Keyup Event", event);
+                        dotNetHelper.invokeMethodAsync(
+                            "OnKeyUp",
+                            event.key,
+                            event.code,
+                            event.shiftKey,
+                            event.ctrlKey,
+                            event.altKey,
+                            event.metaKey,
+                            event.location,
+                            event.type
+                        );
+                    }
+                }
+            });
+        });
+
+        function ConsoleLog(message, objects) {
+            if(objects != undefined && objects != null) {
+                if (message != undefined && message != null && message != "") {
+                    console.log(message, objects);
+                } else {
+                    console.log(objects);
+                }
+            } else if (message != undefined && message != null && message != "") {
+                console.log(message);
+            }
+        }
+
+        function CookieRead(cname) {
+            let name = cookiePrefix + cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+
+            return "";
+        }
+
+        function CookieWrite(name, value, days) {
+            var expires;
+
+            if (days == undefined || days == null || days < 1) {
+                days = 14;
+            }
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+
+            document.cookie = cookiePrefix + name + "=" + value + expires + "; path=/";
+        }
+
+        function CopyToClipboard(value) {
+            navigator.clipboard.writeText(value);
+        }
+
+        function DelayedFocus(element) {
+            setTimeout(() => DelayedFocusInternal(element, 0), 0);
+        }
+
+        function DelayedFocusInternal(element, safety) {
+            if (safety > 20) { return; }
+            safety++;
+
+            if ($("#" + element).is(":visible") == true) {
+                // See if the element is a <div>. If so, find the first child that is an input.
+                if ($("#" + element).is("div")) {
+                    var trigger = "focus";
+
+                    // First, see if this is a Radzen input.
+                    var input = $("#" + element).find('.rz-inputtext').filter(":visible:first");
+                    if (input != undefined && input != null) {
+                        // This is a radzen component, so we will trigger a click.
+                        trigger = "click";
+                    } else {
+                        // Find a regular input element.
+                        input = $("#" + element).find('input,textarea,select').filter(":visible:first");
+                    }
+                    
+                    if (input != null) {
+                        input.trigger(trigger);
+                    }
+                } else {
+                    $("#" + element).trigger("focus");
+                }
+            } else {
+                setTimeout(() => DelayedFocusInternal(element, safety), 20);
+            }
+        }
+
+        function DelayedSelect(element) {
+            setTimeout(() => DelayedSelectInternal(element, 0), 0);
+        }
+
+        function DelayedSelectInternal(element, safety) {
+            if (safety > 20) { return; }
+            safety++;
+
+            if ($("#" + element).is(":visible") == true) {
+                $("#" + element).trigger("select");
+            } else {
+                setTimeout(() => DelayedSelectInternal(element, safety), 20);
+            }
+        }
+
+        async function DownloadFileFromStream(fileName, contentStreamReference) {
+            const arrayBuffer = await contentStreamReference.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function EnsureElementIsOnScreen(element, useMarginOffset) {
+            setTimeout(() => EnsureElementIsOnScreenInternal(element, useMarginOffset, 0), 0);
+        }
+
+        function EnsureElementIsOnScreenInternal(element, useMarginOffset, safety) {
+            if (safety > 20) { return; }
+            safety++;
+
+            if ($("#" + element).is(":visible") == true) {
+                // Get the position of the element.
+                var el = document.getElementById(element);
+                if (!el) {
+                    return;
+                }
+
+                var rect = el.getBoundingClientRect();
+                var top = rect.top;
+                var left = rect.left;
+                var right = rect.right;
+                var bottom = rect.bottom;
+                var width = rect.width;
+                var height = rect.height;
+
+                var innerWidth = window.innerWidth;
+                var innerHeight = window.innerHeight;
+
+                console.log("rect", rect);
+                console.log("Top", top, "Left", left, "Right", right, "Bottom", bottom, "innerWidth", innerWidth, "innerHeight", innerHeight);
+
+                var reposition = false;
+
+                if (useMarginOffset != undefined && useMarginOffset != null && useMarginOffset == true) {
+                    if (right > innerWidth) {
+                        el.style.right = "10px";
+                    } else if (left < 0) {
+                        el.style.left = "10px";
+                    }
+                } else {
+                    if (right > innerWidth) {
+                        left = innerWidth - width - 10;
+                        reposition = true;
+                    }
+
+                    if (left < 0) {
+                        left = 10;
+                        reposition = true;
+                    }
+
+                    if (top < 70) {
+                        top = 70;
+                        reposition = true;
+                    }
+
+                    if (reposition) {
+                        el.style.left = left + 'px';
+                        el.style.top = top + 'px';
+                    }
+                }
+            } else {
+                setTimeout(() => EnsureElementIsOnScreenInternal(element, safety), 20);
+            }
+        }
+
+        function HideMenu() {
+            let bsOffcanvasUserMenu = bootstrap.Offcanvas.getInstance("#offcanvasUserMenu");
+            if (bsOffcanvasUserMenu != undefined && bsOffcanvasUserMenu != null && bsOffcanvasUserMenu._isShown) {
+                bsOffcanvasUserMenu.hide();
+            }
+
+            let bsOffcanvasQuickActionMenu = bootstrap.Offcanvas.getInstance("#offcanvasQuickAction");
+            if (bsOffcanvasQuickActionMenu != undefined && bsOffcanvasQuickActionMenu != null && bsOffcanvasQuickActionMenu._isShown) {
+                bsOffcanvasQuickActionMenu.hide();
+            }
+        }
+
+        function HighlightElementByClass(c) {
+            $("." + c).off("click");
+            $("." + c).on("click", function () {
+                RemoveElementHighlightByClass(c);
+            });
+            $("." + c).addClass("highlight");
+
+            $("." + c).fadeOut(200)
+                .fadeIn(200)
+                .fadeOut(200)
+                .fadeIn(200)
+                .fadeOut(200)
+                .fadeIn(200);
+        }
+
+        function InsertAtCursor(field, value) {
+            var $txt = jQuery("#" + field);
+            var caretPos = $txt[0].selectionStart;
+            var textAreaTxt = $txt.val();
+            $txt.val(textAreaTxt.substring(0, caretPos) + value + textAreaTxt.substring(caretPos));
+        }
+
+        function Loaded() {
+            $("#body-element").removeClass("loading");
+        }
+
+        function NavigateTo(url) {
+            window.location.href = url;
+        }
+
+        function ReloadCurrentPage() {
+            window.location.href = window.location.href;
+        }
+
+        function RemoveElementHighlightByClass(c) {
+            $("." + c).off("click");
+            $("." + c).removeClass("highlight");
+        }
+
+        function ScrollToTop() {
+            window.scrollTo(0, 0);
+        }
+
+        function SetDotNetHelper(value) {
+            dotNetHelper = value;
+        }
+
+        function SetPreferredColorScheme(preferred) {
+            if (preferred == undefined || preferred == null) {
+                preferred = "";
+            }
+
+            if (preferred == "") {
+                var colorScheme = getComputedStyle(document.body, ':after').content;
+                var preferred = colorScheme.indexOf("dark") > -1 ? "dark" : "light";
+            }
+
+            var setTheme = "";
+            var setClass = "";
+
+            if (preferred == "dark") {
+                setTheme = "dark";
+                setClass = "dark";
+            } else if (preferred == "light") {
+                setTheme = "";
+                setClass = "light";
+            } else {
+                setTheme = preferred;
+                setClass = preferred;
+            }
+
+            // Only update if this has changed.
+            if ($("#body-element").hasClass(setClass)) {
+                // Already up-to-date
+            }else{
+                $("#body-element").attr("data-bs-theme", setTheme);
+                $("#body-element").removeClass();
+                $("#body-element").addClass(setClass);
+            }
+        }
+
+        function ShowQuickActionMenu() {
+            HideMenu();
+
+            const bsOffcanvasQuickActionMenu = new bootstrap.Offcanvas("#offcanvasQuickAction");
+            if (bsOffcanvasQuickActionMenu != undefined && bsOffcanvasQuickActionMenu != null) {
+                bsOffcanvasQuickActionMenu.show();
+            }
+        }
+
+        function SetElementValue(id, value) {
+            $("#" + id).val(value);
+        }
+    </script></body></html>

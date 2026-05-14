@@ -1,0 +1,57 @@
+{
+  "PagePath": "/",
+  "Url": "https://flex.em.wsu.edu/",
+  "FinalUrl": "https://flex.em.wsu.edu/Login",
+  "Title": "FlexCRM",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 107411,
+  "ScreenshotSizeBytes": 96598,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 96598
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:07:54.4490291Z"
+}

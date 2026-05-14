@@ -1,0 +1,19 @@
+@page "/showcase/signature/v2"
+@using FreeBlazorExtended.Signature
+
+<div class="container-fluid py-4">
+    <h1>Signature With Custom Clear Button</h1>
+    <p class="text-muted">This variant sets a stable element id, custom draw-area styling, and a styled reset button.</p>
+
+    <Signature Id="customer-sig"
+               Class="border border-2 border-primary rounded"
+               IncludeClearButton="true"
+               ClearButtonText="Reset"
+               ClearButtonClass="btn btn-sm btn-outline-danger mb-2"
+               ClearButtonIcon="fas fa-trash"
+               @bind-Value="_signatureValue" />
+</div>
+
+@code {
+    private string _signatureValue = "";
+}

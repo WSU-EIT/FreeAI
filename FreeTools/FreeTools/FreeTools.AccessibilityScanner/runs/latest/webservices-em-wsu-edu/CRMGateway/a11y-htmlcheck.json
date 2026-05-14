@@ -1,0 +1,107 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "html-lang",
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Message": "\u003Chtml\u003E element missing lang attribute",
+      "Selector": null,
+      "Snippet": "\u003Chtml\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "3.1.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022form-control padbottom\u0022 id=\u0022login-username\u0022 name=\u0022Username\u0022 placeholder=\u0022username\u0022 type=\u0022text\u0022 value=\u0022\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022form-control padbottom\u0022 id=\u0022login-password\u0022 name=\u0022Password\u0022 placeholder=\u0022password\u0022 type=\u0022password\u0022 style=\u0022\u0022\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022form-control padbottom\u0022 id=\u0022login-endpoint\u0022 name=\u0022Endpoint\u0022 placeholder=\u0022enter the URL of your Trussel application\u0022 type=\u0022text\u0022 value=\u0022h...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput class=\u0022form-control padbottom\u0022 id=\u0022login-customer-id\u0022 name=\u0022CustomerId\u0022 placeholder=\u0022enter your unique Customer ID GUID\u0022 type=\u0022text\u0022 value=\u0022edb...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton type=\u0022button\u0022 class=\u0022btn btn-xs btn-primary\u0022 data-bind=\u0022click:function(){$root.EditQuery($data.QueryId())}\u0022\u003E\n                                 ...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-main",
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-nav",
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

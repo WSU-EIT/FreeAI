@@ -1,0 +1,62 @@
+{
+  "PagePath": "/instructions/videos/msc-overview/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/videos/msc-overview/",
+  "FinalUrl": null,
+  "Title": "Maintain Schedule of Classes Overview | Academic Room Scheduling",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 690616,
+  "ScreenshotSizeBytes": 301807,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 301807
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 1,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 1,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:32:08 GMT",
+    "strict-transport-security": "max-age=31536000",
+    "x-content-type-options": "nosniff"
+  },
+  "CapturedAt": "2026-02-19T02:32:08.5972648Z"
+}

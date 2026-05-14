@@ -1,0 +1,184 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 316,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(4) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(6) \u003E td:nth-child(3) \u003E a[rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022mailto:b.martinez-sanchez@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(6) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:molly.hardin@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:molly.hardin@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(8) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:kyla.mccauley@wsu.edu\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:kyla.mccauley@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href=\u0022mailto:alex.bevington@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:alex.bevington@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(12) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(13) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(14) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(17) \u003E td:nth-child(2) \u003E a[href$=\u0022mailto:zwilson@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:zwilson@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(17) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(18) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(22) \u003E td:nth-child(2) \u003E a[rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022mailto:heather.burchell@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(24) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:larkin.mott@wsu.edu\u0022][rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:larkin.mott@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(34) \u003E td:nth-child(2) \u003E a[rel=\u0022noreferrer noopener\u0022][target=\u0022_blank\u0022]:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022mailto:heather.burchell@wsu.edu\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(36) \u003E td:nth-child(3) \u003E a[href=\u0022mailto:kyla.mccauley@wsu.edu\u0022]",
+      "Snippet": "\u003Ca href=\u0022mailto:kyla.mccauley@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "tr:nth-child(38) \u003E td:nth-child(2) \u003E a:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022mailto:kaitlin.morehouse@wsu.edu\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

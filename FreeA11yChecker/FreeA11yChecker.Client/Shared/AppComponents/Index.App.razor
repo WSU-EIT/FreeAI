@@ -1,0 +1,422 @@
+@implements IDisposable
+@using Humanizer
+@inject BlazorDataModel Model
+
+@if (Model.Loaded && Model.View == _pageName && (Model.LoggedIn || !RequireLogin)) {
+    if (Model.Tenant.TenantSettings.LogoIncludedOnHomePage && !String.IsNullOrWhiteSpace(LogoUrl)) {
+        <div class="home-page-logo-container">
+            <img src="@LogoUrl" class="logo-homepage" />
+        </div>
+    }
+
+    if (_loading) {
+        <LoadingMessage />
+    } else {
+        <h1 class="page-title">
+            @if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.AppIcon)) {
+                <i>@((MarkupString)Model.Tenant.TenantSettings.AppIcon)</i>
+            }
+
+            @if (Model.LoggedIn) {
+                <Language Tag="Welcome" ReplaceSpaces="true" /><span>&nbsp;</span>@Model.User.FirstName
+            } else {
+                <Language Tag="Welcome" ReplaceSpaces="true" />
+            }
+        </h1>
+
+        @* ── Section 1: Hero Stat Cards ── *@
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card border-start border-4 border-primary dashboard-stat-card">
+                    <div class="card-body py-2 text-center">
+                        <h3 class="mb-0">@_dashboardSites.Count</h3>
+                        <small class="text-muted text-uppercase"><i class="fas fa-globe me-1"></i> <Language Tag="TotalSites" /></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-start border-4 border-info dashboard-stat-card">
+                    <div class="card-body py-2 text-center">
+                        <h3 class="mb-0">@Model.ScanStatuses.Count</h3>
+                        <small class="text-muted text-uppercase">
+                            @if (Model.ScanStatuses.Count > 0) {
+                                <i class="fas fa-spinner fa-spin me-1"></i>
+                            } else {
+                                <i class="fas fa-sync me-1"></i>
+                            }
+                            <Language Tag="CurrentlyScanning" />
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-start border-4 border-danger dashboard-stat-card">
+                    <div class="card-body py-2 text-center">
+                        <h3 class="mb-0">@_totalCriticalIssues</h3>
+                        <small class="text-muted text-uppercase"><i class="fas fa-exclamation-triangle me-1"></i> <Language Tag="CriticalIssues" /></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-start border-4 border-success dashboard-stat-card">
+                    <div class="card-body py-2 text-center">
+                        <h3 class="mb-0">@_cleanSitesCount</h3>
+                        <small class="text-muted text-uppercase"><i class="fas fa-check-circle me-1"></i> <Language Tag="CleanSites" /></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ── Section 2: Quick Actions ── *@
+        <div class="mb-4">
+            <div class="btn-group" role="group">
+                <a href="@(Helpers.BuildUrl("Compliance"))" class="btn btn-primary btn-sm">
+                    <i class="fas fa-chart-bar me-1"></i> <Language Tag="ViewCompliance" />
+                </a>
+                <a href="@(Helpers.BuildUrl("Reports/Trends"))" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-chart-line me-1"></i> <Language Tag="ViewTrends" />
+                </a>
+                <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-cog me-1"></i> <Language Tag="ManageSites" />
+                </a>
+                <a href="@(Helpers.BuildUrl("Settings/ScanMonitor"))" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-desktop me-1"></i> <Language Tag="ScanMonitor" />
+                </a>
+            </div>
+        </div>
+
+        @* ── Section 3: Active Scans Summary ── *@
+        @if (Model.ScanStatuses.Any()) {
+            <div class="card mb-4 border-info scan-section-reveal">
+                <div class="card-header bg-info text-white d-flex align-items-center">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <strong><Language Tag="ScansInProgress" /></strong>
+                    <span class="badge bg-light text-dark ms-2">@Model.ScanStatuses.Count</span>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var kvp in Model.ScanStatuses) {
+                            var progress = kvp.Value;
+                            <li @key="kvp.Key" class="list-group-item d-flex justify-content-between align-items-center live-list-item">
+                                <div>
+                                    <strong>@progress.SiteName</strong>
+                                    @if (progress.TotalPages > 0) {
+                                        <small class="text-muted ms-2">Page @progress.CurrentPage / @progress.TotalPages</small>
+                                    }
+                                </div>
+                                <div>
+                                    @if (progress.TotalViolations > 0) {
+                                        <span class="badge bg-dark">@progress.TotalViolations violations</span>
+                                    }
+                                    @if (progress.CriticalCount > 0) {
+                                        <span class="badge bg-danger ms-1">@progress.CriticalCount critical</span>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer py-2">
+                    <a href="@(Helpers.BuildUrl("Settings/ScanMonitor"))">
+                        View Scan Monitor <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        }
+
+        @* ── Section 4: Sites Needing Attention ── *@
+        <div class="mb-4">
+            <h5><i class="fas fa-exclamation-triangle text-danger me-1"></i> <Language Tag="SitesNeedingAttention" /></h5>
+            @{
+                var attentionSites = _dashboardSites
+                    .Where(x => x.LastViolationCount > 0)
+                    .OrderByDescending(x => x.LastViolationCount)
+                    .Take(5).ToList();
+            }
+            @if (attentionSites.Any()) {
+                <div class="list-group">
+                    @foreach (var site in attentionSites) {
+                        string siteUrl = site.LastScanRunId.HasValue
+                            ? Helpers.BuildUrl("Compliance/" + site.SiteId + "/" + site.LastScanRunId)
+                            : Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId);
+                        int totalForBar = site.LastViolationCount > 0 ? site.LastViolationCount : 1;
+                        int critPct = (int)(site.LastCriticalCount * 100.0 / totalForBar);
+                        int otherPct = 100 - critPct;
+                        <a @key="site.SiteId" href="@siteUrl" class="list-group-item list-group-item-action live-list-item">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <strong>@site.Name</strong>
+                                    <small class="text-muted ms-2">@site.BaseUrl</small>
+                                </div>
+                                <div>
+                                    @if (site.LastCriticalCount > 0) {
+                                        <span class="badge bg-danger rounded-pill">@site.LastCriticalCount critical</span>
+                                    }
+                                    <span class="badge bg-secondary rounded-pill ms-1">@site.LastViolationCount total</span>
+                                </div>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                @if (site.LastCriticalCount > 0) {
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: @(critPct)%"></div>
+                                }
+                                @if (otherPct > 0 && site.LastViolationCount > 0) {
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: @(otherPct)%"></div>
+                                }
+                            </div>
+                        </a>
+                    }
+                </div>
+            } else {
+                <div class="alert alert-success mb-0">
+                    <i class="fas fa-check-circle me-1"></i> No issues found — all sites are clean.
+                </div>
+            }
+        </div>
+
+        @* ── Section 5: Violation Breakdown Chart + Scan Coverage ── *@
+        @if (_dashboardSites.Any(x => x.LastScanAt.HasValue)) {
+            <div class="row g-3 mb-4">
+                <div class="col-md-7">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-1"></i> Violation Severity Distribution
+                        </div>
+                        <div class="card-body">
+                            <div id="@_chartElementId"></div>
+                            <Highcharts ChartType="Highcharts.ChartTypes.Pie"
+                                        ChartTitle=""
+                                        ElementId="@_chartElementId"
+                                        SeriesDataItems="@_severityChartData" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-tasks me-1"></i> Scan Coverage
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            @{
+                                int scannedCount = _dashboardSites.Count(x => x.LastScanAt.HasValue);
+                                int totalSiteCount = _dashboardSites.Count;
+                                int coveragePct = totalSiteCount > 0 ? (int)(scannedCount * 100.0 / totalSiteCount) : 0;
+                            }
+                            <div class="text-center mb-3">
+                                <h2 class="mb-0">@coveragePct%</h2>
+                                <small class="text-muted text-uppercase">Sites Scanned</small>
+                            </div>
+                            <div class="progress mb-3" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: @(coveragePct)%"></div>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h5 class="mb-0">@scannedCount</h5>
+                                    <small class="text-muted">Scanned</small>
+                                </div>
+                                <div class="col-6">
+                                    <h5 class="mb-0">@(totalSiteCount - scannedCount)</h5>
+                                    <small class="text-muted">Not Scanned</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @* ── Section 6: Recent Scan Activity ── *@
+        @if (_recentScans.Any()) {
+            <div class="mb-4">
+                <h5><i class="fas fa-history me-1"></i> <Language Tag="RecentScanActivity" /></h5>
+                <div class="list-group">
+                    @foreach (var scan in _recentScans) {
+                        string scanUrl = Helpers.BuildUrl("Compliance/" + scan.SiteId + "/" + scan.ScanRunId);
+                        string statusClass = scan.Status == "Completed" ? "text-success" : "text-warning";
+                        <a @key="scan.ScanRunId" href="@scanUrl" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center live-list-item">
+                            <div>
+                                <strong>@scan.SiteName</strong>
+                                <small class="@statusClass ms-2">@scan.Status</small>
+                            </div>
+                            <div>
+                                @if (scan.CriticalCount > 0) {
+                                    <span class="badge bg-danger rounded-pill me-1">@scan.CriticalCount critical</span>
+                                }
+                                <span class="badge bg-secondary rounded-pill">@scan.TotalViolations violations</span>
+                                <small class="text-muted ms-2">@((scan.CompletedAt ?? scan.StartedAt).ToString("yyyy-MM-dd HH:mm"))</small>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        @* ── Section 7: Compliance Overview Cards ── *@
+        @if (_dashboardSites.Any()) {
+            <div class="mb-4">
+                <h5><Language Tag="ComplianceDashboard" /></h5>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 mb-3">
+                    @foreach (var site in _dashboardSites.OrderBy(x => x.Name)) {
+                        string borderClass = site.LastCriticalCount > 0 ? "border-danger"
+                            : site.LastViolationCount > 0 ? "border-warning"
+                            : "border-success";
+                        string cardUrl = site.LastScanRunId.HasValue
+                            ? Helpers.BuildUrl("Compliance/" + site.SiteId + "/" + site.LastScanRunId)
+                            : Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId);
+                        int siteBarTotal = site.LastViolationCount > 0 ? site.LastViolationCount : 1;
+                        int siteCritPct = (int)(site.LastCriticalCount * 100.0 / siteBarTotal);
+                        int siteOtherPct = site.LastViolationCount > 0 ? 100 - siteCritPct : 0;
+                        <div @key="site.SiteId" class="col">
+                            <a href="@cardUrl" class="text-decoration-none">
+                                <div class="card compliance-card h-100 @borderClass">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-truncate" title="@site.Name">@site.Name</h6>
+                                        @if (!site.LastScanAt.HasValue) {
+                                            <span class="badge bg-secondary">Not Scanned</span>
+                                        } else if (site.LastCriticalCount > 0) {
+                                            <span class="badge bg-danger">Critical</span>
+                                        } else if (site.LastViolationCount > 0) {
+                                            <span class="badge bg-warning text-dark">Violations</span>
+                                        } else {
+                                            <span class="badge bg-success">Clean</span>
+                                        }
+                                        <div class="compliance-stat">
+                                            <span class="text-dark">@site.LastViolationCount</span> <Language Tag="Violations" />
+                                        </div>
+                                        @if (site.LastCriticalCount > 0) {
+                                            <div class="compliance-stat text-danger">
+                                                @site.LastCriticalCount <Language Tag="Critical" />
+                                            </div>
+                                        }
+                                        @if (site.Pages.Any()) {
+                                            <small class="text-muted">@site.Pages.Count pages</small>
+                                        }
+                                        @if (site.LastViolationCount > 0) {
+                                            <div class="progress mt-1" style="height: 4px;">
+                                                @if (site.LastCriticalCount > 0) {
+                                                    <div class="progress-bar bg-danger" role="progressbar" style="width: @(siteCritPct)%"></div>
+                                                }
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: @(siteOtherPct)%"></div>
+                                            </div>
+                                        }
+                                        @if (site.LastScanAt.HasValue) {
+                                            <div class="compliance-date text-muted">
+                                                <small>@site.LastScanAt.Value.ToString("yyyy-MM-dd")</small>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                @* ── Section 8: Footer Link ── *@
+                <a href="@(Helpers.BuildUrl("Compliance"))" class="btn btn-outline-primary btn-sm">
+                    View Full Compliance Dashboard <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        }
+    }
+}
+
+@code {
+    /// <summary>
+    /// By default the home page of the app will require login.
+    /// You can change this by setting RequireLogin to false.
+    /// </summary>
+    public bool RequireLogin { get; set; } = true;
+
+    protected bool _loadedData = false;
+    protected bool _loading = true;
+    protected string _pageName = "home";
+    protected List<DataObjects.Site> _dashboardSites = new();
+    protected List<DataObjects.ScanRun> _recentScans = new();
+    protected string _chartElementId = "severityPieChart";
+    protected Highcharts.SeriesData[]? _severityChartData;
+
+    protected int _totalCriticalIssues => _dashboardSites.Sum(x => x.LastCriticalCount);
+    protected int _cleanSitesCount => _dashboardSites.Count(x => x.LastViolationCount == 0 && x.LastScanAt.HasValue);
+
+    public void Dispose() { 
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && (Model.LoggedIn || !RequireLogin)) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    protected void OnDataModelUpdated() {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected void SignalRUpdate(DataObjects.SignalRUpdate update) {
+        if (Model.View == _pageName) {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected async Task LoadData() {
+        // Load public sites for the embedded dashboard summary
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
+        if (sites != null) {
+            _dashboardSites = sites;
+        }
+
+        // Load recent scan history for each site (latest 1 per site, collect top 5 overall)
+        var allRecentScans = new List<DataObjects.ScanRun>();
+        foreach (var site in _dashboardSites.Where(x => x.LastScanAt.HasValue).OrderByDescending(x => x.LastScanAt).Take(10)) {
+            var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
+                new { SiteId = site.SiteId, Count = 1 });
+            if (history != null && history.Any()) {
+                allRecentScans.Add(history[0]);
+            }
+        }
+        _recentScans = allRecentScans.OrderByDescending(x => x.CompletedAt ?? x.StartedAt).Take(5).ToList();
+
+        BuildChartData(allRecentScans);
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    protected void BuildChartData(List<DataObjects.ScanRun> scans) {
+        int critical = scans.Sum(x => x.CriticalCount);
+        int serious = scans.Sum(x => x.SeriousCount);
+        int moderate = scans.Sum(x => x.ModerateCount);
+        int minor = scans.Sum(x => x.MinorCount);
+
+        if (critical + serious + moderate + minor > 0) {
+            _severityChartData = new Highcharts.SeriesData[] {
+                new Highcharts.SeriesData { name = "Critical", data = critical },
+                new Highcharts.SeriesData { name = "Serious", data = serious },
+                new Highcharts.SeriesData { name = "Moderate", data = moderate },
+                new Highcharts.SeriesData { name = "Minor", data = minor },
+            };
+        }
+    }
+
+    protected string LogoUrl {
+        get {
+            if (Model.Tenant.TenantSettings.Logo.HasValue && Model.Tenant.TenantSettings.Logo != Guid.Empty) {
+                return Model.ApplicationUrl + "File/View/" + ((Guid)Model.Tenant.TenantSettings.Logo).ToString();
+            } else {
+                return String.Empty;
+            }
+        }
+    }
+}

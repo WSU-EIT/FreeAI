@@ -1,0 +1,41 @@
+{
+  "Subject": "CN=www.tableausoftware.com, O=\u0022Tableau Software, LLC\u0022, L=Seattle, S=Washington, C=US",
+  "Issuer": "CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1, O=DigiCert Inc, C=US",
+  "Thumbprint": "FE14B26430858114B866643EE88EC7F6EAD0819C",
+  "SerialNumber": "027142DC589EA7F2D77EC69140A672D4",
+  "NotBefore": "2025-10-16T17:00:00-07:00",
+  "NotAfter": "2026-10-17T16:59:59-07:00",
+  "DaysUntilExpiry": 240,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "cdnl.tblsft.com",
+    "cdnlarge.tableausoftware.com",
+    "cdns.tblsft.com",
+    "cdnsmall.tableausoftware.com",
+    "cdnv.tblsft.com",
+    "downloads.tableau.com",
+    "downloads.tableausoftware.com",
+    "register.tableau.com",
+    "tableau.com",
+    "tableausoftware.com",
+    "www.tableau.com",
+    "www.tableausoftware.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "cdnl.tblsft.com",
+    "cdnlarge.tableausoftware.com",
+    "cdns.tblsft.com",
+    "cdnsmall.tableausoftware.com",
+    "cdnv.tblsft.com",
+    "downloads.tableau.com",
+    "downloads.tableausoftware.com",
+    "register.tableau.com",
+    "tableau.com",
+    "tableausoftware.com",
+    "www.tableau.com",
+    "www.tableausoftware.com"
+  ],
+  "ErrorMessage": null
+}

@@ -1,0 +1,139 @@
+@*
+    RenderFiles — inline tile list of attached files.
+
+    Refactored from FreeExamples/FreeExamples.Client/Shared/RenderFiles.razor.
+    The original injected the host BlazorDataModel for ApplicationUrl-based
+    image URLs and used host Helpers + <Language> tags for labels. This
+    version is host-agnostic: caller supplies the file list, click/delete
+    callbacks, and any localized button text. Reuses the FileItem record
+    defined in the SelectFile feature.
+
+    DeleteConfirmation usage is preserved — that component lives in the
+    FreeBlazor library which is already on the @using chain.
+*@
+
+@if (Files is { Count: > 0 }) {
+    <div class="render-files d-flex flex-wrap gap-2">
+        @foreach (var file in Files) {
+            var isImage = IsImageExtension(file.Extension);
+            var title = $"{BytesToFriendlyLabel(file.Bytes)} - {file.FileName}";
+            var imgSrc = isImage ? ResolveImageSrc(file) : null;
+            var icon = string.IsNullOrWhiteSpace(file.ThumbnailIcon)
+                ? "fa-solid fa-file"
+                : file.ThumbnailIcon;
+            var captured = file;
+            var clickable = OnClick.HasDelegate;
+
+            <div class="render-files-item position-relative @(clickable ? "render-files-clickable" : "")"
+                 title="@title"
+                 style="width: 9rem;">
+
+                @if (OnDelete.HasDelegate) {
+                    <div class="render-files-delete position-absolute top-0 end-0 m-1" style="z-index: 2;">
+                        @if (UseDeleteConfirmation) {
+                            <DeleteConfirmation OnConfirmed="@(() => HandleDelete(captured))"
+                                                CancelText="@CancelText"
+                                                DeleteText="@DeleteText"
+                                                ConfirmDeleteText="@ConfirmDeleteText"
+                                                ButtonSize="xs" />
+                        } else {
+                            <button type="button"
+                                    class="btn btn-xs btn-danger"
+                                    @onclick="() => HandleDelete(captured)">
+                                <i class="fa-solid fa-trash me-1" aria-hidden="true"></i>
+                                @DeleteText
+                            </button>
+                        }
+                    </div>
+                }
+
+                <div class="render-files-body text-center @(clickable ? "pointer" : "")"
+                     style="@(clickable ? "cursor: pointer;" : "")"
+                     @onclick="() => HandleClick(captured)">
+                    <div class="render-files-thumbnail d-flex align-items-center justify-content-center"
+                         style="height: 5rem;">
+                        @if (isImage && !string.IsNullOrEmpty(imgSrc)) {
+                            <img src="@imgSrc"
+                                 alt="@file.FileName"
+                                 style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                        } else {
+                            <i class="@icon fa-2x text-secondary" aria-hidden="true"></i>
+                        }
+                    </div>
+                    <div class="render-files-name text-truncate small mt-1">@file.FileName</div>
+                </div>
+            </div>
+        }
+    </div>
+} else {
+    <div class="text-muted">@EmptyText</div>
+}
+
+@code {
+    /// <summary>Files to render.</summary>
+    [Parameter] public List<FileItem> Files { get; set; } = new();
+
+    /// <summary>Optional click handler. When set, items get clickable styling.</summary>
+    [Parameter] public EventCallback<FileItem> OnClick { get; set; }
+
+    /// <summary>Optional delete handler. When set, each tile shows a delete control.</summary>
+    [Parameter] public EventCallback<FileItem> OnDelete { get; set; }
+
+    /// <summary>If true (default), wrap delete in a <c>DeleteConfirmation</c> guard.</summary>
+    [Parameter] public bool UseDeleteConfirmation { get; set; } = true;
+
+    /// <summary>Localized "Delete" label.</summary>
+    [Parameter] public string DeleteText { get; set; } = "Delete";
+
+    /// <summary>Localized "Cancel" label (DeleteConfirmation cancel).</summary>
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+
+    /// <summary>Localized "Confirm" label (DeleteConfirmation confirm).</summary>
+    [Parameter] public string ConfirmDeleteText { get; set; } = "Confirm";
+
+    /// <summary>Message shown when <see cref="Files"/> is empty.</summary>
+    [Parameter] public string EmptyText { get; set; } = "No files to show.";
+
+    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".gif", ".jpg", ".jpeg", ".png", ".svg"
+    };
+
+    private static bool IsImageExtension(string? extension)
+        => !string.IsNullOrWhiteSpace(extension) && _imageExtensions.Contains(extension);
+
+    private static string? ResolveImageSrc(FileItem file)
+    {
+        if (file.Value is { Length: > 0 }) {
+            var ext = (file.Extension ?? "").Replace(".", "").ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)) ext = "png";
+            return $"data:image/{ext};base64,{Convert.ToBase64String(file.Value)}";
+        }
+        return file.RemoteImageUrl;
+    }
+
+    private static string BytesToFriendlyLabel(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        double kb = bytes / 1024.0;
+        if (kb < 1024) return $"{kb:0.#} KB";
+        double mb = kb / 1024.0;
+        if (mb < 1024) return $"{mb:0.#} MB";
+        double gb = mb / 1024.0;
+        return $"{gb:0.#} GB";
+    }
+
+    private async Task HandleClick(FileItem file)
+    {
+        if (OnClick.HasDelegate) {
+            await OnClick.InvokeAsync(file);
+        }
+    }
+
+    private async Task HandleDelete(FileItem file)
+    {
+        if (OnDelete.HasDelegate) {
+            await OnDelete.InvokeAsync(file);
+        }
+    }
+}

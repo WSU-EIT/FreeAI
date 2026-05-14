@@ -1,0 +1,81 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 1,
+  "Serious": 5,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 2,
+      "Critical": 1,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 4,
+      "Critical": 0,
+      "Serious": 4,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "critical",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 4,
+      "Message": "Images must have alternative text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/image-alt?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cimg src=\u0022/Compass/Content/images/EstimateGraphic2.jpg\u0022 style=\u0022width:100%;\u0022\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022#spine-sitenav\u0022 role=\u0022navigation\u0022 class=\u0022screen-reader-shortcut\u0022\u003ESkip to navigation\u003C/a\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput name=\u0022term\u0022 type=\u0022text\u0022 value=\u0022\u0022 placeholder=\u0022search\u0022 title=\u0022Type search term here\u0022 class=\u0022ui-autocomplete-input\u0022 autocomplete=\u0022off\u0022 style=\u0022\u0022\u003E"
+    }
+  ]
+}

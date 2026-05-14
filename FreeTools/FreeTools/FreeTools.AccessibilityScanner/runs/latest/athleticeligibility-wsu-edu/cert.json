@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=athleticeligibility.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "D5E0DBA671CAE9AA30D4D959D48810270DBF427B",
+  "SerialNumber": "00B4915DBC3FCB57D092E54A5B77E0501B",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "athleticeligibility.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "athleticeligibility.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

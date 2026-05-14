@@ -1,0 +1,87 @@
+{
+  "PagePath": "/managers/appointing-authority/",
+  "Url": "https://hrs.wsu.edu/managers/appointing-authority/",
+  "FinalUrl": null,
+  "Title": "Appointing Authority \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 77055,
+  "ScreenshotSizeBytes": 130553,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 130553
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f4d8.svg",
+      "AltText": "\uD83D\uDCD8"
+    },
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f4dd.svg",
+      "AltText": "\uD83D\uDCDD"
+    },
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f4c4.svg",
+      "AltText": "\uD83D\uDCC4"
+    },
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f4e7.svg",
+      "AltText": "\uD83D\uDCE7"
+    },
+    {
+      "SourceUrl": "https://s.w.org/images/core/emoji/16.0.1/svg/1f4de.svg",
+      "AltText": "\uD83D\uDCDE"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:20:22 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:20:22 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/287\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=287\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:20:22.5674518Z"
+}

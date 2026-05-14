@@ -1,0 +1,12 @@
+@implements IDisposable
+@using Humanizer
+@inject BlazorDataModel Model
+
+@{
+}
+
+@code {
+    public void Dispose() {
+        Model.OnChange -= StateHasChanged;
+    }
+}

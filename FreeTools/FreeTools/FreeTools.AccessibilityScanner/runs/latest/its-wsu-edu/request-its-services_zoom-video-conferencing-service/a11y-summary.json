@@ -1,0 +1,96 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 8,
+  "Critical": 2,
+  "Serious": 1,
+  "Moderate": 5,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 2,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 5,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 5,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Cspan class=\u0022aui-icon aui-icon-small aui-iconfont-appswitcher\u0022\u003ELinked Applications\u003C/span\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Certain ARIA roles must contain particular children",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cul role=\u0022list\u0022 aria-busy=\u0022true\u0022 class=\u0022plugin_pagetree_children_list plugin_pagetree_children_list_noleftspace\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca role=\u0022menuitem\u0022 id=\u0022login-link\u0022 href=\u0022/login.action?os_destination=%2Fspaces%2FITSERVICES%2Fpages%2F297828492%2FZoom%2BVideoconferencing\u0022 class=\u0022  ..."
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 5,
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3",
+      "ExampleSnippet": "tabindex=\u00221\u0022"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "PagePath": "/",
+  "Url": "https://peninsulacougs.wsu.edu/",
+  "FinalUrl": null,
+  "Title": null,
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 0,
+  "ScreenshotSizeBytes": 0,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": null,
+  "ErrorMessage": "net::ERR_NAME_NOT_RESOLVED at https://peninsulacougs.wsu.edu/\nCall log:\n  - navigating to \u0022https://peninsulacougs.wsu.edu/\u0022, waiting until \u0022networkidle\u0022",
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:08:53.9206433Z"
+}

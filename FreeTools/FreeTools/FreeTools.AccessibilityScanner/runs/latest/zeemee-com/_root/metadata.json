@@ -1,0 +1,111 @@
+{
+  "PagePath": "/",
+  "Url": "https://zeemee.com/",
+  "FinalUrl": null,
+  "Title": "Home | ZeeMee",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 50891,
+  "ScreenshotSizeBytes": 71511,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 71511
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://zeemee.com/assets/V3/iphone-ss@3x-6cebedc2fcee83a3c2a9728a8299eed9786c16ca0d75d8026e4c45f406af05df.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/V3/purple-ellipse-868cd58d4facd752ba0069cc8b3946260f6ba3393b0fe0269803acdd4a9adc7f.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/pages-v2/apple-appstore-badge-6d56ef3f42bf5714b3f4fd27f35e9a64f61eb8fd6c48bf221f7f18cb61d8f1bf.svg",
+      "AltText": "Download from the Apple Store"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/pages-v2/google-play-badge-8afbe8bf74b9991ca235b30998259542c138d69aee4673ed97ceb09138e6acf0.svg",
+      "AltText": "Download from the Play Store"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/logos/logo-facebook-442fd8938675cdc6ae02e3be3addca6a1affdcdf8950f679b620190990753f14.svg",
+      "AltText": "Facebook"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/logos/logo-twitter-37a8d6b38f15bc21e7fdfd3d08de50b127506367f7838bd2e11e48416f23e8b7.svg",
+      "AltText": "Twitter"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/logos/logo-instagram-4d8f61bcda440123e10ae6f7a56380dad0580daac9a31e303745b82f7cd48ee8.svg",
+      "AltText": "Instagram"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/logos/logo-youtube-6c4eec8e50e128953b0d7325ff00ab522c4514d428bf103ea81d250d9ab94c23.svg",
+      "AltText": "Youtube"
+    },
+    {
+      "SourceUrl": "https://zeemee.com/assets/V3/yellow-blob-8750c474edb2f35e235a780b70fafcf7c249b5382dfea2779d76ca6bb929db03.svg",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 1,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=0, private, must-revalidate",
+    "connection": "keep-alive",
+    "content-length": "13598",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:07:21 GMT",
+    "etag": "W/\u00226c40c25e7a6ab3a0eae6f55419f43a47\u0022",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=31536000; includeSubDomains;",
+    "x-content-type-options": "nosniff",
+    "x-download-options": "noopen",
+    "x-frame-options": "SAMEORIGIN",
+    "x-permitted-cross-domain-policies": "none",
+    "x-request-id": "c9af752b03151b097a651db3a98517a5",
+    "x-runtime": "0.008765",
+    "x-xss-protection": "1; mode=block",
+    "vary": "Origin"
+  },
+  "CapturedAt": "2026-02-19T02:07:18.5449083Z"
+}

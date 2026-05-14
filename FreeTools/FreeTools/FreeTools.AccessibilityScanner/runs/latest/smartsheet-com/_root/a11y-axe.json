@@ -1,0 +1,140 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 10568,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-children",
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must contain particular children",
+      "Selector": ".js-grid",
+      "Snippet": "\u003Cdiv class=\u0022slides js-grid container wilma active\u0022 role=\u0022tablist\u0022 data-slide-total=\u00225\u0022 data-slide-desktop=\u00225\u0022 aria-label=\u0022\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#mclaren-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide active-tab\u0022 aria-label=\u0022McLaren\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022mclaren-tab\u0022 aria-owns=\u0022mclaren-tab\u0022 id=\u0022mclaren-butto...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#roche-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide\u0022 aria-label=\u0022Roche\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022roche-tab\u0022 aria-owns=\u0022roche-tab\u0022 id=\u0022roche-button\u0022 role=\u0022tab\u0022 data-...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#uber-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide\u0022 aria-label=\u0022Uber\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022uber-tab\u0022 aria-owns=\u0022uber-tab\u0022 id=\u0022uber-button\u0022 role=\u0022tab\u0022 data-iden...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#sutherland-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide\u0022 aria-label=\u0022Sutherland\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022sutherland-tab\u0022 aria-owns=\u0022sutherland-tab\u0022 id=\u0022sutherland-butt...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#convergint-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide\u0022 aria-label=\u0022Convergint\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022convergint-tab\u0022 aria-owns=\u0022convergint-tab\u0022 id=\u0022convergint-butt...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "#directtv-button",
+      "Snippet": "\u003Cbutton class=\u0022logo-slide\u0022 aria-label=\u0022DIRECTTV\u0022 aria-expanded=\u0022false\u0022 aria-controls=\u0022directtv-tab\u0022 aria-owns=\u0022directtv-tab\u0022 id=\u0022directtv-button\u0022 role...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "#p-id-765394 \u003E .teaser-content.teaser-card.tile-treatment \u003E .teaser-card-static \u003E .content-container \u003E .teaser-eyebrow.fine-print.field--name-section-eyebrow",
+      "Snippet": "\u003Cp class=\u0022teaser-eyebrow fine-print teaser-eyebrow fine-print field field--name-section-eyebrow field--type-text field--label-hidden field__items\u0022\u003EANA...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "#p-id-765395 \u003E .teaser-content.teaser-card.tile-treatment \u003E .teaser-card-static \u003E .content-container \u003E .teaser-eyebrow.fine-print.field--name-section-eyebrow",
+      "Snippet": "\u003Cp class=\u0022teaser-eyebrow fine-print teaser-eyebrow fine-print field field--name-section-eyebrow field--type-text field--label-hidden field__items\u0022\u003EAI ...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "#p-id-765396 \u003E .teaser-content.teaser-card.tile-treatment \u003E .teaser-card-static \u003E .content-container \u003E .teaser-eyebrow.fine-print.field--name-section-eyebrow",
+      "Snippet": "\u003Cp class=\u0022teaser-eyebrow fine-print teaser-eyebrow fine-print field field--name-section-eyebrow field--type-text field--label-hidden field__items\u0022\u003ECUS...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "#p-id-765397 \u003E .teaser-content.teaser-card.tile-treatment \u003E .teaser-card-static \u003E .content-container \u003E .teaser-eyebrow.fine-print.field--name-section-eyebrow",
+      "Snippet": "\u003Cp class=\u0022teaser-eyebrow fine-print teaser-eyebrow fine-print field field--name-section-eyebrow field--type-text field--label-hidden field__items\u0022\u003EFIR...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".privacy-choices",
+      "Snippet": "\u003Ca class=\u0022privacy-choices\u0022 href=\u0022#\u0022 onclick=\u0022semaphore.push([\u0027showPreferences\u0027, {showOverviewTab: false, showRightsTab: false}]);\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

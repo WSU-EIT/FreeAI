@@ -1,0 +1,120 @@
+﻿@* EntityWizardStepHeader.App.razor - Reusable step header with navigation buttons *@
+@* Based on FreeCICD WizardStepHeader pattern with enhanced features *@
+
+<div class="card-header @HeaderClass d-flex justify-content-between align-items-center flex-wrap gap-2 py-2">
+    <div class="d-flex align-items-center gap-2">
+        @if (ShowSpinner) {
+            <div class="spinner-border spinner-border-sm @SpinnerClass" role="status">
+                <span class="visually-hidden">@SpinnerText</span>
+            </div>
+            <span class="fw-semibold">@SpinnerText</span>
+        } else if (!string.IsNullOrWhiteSpace(BadgeIcon)) {
+            <span class="badge @BadgeClass"><i class="fa-solid @BadgeIcon"></i></span>
+            <span class="fw-semibold">@Title</span>
+        } else {
+            <span class="badge bg-light text-dark small">@StepNumber</span>
+            <span class="fw-semibold">@Title</span>
+        }
+        @if (!string.IsNullOrWhiteSpace(Subtitle) && !ShowSpinner) {
+            <span class="@SubtitleClass small">— @Subtitle</span>
+        }
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        @if (!string.IsNullOrWhiteSpace(InfoText)) {
+            <span class="@InfoTextClass small me-2">
+                <i class="fa-solid fa-info-circle me-1"></i>
+                @InfoText
+            </span>
+        }
+        @if (ShowStartOver) {
+            <button class="btn @StartOverButtonClass btn-sm" @onclick="OnStartOver" disabled="@IsDisabled">
+                <i class="fa-solid fa-rotate-left me-1"></i>
+                @StartOverButtonText
+            </button>
+        }
+        @if (ShowBack) {
+            <button class="btn @BackButtonClass btn-sm" @onclick="OnBack" disabled="@IsDisabled">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                @BackButtonText
+            </button>
+        }
+        @if (ShowNext) {
+            <button class="btn @NextButtonClass btn-sm" @onclick="OnNext" disabled="@(IsDisabled || NextDisabled)">
+                @NextButtonText
+                <i class="fa-solid fa-arrow-right ms-1"></i>
+            </button>
+        }
+        @if (ShowSave) {
+            <button class="btn @SaveButtonClass btn-sm" @onclick="OnSave" disabled="@(IsDisabled || SaveDisabled)">
+                @if (SaveSpinner) {
+                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                } else {
+                    <i class="fa-solid @SaveButtonIcon me-1"></i>
+                }
+                @SaveButtonText
+            </button>
+        }
+        @if (ShowCreateAnother) {
+            <button class="btn btn-outline-light btn-sm" @onclick="OnStartOver">
+                <i class="fa-solid fa-plus me-1"></i>
+                @CreateAnotherText
+            </button>
+        }
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public int StepNumber { get; set; }
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public string HeaderClass { get; set; } = "bg-primary text-white";
+    [Parameter] public string SubtitleClass { get; set; } = "text-white-50";
+    [Parameter] public string BadgeIcon { get; set; } = "";
+    [Parameter] public string BadgeClass { get; set; } = "bg-light text-dark";
+    
+    // Spinner
+    [Parameter] public bool ShowSpinner { get; set; }
+    [Parameter] public string SpinnerText { get; set; } = "Loading...";
+    [Parameter] public string SpinnerClass { get; set; } = "";
+    
+    // Info text
+    [Parameter] public string InfoText { get; set; } = "";
+    [Parameter] public string InfoTextClass { get; set; } = "text-white-50";
+    
+    // Button visibility
+    [Parameter] public bool ShowStartOver { get; set; }
+    [Parameter] public bool ShowBack { get; set; }
+    [Parameter] public bool ShowNext { get; set; } = true;
+    [Parameter] public bool ShowSave { get; set; }
+    [Parameter] public bool ShowCreateAnother { get; set; }
+    
+    // Button states
+    [Parameter] public bool NextDisabled { get; set; }
+    [Parameter] public bool SaveDisabled { get; set; }
+    [Parameter] public bool SaveSpinner { get; set; }
+    [Parameter] public bool IsDisabled { get; set; }
+    
+    // Button text
+    [Parameter] public string StartOverButtonText { get; set; } = "Start Over";
+    [Parameter] public string BackButtonText { get; set; } = "Back";
+    [Parameter] public string NextButtonText { get; set; } = "Next";
+    [Parameter] public string SaveButtonText { get; set; } = "Save";
+    [Parameter] public string CreateAnotherText { get; set; } = "Create Another";
+    
+    // Button classes
+    [Parameter] public string StartOverButtonClass { get; set; } = "btn-outline-light";
+    [Parameter] public string BackButtonClass { get; set; } = "btn-light";
+    [Parameter] public string NextButtonClass { get; set; } = "btn-light";
+    [Parameter] public string SaveButtonClass { get; set; } = "btn-success";
+    [Parameter] public string SaveButtonIcon { get; set; } = "fa-save";
+    
+    // Callbacks
+    [Parameter] public EventCallback OnStartOver { get; set; }
+    [Parameter] public EventCallback OnBack { get; set; }
+    [Parameter] public EventCallback OnNext { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    
+    // Child content for custom buttons
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

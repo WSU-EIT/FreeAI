@@ -1,0 +1,142 @@
+﻿@* EntityWizardTypePicker.App.razor - Visual tile-based type selector *@
+
+<div class="type-picker-container">
+    <label class="form-label">
+        Type <span class="text-danger">*</span>
+    </label>
+    
+    <div class="type-picker-grid">
+        @foreach (var typeInfo in DataObjects.PropertyTypes.All) {
+            <div class="type-tile @(SelectedType == typeInfo.Type ? "selected" : "") @typeInfo.TileColorClass"
+                 @onclick="() => SelectType(typeInfo.Type)"
+                 title="@typeInfo.DisplayName">
+                <div class="type-tile-icon">
+                    @if (typeInfo.TileLabel.Length <= 3) {
+                        <span class="type-tile-label">@typeInfo.TileLabel</span>
+                    } else {
+                        <i class="fa-solid @typeInfo.Icon"></i>
+                    }
+                </div>
+                <div class="type-tile-name">@GetShortName(typeInfo.Type)</div>
+                @if (SelectedType == typeInfo.Type) {
+                    <div class="type-tile-check">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    
+    @if (!string.IsNullOrEmpty(SelectedType)) {
+        <div class="type-picker-selected mt-2">
+            <small class="text-muted">
+                Selected: <strong>@GetSelectedDisplayName()</strong>
+            </small>
+        </div>
+    }
+</div>
+
+<style>
+    .type-picker-container {
+        margin-bottom: 1rem;
+    }
+    
+    .type-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .type-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+        position: relative;
+        color: white;
+        min-height: 70px;
+        border: 2px solid transparent;
+    }
+    
+    .type-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .type-tile.selected {
+        border-color: #212529;
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.25);
+    }
+    
+    .type-tile-icon {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .type-tile-label {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    
+    .type-tile-name {
+        font-size: 0.7rem;
+        text-transform: lowercase;
+        opacity: 0.9;
+    }
+    
+    .type-tile-check {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        font-size: 0.65rem;
+        background: white;
+        color: #198754;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Custom purple for bool */
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+</style>
+
+@code {
+    [Parameter] public string SelectedType { get; set; } = "string";
+    [Parameter] public EventCallback<string> SelectedTypeChanged { get; set; }
+    [Parameter] public EventCallback<string> OnTypeSelected { get; set; }
+
+    private async Task SelectType(string type) {
+        SelectedType = type;
+        await SelectedTypeChanged.InvokeAsync(type);
+        await OnTypeSelected.InvokeAsync(type);
+    }
+
+    private string GetShortName(string type) {
+        return type switch {
+            "string" => "text",
+            "int" => "int",
+            "long" => "long",
+            "decimal" => "money",
+            "bool" => "bool",
+            "DateTime" => "date",
+            "DateOnly" => "date",
+            "Guid" => "guid",
+            "enum" => "enum",
+            _ => type
+        };
+    }
+
+    private string GetSelectedDisplayName() {
+        var typeInfo = DataObjects.PropertyTypes.Get(SelectedType);
+        return typeInfo?.DisplayName ?? SelectedType;
+    }
+}

@@ -1,0 +1,103 @@
+{
+  "PagePath": "/managers/recruitment-toolkit/candidate-toolkit/",
+  "Url": "https://hrs.wsu.edu/managers/recruitment-toolkit/candidate-toolkit/",
+  "FinalUrl": null,
+  "Title": "Application Instructions \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 91231,
+  "ScreenshotSizeBytes": 381804,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 381804
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/create-an-account.png",
+      "AltText": "Detail view of the WSU Jobs sign-in window."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/create-an-account2.png",
+      "AltText": "Detail of the WSU Jobs create account window."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/Filter-Results-1180x593.png",
+      "AltText": "Screenshot of the WSU Jobs page highlighting the search filters."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/Search-for-Jobs-1180x180.png",
+      "AltText": "Screenshot of the WSU Jobs page highlighting the Search for Jobs link."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/wsujobs_submitted-apps.png",
+      "AltText": "Screenshot of the WSU Jobs candidate home page."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2020/12/wsujobs_withdraw-app.png",
+      "AltText": "Screenshot of the WSU Jobs withdraw application menu."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/01/select-create-job-alert.png",
+      "AltText": "Screenshot of the Manage job alerts page."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/01/create-job-alert-form.png",
+      "AltText": "Screenshot of the Create Job Alert form."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/01/modify-job-alert.png",
+      "AltText": "Screenshot of the Manage Job Alerts menu."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=300, must-revalidate",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:22:06 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:22:06 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/pages/15492\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022, \u003Chttps://hrs.wsu.edu/?p=15492\u003E; rel=shortlink",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:22:06.2303123Z"
+}

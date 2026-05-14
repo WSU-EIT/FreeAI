@@ -1,0 +1,18 @@
+@page "/showcase/pipelinetracker/v1"
+@using FreeBlazorExtended.PipelineTracker
+
+<div class="container-fluid py-4">
+    <h1>Default Pipeline Tracker</h1>
+
+    <PipelineTracker Stages="_stages" CurrentStageIndex="2" />
+</div>
+
+@code {
+    private readonly List<PipelineTracker.PipelineStage> _stages = new()
+    {
+        new() { Id = "submitted", Name = "Submitted" },
+        new() { Id = "review", Name = "In Review" },
+        new() { Id = "approved", Name = "Approved" },
+        new() { Id = "closed", Name = "Closed" },
+    };
+}

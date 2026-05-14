@@ -1,0 +1,256 @@
+@page "/Compliance/Rules"
+@page "/{TenantCode}/Compliance/Rules"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-list-ol me-2"></i>Rule Hotlist
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-outline-success" @onclick="ExportCsv" disabled="@(_exporting || !_groups.Any())" title="Download rule summary as CSV">
+                @if (_exporting) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                } else {
+                    <text><i class="fas fa-download me-1"></i>Export CSV</text>
+                }
+            </button>
+        </div>
+        <FreeA11yChecker_App_TriageNav Active="rules" />
+    </div>
+
+    <FreeA11yChecker_App_AboutSection Title="About Rule Hotlist">
+        <p>Every accessibility rule, ranked by total impact across all sites. The "Impact" score weights critical violations highest. Fix the top rule and you eliminate every row in the table beneath it.</p>
+        <p class="mb-0">Click any rule to see exactly which pages and which CSS selectors are affected.</p>
+    </FreeA11yChecker_App_AboutSection>
+
+    @* ── Filter row ── *@
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-auto">
+            <label class="form-label small mb-1">URL Pattern (optional)</label>
+            <input type="text" class="form-control form-control-sm" placeholder="*em.wsu.edu/* (blank = all)"
+                   @bind="_urlPattern" aria-label="URL pattern" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Severity</label>
+            <select class="form-select form-select-sm" @bind="_severity" aria-label="Filter by severity">
+                <option value="">All</option>
+                <option value="critical">Critical</option>
+                <option value="serious">Serious</option>
+                <option value="moderate">Moderate</option>
+                <option value="minor">Minor</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">WCAG</label>
+            <select class="form-select form-select-sm" @bind="_wcagLevel" @bind:after="Rebuild" aria-label="Filter by WCAG level">
+                <option value="all">All</option>
+                <option value="a">Level A only</option>
+                <option value="aa">A + AA</option>
+                <option value="aaa">A + AA + AAA</option>
+            </select>
+        </div>
+        <div class="col-auto align-self-end">
+            <button class="btn btn-sm btn-primary" @onclick="LoadData" disabled="@_loading">
+                @if (_loading) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                } else {
+                    <text><i class="fas fa-sync me-1"></i>Refresh</text>
+                }
+            </button>
+        </div>
+    </div>
+
+    @if (_loading) {
+        <LoadingMessage />
+    } else if (!_groups.Any()) {
+        <div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>No violations match the current filters.</div>
+    } else {
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <span class="badge bg-dark fs-6">@_groups.Count rules</span>
+            <span class="badge bg-secondary fs-6">@_groups.Sum(g => g.TotalCount) total violations</span>
+            <span class="badge bg-secondary fs-6">@_groups.Sum(g => g.PageCount) page-occurrences</span>
+            <span class="badge bg-secondary fs-6">@_groups.Sum(g => g.SiteCount) site-occurrences</span>
+        </div>
+
+        <table class="table table-sm table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:60px;">Impact</th>
+                    <th style="width:90px;">Severity</th>
+                    <th style="width:80px;">Tool</th>
+                    <th>Rule</th>
+                    <th style="width:80px;">WCAG</th>
+                    <th class="text-end" style="width:80px;">Total</th>
+                    <th class="text-end" style="width:80px;">Pages</th>
+                    <th class="text-end" style="width:80px;">Sites</th>
+                    <th style="width:50px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var g in _groups) {
+                    <tr @key="g.Key">
+                        <td><span class="badge bg-dark">@g.Impact</span></td>
+                        <td>@((MarkupString)SeverityBadge(g.Severity))</td>
+                        <td><span class="badge bg-secondary">@g.Tool</span></td>
+                        <td>
+                            <a href="@(Helpers.BuildUrl("Compliance/Rule/" + Uri.EscapeDataString(g.RuleId)))">
+                                <strong>@g.RuleId</strong>
+                            </a>
+                            <br /><span class="text-muted small">@g.SampleMessage</span>
+                        </td>
+                        <td class="small">@g.WcagCriteria</td>
+                        <td class="text-end fw-bold">@g.TotalCount</td>
+                        <td class="text-end">@g.PageCount</td>
+                        <td class="text-end">@g.SiteCount</td>
+                        <td>
+                            @if (!String.IsNullOrWhiteSpace(g.HelpUrl)) {
+                                <a href="@g.HelpUrl" target="_blank" rel="noopener" title="Fix guidance"><i class="fas fa-question-circle"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "rulehotlist";
+    private bool _validatedUrl = false;
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _exporting = false;
+
+    private string _urlPattern = "";
+    private string _severity = "";
+    private string _wcagLevel = "aa";
+
+    private List<DataObjects.CrossSiteViolation> _raw = new();
+    private List<RuleGroup> _groups = new();
+
+    public class RuleGroup
+    {
+        public string Key { get; set; } = "";
+        public string RuleId { get; set; } = "";
+        public string Tool { get; set; } = "";
+        public string Severity { get; set; } = "";
+        public string? WcagCriteria { get; set; }
+        public string? HelpUrl { get; set; }
+        public string SampleMessage { get; set; } = "";
+        public int TotalCount { get; set; }
+        public int PageCount { get; set; }
+        public int SiteCount { get; set; }
+        public int Impact { get; set; }
+    }
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_validatedUrl) { _validatedUrl = true; await Helpers.ValidateUrl(TenantCode); }
+            if (!_loadedData) { _loadedData = true; await LoadData(); }
+        }
+    }
+
+    private void OnDataModelUpdated() { if (Model.View == _pageName) StateHasChanged(); }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+        var filter = new {
+            SiteIds = (List<Guid>?)null,
+            UrlPattern = String.IsNullOrWhiteSpace(_urlPattern) ? null : _urlPattern,
+            Severity = String.IsNullOrWhiteSpace(_severity) ? null : _severity,
+            CanonicalRuleId = (string?)null,
+            LatestScanOnly = true,
+        };
+        var results = await Helpers.GetOrPost<List<DataObjects.CrossSiteViolation>>("api/Data/GetCrossSiteViolations", filter);
+        _raw = results ?? new();
+        Rebuild();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void Rebuild()
+    {
+        var filtered = _wcagLevel == "all"
+            ? _raw
+            : _raw.Where(v => WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevel)).ToList();
+
+        _groups = filtered
+            .GroupBy(v => (v.Tool, v.RuleId))
+            .Select(g => {
+                var first = g.First();
+                int pageCount = g.Select(x => x.PageScanResultId).Distinct().Count();
+                int siteCount = g.Select(x => x.SiteId).Distinct().Count();
+                int sevWeight = (4 - SeverityRank(first.Severity)) * 100;
+                int impact = sevWeight + pageCount + siteCount * 10;
+                return new RuleGroup {
+                    Key = g.Key.Tool + "::" + g.Key.RuleId,
+                    RuleId = g.Key.RuleId,
+                    Tool = g.Key.Tool,
+                    Severity = first.Severity,
+                    WcagCriteria = first.WcagCriteria,
+                    HelpUrl = first.HelpUrl,
+                    SampleMessage = first.Message,
+                    TotalCount = g.Count(),
+                    PageCount = pageCount,
+                    SiteCount = siteCount,
+                    Impact = impact,
+                };
+            })
+            .OrderByDescending(r => r.Impact)
+            .ToList();
+    }
+
+    private async Task ExportCsv()
+    {
+        _exporting = true;
+        StateHasChanged();
+        try {
+            static string Esc(string? s) => "\"" + (s ?? "").Replace("\"", "\"\"") + "\"";
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Impact,Severity,Tool,Rule ID,WCAG Criteria,Total Violations,Pages Affected,Sites Affected,Sample Message,Help URL");
+            foreach (var g in _groups) {
+                sb.AppendLine($"{g.Impact},{Esc(g.Severity)},{Esc(g.Tool)},{Esc(g.RuleId)},{Esc(g.WcagCriteria)},{g.TotalCount},{g.PageCount},{g.SiteCount},{Esc(g.SampleMessage)},{Esc(g.HelpUrl)}");
+            }
+            var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+            await jsRuntime.InvokeVoidAsync("eval",
+                $"var a=document.createElement('a');a.href='data:text/csv;base64,{b64}';a.download='rule-hotlist-{DateTime.Now:yyyy-MM-dd}.csv';a.click();");
+        } finally {
+            _exporting = false;
+            StateHasChanged();
+        }
+    }
+
+    private static int SeverityRank(string s) => s.ToLower() switch {
+        "critical" => 0, "serious" => 1, "moderate" => 2, "minor" => 3, _ => 4
+    };
+
+    private static string SeverityBadge(string severity) => severity.ToLower() switch {
+        "critical" => "<span class=\"badge bg-danger\">Critical</span>",
+        "serious" => "<span class=\"badge bg-warning text-dark\">Serious</span>",
+        "moderate" => "<span class=\"badge bg-info text-dark\">Moderate</span>",
+        "minor" => "<span class=\"badge bg-secondary\">Minor</span>",
+        _ => "<span class=\"badge bg-secondary\">" + severity + "</span>",
+    };
+}

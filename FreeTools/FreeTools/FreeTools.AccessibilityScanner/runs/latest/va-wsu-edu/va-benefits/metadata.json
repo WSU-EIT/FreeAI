@@ -1,0 +1,62 @@
+{
+  "PagePath": "/va-benefits/",
+  "Url": "https://va.wsu.edu/va-benefits/",
+  "FinalUrl": null,
+  "Title": "VA Benefits | WSU Veterans \u0026 Military Affiliated Student Services",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 669981,
+  "ScreenshotSizeBytes": 120318,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 120318
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://va.wsu.edu/media/ngaj3wzg/howtogetbenefits-image.jpg?width=500\u0026height=281.0499359795134",
+      "AltText": "How to get VA benefits: One, apply for certificate of eligibility; two, complete enrollment certification request; three, veteran coordinator certifies your courses; four, wait for VA to process"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:21:57.9290717Z"
+}

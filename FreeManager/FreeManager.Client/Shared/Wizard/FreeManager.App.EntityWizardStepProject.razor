@@ -1,0 +1,114 @@
+﻿@* EntityWizardStepProject.App.razor - Step 1: Project Info *@
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <label for="project-name" class="form-label">
+                Project Name <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="project-name"
+                   class="form-control form-control-lg @Helpers.MissingValue(ProjectName)"
+                   value="@ProjectName"
+                   @oninput="OnProjectNameInput"
+                   placeholder="MyApp" />
+            <div class="form-text">
+                Must be a valid C# identifier: start with a letter, letters and numbers only.
+                This will be used for namespaces and file names.
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_nameError)) {
+                <div class="text-danger small mt-1">
+                    <i class="fa-solid fa-exclamation-circle me-1"></i>
+                    @_nameError
+                </div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label for="display-name" class="form-label">
+                Display Name
+            </label>
+            <input type="text" id="display-name"
+                   class="form-control"
+                   value="@DisplayName"
+                   @oninput="OnDisplayNameInput"
+                   placeholder="My Application" />
+            <div class="form-text">
+                Human-friendly name shown in the UI. If left blank, we'll use the project name.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">
+                Description
+            </label>
+            <textarea id="description"
+                      class="form-control"
+                      rows="3"
+                      @bind="Description"
+                      placeholder="Brief description of your application..."></textarea>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                    Tips
+                </h6>
+                <ul class="small mb-0">
+                    <li>Use PascalCase for the project name (e.g., <code>TaskManager</code>)</li>
+                    <li>Keep it short but descriptive</li>
+                    <li>Avoid generic names like "App" or "Project"</li>
+                    <li>The name will be used in:
+                        <ul>
+                            <li>File names: <code>DataObjects.App.{'{'}Name{'}'}.cs</code></li>
+                            <li>Namespaces: <code>CRM.{'{'}Name{'}'}</code></li>
+                            <li>API routes: <code>/api/Data/{'{'}Name{'}'}...</code></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string ProjectName { get; set; } = "";
+    [Parameter] public EventCallback<string> ProjectNameChanged { get; set; }
+
+    [Parameter] public string DisplayName { get; set; } = "";
+    [Parameter] public EventCallback<string> DisplayNameChanged { get; set; }
+
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public EventCallback<string> DescriptionChanged { get; set; }
+
+    private string _nameError = "";
+
+    private async Task OnProjectNameInput(ChangeEventArgs e) {
+        var value = e.Value?.ToString() ?? "";
+        
+        // Remove invalid characters as user types
+        value = System.Text.RegularExpressions.Regex.Replace(value, @"[^A-Za-z0-9]", "");
+        
+        // Validate
+        _nameError = "";
+        if (!string.IsNullOrWhiteSpace(value)) {
+            if (!char.IsLetter(value[0])) {
+                _nameError = "Must start with a letter";
+            }
+        }
+
+        await ProjectNameChanged.InvokeAsync(value);
+
+        // Auto-set display name if empty
+        if (string.IsNullOrWhiteSpace(DisplayName) && !string.IsNullOrWhiteSpace(value)) {
+            var display = System.Text.RegularExpressions.Regex.Replace(value, @"([a-z])([A-Z])", "$1 $2");
+            await DisplayNameChanged.InvokeAsync(display);
+        }
+    }
+
+    private async Task OnDisplayNameInput(ChangeEventArgs e) {
+        await DisplayNameChanged.InvokeAsync(e.Value?.ToString() ?? "");
+    }
+}

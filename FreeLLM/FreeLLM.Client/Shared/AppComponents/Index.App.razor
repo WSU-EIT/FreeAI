@@ -1,0 +1,919 @@
+﻿@implements IDisposable
+@using System.Text.Json
+@using System.Text.RegularExpressions
+@using Humanizer
+@inject BlazorDataModel Model
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+
+<!--
+Index_App.razor (Merged from Files.razor)
+
+This component moves the entire functionality of the former /files page
+into the home page's Index_App component. The UI, filters, selection,
+summary generation, and server calls are unchanged. Routing attributes
+from Files.razor were removed because this lives under the index page.
+-->
+
+<main class="container py-3">
+    <div class="row">
+        <!-- LEFT COLUMN: CONTROLS -->
+        <div class="col-lg-6 mb-4">
+            <header class="mb-4">
+                <h1 id="pageTitle" class="mb-3">File Explorer – Project</h1>
+            </header>
+
+            <!-- Local Mode: Directory Path Input -->
+            <section aria-labelledby="directoryPathLabel" class="mb-4">
+                <label id="directoryPathLabel" for="directoryPathInput" class="form-label">Enter Directory Path:</label>
+                <div class="input-group">
+                    <input id="directoryPathInput" @bind="DirectoryPath" @bind:event="oninput"
+                    placeholder="e.g. C:\\Users\\YourName\\source\\repos\\YourProject"
+                    class="form-control" />
+                </div>
+            </section>
+
+            <!-- Personal Modification Instructions -->
+            <section aria-labelledby="modificationInstructionsLabel" class="mb-4">
+                <label id="modificationInstructionsLabel" for="modificationInstructionsInput" class="form-label fw-bold">
+                    Your Personal Modification Instructions:
+                </label>
+                <textarea id="modificationInstructionsInput" @bind="ModificationInstructions" @bind:event="oninput"
+                placeholder="Enter your instructions for code modifications..."
+                class="form-control" rows="3" aria-describedby="instructionsHelp"></textarea>
+                <div id="instructionsHelp" class="form-text">
+                    These instructions will appear at the very top of the final update.
+                </div>
+            </section>
+
+            <!-- Common Modification Phrases -->
+            <section aria-labelledby="commonPhrasesLabel" class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label id="commonPhrasesLabel" class="form-label">
+                        Common Modification Phrases:
+                    </label>
+                    <button class="btn btn-outline-secondary" @onclick="ToggleCommonPhrases">
+                        @(showCommonPhrases ? "Hide" : "Show")
+                    </button>
+                </div>
+                @if(showCommonPhrases) {
+                    @foreach(var group in ModificationOptions.GroupBy(opt => opt.Category)) {
+                        <div class="mb-3">
+                            <h5>@group.Key</h5>
+                            @foreach(var opt in group) {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@opt.Key" id="chk_mod_@opt.Key"
+                                    checked="@SelectedModificationOptionKeys.Contains(opt.Key)"
+                                    @onchange="() => ToggleModificationOption(opt.Key)" />
+                                    <label class="form-check-label" for="chk_mod_@opt.Key">
+                                        <strong>@opt.Key</strong> – @opt.Description
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <div class="form-text mt-1">
+                        Select the phrases you want to add as bottom instructions. They will be automatically appended.
+                    </div>
+                    <div class="mb-3">
+                        <label for="beforeTextInput" class="form-label">Before Text (Project Summary Header):</label>
+                        <textarea id="beforeTextInput" class="form-control" rows="3" @bind="textBefore"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="afterTextInput" class="form-label">After Text (Project Summary Footer):</label>
+                        <textarea id="afterTextInput" class="form-control" rows="3" @bind="textAfter"></textarea>
+                    </div>
+                }
+            </section>
+
+            <!-- ChatGPT Model Selection -->
+            <section class="mb-3">
+                <label for="chatGptModel" class="form-label">Select Number of Chunks:</label>
+                <input type="number" class="form-control" @bind="SelectedNumberOfChunks" min="1" />
+            </section>
+
+            <!-- Sorting Options -->
+            <section class="mb-3">
+                <div class="row">
+                    <div class="col">
+                        <label for="sortOption" class="form-label">Sort by:</label>
+                        <select id="sortOption" class="form-select" @bind="SortOption">
+                            <option value="Name">Name</option>
+                            <option value="LineCount">Line Count</option>
+                            <option value="CharCount">Character Count</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="sortDirection" class="form-label">Sort Order:</label>
+                        <select id="sortDirection" class="form-select" @bind="SortDirection">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Toggle Filters Button and Totals Display -->
+            <section class="mb-3">
+                <button class="btn btn-outline-secondary" @onclick="ToggleFilters">
+                    @(showFilters ? "Hide Filters" : "Show Filters")
+                </button>
+                <button class="btn btn-outline-info" @onclick="CheckDefaults">
+                    Check Defaults
+                </button>
+                <div class="row text-center mt-2">
+                    <div class="col">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <div>@FilteredFiles.Count() visible</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-check"></i>
+                        <div>@FilteredFiles.Count(x => x.IsSelected) selected</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-eye-slash"></i>
+                        <div>@(fileItems.Count - FilteredFiles.Count()) hidden</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-code"></i>
+                        <div>@FilteredFiles.Count(x => x.FullPath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)) .cs</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-file-code"></i>
+                        <div>@FilteredFiles.Count(x => x.FullPath.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)) .razor</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <div>@FilteredFiles.Count(x => x.FullPath.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase)) .cshtml</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Plain Text Search Filter -->
+            <section class="mb-3">
+                <label id="plainTextFilterLabel" for="plainTextFilterInput" class="form-label">Plain Text Search Filter:</label>
+                <input id="plainTextFilterInput"
+                value="@plainTextFilter"
+                placeholder="Enter text to search in file paths"
+                class="form-control"
+                @oninput="@(e => { plainTextFilter = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
+            </section>
+
+            <!-- Collapsible Filters & Stats -->
+            <div class="collapse @(showFilters ? "show" : "")">
+                <!-- File Type Filter -->
+                <section aria-labelledby="fileTypeFiltersLabel" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend id="fileTypeFiltersLabel" class="w-auto px-2">File Type Filters:</legend>
+                        <div class="d-flex flex-wrap">
+                            @foreach(var type in fileTypes) {
+                                <div class="form-check me-3">
+                                    <input type="checkbox" id="chk_@type" class="form-check-input"
+                                    @onchange="e => { ToggleFileType(type, e.Value); UpdateSummaryDebounced(); StateHasChanged(); }"
+                                    checked="@selectedFileTypes.Contains(type.ToLower())" />
+                                    <label class="form-check-label" for="chk_@type">@type</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="input-group mt-2">
+                            <input type="text" placeholder="Add file type (e.g. .json)" @bind="customFileType" class="form-control" />
+                            <button class="btn btn-outline-secondary" @onclick="AddCustomFileType">Add</button>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <!-- Ignored Folders Filter -->
+                <section aria-labelledby="ignoredFoldersLabel" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend id="ignoredFoldersLabel" class="w-auto px-2">Ignored Folders:</legend>
+                        <div class="d-flex flex-wrap">
+                            @foreach(var folder in ignoredFolders) {
+                                <span class="badge bg-secondary me-2">
+                                    @folder
+                                    <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove" @onclick="() => RemoveIgnoredFolder(folder)"></button>
+                                </span>
+                            }
+                        </div>
+                        <div class="input-group mt-2">
+                            <input type="text" placeholder="Add ignored folder (e.g. bootstrap)" @bind="customIgnoredFolder" class="form-control" />
+                            <button class="btn btn-outline-secondary" @onclick="AddIgnoredFolder">Add</button>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <!-- Additional Filters -->
+                <section class="mb-4">
+                    <div class="mb-3">
+                        <label id="wildcardFilterLabel" for="wildcardFilterInput" class="form-label">Wildcard Filter (e.g. *.cs, */Views/*):</label>
+                        <input id="wildcardFilterInput"
+                        value="@filterText"
+                        placeholder="Enter wildcard filter"
+                        class="form-control"
+                        @oninput="@(e => { filterText = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
+                        <div class="form-text">Common filters: *.cs, *.cshtml, *.js, *.css, *.razor, etc.</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Selection Buttons -->
+            <section class="mb-4">
+                <div class="btn-group" role="group" aria-label="Selection Controls">
+                    <button class="btn btn-outline-primary" @onclick="SelectAllVisible">Select All Visible</button>
+                    <button class="btn btn-outline-primary" @onclick="DeselectAllVisible">Deselect All Visible</button>
+                    <button class="btn btn-outline-danger" @onclick="ClearAllSelections">Clear All Selections</button>
+                </div>
+            </section>
+
+            <!-- Available Files List -->
+            <section aria-labelledby="fileListLabel" class="mb-4">
+                <h2 id="fileListLabel" class="h5">Available Files:</h2>
+                <ul class="list-group">
+                    @foreach(var item in FilteredFiles) {
+                        <li class="list-group-item">
+                            <div class="form-check">
+                                <input type="checkbox" id="chk_file_@item.FileName" class="form-check-input"
+                                @bind="item.IsSelected" @bind:event="oninput" />
+                                <label class="form-check-label" for="chk_file_@item.FileName">
+                                    @item.FullPath
+                                    @if(fileSizeIndicators.ContainsKey(item.FullPath)) {
+                                        <span class="badge ms-2" style="background-color: @GetFileBadgeColor(item);">
+                                            <i class="fa-solid fa-signal"></i> @fileSizeIndicators[item.FullPath]
+                                        </span>
+                                    }
+                                </label>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        </div>
+
+        <!-- RIGHT COLUMN: PREVIEW -->
+        <div class="col-lg-6">
+            <section aria-labelledby="summaryLabel" class="mb-4 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 id="summaryLabel" class="h5">ChatGPT Project Update:</h2>
+                    <div>
+                        <button class="btn btn-outline-success" @onclick="CopySummary" title="Copy update to clipboard">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                        @if(fileContentsSummaryChunks.Count > 1) {
+                            <span class="ms-2" style="background-color: @GetPreviewBackgroundColor(); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                Total: @overallLineCount lines, @overallCharCount characters
+                            </span>
+                        }
+                    </div>
+                </div>
+                @if(isUpdating) {
+                    <div class="spinner-overlay">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                @if(fileContentsSummaryChunks.Count == 1) {
+                    <textarea class="form-control" rows="20" readonly aria-live="polite">
+                        @fileContentsSummaryChunks[0]
+                    </textarea>
+                    <div class="mt-2 text-end">
+                        <span style="background-color: @GetPreviewBackgroundColor(); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                            Total: @overallLineCount lines, @overallCharCount characters
+                        </span>
+                    </div>
+                } else if(fileContentsSummaryChunks.Count > 1) {
+                    @foreach(var chunk in fileContentsSummaryChunks.Select((text, index) => new { text, index })) {
+                        <div class="mb-2">
+                            <textarea class="form-control" rows="20" readonly aria-live="polite">
+                                @chunk.text
+                            </textarea>
+                            <div class="text-end" style="font-size: smaller;">
+                                @{
+                                    var chunkLineCount = chunk.text.Split('\n').Length;
+                                    var chunkCharCount = chunk.text.Length;
+                                }
+                                Chunk @(chunk.index + 1): @chunkLineCount lines, @chunkCharCount characters
+                            </div>
+                        </div>
+                    }
+                }
+            </section>
+        </div>
+    </div>
+</main>
+
+@code {
+    // NOTE: Removed routing/Parameter(TenantCode). Index page already sets Model.TenantCodeFromUrl.
+
+    #region IDisposable subscription to Model changes (optional)
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    private void OnDataModelUpdated()
+    {
+        StateHasChanged();
+    }
+    #endregion
+
+    #region Parameters & Basic Page State
+    private string _modificationInstructions = "";
+    private string ModificationInstructions {
+        get => _modificationInstructions;
+        set {
+            if(_modificationInstructions != value) {
+                _modificationInstructions = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+
+    private void ToggleFileType(string type, object value)
+    {
+        // Cast the value to bool to determine if the checkbox is checked.
+        bool isChecked = (bool)value;
+        if(isChecked)
+            selectedFileTypes.Add(type.ToLower());
+        else
+            selectedFileTypes.Remove(type.ToLower());
+        UpdateSummaryDebounced();
+    }
+
+    private void RemoveIgnoredFolder(string folder)
+    {
+        ignoredFolders.Remove(folder);
+        UpdateSummaryDebounced();
+        StateHasChanged();
+    }
+
+    private void AddIgnoredFolder()
+    {
+        if(!string.IsNullOrWhiteSpace(customIgnoredFolder)) {
+            var folder = customIgnoredFolder.Trim().ToLower();
+            if(!ignoredFolders.Contains(folder))
+                ignoredFolders.Add(folder);
+            customIgnoredFolder = "";
+            UpdateSummaryDebounced();
+            StateHasChanged();
+        }
+    }
+
+    private void AddCustomFileType()
+    {
+        if(!string.IsNullOrWhiteSpace(customFileType)) {
+            var type = customFileType.Trim().ToLower();
+            if(!fileTypes.Contains(type))
+                fileTypes.Add(type);
+            selectedFileTypes.Add(type);
+            customFileType = "";
+            UpdateSummaryDebounced();
+            StateHasChanged();
+        }
+    }
+
+
+    // Local Files state
+    private string _directoryPath = @"C:\\Repos\\FileGpt";
+    private string DirectoryPath {
+        get => _directoryPath;
+        set {
+            if(_directoryPath != value) {
+                _directoryPath = value;
+                _ = LoadFiles();
+            }
+        }
+    }
+    #endregion
+
+    #region File Items, Modification Options & Toggles
+    private class FileItem
+    {
+        public string FileName { get; set; }
+        public string FullPath { get; set; }
+        public bool IsSelected { get; set; }
+        public int? LineCount { get; set; }
+        public int? CharCount { get; set; }
+    }
+    private List<FileItem> fileItems = new();
+    private string filterText { get; set; } = "";
+    private string plainTextFilter { get; set; } = "";
+    private List<string> fileContentsSummaryChunks = new();
+
+    // Default before/after texts are now editable via inputs in the hidden modification section.
+    private string textBefore = @"=== Instruction Summary ===
+Please review the contents of the files below carefully. Use this code as the foundation for solving the proposed problem.
+
+IMPORTANT: Do not skip or renumber any of the steps. Make sure to call them out as you do them.
+
+1. **Explain our previous chats:** If this is not our first chat, please summarize the previous discussions and decisions made in at most two sentences and three bullet points. Otherwise, acknowledge that this is the first chat and say you are ready and understand the task.
+2. **Explain the Problem:** Begin by summarizing the problem as you understand it from our Modification Instructions (Top), or from the Optional Modification Instructions (Bottom). This should be a brief summary of the problem and the desired outcome.
+3. **Analyze the Code:** Thoroughly review the code to understand its current functionality and structure.
+4. **Study:** List all the software development topics being presented in the existing code and become an expert on them. Identify the languages, patterns, or techniques shown. In the output, make a table with a list of the types, categories, descriptions, and a link to their wiki pages.
+5. **Standards:** Stick to industry standards and best practices as offered by Microsoft or others as they apply when making suggestions.
+6. **Propose Solutions:** List three potential solutions in order from best to worst, including detailed pseudocode and explanations for each.
+7. **Implement the Fix:** Apply the chosen solution by updating the code. Return the entire file where changes were made, including all comments, code blocks, and formatting.
+8. **Explain fix and future improvements:** Explain why we did what we did, then follow it up with 1 to 3 paragraphs of text explaining potential further improvements with 3 to 5 bullet points reinforcing.
+When returning modifications, ensure that only the files which have been modified are provided—unaltered files should be omitted. This will make it easier to integrate changes using a git diff tool. Thank you!
+";
+
+    private string textAfter = @"=== Instruction After Code ===
+Ensure that all modifications preserve the complete file’s functionality and structure.
+Ensure you do not include sections like '// For brevity, not every method is re-implemented.' as part of your changes. Always actually implement the changes or include the complete code that should be there.
+Return only the fully updated files that have been modified; do not include files that remain unchanged.
+Every detail is critical and must be maintained without omissions or placeholder content, unless explicitly modified per the request.
+
+If you make any assumptions or need clarification, please list them in a section at the bottom of the output and we can address them after your best effort has been made.
+I believe in you and do your best!
+I look forward to working with you to accomplish our goals on this project.
+
+==== Optional Modification Instructions (Bottom) ====
+";
+
+
+    private List<string> fileTypes = new() { ".cs", ".razor", ".cshtml", ".md", ".js", ".css", ".ts", ".json", ".html", ".xml", ".scss" };
+    private HashSet<string> selectedFileTypes = new() { ".cs", ".razor", ".cshtml", ".md" };
+
+    private List<string> ignoredFolders = new() { "fontawesome", "bootstrap" };
+    private string customFileType = "";
+    private string customIgnoredFolder = "";
+
+    private bool isUpdating = false;
+    private int overallLineCount = 0;
+    private int overallCharCount = 0;
+    private Dictionary<string, string> fileSizeIndicators = new();
+
+    private string _additionalRequest = "";
+    private string AdditionalRequest {
+        get => _additionalRequest;
+        set {
+            if(_additionalRequest != value) {
+                _additionalRequest = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+
+    public class ModificationOption
+    {
+        public string Key { get; set; }
+        public string Category { get; set; }
+        public string Description { get; set; }
+    }
+    private List<ModificationOption> ModificationOptions = new();
+    private List<string> SelectedModificationOptionKeys = new();
+    private bool showCommonPhrases = false;
+    private void ToggleCommonPhrases() => showCommonPhrases = !showCommonPhrases;
+    private void ToggleModificationOption(string key)
+    {
+        if(SelectedModificationOptionKeys.Contains(key))
+            SelectedModificationOptionKeys.Remove(key);
+        else
+            SelectedModificationOptionKeys.Add(key);
+
+        var phrase = ModificationOptions.Where(opt => SelectedModificationOptionKeys.Contains(opt.Key))
+                                          .Select(opt => $"{opt.Key}: {opt.Description}");
+        additionalSummary = phrase.Any() ? string.Join("\n", phrase) : "";
+        UpdateSummaryDebounced();
+    }
+    private string additionalSummary = "";
+    private string SelectedToolAction { get; set; } = "summarize";
+
+    private bool _showFullFileList = false;
+    private bool ShowFullFileList {
+        get => _showFullFileList;
+        set {
+            if(_showFullFileList != value) {
+                _showFullFileList = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+    #endregion
+
+    #region ChatGPT Model & Sorting Options
+
+    private int _selectedNumberOfChunks = 1;
+    private int SelectedNumberOfChunks {
+        get => _selectedNumberOfChunks;
+        set {
+            if(_selectedNumberOfChunks != value) {
+                _selectedNumberOfChunks = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+
+    private string _sortOption = "Name";
+    private string SortOption {
+        get => _sortOption;
+        set {
+            if(_sortOption != value) {
+                _sortOption = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+    private string _sortDirection = "asc";
+    private string SortDirection {
+        get => _sortDirection;
+        set {
+            if(_sortDirection != value) {
+                _sortDirection = value;
+                UpdateSummaryDebounced();
+            }
+        }
+    }
+    #endregion
+
+    #region Summary & Count Color Helpers
+    private string GetPreviewBackgroundColor()
+    {
+        int limit = 7000;
+        double ratio = overallLineCount / (double)limit;
+
+        if(ratio < 0.5)
+            return "var(--bs-success-bg-subtle)";   // good
+        else if(ratio < 0.7)
+            return "var(--bs-info-bg-subtle)";      // info
+        else if(ratio < 0.9)
+            return "var(--bs-warning-bg-subtle)";   // warn
+        else
+            return "var(--bs-danger-bg-subtle)";    // error
+    }
+
+    private string GetFileBadgeColor(FileItem file)
+    {
+        // hardcoded thresholds preserved
+        double lineCount = (file.LineCount ?? 0);
+
+        if(lineCount < 1000)
+            return "var(--bs-success-bg-subtle)";   // good
+        else if(lineCount < 2000)
+            return "var(--bs-info-bg-subtle)";      // info
+        else if(lineCount < 3000)
+            return "var(--bs-warning-bg-subtle)";   // warn
+        else
+            return "var(--bs-danger-bg-subtle)";    // error
+    }
+    #endregion
+
+
+    #region Update & Load Methods
+    private System.Threading.Timer? debounceTimer;
+    private void UpdateSummaryDebounced()
+    {
+        debounceTimer?.Dispose();
+        debounceTimer = new System.Threading.Timer(async _ => {
+            await InvokeAsync(UpdateSummary);
+        }, null, 300, System.Threading.Timeout.Infinite);
+    }
+
+    private async Task UpdateSummary()
+    {
+        isUpdating = true;
+        StateHasChanged();
+        await GetSelectedFileContents();
+        overallLineCount = Helpers.LinesInString(string.Join("\n", fileContentsSummaryChunks));
+        overallCharCount = string.Join("\n", fileContentsSummaryChunks).Length;
+        isUpdating = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadFiles()
+    {
+        try {
+            var response = await Http.PostAsJsonAsync($"/{DataObjects.Endpoints.EndpointFileGpt.GetFiles}", new { Path = DirectoryPath });
+            if(response.IsSuccessStatusCode) {
+                fileItems = await response.Content.ReadFromJsonAsync<List<FileItem>>() ?? new();
+                await UpdateSummary();
+            }
+        } catch(Exception ex) {
+            // Optionally log error.
+        }
+    }
+
+    private async Task GetSelectedFileContents()
+    {
+        var selectedFiles = fileItems.Where(f => f.IsSelected).ToList();
+        var unselectedFiles = fileItems.Where(f => !f.IsSelected).Select(f => f.FullPath).ToList();
+
+        var summary = new System.Text.StringBuilder();
+        summary.AppendLine("=== Selected Files ===");
+        if(!selectedFiles.Any()) {
+            summary.AppendLine("No files selected.");
+        } else {
+            foreach(var file in selectedFiles) {
+                summary.AppendLine($"- {file.FullPath}");
+            }
+            summary.AppendLine();
+        }
+
+        summary.AppendLine("=== Modification Instructions (Top) ===");
+        summary.AppendLine(ModificationInstructions);
+        summary.AppendLine();
+        summary.AppendLine(textBefore);
+        summary.AppendLine();
+
+        fileSizeIndicators.Clear();
+
+        // Retrieve metadata for unselected files.
+        if(unselectedFiles.Any()) {
+            try {
+                var metaResponseUnselected = await Http.PostAsJsonAsync($"/{DataObjects.Endpoints.EndpointFileGpt.GetFileMetadata}", new { FilePaths = unselectedFiles });
+                if(metaResponseUnselected.IsSuccessStatusCode) {
+                    var metaItemsUnselected = await metaResponseUnselected.Content.ReadFromJsonAsync<List<FileMetadataItem>>();
+                    if(metaItemsUnselected != null) {
+                        foreach(var meta in metaItemsUnselected) {
+                            var file = FilteredFiles.FirstOrDefault(f => f.FullPath == meta.FullPath);
+                            if(file != null) {
+                                file.LineCount = meta.LineCount;
+                                file.CharCount = meta.CharCount;
+                            }
+                            fileSizeIndicators[meta.FullPath] = $"{meta.LineCount}L/{meta.CharCount}C";
+                        }
+                    }
+                }
+            } catch(Exception ex) {
+                // Optionally log error.
+            }
+        }
+
+        // Retrieve full contents for selected files.
+        if(selectedFiles.Any()) {
+            try {
+                var contentResponse = await Http.PostAsJsonAsync($"/{DataObjects.Endpoints.EndpointFileGpt.GetFileContents}", new { FilePaths = selectedFiles.Select(f => f.FullPath).ToList() });
+                if(contentResponse.IsSuccessStatusCode) {
+                    var fileContents = await contentResponse.Content.ReadFromJsonAsync<List<FileContentItem>>();
+                    if(fileContents != null) {
+                        foreach(var file in fileContents) {
+                            int lineCount = file.Content.Split('\n').Length;
+                            int charCount = file.Content.Length;
+                            var item = selectedFiles.FirstOrDefault(f => f.FullPath == file.FullPath);
+                            if(item != null) {
+                                item.LineCount = lineCount;
+                                item.CharCount = charCount;
+                            }
+                            fileSizeIndicators[file.FullPath] = $"{lineCount}L/{charCount}C";
+                            summary.AppendLine($"----- {file.FullPath} [ {lineCount}L/{charCount}C ] -----");
+                            summary.AppendLine("\"\"\"\"");
+                            summary.AppendLine(file.Content);
+                            summary.AppendLine("\"\"\"\"");
+                            summary.AppendLine();
+                        }
+                    }
+                } else {
+                    summary.AppendLine("Error retrieving file contents.");
+                }
+            } catch(Exception ex) {
+                summary.AppendLine("Error retrieving file contents: " + ex.Message);
+            }
+        }
+
+        summary.AppendLine(textAfter);
+        if(!string.IsNullOrWhiteSpace(AdditionalRequest)) {
+            summary.AppendLine();
+            summary.AppendLine("=== Bottom Modification Instructions ===");
+            summary.AppendLine(AdditionalRequest);
+        }
+        if(!string.IsNullOrWhiteSpace(additionalSummary)) {
+            summary.AppendLine();
+            summary.AppendLine("=== Common Modification Phrases ===");
+            summary.AppendLine(additionalSummary);
+        }
+
+        fileContentsSummaryChunks = SplitSummaryIntoChunks(summary.ToString());
+        StateHasChanged();
+    }
+
+    private async Task CopySummary()
+    {
+        string allText = string.Join("\n\n", fileContentsSummaryChunks);
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", allText);
+        await ShowCopyToast();
+    }
+
+    private async Task ShowCopyToast()
+    {
+        await JS.InvokeVoidAsync("alert", "Update copied to clipboard!");
+    }
+    #endregion
+
+    #region Helper Method: Splitting Summary into Chunks
+    private List<string> SplitSummaryIntoChunks(string summary)
+    {
+        int chunkCount = Math.Max(1, SelectedNumberOfChunks);
+
+        // 1) Fast path: no splitting requested
+        if(chunkCount <= 1)
+        {
+            return new List<string> { summary };
+        }
+
+        // 2) Split into lines
+        var lines = summary.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+        int totalLines = lines.Count;
+
+        // 3) Partition into "blocks" separated by lines that start with "----- "
+        //    (this preserves the preamble as block[0])
+        var blocks = new List<List<string>>();
+        var currentBlock = new List<string>();
+        foreach(var line in lines) {
+            if(line.StartsWith("----- ")) {
+                if(currentBlock.Count > 0) {
+                    blocks.Add(currentBlock);
+                    currentBlock = new List<string>();
+                }
+            }
+            currentBlock.Add(line);
+        }
+        if(currentBlock.Count > 0)
+            blocks.Add(currentBlock);
+
+        // If we somehow failed to detect any blocks, just return the whole thing.
+        if(blocks.Count == 0)
+            return new List<string> { summary };
+
+        // If there are fewer blocks than requested chunks, we’ll return one chunk per block.
+        // (If you want to split *inside* blocks to always reach chunkCount, we can add that later.)
+        int targetChunkCount = Math.Min(chunkCount, blocks.Count);
+
+        // 4) Greedy pack blocks into ~equal line-count chunks
+        int targetLinesPerChunk = (int)Math.Ceiling(totalLines / (double)targetChunkCount);
+
+        var chunks = new List<List<string>>();
+        var chunk = new List<string>();
+        int chunkLineCount = 0;
+
+        for(int i = 0; i < blocks.Count; i++) {
+            var block = blocks[i];
+            int remainingBlocks = blocks.Count - i;                 // including this one
+            int remainingChunks = targetChunkCount - chunks.Count;  // including the current one
+
+            // Ensure we leave at least one block for each remaining chunk.
+            bool mustBreakHere = (remainingBlocks - 1) >= (remainingChunks - 1)    // enough blocks left
+                                 && chunk.Count > 0
+                                 && (chunkLineCount + block.Count) > targetLinesPerChunk;
+
+            // Also force a break if keeping this block would starve remaining chunks of at least 1 block each
+            bool needToBreakToReserve = chunk.Count > 0
+                                        && (remainingBlocks - 1) == (remainingChunks - 1)
+                                        && (chunkLineCount > 0);
+
+            if((mustBreakHere || needToBreakToReserve) && chunks.Count < targetChunkCount - 1) {
+                chunks.Add(chunk);
+                chunk = new List<string>();
+                chunkLineCount = 0;
+            }
+
+            chunk.AddRange(block);
+            chunkLineCount += block.Count;
+        }
+
+        if(chunk.Count > 0)
+            chunks.Add(chunk);
+
+        // It’s possible (e.g., tiny input) we ended with fewer than targetChunkCount chunks.
+        // That’s fine—we won’t split blocks further in this version.
+
+        // 5) Materialize chunks with headers
+        var result = new List<string>(chunks.Count);
+        for(int i = 0; i < chunks.Count; i++) {
+            string header =
+                $"=== Chunk {i + 1} of {chunks.Count} ===\nPlease wait until all chunks are received before responding.\n";
+            result.Add(header + "\n" + string.Join("\n", chunks[i]));
+        }
+        return result;
+    }
+
+    #endregion
+
+    #region API Data Classes
+    public class FileContentItem
+    {
+        public string FileName { get; set; }
+        public string FullPath { get; set; }
+        public string Content { get; set; }
+    }
+    public class FileMetadataItem
+    {
+        public string FileName { get; set; }
+        public string FullPath { get; set; }
+        public int LineCount { get; set; }
+        public int CharCount { get; set; }
+    }
+    #endregion
+
+    #region File Selection & Filtering
+    private void SelectAllVisible()
+    {
+        foreach(var item in FilteredFiles) {
+            item.IsSelected = true;
+        }
+        UpdateSummaryDebounced();
+        StateHasChanged();
+    }
+
+    private void DeselectAllVisible()
+    {
+        foreach(var item in FilteredFiles) {
+            item.IsSelected = false;
+        }
+        UpdateSummaryDebounced();
+        StateHasChanged();
+    }
+
+    private void ClearAllSelections()
+    {
+        foreach(var item in fileItems) {
+            item.IsSelected = false;
+        }
+        UpdateSummaryDebounced();
+        StateHasChanged();
+    }
+
+    private bool showFilters = false;
+    private void ToggleFilters()
+    {
+        showFilters = !showFilters;
+        StateHasChanged();
+    }
+
+    private async Task CheckDefaults()
+    {
+        List<string> stringList = ["Readme.md", "Program.cs", "App.razor", "MainLayout.razor", "\\DataAccess.cs", "\\DataObjects.cs", "Controllers\\DataController.cs", "\\DataModel.cs", "\\EFDataModel.cs"];
+        var listCopy = fileItems.ToList();
+        // now we need to select any file that matches the name
+        foreach(FileItem item in listCopy) {
+            if(stringList.Any(o => (string.Empty + item.FullPath).Trim().ToLower().EndsWith(((string.Empty + o).ToLower().Trim())))) {
+                item.IsSelected = true;
+            }
+        }
+        fileItems = listCopy.ToList();
+        await UpdateSummary();
+        StateHasChanged();
+    }
+
+    // FilteredFiles based on fileItems
+    private IEnumerable<FileItem> FilteredFiles {
+        get {
+            if(fileItems == null)
+                return Enumerable.Empty<FileItem>();
+            IEnumerable<FileItem> filtered = fileItems;
+            if(selectedFileTypes.Any()) {
+                filtered = filtered.Where(item => {
+                    string ext = System.IO.Path.GetExtension(item.FullPath).ToLower();
+                    return selectedFileTypes.Contains(ext);
+                });
+            }
+            if(!string.IsNullOrWhiteSpace(filterText))
+                filtered = filtered.Where(item => IsWildcardMatch(item.FullPath, filterText));
+            if(!string.IsNullOrWhiteSpace(plainTextFilter))
+                filtered = filtered.Where(item => item.FullPath.IndexOf(plainTextFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+            filtered = filtered.Where(item => !ignoredFolders.Any(ignored => item.FullPath.IndexOf(ignored, StringComparison.OrdinalIgnoreCase) >= 0));
+
+            if(SortOption == "LineCount") {
+                filtered = SortDirection == "asc" ?
+                           filtered.OrderBy(item => item.LineCount ?? int.MaxValue) :
+                           filtered.OrderByDescending(item => item.LineCount ?? int.MaxValue);
+            } else if(SortOption == "CharCount") {
+                filtered = SortDirection == "asc" ?
+                           filtered.OrderBy(item => item.CharCount ?? int.MaxValue) :
+                           filtered.OrderByDescending(item => item.CharCount ?? int.MaxValue);
+            } else {
+                filtered = SortDirection == "asc" ?
+                           filtered.OrderBy(item => item.FileName) :
+                           filtered.OrderByDescending(item => item.FileName);
+            }
+
+            return filtered;
+        }
+    }
+
+    private bool IsWildcardMatch(string text, string pattern)
+    {
+        var regexPattern = "^" + Regex.Escape(pattern)
+            .Replace("\\*", ".*")
+            .Replace("\\?", ".") + "$";
+        return Regex.IsMatch(text, regexPattern, RegexOptions.IgnoreCase);
+    }
+    #endregion
+
+
+    #region Lifecycle & Initialization
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender) {
+            // Model.TenantCodeFromUrl is already set by the parent index page.
+            await LoadFiles();
+            await UpdateSummary();
+        }
+    }
+    #endregion
+}
+

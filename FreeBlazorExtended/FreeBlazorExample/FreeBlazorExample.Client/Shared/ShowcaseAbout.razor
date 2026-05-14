@@ -1,0 +1,142 @@
+<div class="card shadow-sm mb-4 border-info">
+    <div class="card-header bg-info bg-opacity-10 border-info d-flex justify-content-between align-items-center"
+         role="button" style="cursor:pointer" @onclick="() => _open = !_open">
+        <span>
+            <i class="fa-solid fa-circle-info text-info me-2"></i>
+            <strong>About this @Kind</strong>
+            <span class="text-muted small ms-2">— click to @(_open ? "hide" : "learn more")</span>
+        </span>
+        <i class="fa-solid @(_open ? "fa-chevron-up" : "fa-chevron-down") text-muted"></i>
+    </div>
+    @if (_open)
+    {
+        <div class="card-body pb-2">
+
+            @* Row 1: What / Who / When / Why *@
+            <div class="row g-3 mb-3">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-primary">
+                        <div class="card-header bg-primary bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-magnifying-glass me-1"></i> What is it?</strong>
+                        </div>
+                        <div class="card-body small py-2">
+                            <p class="mb-1">@WhatTechnical</p>
+                            <hr class="my-2" />
+                            <p class="mb-0 fst-italic text-muted">
+                                <strong>ELI5:</strong> @WhatEli5
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-success">
+                        <div class="card-header bg-success bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-users me-1"></i> Who uses it?</strong>
+                        </div>
+                        <div class="card-body small py-2">
+                            <ul class="mb-0 ps-3">
+                                @foreach (var item in Who)
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-warning">
+                        <div class="card-header bg-warning bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-clock me-1"></i> When to use it?</strong>
+                        </div>
+                        <div class="card-body small py-2">
+                            @if (WhenUse.Length > 0)
+                            {
+                                <p class="mb-1 text-success fw-semibold">✓ Use when:</p>
+                                <ul class="ps-3 mb-1">
+                                    @foreach (var item in WhenUse)
+                                    {
+                                        <li>@item</li>
+                                    }
+                                </ul>
+                            }
+                            @if (WhenNot.Length > 0)
+                            {
+                                <p class="mb-1 text-danger fw-semibold">✗ Not for:</p>
+                                <ul class="ps-3 mb-0">
+                                    @foreach (var item in WhenNot)
+                                    {
+                                        <li>@item</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-secondary">
+                        <div class="card-header bg-secondary bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-lightbulb me-1"></i> Why does it exist?</strong>
+                        </div>
+                        <div class="card-body small py-2">
+                            <p class="mb-0">@Why</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Row 2: Tech Notes + Quick Facts *@
+            <div class="row g-3 mb-2">
+                <div class="col-lg-8">
+                    <div class="card h-100 border-dark">
+                        <div class="card-header bg-dark bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-gears me-1"></i> Technical notes</strong>
+                        </div>
+                        <div class="card-body small py-2">
+                            <ul class="mb-0 ps-3">
+                                @foreach (var item in TechNotes)
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100 border-info">
+                        <div class="card-header bg-info bg-opacity-10 py-2">
+                            <strong><i class="fa-solid fa-table-list me-1"></i> Quick facts</strong>
+                        </div>
+                        <div class="card-body small py-2 px-3">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                                    @foreach (var kv in QuickFacts)
+                                    {
+                                        <tr>
+                                            <td class="text-muted ps-0" style="white-space:nowrap">@kv.Key</td>
+                                            <td>@kv.Value</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Kind { get; set; } = "feature";
+    [Parameter, EditorRequired] public string WhatTechnical { get; set; } = "";
+    [Parameter, EditorRequired] public string WhatEli5 { get; set; } = "";
+    [Parameter, EditorRequired] public string[] Who { get; set; } = [];
+    [Parameter, EditorRequired] public string[] WhenUse { get; set; } = [];
+    [Parameter] public string[] WhenNot { get; set; } = [];
+    [Parameter, EditorRequired] public string Why { get; set; } = "";
+    [Parameter, EditorRequired] public string[] TechNotes { get; set; } = [];
+    [Parameter, EditorRequired] public Dictionary<string, string> QuickFacts { get; set; } = [];
+
+    private bool _open;
+}

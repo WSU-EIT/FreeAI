@@ -1,0 +1,129 @@
+{
+  "PagePath": "/admitted-pullman/",
+  "Url": "https://admission.wsu.edu/admitted-pullman/",
+  "FinalUrl": null,
+  "Title": "Welcome #FutureCoug | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 252571,
+  "ScreenshotSizeBytes": 1270559,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 1270559
+    }
+  ],
+  "ImageCount": 15,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/bryan-tower-at-dusk-1.png",
+      "AltText": "Aerial view of Bryan Tower on the WSU Pullman campus"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Summer2020DroneAerial_0929-scaled-1.jpg",
+      "AltText": "Aerial view of the WSU Pullman campus"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-28@2x-scaled-1.jpg",
+      "AltText": "A group of people looking at art in a museum"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Nife-Shola-Dare-2-1-792x528.jpg",
+      "AltText": "Oluwanifemi \u201CNife\u201D Shola-Dare"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3468/2024/06/Mask-Group-36@2x-792x792.jpg",
+      "AltText": "Students writing in notebooks."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-41.jpg",
+      "AltText": "A WSU student focuses at a workbench."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-30@2x-scaled-1.jpg",
+      "AltText": "A woman focused in a classroom as others work alongside."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Brooke-Munyon_2005-scaled-e1696962627398-792x418.jpg",
+      "AltText": "Brooke Munyon"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-42@2x-scaled-1.jpg",
+      "AltText": "A group of people sitting on a bench together."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Band-and-Cheer-_-44-1.jpg",
+      "AltText": "Cougar mascot and band standing on a football field"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Akash-Rathnayaka_1482-scaled-e1696962522691.jpg",
+      "AltText": "Akash Rathnayaka"
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/3468/2024/06/Mask-Group-31@2x-792x792.jpg",
+      "AltText": "A young man assembling an underwater drone."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-32@2x-scaled-1.jpg",
+      "AltText": "A crowd of students standing together, smiling and cheering."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Mask-Group-43@2x-1-scaled-1.jpg",
+      "AltText": "Four young people happily jumping in the air."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3468/2024/06/Jakiyah-Johnson_1584-scaled-e1696962394874-792x455.jpg",
+      "AltText": "Jakiyah Johnson"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 5,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:07:56 GMT",
+    "etag": "\u00226114377ac2221435fba96176720ed74d\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:07:01 GMT",
+    "link": "\u003Chttps://admission.wsu.edu/admitted-pullman/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://admission.wsu.edu/admitted-pullman/wp-json/wp/v2/pages/2\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://admission.wsu.edu/admitted-pullman/\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:07:56.3650857Z"
+}

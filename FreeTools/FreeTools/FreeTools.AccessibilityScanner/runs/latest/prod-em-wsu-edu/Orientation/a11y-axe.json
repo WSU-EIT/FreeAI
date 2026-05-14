@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 122,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "span[data-bind=\u0022html:Language(\u0027AppTitle\u0027)\u0022]",
+      "Snippet": "\u003Cspan class=\u0022icon-text\u0022 data-bind=\u0022html:Language(\u0027AppTitle\u0027)\u0022\u003EOrientation\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "i[data-bind=\u0022html:IconAndText(\u0027AssignOCs\u0027)\u0022] \u003E .icon-text",
+      "Snippet": "\u003Cspan class=\u0022icon-text\u0022\u003EAssign OCs\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "list",
+      "CanonicalRuleId": "list",
+      "Severity": "serious",
+      "Message": "\u003Cul\u003E and \u003Col\u003E must only directly contain \u003Cli\u003E, \u003Cscript\u003E or \u003Ctemplate\u003E elements",
+      "Selector": ".d-flex \u003E ul",
+      "Snippet": "\u003Cul class=\u0022navbar-nav me-auto\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

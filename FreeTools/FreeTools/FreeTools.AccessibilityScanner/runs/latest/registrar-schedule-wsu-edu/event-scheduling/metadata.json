@@ -1,0 +1,70 @@
+{
+  "PagePath": "/event-scheduling/",
+  "Url": "https://registrar.schedule.wsu.edu/event-scheduling/",
+  "FinalUrl": null,
+  "Title": "Event Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 655404,
+  "ScreenshotSizeBytes": 271024,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 271024
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761541/searchforevent.png?width=329\u0026height=108",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761542/eventsearchdropdown.png?width=433\u0026height=237",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/761543/dashboardevents.png?width=369\u0026height=297",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:35.538476Z"
+}

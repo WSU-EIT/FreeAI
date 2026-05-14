@@ -1,0 +1,21 @@
+{
+  "Subject": "CN=wsu.edu",
+  "Issuer": "CN=R12, O=Let\u0027s Encrypt, C=US",
+  "Thumbprint": "0C0A11EE741418A19BC8474BF378536666560811",
+  "SerialNumber": "050593F9FD3A3912C678B906240D0F21A41C",
+  "NotBefore": "2026-02-09T06:24:47-08:00",
+  "NotAfter": "2026-05-10T07:24:46-07:00",
+  "DaysUntilExpiry": 80,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 4096,
+  "SubjectAlternativeNames": [
+    "wsu.edu",
+    "www.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "wsu.edu",
+    "www.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

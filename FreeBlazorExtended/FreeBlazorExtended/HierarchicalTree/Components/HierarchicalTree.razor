@@ -1,0 +1,230 @@
+﻿@*
+    HierarchicalTree — Interactive tree editor with full CRUD at root and child levels.
+
+    Renders a recursive node tree with a toolbar for adding root nodes, adding children,
+    editing, and deleting the selected node. Node editing opens an inline modal.
+    Delegates recursive rendering to <TreeNodeComponent>.
+
+    Required host setup:
+        1. Register in DI: builder.Services.AddScoped<TreeService>();
+        2. Add the component: <HierarchicalTree />
+        3. Optionally seed initial data via TreeService before render.
+
+    There are no external [Parameter] inputs — all state is owned and managed by the
+    injected TreeService. To read or persist changes, subscribe to TreeService events
+    or call TreeService methods directly from the host page.
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.HierarchicalTree
+@using FreeBlazorExtended.HierarchicalTree
+@inject TreeService TreeService
+
+<div class="hierarchical-tree-container">
+    <div class="tree-toolbar mb-3">
+        <button class="btn btn-sm btn-primary" @onclick="AddRootNode">+ Add Root Node</button>
+        @if (SelectedNode != null)
+        {
+            <button class="btn btn-sm btn-success" @onclick="AddChildNode">+ Add Child</button>
+            <button class="btn btn-sm btn-warning" @onclick="EditSelectedNode">Edit</button>
+            <button class="btn btn-sm btn-danger" @onclick="DeleteSelectedNode">Delete</button>
+        }
+    </div>
+
+    @if (_nodes == null)
+    {
+        <div class="alert alert-info">Loading...</div>
+    }
+    else if (_nodes.Count == 0)
+    {
+        <div class="alert alert-info">No nodes yet. Click "Add Root Node" to start.</div>
+    }
+    else
+    {
+        <div class="tree-view">
+            @foreach (var root in _roots)
+            {
+                <TreeNodeComponent Node="root"
+                                   AllNodes="_nodes"
+                                   SelectedNode="SelectedNode"
+                                   OnNodeSelected="SelectNode"
+                                   OnAddChild="AddChildNodeToNode"
+                                   OnDelete="DeleteNode"
+                                   TreeService="TreeService" />
+            }
+        </div>
+    }
+
+    @if (_editingNode != null)
+    {
+        <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@(_editingNode.TreeNodeId == Guid.Empty ? "Add Node" : "Edit Node")</h5>
+                        <button type="button" class="btn-close" @onclick="CloseNodeEditor"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" class="form-control" @bind="_editingNode.Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" @bind="_editingNode.Description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Node Type</label>
+                            <input type="text" class="form-control" @bind="_editingNode.NodeType" placeholder="e.g., Folder, Category" />
+                        </div>
+                        <div class="form-group">
+                            <label>Color (hex)</label>
+                            <input type="text" class="form-control" @bind="_editingNode.Color" placeholder="#FF5733" />
+                        </div>
+                        <div class="form-group">
+                            <label>Icon (FontAwesome class)</label>
+                            <input type="text" class="form-control" @bind="_editingNode.Icon" placeholder="fa-folder" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseNodeEditor">Cancel</button>
+                        <button type="button" class="btn btn-primary" @onclick="SaveEditingNode">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+.hierarchical-tree-container {
+    padding: 1rem;
+}
+
+.tree-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tree-view {
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    min-height: 300px;
+}
+
+.modal.show {
+    z-index: 1000;
+}
+
+.modal-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    max-width: 90vw;
+}
+</style>
+
+@code {
+    private List<TreeNode>? _nodes;
+    private List<TreeNode> _roots = new();
+    private TreeNode? _editingNode;
+    private Guid _tenantId = Guid.NewGuid(); // In real app, from auth context
+
+    [Parameter]
+    public TreeNode? SelectedNode { get; set; }
+
+    [Parameter]
+    public EventCallback<TreeNode> OnNodeSelected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNodesAsync();
+    }
+
+    private async Task LoadNodesAsync()
+    {
+        _nodes = await TreeService.GetTreeNodes(_tenantId);
+        _roots = await TreeService.GetRootNodes(_tenantId);
+    }
+
+    private void SelectNode(TreeNode node)
+    {
+        SelectedNode = node;
+        OnNodeSelected.InvokeAsync(node);
+    }
+
+    private void AddRootNode()
+    {
+        _editingNode = new TreeNode
+        {
+            TenantId = _tenantId,
+            TreeNodeId = Guid.Empty
+        };
+    }
+
+    private void AddChildNode()
+    {
+        if (SelectedNode == null) return;
+        AddChildNodeToNode(SelectedNode);
+    }
+
+    private void AddChildNodeToNode(TreeNode parent)
+    {
+        _editingNode = new TreeNode
+        {
+            TenantId = _tenantId,
+            ParentNodeId = parent.TreeNodeId,
+            TreeNodeId = Guid.Empty
+        };
+    }
+
+    private void EditSelectedNode()
+    {
+        if (SelectedNode == null) return;
+        _editingNode = new TreeNode
+        {
+            TreeNodeId = SelectedNode.TreeNodeId,
+            TenantId = SelectedNode.TenantId,
+            Name = SelectedNode.Name,
+            Description = SelectedNode.Description,
+            Color = SelectedNode.Color,
+            Icon = SelectedNode.Icon,
+            NodeType = SelectedNode.NodeType,
+            ParentNodeId = SelectedNode.ParentNodeId,
+            SortOrder = SelectedNode.SortOrder,
+            IsExpanded = SelectedNode.IsExpanded
+        };
+    }
+
+    private async Task SaveEditingNode()
+    {
+        if (_editingNode == null || string.IsNullOrWhiteSpace(_editingNode.Name))
+            return;
+
+        await TreeService.SaveTreeNode(_editingNode);
+        _editingNode = null;
+        await LoadNodesAsync();
+    }
+
+    private void CloseNodeEditor()
+    {
+        _editingNode = null;
+    }
+
+    private void DeleteSelectedNode()
+    {
+        if (SelectedNode == null) return;
+        DeleteNode(SelectedNode);
+    }
+
+    private async Task DeleteNode(TreeNode node)
+    {
+        await TreeService.DeleteTreeNode(node.TreeNodeId);
+        if (SelectedNode?.TreeNodeId == node.TreeNodeId)
+            SelectedNode = null;
+        await LoadNodesAsync();
+    }
+}

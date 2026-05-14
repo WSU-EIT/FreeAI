@@ -1,0 +1,150 @@
+# 📄 Page Scan Report
+
+> **URL:** https://prod.em.wsu.edu/FormsToImaging  
+> **Captured:** 2026-02-19 02:09:28 UTC  
+> **Status:** ✅ 200  
+
+---
+
+## 📑 Contents
+
+- [Summary](#-summary)
+- [Screenshots](#-screenshots)
+- [Page Images](#-page-images)
+- [JavaScript Errors](#-javascript-errors)
+- [Accessibility](#-accessibility)
+- [Actions](#-actions)
+- [Files](#-files)
+
+---
+
+## 📋 Summary
+
+| Field | Value |
+|-------|-------|
+| URL | https://prod.em.wsu.edu/FormsToImaging |
+| Title |  |
+| Status | ✅ 200 |
+| HTML Size | 193.5 KB |
+| Screenshots | 1 (6.0 KB) |
+| Images | 0 (referenced by URL) |
+| Images Missing Alt | ✅ 0 |
+| JS Errors | 🔴 130 |
+| JS Warnings | 0 |
+| A11y Violations | ⚠️ 4 |
+| 🔴 Critical | 0 |
+| 🟠 Serious | 1 |
+| 🟡 Moderate | 2 |
+| 🔵 Minor | 1 |
+| Tools Run | axe, htmlcheck |
+| Auth | none |
+| Captured | 2026-02-19T02:09:28.3145755Z |
+
+## 🔴 JavaScript Errors
+
+<details>
+<summary><strong>130 error(s) detected</strong></summary>
+
+```
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/Microsoft.CodeAnalysis.CSharp.spyk6zagzf.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Error in mono_download_assets: Error: download 'https://prod.em.wsu.edu/FormsToImaging/_framework/Microsoft.CodeAnalysis.CSharp.spyk6zagzf.wasm' for Microsoft.CodeAnalysis.CSharp.spyk6zagzf.wasm faile...
+Error in mono_download_assets: Error: download 'https://prod.em.wsu.edu/FormsToImaging/_framework/Microsoft.CodeAnalysis.CSharp.spyk6zagzf.wasm' for Microsoft.CodeAnalysis.CSharp.spyk6zagzf.wasm faile...
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/MudBlazor.845kbj1w9a.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.Http.dbj3sqfsj2.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.NameResolution.fps7k2zdg8.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.Mail.yskh0ggf9n.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.HttpListener.y8b80mdihw.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.NetworkInformation.5e5zt3e762.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.Ping.rui35iunfo.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+Fetch API cannot load https://prod.em.wsu.edu/FormsToImaging/_framework/System.Net.Primitives.k3wdvqqvj1.wasm. 
+Failed to load resource: net::ERR_CONNECTION_RESET
+... and 110 more (see errors.log)
+```
+
+</details>
+
+## 🔧 Actions
+
+<details>
+<summary><strong>4 action(s) performed</strong></summary>
+
+- Screenshot #1: page-loaded (6.0 KB)
+- No images found on page
+- axe-core: 1 violations (163ms)
+- htmlcheck: 3 violations (0ms)
+
+</details>
+
+## 📸 Screenshots
+
+<table>
+<tr>
+<td align="center" width="50%">
+<a href="01-page-loaded.jpg">
+<img src="01-page-loaded.jpg" width="400" alt="page-loaded" />
+</a>
+<br /><strong>1. page-loaded</strong>
+<br /><sub>6.0 KB</sub>
+</td>
+<td></td>
+</tr>
+</table>
+
+## 🖼️ Page Images (0)
+
+*No images found on page.*
+
+## ♿ Accessibility
+
+### Summary
+
+| Severity | axe | htmlcheck |
+|----------|:---:|:---:|
+| 🔴 critical | 0 | 0 |
+| 🟠 serious | 1 | 0 |
+| 🟡 moderate | 0 | 2 |
+| 🔵 minor | 0 | 1 |
+| **Total** | **1** | **3** |
+
+### Violations by Confidence
+
+<details open>
+<summary><strong>4 rule(s) violated</strong></summary>
+
+| # | Rule | Sev | Confidence | axe | htmlcheck | Example |
+|--:|------|:---:|:----------:|:---:|:---:|---------|
+| 1 | [document-title](../../a11y-rules.md#document-title) | 🟠 | 🟡 1/2 | ⚠️ | ✅ | `<html lang="en" style="--blazor-load-percentage: 71.55555...` |
+| 2 | [skip-link](../../a11y-rules.md#skip-link) | 🟡 | 🟡 1/2 | ✅ | ⚠️ |  |
+| 3 | [landmark-one-main](../../a11y-rules.md#landmark-one-main) | 🟡 | 🟡 1/2 | ✅ | ⚠️ |  |
+| 4 | [landmark-nav](../../a11y-rules.md#landmark-nav) | 🔵 | 🟡 1/2 | ✅ | ⚠️ |  |
+
+</details>
+
+> **Note:** Automated scanning catches ~30-60% of WCAG issues. Manual keyboard and screen reader testing is still required for full compliance.
+
+## 📁 Files
+
+| File | Description |
+|------|-------------|
+| `01-page-loaded.jpg` | page-loaded (6.0 KB) |
+| `page.html` | Rendered HTML content |
+| `metadata.json` | Machine-readable scan data |
+| `errors.log` | JavaScript console errors |
+| `warnings.log` | JavaScript console warnings |
+| `info.log` | Navigation and timing details |
+| `actions.log` | Interactions performed |
+| `a11y-axe.json` | axe accessibility results |
+| `a11y-htmlcheck.json` | htmlcheck accessibility results |
+| `a11y-summary.json` | Merged cross-tool accessibility summary |
+
+---
+
+*Generated by AccessibilityScanner (FreeTools) v1.0*

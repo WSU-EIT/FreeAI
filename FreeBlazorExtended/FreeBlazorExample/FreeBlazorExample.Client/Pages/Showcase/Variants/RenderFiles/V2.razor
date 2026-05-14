@@ -1,0 +1,54 @@
+@page "/showcase/renderfiles/v2"
+@using FreeBlazorExtended.RenderFiles
+@using FreeBlazorExtended.SelectFile
+
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Clickable With Delete Confirmation</h1>
+    <p class="text-muted">Last opened: @_lastOpened</p>
+
+    <RenderFiles Files="_files"
+                 OnClick="HandleOpen"
+                 OnDelete="HandleDelete"
+                 UseDeleteConfirmation="true"
+                 DeleteText="Remove"
+                 CancelText="Keep"
+                 ConfirmDeleteText="Yes, remove"
+                 EmptyText="All files removed." />
+
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-3" @onclick="ResetFiles">Reset</button>
+</div>
+
+@code {
+    private List<FileItem> _files = BuildFiles();
+    private string _lastOpened = "(none)";
+
+    private Task HandleOpen(FileItem file)
+    {
+        _lastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleDelete(FileItem file)
+    {
+        _files = _files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private void ResetFiles()
+    {
+        _files = BuildFiles();
+        _lastOpened = "(none)";
+    }
+
+    private static List<FileItem> BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "dashboard.png", Extension = ".png", Bytes = 930000, RemoteImageUrl = "https://picsum.photos/seed/rfv21/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "lake.jpg", Extension = ".jpg", Bytes = 1180000, RemoteImageUrl = "https://picsum.photos/seed/rfv22/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "manual.pdf", Extension = ".pdf", Bytes = 1880000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "brief.docx", Extension = ".docx", Bytes = 94400, ThumbnailIcon = "fa-solid fa-file-word" },
+            new() { FileId = Guid.NewGuid(), FileName = "bundle.zip", Extension = ".zip", Bytes = 3020000, ThumbnailIcon = "fa-solid fa-file-zipper" },
+        };
+    }
+}

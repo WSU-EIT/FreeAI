@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=*.iu.edu, O=Indiana University-Bloomington, S=Indiana, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "DE5A7197C650EC8EEB5CE7C3B3D93B7AB93266C8",
+  "SerialNumber": "7F6D9DC89D5D253D624502DEDC027597",
+  "NotBefore": "2026-01-01T16:00:00-08:00",
+  "NotAfter": "2027-01-02T15:59:59-08:00",
+  "DaysUntilExpiry": 317,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.iu.edu"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "*.iu.edu"
+  ],
+  "ErrorMessage": null
+}

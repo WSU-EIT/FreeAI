@@ -1,0 +1,27 @@
+{
+  "Subject": "CN=localhost",
+  "Issuer": "CN=localhost",
+  "Thumbprint": "7D0F17484966ABC4CD2E2CF0DFEAB7CC56E59FAC",
+  "SerialNumber": "00826DAA257AD52776",
+  "NotBefore": "2026-01-16T10:34:44-08:00",
+  "NotAfter": "2027-01-16T10:34:44-08:00",
+  "DaysUntilExpiry": 317,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.dev.internal",
+    "*.dev.localhost",
+    "host.containers.internal",
+    "host.docker.internal",
+    "localhost"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "*.dev.internal",
+    "*.dev.localhost",
+    "host.containers.internal",
+    "host.docker.internal",
+    "localhost"
+  ],
+  "ErrorMessage": null
+}

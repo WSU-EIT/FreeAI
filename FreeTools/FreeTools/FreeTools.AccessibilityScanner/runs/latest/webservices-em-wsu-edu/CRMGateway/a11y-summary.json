@@ -1,0 +1,129 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 10,
+  "Critical": 0,
+  "Serious": 7,
+  "Moderate": 2,
+  "Minor": 1,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 9,
+      "Critical": 0,
+      "Serious": 6,
+      "Moderate": 2,
+      "Minor": 1
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Chtml\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 4,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput class=\u0022form-control padbottom\u0022 id=\u0022login-username\u0022 name=\u0022Username\u0022 placeholder=\u0022username\u0022 type=\u0022text\u0022 value=\u0022\u0022 style=\u0022\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Button has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Cbutton type=\u0022button\u0022 class=\u0022btn btn-xs btn-primary\u0022 data-bind=\u0022click:function(){$root.EditQuery($data.QueryId())}\u0022\u003E\n                                 ..."
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 6,
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "minor",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cnav\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

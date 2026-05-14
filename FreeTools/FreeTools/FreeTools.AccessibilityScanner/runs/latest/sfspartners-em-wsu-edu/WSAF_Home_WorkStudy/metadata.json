@@ -1,0 +1,67 @@
+{
+  "PagePath": "/WSAF/Home/WorkStudy",
+  "Url": "https://sfspartners.em.wsu.edu/WSAF/Home/WorkStudy",
+  "FinalUrl": "http://sfspartners.em.wsu.edu/WSAF/Account/Login?ReturnUrl=%2FWSAF%2FHome%2FWorkStudy",
+  "Title": "Log in",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 12541,
+  "ScreenshotSizeBytes": 56228,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 56228
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 1,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "private",
+    "connection": "keep-alive",
+    "content-length": "9268",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:11:57 GMT",
+    "server": "Microsoft-IIS/10.0",
+    "x-aspnet-version": "4.0.30319",
+    "x-aspnetmvc-version": "5.2",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:11:57.6452993Z"
+}

@@ -1,0 +1,112 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 7,
+  "Critical": 1,
+  "Serious": 5,
+  "Moderate": 1,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 6,
+      "Critical": 1,
+      "Serious": 5,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 1,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Ca href=\u0022https://policies.google.com/privacy\u0022\u003E Privacy Policy\u003C/a\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "meta-viewport",
+      "Severity": "critical",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Zooming and scaling must not be disabled",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/meta-viewport?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1, maximum-scale=1\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must be distinguishable without relying on color",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022https://policies.google.com/privacy\u0022\u003E Privacy Policy\u003C/a\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "aria-hidden-focus",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "ARIA hidden element must not be focusable or contain focusable elements",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-hidden-focus?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cbutton aria-hidden=\u0022true\u0022 id=\u0022hidden_skip_to_content\u0022 type=\u0022button\u0022\u003ESKIP NAVIGATION\u003C/button\u003E"
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

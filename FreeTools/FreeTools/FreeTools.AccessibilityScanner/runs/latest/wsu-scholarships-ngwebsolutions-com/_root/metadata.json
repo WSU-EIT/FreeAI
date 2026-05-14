@@ -1,0 +1,93 @@
+{
+  "PagePath": "/",
+  "Url": "https://wsu.scholarships.ngwebsolutions.com/",
+  "FinalUrl": "https://wsu.scholarships.ngwebsolutions.com/CMXAdmin/Cmx_Content.aspx?cpId=302",
+  "Title": "Scholarship Manager",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 24820,
+  "ScreenshotSizeBytes": 83718,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 83718
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 2,
+  "Images": [
+    {
+      "SourceUrl": "https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsu_header.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wsu.scholarships.ngwebsolutions.com/images/ajax_loader_blue_32.gif",
+      "AltText": "Loading Icon"
+    },
+    {
+      "SourceUrl": "https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsufooter.png",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 2,
+    "Serious": 4,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 4,
+        "Critical": 2,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "access-control-allow-headers": "Content-Type",
+    "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "access-control-allow-origin": "*",
+    "cache-control": "no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-length": "9072",
+    "content-security-policy": "default-src https: data: \u0027unsafe-inline\u0027 \u0027unsafe-eval\u0027; img-src https: data: blob:; connect-src https: wss://directline.botframework.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:13:26 GMT",
+    "expires": "-1",
+    "permissions-policy": "accelerometer=(); camera=(); geolocation=(); gyroscope=(); magnetometer=(); microphone=(); payment=(); usb=()",
+    "pragma": "no-cache",
+    "referrer-policy": "strict-origin",
+    "server": "Microsoft-IIS/10.0",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Accept-Encoding",
+    "x-aspnet-version": "4.0.30319",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-powered-by": "Magic",
+    "x-xss-protection": "1; mode=block",
+    "p3p": "CP=\u0022IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\u0022"
+  },
+  "CapturedAt": "2026-02-19T02:13:27.2875274Z"
+}

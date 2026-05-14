@@ -1,0 +1,103 @@
+{
+  "PagePath": "/apartments/nez-perce-village/",
+  "Url": "https://housing.wsu.edu/apartments/nez-perce-village/",
+  "FinalUrl": null,
+  "Title": "Nez Perce Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 80644,
+  "ScreenshotSizeBytes": 221627,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 221627
+    }
+  ],
+  "ImageCount": 9,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/drpjvwv1/nez-perce-exterior-banner.png",
+      "AltText": "Nez Perce flat exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pwnhpjqm/nez-perce-6.png",
+      "AltText": "Nez Perce Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3buf2q2v/nez-perce-1.png",
+      "AltText": "Nez Perce Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5ibpdvio/nez-perce-2.png",
+      "AltText": "Nez Perce Flat Living/Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/fcupl21f/nez-perce-3.png",
+      "AltText": "Nez Perce Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/sjmb0tw1/nez-perce-4.png",
+      "AltText": "Nez Perce Bedroom Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0tujxief/nez-perce-5.png",
+      "AltText": "Nez Perce Patio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gwzln5sv/nez-perce-village-2-bedroom.jpg",
+      "AltText": "Nez Perce Village Two Bedroom Flat"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/m1bjtcgk/nez-perce-2-bedroom-townhouse.jpg",
+      "AltText": "Nez Perce Two Bedroom Townhouse"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:06 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:10:07.0322385Z"
+}

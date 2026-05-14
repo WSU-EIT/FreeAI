@@ -1,0 +1,649 @@
+﻿@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        @if (_loading) {
+            <LoadingMessage />
+        } else if (_project == null) {
+            <div class="alert alert-danger">
+                <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                Project not found.
+            </div>
+            <a href="@(Helpers.BuildUrl("AppBuilder"))" class="btn btn-dark">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Back to Projects
+            </a>
+        } else {
+            <div class="@Model.StickyMenuClass">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-code me-2"></i>
+                    @_project.DisplayName
+                    <StickyMenuIcon />
+                </h1>
+                <div class="btn-group mb-2" role="group">
+                    <a href="@(Helpers.BuildUrl("AppBuilder"))" class="btn btn-dark">
+                        <i class="fa-solid fa-arrow-left me-1"></i>
+                        Back
+                    </a>
+                    <button type="button" class="btn btn-success" @onclick="SaveCurrentFile" disabled="@(!_hasUnsavedChanges || _saving)">
+                        @if (_saving) {
+                            <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                        } else {
+                            <i class="fa-solid fa-save me-1"></i>
+                        }
+                        Save
+                        @if (_hasUnsavedChanges) {
+                            <span class="badge bg-warning ms-1">*</span>
+                        }
+                    </button>
+                    <button type="button" class="btn btn-info" @onclick="ExportProject" disabled="@_exporting" title="Download ZIP of all files">
+                        @if (_exporting) {
+                            <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                        } else {
+                            <i class="fa-solid fa-file-zipper me-1"></i>
+                        }
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- File Tree Sidebar -->
+                <div class="col-md-3 col-lg-2 border-end" style="min-width: 180px; max-width: 250px; height: calc(100vh - 180px); overflow-y: auto;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Files</strong>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="ShowNewFileDialog" title="New File">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
+                    @if (_files.Count == 0) {
+                        <div class="text-muted small">No files yet</div>
+                    } else {
+                        <div class="list-group list-group-flush">
+                            @foreach (var file in _files) {
+                                string itemClass = "list-group-item list-group-item-action py-1 px-2";
+                                if (_selectedFile?.Id == file.Id) {
+                                    itemClass += " active";
+                                }
+                                <div class="@itemClass" title="@file.FilePath">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="javascript:void(0);" class="text-decoration-none flex-grow-1 text-truncate @(_selectedFile?.Id == file.Id ? "text-white" : "")"
+                                           @onclick="() => SelectFile(file)">
+                                            <i class="@GetFileIcon(file.FileType) me-1"></i>
+                                            @GetFileName(file.FilePath)
+                                        </a>
+                                        <div class="btn-group btn-group-sm ms-1 flex-shrink-0">
+                                            <button class="btn btn-link btn-sm p-0 @(_selectedFile?.Id == file.Id ? "text-white" : "text-muted")"
+                                                    title="Version History"
+                                                    @onclick="() => ShowVersionHistory(file)"
+                                                    @onclick:stopPropagation="true">
+                                                <small>v@(file.CurrentVersion)</small>
+                                            </button>
+                                            <button class="btn btn-link btn-sm p-0 ms-1 @(_selectedFile?.Id == file.Id ? "text-white" : "text-danger")"
+                                                    title="Delete File"
+                                                    @onclick="() => ConfirmDeleteFile(file)"
+                                                    @onclick:stopPropagation="true">
+                                                <i class="fa-solid fa-trash-can fa-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Monaco Editor -->
+                <div class="col p-0">
+                    @if (_selectedFile == null) {
+                        <div class="d-flex align-items-center justify-content-center text-muted" style="height: calc(100vh - 180px);">
+                            <div class="text-center">
+                                <i class="fa-solid fa-file-code fa-3x mb-3"></i>
+                                <p>Select a file to edit</p>
+                            </div>
+                        </div>
+                    } else {
+                        <div class="bg-light border-bottom px-3 py-1 d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong>@_selectedFile.FilePath</strong>
+                                @if (_hasUnsavedChanges) {
+                                    <span class="text-warning ms-1">*</span>
+                                }
+                            </span>
+                            <span class="text-muted small">
+                                Version @_selectedFile.Version
+                            </span>
+                        </div>
+                        <MonacoEditor @ref="_monacoEditor"
+                            Id="fm-code-editor"
+                            Class="fm-code-editor"
+                            MinHeight="calc(100vh - 220px)"
+                            Language="@GetLanguageFromFileType(_selectedFile.FileType)"
+                            @bind-Value="_editorContent" />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- New File Modal -->
+    @if (_showNewFileModal) {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fa-solid fa-file-circle-plus me-2"></i>
+                            New File
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CloseNewFileModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">File Type</label>
+                            <select class="form-select" @bind="_newFileType">
+                                <option value="DataObjects">DataObjects (.cs) - DTOs & Models</option>
+                                <option value="DataAccess">DataAccess (.cs) - Business Logic</option>
+                                <option value="Controller">Controller (.cs) - API Endpoints</option>
+                                <option value="EFModel">EF Entity (.cs) - Database Model</option>
+                                <option value="RazorComponent">Razor Component (.razor) - UI</option>
+                                <option value="GlobalSettings">GlobalSettings (.cs) - Config</option>
+                                <option value="Stylesheet">Stylesheet (.css)</option>
+                                <option value="Other">Other (.cs)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">File Name</label>
+                            <input type="text" class="form-control" @bind="_newFileName" placeholder="MyFile.App.cs" />
+                            <div class="form-text">Use .App. in the name to follow conventions (e.g., DataObjects.App.MyFeature.cs)</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseNewFileModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @onclick="CreateNewFile" disabled="@_creatingFile">
+                            @if (_creatingFile) {
+                                <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                            }
+                            Create
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Delete Confirmation Modal -->
+    @if (_showDeleteModal) {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            Delete File
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CloseDeleteModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete <strong>@_fileToDelete?.FilePath</strong>?</p>
+                        <p class="text-muted small">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteFile" disabled="@_deletingFile">
+                            @if (_deletingFile) {
+                                <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                            }
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Version History Modal -->
+    @if (_showVersionModal) {
+        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                            Version History - @_versionHistoryFile?.FilePath
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CloseVersionModal"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        @if (_loadingVersions) {
+                            <div class="text-center py-3">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                            </div>
+                        } else if (_versions.Count == 0) {
+                            <div class="text-muted">No version history available.</div>
+                        } else {
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Version</th>
+                                        <th>Date</th>
+                                        <th>Comment</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var version in _versions) {
+                                        <tr>
+                                            <td><span class="badge bg-secondary">v@(version.Version)</span></td>
+                                            <td>@version.CreatedAt.ToString("g")</td>
+                                            <td>@(String.IsNullOrEmpty(version.Comment) ? "-" : version.Comment)</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => LoadVersion(version)">
+                                                    Load
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseVersionModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public Guid ProjectId { get; set; }
+
+    // Core state
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _saving = false;
+    private bool _exporting = false;
+    private bool _hasUnsavedChanges = false;
+    private string _pageName = "appbuilder-edit";
+
+    // Data
+    private DataObjects.FMProjectInfo? _project;
+    private List<DataObjects.FMAppFileInfo> _files = new();
+    private DataObjects.FMAppFileContent? _selectedFile;
+    private string _editorContent = "";
+    private int _loadedVersion = 0;
+
+    // Editor - using MonacoEditor component
+    private MonacoEditor? _monacoEditor;
+
+    // New File Modal
+    private bool _showNewFileModal = false;
+    private bool _creatingFile = false;
+    private string _newFileType = "DataObjects";
+    private string _newFileName = "";
+
+    // Delete Modal
+    private bool _showDeleteModal = false;
+    private bool _deletingFile = false;
+    private DataObjects.FMAppFileInfo? _fileToDelete;
+
+    // Version History Modal
+    private bool _showVersionModal = false;
+    private bool _loadingVersions = false;
+    private DataObjects.FMAppFileInfo? _versionHistoryFile;
+    private List<DataObjects.FMFileVersionInfo> _versions = new();
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try {
+            string projectUrl = $"{DataObjects.Endpoints.FreeManager.GetProject}?projectId={ProjectId}";
+            _project = await Http.GetFromJsonAsync<DataObjects.FMProjectInfo>(projectUrl);
+
+            if (_project != null) {
+                string filesUrl = $"{DataObjects.Endpoints.FreeManager.GetAppFiles}?projectId={ProjectId}";
+                _files = await Http.GetFromJsonAsync<List<DataObjects.FMAppFileInfo>>(filesUrl) ?? new();
+
+                if (_files.Count > 0) {
+                    await SelectFile(_files[0]);
+                }
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading project: {ex.Message}");
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task SelectFile(DataObjects.FMAppFileInfo file)
+    {
+        if (_hasUnsavedChanges) {
+            // TODO: Prompt to save
+        }
+
+        try {
+            string url = $"{DataObjects.Endpoints.FreeManager.GetAppFile}?fileId={file.Id}";
+            _selectedFile = await Http.GetFromJsonAsync<DataObjects.FMAppFileContent>(url);
+
+            if (_selectedFile != null) {
+                _editorContent = _selectedFile.Content;
+                _loadedVersion = _selectedFile.Version;
+
+                // Update Monaco editor if it's already initialized
+                if (_monacoEditor?.Editor != null) {
+                    await _monacoEditor.Editor.SetValue(_selectedFile.Content);
+                }
+            }
+
+            _hasUnsavedChanges = false;
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading file: {ex.Message}");
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task SaveCurrentFile()
+    {
+        if (_selectedFile == null || _monacoEditor?.Editor == null || _saving) return;
+
+        _saving = true;
+        Model.ClearMessages();
+        StateHasChanged();
+
+        try {
+            string content = await _monacoEditor.Editor.GetValue();
+
+            var request = new DataObjects.FMSaveFileRequest {
+                FileId = _selectedFile.Id,
+                Content = content,
+                ExpectedVersion = _loadedVersion,
+                Comment = ""
+            };
+
+            var response = await Helpers.GetOrPost<DataObjects.FMSaveFileResponse>(
+                DataObjects.Endpoints.FreeManager.SaveAppFile, request);
+
+            if (response != null && response.Success) {
+                _loadedVersion = response.NewVersion;
+                _selectedFile.Version = response.NewVersion;
+                _hasUnsavedChanges = false;
+
+                var fileInList = _files.FirstOrDefault(f => f.Id == _selectedFile.Id);
+                if (fileInList != null) {
+                    fileInList.CurrentVersion = response.NewVersion;
+                }
+
+                Model.AddMessage(response.Message ?? "Saved", MessageType.Success);
+            } else {
+                Model.ErrorMessage(response?.Message ?? "Failed to save file");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error saving file: {ex.Message}");
+            Model.ErrorMessage("Error saving file");
+        }
+
+        _saving = false;
+        StateHasChanged();
+    }
+
+    private async Task ExportProject()
+    {
+        if (_project == null || _exporting) return;
+
+        _exporting = true;
+        Model.ClearMessages();
+        StateHasChanged();
+
+        try {
+            string url = $"{Helpers.BaseUri}{DataObjects.Endpoints.FreeManager.ExportProject}?projectId={ProjectId}";
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+            Model.AddMessage("Export download started", MessageType.Success);
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error exporting project: {ex.Message}");
+            Model.ErrorMessage("Error exporting project");
+        }
+
+        _exporting = false;
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // NEW FILE
+    // ============================================================
+
+    private void ShowNewFileDialog()
+    {
+        _newFileType = "DataObjects";
+        _newFileName = "";
+        _showNewFileModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseNewFileModal()
+    {
+        _showNewFileModal = false;
+        StateHasChanged();
+    }
+
+    private async Task CreateNewFile()
+    {
+        if (String.IsNullOrWhiteSpace(_newFileName)) {
+            Model.ErrorMessage("File name is required");
+            return;
+        }
+
+        _creatingFile = true;
+        StateHasChanged();
+
+        try {
+            var request = new DataObjects.FMCreateFileRequest {
+                ProjectId = ProjectId,
+                FilePath = _newFileName,
+                FileType = _newFileType,
+                Content = GetDefaultContent(_newFileType, _newFileName)
+            };
+
+            var result = await Helpers.GetOrPost<DataObjects.FMAppFileInfo>(
+                DataObjects.Endpoints.FreeManager.CreateAppFile, request);
+
+            if (result != null) {
+                _files.Add(result);
+                CloseNewFileModal();
+                await SelectFile(result);
+                Model.AddMessage($"File '{_newFileName}' created", MessageType.Success);
+            } else {
+                Model.ErrorMessage("Failed to create file");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error creating file: {ex.Message}");
+            Model.ErrorMessage(ex.Message);
+        }
+
+        _creatingFile = false;
+        StateHasChanged();
+    }
+
+    private string GetDefaultContent(string fileType, string fileName)
+    {
+        string projectName = _project?.Name ?? "MyApp";
+        return FMFileTemplates.GetDefaultContent(fileType, fileName, projectName);
+    }
+
+    // ============================================================
+    // DELETE FILE
+    // ============================================================
+
+    private void ConfirmDeleteFile(DataObjects.FMAppFileInfo file)
+    {
+        _fileToDelete = file;
+        _showDeleteModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseDeleteModal()
+    {
+        _showDeleteModal = false;
+        _fileToDelete = null;
+        StateHasChanged();
+    }
+
+    private async Task DeleteFile()
+    {
+        if (_fileToDelete == null) return;
+
+        _deletingFile = true;
+        StateHasChanged();
+
+        try {
+            string url = $"{DataObjects.Endpoints.FreeManager.DeleteAppFile}?fileId={_fileToDelete.Id}";
+            var response = await Helpers.GetOrPost<DataObjects.BooleanResponse>(url);
+
+            if (response != null && response.Result) {
+                if (_selectedFile?.Id == _fileToDelete.Id) {
+                    _selectedFile = null;
+                    _hasUnsavedChanges = false;
+                }
+
+                _files.RemoveAll(f => f.Id == _fileToDelete.Id);
+                Model.AddMessage("File deleted", MessageType.Success);
+                CloseDeleteModal();
+
+                if (_files.Count > 0 && _selectedFile == null) {
+                    await SelectFile(_files[0]);
+                }
+            } else {
+                Model.ErrorMessage(response?.Messages.FirstOrDefault() ?? "Failed to delete file");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error deleting file: {ex.Message}");
+            Model.ErrorMessage("Error deleting file");
+        }
+
+        _deletingFile = false;
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // VERSION HISTORY
+    // ============================================================
+
+    private async Task ShowVersionHistory(DataObjects.FMAppFileInfo file)
+    {
+        _versionHistoryFile = file;
+        _showVersionModal = true;
+        _loadingVersions = true;
+        _versions = new();
+        StateHasChanged();
+
+        try {
+            string url = $"{DataObjects.Endpoints.FreeManager.GetFileVersions}?fileId={file.Id}";
+            _versions = await Http.GetFromJsonAsync<List<DataObjects.FMFileVersionInfo>>(url) ?? new();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading versions: {ex.Message}");
+        }
+
+        _loadingVersions = false;
+        StateHasChanged();
+    }
+
+    private void CloseVersionModal()
+    {
+        _showVersionModal = false;
+        _versionHistoryFile = null;
+        _versions = new();
+        StateHasChanged();
+    }
+
+    private async Task LoadVersion(DataObjects.FMFileVersionInfo version)
+    {
+        try {
+            string url = $"{DataObjects.Endpoints.FreeManager.GetFileVersion}?versionId={version.Id}";
+            var content = await Http.GetFromJsonAsync<DataObjects.FMAppFileContent>(url);
+
+            if (content != null && _monacoEditor?.Editor != null) {
+                await _monacoEditor.Editor.SetValue(content.Content);
+                _editorContent = content.Content;
+                _hasUnsavedChanges = true;
+                Model.AddMessage($"Loaded version {version.Version} - save to keep changes", MessageType.Info);
+                CloseVersionModal();
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading version: {ex.Message}");
+            Model.ErrorMessage("Error loading version");
+        }
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    private string GetFileIcon(string fileType)
+    {
+        return fileType switch {
+            "DataObjects" => "fa-solid fa-database",
+            "DataAccess" => "fa-solid fa-layer-group",
+            "Controller" => "fa-solid fa-server",
+            "RazorComponent" => "fa-solid fa-puzzle-piece",
+            "RazorPage" => "fa-solid fa-file-lines",
+            "Stylesheet" => "fa-solid fa-palette",
+            "GlobalSettings" => "fa-solid fa-cog",
+            "EFModel" => "fa-solid fa-table",
+            "EFDataModel" => "fa-solid fa-database",
+            _ => "fa-solid fa-file-code"
+        };
+    }
+
+    private string GetFileName(string filePath)
+    {
+        int lastSlash = filePath.LastIndexOf('/');
+        if (lastSlash >= 0) {
+            return filePath.Substring(lastSlash + 1);
+        }
+        return filePath;
+    }
+
+    private string GetLanguageFromFileType(string fileType)
+    {
+        return fileType switch {
+            "RazorComponent" or "RazorPage" => MonacoEditor.MonacoLanguage.razor,
+            "Stylesheet" => MonacoEditor.MonacoLanguage.css,
+            _ => MonacoEditor.MonacoLanguage.csharp
+        };
+    }
+}

@@ -1,0 +1,57 @@
+{
+  "PagePath": "/WSAF/Authorization/RequestAccess",
+  "Url": "https://prod.em.wsu.edu/WSAF/Authorization/RequestAccess",
+  "FinalUrl": null,
+  "Title": "WorkStudy",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 99485,
+  "ScreenshotSizeBytes": 47220,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 47220
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 5,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:11:49.867106Z"
+}

@@ -1,0 +1,66 @@
+{
+  "PagePath": "/Home/DataManager",
+  "Url": "https://academiccalendarpetitions.em.wsu.edu/Home/DataManager",
+  "FinalUrl": "https://academiccalendarpetitions.em.wsu.edu/",
+  "Title": "Home Page - Calendar Petition Data Manager Application",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 3424,
+  "ScreenshotSizeBytes": 21833,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 21833
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "private",
+    "content-length": "2978",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:07:30 GMT",
+    "server": "Microsoft-IIS/10.0",
+    "x-aspnet-version": "4.0.30319",
+    "x-aspnetmvc-version": "5.2",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:07:30.8264906Z"
+}

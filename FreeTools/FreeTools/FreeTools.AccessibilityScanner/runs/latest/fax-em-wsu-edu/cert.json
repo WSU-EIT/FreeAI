@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=fax.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "8ADA51B18E1EEBEA1FD099031223D34BA70C9389",
+  "SerialNumber": "00EF5B06E07A56869043DFC5B3D6ED307C",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "fax.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "fax.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

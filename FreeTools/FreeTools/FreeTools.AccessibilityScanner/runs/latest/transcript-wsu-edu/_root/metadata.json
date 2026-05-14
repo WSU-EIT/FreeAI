@@ -1,0 +1,98 @@
+{
+  "PagePath": "/",
+  "Url": "https://transcript.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "Order Student Transcript",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 665399,
+  "ScreenshotSizeBytes": 149881,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 149881
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/l0bn12bj/parchmentaddschool.png?rmode=max\u0026width=500",
+      "AltText": "Parchment enter school name in search bar"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/me3dbjy3/parchmentlinkschool.png?rmode=max\u0026height=500",
+      "AltText": "Parchment confirm if currently enrolled"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/y54jk2ee/parchmentenrollmentinformation.png?rmode=max\u0026height=500",
+      "AltText": "Parchment enter enrollment information"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/2vkkzy1j/parchmentordertranscript.png?rmode=max\u0026width=500",
+      "AltText": "Parchment select order your transcript link"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/u4ydjmdh/parchmentdeliverydestination.png?rmode=max\u0026height=500",
+      "AltText": "Parchment enter transcript recipient information"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/0zjjhbbl/parchmentsendtoself.png?rmode=max\u0026width=500",
+      "AltText": "Parchment confirm delivery destination"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/lfinfwnt/parchmentitemdetails.png?rmode=max\u0026width=500",
+      "AltText": "Parchment transcript delivery details summary"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/wp4ff5p0/parchmentsignature.png?rmode=max\u0026height=500",
+      "AltText": "Parchment enter electronic signature"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/0ftj3wpp/parchmentpaymentinfo.png?rmode=max\u0026height=500",
+      "AltText": "Parchment payment page"
+    },
+    {
+      "SourceUrl": "https://transcript.wsu.edu/media/mecppd2w/parchmentattachment.png?rmode=max\u0026width=500",
+      "AltText": "Parchment add attachment on delivery details page"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:29.8620963Z"
+}

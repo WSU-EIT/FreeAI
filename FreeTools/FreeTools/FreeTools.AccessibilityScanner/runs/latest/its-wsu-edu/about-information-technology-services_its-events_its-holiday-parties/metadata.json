@@ -1,0 +1,150 @@
+{
+  "PagePath": "/about-information-technology-services/its-events/its-holiday-parties/",
+  "Url": "https://its.wsu.edu/about-information-technology-services/its-events/its-holiday-parties/",
+  "FinalUrl": "https://its.wsu.edu/about-its/its-events/its-holiday-parties/",
+  "Title": "ITS Holiday Party and Awards | Information Technology Services | Washington State University",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 255851,
+  "ScreenshotSizeBytes": 150021,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 150021
+    }
+  ],
+  "ImageCount": 23,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0101.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0089.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0087-1.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0080.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0063.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0056.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0053.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0046.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0037.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_0027.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2019"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2088.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2094.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2100.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2109.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2116.png",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2158.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2179.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2191.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2195.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2199.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2209.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2217.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_2221.jpg",
+      "AltText": "ITS HOLIDAY PARTY 2017"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 0,
+    "Serious": 8,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:12:20.5351339Z"
+}

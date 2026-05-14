@@ -1,0 +1,66 @@
+{
+  "PagePath": "/",
+  "Url": "https://edit.em.wsu.edu/",
+  "FinalUrl": "https://edit.em.wsu.edu/umbraco/login",
+  "Title": "Umbraco",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 4358,
+  "ScreenshotSizeBytes": 124321,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 124321
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "no-store, must-revalidate, no-cache, max-age=0",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:07:47 GMT",
+    "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+    "last-modified": "Wed, 18 Feb 2026 18:07:47 GMT",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=31536000",
+    "x-content-type-options": "nosniff"
+  },
+  "CapturedAt": "2026-02-19T02:07:47.468422Z"
+}

@@ -1,0 +1,689 @@
+﻿@page "/Compliance/{SiteId}/{ScanRunId}"
+@page "/Scans/{ScanRunId}"
+@page "/{TenantCode}/Scans/{ScanRunId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="ScanDetail" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="ScanDetail" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                @if (_isPublic) {
+                    <a href="@(Helpers.BuildUrl("Compliance"))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                } else if (_scanRun != null) {
+                    <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + _scanRun.SiteId))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                } else {
+                    <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                        <Language Tag="Back" IncludeIcon="true" />
+                    </a>
+                }
+                @if (_scanRun != null) {
+                    <a href="@(Helpers.BuildUrl("Compliance/Status/" + _scanRun.SiteId))" class="btn btn-outline-primary">
+                        <i class="fas fa-clipboard-check me-1"></i>Compliance
+                    </a>
+                    <a href="@(Helpers.BuildUrl("Reports/Audit/" + _scanRun.SiteId))" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-alt me-1"></i>Audit Report
+                    </a>
+                    @if (!_isPublic) {
+                        <button class="btn btn-outline-success" @onclick="ExportViolationsCsv" disabled="@_exportingCsv" title="Download all violations as CSV">
+                            @if (_exportingCsv) {
+                                <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                            } else {
+                                <text><i class="fas fa-download me-1"></i>Export CSV</text>
+                            }
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+
+        @if (_scanRun != null) {
+            @* ── Breadcrumb ── *@
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb">
+                    @if (_isPublic) {
+                        <li class="breadcrumb-item"><a href="@(Helpers.BuildUrl("Compliance"))"><Language Tag="ComplianceDashboard" /></a></li>
+                    } else {
+                        <li class="breadcrumb-item"><a href="@(Helpers.BuildUrl("Settings/Sites"))">Sites</a></li>
+                        <li class="breadcrumb-item"><a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + _scanRun.SiteId))">@_scanRun.SiteName</a></li>
+                    }
+                    <li class="breadcrumb-item active" aria-current="page"><Language Tag="ScanDetail" /> &mdash; @_scanRun.StartedAt.ToString("yyyy-MM-dd HH:mm")</li>
+                </ol>
+            </nav>
+
+            @* ── Summary Header ── *@
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong><Language Tag="ScanDate" />:</strong> @_scanRun.StartedAt.ToString("yyyy-MM-dd HH:mm")
+                            @if (_scanRun.CompletedAt.HasValue) {
+                                <span class="text-muted"> &mdash; @_scanRun.CompletedAt.Value.ToString("HH:mm")</span>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <strong><Language Tag="Status" />:</strong>
+                            @((MarkupString)GetRunStatusBadge(_scanRun.Status))
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <span class="badge bg-dark me-1">@_scanRun.TotalViolations <Language Tag="Violations" /></span>
+                            <span class="badge bg-danger me-1">@_scanRun.CriticalCount <Language Tag="Critical" /></span>
+                            <span class="badge bg-warning text-dark me-1">@_scanRun.SeriousCount <Language Tag="Serious" /></span>
+                            <span class="badge bg-info text-dark me-1">@_scanRun.ModerateCount <Language Tag="Moderate" /></span>
+                            <span class="badge bg-secondary me-1">@_scanRun.MinorCount <Language Tag="Minor" /></span>
+                        </div>
+                    </div>
+                    @if (!_isPublic && !String.IsNullOrWhiteSpace(_scanRun.TriggeredBy)) {
+                        <div class="row mt-2">
+                            <div class="col-12 text-muted">
+                                <Language Tag="TriggeredBy" />: @_scanRun.TriggeredBy
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* ── Live Scan Log (shown when scan is still running) ── *@
+            @if (_isRunning) {
+                <div class="card mb-3 border-primary">
+                    <div class="card-header bg-dark text-light d-flex align-items-center py-2">
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <strong class="me-auto">Live Scan Output</strong>
+                        <span class="badge bg-light text-dark">@_logEntries.Count lines</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="scandetail-log-container" style="max-height:350px; overflow-y:auto; font-family:'Cascadia Code','Fira Code','Consolas',monospace; font-size:0.8rem; background:#1e1e1e; color:#d4d4d4; padding:0.75rem;">
+                            @if (_logEntries.Any()) {
+                                @foreach (var entry in _logEntries) {
+                                    <div class="@GetLogLineClass(entry)" style="white-space:pre-wrap; line-height:1.6;">[@entry.Timestamp.ToString("HH:mm:ss")] @entry.Message</div>
+                                }
+                            } else {
+                                <div class="text-secondary" style="white-space:pre-wrap; line-height:1.6;">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                                    Waiting for scan output... (logs will appear as pages are scanned)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* ── Filter Bar ── *@
+            <div class="row mb-3 g-2 align-items-center">
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by severity" @bind="_severityFilter" @bind:after="ApplyFilters">
+                        <option value="all"><Language Tag="AllSeverities" /></option>
+                        <option value="critical"><Language Tag="Critical" /></option>
+                        <option value="serious"><Language Tag="Serious" /></option>
+                        <option value="moderate"><Language Tag="Moderate" /></option>
+                        <option value="minor"><Language Tag="Minor" /></option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by tool" @bind="_toolFilter" @bind:after="ApplyFilters">
+                        <option value="all"><Language Tag="AllTools" /></option>
+                        <option value="axe">axe-core</option>
+                        <option value="htmlcheck">htmlcheck</option>
+                        <option value="htmlcs_ibm">htmlcs / ibm</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter by WCAG level" @bind="_wcagLevelFilter" @bind:after="StateHasChanged">
+                        <option value="all">All WCAG Levels</option>
+                        <option value="a">Level A only</option>
+                        <option value="aa">Level AA (A + AA)</option>
+                        <option value="aaa">Level AAA (A + AA + AAA)</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search URL or title..." aria-label="Search pages"
+                           @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
+                </div>
+                <div class="col-auto ms-auto">
+                    <button class="btn btn-sm btn-outline-secondary me-1" @onclick="ExpandAllPages" title="Expand all page rows">
+                        <i class="fas fa-expand-alt me-1"></i>Expand All
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="CollapseAllPages" title="Collapse all page rows">
+                        <i class="fas fa-compress-alt me-1"></i>Collapse All
+                    </button>
+                </div>
+            </div>
+
+            @* ── Page Results Accordion Table ── *@
+            @if (_filteredResults.Any()) {
+                <div class="d-flex align-items-center mb-2 small text-muted">
+                    <span>Showing @_filteredResults.Count of @_pageResults.Count page@(_pageResults.Count == 1 ? "" : "s")</span>
+                    @if (_wcagLevelFilter != "all" || _severityFilter != "all" || _toolFilter != "all") {
+                        <span class="ms-2 badge bg-light text-dark border"><i class="fas fa-info-circle me-1"></i>Active filters apply to expanded violation rows</span>
+                    }
+                </div>
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr class="table-dark">
+                            <th style="width:1.5rem;"></th>
+                            <th><Language Tag="Page" ReplaceSpaces="true" /></th>
+                            <th class="center" style="width:60px;"><Language Tag="StatusCode" ReplaceSpaces="true" /></th>
+                            <th class="center" style="width:80px;">axe</th>
+                            <th class="center" style="width:80px;">htmlcheck</th>
+                            <th class="center" style="width:80px;">htmlcs+ibm</th>
+                            <th class="center" style="width:80px;"><Language Tag="Total" ReplaceSpaces="true" /></th>
+                            <th class="center" style="width:100px;"><Language Tag="Severity" ReplaceSpaces="true" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pr in _filteredResults) {
+                            string detailUrl = _isPublic
+                                ? Helpers.BuildUrl("Compliance/Page/" + pr.PageScanResultId)
+                                : Helpers.BuildUrl("Pages/" + pr.PageScanResultId);
+                            bool isExpanded = _expandedPageIds.Contains(pr.PageScanResultId);
+                            <tr @key="pr.PageScanResultId" class="cursor-pointer @(isExpanded ? "table-active" : "") scan-table-row"
+                                @onclick="() => TogglePageExpand(pr)">
+                                <td><i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right") text-muted" style="font-size:0.7rem;"></i></td>
+                                <td>
+                                    <strong>@(String.IsNullOrWhiteSpace(pr.PageTitle) ? pr.Url : pr.PageTitle)</strong>
+                                    <br /><small class="text-muted">@pr.Url</small>
+                                </td>
+                                <td class="center">@pr.StatusCode</td>
+                                <td class="center">@pr.AxeViolationCount</td>
+                                <td class="center">@pr.HtmlCheckViolationCount</td>
+                                <td class="center">@pr.OverlayViolationCount</td>
+                                <td class="center fw-bold">@pr.TotalViolations</td>
+                                <td class="center">
+                                    @if (pr.CriticalCount > 0) {
+                                        <span class="badge bg-danger">@pr.CriticalCount</span>
+                                    }
+                                    @if (pr.SeriousCount > 0) {
+                                        <span class="badge bg-warning text-dark">@pr.SeriousCount</span>
+                                    }
+                                    @if (pr.ModerateCount > 0) {
+                                        <span class="badge bg-info text-dark">@pr.ModerateCount</span>
+                                    }
+                                    @if (pr.MinorCount > 0) {
+                                        <span class="badge bg-secondary">@pr.MinorCount</span>
+                                    }
+                                </td>
+                            </tr>
+                            @if (isExpanded) {
+                                <tr>
+                                    <td colspan="8" class="p-0">
+                                        <div class="bg-light border-top p-3">
+                                            @* Navigation links *@
+                                            <div class="d-flex gap-2 mb-2">
+                                                <a href="@detailUrl" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-search me-1"></i>Full Page Detail
+                                                </a>
+                                                <a href="@pr.Url" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-external-link-alt me-1"></i>Visit Page
+                                                </a>
+                                            </div>
+
+                                            @* Page summary stats *@
+                                            <div class="row mb-2 small">
+                                                <div class="col-auto"><strong>Scan Time:</strong> @((pr.ScanDurationMs / 1000.0).ToString("F1"))s</div>
+                                                @if (!String.IsNullOrWhiteSpace(pr.Language)) {
+                                                    <div class="col-auto"><strong>Language:</strong> @pr.Language</div>
+                                                }
+                                                @if (pr.HtmlSizeBytes > 0) {
+                                                    <div class="col-auto"><strong>HTML Size:</strong> @((pr.HtmlSizeBytes / 1024.0).ToString("F0")) KB</div>
+                                                }
+                                            </div>
+
+                                            @* Inline violations *@
+                                            @if (_loadingViolations.Contains(pr.PageScanResultId)) {
+                                                <LoadingMessage />
+                                            } else if (_violations.ContainsKey(pr.PageScanResultId)) {
+                                                var viols = _violations[pr.PageScanResultId];
+                                                var filteredViols = viols.Where(v =>
+                                                    (_wcagLevelFilter == "all" || WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevelFilter)) &&
+                                                    (_severityFilter == "all" || v.Severity.ToLower() == _severityFilter) &&
+                                                    (_toolFilter == "all" || ToolMatchesFilter(v.Tool))
+                                                ).ToList();
+                                                @if (filteredViols.Any()) {
+                                                    <div style="max-height:400px; overflow-y:auto;">
+                                                        <table class="table table-sm table-striped mb-0 bg-white">
+                                                            <thead>
+                                                                <tr class="table-dark">
+                                                                    <th style="width:80px;">Severity</th>
+                                                                    <th style="width:80px;">Tool</th>
+                                                                    <th style="width:140px;">Rule</th>
+                                                                    <th>Message</th>
+                                                                    <th style="width:80px;">WCAG</th>
+                                                                    <th style="width:40px;"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var v in filteredViols.Take(50)) {
+                                                                    <tr @key="v.A11yViolationId">
+                                                                        <td>
+                                                                            @((MarkupString)GetSeverityBadge(v.Severity))
+                                                                            @if (v.IsSuppressed) {
+                                                                                <span class="badge bg-warning text-dark ms-1" title="@v.SuppressionReason"><i class="fas fa-shield-alt"></i></span>
+                                                                            }
+                                                                        </td>
+                                                                        <td><span class="badge bg-secondary">@v.Tool</span></td>
+                                                                        <td class="small"><strong>@v.RuleId</strong></td>
+                                                                        <td class="small">@v.Message</td>
+                                                                        <td class="small">@v.WcagCriteria</td>
+                                                                        <td>
+                                                                            @if (!String.IsNullOrWhiteSpace(v.HelpUrl)) {
+                                                                                <a href="@v.HelpUrl" target="_blank" rel="noopener" title="Fix guidance">
+                                                                                    <i class="fas fa-question-circle"></i>
+                                                                                </a>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    @if (filteredViols.Count > 50) {
+                                                        <div class="text-muted small mt-1">
+                                                            Showing 50 of @filteredViols.Count violations.
+                                                            <a href="@detailUrl">View all &rarr;</a>
+                                                        </div>
+                                                    }
+                                                } else if (viols.Any()) {
+                                                    <div class="alert alert-warning small py-2 mb-0 d-flex align-items-center flex-wrap gap-2">
+                                                        <span><i class="fas fa-filter me-1"></i><strong>@viols.Count violation@(viols.Count == 1 ? "" : "s") on this page</strong> — all hidden by current filters.</span>
+                                                        <button class="btn btn-sm btn-outline-dark" @onclick="ResetViolationFilters">
+                                                            <i class="fas fa-times me-1"></i>Clear filters
+                                                        </button>
+                                                    </div>
+                                                } else {
+                                                    <div class="text-success small"><i class="fas fa-check-circle me-1"></i>No violations found.</div>
+                                                }
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            } else {
+                <Language Tag="NoItemsToShow" />
+            }
+        }
+    }
+}
+@code {
+    [Parameter] public string? SiteId { get; set; }
+    [Parameter] public string? ScanRunId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _validatedUrl = false;
+    private bool _isPublic = false;
+    private bool _isRunning = false;
+    private string _pageName = "scandetail";
+
+    private string _severityFilter = "all";
+    private string _toolFilter = "all";
+    private string _searchText = "";
+    private string _wcagLevelFilter = "aa";
+    private bool _exportingCsv = false;
+
+    private DataObjects.ScanRun? _scanRun;
+    private List<DataObjects.PageScanResult> _pageResults = new();
+    private List<DataObjects.PageScanResult> _filteredResults = new();
+    private List<DataObjects.ScanLogEntry> _logEntries = new();
+    private HashSet<Guid> _expandedPageIds = new();
+    private Dictionary<Guid, List<DataObjects.A11yViolation>> _violations = new();
+    private HashSet<Guid> _loadingViolations = new();
+    private System.Threading.Timer? _renderTimer;
+    private bool _renderPending = false;
+    private const int RenderThrottleMs = 300;
+
+    public void Dispose()
+    {
+        _renderTimer?.Dispose();
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            // Determine public vs admin based on whether SiteId parameter is present
+            _isPublic = !String.IsNullOrWhiteSpace(SiteId);
+
+            if (!_isPublic && !Model.LoggedIn) {
+                return; // Admin route requires login
+            }
+
+            if (!_validatedUrl && !_isPublic) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        if (!String.IsNullOrWhiteSpace(ScanRunId)) {
+            Guid scanRunGuid = Guid.Parse(ScanRunId);
+
+            if (_isPublic) {
+                _scanRun = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/GetPublicScanDetail", scanRunGuid);
+                if (_scanRun != null && _scanRun.PageResults.Any()) {
+                    _pageResults = _scanRun.PageResults;
+                }
+            } else {
+                var runs = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetScanRuns",
+                    new { Ids = new List<Guid> { scanRunGuid }, SiteId = (Guid?)null });
+                if (runs != null && runs.Any()) {
+                    _scanRun = runs.First();
+                }
+
+                var pages = await Helpers.GetOrPost<List<DataObjects.PageScanResult>>("api/Data/GetPageScanResults",
+                    new { Ids = new List<Guid>(), ScanRunId = scanRunGuid });
+                if (pages != null) {
+                    _pageResults = pages;
+                }
+            }
+
+            _isRunning = _scanRun?.Status == "Running" || _scanRun?.Status == "Queued";
+        }
+
+        ApplyFilters();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void ApplyFilters()
+    {
+        var results = _pageResults.AsEnumerable();
+
+        if (_severityFilter != "all") {
+            results = _severityFilter switch {
+                "critical" => results.Where(x => x.CriticalCount > 0),
+                "serious" => results.Where(x => x.SeriousCount > 0),
+                "moderate" => results.Where(x => x.ModerateCount > 0),
+                "minor" => results.Where(x => x.MinorCount > 0),
+                _ => results,
+            };
+        }
+
+        if (_toolFilter != "all") {
+            results = _toolFilter switch {
+                "axe" => results.Where(x => x.AxeViolationCount > 0),
+                "htmlcheck" => results.Where(x => x.HtmlCheckViolationCount > 0),
+                "htmlcs_ibm" => results.Where(x => x.OverlayViolationCount > 0),
+                _ => results,
+            };
+        }
+
+        if (!String.IsNullOrWhiteSpace(_searchText)) {
+            string search = _searchText.Trim().ToLower();
+            results = results.Where(x =>
+                x.Url.ToLower().Contains(search) ||
+                (!String.IsNullOrWhiteSpace(x.PageTitle) && x.PageTitle.ToLower().Contains(search)));
+        }
+
+        _filteredResults = results.ToList();
+    }
+
+    private async Task ExpandAllPages()
+    {
+        foreach (var pr in _filteredResults) {
+            if (!_expandedPageIds.Contains(pr.PageScanResultId)) {
+                await TogglePageExpand(pr);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void CollapseAllPages()
+    {
+        _expandedPageIds.Clear();
+        StateHasChanged();
+    }
+
+    private async Task ExportViolationsCsv()
+    {
+        if (_exportingCsv || _scanRun == null) return;
+        _exportingCsv = true;
+        StateHasChanged();
+
+        // Load violations for all pages not already cached
+        var tasks = _pageResults
+            .Where(p => !_violations.ContainsKey(p.PageScanResultId))
+            .Select(async pr => {
+                var viols = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolations",
+                    new { Ids = new List<Guid>(), PageScanResultId = pr.PageScanResultId });
+                return (pr.PageScanResultId, viols ?? new List<DataObjects.A11yViolation>());
+            }).ToList();
+
+        foreach (var (id, viols) in await Task.WhenAll(tasks)) {
+            _violations[id] = viols;
+        }
+
+        // Build CSV applying current violation-level filters
+        static string CsvEscape(string? s) => "\"" + (s ?? "").Replace("\"", "\"\"") + "\"";
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("Page URL,Page Title,Severity,Tool,WCAG Criteria,Rule ID,Message,CSS Selector,Help URL");
+
+        foreach (var pr in _pageResults.OrderBy(p => p.Url)) {
+            if (!_violations.TryGetValue(pr.PageScanResultId, out var viols)) continue;
+
+            var filtered = viols.Where(v =>
+                (_wcagLevelFilter == "all" || WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevelFilter)) &&
+                (_severityFilter == "all" || v.Severity.ToLower() == _severityFilter) &&
+                (_toolFilter == "all" || ToolMatchesFilter(v.Tool))
+            );
+
+            foreach (var v in filtered) {
+                sb.AppendLine($"{CsvEscape(pr.Url)},{CsvEscape(pr.PageTitle)},{CsvEscape(v.Severity)},{CsvEscape(v.Tool)},{CsvEscape(v.WcagCriteria)},{CsvEscape(v.RuleId)},{CsvEscape(v.Message)},{CsvEscape(v.Selector)},{CsvEscape(v.HelpUrl)}");
+            }
+        }
+
+        var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+        var base64 = Convert.ToBase64String(bytes);
+        var siteName = System.Text.RegularExpressions.Regex.Replace(_scanRun.SiteName ?? "scan", @"[^a-zA-Z0-9_-]", "_");
+        var filename = $"violations-{siteName}-{_scanRun.StartedAt:yyyy-MM-dd}.csv";
+        await jsRuntime.InvokeVoidAsync("eval",
+            $"var a=document.createElement('a');a.href='data:text/csv;base64,{base64}';a.download='{filename}';a.click();");
+
+        _exportingCsv = false;
+        StateHasChanged();
+    }
+
+    private bool ToolMatchesFilter(string tool) => _toolFilter switch {
+        "axe" => tool.ToLower() == "axe",
+        "htmlcheck" => tool.ToLower() == "htmlcheck",
+        "htmlcs_ibm" => tool.ToLower() is "htmlcs" or "ibm" or "quickpeek",
+        _ => true
+    };
+
+    private void ResetViolationFilters()
+    {
+        _severityFilter = "all";
+        _toolFilter = "all";
+        _wcagLevelFilter = "all";
+        ApplyFilters();
+        StateHasChanged();
+    }
+
+    private async Task TogglePageExpand(DataObjects.PageScanResult pr)
+    {
+        if (_expandedPageIds.Contains(pr.PageScanResultId)) {
+            _expandedPageIds.Remove(pr.PageScanResultId);
+        } else {
+            _expandedPageIds.Add(pr.PageScanResultId);
+
+            // Lazy-load violations for this page if not already cached
+            if (!_violations.ContainsKey(pr.PageScanResultId) && !_loadingViolations.Contains(pr.PageScanResultId)) {
+                _loadingViolations.Add(pr.PageScanResultId);
+                StateHasChanged();
+
+                var viols = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolations",
+                    new { Ids = new List<Guid>(), PageScanResultId = pr.PageScanResultId });
+                _violations[pr.PageScanResultId] = viols ?? new();
+                _loadingViolations.Remove(pr.PageScanResultId);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private string GetSeverityBadge(string severity)
+    {
+        return severity.ToLower() switch {
+            "critical" => "<span class=\"badge bg-danger\">Critical</span>",
+            "serious" => "<span class=\"badge bg-warning text-dark\">Serious</span>",
+            "moderate" => "<span class=\"badge bg-info text-dark\">Moderate</span>",
+            "minor" => "<span class=\"badge bg-secondary\">Minor</span>",
+            _ => "<span class=\"badge bg-secondary\">" + severity + "</span>",
+        };
+    }
+
+    private string GetRunStatusBadge(string? status)
+    {
+        return status switch {
+            "Completed" => "<span class=\"badge bg-success\">Completed</span>",
+            "Running" => "<span class=\"badge bg-primary\">Running</span>",
+            "Queued" => "<span class=\"badge bg-info text-dark\">Queued</span>",
+            "Error" => "<span class=\"badge bg-danger\">Error</span>",
+            _ => "<span class=\"badge bg-secondary\">" + (status ?? "Unknown") + "</span>",
+        };
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _scanRun == null) { return; }
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (progress != null && progress.ScanRunId == _scanRun.ScanRunId) {
+                    // Update header counts in real-time.
+                    _scanRun.PagesScanned = progress.PagesScanned;
+                    _scanRun.TotalViolations = progress.TotalViolations;
+                    _scanRun.CriticalCount = progress.CriticalCount;
+                    _scanRun.SeriousCount = progress.SeriousCount;
+                    _scanRun.ModerateCount = progress.ModerateCount;
+                    _scanRun.MinorCount = progress.MinorCount;
+
+                    // Add completed page result to table if it arrived.
+                    if (progress.CompletedPageResult != null) {
+                        // Avoid duplicates.
+                        if (!_pageResults.Any(p => p.PageScanResultId == progress.CompletedPageResult.PageScanResultId)) {
+                            _pageResults.Add(progress.CompletedPageResult);
+                            ApplyFilters();
+                        }
+                    }
+
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanLog && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var logEntry = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanLogEntry>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (logEntry != null && logEntry.ScanRunId == _scanRun.ScanRunId) {
+                    _logEntries.Add(logEntry);
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+                   update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (scanRun == null || scanRun.ScanRunId != _scanRun.ScanRunId) { return; }
+
+                // Update the run summary from the event payload — no full reload needed.
+                _scanRun.Status = scanRun.Status;
+                _scanRun.CompletedAt = scanRun.CompletedAt;
+                _scanRun.TotalPages = scanRun.TotalPages;
+                _scanRun.PagesScanned = scanRun.PagesScanned;
+                _scanRun.TotalViolations = scanRun.TotalViolations;
+                _scanRun.CriticalCount = scanRun.CriticalCount;
+                _scanRun.SeriousCount = scanRun.SeriousCount;
+                _scanRun.ModerateCount = scanRun.ModerateCount;
+                _scanRun.MinorCount = scanRun.MinorCount;
+                _isRunning = false;
+
+                ApplyFilters();
+                InvokeAsync(StateHasChanged);
+            } catch { }
+        }
+    }
+
+    private void RequestThrottledRender()
+    {
+        if (_renderPending) return;
+        _renderPending = true;
+        _renderTimer?.Dispose();
+        _renderTimer = new System.Threading.Timer(_ => {
+            _renderPending = false;
+            InvokeAsync(async () => {
+                StateHasChanged();
+                try {
+                    await jsRuntime.InvokeVoidAsync("eval",
+                        "var el = document.getElementById('scandetail-log-container'); if (el) el.scrollTop = el.scrollHeight;");
+                } catch { }
+            });
+        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
+    }
+
+    private string GetLogLineClass(DataObjects.ScanLogEntry entry)
+    {
+        return entry.Level switch {
+            "error" => "text-danger",
+            "warning" => "text-warning",
+            "success" => "text-success",
+            "detail" => "text-secondary",
+            _ => "",
+        };
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 88,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "document-title",
+      "CanonicalRuleId": "document-title",
+      "Severity": "serious",
+      "Message": "Documents must have \u003Ctitle\u003E element to aid in navigation",
+      "Selector": "html",
+      "Snippet": "\u003Chtml\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "html-has-lang",
+      "CanonicalRuleId": "html-has-lang",
+      "Severity": "serious",
+      "Message": "\u003Chtml\u003E element must have a lang attribute",
+      "Selector": "html",
+      "Snippet": "\u003Chtml\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/html-has-lang?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

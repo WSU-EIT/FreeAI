@@ -1,0 +1,151 @@
+{
+  "PagePath": "/residence-halls/stimson/",
+  "Url": "https://housing.wsu.edu/residence-halls/stimson/",
+  "FinalUrl": null,
+  "Title": "Stimson",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 107819,
+  "ScreenshotSizeBytes": 324362,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 324362
+    }
+  ],
+  "ImageCount": 21,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dgybsbyf/6q6a0538.jpg",
+      "AltText": "6Q6A0538"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rp5n2x4n/stimson-main-lounge.jpg",
+      "AltText": "Stimson Main Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gjmnud3w/stimson-tv-lounge.jpg",
+      "AltText": "Stimson TV Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uwafxmpi/6q6a0492.jpg",
+      "AltText": "6Q6A0492"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wbfjea3x/6q6a0473.jpg",
+      "AltText": "6Q6A0473"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/udkbo04u/6q6a0488.jpg",
+      "AltText": "6Q6A0488"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/uj4mszzj/6q6a0507.jpg",
+      "AltText": "6Q6A0507"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tu3nob0u/6q6a0405.jpg",
+      "AltText": "6Q6A0405"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4dznsalx/6q6a0556.jpg",
+      "AltText": "6Q6A0556"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u5sh1pww/samuel-houle.jpg",
+      "AltText": "Sam Houle"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2a5be03o/southside-students-eating-2.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qrlm4am3/stimson-meeting.png",
+      "AltText": "Quick Facts"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4z4pmjbd/southside-towers-square.jpg",
+      "AltText": "Neighborhood: South Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/siolpm0l/gg-exterior-bball-court.jpg",
+      "AltText": "Gannon/Goldsworthy Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hfjf3xbn/stephenson-student-5.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hlad4df3/floor-plan-stimson-1st-floor.png",
+      "AltText": "Stimson first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/x5bpq45k/floor-plan-stimson-2nd-floor.png",
+      "AltText": "Stimson second floor"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wx3ddtn0/floor-plan-stimson-3rd-floor.png",
+      "AltText": "stimson third floor"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/x1pnk1xv/floor-plan-stimson-4th-floor.png",
+      "AltText": "Stimson fourth floor"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/aunhqh01/floor-plan-stimson-basement-floor.png",
+      "AltText": "Stimson basement floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2t1erwqe/stimson-suite.gif",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:16:23 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:16:23.5658297Z"
+}

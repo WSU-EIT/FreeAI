@@ -1,0 +1,21 @@
+@page "/showcase/infotip/v2"
+@using FreeBlazorExtended.InfoTip
+
+<div class="container-fluid py-4">
+    <h1>InfoTip With Code Sample</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="apiKeyField" class="form-label fw-semibold">
+                API Key
+                <InfoTip Title="API Key Format"
+                         Description="Keys are 32-character hex strings issued at registration. Send them as the X-Api-Key header."
+                         Code="X-Api-Key: 0123456789abcdef0123456789abcdef" />
+            </label>
+            <input id="apiKeyField"
+                   class="form-control"
+                   value="0123456789abcdef0123456789abcdef"
+                   disabled />
+        </div>
+    </div>
+</div>

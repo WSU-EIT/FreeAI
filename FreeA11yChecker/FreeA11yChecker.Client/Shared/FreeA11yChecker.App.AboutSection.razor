@@ -1,0 +1,40 @@
+@* Collapsible info card for page help text *@
+
+<div class="card mb-3 about-section">
+    <div class="card-header d-flex align-items-center justify-content-between" role="button" tabindex="0" aria-expanded="@_expanded" @onclick="Toggle" @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") Toggle(); })" style="cursor:pointer;">
+        <span>
+            <Icon Name="fa-info-circle" />
+            <span class="ms-1 fw-semibold">@Title</span>
+        </span>
+        <span>
+            @if (_expanded) {
+                <Icon Name="fa-chevron-up" />
+            } else {
+                <Icon Name="fa-chevron-down" />
+            }
+        </span>
+    </div>
+    @if (_expanded) {
+        <div class="card-body">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool StartExpanded { get; set; } = false;
+
+    private bool _expanded = false;
+
+    protected override void OnInitialized()
+    {
+        _expanded = StartExpanded;
+    }
+
+    private void Toggle()
+    {
+        _expanded = !_expanded;
+    }
+}

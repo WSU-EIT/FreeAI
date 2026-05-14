@@ -1,0 +1,330 @@
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <i class="fa-solid fa-plus me-2"></i>
+                New Project
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("AppBuilder"))" class="btn btn-dark">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Back
+                </a>
+                <button type="button" class="btn btn-success" @onclick="CreateProject" disabled="@_saving">
+                    @if (_saving) {
+                        <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                    } else {
+                        <i class="fa-solid fa-save me-1"></i>
+                    }
+                    Create Project
+                </button>
+            </div>
+        </div>
+
+        <RequiredIndicator />
+
+        @* Entity Wizard Promotion *@
+        <div class="alert alert-info d-flex align-items-center mb-3">
+            <i class="fa-solid fa-wand-magic-sparkles fa-2x me-3 text-primary"></i>
+            <div class="flex-grow-1">
+                <strong>Want a guided experience?</strong>
+                <div class="small">
+                    Use the Entity Builder Wizard to define your data model step-by-step and generate all CRUD code automatically.
+                </div>
+            </div>
+            <a href="@(Helpers.BuildUrl("AppBuilder/EntityWizard"))" class="btn btn-primary ms-3">
+                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+                Open Wizard
+            </a>
+        </div>
+
+        <div class="row">
+            @* Left Column: Template Selection & Project Details *@
+            <div class="col-lg-7">
+                @* Step 1: Template Selection *@
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fa-solid fa-layer-group me-1"></i>
+                        Step 1: Choose a Template
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var template in _templates) {
+                                bool isSelected = _request.Template == template.Template;
+                                <div class="col-md-6 mb-2">
+                                    <div class="card h-100 @(isSelected ? "border-primary border-2" : "border")"
+                                         @onclick="() => SelectTemplate(template.Template)"
+                                         style="cursor: pointer;">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <input type="radio"
+                                                       class="form-check-input me-2"
+                                                       checked="@isSelected"
+                                                       @onchange="() => SelectTemplate(template.Template)" />
+                                                <i class="@template.Icon me-2 @(isSelected ? "text-primary" : "text-muted")"></i>
+                                                <strong>@template.Name</strong>
+                                                @if (template.IsRecommended) {
+                                                    <span class="badge bg-success ms-2">Recommended</span>
+                                                }
+                                            </div>
+                                            <p class="card-text small text-muted mb-1">@template.Description</p>
+                                            <small class="text-muted">
+                                                <i class="fa-solid fa-file me-1"></i>
+                                                @template.FileCount files
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @* Step 2: Project Details *@
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fa-solid fa-info-circle me-1"></i>
+                        Step 2: Project Details
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="project-name" class="form-label">
+                                Project Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   id="project-name"
+                                   class="@Helpers.MissingValue(_request.Name, "form-control")"
+                                   @bind="_request.Name"
+                                   @bind:event="oninput"
+                                   placeholder="MyApp (must be valid C# identifier)" />
+                            <div class="form-text">
+                                Must start with a letter and contain only letters and numbers. Used for namespace.
+                            </div>
+                            @if (!String.IsNullOrWhiteSpace(_nameError)) {
+                                <div class="text-danger small mt-1">@_nameError</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="project-display-name" class="form-label">
+                                Display Name
+                            </label>
+                            <input type="text"
+                                   id="project-display-name"
+                                   class="form-control"
+                                   @bind="_request.DisplayName"
+                                   @bind:event="oninput"
+                                   placeholder="My Application (human-friendly name)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="project-description" class="form-label">
+                                Description
+                            </label>
+                            <textarea id="project-description"
+                                      class="form-control"
+                                      rows="2"
+                                      @bind="_request.Description"
+                                      placeholder="Brief description of your application"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                @* Optional: Module Selection *@
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fa-solid fa-puzzle-piece me-1"></i>
+                        Optional: Include Modules
+                    </div>
+                    <div class="card-body">
+                        <div class="form-text mb-2">
+                            Select which FreeCRM modules to include. Unselected modules will be removed during build.
+                        </div>
+                        <div class="row">
+                            @foreach (var module in _availableModules) {
+                                bool isSelected = _request.IncludedModules.Contains(module.Key);
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="module-@module.Key"
+                                               checked="@isSelected"
+                                               @onchange="() => ToggleModule(module.Key)" />
+                                        <label class="form-check-label" for="module-@module.Key">
+                                            <strong>@module.Key</strong>
+                                            <div class="text-muted small">@module.Value</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Right Column: File Preview *@
+            <div class="col-lg-5">
+                <div class="card sticky-top" style="top: 80px;">
+                    <div class="card-header bg-dark text-white">
+                        <i class="fa-solid fa-eye me-1"></i>
+                        Preview: Files to be Created
+                    </div>
+                    <div class="card-body">
+                        @{ var selectedTemplate = _templates.FirstOrDefault(t => t.Template == _request.Template); }
+                        @if (selectedTemplate != null && selectedTemplate.FileCount > 0) {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var file in selectedTemplate.IncludedFiles) {
+                                    string displayName = file.Replace("{Name}", String.IsNullOrWhiteSpace(_request.Name) ? "YourApp" : _request.Name);
+                                    string icon = GetFileIcon(file);
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="@icon me-2 text-muted"></i>
+                                        <code class="small">@displayName</code>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="mt-3 text-muted small">
+                                <i class="fa-solid fa-info-circle me-1"></i>
+                                These files will be created in your project with working example code.
+                            </div>
+                        } else {
+                            <div class="text-muted">
+                                <i class="fa-solid fa-folder-open me-2"></i>
+                                Empty project - no starter files. You'll add files manually.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _loadedData = false;
+    private bool _saving = false;
+    private string _pageName = "appbuilder-new";
+    private string _nameError = "";
+    private DataObjects.FMCreateProjectRequest _request = new();
+    private List<DataObjects.FMProjectTemplateInfo> _templates = new();
+
+    private Dictionary<string, string> _availableModules = new() {
+        { "Appointments", "Scheduling and calendar" },
+        { "EmailTemplates", "Email templates" },
+        { "Invoices", "Invoice management" },
+        { "Locations", "Location/address" },
+        { "Payments", "Payment processing" },
+        { "Services", "Service catalog" },
+        { "Tags", "Tagging system" }
+    };
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+
+        _templates = ProjectTemplates.GetTemplates();
+        _request.Template = DataObjects.FMProjectTemplate.Starter;
+        _request.IncludedModules = new List<string> { "Tags" };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_loadedData) {
+                _loadedData = true;
+                StateHasChanged();
+            }
+        }
+        await Task.CompletedTask;
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private void SelectTemplate(DataObjects.FMProjectTemplate template)
+    {
+        _request.Template = template;
+        StateHasChanged();
+    }
+
+    private void ToggleModule(string moduleName)
+    {
+        if (_request.IncludedModules.Contains(moduleName)) {
+            _request.IncludedModules.Remove(moduleName);
+        } else {
+            _request.IncludedModules.Add(moduleName);
+        }
+        StateHasChanged();
+    }
+
+    private string GetFileIcon(string fileName)
+    {
+        if (fileName.EndsWith(".cs")) return "fa-solid fa-code text-success";
+        if (fileName.EndsWith(".razor")) return "fa-solid fa-file-code text-primary";
+        if (fileName.EndsWith(".css")) return "fa-solid fa-palette text-info";
+        return "fa-solid fa-file";
+    }
+
+    private bool ValidateName()
+    {
+        _nameError = "";
+
+        if (String.IsNullOrWhiteSpace(_request.Name)) {
+            _nameError = "Project name is required";
+            return false;
+        }
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(_request.Name, @"^[A-Za-z][A-Za-z0-9]*$")) {
+            _nameError = "Project name must start with a letter and contain only letters and numbers";
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task CreateProject()
+    {
+        if (!ValidateName()) {
+            return;
+        }
+
+        _saving = true;
+        Model.ClearMessages();
+        Model.Message_Saving();
+        StateHasChanged();
+
+        try {
+            DataObjects.FMProjectInfo? result = await Helpers.GetOrPost<DataObjects.FMProjectInfo>(
+                DataObjects.Endpoints.FreeManager.CreateProject, _request);
+
+            Model.ClearMessages();
+
+            if (result != null && result.Id != Guid.Empty) {
+                Model.AddMessage($"Project '{result.DisplayName}' created successfully!", MessageType.Success);
+                Helpers.NavigateTo($"AppBuilder/Edit/{result.Id}");
+            } else {
+                Model.ErrorMessage("Failed to create project. Please try again.");
+            }
+        } catch (Exception ex) {
+            Model.ClearMessages();
+            await Helpers.ConsoleLog($"Error creating project: {ex.Message}");
+            Model.ErrorMessage(ex.Message);
+        }
+
+        _saving = false;
+        StateHasChanged();
+    }
+}

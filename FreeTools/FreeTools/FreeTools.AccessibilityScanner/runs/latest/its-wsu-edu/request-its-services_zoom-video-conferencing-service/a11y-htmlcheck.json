@@ -1,0 +1,63 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 1,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "PagePath": "/sfs-outreach-rename-as-you-see-fit/",
+  "Url": "https://dev.finaid.wsu.edu/sfs-outreach-rename-as-you-see-fit/",
+  "FinalUrl": null,
+  "Title": "SFS Outreach (Rename as you see fit) | Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 660550,
+  "ScreenshotSizeBytes": 82453,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 82453
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://sayingimages.com/wp-content/uploads/thumbs-up-very-nice-meme.jpg",
+      "AltText": "25 Thumbs Up Memes To Show Approval - SayingImages.com"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:23:14.127271Z"
+}

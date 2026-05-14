@@ -1,0 +1,28 @@
+﻿{
+  "profiles": {
+    "A11yAudit": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Scan External Sites Only": {
+      "commandName": "Project",
+      "commandLineArgs": "--external-only",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Scan Local Projects Only": {
+      "commandName": "Project",
+      "commandLineArgs": "--local-only",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Scan BlazorApp1 Only": {
+      "commandName": "Project",
+      "commandLineArgs": "BlazorApp1",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Scan FreeA11yChecker Only": {
+      "commandName": "Project",
+      "commandLineArgs": "FreeA11yChecker",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

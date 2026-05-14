@@ -1,0 +1,209 @@
+{
+  "TotalViolations": 7,
+  "CriticalCount": 0,
+  "SeriousCount": 4,
+  "ModerateCount": 3,
+  "MinorCount": 0,
+  "AxeCount": 1,
+  "HtmlCheckCount": 4,
+  "HtmlCsCount": 0,
+  "IbmCount": 2,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "skip-link",
+          "CanonicalRuleId": "skip-link",
+          "Severity": "moderate",
+          "Message": "No skip-to-content link found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "document-title",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "document-title",
+          "CanonicalRuleId": "document-title",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Document does not have a non-empty \u003Ctitle\u003E element",
+          "Selector": "html",
+          "Snippet": "\u003Chtml lang=\u0022en\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 style=\u0022--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: \u0026quot;64%\u0026quot;;\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag242",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "title-missing",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "title-missing",
+          "CanonicalRuleId": "title-missing",
+          "Severity": "serious",
+          "Message": "Page is missing a \u003Ctitle\u003E element",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "page_title_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "page_title_exists",
+          "CanonicalRuleId": "page_title_exists",
+          "Severity": "serious",
+          "Message": "Missing \u003Ctitle\u003E element in \u003Chead\u003E element",
+          "Selector": "/html[1]",
+          "Snippet": "\u003Chtml style=\u0022--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: \u002264%\u0022;\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 lang=\u0022en\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "skip_main_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "skip_main_exists",
+          "CanonicalRuleId": "skip_main_exists",
+          "Severity": "serious",
+          "Message": "The page does not provide a way to quickly navigate to the main content (ARIA \u0022main\u0022 landmark or a skip link)",
+          "Selector": "/html[1]/body[1]",
+          "Snippet": "\u003Cbody class=\u0022light\u0022 data-bs-theme=\u0022\u0022 id=\u0022body-element\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "landmark-main",
+          "CanonicalRuleId": "landmark-one-main",
+          "Severity": "moderate",
+          "Message": "No \u003Cmain\u003E landmark found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "landmark-nav",
+          "CanonicalRuleId": "landmark-nav",
+          "Severity": "moderate",
+          "Message": "No \u003Cnav\u003E landmark found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

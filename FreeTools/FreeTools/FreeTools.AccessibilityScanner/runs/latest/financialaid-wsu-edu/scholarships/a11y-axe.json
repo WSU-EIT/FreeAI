@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 607,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "select-name",
+      "CanonicalRuleId": "select-name",
+      "Severity": "critical",
+      "Message": "Select element must have an accessible name",
+      "Selector": "#wsuwp-scholarship-grade-level",
+      "Snippet": "\u003Cselect id=\u0022wsuwp-scholarship-grade-level\u0022 class=\u0022wsu-scholarship-search__select\u0022 name=\u0022grade\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "select-name",
+      "CanonicalRuleId": "select-name",
+      "Severity": "critical",
+      "Message": "Select element must have an accessible name",
+      "Selector": "#wsuwp-scholarship-citizenship",
+      "Snippet": "\u003Cselect id=\u0022wsuwp-scholarship-citizenship\u0022 class=\u0022wsu-scholarship-search__select\u0022 name=\u0022citizenship\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "select-name",
+      "CanonicalRuleId": "select-name",
+      "Severity": "critical",
+      "Message": "Select element must have an accessible name",
+      "Selector": "#wsuwp-scholarship-state",
+      "Snippet": "\u003Cselect id=\u0022wsuwp-scholarship-state\u0022 class=\u0022wsu-scholarship-search__select\u0022 name=\u0022state\u0022\u003E\n\t\t\t\u003Coption value=\u0022\u0022\u003E\u2013 Residency \u2013\u003C/option\u003E\n\t\t\t\t\t\t\t\u003Coption va...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

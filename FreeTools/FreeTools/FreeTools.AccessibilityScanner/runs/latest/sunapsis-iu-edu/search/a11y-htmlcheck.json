@@ -1,0 +1,30 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "label-missing",
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Message": "Form input has no associated label or aria-label",
+      "Selector": null,
+      "Snippet": "\u003Cinput autocomplete=\u0022off\u0022 class=\u0022gsc-input\u0022 dir=\u0022ltr\u0022 name=\u0022q\u0022 size=\u002210\u0022 spellcheck=\u0022false\u0022 title=\u0022search\u0022 type=\u0022text\u0022/\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable cellpadding=\u00220\u0022 cellspacing=\u00220\u0022 class=\u0022gsc-search-box\u0022\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022gsc-input\u0022\u003E\u003Cdiv class=\u0022gsc-input-box\u0022\u003E\u003Ctable cellpadding=\u00220\u0022 cells...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

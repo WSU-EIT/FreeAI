@@ -1,0 +1,268 @@
+﻿@*
+    ColumnSelector — Foundation dropdown for toggling the visibility of named table columns.
+
+    Renders a “Columns” button that opens a dropdown checklist. Each column name maps
+    to a checkbox; checking or unchecking one fires OnColumnVisibilityChanged with the
+    column name, new state, and the full visibility map. Show All / Hide All buttons
+    are included in the dropdown footer.
+
+    Pair with DataTable or ExpandableRows: wire OnColumnVisibilityChanged to show/hide
+    columns in your table's AddColumn registration logic, then call StateHasChanged.
+
+    Required parameters:
+        ColumnNames               — List<string> of the display names to manage.
+        OnColumnVisibilityChanged — EventCallback<ColumnVisibilityChangedEventArgs> that
+                                    receives the change and the full visibility snapshot.
+
+    Optional parameters:
+        InitialVisibility — Dictionary<string, bool> pre-seeding each column's checked
+                            state on first render. Columns not listed default to visible.
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="column-selector-wrapper">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+            @onclick="ToggleDropdown"
+            aria-haspopup="true"
+            aria-expanded="@_showDropdown"
+            aria-label="Column visibility settings">
+            <i class="fas fa-columns me-2" aria-hidden="true"></i>Columns
+        </button>
+    </div>
+
+    @if (_showDropdown) {
+        <div class="column-selector-dropdown" role="menu">
+            <div class="column-selector-header">
+                <h3>Visible Columns</h3>
+            </div>
+            <div class="column-selector-body">
+                @foreach (var column in _columns) {
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="col-@column.Id"
+                            @onchange="@((ChangeEventArgs e) => ColumnToggled(column, e))"
+                            checked="@column.Visible"
+                            aria-label="Toggle @column.Name visibility" />
+                        <label class="form-check-label" for="col-@column.Id">
+                            @column.Name
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="column-selector-footer">
+                <button type="button" class="btn btn-sm btn-link btn-block w-100" @onclick="ShowAll" aria-label="Show all columns">
+                    Show All
+                </button>
+                <button type="button" class="btn btn-sm btn-link btn-block w-100" @onclick="HideAll" aria-label="Hide all columns">
+                    Hide All
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .column-selector-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .column-selector-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1000;
+        min-width: 250px;
+        margin-top: 0.5rem;
+        background-color: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.375rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .column-selector-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .column-selector-header h6 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .column-selector-body {
+        padding: 0.75rem 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .column-selector-body .form-check {
+        margin-bottom: 0.5rem;
+    }
+
+    .column-selector-body .form-check:last-child {
+        margin-bottom: 0;
+    }
+
+    .column-selector-footer {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--bs-border-color);
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .column-selector-footer button {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+
+    .form-check-label {
+        margin-bottom: 0;
+        color: var(--bs-body-color);
+        user-select: none;
+    }
+
+    @@media (max-width: 576px) {
+        .column-selector-dropdown {
+            right: -50px;
+        }
+    }
+</style>
+
+@code {
+    public class Column {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Name { get; set; } = "";
+        public bool Visible { get; set; } = true;
+    }
+
+    private List<Column> _columns = new();
+    private bool _showDropdown = false;
+
+    /// <summary>
+    /// Fired whenever a checkbox is toggled or Show All / Hide All is clicked.
+    /// <para><b>Required</b> for the component to have any external effect.</para>
+    /// The <see cref="ColumnVisibilityChangedEventArgs.AllVisibleColumns"/> dictionary
+    /// always contains the full current snapshot of every column's visibility.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ColumnVisibilityChangedEventArgs> OnColumnVisibilityChanged { get; set; }
+
+    /// <summary>
+    /// The ordered list of column display names to show in the dropdown.
+    /// <para><b>Required.</b></para>
+    /// Each string becomes a checkbox label. Use the same strings as your table's
+    /// column headers so the names are consistent.
+    /// </summary>
+    [Parameter]
+    public List<string> ColumnNames { get; set; } = new();
+
+    /// <summary>
+    /// Pre-seeds the checked state of each column on first render.
+    /// Key: column display name (must match an entry in <see cref="ColumnNames"/>).
+    /// Value: <c>true</c> = visible, <c>false</c> = hidden.
+    /// Columns not included in this dictionary default to <c>true</c> (visible).
+    /// </summary>
+    [Parameter]
+    public Dictionary<string, bool> InitialVisibility { get; set; } = new();
+
+    public class ColumnVisibilityChangedEventArgs {
+        public string ColumnName { get; set; } = "";
+        public bool IsVisible { get; set; } = false;
+        public Dictionary<string, bool> AllVisibleColumns { get; set; } = new();
+    }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _columns.Clear();
+
+        foreach (string columnName in ColumnNames) {
+            bool visible = true;
+            if (InitialVisibility != null && InitialVisibility.ContainsKey(columnName)) {
+                visible = InitialVisibility[columnName];
+            }
+
+            _columns.Add(new Column {
+                Name = columnName,
+                Visible = visible
+            });
+        }
+    }
+
+    protected void ToggleDropdown()
+    {
+        _showDropdown = !_showDropdown;
+    }
+
+    protected async Task ColumnToggled(Column column, ChangeEventArgs e)
+    {
+        bool isVisible = (bool)e.Value!;
+        column.Visible = isVisible;
+
+        var visibilityMap = _columns.ToDictionary(c => c.Name, c => c.Visible);
+
+        await OnColumnVisibilityChanged.InvokeAsync(new ColumnVisibilityChangedEventArgs {
+            ColumnName = column.Name,
+            IsVisible = isVisible,
+            AllVisibleColumns = visibilityMap
+        });
+    }
+
+    protected async Task ShowAll()
+    {
+        foreach (var column in _columns) {
+            column.Visible = true;
+        }
+
+        var visibilityMap = _columns.ToDictionary(c => c.Name, c => true);
+        await OnColumnVisibilityChanged.InvokeAsync(new ColumnVisibilityChangedEventArgs {
+            ColumnName = "*",
+            IsVisible = true,
+            AllVisibleColumns = visibilityMap
+        });
+    }
+
+    protected async Task HideAll()
+    {
+        foreach (var column in _columns) {
+            column.Visible = false;
+        }
+
+        var visibilityMap = _columns.ToDictionary(c => c.Name, c => false);
+        await OnColumnVisibilityChanged.InvokeAsync(new ColumnVisibilityChangedEventArgs {
+            ColumnName = "*",
+            IsVisible = false,
+            AllVisibleColumns = visibilityMap
+        });
+    }
+
+    public Dictionary<string, bool> GetVisibleColumns()
+    {
+        return _columns.ToDictionary(c => c.Name, c => c.Visible);
+    }
+
+    public void SetColumnVisibility(string columnName, bool visible)
+    {
+        var column = _columns.FirstOrDefault(c => c.Name == columnName);
+        if (column != null) {
+            column.Visible = visible;
+        }
+    }
+}

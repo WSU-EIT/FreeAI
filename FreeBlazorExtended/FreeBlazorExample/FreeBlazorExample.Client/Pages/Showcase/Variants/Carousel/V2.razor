@@ -1,0 +1,32 @@
+@page "/showcase/carousel/v2"
+@using FreeBlazorExtended.Carousel
+
+<div class="container-fluid py-4">
+    <h1>Carousel - Configured</h1>
+    <p class="text-muted">Autoplay advances every three seconds, hover pauses the run, dots replace the filmstrip, and looping is disabled.</p>
+
+    <Carousel Slides="_slides"
+              AutoPlay="true"
+              AutoPlayInterval="@_interval"
+              PauseOnHover="true"
+              ShowFilmstrip="false"
+              ShowDots="true"
+              ShowArrows="true"
+              Loop="false"
+              InitialSlideIndex="0"
+              FocusStyle="height:340px; object-fit:cover;"
+              AriaLabel="Featured products" />
+</div>
+
+@code {
+    private readonly TimeSpan _interval = TimeSpan.FromSeconds(3);
+
+    private readonly List<Carousel.CarouselSlide> _slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/product1/1200/600", Title = "Foundations Suite", Caption = "Baseline component set for operational dashboards.", LinkUrl = "#" },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/product2/1200/600", Title = "Insight Cards", Caption = "Quick summary visuals for dense workflows.", LinkUrl = "#" },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/product3/1200/600", Title = "Pipeline Views", Caption = "Delivery and deployment tracking surfaces.", LinkUrl = "#" },
+        new() { Id = "4", ImageUrl = "https://picsum.photos/seed/product4/1200/600", Title = "File Workbench", Caption = "File pickers, previews, and attachment flows.", LinkUrl = "#" },
+        new() { Id = "5", ImageUrl = "https://picsum.photos/seed/product5/1200/600", Title = "Command Overlay", Caption = "Keyboard-first navigation across large apps.", LinkUrl = "#" },
+    };
+}

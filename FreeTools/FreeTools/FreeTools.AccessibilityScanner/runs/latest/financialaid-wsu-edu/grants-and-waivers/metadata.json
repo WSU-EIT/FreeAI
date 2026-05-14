@@ -1,0 +1,101 @@
+{
+  "PagePath": "/grants-and-waivers/",
+  "Url": "https://financialaid.wsu.edu/grants-and-waivers/",
+  "FinalUrl": null,
+  "Title": "Grants and Waivers | Student Financial Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 267084,
+  "ScreenshotSizeBytes": 586823,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 586823
+    }
+  ],
+  "ImageCount": 8,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/08/ExcitedCougs.jpg",
+      "AltText": "WSU student in sunglasses giving piece signs."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/09/StudentswithPeaceSign.jpg",
+      "AltText": "Two students give peace signs while standing outside a building on the WSU Pullman campus."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/09/BoyStudying.jpg",
+      "AltText": "Two graduating students accept their diplomas in a shower of confetti."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/09/ConfettiGrads.jpg",
+      "AltText": "Two graduating students accept their diplomas in a shower of confetti."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/10/BoysWalking-1024x694.jpg",
+      "AltText": "Two students walking outside on the first day of fall classes"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/10/StudentswithDog.jpg",
+      "AltText": "Three students relax on the campus lawn with a german shepard"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/10/CampusMentor.jpg",
+      "AltText": "Five peer mentor students pose for a photo in the multicultural student center"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/10/GraduatingCoug.jpg",
+      "AltText": "A graduating student in a cap and gown poses outside on WSU Pullman campus"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:11:20 GMT",
+    "etag": "\u002248b0c65ed8a54176862bacf00c4486a8\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:14:05 GMT",
+    "link": "\u003Chttps://financialaid.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://financialaid.wsu.edu/wp-json/wp/v2/pages/136\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://financialaid.wsu.edu/?p=136\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:11:20.3957634Z"
+}

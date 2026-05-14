@@ -1,0 +1,67 @@
+{
+  "PagePath": "/compass/aidestimate/index",
+  "Url": "https://sfsapps.em.wsu.edu/compass/aidestimate/index",
+  "FinalUrl": null,
+  "Title": "WSU Financial Aid Estimator | Student Financial Aid | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 70084,
+  "ScreenshotSizeBytes": 283539,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 17,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 283539
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 12,
+    "Critical": 0,
+    "Serious": 11,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 5,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "private",
+    "content-length": "60503",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:43 GMT",
+    "server": "Microsoft-IIS/10.0",
+    "x-aspnet-version": "4.0.30319",
+    "x-aspnetmvc-version": "5.2",
+    "x-powered-by": "ASP.NET",
+    "x-ua-compatible": "IE=edge,chrome=1"
+  },
+  "CapturedAt": "2026-02-19T02:10:39.5108259Z"
+}

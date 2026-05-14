@@ -1,0 +1,250 @@
+﻿@page "/showcase/datetimepicker"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Date Time Picker Component</h1>
+            <p class="lead">A flexible date and time picker component supporting Date, Time, and DateTime input modes with customizable formatting.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A type-aware date/time input that infers whether to render a date, time, or combined datetime picker from the TValue generic type parameter — supporting DateTime?, DateOnly?, and TimeOnly? — and handles UTC↔local conversion automatically."
+        WhatEli5="A date or time box that figures out what kind of value you need (just a date? just a time? both?) and shows the right calendar or clock without you having to configure it."
+        Who=@(new[]{ "Developers binding form fields to DateTime, DateOnly, or TimeOnly model properties", "Form builders that need consistent date entry across the app without copy-pasting format strings", "Any page collecting appointment times, birth dates, or event timestamps" })
+        WhenUse=@(new[]{ "Any form field bound to a date or time C# type", "Scheduling inputs where MinDate/MaxDate constraints need to be enforced", "Forms where the server stores UTC but the UI should show local time" })
+        WhenNot=@(new[]{ "Inline calendar month views (use the Calendar feature for that)", "Date range pickers — this is a single-value input" })
+        Why="Native browser date inputs use different formats on different browsers and OSes, and don't understand C# nullable types. This wraps them into a consistent, strongly-typed Blazor component."
+        TechNotes=@(new[]{ "Generic TValue parameter; the component determines input type = 'date', 'time', or 'datetime-local' at render time", "UTC conversion: if ConvertToLocal=true, incoming UTC values are shifted to local before display and shifted back on change", "Format parameter overrides the default display format string", "Min/MaxDate enforced via the native min/max HTML attributes on the underlying input" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Date Picker</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Select a date using the date picker.</p>
+                    <label for="dateInput" class="form-label">Select Date:</label>
+                    <DateTimePicker TValue="DateOnly?"
+                        Value="@_selectedDate"
+                        OnUpdate="@((DateOnly? v) => { _selectedDate = v; StateHasChanged(); })" />
+                    @if (_selectedDate.HasValue) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected Date:</strong> @_selectedDate?.ToString("MMMM dd, yyyy")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Time Picker</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Select a time using the time picker.</p>
+                    <label for="timeInput" class="form-label">Select Time:</label>
+                    <DateTimePicker TValue="TimeOnly?"
+                        Value="@_selectedTime"
+                        OnUpdate="@((TimeOnly? v) => { _selectedTime = v; StateHasChanged(); })" />
+                    @if (_selectedTime.HasValue) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected Time:</strong> @_selectedTime?.ToString("hh:mm:ss tt")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">DateTime Picker</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Select both date and time together.</p>
+                    <label for="dateTimeInput" class="form-label">Select Date and Time:</label>
+                    <DateTimePicker TValue="DateTime?"
+                        Value="@_selectedDateTime"
+                        OnUpdate="@((DateTime? v) => { _selectedDateTime = v; StateHasChanged(); })" />
+                    @if (_selectedDateTime.HasValue) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected DateTime:</strong> @_selectedDateTime?.ToString("MMMM dd, yyyy hh:mm:ss tt")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Min/Max Dates</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Date picker restricted to a specific range.</p>
+                    <label for="restrictedDateInput" class="form-label">Select Date (30 days window):</label>
+                    <DateTimePicker TValue="DateOnly?"
+                        Value="@_restrictedDate"
+                        OnUpdate="@((DateOnly? v) => { _restrictedDate = v; StateHasChanged(); })"
+                        Min="@DateOnly.FromDateTime(DateTime.Now.AddDays(-30))"
+                        Max="@DateOnly.FromDateTime(DateTime.Now.AddDays(30))" />
+                    @if (_restrictedDate.HasValue) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Selected Date:</strong> @_restrictedDate?.ToString("MMMM dd, yyyy")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Value</code></td>
+                                    <td>DateTime?</td>
+                                    <td>null</td>
+                                    <td>The selected date/time value (supports @@bind)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>InputType</code></td>
+                                    <td>InputTypes enum</td>
+                                    <td>DateTime</td>
+                                    <td>Type of input: Date, Time, or DateTime</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Format</code></td>
+                                    <td>string</td>
+                                    <td>varies</td>
+                                    <td>Date/time format string (e.g., "MM/dd/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MinDate</code></td>
+                                    <td>DateTime?</td>
+                                    <td>null</td>
+                                    <td>Minimum selectable date</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MaxDate</code></td>
+                                    <td>DateTime?</td>
+                                    <td>null</td>
+                                    <td>Maximum selectable date</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Class</code></td>
+                                    <td>string</td>
+                                    <td>"form-control"</td>
+                                    <td>CSS class for the input element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Disabled</code></td>
+                                    <td>bool</td>
+                                    <td>false</td>
+                                    <td>Disables the input field</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Placeholder</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>Placeholder text for the input</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Examples</h2>
+                </div>
+                <div class="card-body">
+                    <h3 class="mb-3">Date Picker:</h3>
+                    <pre><code class="language-razor">&lt;DateTimePicker
+    @@bind-Value="@@_selectedDate"
+    InputType="DateTimePicker.InputTypes.Date"
+    Format="MM/dd/yyyy" /&gt;</code></pre>
+
+                    <h3 class="mb-3 mt-4">DateTime with Restrictions:</h3>
+                    <pre><code class="language-razor">&lt;DateTimePicker
+    @@bind-Value="@@_selectedDateTime"
+    InputType="DateTimePicker.InputTypes.DateTime"
+    MinDate="@@DateTime.Now"
+    MaxDate="@@DateTime.Now.AddYears(1)"
+    Format="MM/dd/yyyy HH:mm" /&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Common Use Cases</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Event Scheduling:</strong> Pick event date and time with min/max constraints</li>
+                        <li><strong>Birthday Selection:</strong> Date picker for past dates only</li>
+                        <li><strong>Appointment Booking:</strong> Restrict to business hours and available dates</li>
+                        <li><strong>Report Date Range:</strong> Select start and end dates for reports</li>
+                        <li><strong>Age Verification:</strong> Select birth date with validation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Fully keyboard accessible with standard HTML5 input controls</li>
+                        <li>Screen reader friendly with proper ARIA labels</li>
+                        <li>Native browser date/time pickers for enhanced mobile experience</li>
+                        <li>Clear error messages for validation failures</li>
+                        <li>Format guidance helps users understand expected input</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected DateOnly? _selectedDate;
+    protected TimeOnly? _selectedTime;
+    protected DateTime? _selectedDateTime;
+    protected DateOnly? _restrictedDate;
+}

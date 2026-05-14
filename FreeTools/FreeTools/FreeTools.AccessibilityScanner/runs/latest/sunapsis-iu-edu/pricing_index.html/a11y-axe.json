@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 218,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": ".collapsed.bg-none.section:nth-child(4) \u003E .row \u003E .layout \u003E .text \u003E p \u003E .external",
+      "Snippet": "\u003Ca href=\u0022https://web.archive.org/web/20240915060807/mailto:sunaplic@indiana.edu\u0022 class=\u0022external\u0022\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

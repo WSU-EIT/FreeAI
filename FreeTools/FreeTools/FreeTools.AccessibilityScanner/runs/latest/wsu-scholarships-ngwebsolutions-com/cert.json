@@ -1,0 +1,21 @@
+{
+  "Subject": "CN=*.scholarships.ngwebsolutions.com",
+  "Issuer": "CN=Go Daddy Secure Certificate Authority - G2, OU=http://certs.godaddy.com/repository/, O=\u0022GoDaddy.com, Inc.\u0022, L=Scottsdale, S=Arizona, C=US",
+  "Thumbprint": "C65591655E697A95FB5EEEC7DCAAC7378FA6064D",
+  "SerialNumber": "087AD011E71F6E24",
+  "NotBefore": "2025-10-03T08:30:47-07:00",
+  "NotAfter": "2026-11-04T07:30:47-08:00",
+  "DaysUntilExpiry": 258,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.scholarships.ngwebsolutions.com",
+    "scholarships.ngwebsolutions.com"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "*.scholarships.ngwebsolutions.com",
+    "scholarships.ngwebsolutions.com"
+  ],
+  "ErrorMessage": null
+}

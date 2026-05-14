@@ -1,0 +1,86 @@
+{
+  "PagePath": "/",
+  "Url": "https://finaiddev.wsu.edu/",
+  "FinalUrl": null,
+  "Title": "Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 664829,
+  "ScreenshotSizeBytes": 112465,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 112465
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/756126/early-fafsa.png?width=277\u0026height=230",
+      "AltText": "Early FAFSA/WASFA Information"
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2443/check.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/3071/compass-tiny.png",
+      "AltText": "CougCompass"
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2506/paw_small.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2535/phoneicon.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2450/submitsfsdocs.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2457/picture1.png",
+      "AltText": "Picture1"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 1,
+    "Serious": 5,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 1,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:07:49.1153437Z"
+}

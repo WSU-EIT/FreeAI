@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 142,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "document-title",
+      "CanonicalRuleId": "document-title",
+      "Severity": "serious",
+      "Message": "Documents must have \u003Ctitle\u003E element to aid in navigation",
+      "Selector": "html",
+      "Snippet": "\u003Chtml lang=\u0022en\u0022 style=\u0022--blazor-load-percentage: 58.97435897435898%; --blazor-load-percentage-text: \u0026quot;58%\u0026quot;;\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

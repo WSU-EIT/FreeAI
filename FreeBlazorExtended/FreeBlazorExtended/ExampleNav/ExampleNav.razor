@@ -1,0 +1,145 @@
+@*
+    ExampleNav — fully controlled breadcrumb + Prev/All/Next navigation strip.
+
+    Renders a Bootstrap "bg-light rounded border" bar with breadcrumbs on the
+    left (Home -> Category -> [Parent ->] Title) and Prev / All / Next buttons
+    on the right. The component is host-app agnostic: the caller supplies the
+    full page list, the current route, and (optionally) Home link metadata.
+
+    If CurrentRoute does not match any entry in Pages, the component renders
+    nothing.
+*@
+
+@namespace FreeBlazorExtended.ExampleNav
+
+@{
+    var info = FindCurrentPage();
+}
+
+@if (info.Current != null) {
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 py-2 px-3 bg-light rounded border">
+        @if (ShowBreadcrumbs) {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item">
+                        <a href="@(HomeUrl ?? "/")"><i class="@HomeIcon me-1"></i>@HomeLabel</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@(info.Current.CategoryRoute ?? HomeUrl ?? "/")">@info.Current.Category</a>
+                    </li>
+                    @if (info.Current.ParentTitle != null) {
+                        <li class="breadcrumb-item">
+                            <a href="@(info.Current.ParentRoute ?? "#")">@info.Current.ParentTitle</a>
+                        </li>
+                    }
+                    <li class="breadcrumb-item active" aria-current="page">@info.Current.Title</li>
+                </ol>
+            </nav>
+        } else {
+            <span></span>
+        }
+        @if (ShowPrevNext) {
+            <div class="d-flex gap-1 align-items-center">
+                @if (info.Prev != null) {
+                    <a href="@info.Prev.Route" class="btn btn-outline-primary btn-sm" title="@info.Prev.Title">
+                        <i class="fa-solid fa-chevron-left me-1"></i>Prev
+                    </a>
+                } else {
+                    <span class="btn btn-outline-secondary btn-sm disabled"><i class="fa-solid fa-chevron-left me-1"></i>Prev</span>
+                }
+                <a href="@(HomeUrl ?? "/")" class="btn btn-outline-dark btn-sm" title="@($"Back to {HomeLabel}")">
+                    <i class="@HomeIcon me-1"></i>All
+                </a>
+                @if (info.Next != null) {
+                    <a href="@info.Next.Route" class="btn btn-outline-primary btn-sm" title="@info.Next.Title">
+                        Next<i class="fa-solid fa-chevron-right ms-1"></i>
+                    </a>
+                } else {
+                    <span class="btn btn-outline-secondary btn-sm disabled">Next<i class="fa-solid fa-chevron-right ms-1"></i></span>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>Full ordered list of pages to navigate among. Prev/Next are derived from this list's order.</summary>
+    [Parameter] public List<NavPage> Pages { get; set; } = new();
+
+    /// <summary>The current page's route. Matched (case-insensitive) against <see cref="NavPage.Route"/>.</summary>
+    [Parameter] public string CurrentRoute { get; set; } = "";
+
+    /// <summary>URL for the Home / "All" link and the first two breadcrumb segments. Defaults to "/".</summary>
+    [Parameter] public string? HomeUrl { get; set; }
+
+    /// <summary>Label shown on the Home breadcrumb and the "All" button title.</summary>
+    [Parameter] public string HomeLabel { get; set; } = "Dashboard";
+
+    /// <summary>FontAwesome icon class used for the Home breadcrumb and the "All" button.</summary>
+    [Parameter] public string HomeIcon { get; set; } = "fa-solid fa-table-cells";
+
+    /// <summary>Render the breadcrumb on the left side. Default true.</summary>
+    [Parameter] public bool ShowBreadcrumbs { get; set; } = true;
+
+    /// <summary>Render the Prev / All / Next button group on the right side. Default true.</summary>
+    [Parameter] public bool ShowPrevNext { get; set; } = true;
+
+    private (NavPage? Current, NavPage? Prev, NavPage? Next) FindCurrentPage()
+    {
+        if (Pages == null || Pages.Count == 0 || string.IsNullOrEmpty(CurrentRoute)) {
+            return (null, null, null);
+        }
+        var normalizedCurrentRoute = NormalizeRoute(CurrentRoute);
+        var idx = Pages.FindIndex(p => string.Equals(NormalizeRoute(p.Route), normalizedCurrentRoute, StringComparison.OrdinalIgnoreCase));
+        if (idx < 0) {
+            return (null, null, null);
+        }
+        return (
+            Pages[idx],
+            idx > 0 ? Pages[idx - 1] : null,
+            idx < Pages.Count - 1 ? Pages[idx + 1] : null
+        );
+    }
+
+    private static string NormalizeRoute(string? route)
+    {
+        var output = (route ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(output)) {
+            return string.Empty;
+        }
+
+        if (Uri.TryCreate(output, UriKind.Absolute, out var absoluteUri)) {
+            output = absoluteUri.AbsolutePath;
+        }
+
+        var markerIndex = output.IndexOfAny(['?', '#']);
+        if (markerIndex >= 0) {
+            output = output[..markerIndex];
+        }
+
+        output = "/" + output.Trim().TrimStart('/');
+        return output.TrimEnd('/');
+    }
+
+    /// <summary>A single navigable page. Pages within the same Category appear under the same breadcrumb.</summary>
+    public class NavPage
+    {
+        /// <summary>Top-level grouping shown as the second breadcrumb segment.</summary>
+        public string Category { get; set; } = "";
+
+        /// <summary>Optional route for the category breadcrumb segment.</summary>
+        public string? CategoryRoute { get; set; }
+
+        /// <summary>The href used for Prev/Next links, and the value matched against <c>CurrentRoute</c>.</summary>
+        public string Route { get; set; } = "";
+
+        /// <summary>Display title shown in the breadcrumb and on Prev/Next button tooltips.</summary>
+        public string Title { get; set; } = "";
+
+        /// <summary>Optional parent page title shown as an extra breadcrumb segment.</summary>
+        public string? ParentTitle { get; set; }
+
+        /// <summary>Optional href for the parent breadcrumb segment.</summary>
+        public string? ParentRoute { get; set; }
+    }
+}

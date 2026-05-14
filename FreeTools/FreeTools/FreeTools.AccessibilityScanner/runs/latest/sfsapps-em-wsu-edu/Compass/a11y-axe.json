@@ -1,0 +1,30 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 193,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "image-alt",
+      "CanonicalRuleId": "image-alt",
+      "Severity": "critical",
+      "Message": "Images must have alternative text",
+      "Selector": "img",
+      "Snippet": "\u003Cimg src=\u0022/Compass/Content/images/EstimateGraphic2.jpg\u0022 style=\u0022width:100%;\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/image-alt?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href$=\u0022#spine-sitenav\u0022]",
+      "Snippet": "\u003Ca href=\u0022#spine-sitenav\u0022 role=\u0022navigation\u0022 class=\u0022screen-reader-shortcut\u0022\u003ESkip to navigation\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

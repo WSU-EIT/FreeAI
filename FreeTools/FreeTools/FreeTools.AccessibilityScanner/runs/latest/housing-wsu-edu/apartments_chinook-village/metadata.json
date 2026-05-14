@@ -1,0 +1,143 @@
+{
+  "PagePath": "/apartments/chinook-village/",
+  "Url": "https://housing.wsu.edu/apartments/chinook-village/",
+  "FinalUrl": null,
+  "Title": "Chinook Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 140213,
+  "ScreenshotSizeBytes": 304200,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 13,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 304200
+    }
+  ],
+  "ImageCount": 19,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4kpeze3q/chinook-exterior-banner.png",
+      "AltText": "Chinook"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ufsd5wtj/chinook-threebedflat-5.png",
+      "AltText": "Chinook Three Bed Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/pv5jzzlm/chinook-exterior-3.png",
+      "AltText": "Chinook Exterior covered patio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/c3scn1e0/chinook-fourbedflat-2.png",
+      "AltText": "Chinook Four Bed Flat Living"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wrddj204/chinook-fourbedflat-3.png",
+      "AltText": "Chinook Four Bed Flat Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/aelh2vga/chinook-fourbledflat-1.png",
+      "AltText": "Chinook Four Bed Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vlxhqugk/chinook-threebed-th-1.png",
+      "AltText": "Chinook Three Bed Refurbished Townhouse Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jvdk3hny/chinook-threebed-th-2.png",
+      "AltText": "Chinook Three Bed Refurbished Townhouse Living"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zj1be21i/chinook-threebed-th-3.png",
+      "AltText": "Chinook Three Bed Refurbished Townhouse Bedroom A"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/51bbwhbs/chinook-threebed-th-4.png",
+      "AltText": "Chinook Three Bed Refurbished Townhouse Bath"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eapnwcne/chinook-threebed-th-5.png",
+      "AltText": "Chinook Three Bed Refurbished Townhouse Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4frdj3ak/chinook-threebedflast-3.png",
+      "AltText": "Chinook Three Bed Flat Living"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/54jnce0j/chinook-threebedflast-4.png",
+      "AltText": "Chinook Three Bed Flat Living Window"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4oidgzom/chinook-threebedflat-1.png",
+      "AltText": "Chinook Three Bed Flat Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/03dgprut/chinook-threebedflat-2.png",
+      "AltText": "Chinook Three Bed Flat Bedroom B"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/45enddlj/chinook-4-bedroom-resized.jpg",
+      "AltText": "Chinook Four Bedroom Flat"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hplgw5xm/chinook-3-bedroom-townhouse-resized.jpg",
+      "AltText": "Chinook Three Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/sr2jdjgw/chinook-3-bedroom-resized.jpg",
+      "AltText": "Chinook Three Bedroom Flat"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wg3kfcex/chinook-2-bedroom-resized.png",
+      "AltText": "Chinook Two Bedroom Flat"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:09:35 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:09:35.3430885Z"
+}

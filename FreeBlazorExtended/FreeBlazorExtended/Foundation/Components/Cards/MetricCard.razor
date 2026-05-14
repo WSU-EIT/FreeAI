@@ -1,0 +1,219 @@
+﻿@*
+    MetricCard — Foundation KPI card displaying a primary metric with optional trend and footer.
+
+    Use this component to surface a single key number in a dashboard or summary panel.
+    It formats numeric values automatically and renders a directional trend indicator
+    when a TrendPercent is provided.
+
+    Required parameters:
+        Title   — the metric label (e.g. "Monthly Revenue", "Active Users")
+        Value   — the numeric or string value to display
+
+    Optional parameters:
+        TrendPercent    — positive or negative percentage shown as ↑/↓ with colour coding
+        SupplementalText — small label next to the title (e.g. "YTD", "Last 30 days")
+        Footer          — explanatory line below the value (e.g. "vs. previous month")
+        ValueFormat     — standard .NET format string applied when Value is numeric
+                          e.g. "N0" for whole numbers, "C0" for currency, "P1" for percent
+
+    Example:
+        <MetricCard Title="Active Users"
+                    Value="@userCount"
+                    TrendPercent="12.4m"
+                    Footer="vs last month"
+                    ValueFormat="N0" />
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_title)) {
+    <div class="metric-card">
+        <div class="metric-header">
+            <h3 class="metric-title">@_title</h3>
+            @if (!String.IsNullOrWhiteSpace(SupplementalText)) {
+                <span class="metric-supplement">@SupplementalText</span>
+            }
+        </div>
+
+        <div class="metric-value-section">
+            <div class="metric-value">@_formattedValue</div>
+            @if (_showTrend) {
+                <div class="metric-trend @_trendClass">
+                    @if (_trendPercent >= 0) {
+                        <i class="fas fa-arrow-up"></i>
+                    } else {
+                        <i class="fas fa-arrow-down"></i>
+                    }
+                    <span>@Math.Abs(_trendPercent).ToString("F1")%</span>
+                </div>
+            }
+        </div>
+
+        @if (!String.IsNullOrWhiteSpace(Footer)) {
+            <div class="metric-footer">
+                @Footer
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .metric-card {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        min-width: 200px;
+    }
+
+    .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .metric-title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .metric-supplement {
+        font-size: 0.85rem;
+        color: var(--bs-secondary);
+    }
+
+    .metric-value-section {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--bs-body-color);
+    }
+
+    .metric-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .metric-trend.positive {
+        color: var(--bs-success);
+    }
+
+    .metric-trend.negative {
+        color: var(--bs-danger);
+    }
+
+    .metric-trend.neutral {
+        color: var(--bs-secondary);
+    }
+
+    .metric-footer {
+        font-size: 0.85rem;
+        color: var(--bs-secondary);
+        border-top: 1px solid var(--bs-border-color);
+        padding-top: 1rem;
+    }
+</style>
+
+@code {
+    protected string _title = "";
+    protected string _formattedValue = "";
+    protected bool _showTrend = false;
+    protected decimal _trendPercent = 0;
+    protected string _trendClass = "";
+
+    /// <summary>
+    /// The metric label rendered above the value.
+    /// <para><b>Required.</b> The card is hidden when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// The primary value displayed in large type. Accepts any numeric type or a
+    /// pre-formatted string. When numeric, apply <see cref="ValueFormat"/> to control
+    /// the rendered representation.
+    /// <para><b>Required</b> for the card to display meaningful data.</para>
+    /// </summary>
+    [Parameter] public object Value { get; set; }
+
+    /// <summary>
+    /// Small label placed to the right of <see cref="Title"/> (e.g. <c>"YTD"</c>,
+    /// <c>"Last 30 days"</c>). Optional — omit to leave the header clean.
+    /// </summary>
+    [Parameter] public string SupplementalText { get; set; } = "";
+
+    /// <summary>
+    /// Trend percentage shown as an arrow indicator next to the value.
+    /// Positive values render green with an up arrow; negative values render red
+    /// with a down arrow; zero renders grey with no arrow.
+    /// <para>Optional — omit to hide the trend indicator entirely.</para>
+    /// </summary>
+    [Parameter] public decimal? TrendPercent { get; set; }
+
+    /// <summary>
+    /// Explanatory text rendered below the value in a muted footer style
+    /// (e.g. <c>"vs. previous month"</c>, <c>"updated 2 min ago"</c>).
+    /// Optional — omit for a compact card.
+    /// </summary>
+    [Parameter] public string Footer { get; set; } = "";
+
+    /// <summary>
+    /// Standard .NET numeric format string applied when <see cref="Value"/> is a
+    /// numeric type (e.g. <c>"N0"</c> for whole numbers with comma separators,
+    /// <c>"C0"</c> for currency, <c>"P1"</c> for percentage with one decimal).
+    /// Ignored when <see cref="Value"/> is already a <see cref="string"/>.
+    /// Optional — defaults to zero-decimal integer formatting.
+    /// </summary>
+    [Parameter] public string ValueFormat { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _title = Title ?? "";
+
+        // Format the value based on type and format string
+        if (Value != null) {
+            _formattedValue = FormatValue(Value, ValueFormat);
+        }
+
+        // Set up trend indicator
+        if (TrendPercent.HasValue) {
+            _showTrend = true;
+            _trendPercent = TrendPercent.Value;
+            _trendClass = _trendPercent > 0 ? "positive" : (_trendPercent < 0 ? "negative" : "neutral");
+        }
+    }
+
+    protected string FormatValue(object value, string format)
+    {
+        if (value == null) return "";
+
+        return value switch
+        {
+            decimal d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
+            double d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
+            int i => String.IsNullOrWhiteSpace(format) ? i.ToString() : i.ToString(format),
+            long l => String.IsNullOrWhiteSpace(format) ? l.ToString() : l.ToString(format),
+            _ => value.ToString() ?? ""
+        };
+    }
+}

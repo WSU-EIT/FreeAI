@@ -1,0 +1,70 @@
+{
+  "PagePath": "/how-you-can-help/",
+  "Url": "https://cougnet.wsu.edu/how-you-can-help/",
+  "FinalUrl": null,
+  "Title": "How You Can Help | CougNet",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 647939,
+  "ScreenshotSizeBytes": 100029,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 100029
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://cougnet.wsu.edu/media/1562/cougnet_small.jpg",
+      "AltText": "CougNet Booth 1"
+    },
+    {
+      "SourceUrl": "https://cougnet.wsu.edu/media/1563/cougnet2.jpg",
+      "AltText": "CougNet Booth 2"
+    },
+    {
+      "SourceUrl": "https://cougnet.wsu.edu/media/1569/transferfair.jpg",
+      "AltText": "CougNet Booth 3"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 1,
+    "Serious": 3,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 4,
+        "Critical": 1,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:22.2031651Z"
+}

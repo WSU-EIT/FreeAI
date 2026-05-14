@@ -1,0 +1,17 @@
+@page "/showcase/carousel/v1"
+@using FreeBlazorExtended.Carousel
+
+<div class="container-fluid py-4">
+    <h1>Carousel - Default</h1>
+
+    <Carousel Slides="_slides" />
+</div>
+
+@code {
+    private readonly List<Carousel.CarouselSlide> _slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/c1/1200/600", Title = "Slide One", Caption = "A simple default carousel slide." },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/c2/1200/600", Title = "Slide Two", Caption = "Navigate with arrows or thumbnails." },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/c3/1200/600", Title = "Slide Three", Caption = "The filmstrip is enabled by default." },
+    };
+}

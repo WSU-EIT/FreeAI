@@ -1,0 +1,64 @@
+{
+  "PagePath": "/RSP",
+  "Url": "https://sfsapps.em.wsu.edu/RSP",
+  "FinalUrl": null,
+  "Title": "Site Moved",
+  "StatusCode": 503,
+  "Success": false,
+  "HtmlSizeBytes": 441,
+  "ScreenshotSizeBytes": 14357,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 14357
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-length": "458",
+    "content-type": "text/html",
+    "date": "Thu, 19 Feb 2026 02:11:00 GMT",
+    "retry-after": "3600",
+    "server": "Microsoft-IIS/10.0",
+    "x-powered-by": "ASP.NET"
+  },
+  "CapturedAt": "2026-02-19T02:10:58.8010386Z"
+}

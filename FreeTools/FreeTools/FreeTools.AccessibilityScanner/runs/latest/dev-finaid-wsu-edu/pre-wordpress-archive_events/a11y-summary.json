@@ -1,0 +1,81 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 12,
+  "Critical": 3,
+  "Serious": 2,
+  "Moderate": 7,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 3,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 9,
+      "Critical": 0,
+      "Serious": 2,
+      "Moderate": 7,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "button-name",
+      "Severity": "critical",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 4,
+      "Message": "Buttons must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/button-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cbutton type=\u0022button\u0022 class=\u0022fc-prev-button ui-button ui-state-default ui-corner-left\u0022\u003E\u003Cspan class=\u0022ui-icon ui-icon-circle-triangle-w\u0022\u003E\u003C/span\u003E\u003C/button..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel  wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-non..."
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 7,
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-sun fc-past\u0022 data-date=\u00222026-02-01\u0022\u003E\u003C/td\u003E\u003Ctd class=\u0022fc-day ui-widget-content fc-mon fc-past\u0022 ..."
+    }
+  ]
+}

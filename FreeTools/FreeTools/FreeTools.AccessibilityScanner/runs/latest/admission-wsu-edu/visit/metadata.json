@@ -1,0 +1,117 @@
+{
+  "PagePath": "/visit/",
+  "Url": "https://admission.wsu.edu/visit/",
+  "FinalUrl": null,
+  "Title": "Visit \u0026 Explore | Admissions | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 112089,
+  "ScreenshotSizeBytes": 504514,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 4,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 504514
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2022/11/Summer2020DroneAerialThompsonCore_0920-1900x1068-1.jpg",
+      "AltText": "Summer aerials with a drone on the campus of Washington State University, Monday, June 22, 2020."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/vlcsnap-2024-08-14-08h45m34s225-edited-1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Group-tour-cut-edited-792x594.jpg",
+      "AltText": "Future WSU students and their families on tour in front of the Chinook."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/Map-edited-792x594.jpg",
+      "AltText": "Close up of two students looking at a campus map"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2023/11/tour-for-web.jpg",
+      "AltText": "campus tour in spring"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/computer-edited-792x594.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/08/FutureCoug-Square-edited-792x594.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/09/Spring_2059-792x528.jpg",
+      "AltText": "Students take photos by the Cherry Trees in front of French Administration Building."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2025/07/Spring-Preview-Tour.jpg",
+      "AltText": "Visitors on tour on Glenn Terrell Mall during Preview."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2025/07/FootballCrowd.jpg",
+      "AltText": "Crowd cheering in Martin Stadium"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2025/07/Cougs-Run-On_8846-792x529.jpg",
+      "AltText": "Aerial view of Gesa field with fireworks going off."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-admission/uploads/sites/3144/2024/10/Pullman-Road-Sign_4981-scaled.jpg",
+      "AltText": "Sign pointing to turn for Pullman on the way to Washington State University, Friday, April 30, 2021."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 1,
+    "Serious": 10,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 5,
+        "Critical": 1,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:13:48 GMT",
+    "etag": "\u0022a2e7a77156d71d913dfbb572b0c2f0b3\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:37:36 GMT",
+    "link": "\u003Chttps://admission.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://admission.wsu.edu/wp-json/wp/v2/pages/32\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://admission.wsu.edu/?p=32\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:13:48.6214483Z"
+}

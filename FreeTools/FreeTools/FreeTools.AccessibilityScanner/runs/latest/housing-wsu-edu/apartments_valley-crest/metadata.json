@@ -1,0 +1,95 @@
+{
+  "PagePath": "/apartments/valley-crest/",
+  "Url": "https://housing.wsu.edu/apartments/valley-crest/",
+  "FinalUrl": null,
+  "Title": "Valley Crest",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 98282,
+  "ScreenshotSizeBytes": 241753,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 241753
+    }
+  ],
+  "ImageCount": 7,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4tifvrer/valley-crest-banner.jpg",
+      "AltText": "Valley Crest exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kjpdyn45/valley-crest-front-walkway.png",
+      "AltText": "Valley Crest Front Walkway"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/acdoqkfx/valley-crest-outdoor-space.png",
+      "AltText": "Valley Crest Outdoor Space"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/glqbubkt/valley-crest-back-patio.png",
+      "AltText": "Valley Crest Back Patio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/e5fjpvwe/valley-crest-bbq-area.png",
+      "AltText": "Valley Crest BBQ Area"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/cnifrghw/valley-crest-two-bedroom.jpg",
+      "AltText": "Valley Crest Two Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/matb1prq/valley-crest-three-bedroom.png",
+      "AltText": "Valley Crest Three Bedroom"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:49 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:10:48.9193909Z"
+}

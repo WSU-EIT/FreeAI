@@ -1,0 +1,102 @@
+{
+  "PagePath": "/news/newsletters/wsu-zoom-newsletter-november-2024/",
+  "Url": "https://its.wsu.edu/news/newsletters/wsu-zoom-newsletter-november-2024/",
+  "FinalUrl": null,
+  "Title": "WSU Zoom Newsletter November 2024 | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 303217,
+  "ScreenshotSizeBytes": 800877,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 800877
+    }
+  ],
+  "ImageCount": 8,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/10/Stock-Firefly-67483-1.jpeg",
+      "AltText": "Over shoulder view of female individual on a digital virtual conference with several colleagues"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/10/Zoom-Whiteboard-3.png",
+      "AltText": "Eight different Zoom whiteboards"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/10/multi-speaker-layout-zoom.png",
+      "AltText": "Digital virtual conference with two primary speakers in enlarged video tiles and several colleagues in smaller tiles"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/10/Screenshot-2024-10-01-at-12.44.26%E2%80%AFPM.png",
+      "AltText": "Zoom Workplace desktop app with toolbar and Share button visible"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2024/09/24-09-Zoom-AI-Companion-Settings-1.png",
+      "AltText": "AI Companion tab within the Settings section of the WSU Zoom web portal"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Travis-Williams-web-450-23.jpg",
+      "AltText": "Photo of Travis Williams Manager, VC Infrastructure and Support"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Henry-Brandon-web-450-23-update.jpg",
+      "AltText": "Photo of Brandon Henry\nVideoconferencing Specialist"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/09/Casey-Oleary-web-450-23-update.jpg",
+      "AltText": "Photo of Casey O\u2019Leary\nVideoconferencing Specialist"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 12,
+    "Critical": 0,
+    "Serious": 12,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 11,
+        "Critical": 0,
+        "Serious": 11,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:20:52 GMT",
+    "etag": "\u0022ca8752227874dd6f68e7a6a2c47a1569\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:20:52 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/7000\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=7000\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:20:52.5009389Z"
+}

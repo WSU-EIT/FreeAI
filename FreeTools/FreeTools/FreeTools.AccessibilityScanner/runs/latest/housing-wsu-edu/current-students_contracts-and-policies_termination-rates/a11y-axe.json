@@ -1,0 +1,74 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 310,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-children",
+      "CanonicalRuleId": "aria-required-children",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must contain particular children",
+      "Selector": "#mainNav",
+      "Snippet": "\u003Cul id=\u0022mainNav\u0022 class=\u0022dropdown menu\u0022 aria-label=\u0022Main Navigation\u0022 data-dropdown-menu=\u0022cj5w30-dropdown-menu\u0022 role=\u0022menubar\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-children?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022Prospective Students\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/prospective-students/\u0022 aria-label=\u0022Prospective Students\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EProspective Student...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022Current Students\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/current-students/\u0022 aria-label=\u0022Current Students\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003ECurrent Students\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022Residence Halls\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/residence-halls/\u0022 aria-label=\u0022Residence Halls\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EResidence Halls\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022Apartments\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/apartments/\u0022 aria-label=\u0022Apartments\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EApartments\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "aria-required-parent",
+      "CanonicalRuleId": "aria-required-parent",
+      "Severity": "critical",
+      "Message": "Certain ARIA roles must be contained by particular parents",
+      "Selector": "a[aria-label=\u0022About Us\u0022]",
+      "Snippet": "\u003Ca class=\u0022foundationMenuLink\u0022 href=\u0022/about-us/\u0022 aria-label=\u0022About Us\u0022 role=\u0022menuitem\u0022 aria-haspopup=\u0022true\u0022\u003EAbout Us\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-required-parent?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

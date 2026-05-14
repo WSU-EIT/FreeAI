@@ -1,0 +1,1055 @@
+{
+  "TotalViolations": 49,
+  "CriticalCount": 1,
+  "SeriousCount": 26,
+  "ModerateCount": 22,
+  "MinorCount": 0,
+  "AxeCount": 5,
+  "HtmlCheckCount": 6,
+  "HtmlCsCount": 0,
+  "IbmCount": 38,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "aria-allowed-attr",
+          "CanonicalRuleId": "aria-allowed-attr",
+          "Severity": "critical",
+          "Message": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\u0022true\u0022",
+          "Selector": "#wsu-navigation-vertical",
+          "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-slide-in-panel wsu-navigation-vertical wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none wsu-slide-in-panel--position-left wsu-slide-in-panel--width-vertical-nav wsu-slide-in-panel--style-crimson-mark\u0022 aria-expanded=\u0022true\u0022 aria-haspopup=\u0022true\u0022 aria-label=\u0022Site Navigation\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "color-contrast",
+          "CanonicalRuleId": "color-contrast",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Element has insufficient color contrast of 1.64 (foreground color: #a60f2d, background color: #333333, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1",
+          "Selector": "a[href=\u0022tel:5095535450\u0022]",
+          "Snippet": "\u003Ca href=\u0022tel:5095535450\u0022\u003E509-553-5450\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+          "WcagCriteria": "wcag2aa, wcag143",
+          "ContrastForeground": "#a60f2d",
+          "ContrastBackground": "#333333",
+          "ContrastRatio": 1.64,
+          "ContrastExpected": 4.5,
+          "ContrastFontSize": "13.5pt (18px)",
+          "ContrastFontWeight": "normal"
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "color-contrast",
+          "CanonicalRuleId": "color-contrast",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Element has insufficient color contrast of 1.64 (foreground color: #a60f2d, background color: #333333, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1",
+          "Selector": "a[href=\u0022mailto:future.coug@wsu.edu\u0022]",
+          "Snippet": "\u003Ca href=\u0022mailto:future.coug@wsu.edu\u0022\u003Efuture.coug@wsu.edu\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+          "WcagCriteria": "wcag2aa, wcag143",
+          "ContrastForeground": "#a60f2d",
+          "ContrastBackground": "#333333",
+          "ContrastRatio": 1.64,
+          "ContrastExpected": 4.5,
+          "ContrastFontSize": "13.5pt (18px)",
+          "ContrastFontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "label_name_visible",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[2]/div[3]/div[1]/div[2]/div[1]/article[1]/div[1]/span[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca class=\u0022wsu-button wsu-button--style-action\u0022 href=\u0022https://admission.wsu.edu/visit/campus-tours/#group-visit\u0022 aria-label=\u0022Request a Group Visit Tour\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[2]/div[3]/div[1]/div[2]/div[1]/article[1]/div[1]/span[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca class=\u0022wsu-button wsu-button--style-action\u0022 href=\u0022https://pullman.wsu.edu/the-college-tour/\u0022 aria-label=\u0022Get Self Guided Tour Information\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[4]/div[1]/div[1]/div[1]/div[1]/article[1]/div[1]/span[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca class=\u0022wsu-button wsu-button--style-action\u0022 href=\u0022https://admission.wsu.edu/visit/spring-break-sneak-peek/\u0022 aria-label=\u0022Get Self Guided Tour Information\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
+          "Severity": "serious",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[6]/div[1]/section[1]/div[1]/div[2]/div[1]/a[1]",
+          "Snippet": "\u003Ca class=\u0022wsu-button wsu-button--style-action\u0022 href=\u0022https://admission.wsu.edu/visit/travel/\u0022 aria-label=\u0022More about Traveling to Pullman\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_navigation_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_navigation_label_unique",
+          "CanonicalRuleId": "aria_navigation_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022navigation\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/nav[1]",
+          "Snippet": "\u003Cnav class=\u0022wsu-navigation-audience \u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_navigation_label_unique",
+          "CanonicalRuleId": "aria_navigation_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022navigation\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/nav[1]",
+          "Snippet": "\u003Cnav class=\u0022wsu-navigation\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_navigation_label_unique",
+          "CanonicalRuleId": "aria_navigation_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022navigation\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/footer[1]/nav[1]",
+          "Snippet": "\u003Cnav class=\u0022wsu-footer-global__navigation\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "frame-title",
+          "CanonicalRuleId": "frame-title",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Element has no title attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element\u0027s default semantics were not overridden with role=\u0022none\u0022 or role=\u0022presentation\u0022",
+          "Selector": ".wsu-column:nth-child(1) \u003E .wp-block-embed.is-type-video.is-provider-youtube \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+          "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/jWqiWEUERO8?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026amp;autohide=2\u0026amp;showsearch=0\u0026amp;showinfo=1\u0026amp;iv_load_policy=1\u0026amp;wmode=transparent\u0022 frameborder=\u00220\u0022 allowfullscreen=\u0022true\u0022\u003E\u003C/iframe\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "frame-title",
+          "CanonicalRuleId": "frame-title",
+          "Severity": "serious",
+          "Message": "Fix any of the following:\n  Element has no title attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element\u0027s default semantics were not overridden with role=\u0022none\u0022 or role=\u0022presentation\u0022",
+          "Selector": ".wsu-column:nth-child(2) \u003E .wp-block-embed.is-type-video.is-provider-youtube \u003E .wp-block-embed__wrapper \u003E .embed-youtube \u003E .youtube-player[type=\u0022text/html\u0022][width=\u0022640\u0022]",
+          "Snippet": "\u003Ciframe class=\u0022youtube-player\u0022 type=\u0022text/html\u0022 width=\u0022640\u0022 height=\u0022390\u0022 src=\u0022https://www.youtube.com/embed/wNAbU1_GgzE?version=3\u0026amp;rel=1\u0026amp;fs=1\u0026amp;autohide=2\u0026amp;showsearch=0\u0026amp;showinfo=1\u0026amp;iv_load_policy=1\u0026amp;wmode=transparent\u0022 frameborder=\u00220\u0022 allowfullscreen=\u0022true\u0022\u003E\u003C/iframe\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_single",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[2]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[3]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-unit \u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/header[2]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/header[3]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-unit \u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "frame_title_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "frame_title_exists",
+          "CanonicalRuleId": "frame_title_exists",
+          "Severity": "serious",
+          "Message": "Inline frame does not have a \u0027title\u0027 attribute",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[5]/div[1]/figure[1]/div[1]/div[1]/iframe[1]",
+          "Snippet": "\u003Ciframe allowfullscreen=\u0022true\u0022 frameborder=\u00220\u0022 src=\u0022https://www.youtube.com/embed/jWqiWEUERO8?version=3\u0026rel=1\u0026fs=1\u0026autohide=2\u0026showsearch=0\u0026showinfo=1\u0026iv_load_policy=1\u0026wmode=transparent\u0022 height=\u0022390\u0022 width=\u0022640\u0022 type=\u0022text/html\u0022 class=\u0022youtube-player\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "frame_title_exists",
+          "CanonicalRuleId": "frame_title_exists",
+          "Severity": "serious",
+          "Message": "Inline frame does not have a \u0027title\u0027 attribute",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[5]/div[2]/figure[1]/div[1]/div[1]/iframe[1]",
+          "Snippet": "\u003Ciframe allowfullscreen=\u0022true\u0022 frameborder=\u00220\u0022 src=\u0022https://www.youtube.com/embed/wNAbU1_GgzE?version=3\u0026rel=1\u0026fs=1\u0026autohide=2\u0026showsearch=0\u0026showinfo=1\u0026iv_load_policy=1\u0026wmode=transparent\u0022 height=\u0022390\u0022 width=\u0022640\u0022 type=\u0022text/html\u0022 class=\u0022youtube-player\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_contentinfo_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_contentinfo_label_unique",
+          "CanonicalRuleId": "aria_contentinfo_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]",
+          "Snippet": "\u003Cfooter class=\u0022wsu-footer-site wsu-footer-site--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_contentinfo_label_unique",
+          "CanonicalRuleId": "aria_contentinfo_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/footer[1]",
+          "Snippet": "\u003Cfooter class=\u0022wsu-footer-global\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "text_contrast_sufficient",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "text_contrast_sufficient",
+          "CanonicalRuleId": "text_contrast_sufficient",
+          "Severity": "serious",
+          "Message": "Text contrast of 1.64 with its background is less than the WCAG AA minimum requirements for text of size 18px and weight of 400",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/article[2]/div[1]/span[1]/p[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022tel:5095535450\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "text_contrast_sufficient",
+          "CanonicalRuleId": "text_contrast_sufficient",
+          "Severity": "serious",
+          "Message": "Text contrast of 1.64 with its background is less than the WCAG AA minimum requirements for text of size 18px and weight of 400",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/article[2]/div[1]/span[1]/p[1]/a[2]",
+          "Snippet": "\u003Ca href=\u0022mailto:future.coug@wsu.edu\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-empty",
+          "CanonicalRuleId": "link-name",
+          "Severity": "serious",
+          "Message": "Link has no text content",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://admission.wsu.edu?s=\u0022 class=\u0022wsu-button-ui-search\u0022 title=\u0022Search WSU\u0022\u003E\u003C/a\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "button-empty",
+          "CanonicalRuleId": "button-name",
+          "Severity": "serious",
+          "Message": "Button has no text content or accessible name",
+          "Selector": "",
+          "Snippet": "\u003Cbutton class=\u0022wsu-search__submit\u0022 aria-lable=\u0022Submit Search\u0022\u003E\u003C/button\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "figure_label_exists",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[2]/div[1]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[2]/div[2]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[2]/div[3]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-full wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[2]/div[4]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[2]/div[3]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[3]/div[1]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-full wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[3]/div[1]/div[1]/div[1]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[4]/div[1]/div[1]/div[2]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[4]/div[1]/div[1]/div[2]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-full wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/section[5]/div[1]/div[1]/div[2]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-image size-large wsu-position--relative wsu-zindex--level-3 wsu-image--style-framed\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[5]/div[1]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "figure_label_exists",
+          "CanonicalRuleId": "figure_label_exists",
+          "Severity": "moderate",
+          "Message": "The \u003Cfigure\u003E element does not have an associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[5]/div[2]/figure[1]",
+          "Snippet": "\u003Cfigure class=\u0022wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_landmark_name_unique",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/header[2]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/header[3]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-unit \u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]",
+          "Snippet": "\u003Cfooter class=\u0022wsu-footer-site wsu-footer-site--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
+          "Severity": "moderate",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/footer[1]",
+          "Snippet": "\u003Cfooter class=\u0022wsu-footer-global\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#menu-site-navigation\u0022 class=\u0022wsu-skip-to-main\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/ul[1]",
+          "Snippet": "\u003Cul class=\u0022wsu-menu-collapse wsu-menu-collapse--style-vertical\u0022 id=\u0022wsu-site-menu\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[2]/div[2]/div[2]/button[1]",
+          "Snippet": "\u003Cbutton type=\u0022button\u0022 style=\u0022background: #cccccc; font-weight: bold; margin-right: 0;\u0022 id=\u0022_pc_1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "label",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "label-missing",
+          "CanonicalRuleId": "label",
+          "Severity": "moderate",
+          "Message": "Form input may be missing a label",
+          "Selector": "",
+          "Snippet": "\u003Cinput class=\u0022wsu-search__input\u0022 type=\u0022text\u0022 aria-lable=\u0022Search input\u0022 placeholder=\u0022Search\u0022 name=\u0022s\u0022 style=\u0022\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_attribute_redundant",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_attribute_redundant",
+          "CanonicalRuleId": "aria_attribute_redundant",
+          "Severity": "moderate",
+          "Message": "The ARIA attribute \u0022aria-required\u0022 is redundant with the HTML attribute \u0022required\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/form[1]/div[1]/select[1]",
+          "Snippet": "\u003Cselect aria-required=\u0022true\u0022 required=\u0022required\u0022 name=\u0022form_campus\u0022 class=\u0022counselor-form-control\u0022 id=\u0022form_campus\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_child_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_child_valid",
+          "CanonicalRuleId": "aria_child_valid",
+          "Severity": "moderate",
+          "Message": "The element with role \u0022list\u0022 does not own any child element with any of the following role(s): \u0022listitem\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/ul[1]",
+          "Snippet": "\u003Cul class=\u0022wsu-social-icons\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 234,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[href$=\u0022estimated-tuition-fees/\u0022]",
+      "Snippet": "\u003Ca class=\u0022btn\u0022 href=\u0022/estimated-tuition-fees/\u0022\u003E\u003Ci class=\u0022fa fa-money\u0022\u003E\u003C/i\u003E\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

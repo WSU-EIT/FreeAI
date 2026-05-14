@@ -1,0 +1,25 @@
+{
+  "Subject": "CN=*.twilio.com",
+  "Issuer": "CN=Amazon RSA 2048 M01, O=Amazon, C=US",
+  "Thumbprint": "560DBB97A57AC6B32C06229E659276AAE4D8FF8F",
+  "SerialNumber": "055B28D1D67D17B8FF843073AEAC6329",
+  "NotBefore": "2026-02-12T16:00:00-08:00",
+  "NotAfter": "2027-03-13T15:59:59-08:00",
+  "DaysUntilExpiry": 387,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "*.twilio.com",
+    "*.twilio.jp",
+    "twilio.com",
+    "twilio.jp"
+  ],
+  "SanWsuDomains": [],
+  "SanOtherDomains": [
+    "*.twilio.com",
+    "*.twilio.jp",
+    "twilio.com",
+    "twilio.jp"
+  ],
+  "ErrorMessage": null
+}

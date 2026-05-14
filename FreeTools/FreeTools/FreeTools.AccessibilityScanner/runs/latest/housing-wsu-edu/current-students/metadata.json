@@ -1,0 +1,87 @@
+{
+  "PagePath": "/current-students/",
+  "Url": "https://housing.wsu.edu/current-students/",
+  "FinalUrl": null,
+  "Title": "Current Students",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 61445,
+  "ScreenshotSizeBytes": 166404,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 166404
+    }
+  ],
+  "ImageCount": 5,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1n4hcrys/6q6a5477.jpg",
+      "AltText": "Mail \u0026 Area Desks"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/je0fcmih/streit-perham-study-banner.jpg",
+      "AltText": "Technology Services"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3eqillg3/maintenance.jpg",
+      "AltText": "Maintenance Requests"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/z5yey0yq/honors-study-group-square.jpg",
+      "AltText": "Academic Breaks"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3dke0mlw/gsh-quiet-lounge.jpg",
+      "AltText": "Contracts \u0026 Policies"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:11:06 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:11:06.3072229Z"
+}

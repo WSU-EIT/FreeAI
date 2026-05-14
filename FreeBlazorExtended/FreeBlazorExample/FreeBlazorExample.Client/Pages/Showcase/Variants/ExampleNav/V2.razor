@@ -1,0 +1,24 @@
+@page "/showcase/examplenav/v2"
+@using FreeBlazorExtended.ExampleNav
+
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Parent/Child Pages With Custom Home</h1>
+    <p class="text-muted">This variant shows how the optional parent breadcrumb segment and custom home link metadata behave.</p>
+
+    <ExampleNav Pages="_pages"
+                CurrentRoute="/showcase/examplenav/v2"
+                HomeUrl="/showcase"
+                HomeLabel="Showcase"
+                HomeIcon="fa-solid fa-grid-2" />
+</div>
+
+@code {
+    private readonly List<ExampleNav.NavPage> _pages = new()
+    {
+        new() { Category = "Demo", Route = "/items", Title = "Items" },
+        new() { Category = "Demo", Route = "/items/cards", Title = "Cards", ParentTitle = "Items", ParentRoute = "/items" },
+        new() { Category = "Demo", Route = "/items/timeline", Title = "Timeline", ParentTitle = "Items", ParentRoute = "/items" },
+        new() { Category = "Demo", Route = "/search", Title = "Search" },
+        new() { Category = "Demo", Route = "/showcase/examplenav/v2", Title = "This Page", ParentTitle = "Showcase", ParentRoute = "/showcase" },
+    };
+}

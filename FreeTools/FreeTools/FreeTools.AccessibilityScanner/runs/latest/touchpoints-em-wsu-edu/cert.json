@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=touchpoints.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "362A6ED798C3785EDA00F8C01EE238925898105F",
+  "SerialNumber": "1001FC3D436A1A630373BE3A99710909",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "touchpoints.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "touchpoints.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

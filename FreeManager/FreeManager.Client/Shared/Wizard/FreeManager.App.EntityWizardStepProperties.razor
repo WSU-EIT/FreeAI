@@ -1,0 +1,718 @@
+﻿@* EntityWizardStepProperties.App.razor - Step 3: Define Properties *@
+@* Improved UX: Snippet panel, view toggle, improved layout *@
+
+<div class="row">
+    <div class="col-lg-7">
+        @* Property List *@
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="fa-solid fa-list-check me-1"></i>
+                    Properties (@Properties.Count)
+                </span>
+                <div class="d-flex gap-2">
+                    @* View Mode Toggle *@
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn @(_viewMode == "compact" ? "btn-secondary" : "btn-outline-secondary")" 
+                                @onclick="@(() => _viewMode = "compact")"
+                                title="Compact View">
+                            <i class="fa-solid fa-list"></i>
+                        </button>
+                        <button class="btn @(_viewMode == "expanded" ? "btn-secondary" : "btn-outline-secondary")" 
+                                @onclick="@(() => _viewMode = "expanded")"
+                                title="Expanded View">
+                            <i class="fa-solid fa-table-list"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-sm" @onclick="AddProperty">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Add Property
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;" class="text-center">
+                                    <i class="fa-solid fa-sort text-muted" title="Reorder"></i>
+                                </th>
+                                <th>Name</th>
+                                <th style="width: 120px;">Type</th>
+                                @if (_viewMode == "expanded") {
+                                    <th style="width: 80px;">MaxLen</th>
+                                    <th style="width: 100px;">Default</th>
+                                }
+                                <th style="width: 70px;" class="text-center">Req</th>
+                                <th style="width: 100px;" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Properties.Count == 0) {
+                                <tr>
+                                    <td colspan="@(_viewMode == "expanded" ? 7 : 5)" class="text-center text-muted py-4">
+                                        <i class="fa-solid fa-inbox fa-2x mb-2 d-block opacity-50"></i>
+                                        <div>No properties defined yet.</div>
+                                        <div class="mt-2">
+                                            <button class="btn btn-outline-primary btn-sm me-2" @onclick="AddProperty">
+                                                <i class="fa-solid fa-plus me-1"></i>
+                                                Add Property
+                                            </button>
+                                            <span class="text-muted">or use snippets →</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @{ var sortedProps = Properties.OrderBy(p => p.SortOrder).ThenBy(p => p.Name).ToList(); }
+                            @for (int i = 0; i < sortedProps.Count; i++) {
+                                var prop = sortedProps[i];
+                                var index = i;
+                                var isImported = _importedFieldIds.Contains(prop.Id);
+                                var canMoveUp = index > 0 && !prop.IsPrimaryKey && !sortedProps[index - 1].IsPrimaryKey;
+                                var canMoveDown = index < sortedProps.Count - 1 && !prop.IsPrimaryKey;
+                                <tr class="property-row @(prop.IsSystemField ? "table-secondary" : "") @(prop.IsPrimaryKey ? "table-warning" : "") @(isImported ? "imported-field" : "")">
+                                    <td class="text-center">
+                                        @if (!prop.IsPrimaryKey && !prop.IsSystemField) {
+                                            <div class="btn-group-vertical btn-group-sm reorder-buttons">
+                                                <button class="btn btn-sm btn-link p-0 @(canMoveUp ? "" : "invisible")" 
+                                                        @onclick="@(() => MovePropertyUp(prop))" title="Move up">
+                                                    <i class="fa-solid fa-chevron-up"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link p-0 @(canMoveDown ? "" : "invisible")" 
+                                                        @onclick="@(() => MovePropertyDown(prop))" title="Move down">
+                                                    <i class="fa-solid fa-chevron-down"></i>
+                                                </button>
+                                            </div>
+                                        } else if (prop.IsPrimaryKey) {
+                                            <i class="fa-solid fa-key text-warning" title="Primary Key"></i>
+                                        } else {
+                                            <i class="fa-solid fa-cog text-muted" title="System Field"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <strong>@prop.Name</strong>
+                                                @if (prop.IsRequired) {
+                                                    <span class="text-danger ms-1">*</span>
+                                                }
+                                                @if (_viewMode == "expanded" && !string.IsNullOrWhiteSpace(prop.Description)) {
+                                                    <br/><small class="text-muted">@prop.Description</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{ var typeInfo = DataObjects.PropertyTypes.Get(prop.Type.Replace("enum:", "")); }
+                                        @if (prop.Type.StartsWith("enum:")) {
+                                            <span class="badge bg-danger">
+                                                <i class="fa-solid fa-list me-1"></i>
+                                                @prop.EnumName
+                                            </span>
+                                        } else {
+                                            <span class="badge @(typeInfo?.TileColorClass ?? "bg-secondary")">
+                                                @GetTypeDisplay(prop)
+                                            </span>
+                                            @if (prop.MaxLength.HasValue) {
+                                                <span class="badge bg-light text-dark ms-1 maxlen-badge" 
+                                                      @onclick="@(() => EditMaxLengthInline(prop))" 
+                                                      @onclick:stopPropagation="true"
+                                                      title="Click to edit"
+                                                      style="cursor: pointer;">
+                                                    @prop.MaxLength
+                                                </span>
+                                            }
+                                        }
+                                    </td>
+                                    @if (_viewMode == "expanded") {
+                                        <td>
+                                            @if (_inlineEditingMaxLengthId == prop.Id) {
+                                                <input type="number" class="form-control form-control-sm" style="width: 70px;"
+                                                       value="@prop.MaxLength" 
+                                                       @onchange="@(e => SaveMaxLengthInline(prop, e))"
+                                                       @onblur="CancelInlineEdit" />
+                                            } else {
+                                                <span class="editable-value" @onclick="@(() => EditMaxLengthInline(prop))" 
+                                                      style="cursor: pointer;" title="Click to edit">
+                                                    @(prop.MaxLength?.ToString() ?? "-")
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="small">@if (prop.DefaultValue != null) { <strong>@prop.DefaultValue</strong> }</div>
+                                        </td>
+                                    }
+                                    <td class="text-center">
+                                        @if (!prop.IsPrimaryKey) {
+                                            <button class="btn btn-sm p-0 required-toggle @(prop.IsRequired ? "text-success" : "text-muted")"
+                                                    @onclick="@(() => ToggleRequired(prop))"
+                                                    title="@(prop.IsRequired ? "Required - click to make optional" : "Optional - click to make required")">
+                                                @if (prop.IsRequired) {
+                                                    <i class="fa-solid fa-check-circle"></i>
+                                                } else {
+                                                    <i class="fa-regular fa-circle"></i>
+                                                }
+                                            </button>
+                                        } else {
+                                            <i class="fa-solid fa-check text-success" title="Primary keys are always required"></i>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (!prop.IsPrimaryKey) {
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" 
+                                                        @onclick="() => EditProperty(prop)"
+                                                        title="Edit all properties">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" 
+                                                        @onclick="() => DuplicateProperty(prop)"
+                                                        title="Duplicate">
+                                                    <i class="fa-solid fa-copy"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" 
+                                                        @onclick="() => DeleteProperty(prop)"
+                                                        title="Delete">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @* Enums Section *@
+        @if (Enums.Count > 0) {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fa-solid fa-list me-1"></i>
+                        Defined Enums (@Enums.Count)
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary" @onclick="AddEnum">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Add Enum
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            @foreach (var enumDef in Enums) {
+                                <tr>
+                                    <td>
+                                        <strong>@enumDef.Name</strong>
+                                    </td>
+                                    <td>
+                                        <code class="small">@string.Join(", ", enumDef.Values)</code>
+                                    </td>
+                                    <td style="width: 80px;">
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" 
+                                                    @onclick="() => EditEnum(enumDef)">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" 
+                                                    @onclick="() => DeleteEnum(enumDef)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* ============================================================ *@
+    @* RIGHT SIDEBAR: Snippets + Summary *@
+    @* ============================================================ *@
+    <div class="col-lg-5">
+        @* Snippets Panel *@
+        <div class="card mb-3 border-primary">
+            <div class="card-header bg-primary text-white">
+                <i class="fa-solid fa-puzzle-piece me-1"></i>
+                Quick Add Snippets
+            </div>
+            <div class="card-body p-2">
+                <div class="snippets-grid">
+                    @foreach (var snippet in DataObjects.PropertySnippets.All) {
+                        <div class="snippet-card" @onclick="() => InsertSnippet(snippet)">
+                            <div class="snippet-icon">
+                                <i class="fa-solid @snippet.Icon"></i>
+                            </div>
+                            <div class="snippet-info">
+                                <div class="snippet-name">@snippet.Name</div>
+                                <div class="snippet-desc">@snippet.Description</div>
+                            </div>
+                            <div class="snippet-action">
+                                <i class="fa-solid fa-plus-circle text-primary"></i>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Summary Panel *@
+        <div class="card bg-light mb-3">
+            <div class="card-header">
+                <i class="fa-solid fa-chart-pie text-info me-1"></i>
+                Schema Summary
+            </div>
+            <div class="card-body py-2">
+                <div class="row small">
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-list-check text-primary me-1"></i>
+                        <strong>@Properties.Count</strong> properties
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-asterisk text-danger me-1"></i>
+                        <strong>@Properties.Count(p => p.IsRequired)</strong> required
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-font text-success me-1"></i>
+                        <strong>@Properties.Count(p => p.Type == "string")</strong> strings
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-list text-danger me-1"></i>
+                        <strong>@Enums.Count</strong> enums
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-cog text-muted me-1"></i>
+                        <strong>@Properties.Count(p => p.IsSystemField)</strong> system
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="fa-solid fa-filter text-info me-1"></i>
+                        <strong>@Properties.Count(p => p.IsFilterable)</strong> filterable
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Live Code Preview *@
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="fa-solid fa-code text-info me-1"></i>
+                    Live Preview
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                        @onclick="() => _showPreview = !_showPreview">
+                    <i class="fa-solid @(_showPreview ? "fa-chevron-up" : "fa-chevron-down")"></i>
+                </button>
+            </div>
+            @if (_showPreview) {
+                <div class="card-body p-0">
+                    <FreeManager_App_EntityWizardLivePreview EntityName="@EntityName"
+                                                  PluralName="@(EntityName + "s")"
+                                                  PrimaryKeyName="@(EntityName + "Id")"
+                                                  PrimaryKeyType="@PrimaryKeyType"
+                                                  Properties="Properties"
+                                                  Enums="Enums" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* Property Editor Modal *@
+<FreeManager_App_EntityWizardPropertyEditor IsOpen="_showPropertyModal"
+                                 IsOpenChanged="OnPropertyModalChanged"
+                                 Property="_editingProperty"
+                                 PropertyChanged="OnPropertyChanged"
+                                 Enums="Enums"
+                                 OnSave="SaveProperty"
+                                 OnAddEnum="AddEnumFromProperty" />
+
+@* Enum Editor Modal *@
+<FreeManager_App_EntityWizardEnumEditor IsOpen="_showEnumModal"
+                             IsOpenChanged="OnEnumModalChanged"
+                             EnumDef="_editingEnum"
+                             EnumDefChanged="OnEnumDefChanged"
+                             OnSave="SaveEnum" />
+
+<style>
+    .snippets-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .snippet-card {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        background: white;
+    }
+    
+    .snippet-card:hover {
+        border-color: #0d6efd;
+        background: #f0f7ff;
+        transform: translateX(4px);
+    }
+    
+    .snippet-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e9ecef;
+        border-radius: 0.375rem;
+        margin-right: 0.75rem;
+        color: #495057;
+    }
+    
+    .snippet-card:hover .snippet-icon {
+        background: #0d6efd;
+        color: white;
+    }
+    
+    .snippet-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .snippet-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .snippet-desc {
+        font-size: 0.75rem;
+        color: #6c757d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .snippet-action {
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    
+    .snippet-card:hover .snippet-action {
+        opacity: 1;
+    }
+
+    @@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    
+    .imported-field {
+        animation: fadeIn 0.3s ease-out;
+        background-color: #e3f2fd;
+    }
+
+    .imported-field:hover {
+        animation: fadeOut 0.3s ease-in;
+        background-color: #bbdefb;
+    }
+    
+    /* Inline editing styles */
+    .property-row .reorder-buttons {
+        opacity: 0.3;
+        transition: opacity 0.15s;
+    }
+    .property-row:hover .reorder-buttons {
+        opacity: 1;
+    }
+    .required-toggle {
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .required-toggle:hover {
+        transform: scale(1.2);
+    }
+    .editable-value {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: background 0.15s;
+    }
+    .editable-value:hover {
+        background: #e9ecef;
+    }
+    .maxlen-badge {
+        transition: all 0.15s;
+    }
+    .maxlen-badge:hover {
+        background: #0d6efd !important;
+        color: white !important;
+    }
+</style>
+
+@code {
+    [Parameter] public List<DataObjects.PropertyDefinition> Properties { get; set; } = new();
+    [Parameter] public EventCallback<List<DataObjects.PropertyDefinition>> PropertiesChanged { get; set; }
+
+    [Parameter] public List<DataObjects.EnumDefinition> Enums { get; set; } = new();
+    [Parameter] public EventCallback<List<DataObjects.EnumDefinition>> EnumsChanged { get; set; }
+
+    [Parameter] public string EntityName { get; set; } = "";
+    [Parameter] public string PrimaryKeyType { get; set; } = "Guid";
+
+    private bool _showPropertyModal = false;
+    private bool _showEnumModal = false;
+    private bool _showPreview = false;
+    private DataObjects.PropertyDefinition _editingProperty = new();
+    private DataObjects.EnumDefinition _editingEnum = new();
+    private string _viewMode = "compact";
+
+    private List<Guid> _importedFieldIds = new();
+
+    // Modal handlers
+    private void OnPropertyModalChanged(bool value) => _showPropertyModal = value;
+    private void OnPropertyChanged(DataObjects.PropertyDefinition value) => _editingProperty = value;
+    private void OnEnumModalChanged(bool value) => _showEnumModal = value;
+    private void OnEnumDefChanged(DataObjects.EnumDefinition value) => _editingEnum = value;
+
+    private string GetTypeDisplay(DataObjects.PropertyDefinition prop) {
+        var type = prop.Type;
+        if (prop.IsNullable && !type.EndsWith("?")) {
+            type += "?";
+        }
+        return type;
+    }
+
+    // ============================================================
+    // SNIPPET INSERT
+    // ============================================================
+
+    private async Task InsertSnippet(DataObjects.PropertySnippet snippet) {
+        int addedCount = 0;
+        foreach (var propDef in snippet.Properties) {
+            if (!Properties.Any(p => p.Name == propDef.Name)) {
+                Properties.Add(new DataObjects.PropertyDefinition {
+                    Id = Guid.NewGuid(),
+                    Name = propDef.Name,
+                    Type = propDef.Type,
+                    IsRequired = propDef.IsRequired,
+                    IsNullable = propDef.IsNullable,
+                    DefaultValue = propDef.DefaultValue,
+                    MaxLength = propDef.MaxLength,
+                    IsSystemField = propDef.IsSystemField,
+                    Description = propDef.Description,
+                    IsFilterable = propDef.IsFilterable,
+                    SortOrder = Properties.Count
+                });
+                addedCount++;
+            }
+        }
+        if (addedCount > 0) {
+            await PropertiesChanged.InvokeAsync(Properties);
+        }
+    }
+
+    // ============================================================
+    // PROPERTY CRUD
+    // ============================================================
+
+    private void AddProperty() {
+        _editingProperty = new DataObjects.PropertyDefinition {
+            SortOrder = Properties.Count,
+            IsFilterable = true
+        };
+        _showPropertyModal = true;
+    }
+
+    private void EditProperty(DataObjects.PropertyDefinition prop) {
+        _editingProperty = new DataObjects.PropertyDefinition {
+            Id = prop.Id,
+            Name = prop.Name,
+            Type = prop.Type,
+            IsRequired = prop.IsRequired,
+            IsNullable = prop.IsNullable,
+            DefaultValue = prop.DefaultValue,
+            MaxLength = prop.MaxLength,
+            EnumName = prop.EnumName,
+            SortOrder = prop.SortOrder,
+            IsPrimaryKey = prop.IsPrimaryKey,
+            IsSystemField = prop.IsSystemField,
+            Description = prop.Description,
+            IsFilterable = prop.IsFilterable,
+            FilterType = prop.FilterType
+        };
+        _showPropertyModal = true;
+    }
+
+    private async Task SaveProperty(DataObjects.PropertyDefinition prop) {
+        var existing = Properties.FirstOrDefault(p => p.Id == prop.Id);
+        if (existing != null) {
+            // Update existing
+            var index = Properties.IndexOf(existing);
+            Properties[index] = prop;
+        } else {
+            // Add new
+            Properties.Add(prop);
+        }
+        await PropertiesChanged.InvokeAsync(Properties);
+        _showPropertyModal = false;
+    }
+
+    private async Task DeleteProperty(DataObjects.PropertyDefinition prop) {
+        Properties.Remove(prop);
+        await PropertiesChanged.InvokeAsync(Properties);
+    }
+
+    private async Task DuplicateProperty(DataObjects.PropertyDefinition prop) {
+        var newProp = new DataObjects.PropertyDefinition {
+            Id = Guid.NewGuid(),
+            Name = prop.Name + " Copy",
+            Type = prop.Type,
+            IsRequired = prop.IsRequired,
+            IsNullable = prop.IsNullable,
+            DefaultValue = prop.DefaultValue,
+            MaxLength = prop.MaxLength,
+            IsSystemField = prop.IsSystemField,
+            Description = prop.Description,
+            IsFilterable = prop.IsFilterable,
+            SortOrder = Properties.Count
+        };
+        Properties.Add(newProp);
+        await PropertiesChanged.InvokeAsync(Properties);
+    }
+
+    // ============================================================
+    // ENUM CRUD
+    // ============================================================
+
+    private void AddEnum() {
+        _editingEnum = new DataObjects.EnumDefinition();
+        _showEnumModal = true;
+    }
+
+    private void AddEnumFromProperty(string enumName) {
+        _editingEnum = new DataObjects.EnumDefinition { Name = enumName };
+        _showEnumModal = true;
+    }
+
+    private void EditEnum(DataObjects.EnumDefinition enumDef) {
+        _editingEnum = new DataObjects.EnumDefinition {
+            Id = enumDef.Id,
+            Name = enumDef.Name,
+            Values = new List<string>(enumDef.Values),
+            DefaultValue = enumDef.DefaultValue
+        };
+        _showEnumModal = true;
+    }
+
+    private async Task SaveEnum(DataObjects.EnumDefinition enumDef) {
+        var existing = Enums.FirstOrDefault(e => e.Id == enumDef.Id);
+        if (existing != null) {
+            var index = Enums.IndexOf(existing);
+            Enums[index] = enumDef;
+        } else {
+            Enums.Add(enumDef);
+        }
+        await EnumsChanged.InvokeAsync(Enums);
+        _showEnumModal = false;
+    }
+
+    private async Task DeleteEnum(DataObjects.EnumDefinition enumDef) {
+        Enums.Remove(enumDef);
+        // Also remove any properties using this enum
+        var propsToRemove = Properties.Where(p => p.EnumName == enumDef.Name).ToList();
+        foreach (var prop in propsToRemove) {
+            Properties.Remove(prop);
+        }
+        await EnumsChanged.InvokeAsync(Enums);
+        await PropertiesChanged.InvokeAsync(Properties);
+    }
+
+    // ============================================================
+    // INLINE EDITING (UX Polish)
+    // ============================================================
+
+    private Guid? _inlineEditingMaxLengthId = null;
+
+    private async Task ToggleRequired(DataObjects.PropertyDefinition prop) {
+        prop.IsRequired = !prop.IsRequired;
+        prop.IsNullable = !prop.IsRequired;
+        await PropertiesChanged.InvokeAsync(Properties);
+    }
+
+    private void EditMaxLengthInline(DataObjects.PropertyDefinition prop) {
+        if (prop.Type == "string") {
+            _inlineEditingMaxLengthId = prop.Id;
+        }
+    }
+
+    private async Task SaveMaxLengthInline(DataObjects.PropertyDefinition prop, ChangeEventArgs e) {
+        if (int.TryParse(e.Value?.ToString(), out int maxLen) && maxLen > 0) {
+            prop.MaxLength = maxLen;
+        } else {
+            prop.MaxLength = null;
+        }
+        _inlineEditingMaxLengthId = null;
+        await PropertiesChanged.InvokeAsync(Properties);
+    }
+
+    private void CancelInlineEdit() {
+        _inlineEditingMaxLengthId = null;
+    }
+
+    // ============================================================
+    // REORDER
+    // ============================================================
+
+    private async Task MovePropertyUp(DataObjects.PropertyDefinition prop) {
+        var sortedProps = Properties.OrderBy(p => p.SortOrder).ToList();
+        var index = sortedProps.IndexOf(prop);
+        if (index > 0) {
+            // Swap sort orders with the previous property
+            var prevProp = sortedProps[index - 1];
+            if (!prevProp.IsPrimaryKey) {
+                var tempOrder = prop.SortOrder;
+                prop.SortOrder = prevProp.SortOrder;
+                prevProp.SortOrder = tempOrder;
+                await PropertiesChanged.InvokeAsync(Properties);
+            }
+        }
+    }
+
+    private async Task MovePropertyDown(DataObjects.PropertyDefinition prop) {
+        var sortedProps = Properties.OrderBy(p => p.SortOrder).ToList();
+        var index = sortedProps.IndexOf(prop);
+        if (index < sortedProps.Count - 1) {
+            // Swap sort orders with the next property
+            var nextProp = sortedProps[index + 1];
+            var tempOrder = prop.SortOrder;
+            prop.SortOrder = nextProp.SortOrder;
+            nextProp.SortOrder = tempOrder;
+            await PropertiesChanged.InvokeAsync(Properties);
+        }
+    }
+
+    // ============================================================
+    // IMPORT SUPPORT
+    // ============================================================
+
+    /// <summary>
+    /// Mark fields as imported (called by parent after import).
+    /// </summary>
+    public void MarkFieldsAsImported(IEnumerable<Guid> fieldIds) {
+        _importedFieldIds = fieldIds.ToList();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Clear import highlighting.
+    /// </summary>
+    public void ClearImportHighlighting() {
+        _importedFieldIds.Clear();
+        StateHasChanged();
+    }
+}

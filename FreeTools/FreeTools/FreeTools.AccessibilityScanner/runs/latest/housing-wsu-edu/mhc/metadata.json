@@ -1,0 +1,87 @@
+{
+  "PagePath": "/mhc",
+  "Url": "https://housing.wsu.edu/mhc",
+  "FinalUrl": "https://login.wsu.edu/app/template_wsfed/sso/wsfed/passive?wa=wsignin1.0\u0026wtrealm=urn%3aokta%3aapp%3aexk3uqo2robkgUYi92p7\u0026wctx=rm%3d0%26id%3dpassive%26ru%3d%252fsso%252fssologin.aspx%253flogonurl%253dhttps%253a%252f%252fhousing.wsu.edu%252fmhc\u0026wct=2026-02-19T02%3a13%3a06Z",
+  "Title": "WSU | Sign In",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 142069,
+  "ScreenshotSizeBytes": 50063,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 9,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 50063
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://ok6static2.oktacdn.com/fs/bco/1/fs015xh0tygNgGVxX2p8",
+      "AltText": "WSU logo"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 1,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "accept-ch": "Sec-CH-UA-Platform-Version",
+    "cache-control": "no-cache, no-store",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-security-policy": "frame-ancestors \u0027self\u0027",
+    "content-security-policy-report-only": "default-src \u0027self\u0027 wsu.okta.com login.wsu.edu *.oktacdn.com; connect-src \u0027self\u0027 wsu.okta.com wsu-admin.okta.com login.wsu.edu *.oktacdn.com *.mixpanel.com *.mapbox.com wsu.kerberos.okta.com wsu.mtls.okta.com *.authenticatorlocalprod.com:8769 http://localhost:8769 http://127.0.0.1:8769 *.authenticatorlocalprod.com:65111 http://localhost:65111 http://127.0.0.1:65111 *.authenticatorlocalprod.com:65121 http://localhost:65121 http://127.0.0.1:65121 *.authenticatorlocalprod.com:65131 http://localhost:65131 http://127.0.0.1:65131 *.authenticatorlocalprod.com:65141 http://localhost:65141 http://127.0.0.1:65141 *.authenticatorlocalprod.com:65151 http://localhost:65151 http://127.0.0.1:65151 https://oinmanager.okta.com data: *.ingest.sentry.io; script-src \u0027unsafe-inline\u0027 \u0027unsafe-eval\u0027 \u0027self\u0027 \u0027report-sample\u0027 wsu.okta.com login.wsu.edu *.oktacdn.com; style-src \u0027unsafe-inline\u0027 \u0027self\u0027 \u0027report-sample\u0027 wsu.okta.com login.wsu.edu *.oktacdn.com; frame-src \u0027self\u0027 wsu.okta.com wsu-admin.okta.com login.wsu.edu login.okta.com *.vidyard.com com-okta-authenticator:; img-src \u0027self\u0027 wsu.okta.com login.wsu.edu *.oktacdn.com *.tiles.mapbox.com *.mapbox.com *.vidyard.com data: blob:; font-src \u0027self\u0027 wsu.okta.com login.wsu.edu data: *.oktacdn.com fonts.gstatic.com; frame-ancestors \u0027self\u0027",
+    "content-type": "text/html;charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:13:06 GMT",
+    "expires": "0",
+    "p3p": "CP=\u0022HONK\u0022",
+    "pragma": "no-cache",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "server": "nginx",
+    "strict-transport-security": "max-age=315360000; includeSubDomains",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "x-okta-request-id": "aZZxsnQjIsHjQTC7x8moYAADHUE",
+    "x-rate-limit-limit": "60",
+    "x-rate-limit-remaining": "59",
+    "x-rate-limit-reset": "1771467246",
+    "x-robots-tag": "noindex,nofollow",
+    "x-ua-compatible": "IE=edge",
+    "x-xss-protection": "0"
+  },
+  "CapturedAt": "2026-02-19T02:13:06.008698Z"
+}

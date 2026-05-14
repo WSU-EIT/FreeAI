@@ -1,0 +1,62 @@
+{
+  "PagePath": "/add-a-pdf/",
+  "Url": "https://gocougs.em.wsu.edu/add-a-pdf/",
+  "FinalUrl": null,
+  "Title": "Add a pdf | gocougs.em.wsu.edu",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 664198,
+  "ScreenshotSizeBytes": 103574,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 103574
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/759306/dsc_3512.jpg?rmode=max\u0026width=500",
+      "AltText": "four military affiliated students with flags"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:09.6786991Z"
+}

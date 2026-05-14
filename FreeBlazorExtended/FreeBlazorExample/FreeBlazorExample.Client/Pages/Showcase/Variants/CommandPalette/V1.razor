@@ -1,0 +1,20 @@
+@page "/showcase/commandpalette/v1"
+@using FreeBlazorExtended.CommandPalette
+
+<div class="container-fluid py-4">
+    <h1>Default Command Palette</h1>
+    <p class="text-muted">Press Ctrl+K to open the palette and filter this small command list.</p>
+
+    <CommandPalette Commands="_commands" />
+</div>
+
+@code {
+    private readonly List<CommandPalette.CommandItem> _commands = new()
+    {
+        new() { Id = "new-file", Label = "New File" },
+        new() { Id = "open-file", Label = "Open File" },
+        new() { Id = "save", Label = "Save" },
+        new() { Id = "close-tab", Label = "Close Tab" },
+        new() { Id = "toggle-sidebar", Label = "Toggle Sidebar" },
+    };
+}

@@ -1,0 +1,85 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 2,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "tabindex-positive",
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Message": "tabindex=\u00221\u0022 disrupts natural tab order",
+      "Selector": null,
+      "Snippet": "tabindex=\u00221\u0022",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.3"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable class=\u0022relative-table wrapped confluenceTable\u0022 style=\u0022width: 65.053764%;\u0022\u003E\u003Ccolgroup class=\u0022\u0022\u003E\u003Ccol class=\u0022\u0022 style=\u0022width: 24.5342%;\u0022\u003E\u003Ccol class=...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable class=\u0022relative-table wrapped confluenceTable\u0022 style=\u0022text-align: center;width: 55.10753%;\u0022\u003E\u003Ccolgroup\u003E\u003Ccol style=\u0022width: 49.918697%;\u0022\u003E\u003Ccol styl...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

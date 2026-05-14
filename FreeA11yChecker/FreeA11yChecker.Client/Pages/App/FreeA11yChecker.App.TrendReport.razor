@@ -1,0 +1,650 @@
+﻿@page "/Reports/Trends"
+@page "/{TenantCode}/Reports/Trends"
+@implements IDisposable
+@using Blazored.LocalStorage
+@using Humanizer
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="TrendReport" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="TrendReport" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+        </div>
+
+        <FreeA11yChecker_App_AboutSection Title="About Scan Trends">
+            <p>Historical scan results across all sites. Each row shows the last @_maxHistory scans as colored heartbeat
+            indicators. Click any row to drill into individual scan runs, page results, and specific violations.</p>
+        </FreeA11yChecker_App_AboutSection>
+
+        @* ══════════════════════════════════════════════════════════════
+           SECTION 1 — Overall Summary Badges
+           ══════════════════════════════════════════════════════════════ *@
+        @if (_sites.Any()) {
+            int totalScans = _allHistory.Values.Sum(x => x.Count);
+            int totalViolations = _allHistory.Values.SelectMany(x => x).Sum(x => x.TotalViolations);
+            int totalCritical = _allHistory.Values.SelectMany(x => x).Sum(x => x.CriticalCount);
+            var latestRuns = _allHistory.Values.SelectMany(x => x).OrderByDescending(x => x.StartedAt).ToList();
+            DateTime? lastRun = latestRuns.FirstOrDefault()?.StartedAt;
+
+            <div class="row mb-3">
+                <div class="col-auto">
+                    <span class="badge bg-dark fs-6">@_sites.Count Sites</span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-secondary fs-6">@totalScans Scan Runs</span>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-warning text-dark fs-6">@totalViolations Total Violations</span>
+                </div>
+                @if (totalCritical > 0) {
+                    <div class="col-auto">
+                        <span class="badge bg-danger fs-6">@totalCritical Critical</span>
+                    </div>
+                }
+                @if (lastRun.HasValue) {
+                    <div class="col-auto text-muted align-self-center">
+                        Last scan: @lastRun.Value.Humanize()
+                    </div>
+                }
+            </div>
+        }
+
+        @* ══════════════════════════════════════════════════════════════
+           SECTION 2 — Per-Site Heartbeat Rows (Uptime-Kuma style)
+           ══════════════════════════════════════════════════════════════ *@
+        @if (_sites.Any()) {
+            <div class="row mb-2 g-2">
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter violations by severity" @bind="_severityFilter" @bind:after="StateHasChanged">
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="serious">Serious</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="minor">Minor</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter violations by tool" @bind="_toolFilter" @bind:after="StateHasChanged">
+                        <option value="all">All Tools</option>
+                        <option value="axe">axe-core</option>
+                        <option value="htmlcheck">htmlcheck</option>
+                        <option value="htmlcs">htmlcs</option>
+                        <option value="ibm">ibm</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" aria-label="Filter violations by WCAG level" @bind="_wcagLevelFilter" @bind:after="StateHasChanged">
+                        <option value="all">All WCAG Levels</option>
+                        <option value="a">Level A only</option>
+                        <option value="aa">Level AA (A + AA)</option>
+                        <option value="aaa">Level AAA (A + AA + AAA)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    @foreach (var site in _sites.OrderBy(x => x.Name)) {
+                        List<DataObjects.ScanRun> history = _allHistory.ContainsKey(site.SiteId)
+                            ? _allHistory[site.SiteId]
+                            : new List<DataObjects.ScanRun>();
+
+                        bool isExpanded = _expandedSites.Contains(site.SiteId);
+                        string chevron = isExpanded ? "fa-chevron-down" : "fa-chevron-right";
+                        string borderClass = GetSiteBorderClass(history);
+
+                        <div @key="site.SiteId" class="border-bottom trend-site-row">
+                            @* ── Site Header Row (clickable) ── *@
+                            <div class="d-flex align-items-center px-3 py-2 @borderClass" style="cursor:pointer;"
+                                 @onclick="() => ToggleSite(site.SiteId)">
+                                <div class="me-2">
+                                    <i class="fas @chevron text-muted"></i>
+                                </div>
+                                <div class="me-3" style="min-width:200px;">
+                                    <a href="@Helpers.BuildUrl($"Settings/SiteRuns/{site.SiteId}")" @onclick:stopPropagation="true">
+                                        <strong class="text-truncate d-block" title="@site.Name" style="max-width:200px;">@site.Name</strong>
+                                    </a>
+                                    <small class="text-muted">@site.BaseUrl</small>
+                                </div>
+
+                                @* ── Heartbeat Bar ── *@
+                                <div class="d-flex align-items-center flex-grow-1 mx-2" style="gap:2px; min-width:0;">
+                                    @if (history.Any()) {
+                                        @foreach (var run in history.OrderBy(x => x.StartedAt)) {
+                                            string dotColor = GetHeartbeatColor(run);
+                                            string dotTitle = run.StartedAt.ToString("yyyy-MM-dd HH:mm") + " — "
+                                                + run.TotalViolations + " violations"
+                                                + (run.CriticalCount > 0 ? " (" + run.CriticalCount + " critical)" : "")
+                                                + " — " + run.Status;
+                                            <div @key="run.ScanRunId" style="width:8px; height:28px; border-radius:3px; flex-shrink:0;"
+                                                 class="@dotColor heartbeat-dot" title="@dotTitle"></div>
+                                        }
+                                    } else {
+                                        <span class="text-muted small"><em>No scans yet</em></span>
+                                    }
+                                </div>
+
+                                @* ── Latest Stats ── *@
+                                <div class="ms-2 text-end text-nowrap" style="min-width:180px;">
+                                    @if (history.Any()) {
+                                        var latest = history.OrderByDescending(x => x.StartedAt).First();
+                                        <span class="badge bg-dark me-1">@latest.TotalViolations</span>
+                                        @if (latest.CriticalCount > 0) {
+                                            <span class="badge bg-danger me-1">@latest.CriticalCount</span>
+                                        }
+                                        @if (latest.SeriousCount > 0) {
+                                            <span class="badge bg-warning text-dark me-1">@latest.SeriousCount</span>
+                                        }
+                                        <small class="text-muted">@latest.StartedAt.Humanize()</small>
+                                    }
+                                </div>
+                            </div>
+
+                            @* ══════════════════════════════════════════════════════════
+                               ACCORDION LEVEL 1 — Scan Runs for this Site
+                               ══════════════════════════════════════════════════════════ *@
+                            @if (isExpanded) {
+                                <div class="bg-light px-3 py-2">
+                                    @* ── Chart for selected site ── *@
+                                    @if (history.Count >= 2) {
+                                        string chartId = "trend-chart-" + site.SiteId.ToString("N");
+                                        var ordered = history.OrderBy(x => x.StartedAt).ToList();
+                                        string[] cats = ordered.Select(r => r.StartedAt.ToString("MM/dd")).ToArray();
+                                        var chartData = new Highcharts.SeriesDataArray[] {
+                                            new Highcharts.SeriesDataArray { name = "Critical", data = ordered.Select(r => (decimal)r.CriticalCount).ToArray() },
+                                            new Highcharts.SeriesDataArray { name = "Serious", data = ordered.Select(r => (decimal)r.SeriousCount).ToArray() },
+                                            new Highcharts.SeriesDataArray { name = "Moderate", data = ordered.Select(r => (decimal)r.ModerateCount).ToArray() },
+                                            new Highcharts.SeriesDataArray { name = "Minor", data = ordered.Select(r => (decimal)r.MinorCount).ToArray() },
+                                        };
+                                        var firstRun = ordered.First();
+                                        var lastRun2 = ordered.Last();
+                                        decimal pct = firstRun.TotalViolations > 0
+                                            ? ((decimal)(lastRun2.TotalViolations - firstRun.TotalViolations) / firstRun.TotalViolations) * 100
+                                            : 0;
+
+                                        <div class="mb-3">
+                                            <Highcharts ChartType="Highcharts.ChartTypes.Column"
+                                                        ChartTitle="Violations Over Time"
+                                                        ChartSubtitle="@site.Name"
+                                                        ElementId="@chartId"
+                                                        yAxisText="Violations"
+                                                        SeriesCategories="@cats"
+                                                        SeriesDataArrayItems="@chartData" />
+                                            <div id="@chartId" style="min-height:300px;"></div>
+                                        </div>
+
+                                        @* ── Improvement/Regression badge ── *@
+                                        <div class="mb-2">
+                                            @if (pct < 0) {
+                                                <span class="badge bg-success fs-6">Improvement: @pct.ToString("F0")% since first scan</span>
+                                            } else if (pct > 0) {
+                                                <span class="badge bg-danger fs-6">Regression: +@pct.ToString("F0")% since first scan</span>
+                                            } else {
+                                                <span class="badge bg-secondary fs-6">No change</span>
+                                            }
+                                        </div>
+                                    }
+
+                                    @if (!history.Any()) {
+                                        <p class="text-muted mb-0 ms-4">No scan history available.</p>
+                                    } else {
+                                        int runNumber = history.Count;
+                                        @foreach (var run in history.OrderByDescending(x => x.StartedAt)) {
+                                            bool runExpanded = _expandedRuns.Contains(run.ScanRunId);
+                                            string runChevron = runExpanded ? "fa-chevron-down" : "fa-chevron-right";
+                                            string runBorder = GetRunBorderClass(run);
+
+                                            <div @key="run.ScanRunId" class="card mb-1 @runBorder">
+                                                <div class="card-header py-1 px-3 d-flex align-items-center flex-wrap" style="cursor:pointer;"
+                                                     @onclick="() => ToggleRun(run.ScanRunId)">
+                                                    <i class="fas @runChevron text-muted me-2 small"></i>
+                                                    <a href="@Helpers.BuildUrl($"Scans/{run.ScanRunId}")" @onclick:stopPropagation="true">
+                                                        <strong class="me-2">#@runNumber</strong>
+                                                        <span class="me-2">@run.StartedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                                                    </a>
+                                                    @((MarkupString)GetRunStatusBadge(run.Status))
+                                                    <span class="badge bg-dark ms-2">@run.TotalViolations violations</span>
+                                                    @if (run.CriticalCount > 0) {
+                                                        <span class="badge bg-danger ms-1">@run.CriticalCount critical</span>
+                                                    }
+                                                    @if (run.SeriousCount > 0) {
+                                                        <span class="badge bg-warning text-dark ms-1">@run.SeriousCount serious</span>
+                                                    }
+                                                    @if (run.ModerateCount > 0) {
+                                                        <span class="badge bg-info text-dark ms-1">@run.ModerateCount moderate</span>
+                                                    }
+                                                    @if (run.MinorCount > 0) {
+                                                        <span class="badge bg-secondary ms-1">@run.MinorCount minor</span>
+                                                    }
+                                                    @if (run.CompletedAt.HasValue) {
+                                                        var duration = run.CompletedAt.Value - run.StartedAt;
+                                                        <span class="text-muted ms-2 small"><i class="fas fa-stopwatch me-1"></i>@duration.Humanize()</span>
+                                                    }
+                                                    <span class="text-muted ms-2 small">@run.PagesScanned pages</span>
+                                                    @if (!String.IsNullOrWhiteSpace(run.TriggeredBy)) {
+                                                        <span class="text-muted ms-auto small"><i class="fas fa-user me-1"></i>@run.TriggeredBy</span>
+                                                    } else {
+                                                        <span class="text-muted ms-auto small"><i class="fas fa-clock me-1"></i>Scheduled</span>
+                                                    }
+                                                </div>
+
+                                                @* ══════════════════════════════════════════════════════
+                                                   ACCORDION LEVEL 2 — Page Results for this Scan Run
+                                                   ══════════════════════════════════════════════════════ *@
+                                                @if (runExpanded) {
+                                                    <div class="card-body p-0">
+                                                        @if (_loadingPages.Contains(run.ScanRunId)) {
+                                                            <div class="p-3"><LoadingMessage /></div>
+                                                        } else if (_pageResults.ContainsKey(run.ScanRunId)) {
+                                                            var pages = _pageResults[run.ScanRunId];
+                                                            @if (pages.Any()) {
+                                                                <table class="table table-sm table-hover mb-0">
+                                                                    <thead>
+                                                                        <tr class="table-secondary">
+                                                                            <th style="width:30px;"></th>
+                                                                            <th>Page</th>
+                                                                            <th class="center" style="width:60px;">Status</th>
+                                                                            <th class="center" style="width:60px;">axe</th>
+                                                                            <th class="center" style="width:60px;">htmlcheck</th>
+                                                                            <th class="center" style="width:60px;">htmlcs+ibm</th>
+                                                                            <th class="center" style="width:70px;">Total</th>
+                                                                            <th class="center" style="width:110px;">Severity</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var pr in pages.OrderByDescending(x => x.TotalViolations)) {
+                                                                            bool pageExpanded = _expandedPages.Contains(pr.PageScanResultId);
+                                                                            string pageChevron = pageExpanded ? "fa-chevron-down" : "fa-chevron-right";
+
+                                                                            <tr @key="pr.PageScanResultId" style="cursor:pointer;" @onclick="() => TogglePage(pr.PageScanResultId)">
+                                                                                <td class="center"><i class="fas @pageChevron text-muted small"></i></td>
+                                                                                <td>
+                                                                                    <a href="@Helpers.BuildUrl($"Pages/{pr.PageScanResultId}")" @onclick:stopPropagation="true">
+                                                                                        @(String.IsNullOrWhiteSpace(pr.PageTitle) ? pr.Url : pr.PageTitle)
+                                                                                    </a>
+                                                                                    <br /><small class="text-muted">@pr.Url</small>
+                                                                                </td>
+                                                                                <td class="center">@pr.StatusCode</td>
+                                                                                <td class="center">@pr.AxeViolationCount</td>
+                                                                                <td class="center">@pr.HtmlCheckViolationCount</td>
+                                                                                <td class="center">@pr.OverlayViolationCount</td>
+                                                                                <td class="center fw-bold">@pr.TotalViolations</td>
+                                                                                <td class="center">
+                                                                                    @if (pr.CriticalCount > 0) {
+                                                                                        <span class="badge bg-danger">@pr.CriticalCount</span>
+                                                                                    }
+                                                                                    @if (pr.SeriousCount > 0) {
+                                                                                        <span class="badge bg-warning text-dark">@pr.SeriousCount</span>
+                                                                                    }
+                                                                                    @if (pr.ModerateCount > 0) {
+                                                                                        <span class="badge bg-info text-dark">@pr.ModerateCount</span>
+                                                                                    }
+                                                                                    @if (pr.MinorCount > 0) {
+                                                                                        <span class="badge bg-secondary">@pr.MinorCount</span>
+                                                                                    }
+                                                                                </td>
+                                                                            </tr>
+
+                                                                            @* ══════════════════════════════════════════════
+                                                                               ACCORDION LEVEL 3 — Violations for this Page
+                                                                               ══════════════════════════════════════════════ *@
+                                                                            @if (pageExpanded) {
+                                                                                <tr>
+                                                                                    <td colspan="8" class="p-0">
+                                                                                        @if (_loadingViolations.Contains(pr.PageScanResultId)) {
+                                                                                            <div class="p-3"><LoadingMessage /></div>
+                                                                                        } else if (_violations.ContainsKey(pr.PageScanResultId)) {
+                                                                                            var violations = _violations[pr.PageScanResultId];
+                                                                                            var filteredViols = violations.Where(v =>
+                                                                                                (_wcagLevelFilter == "all" || WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevelFilter)) &&
+                                                                                                (_severityFilter == "all" || v.Severity.ToLower() == _severityFilter) &&
+                                                                                                (_toolFilter == "all" || v.Tool.ToLower() == _toolFilter)
+                                                                                            ).ToList();
+                                                                                            @if (filteredViols.Any()) {
+                                                                                                <div style="max-height:400px; overflow-y:auto;">
+                                                                                                    <table class="table table-sm table-striped mb-0 ms-4" style="width:calc(100% - 2rem);">
+                                                                                                        <thead>
+                                                                                                            <tr class="table-dark">
+                                                                                                                <th style="width:80px;">Severity</th>
+                                                                                                                <th style="width:80px;">Tool</th>
+                                                                                                                <th style="width:120px;">Rule</th>
+                                                                                                                <th>Message</th>
+                                                                                                                <th style="width:100px;">WCAG</th>
+                                                                                                                <th style="width:40px;">Help</th>
+                                                                                                            </tr>
+                                                                                                        </thead>
+                                                                                                        <tbody>
+                                                                                                            @foreach (var v in filteredViols.OrderBy(x => GetSeveritySort(x.Severity)).ThenBy(x => x.Tool)) {
+                                                                                                                <tr @key="v.A11yViolationId">
+                                                                                                                    <td>@((MarkupString)GetSeverityBadge(v.Severity))</td>
+                                                                                                                    <td><small>@v.Tool</small></td>
+                                                                                                                    <td><small class="text-break">@(v.CanonicalRuleId ?? v.RuleId)</small></td>
+                                                                                                                    <td>
+                                                                                                                        <small>@v.Message</small>
+                                                                                                                        @if (!String.IsNullOrWhiteSpace(v.Selector)) {
+                                                                                                                            <br /><code class="small text-muted">@v.Selector</code>
+                                                                                                                        }
+                                                                                                                        @if (!String.IsNullOrWhiteSpace(v.HtmlSnippet)) {
+                                                                                                                            <br /><code class="small text-muted" style="max-width:400px; display:inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@v.HtmlSnippet</code>
+                                                                                                                        }
+                                                                                                                    </td>
+                                                                                                                    <td><small>@v.WcagCriteria</small></td>
+                                                                                                                    <td>
+                                                                                                                        @if (!String.IsNullOrWhiteSpace(v.HelpUrl)) {
+                                                                                                                            <a href="@v.HelpUrl" target="_blank" rel="noopener" title="Help">
+                                                                                                                                <i class="fas fa-external-link-alt"></i>
+                                                                                                                            </a>
+                                                                                                                        }
+                                                                                                                    </td>
+                                                                                                                </tr>
+                                                                                                            }
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </div>
+                                                                                            } else {
+                                                                                                <div class="p-3 text-muted"><em>No violations recorded for this page.</em></div>
+                                                                                            }
+                                                                                        } else {
+                                                                                            <div class="p-3 text-muted"><em>Click to load violations...</em></div>
+                                                                                        }
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            } else {
+                                                                <div class="p-3 text-muted"><em>No page results for this scan run.</em></div>
+                                                            }
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                            runNumber--;
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        } else {
+            <div class="text-center text-muted mt-4">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>No sites configured. Add sites under <strong>Settings &gt; Sites</strong> and run scans to see historical trends.</p>
+            </div>
+        }
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _validatedUrl = false;
+    private string _pageName = "trendreport";
+    private int _maxHistory = 30;
+
+    private List<DataObjects.Site> _sites = new();
+    private Dictionary<Guid, List<DataObjects.ScanRun>> _allHistory = new();
+
+    // Accordion state
+    private HashSet<Guid> _expandedSites = new();
+    private HashSet<Guid> _expandedRuns = new();
+    private HashSet<Guid> _expandedPages = new();
+
+    // Lazy-loaded drill-down data
+    private Dictionary<Guid, List<DataObjects.PageScanResult>> _pageResults = new();
+    private Dictionary<Guid, List<DataObjects.A11yViolation>> _violations = new();
+    private HashSet<Guid> _loadingPages = new();
+    private HashSet<Guid> _loadingViolations = new();
+
+    // Violation filters
+    private string _wcagLevelFilter = "aa";
+    private string _severityFilter = "all";
+    private string _toolFilter = "all";
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        // Load sites
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+        if (sites != null) {
+            _sites = sites.Where(x => !x.Deleted).ToList();
+        }
+
+        // Load all scan history in one batch call
+        var history = await Helpers.GetOrPost<Dictionary<Guid, List<DataObjects.ScanRun>>>(
+            "api/Data/GetAllSiteScanHistory",
+            new { CountPerSite = _maxHistory });
+        if (history != null) {
+            _allHistory = history;
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    // ── Accordion Toggles ──────────────────────────────────────────
+
+    private void ToggleSite(Guid siteId)
+    {
+        if (_expandedSites.Contains(siteId)) {
+            _expandedSites.Remove(siteId);
+        } else {
+            _expandedSites.Add(siteId);
+        }
+    }
+
+    private async Task ToggleRun(Guid scanRunId)
+    {
+        if (_expandedRuns.Contains(scanRunId)) {
+            _expandedRuns.Remove(scanRunId);
+        } else {
+            _expandedRuns.Add(scanRunId);
+
+            // Lazy-load page results if not already loaded
+            if (!_pageResults.ContainsKey(scanRunId) && !_loadingPages.Contains(scanRunId)) {
+                _loadingPages.Add(scanRunId);
+                StateHasChanged();
+
+                var pages = await Helpers.GetOrPost<List<DataObjects.PageScanResult>>(
+                    "api/Data/GetPageScanResults",
+                    new { Ids = new List<Guid>(), ScanRunId = scanRunId });
+
+                _loadingPages.Remove(scanRunId);
+
+                if (pages != null) {
+                    _pageResults[scanRunId] = pages;
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task TogglePage(Guid pageScanResultId)
+    {
+        if (_expandedPages.Contains(pageScanResultId)) {
+            _expandedPages.Remove(pageScanResultId);
+        } else {
+            _expandedPages.Add(pageScanResultId);
+
+            // Lazy-load violations if not already loaded
+            if (!_violations.ContainsKey(pageScanResultId) && !_loadingViolations.Contains(pageScanResultId)) {
+                _loadingViolations.Add(pageScanResultId);
+                StateHasChanged();
+
+                var viols = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>(
+                    "api/Data/GetViolations",
+                    new { Ids = new List<Guid>(), PageScanResultId = pageScanResultId });
+
+                _loadingViolations.Remove(pageScanResultId);
+
+                if (viols != null) {
+                    _violations[pageScanResultId] = viols;
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
+
+    // ── Visual Helpers ─────────────────────────────────────────────
+
+    private string GetHeartbeatColor(DataObjects.ScanRun run)
+    {
+        if (run.Status == "Failed") return "bg-secondary";
+        if (run.CriticalCount > 0) return "bg-danger";
+        if (run.SeriousCount > 0) return "bg-warning";
+        if (run.TotalViolations > 0) return "bg-info";
+        return "bg-success";
+    }
+
+    private string GetSiteBorderClass(List<DataObjects.ScanRun> history)
+    {
+        if (!history.Any()) return "";
+        var latest = history.OrderByDescending(x => x.StartedAt).First();
+        if (latest.Status == "Failed") return "border-start border-secondary border-3";
+        if (latest.CriticalCount > 0) return "border-start border-danger border-3";
+        if (latest.TotalViolations > 0) return "border-start border-warning border-3";
+        return "border-start border-success border-3";
+    }
+
+    private string GetRunBorderClass(DataObjects.ScanRun run)
+    {
+        return run.Status switch {
+            "Complete" or "Completed" when run.CriticalCount > 0 => "border-start border-danger border-3",
+            "Complete" or "Completed" when run.TotalViolations > 0 => "border-start border-warning border-3",
+            "Complete" or "Completed" => "border-start border-success border-3",
+            "Failed" => "border-start border-secondary border-3",
+            _ => "",
+        };
+    }
+
+    private string GetRunStatusBadge(string? status)
+    {
+        return status switch {
+            "Complete" or "Completed" => "<span class=\"badge bg-success\">Complete</span>",
+            "Running" => "<span class=\"badge bg-primary\">Running</span>",
+            "Queued" => "<span class=\"badge bg-info text-dark\">Queued</span>",
+            "Failed" => "<span class=\"badge bg-danger\">Failed</span>",
+            _ => "<span class=\"badge bg-secondary\">" + (status ?? "Unknown") + "</span>",
+        };
+    }
+
+    private string GetSeverityBadge(string severity)
+    {
+        return severity.ToLower() switch {
+            "critical" => "<span class=\"badge bg-danger\">Critical</span>",
+            "serious" => "<span class=\"badge bg-warning text-dark\">Serious</span>",
+            "moderate" => "<span class=\"badge bg-info text-dark\">Moderate</span>",
+            "minor" => "<span class=\"badge bg-secondary\">Minor</span>",
+            _ => "<span class=\"badge bg-secondary\">" + severity + "</span>",
+        };
+    }
+
+    private int GetSeveritySort(string severity)
+    {
+        return severity.ToLower() switch {
+            "critical" => 0,
+            "serious" => 1,
+            "moderate" => 2,
+            "minor" => 3,
+            _ => 4,
+        };
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName) { return; }
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+            update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (scanRun == null) { return; }
+
+                // Update just the affected site's summary and history.
+                var site = _sites.FirstOrDefault(s => s.SiteId == scanRun.SiteId);
+                if (site != null) {
+                    site.LastScanAt = scanRun.StartedAt;
+                    site.LastScanStatus = scanRun.Status;
+                    site.LastViolationCount = scanRun.TotalViolations;
+                    site.LastCriticalCount = scanRun.CriticalCount;
+                    site.LastScanRunId = scanRun.ScanRunId;
+                }
+
+                // Prepend the completed run to this site's history.
+                if (_allHistory.ContainsKey(scanRun.SiteId)) {
+                    _allHistory[scanRun.SiteId].Insert(0, scanRun);
+                    if (_allHistory[scanRun.SiteId].Count > _maxHistory) {
+                        _allHistory[scanRun.SiteId].RemoveAt(_allHistory[scanRun.SiteId].Count - 1);
+                    }
+                } else {
+                    _allHistory[scanRun.SiteId] = new List<DataObjects.ScanRun> { scanRun };
+                }
+
+                InvokeAsync(StateHasChanged);
+            } catch { }
+        }
+    }
+}

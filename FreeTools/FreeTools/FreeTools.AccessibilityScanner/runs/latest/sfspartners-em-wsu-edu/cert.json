@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=sfspartners.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "3806537B84180FA8AD725999F678D435853FB7B2",
+  "SerialNumber": "253D29593C3166B5628C0D26C2713EBC",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "sfspartners.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "sfspartners.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

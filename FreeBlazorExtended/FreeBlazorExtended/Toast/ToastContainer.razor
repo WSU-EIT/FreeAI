@@ -1,0 +1,169 @@
+﻿@*
+    ToastContainer — Renders all active toasts from NotificationService as stacked Bootstrap 5 toasts.
+
+    Place this component once in MainLayout.razor — it wires itself to the NotificationService
+    automatically and requires no per-page configuration. Toasts appear and disappear in response
+    to ShowSuccess / ShowError / ShowInfo / ShowWarning calls on the injected service.
+
+    Required host setup:
+        1. Register in DI: builder.Services.AddScoped<NotificationService>();
+        2. Add to MainLayout.razor: <ToastContainer />
+        3. Inject and use: @inject NotificationService Notifications
+                          Notifications.ShowSuccess("Saved!");
+
+    Optional parameters:
+        Position        — screen corner where toasts stack (ToastPosition enum, default BottomEnd)
+        ShowDismissButton — shows the × close button on each toast (default true)
+        ShowTimestamp   — shows HH:mm:ss in the header (default false)
+        ShowProgressBar — shows a draining progress bar on auto-dismiss toasts (default true)
+*@
+@namespace FreeBlazorExtended.Toast
+@using FreeBlazorExtended.Foundation.Services
+@inject NotificationService Notifications
+@implements IDisposable
+
+<div class="toast-container position-fixed @_positionClass p-3" style="z-index: 1090;" aria-live="polite" aria-atomic="false">
+    @foreach (var toast in _toasts) {
+        <div class="toast show @_animationClass" role="@(toast.Type == NotificationType.Error ? "alert" : "status")"
+             aria-live="@(toast.Type == NotificationType.Error ? "assertive" : "polite")"
+             aria-atomic="true"
+             data-toast-id="@toast.Id">
+            <div class="toast-header @GetHeaderClass(toast.Type)">
+                <i class="@GetIconClass(toast.Type) me-2" aria-hidden="true"></i>
+                <strong class="me-auto">@(string.IsNullOrWhiteSpace(toast.Title) ? GetDefaultTitle(toast.Type) : toast.Title)</strong>
+                @if (ShowTimestamp) {
+                    <small class="text-body-secondary">@toast.CreatedAt.ToLocalTime().ToString("HH:mm:ss")</small>
+                }
+                @if (ShowDismissButton) {
+                    <button type="button" class="btn-close @GetBtnCloseClass(toast.Type)"
+                            @onclick="() => Notifications.Remove(toast.Id)"
+                            aria-label="Close"></button>
+                }
+            </div>
+            <div class="toast-body">
+                @toast.Message
+            </div>
+            @if (toast.DurationMs > 0 && ShowProgressBar) {
+                <div class="toast-progress" style="--duration: @(toast.DurationMs)ms;"></div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .toast-progress {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.5);
+        animation: toast-progress-drain var(--duration, 5000ms) linear forwards;
+        border-radius: 0 0 0.375rem 0.375rem;
+    }
+
+    @@keyframes toast-progress-drain {
+        from { width: 100%; }
+        to   { width: 0%; }
+    }
+
+    .toast.toast-fade-in {
+        animation: toast-slide-in 0.2s ease-out;
+    }
+
+    @@keyframes toast-slide-in {
+        from { opacity: 0; transform: translateY(0.5rem); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+@code {
+    /// <summary>
+    /// Screen corner where toasts stack. Uses the <see cref="ToastPosition"/> enum.
+    /// Default: <see cref="ToastPosition.BottomEnd"/> (bottom-right).
+    /// Common choices: <c>TopEnd</c> (top-right), <c>BottomCenter</c> (centred bottom).
+    /// </summary>
+    [Parameter] public ToastPosition Position { get; set; } = ToastPosition.BottomEnd;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders an × close button on every toast so the user
+    /// can dismiss it before it auto-expires. Set to <c>false</c> for info-only toasts
+    /// that should not be manually dismissible.
+    /// </summary>
+    [Parameter] public bool ShowDismissButton { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, displays an <c>HH:mm:ss</c> timestamp in the toast header.
+    /// Useful in high-frequency notification scenarios so the user can tell when each
+    /// event occurred. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ShowTimestamp { get; set; } = false;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a thin draining progress bar at the bottom
+    /// of each auto-dismiss toast to give the user a visual cue of remaining time.
+    /// Only visible on toasts where <c>DurationMs &gt; 0</c>.
+    /// </summary>
+    [Parameter] public bool ShowProgressBar { get; set; } = true;
+
+    private List<NotificationMessage> _toasts = new();
+    private string _animationClass => "toast-fade-in";
+
+    private string _positionClass => Position switch {
+        ToastPosition.TopStart    => "top-0 start-0",
+        ToastPosition.TopCenter   => "top-0 start-50 translate-middle-x",
+        ToastPosition.TopEnd      => "top-0 end-0",
+        ToastPosition.MiddleStart => "top-50 start-0 translate-middle-y",
+        ToastPosition.MiddleEnd   => "top-50 end-0 translate-middle-y",
+        ToastPosition.BottomStart => "bottom-0 start-0",
+        ToastPosition.BottomCenter=> "bottom-0 start-50 translate-middle-x",
+        _                         => "bottom-0 end-0",  // BottomEnd default
+    };
+
+    protected override void OnInitialized()
+    {
+        _toasts = Notifications.GetAll();
+        Notifications.OnNotificationAdded   += HandleAdded;
+        Notifications.OnNotificationRemoved += HandleRemoved;
+    }
+
+    private void HandleAdded(NotificationMessage msg)
+    {
+        _toasts.Add(msg);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleRemoved(string id)
+    {
+        _toasts.RemoveAll(t => t.Id == id);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private static string GetHeaderClass(NotificationType type) => type switch {
+        NotificationType.Success => "text-bg-success",
+        NotificationType.Error   => "text-bg-danger",
+        NotificationType.Warning => "text-bg-warning",
+        _                        => "text-bg-primary",
+    };
+
+    private static string GetBtnCloseClass(NotificationType type) => type switch {
+        NotificationType.Warning => "",         // dark close button on yellow
+        _                        => "btn-close-white",
+    };
+
+    private static string GetIconClass(NotificationType type) => type switch {
+        NotificationType.Success => "fas fa-check-circle",
+        NotificationType.Error   => "fas fa-exclamation-circle",
+        NotificationType.Warning => "fas fa-triangle-exclamation",
+        _                        => "fas fa-circle-info",
+    };
+
+    private static string GetDefaultTitle(NotificationType type) => type switch {
+        NotificationType.Success => "Success",
+        NotificationType.Error   => "Error",
+        NotificationType.Warning => "Warning",
+        _                        => "Info",
+    };
+
+    public void Dispose()
+    {
+        Notifications.OnNotificationAdded   -= HandleAdded;
+        Notifications.OnNotificationRemoved -= HandleRemoved;
+    }
+}

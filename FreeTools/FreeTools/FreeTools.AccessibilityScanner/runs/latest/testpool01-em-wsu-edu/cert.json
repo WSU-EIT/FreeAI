@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=testpool01.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "27D2E8F43CA80E8D1BA241A40A34B98BBC8A322F",
+  "SerialNumber": "00ACF3BACF336F531DC1D872F6A2176C55",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "testpool01.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "testpool01.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

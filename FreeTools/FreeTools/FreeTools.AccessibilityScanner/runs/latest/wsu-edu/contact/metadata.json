@@ -1,0 +1,94 @@
+{
+  "PagePath": "/contact/",
+  "Url": "https://wsu.edu/contact/",
+  "FinalUrl": "https://search.wsu.edu/employees/",
+  "Title": "Employee Directory | Search | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 213861,
+  "ScreenshotSizeBytes": 210988,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 210988
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/Michael-Neff-and-Lee-Gilliam-on-Ask-This-Old-House-set-1024x676.jpg",
+      "AltText": "Michael Neff talking with \u0022Ask This Old House\u0022 co-host Lee Gilliam during filming at a grass seed field in Washington."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2024/09/generic-system-logo-gray-angled-lines-1024x676.jpg",
+      "AltText": "Washington State University logo."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/smartphone-and-ar-menu-displaying-food-1024x676.jpg",
+      "AltText": "A smartphone app displays food at a restaurant."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/assisting-dead-car-battery-with-jumper-cables-1024x676.jpg",
+      "AltText": "A man reaching towards a car battery with jumper cables as a woman thanks him."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2026/02/USA-map-with-Coug-logo-and-WA-state-1024x676.jpg",
+      "AltText": "A map of the United States of America made up of interconnected lines and large, glowing points. The state of Washington is filled with a solid background and a WSU Cougars logo in the upper left corner of the map."
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2024/09/generic-system-logo-crimson-song-lyrics-1024x676.jpg",
+      "AltText": "Washington State University logo."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 3,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "access-control-allow-origin": "*",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:10:31 GMT",
+    "etag": "\u00228f00f4d9d09561e83e99644eea07c57b\u0022",
+    "last-modified": "Thu, 19 Feb 2026 01:52:47 GMT",
+    "link": "\u003Chttps://search.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://search.wsu.edu/wp-json/wp/v2/pages/13\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://search.wsu.edu/?p=13\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-cache": "EXPIRED",
+    "x-cache-status": "EXPIRED"
+  },
+  "CapturedAt": "2026-02-19T02:10:31.5514957Z"
+}

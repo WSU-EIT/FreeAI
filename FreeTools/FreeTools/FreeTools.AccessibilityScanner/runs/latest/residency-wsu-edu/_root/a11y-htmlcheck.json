@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable border=\u00220\u0022 id=\u0022res-cal\u0022\u003E\n\u003Ctbody\u003E\n\u003Ctr\u003E\n\u003Ctd class=\u0022term\u0022\u003ESpring 2026\u003C/td\u003E\n\u003Ctd class=\u0022term\u0022\u003EFall 2026\u003C/td\u003E\n\u003C/tr\u003E\n\u003Ctr\u003E\n\u003Ctd class=\u0022dates\u0022\u003E\n\u003Cp\u003ETradit...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

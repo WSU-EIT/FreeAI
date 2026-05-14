@@ -1,0 +1,32 @@
+@page "/showcase/selectfile/v1"
+@using FreeBlazorExtended.SelectFile
+
+<div class="container-fluid py-4">
+    <h1>SelectFile - Default</h1>
+
+    <SelectFile Files="_files" OnFileSelected="HandleSelected" />
+
+    <div class="mt-3 text-muted">Selected: @(_selectedFileName ?? "(none)")</div>
+</div>
+
+@code {
+    private readonly List<FileItem> _files = BuildFiles();
+    private string? _selectedFileName;
+
+    private Task HandleSelected(FileItem file)
+    {
+        _selectedFileName = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private static List<FileItem> BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "sunrise.png", Extension = ".png", Bytes = 800, RemoteImageUrl = "https://picsum.photos/seed/sf1/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "forest.jpg", Extension = ".jpg", Bytes = 524288, RemoteImageUrl = "https://picsum.photos/seed/sf2/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2345678, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "proposal.docx", Extension = ".docx", Bytes = 87400, ThumbnailIcon = "fa-solid fa-file-word" },
+        };
+    }
+}

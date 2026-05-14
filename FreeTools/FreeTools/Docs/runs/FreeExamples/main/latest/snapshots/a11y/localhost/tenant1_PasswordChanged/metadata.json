@@ -1,0 +1,161 @@
+{
+  "PagePath": "/tenant1/PasswordChanged",
+  "Url": "https://localhost:7271/tenant1/PasswordChanged",
+  "FinalUrl": null,
+  "Title": "FreeExamples",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 72862,
+  "ScreenshotSizeBytes": 634268,
+  "CredentialUsed": "admin",
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 9,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 16376
+    },
+    {
+      "FileName": "02-auth-form-detected.jpg",
+      "Label": "auth-form-detected",
+      "StepNumber": 2,
+      "FileSize": 16376
+    },
+    {
+      "FileName": "03-auth-form-filled.jpg",
+      "Label": "auth-form-filled",
+      "StepNumber": 3,
+      "FileSize": 17245
+    },
+    {
+      "FileName": "04-auth-result.jpg",
+      "Label": "auth-result",
+      "StepNumber": 4,
+      "FileSize": 6157
+    },
+    {
+      "FileName": "05-axe-overlay.jpg",
+      "Label": "axe-overlay",
+      "StepNumber": 5,
+      "FileSize": 13846
+    },
+    {
+      "FileName": "06-wave-overlay.jpg",
+      "Label": "wave-overlay",
+      "StepNumber": 6,
+      "FileSize": 45547
+    },
+    {
+      "FileName": "07-htmlcs-overlay.jpg",
+      "Label": "htmlcs-overlay",
+      "StepNumber": 7,
+      "FileSize": 73022
+    },
+    {
+      "FileName": "08-ibm-a11y-overlay.jpg",
+      "Label": "ibm-a11y-overlay",
+      "StepNumber": 8,
+      "FileSize": 42610
+    },
+    {
+      "FileName": "09-structure-overlay.jpg",
+      "Label": "structure-overlay",
+      "StepNumber": 9,
+      "FileSize": 81449
+    },
+    {
+      "FileName": "10-cvd-protanopia.jpg",
+      "Label": "cvd-protanopia",
+      "StepNumber": 10,
+      "FileSize": 32275
+    },
+    {
+      "FileName": "11-cvd-deuteranopia.jpg",
+      "Label": "cvd-deuteranopia",
+      "StepNumber": 11,
+      "FileSize": 33070
+    },
+    {
+      "FileName": "12-cvd-tritanopia.jpg",
+      "Label": "cvd-tritanopia",
+      "StepNumber": 12,
+      "FileSize": 32525
+    },
+    {
+      "FileName": "13-cvd-achromatopsia.jpg",
+      "Label": "cvd-achromatopsia",
+      "StepNumber": 13,
+      "FileSize": 32074
+    },
+    {
+      "FileName": "14-cvd-protanomaly.jpg",
+      "Label": "cvd-protanomaly",
+      "StepNumber": 14,
+      "FileSize": 32590
+    },
+    {
+      "FileName": "15-cvd-deuteranomaly.jpg",
+      "Label": "cvd-deuteranomaly",
+      "StepNumber": 15,
+      "FileSize": 32966
+    },
+    {
+      "FileName": "16-cvd-tritanomaly.jpg",
+      "Label": "cvd-tritanomaly",
+      "StepNumber": 16,
+      "FileSize": 32469
+    },
+    {
+      "FileName": "17-screenreader-view.jpg",
+      "Label": "screenreader-view",
+      "StepNumber": 17,
+      "FileSize": 93671
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 10,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "blazor-enhanced-nav": "allow",
+    "cache-control": "no-cache, no-store",
+    "content-security-policy": "frame-ancestors \u0027self\u0027 login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 04 Mar 2026 20:54:57 GMT",
+    "pragma": "no-cache",
+    "server": "Kestrel"
+  },
+  "CapturedAt": "2026-03-04T20:54:58.2237617Z"
+}

@@ -1,0 +1,74 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 281,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-hidden-focus",
+      "CanonicalRuleId": "aria-hidden-focus",
+      "Severity": "serious",
+      "Message": "ARIA hidden element must not be focusable or contain focusable elements",
+      "Selector": "#hidden_skip_to_content",
+      "Snippet": "\u003Cbutton aria-hidden=\u0022true\u0022 id=\u0022hidden_skip_to_content\u0022 type=\u0022button\u0022\u003ESKIP NAVIGATION\u003C/button\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-hidden-focus?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".left \u003E a:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022https://policies.google.com/privacy\u0022\u003E Privacy Policy\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": "a:nth-child(2)",
+      "Snippet": "\u003Ca href=\u0022https://policies.google.com/terms\u0022\u003E Terms of Service\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": ".left \u003E a:nth-child(1)",
+      "Snippet": "\u003Ca href=\u0022https://policies.google.com/privacy\u0022\u003E Privacy Policy\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "a:nth-child(2)",
+      "Snippet": "\u003Ca href=\u0022https://policies.google.com/terms\u0022\u003E Terms of Service\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "meta-viewport",
+      "CanonicalRuleId": "meta-viewport",
+      "Severity": "critical",
+      "Message": "Zooming and scaling must not be disabled",
+      "Selector": "meta[name=\u0022viewport\u0022]",
+      "Snippet": "\u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1, maximum-scale=1\u0022\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/meta-viewport?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    }
+  ]
+}

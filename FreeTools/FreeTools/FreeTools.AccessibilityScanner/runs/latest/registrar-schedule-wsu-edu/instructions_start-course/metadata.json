@@ -1,0 +1,70 @@
+{
+  "PagePath": "/instructions/start-course/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/start-course/",
+  "FinalUrl": null,
+  "Title": "Start a New Course | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 689729,
+  "ScreenshotSizeBytes": 269072,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 269072
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/s0iggv5c/startclasssection.png?rmode=max\u0026width=500",
+      "AltText": "Start class section in MSC"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/0thialnh/schedulenewcoursesearch.png?rmode=max\u0026width=500",
+      "AltText": "Schedule new Course search"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/5j4n2rxh/schedulenewcourse.png?rmode=max\u0026width=500",
+      "AltText": "Start a new course"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 2,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:29:46.2923788Z"
+}

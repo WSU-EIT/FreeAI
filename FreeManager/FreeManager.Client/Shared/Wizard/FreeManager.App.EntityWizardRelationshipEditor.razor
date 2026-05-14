@@ -1,0 +1,766 @@
+﻿@* EntityWizardRelationshipEditor.App.razor - Define relationships between entities *@
+@* Supports One-to-Many, Many-to-Many, Self-Reference, One-to-One *@
+@* W-016: Enhanced M:M UX with visual diagrams and plain English *@
+
+<div class="relationship-editor">
+    @* Header *@
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <span class="text-muted">
+                @if (Relationships.Count == 0)
+                {
+                    <span>No relationships defined. Add relationships to link your entities together.</span>
+                }
+                else
+                {
+                    <span>@Relationships.Count @(Relationships.Count == 1 ? "relationship" : "relationships") defined</span>
+                }
+            </span>
+        </div>
+        <button class="btn btn-primary" @onclick="@(() => _showAddModal = true)" disabled="@(Entities.Count < 2 && !HasSelfReferenceCandidate())">
+            <i class="fa-solid fa-plus me-1"></i>
+            Add Relationship
+        </button>
+    </div>
+
+    @if (Entities.Count < 2 && !HasSelfReferenceCandidate())
+    {
+        <div class="alert alert-warning">
+            <i class="fa-solid fa-info-circle me-2"></i>
+            You need at least 2 entities to create relationships. Go back to add more entities.
+        </div>
+    }
+
+    @* Relationship Cards *@
+    @if (Relationships.Any())
+    {
+        <div class="row g-3">
+            @foreach (var rel in Relationships.OrderBy(r => r.SortOrder))
+            {
+                var relCopy = rel;
+                <div class="col-md-6">
+                    <div class="card relationship-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge @GetRelationshipTypeBadge(rel.Type) me-2">@GetRelationshipTypeLabel(rel.Type)</span>
+                                <strong>@rel.Name</strong>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" @onclick="@(() => EditRelationship(relCopy))" title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" @onclick="@(() => DeleteRelationship(relCopy))" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @* Visual Relationship Diagram *@
+                            <div class="relationship-visual text-center mb-3">
+                                @if (rel.Type == DataObjects.RelationshipType.ManyToMany)
+                                {
+                                    @* Enhanced M:M Diagram with Link Table *@
+                                    <div class="mm-diagram">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <div class="entity-box">
+                                                <i class="fa-solid fa-cube text-primary"></i>
+                                                <div><strong>@rel.SourceEntityName</strong></div>
+                                                <small class="text-muted">@rel.SourceNavigationProperty</small>
+                                            </div>
+                                            <div class="link-arrow">
+                                                <span class="badge bg-secondary">N</span>
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </div>
+                                            <div class="entity-box link-table-box">
+                                                <i class="fa-solid fa-link text-warning"></i>
+                                                <div><strong class="text-warning">@(rel.JoinEntityName ?? "Link")</strong></div>
+                                                <small class="text-muted">auto-created</small>
+                                            </div>
+                                            <div class="link-arrow">
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                                <span class="badge bg-secondary">M</span>
+                                            </div>
+                                            <div class="entity-box">
+                                                <i class="fa-solid fa-cube text-primary"></i>
+                                                <div><strong>@rel.TargetEntityName</strong></div>
+                                                <small class="text-muted">@rel.TargetNavigationProperty</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @* Standard Diagram for other relationship types *@
+                                    <div class="d-flex align-items-center justify-content-center gap-3">
+                                        <div class="entity-box">
+                                            <i class="fa-solid fa-cube text-primary"></i>
+                                            <div><strong>@rel.SourceEntityName</strong></div>
+                                            <small class="text-muted">@rel.SourceNavigationProperty</small>
+                                        </div>
+                                        <div class="relationship-arrow">
+                                            @if (rel.Type == DataObjects.RelationshipType.OneToMany)
+                                            {
+                                                <span>1</span>
+                                                <i class="fa-solid fa-arrow-right fa-lg"></i>
+                                                <span>N</span>
+                                            }
+                                            else if (rel.Type == DataObjects.RelationshipType.SelfReference)
+                                            {
+                                                <i class="fa-solid fa-rotate fa-lg"></i>
+                                            }
+                                            else
+                                            {
+                                                <span>1</span>
+                                                <i class="fa-solid fa-arrow-right fa-lg"></i>
+                                                <span>1</span>
+                                            }
+                                        </div>
+                                        <div class="entity-box">
+                                            <i class="fa-solid fa-cube text-primary"></i>
+                                            <div><strong>@rel.TargetEntityName</strong></div>
+                                            <small class="text-muted">@rel.TargetNavigationProperty</small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            
+                            @* Plain English Explanation *@
+                            <div class="relationship-explanation small text-muted mb-2">
+                                <i class="fa-solid fa-info-circle me-1"></i>
+                                @GetPlainEnglishExplanation(rel)
+                            </div>
+                            
+                            <div class="relationship-details small">
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="text-muted">FK:</span>
+                                        <code>@rel.ForeignKeyProperty</code>
+                                    </div>
+                                    <div class="col">
+                                        <span class="text-muted">Delete:</span>
+                                        <span class="badge bg-secondary">@rel.OnDelete</span>
+                                    </div>
+                                    <div class="col">
+                                        <span class="text-muted">Required:</span>
+                                        @if (rel.IsRequired)
+                                        {
+                                            <i class="fa-solid fa-check text-success"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-times text-muted"></i>
+                                        }
+                                    </div>
+                                </div>
+                                @if (rel.Type == DataObjects.RelationshipType.ManyToMany && !string.IsNullOrEmpty(rel.JoinEntityName))
+                                {
+                                    <div class="mt-2 p-2 bg-warning bg-opacity-10 rounded">
+                                        <i class="fa-solid fa-link text-warning me-1"></i>
+                                        <span class="text-muted">Link Table:</span>
+                                        <code class="text-warning">@rel.JoinEntityName</code>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @* Visual Schema Diagram *@
+    @if (Entities.Count > 1 && Relationships.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fa-solid fa-diagram-project me-2"></i>
+                Schema Diagram
+            </div>
+            <div class="card-body">
+                <div class="schema-diagram text-center">
+                    <div class="d-flex flex-wrap justify-content-center gap-4">
+                        @foreach (var entity in Entities)
+                        {
+                            <div class="schema-entity p-3 border rounded @(entity.IsJoinTable ? "border-warning" : "")">
+                                <div class="fw-bold mb-2">
+                                    <i class="fa-solid @(entity.IsJoinTable ? "fa-link text-warning" : "fa-cube text-primary") me-1"></i>
+                                    @entity.Name
+                                </div>
+                                <div class="small text-start">
+                                    @foreach (var rel in Relationships.Where(r => r.SourceEntityName == entity.Name || r.TargetEntityName == entity.Name).Take(3))
+                                    {
+                                        var isSource = rel.SourceEntityName == entity.Name;
+                                        <div class="text-muted">
+                                            @if (isSource)
+                                            {
+                                                <i class="fa-solid fa-arrow-right text-primary"></i>
+                                                <span>@rel.SourceNavigationProperty → @rel.TargetEntityName</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="fa-solid fa-arrow-left text-info"></i>
+                                                <span>@rel.TargetNavigationProperty → @rel.SourceEntityName</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Quick Reference - Enhanced with better 1:N vs N:M comparison *@
+    <div class="card mt-4 bg-light">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-info-circle me-2"></i>Relationship Types — Which One Do I Need?</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="p-2 border rounded bg-white mb-2">
+                        <span class="badge bg-primary me-1">1:N</span>
+                        <strong>One-to-Many</strong>
+                        <div class="small text-muted mt-1">
+                            <em>"Item <strong>belongs to</strong> Collection"</em>
+                        </div>
+                        <ul class="small mb-0 mt-1">
+                            <li>Each item is in <strong>ONE</strong> collection only</li>
+                            <li>Delete collection → items deleted too</li>
+                            <li>Example: Order → OrderLines</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-2 border border-warning rounded bg-white mb-2">
+                        <span class="badge bg-warning text-dark me-1">N:M</span>
+                        <strong>Many-to-Many</strong>
+                        <div class="small text-muted mt-1">
+                            <em>"Item is <strong>linked to</strong> Collections"</em>
+                        </div>
+                        <ul class="small mb-0 mt-1">
+                            <li>Each item can be in <strong>MULTIPLE</strong> collections</li>
+                            <li>Delete collection → items remain, links removed</li>
+                            <li>Example: Student ↔ Courses (via Enrollment)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-2 border rounded bg-white">
+                        <span class="badge bg-info me-1">Self</span>
+                        <strong>Self-Reference</strong>
+                        <div class="small text-muted">Entity references itself (Category → SubCategories, Employee → Manager)</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-2 border rounded bg-white">
+                        <span class="badge bg-success me-1">1:1</span>
+                        <strong>One-to-One</strong>
+                        <div class="small text-muted">Exclusive relationship (User → Profile)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Add/Edit Relationship Modal *@
+@if (_showAddModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-project-diagram me-2"></i>
+                        @(_editingRelationship == null ? "Add Relationship" : "Edit Relationship")
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    @* Relationship Type *@
+                    <div class="mb-3">
+                        <label class="form-label">Relationship Type <span class="text-danger">*</span></label>
+                        <div class="btn-group w-100" role="group">
+                            @foreach (var type in Enum.GetValues<DataObjects.RelationshipType>())
+                            {
+                                <input type="radio" class="btn-check" name="relType" id="relType-@type" 
+                                       checked="@(_newRelationship.Type == type)" 
+                                       @onchange="@(() => OnTypeChanged(type))" />
+                                <label class="btn btn-outline-primary" for="relType-@type">
+                                    <span class="badge @GetRelationshipTypeBadge(type) me-1">@GetRelationshipTypeLabel(type)</span>
+                                    @type
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                    @* M:M Explanation Panel - Shows when Many-to-Many is selected *@
+                    @if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+                    {
+                        <div class="alert alert-warning mb-3">
+                            <h6 class="alert-heading">
+                                <i class="fa-solid fa-lightbulb me-2"></i>
+                                How Many-to-Many Works
+                            </h6>
+                            <div class="mm-explanation-diagram my-3 text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                                    <div class="entity-box-small">
+                                        <i class="fa-solid fa-cube text-primary"></i>
+                                        <div><strong>@(_newRelationship.SourceEntityName ?? "Source")</strong></div>
+                                    </div>
+                                    <div class="text-muted">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                        <span class="badge bg-secondary">N</span>
+                                    </div>
+                                    <div class="entity-box-small link-table-highlight">
+                                        <i class="fa-solid fa-link text-warning"></i>
+                                        <div><strong class="text-warning">Link Table</strong></div>
+                                        <small class="text-muted">auto-created</small>
+                                    </div>
+                                    <div class="text-muted">
+                                        <span class="badge bg-secondary">M</span>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </div>
+                                    <div class="entity-box-small">
+                                        <i class="fa-solid fa-cube text-primary"></i>
+                                        <div><strong>@(_newRelationship.TargetEntityName ?? "Target")</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="mb-0 small">
+                                <li>A <strong>link table</strong> is automatically created to connect the two entities</li>
+                                <li>Each @(_newRelationship.SourceEntityName ?? "source") can link to <strong>multiple</strong> @(_newRelationship.TargetEntityName ?? "target")s</li>
+                                <li>Each @(_newRelationship.TargetEntityName ?? "target") can link to <strong>multiple</strong> @(_newRelationship.SourceEntityName ?? "source")s</li>
+                                <li>Think of it like a <strong>guest list</strong> — guests can attend multiple parties!</li>
+                            </ul>
+                        </div>
+                    }
+
+                    @* Source Entity *@
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Source Entity (Principal) <span class="text-danger">*</span></label>
+                            <select class="form-select" @bind="_newRelationship.SourceEntityName" @bind:after="OnSourceChanged">
+                                <option value="">-- Select --</option>
+                                @foreach (var entity in Entities.Where(e => !e.IsJoinTable))
+                                {
+                                    <option value="@entity.Name">@entity.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Target Entity (Dependent) <span class="text-danger">*</span></label>
+                            <select class="form-select" @bind="_newRelationship.TargetEntityName" @bind:after="OnTargetChanged">
+                                <option value="">-- Select --</option>
+                                @foreach (var entity in GetTargetEntityOptions())
+                                {
+                                    <option value="@entity.Name">@entity.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    @* Navigation Properties *@
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Source Navigation Property</label>
+                            <input type="text" class="form-control" @bind="_newRelationship.SourceNavigationProperty"
+                                   placeholder="@GetSuggestedSourceNav()" />
+                            <div class="form-text">Property on @(_newRelationship.SourceEntityName ?? "Source") that holds @(_newRelationship.TargetEntityName ?? "Target")(s)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Target Navigation Property</label>
+                            <input type="text" class="form-control" @bind="_newRelationship.TargetNavigationProperty"
+                                   placeholder="@GetSuggestedTargetNav()" />
+                            <div class="form-text">Property on @(_newRelationship.TargetEntityName ?? "Target") that points to @(_newRelationship.SourceEntityName ?? "Source")</div>
+                        </div>
+                    </div>
+
+                    @* Foreign Key *@
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Foreign Key Property</label>
+                            <input type="text" class="form-control" @bind="_newRelationship.ForeignKeyProperty"
+                                   placeholder="@GetSuggestedFK()" />
+                            <div class="form-text">FK column on the dependent entity</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Relationship Name</label>
+                            <input type="text" class="form-control" @bind="_newRelationship.Name"
+                                   placeholder="@GetSuggestedName()" />
+                        </div>
+                    </div>
+
+                    @* Options *@
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">On Delete</label>
+                            <select class="form-select" @bind="_newRelationship.OnDelete">
+                                @foreach (var behavior in Enum.GetValues<DataObjects.RelationshipDeleteBehavior>())
+                                {
+                                    <option value="@behavior">@behavior</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="relRequired" @bind="_newRelationship.IsRequired" />
+                                <label class="form-check-label" for="relRequired">Required (FK cannot be null)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Link Table Name (for M:M) - Now with auto-generation and validation *@
+                    @if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+                    {
+                        <div class="mb-3 p-3 border border-warning rounded bg-warning bg-opacity-10">
+                            <label class="form-label">
+                                <i class="fa-solid fa-link text-warning me-1"></i>
+                                Link Table Name <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control @GetLinkTableValidationClass()" 
+                                       @bind="_newRelationship.JoinEntityName"
+                                       @bind:event="oninput"
+                                       placeholder="@GetSuggestedLinkTableName()" />
+                                <button class="btn btn-outline-warning" type="button" @onclick="AutoFillLinkTableName" title="Auto-generate name">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </button>
+                            </div>
+                            @if (!string.IsNullOrEmpty(_newRelationship.JoinEntityName) && !IsValidCSharpIdentifier(_newRelationship.JoinEntityName))
+                            {
+                                <div class="text-danger small mt-1">
+                                    <i class="fa-solid fa-exclamation-triangle me-1"></i>
+                                    Must be a valid C# name (letters, numbers, underscores; no spaces or keywords)
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-text">
+                                    <i class="fa-solid fa-info-circle me-1"></i>
+                                    This table will be auto-created to track which @(_newRelationship.SourceEntityName ?? "sources") are linked to which @(_newRelationship.TargetEntityName ?? "targets").
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                    <button class="btn btn-primary" @onclick="SaveRelationship" disabled="@(!CanSaveRelationship())">
+                        <i class="fa-solid fa-save me-1"></i>
+                        @(_editingRelationship == null ? "Add Relationship" : "Save Changes")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .relationship-card { transition: all 0.2s ease; }
+    .relationship-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .entity-box { padding: 0.5rem 1rem; background: #f8f9fa; border-radius: 0.375rem; min-width: 100px; }
+    .entity-box-small { padding: 0.25rem 0.75rem; background: #f8f9fa; border-radius: 0.375rem; min-width: 80px; font-size: 0.85rem; }
+    .link-table-box { background: #fff3cd; border: 1px dashed #ffc107; }
+    .link-table-highlight { background: #fff3cd; border: 2px dashed #ffc107; }
+    .relationship-arrow { font-weight: bold; color: var(--bs-primary); }
+    .link-arrow { font-weight: bold; color: var(--bs-secondary); display: flex; align-items: center; gap: 0.25rem; }
+    .schema-entity { min-width: 150px; background: white; }
+    .relationship-explanation { font-style: italic; }
+    .mm-diagram { padding: 0.5rem; background: linear-gradient(90deg, rgba(13,110,253,0.05) 0%, rgba(255,193,7,0.1) 50%, rgba(13,110,253,0.05) 100%); border-radius: 0.5rem; }
+</style>
+
+@code {
+    [Parameter] public List<DataObjects.EntityDefinition> Entities { get; set; } = new();
+    [Parameter] public List<DataObjects.RelationshipDefinition> Relationships { get; set; } = new();
+    [Parameter] public EventCallback<List<DataObjects.RelationshipDefinition>> RelationshipsChanged { get; set; }
+
+    private bool _showAddModal = false;
+    private DataObjects.RelationshipDefinition _newRelationship = new();
+    private DataObjects.RelationshipDefinition? _editingRelationship = null;
+
+    private bool HasSelfReferenceCandidate() => Entities.Any();
+
+    private string GetPlainEnglishExplanation(DataObjects.RelationshipDefinition rel)
+    {
+        return rel.Type switch
+        {
+            DataObjects.RelationshipType.OneToMany => 
+                $"Each {rel.TargetEntityName} belongs to one {rel.SourceEntityName}. A {rel.SourceEntityName} can have many {rel.TargetNavigationProperty ?? rel.TargetEntityName + "s"}.",
+            DataObjects.RelationshipType.ManyToMany => 
+                $"A {rel.SourceEntityName} can link to multiple {rel.TargetEntityName}s, and a {rel.TargetEntityName} can link to multiple {rel.SourceEntityName}s.",
+            DataObjects.RelationshipType.SelfReference => 
+                $"A {rel.SourceEntityName} can have child {rel.SourceEntityName}s (tree/hierarchy structure).",
+            DataObjects.RelationshipType.OneToOne => 
+                $"Each {rel.SourceEntityName} has exactly one {rel.TargetEntityName}, and vice versa.",
+            _ => ""
+        };
+    }
+
+    private string GetSuggestedLinkTableName()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceEntityName) || string.IsNullOrEmpty(_newRelationship.TargetEntityName))
+            return "SourceTargetLink";
+        return $"{_newRelationship.SourceEntityName}{_newRelationship.TargetEntityName}Link";
+    }
+
+    private void AutoFillLinkTableName()
+    {
+        _newRelationship.JoinEntityName = GetSuggestedLinkTableName();
+    }
+
+    private void OnTypeChanged(DataObjects.RelationshipType type)
+    {
+        _newRelationship.Type = type;
+        if (type == DataObjects.RelationshipType.SelfReference && !string.IsNullOrEmpty(_newRelationship.SourceEntityName))
+        {
+            _newRelationship.TargetEntityName = _newRelationship.SourceEntityName;
+        }
+        // Auto-fill link table name for M:M
+        if (type == DataObjects.RelationshipType.ManyToMany && string.IsNullOrEmpty(_newRelationship.JoinEntityName))
+        {
+            _newRelationship.JoinEntityName = GetSuggestedLinkTableName();
+        }
+        UpdateSuggestions();
+    }
+
+    private void OnSourceChanged()
+    {
+        UpdateSuggestions();
+        // Update link table name if M:M
+        if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+        {
+            _newRelationship.JoinEntityName = GetSuggestedLinkTableName();
+        }
+    }
+
+    private void OnTargetChanged()
+    {
+        UpdateSuggestions();
+        // Update link table name if M:M
+        if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+        {
+            _newRelationship.JoinEntityName = GetSuggestedLinkTableName();
+        }
+    }
+
+    private void UpdateSuggestions()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceNavigationProperty))
+            _newRelationship.SourceNavigationProperty = GetSuggestedSourceNav();
+        if (string.IsNullOrEmpty(_newRelationship.TargetNavigationProperty))
+            _newRelationship.TargetNavigationProperty = GetSuggestedTargetNav();
+        if (string.IsNullOrEmpty(_newRelationship.ForeignKeyProperty))
+            _newRelationship.ForeignKeyProperty = GetSuggestedFK();
+        if (string.IsNullOrEmpty(_newRelationship.Name))
+            _newRelationship.Name = GetSuggestedName();
+    }
+
+    private IEnumerable<DataObjects.EntityDefinition> GetTargetEntityOptions()
+    {
+        if (_newRelationship.Type == DataObjects.RelationshipType.SelfReference)
+            return Entities.Where(e => e.Name == _newRelationship.SourceEntityName);
+        // For M:M, exclude join tables from target selection
+        if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+            return Entities.Where(e => !e.IsJoinTable);
+        return Entities;
+    }
+
+    private string GetSuggestedSourceNav()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.TargetEntityName)) return "";
+        var target = Entities.FirstOrDefault(e => e.Name == _newRelationship.TargetEntityName);
+        return _newRelationship.Type switch
+        {
+            DataObjects.RelationshipType.OneToMany => target?.PluralName ?? _newRelationship.TargetEntityName + "s",
+            DataObjects.RelationshipType.ManyToMany => target?.PluralName ?? _newRelationship.TargetEntityName + "s",
+            DataObjects.RelationshipType.SelfReference => "Children",
+            DataObjects.RelationshipType.OneToOne => _newRelationship.TargetEntityName,
+            _ => ""
+        };
+    }
+
+    private string GetSuggestedTargetNav()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceEntityName)) return "";
+        var source = Entities.FirstOrDefault(e => e.Name == _newRelationship.SourceEntityName);
+        return _newRelationship.Type switch
+        {
+            DataObjects.RelationshipType.SelfReference => "Parent",
+            DataObjects.RelationshipType.ManyToMany => source?.PluralName ?? _newRelationship.SourceEntityName + "s",
+            _ => _newRelationship.SourceEntityName
+        };
+    }
+
+    private string GetSuggestedFK()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceEntityName)) return "";
+        return _newRelationship.Type switch
+        {
+            DataObjects.RelationshipType.SelfReference => "Parent" + _newRelationship.SourceEntityName + "Id",
+            _ => _newRelationship.SourceEntityName + "Id"
+        };
+    }
+
+    private string GetSuggestedName()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceEntityName) || string.IsNullOrEmpty(_newRelationship.TargetEntityName)) 
+            return "";
+        return _newRelationship.Type switch
+        {
+            DataObjects.RelationshipType.SelfReference => _newRelationship.SourceEntityName + " Hierarchy",
+            DataObjects.RelationshipType.ManyToMany => _newRelationship.SourceEntityName + " to " + _newRelationship.TargetEntityName,
+            _ => _newRelationship.SourceEntityName + " " + _newRelationship.SourceNavigationProperty
+        };
+    }
+
+    private bool CanSaveRelationship()
+    {
+        if (string.IsNullOrEmpty(_newRelationship.SourceEntityName)) return false;
+        if (string.IsNullOrEmpty(_newRelationship.TargetEntityName)) return false;
+        // For M:M, require valid link table name
+        if (_newRelationship.Type == DataObjects.RelationshipType.ManyToMany)
+        {
+            if (string.IsNullOrEmpty(_newRelationship.JoinEntityName))
+                return false;
+            // Validate it's a valid C# identifier
+            if (!IsValidCSharpIdentifier(_newRelationship.JoinEntityName))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Validates that a string is a valid C# identifier (for class/property names).
+    /// </summary>
+    private bool IsValidCSharpIdentifier(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return false;
+        
+        // Must start with letter or underscore
+        if (!char.IsLetter(name[0]) && name[0] != '_')
+            return false;
+        
+        // Rest must be letters, digits, or underscores
+        for (int i = 1; i < name.Length; i++)
+        {
+            if (!char.IsLetterOrDigit(name[i]) && name[i] != '_')
+                return false;
+        }
+        
+        // Check for C# reserved keywords
+        var keywords = new HashSet<string> { 
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+            "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
+            "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
+            "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
+            "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
+            "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short",
+            "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true",
+            "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual",
+            "void", "volatile", "while"
+        };
+        
+        return !keywords.Contains(name.ToLowerInvariant());
+    }
+
+    private void EditRelationship(DataObjects.RelationshipDefinition rel)
+    {
+        _editingRelationship = rel;
+        _newRelationship = new DataObjects.RelationshipDefinition
+        {
+            Id = rel.Id,
+            Name = rel.Name,
+            Type = rel.Type,
+            SourceEntityName = rel.SourceEntityName,
+            TargetEntityName = rel.TargetEntityName,
+            SourceNavigationProperty = rel.SourceNavigationProperty,
+            TargetNavigationProperty = rel.TargetNavigationProperty,
+            ForeignKeyProperty = rel.ForeignKeyProperty,
+            IsRequired = rel.IsRequired,
+            OnDelete = rel.OnDelete,
+            JoinEntityName = rel.JoinEntityName,
+            SortOrder = rel.SortOrder
+        };
+        _showAddModal = true;
+    }
+
+    private async Task DeleteRelationship(DataObjects.RelationshipDefinition rel)
+    {
+        Relationships.Remove(rel);
+        ReorderRelationships();
+        await RelationshipsChanged.InvokeAsync(Relationships);
+    }
+
+    private async Task SaveRelationship()
+    {
+        // Auto-fill empty fields with suggestions
+        if (string.IsNullOrEmpty(_newRelationship.SourceNavigationProperty))
+            _newRelationship.SourceNavigationProperty = GetSuggestedSourceNav();
+        if (string.IsNullOrEmpty(_newRelationship.TargetNavigationProperty))
+            _newRelationship.TargetNavigationProperty = GetSuggestedTargetNav();
+        if (string.IsNullOrEmpty(_newRelationship.ForeignKeyProperty))
+            _newRelationship.ForeignKeyProperty = GetSuggestedFK();
+        if (string.IsNullOrEmpty(_newRelationship.Name))
+            _newRelationship.Name = GetSuggestedName();
+
+        if (_editingRelationship != null)
+        {
+            var index = Relationships.IndexOf(_editingRelationship);
+            if (index >= 0)
+            {
+                _newRelationship.SortOrder = _editingRelationship.SortOrder;
+                Relationships[index] = _newRelationship;
+            }
+        }
+        else
+        {
+            _newRelationship.SortOrder = Relationships.Count;
+            Relationships.Add(_newRelationship);
+        }
+        
+        await RelationshipsChanged.InvokeAsync(Relationships);
+        CloseModal();
+    }
+
+    private void CloseModal()
+    {
+        _showAddModal = false;
+        _editingRelationship = null;
+        _newRelationship = new DataObjects.RelationshipDefinition();
+    }
+
+    private void ReorderRelationships()
+    {
+        for (int i = 0; i < Relationships.Count; i++)
+            Relationships[i].SortOrder = i;
+    }
+
+    private string GetRelationshipTypeBadge(DataObjects.RelationshipType type) => type switch
+    {
+        DataObjects.RelationshipType.OneToMany => "bg-primary",
+        DataObjects.RelationshipType.ManyToMany => "bg-warning text-dark",
+        DataObjects.RelationshipType.SelfReference => "bg-info",
+        DataObjects.RelationshipType.OneToOne => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    private string GetRelationshipTypeLabel(DataObjects.RelationshipType type) => type switch
+    {
+        DataObjects.RelationshipType.OneToMany => "1:N",
+        DataObjects.RelationshipType.ManyToMany => "N:M",
+        DataObjects.RelationshipType.SelfReference => "Self",
+        DataObjects.RelationshipType.OneToOne => "1:1",
+        _ => "?"
+    };
+
+    private string GetLinkTableValidationClass()
+    {
+        if (_newRelationship.Type != DataObjects.RelationshipType.ManyToMany)
+            return "";
+
+        return string.IsNullOrEmpty(_newRelationship.JoinEntityName) || IsValidCSharpIdentifier(_newRelationship.JoinEntityName) 
+            ? "" : "is-invalid";
+    }
+}

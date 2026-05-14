@@ -1,0 +1,288 @@
+@page "/Compliance/Scorecard"
+@page "/{TenantCode}/Compliance/Scorecard"
+@implements IDisposable
+@using Blazored.LocalStorage
+@using Humanizer
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-table me-2"></i>Site Scorecard
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-outline-success" @onclick="ExportCsv" disabled="@(_exporting || !_rows.Any())" title="Download scorecard as CSV">
+                @if (_exporting) {
+                    <text><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading</text>
+                } else {
+                    <text><i class="fas fa-download me-1"></i>Export CSV</text>
+                }
+            </button>
+        </div>
+        <FreeA11yChecker_App_TriageNav Active="scorecard" />
+    </div>
+
+    <FreeA11yChecker_App_AboutSection Title="About Site Scorecard">
+        <p>One row per site, sorted worst-first. Use this to triage which sites need attention before the next deadline. Click a site name to open its scan history; click a rule to see every page where that rule fires across all your sites.</p>
+    </FreeA11yChecker_App_AboutSection>
+
+    @* ── Filter row ── *@
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-auto">
+            <label class="form-label small mb-1">WCAG</label>
+            <select class="form-select form-select-sm" @bind="_wcagLevel" @bind:after="Rebuild" aria-label="Filter by WCAG level">
+                <option value="all">All</option>
+                <option value="a">Level A only</option>
+                <option value="aa">A + AA</option>
+                <option value="aaa">A + AA + AAA</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Sort by</label>
+            <select class="form-select form-select-sm" @bind="_sortMode" @bind:after="StateHasChanged" aria-label="Sort by">
+                <option value="critical">Critical (worst first)</option>
+                <option value="total">Total violations</option>
+                <option value="rules">Distinct rules failing</option>
+                <option value="name">Site name (A→Z)</option>
+                <option value="recent">Most recently scanned</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Search</label>
+            <input type="text" class="form-control form-control-sm" placeholder="Filter sites..." @bind="_search" @bind:event="oninput" aria-label="Filter sites" />
+        </div>
+    </div>
+
+    @if (_loading) {
+        <LoadingMessage />
+    } else if (!_rows.Any()) {
+        <div class="alert alert-info">No site data available. Run at least one scan to populate the scorecard.</div>
+    } else {
+        var visible = SortAndFilter();
+        int totalCritical = visible.Sum(r => r.CriticalCount);
+        int totalSites = visible.Count;
+        int passingSites = visible.Count(r => r.TotalCount == 0);
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+            <span class="badge bg-dark fs-6">@totalSites sites</span>
+            <span class="badge bg-success fs-6">@passingSites passing (@(totalSites > 0 ? (passingSites * 100 / totalSites) : 0)%)</span>
+            @if (totalCritical > 0) {
+                <span class="badge bg-danger fs-6">@totalCritical critical issues</span>
+            }
+        </div>
+
+        <table class="table table-sm table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Site</th>
+                    <th class="text-end" style="width:80px;">Pages</th>
+                    <th class="text-end" style="width:80px;" title="Critical">C</th>
+                    <th class="text-end" style="width:80px;" title="Serious">S</th>
+                    <th class="text-end" style="width:80px;" title="Moderate">M</th>
+                    <th class="text-end" style="width:80px;" title="Minor">m</th>
+                    <th class="text-end" style="width:80px;">Total</th>
+                    <th style="width:200px;">Top failing rule</th>
+                    <th style="width:140px;">Last scan</th>
+                    <th style="width:140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in visible) {
+                    string statusClass = r.TotalCount == 0 ? "table-success"
+                        : r.CriticalCount > 0 ? "table-danger"
+                        : r.SeriousCount > 0 ? "table-warning"
+                        : "";
+                    <tr @key="r.SiteId" class="@statusClass">
+                        <td>
+                            <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + r.SiteId))"><strong>@r.SiteName</strong></a>
+                            <br /><span class="text-muted small">@r.SiteBaseUrl</span>
+                        </td>
+                        <td class="text-end">@r.PageCount</td>
+                        <td class="text-end">@(r.CriticalCount > 0 ? r.CriticalCount.ToString() : "—")</td>
+                        <td class="text-end">@(r.SeriousCount > 0 ? r.SeriousCount.ToString() : "—")</td>
+                        <td class="text-end">@(r.ModerateCount > 0 ? r.ModerateCount.ToString() : "—")</td>
+                        <td class="text-end">@(r.MinorCount > 0 ? r.MinorCount.ToString() : "—")</td>
+                        <td class="text-end fw-bold">@r.TotalCount</td>
+                        <td class="small">
+                            @if (!String.IsNullOrWhiteSpace(r.TopRuleId)) {
+                                <a href="@(Helpers.BuildUrl("Compliance/Rule/" + Uri.EscapeDataString(r.TopRuleId)))" title="@r.TopRuleMessage">
+                                    <strong>@r.TopRuleId</strong>
+                                </a>
+                                <br /><span class="text-muted">@r.TopRuleCount occurrences</span>
+                            } else {
+                                <span class="text-muted">&mdash;</span>
+                            }
+                        </td>
+                        <td class="small">
+                            @if (r.LastScanAt.HasValue) {
+                                <span title="@r.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm")">@r.LastScanAt.Value.Humanize()</span>
+                            } else {
+                                <span class="text-muted">never</span>
+                            }
+                        </td>
+                        <td>
+                            <a href="@(Helpers.BuildUrl("Compliance/Status/" + r.SiteId))" class="btn btn-xs btn-outline-primary me-1" title="Compliance status"><i class="fas fa-clipboard-check"></i></a>
+                            <a href="@(Helpers.BuildUrl("Reports/Audit/" + r.SiteId))" class="btn btn-xs btn-outline-secondary" title="Audit report"><i class="fas fa-file-alt"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "sitescorecard";
+    private bool _validatedUrl = false;
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _exporting = false;
+
+    private string _wcagLevel = "aa";
+    private string _sortMode = "critical";
+    private string _search = "";
+
+    private List<DataObjects.Site> _sites = new();
+    private List<DataObjects.CrossSiteViolation> _raw = new();
+    private List<ScorecardRow> _rows = new();
+
+    public class ScorecardRow
+    {
+        public Guid SiteId { get; set; }
+        public string SiteName { get; set; } = "";
+        public string SiteBaseUrl { get; set; } = "";
+        public DateTime? LastScanAt { get; set; }
+        public int PageCount { get; set; }
+        public int TotalCount { get; set; }
+        public int CriticalCount { get; set; }
+        public int SeriousCount { get; set; }
+        public int ModerateCount { get; set; }
+        public int MinorCount { get; set; }
+        public int DistinctRules { get; set; }
+        public string? TopRuleId { get; set; }
+        public string? TopRuleMessage { get; set; }
+        public int TopRuleCount { get; set; }
+    }
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_validatedUrl) { _validatedUrl = true; await Helpers.ValidateUrl(TenantCode); }
+            if (!_loadedData) { _loadedData = true; await LoadData(); }
+        }
+    }
+
+    private void OnDataModelUpdated() { if (Model.View == _pageName) StateHasChanged(); }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        var sitesTask = Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+        var filter = new {
+            SiteIds = (List<Guid>?)null,
+            UrlPattern = (string?)null,
+            Severity = (string?)null,
+            CanonicalRuleId = (string?)null,
+            LatestScanOnly = true,
+        };
+        var violationsTask = Helpers.GetOrPost<List<DataObjects.CrossSiteViolation>>("api/Data/GetCrossSiteViolations", filter);
+
+        await Task.WhenAll(sitesTask, violationsTask);
+        _sites = (await sitesTask)?.Where(s => !s.Deleted).ToList() ?? new();
+        _raw = await violationsTask ?? new();
+
+        Rebuild();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void Rebuild()
+    {
+        var filtered = _wcagLevel == "all"
+            ? _raw
+            : _raw.Where(v => WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevel)).ToList();
+
+        var bySite = filtered.GroupBy(v => v.SiteId).ToDictionary(g => g.Key, g => g.ToList());
+
+        _rows = _sites.Select(s => {
+            bySite.TryGetValue(s.SiteId, out var siteViols);
+            siteViols ??= new();
+            var topRule = siteViols.GroupBy(v => v.RuleId)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault();
+            return new ScorecardRow {
+                SiteId = s.SiteId,
+                SiteName = s.Name,
+                SiteBaseUrl = s.BaseUrl,
+                LastScanAt = s.LastScanAt,
+                PageCount = siteViols.Select(v => v.PageScanResultId).Distinct().Count(),
+                TotalCount = siteViols.Count,
+                CriticalCount = siteViols.Count(v => v.Severity.ToLower() == "critical"),
+                SeriousCount = siteViols.Count(v => v.Severity.ToLower() == "serious"),
+                ModerateCount = siteViols.Count(v => v.Severity.ToLower() == "moderate"),
+                MinorCount = siteViols.Count(v => v.Severity.ToLower() == "minor"),
+                DistinctRules = siteViols.Select(v => v.RuleId).Distinct().Count(),
+                TopRuleId = topRule?.Key,
+                TopRuleMessage = topRule?.First().Message,
+                TopRuleCount = topRule?.Count() ?? 0,
+            };
+        }).ToList();
+    }
+
+    private List<ScorecardRow> SortAndFilter()
+    {
+        var seq = _rows.AsEnumerable();
+        if (!String.IsNullOrWhiteSpace(_search)) {
+            string s = _search.Trim().ToLower();
+            seq = seq.Where(r => r.SiteName.ToLower().Contains(s) || r.SiteBaseUrl.ToLower().Contains(s));
+        }
+        seq = _sortMode switch {
+            "total" => seq.OrderByDescending(r => r.TotalCount).ThenBy(r => r.SiteName),
+            "rules" => seq.OrderByDescending(r => r.DistinctRules).ThenBy(r => r.SiteName),
+            "name" => seq.OrderBy(r => r.SiteName),
+            "recent" => seq.OrderByDescending(r => r.LastScanAt ?? DateTime.MinValue).ThenBy(r => r.SiteName),
+            _ => seq.OrderByDescending(r => r.CriticalCount)
+                    .ThenByDescending(r => r.SeriousCount)
+                    .ThenByDescending(r => r.ModerateCount)
+                    .ThenBy(r => r.SiteName),
+        };
+        return seq.ToList();
+    }
+
+    private async Task ExportCsv()
+    {
+        _exporting = true;
+        StateHasChanged();
+        try {
+            static string Esc(string? s) => "\"" + (s ?? "").Replace("\"", "\"\"") + "\"";
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Site,Base URL,Pages,Critical,Serious,Moderate,Minor,Total,Distinct Rules,Top Rule,Top Rule Count,Last Scan");
+            foreach (var r in SortAndFilter()) {
+                sb.AppendLine($"{Esc(r.SiteName)},{Esc(r.SiteBaseUrl)},{r.PageCount},{r.CriticalCount},{r.SeriousCount},{r.ModerateCount},{r.MinorCount},{r.TotalCount},{r.DistinctRules},{Esc(r.TopRuleId)},{r.TopRuleCount},{Esc(r.LastScanAt?.ToString("yyyy-MM-dd HH:mm"))}");
+            }
+            var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+            await jsRuntime.InvokeVoidAsync("eval",
+                $"var a=document.createElement('a');a.href='data:text/csv;base64,{b64}';a.download='site-scorecard-{DateTime.Now:yyyy-MM-dd}.csv';a.click();");
+        } finally {
+            _exporting = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,139 @@
+{
+  "PagePath": "/residence-halls/elmina-white-honors-hall/",
+  "Url": "https://housing.wsu.edu/residence-halls/elmina-white-honors-hall/",
+  "FinalUrl": null,
+  "Title": "Elmina White Honors Hall",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 107677,
+  "ScreenshotSizeBytes": 323697,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 323697
+    }
+  ],
+  "ImageCount": 18,
+  "ImagesMissingAlt": 5,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0jvhq4kb/honors-students-lounge.jpg",
+      "AltText": "Honors Students Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/amypjklv/honors-study-lounge.jpg",
+      "AltText": "Honors Study Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xd5d0i3v/honors-bed-desk.jpg",
+      "AltText": "Honors Bed Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rr4lujl5/honors-double-wide.jpg",
+      "AltText": "Honors Double Wide"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/nmwbcc3l/honors-exterior-side.jpg",
+      "AltText": "Honors Exterior Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/egqhadoj/honors-lounge-gaming.jpg",
+      "AltText": "Honors Lounge Gaming"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kiofpe3g/honors-single.jpg",
+      "AltText": "Honors Single"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0ufh4jka/honors-student-room.jpg",
+      "AltText": "Honors Student Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zzelvta2/kelly-chege-2.jpg",
+      "AltText": "Kelly Chege"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dtsc4xhl/hillside-students-eating.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/a0nf0dmz/honors-study-group-square.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/em3jqxoh/central-campus-square-mall.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mcbn4kjv/hillside-area-desk.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/t0mj3s12/chinook-student-1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/iozp01wz/floor-plan-honors-1st-floor.png",
+      "AltText": "Honors first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tcyfwnmf/floor-plan-honors-2nd-floor.png",
+      "AltText": "Honors second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/gdka2y1x/floor-plan-honors-3rd-floor.png",
+      "AltText": "Honors third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/b2via4fr/floor-plan-honors-4th-floor.png",
+      "AltText": "Honors fourth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:14:19 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:14:19.3197992Z"
+}

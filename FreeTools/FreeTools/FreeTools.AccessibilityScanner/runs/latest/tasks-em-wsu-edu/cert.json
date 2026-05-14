@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=tasks.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "A350819A47741208B0D6B92217D667F5D123C116",
+  "SerialNumber": "00D302B7453140F52348B9EA00E12D44F5",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "tasks.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "tasks.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

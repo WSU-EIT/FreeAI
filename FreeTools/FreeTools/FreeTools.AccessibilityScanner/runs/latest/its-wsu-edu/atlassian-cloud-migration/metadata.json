@@ -1,0 +1,67 @@
+{
+  "PagePath": "/atlassian-cloud-migration/",
+  "Url": "https://its.wsu.edu/atlassian-cloud-migration/",
+  "FinalUrl": "https://its.wsu.edu/wsu-login/?redirect_to=/atlassian-cloud-migration/",
+  "Title": "Log In \u2039 Information Technology Services \u2014 WordPress",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 6446,
+  "ScreenshotSizeBytes": 13482,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 13482
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 2,
+    "Minor": 1,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 2,
+        "Minor": 1
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "no-cache, must-revalidate, max-age=0",
+    "content-encoding": "gzip",
+    "content-length": "2390",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:16:19 GMT",
+    "expires": "Wed, 11 Jan 1984 05:00:00 GMT",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "CapturedAt": "2026-02-19T02:16:19.3678487Z"
+}

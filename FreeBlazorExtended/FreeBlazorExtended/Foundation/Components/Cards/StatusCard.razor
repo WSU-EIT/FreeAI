@@ -1,0 +1,276 @@
+﻿@*
+    StatusCard — Foundation status summary card with a coloured indicator, detail rows, and optional footer.
+
+    Use this component to visualise the health or lifecycle state of a system entity (a service,
+    a deployment, a device, a pipeline stage). The left border and badge colour adapt automatically
+    to the Status value.
+
+    Required parameters:
+        Title  — the entity name (card is hidden when empty)
+        Status — one of "active" | "inactive" | "warning" | "error" (drives colour coding)
+
+    Optional parameters:
+        Subtitle   — secondary description below the title
+        StatusText — overrides the capitalised Status label shown in the badge
+        Details    — key/value pairs displayed as labelled rows (e.g. "Version: 2.1.0")
+        ChildContent — render fragment for footer buttons or links
+
+    Example:
+        <StatusCard Title="API Gateway"
+                    Status="warning"
+                    StatusText="Degraded"
+                    Subtitle="us-east-1 region"
+                    Details="@(new() { ["Latency"] = "430 ms", ["Uptime"] = "99.1%" })">
+            <button class="btn btn-sm btn-outline-warning">View Logs</button>
+        </StatusCard>
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_title)) {
+    <div class="status-card @_statusClass" role="region" aria-label="@_title status">
+        <div class="status-header">
+            <h3 class="status-title">@_title</h3>
+            <span class="status-badge @_badgeClass">
+                <span class="status-indicator"></span>
+                @_statusText
+            </span>
+        </div>
+
+        @if (!String.IsNullOrWhiteSpace(Subtitle)) {
+            <p class="status-subtitle">@Subtitle</p>
+        }
+
+        <div class="status-details">
+            @if (Details?.Any() == true) {
+                @foreach (var detail in Details) {
+                    <div class="status-detail-row">
+                        <span class="detail-label">@detail.Key:</span>
+                        <span class="detail-value">@detail.Value</span>
+                    </div>
+                }
+            }
+        </div>
+
+        @if (ChildContent != null) {
+            <div class="status-footer">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .status-card {
+        background-color: var(--bs-light);
+        border-left: 4px solid var(--bs-secondary);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-card.active {
+        border-left-color: var(--bs-success);
+    }
+
+    .status-card.inactive {
+        border-left-color: var(--bs-secondary);
+    }
+
+    .status-card.warning {
+        border-left-color: var(--bs-warning);
+    }
+
+    .status-card.error {
+        border-left-color: var(--bs-danger);
+    }
+
+    .status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .status-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        background-color: var(--bs-light);
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-badge.active {
+        color: var(--bs-success);
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+
+    .status-badge.inactive {
+        color: var(--bs-secondary);
+        background-color: rgba(108, 117, 125, 0.1);
+    }
+
+    .status-badge.warning {
+        color: var(--bs-warning);
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .status-badge.error {
+        color: var(--bs-danger);
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: currentColor;
+        display: inline-block;
+    }
+
+    .status-subtitle {
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+        color: var(--bs-secondary);
+    }
+
+    .status-details {
+        margin-bottom: 1rem;
+    }
+
+    .status-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .status-detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--bs-secondary);
+        font-weight: 500;
+    }
+
+    .detail-value {
+        color: var(--bs-body-color);
+        font-weight: 600;
+    }
+
+    .status-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    @@media (max-width: 576px) {
+        .status-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+@code {
+    protected string _title = "";
+    protected string _statusClass = "";
+    protected string _badgeClass = "";
+    protected string _statusText = "";
+
+    /// <summary>
+    /// The entity name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// Secondary description rendered below the title in a muted, smaller font.
+    /// Optional — use for region, environment, or version context.
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// Drives the left-border and badge colour of the card.
+    /// Accepted values (case-insensitive):
+    /// <list type="bullet">
+    ///   <item><c>"active"</c> — green (healthy / running)</item>
+    ///   <item><c>"inactive"</c> — grey (stopped / disabled)</item>
+    ///   <item><c>"warning"</c> — amber (degraded / throttled)</item>
+    ///   <item><c>"error"</c> — red (failed / critical)</item>
+    /// </list>
+    /// Default: <c>"active"</c>.
+    /// </summary>
+    [Parameter] public string Status { get; set; } = "active";
+
+    /// <summary>
+    /// Overrides the human-readable label shown inside the status badge.
+    /// When empty, the badge displays a capitalised form of <see cref="Status"/>
+    /// (e.g. <c>"Active"</c>, <c>"Warning"</c>).
+    /// Optional — supply when the domain label differs from the status key
+    /// (e.g. Status = <c>"warning"</c>, StatusText = <c>"Degraded"</c>).
+    /// </summary>
+    [Parameter] public string StatusText { get; set; } = "";
+
+    /// <summary>
+    /// Key/value pairs rendered as labelled detail rows inside the card body.
+    /// Keys appear as muted labels; values appear in bold.
+    /// Example: <c>new() { ["Version"] = "2.1.0", ["Uptime"] = "99.9%" }</c>.
+    /// Optional — omit for a simple title + status card.
+    /// </summary>
+    [Parameter] public Dictionary<string, string> Details { get; set; } = new();
+
+    /// <summary>
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for action buttons (View Logs, Restart) or supplemental links.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _title = Title ?? "";
+
+        string status = (Status ?? "active").ToLower();
+        _statusClass = status switch
+        {
+            "active" => "active",
+            "inactive" => "inactive",
+            "warning" => "warning",
+            "error" => "error",
+            _ => "active"
+        };
+
+        _badgeClass = _statusClass;
+        _statusText = String.IsNullOrWhiteSpace(StatusText)
+            ? status.Substring(0, 1).ToUpper() + status.Substring(1)
+            : StatusText;
+    }
+}

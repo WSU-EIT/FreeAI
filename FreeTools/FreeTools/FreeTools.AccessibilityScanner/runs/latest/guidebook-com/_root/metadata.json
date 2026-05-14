@@ -1,0 +1,462 @@
+{
+  "PagePath": "/",
+  "Url": "https://guidebook.com/",
+  "FinalUrl": "https://www.guidebook.com/",
+  "Title": "Event Management Platform | Build An App, Manage Registration, Print Badges",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 290225,
+  "ScreenshotSizeBytes": 633303,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 633303
+    }
+  ],
+  "ImageCount": 101,
+  "ImagesMissingAlt": 83,
+  "Images": [
+    {
+      "SourceUrl": "https://cdn-cookieyes.com/assets/images/revisit.svg",
+      "AltText": "Revisit consent button"
+    },
+    {
+      "SourceUrl": "https://cdn-cookieyes.com/assets/images/close.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68fb8832fac5162a8c92180d_fdf0ba9aab71e87be256d45d60b82fe4_gb-splash1-min.avif",
+      "AltText": "Abstract background with large soft-edged pastel shapes in blue, purple, and yellow blending together."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/698c9607b9b2083e71138b5a_associations%20unlimited.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/6989f7eef306c4d375404bfa_Home%20hero%20(1).png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69851d27ce04a549c5e454a7_Louisiana-Tech-logo.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/697733052a13f0881fead53d_siemens.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69178585faabbf8c6b48182f_berklee.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/691783fd7fcedbfea06e0487_bournemouth.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69178222ccbe66f26f806ac8_university-of-texas-austin.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69177e4498a9170bac661f35_royal-holloway-logo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69177ba12d01b2d217bc66dd_rutgers.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/691776d7672a890408c6c077_festival-of-marketing.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6917762ebf224977100cc2c8_ymca.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/691775305c30f3bb008b7be0_nc-state.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/691773775c30f3bb008a852c_spelman.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914c0271bad14b3042b53be_black-romance-logo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914dfb05130f650c28b25d9_Flight4cf.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914dee06e7e7560465adc96_perfusion-life.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914dca8aeb72622734f288c_UC-Berkeley.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914d96b6ba1c10deae9cd0c_energy-marketing-conferences.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914da668a2961cc6a81214b_amazon.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69145bbc19f9435bf025e902_messiah.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914d8755b59ae081b5e74e4_sentinel-group.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914c66862518b91a4fdc2cf_chapman.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6914b816d7a140edb42be3de_AKBHA-logo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6904afd7ab577fc451f228db_abicblogo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6904afd7ab577fc451f228d8_SEA-logo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6904afd7ab577fc451f228de_githublogo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69160c4c196bb68909568e5d_tedXmilehigh.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69160ba24f1d4683580b95a5_oecd.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69160a9e984ebbec81a76208_bsi.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6915e9b29b5a6ce0fe97b8ef_kennedy-jenks.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6915eb24e28481890fde8ed8_northeastern-uni.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6915e8f09b5a6ce0fe9711de_AAJA.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/6915ea2fe6f453f0c18392b2_purdue.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe20f24bf1e68af07c494b_fairfield.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe2084d0d87ae8365fd706_charlston.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1ea0d8aa8e1526bfac16_scripps.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1defccf87c62393c803c_cbu.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1ce985f7f77b865bf5b5_illinois.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1a5c4a729157913803b7_high-point.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe191f57c9983c47c976fa_bowdin.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1489a654af2790cd879c_calgary.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fc65e9874abcfb234cd226_arizona.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fc65b2f05dbe213fe18795_notre-dame.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349ce1_dbd9873b16fbc5b3ffcfb8bd.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb991fba571f50c649dd27_cde645a7b77239858a8cbb1b.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb991fba571f50c649dd21_82945e48c5ff980fa464b8ce.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9939137c06d9c10f3f66_29bbde721bad83ef8b2ad84b.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e134528_90af5e39719ca037a2418d7c.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349cd5_5e8dd6a2da03b52238b1f040.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349cc9_45de8fa53827e433b5d300e2.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e134531_0d2918bffab67b36925e8411.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349ccf_cc4681a3e251a9471e1af6af.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349cd8_acpa.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e134525_bec18fb9f6226c55f91145b6.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb991fba571f50c649dd36_eeddb7c9ae7b86519d98141a.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9939137c06d9c10f3f7e_3676f385ec5bbbd64a392515.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9939137c06d9c10f3f73_312a963da6575a6ec5a0bbcb.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9939137c06d9c10f3f6d_5c87c0690c8b05c6e5b367a8.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb991fba571f50c649dd2a_9e91154d6e8d434027d9acf4.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e13451f_snapon.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349ccc_27b606f912f084630d42b855.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e13453a_b33bd8113468dca6b87534e1.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349cd2_7978ef54d1ed8adece0eca24.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e134534_9c28d31cc1cd852a3d4bdf92.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fe1c25c300314d2c486947_johnson.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb991fba571f50c649dd24_f301a399b160aea36b195311.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e13452b_808d18d2043dcc618d4cead3.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9939137c06d9c10f3f69_d29fbdf4c863b875a4815dbc.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9912aafada04be349cdb_ed1bbfe99055643ed4faf0dd.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e134537_812b5aa2f3bb049693c136d2.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69022a92fe1fbdc9bccab382_h1-image.avif",
+      "AltText": "Three smartphones showing Guidebook app screens with event guides, schedule sessions, and an expo hall map."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69022b59dcbfc7da1a92ae08_h3.avif",
+      "AltText": "Person scanning a glowing purple QR code with a smartphone under low light, featuring security and settings icons overlay."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69022dd1dfa33e791b42ab08_h4.avif",
+      "AltText": "People standing in a long line indoors with graphical overlays of charts representing data analytics."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69022b033fa50f26ca754145_h2.avif",
+      "AltText": "Plastic badge holders with lanyards displayed on a reflective surface under purple lighting."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69021ee59844fc331c64c485_Group%202147202806.avif",
+      "AltText": "Woman smiling sideways in a colorful social setting with heart and star icons above her."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/6911f69fc6b56497960fcbb8_hf1.avif",
+      "AltText": "Woman wearing glasses working on a laptop with floating digital interface elements and text highlighting brand focus, design ease, actionable insights, and platform unity."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/6913502b0cfdc527db2002b4_hf2.avif",
+      "AltText": "Smiling woman at a check-in counter with event lanyard, surrounded by people and text bubbles highlighting fast self-check-in and event engagement features."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/691b15506116945eeca44068_trust-grid-2.avif",
+      "AltText": "Collage of three circular images showing smiling conference attendees using devices, a large audience at a presentation, and event badges with awards for Best Estimated ROI and Users Love Us."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de9627554b3e8f8e251b5b_u4866798417_Students_at_events_--v_7_4b789074-c2c8-4da2-91a4-403203e71eee_1.avif",
+      "AltText": "Young woman with glasses and a gray sweater resting her chin on her hand, attentively watching an event."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68b01d3952e6264d97325a48_placeholder-image.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de9628113a562290a2421a_u4866798417_Students_at_events_--v_7_4b789074-c2c8-4da2-91a4-403203e71eee_2.avif",
+      "AltText": "Group of five young people smiling and posing in front of a colorful graffiti wall at an event."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de96270a419431e4fad687_u4866798417_Lively_event_with_business_people_--v_7_3013958a-56f2-4603-a664-a103f7100517_1.avif",
+      "AltText": "Smiling business people holding wine glasses at a lively indoor event with warm lighting."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/69145ca1984b7e277c126b82_Jose-Daniel-Mancera-Carrillo.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de964aa8d98d913a04bf62_u4866798417_Lively_event_with_business_people_--v_7_3013958a-56f2-4603-a664-a103f7100517_2.avif",
+      "AltText": "Smiling businessman in suit and tie enjoying a lively networking event with blurred people and warm lighting in the background."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68dea673505c6b91b753ddb3/68fb9932894d85985e13452e_indiana-tech.avif",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69023a8535ccce4b53f0c646_Frame.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69023a8576bd664cb18a1fa0_hl3.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69023af9efb966060be992e1_Group%202147202808.avif",
+      "AltText": "Two women smiling and looking at a smartphone together at a social event with blurred people in the background."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69023a9eeca5d63060a271c8_hl2.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/69023a78fccb8ed0a1dd46f5_Frame.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/691b0fa5a256c8bd9ed9f3ad_users-love-us.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de63ebb1239146ed75d9d8_EventNetworkingandMatchmaking_EasiestAdmin_Mid-Market_EaseOfAdmin.avif",
+      "AltText": "G2 badge for Easiest Admin Mid-Market Winter 2025 award."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de63eb8f82448c30370981_EventNetworkingandMatchmaking_Leader_Leader.avif",
+      "AltText": "G2 Leader Winter 2025 badge with a white shield and red banner."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/68de63ebe727c4698f5984ad_EventNetworkingandMatchmaking_EasiestToUse_Mid-Market_EaseOfUse.avif",
+      "AltText": "G2 badge stating Easiest To Use Mid-Market Winter 2025."
+    },
+    {
+      "SourceUrl": "https://cdn.prod.website-files.com/68b01d3752e6264d97325944/691b0fd91a54419a33e62478_medal.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://bat.bing.com/action/0?ti=5751707\u0026tm=gtm002\u0026Ver=2\u0026mid=f55540ca-b84d-41c2-bb73-4fad2f8edb5d\u0026bo=2\u0026sid=f7a348d00d3711f19da5557321814c42\u0026vid=f7a35b000d3711f1bc2ddbc6906c4d90\u0026vids=1\u0026msclkid=N\u0026uach=pv%3D10.0\u0026pi=0\u0026lg=en-US\u0026sw=1280\u0026sh=720\u0026sc=24\u0026nwd=1\u0026tl=Event%20Management%20Platform%20%7C%20Build%20An%20App,%20Manage%20Registration,%20Print%20Badges\u0026p=https%3A%2F%2Fwww.guidebook.com%2F\u0026r=\u0026lt=1738\u0026evt=pageLoad\u0026sv=2\u0026asc=G\u0026cdb=AQcD\u0026rn=858781",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.bizible.com/ipv?_biz_r=\u0026_biz_h=-1719904874\u0026_biz_u=41d7571cb6664191ce773d61639fd46d\u0026_biz_l=https%3A%2F%2Fwww.guidebook.com%2F\u0026_biz_t=1771466944593\u0026_biz_i=Event%20Management%20Platform%20%7C%20Build%20An%20App%2C%20Manage%20Registration%2C%20Print%20Badges\u0026_biz_n=0\u0026rnd=90540\u0026cdn_o=a\u0026_biz_z=1771466944593",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.bizibly.com/u?_biz_u=41d7571cb6664191ce773d61639fd46d\u0026_biz_l=https%3A%2F%2Fwww.guidebook.com%2F\u0026_biz_t=1771466944594\u0026_biz_i=Event%20Management%20Platform%20%7C%20Build%20An%20App%2C%20Manage%20Registration%2C%20Print%20Badges\u0026rnd=146341\u0026cdn_o=a\u0026_biz_z=1771466944594",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 22,
+    "Critical": 0,
+    "Serious": 19,
+    "Moderate": 3,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 10,
+        "Critical": 0,
+        "Serious": 10,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 12,
+        "Critical": 0,
+        "Serious": 9,
+        "Moderate": 3,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:02.3295692Z"
+}

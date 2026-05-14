@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=schedules.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "77B9C1F4DAD23EF04BC2816AE13BA465BDC1071C",
+  "SerialNumber": "6E1DDFEDD77ABE4EA7BF15ABE5773159",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "schedules.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "schedules.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

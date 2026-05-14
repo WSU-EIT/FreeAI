@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/TestSite/">
+    <Project Path="BlazorApp1/BlazorApp1.Client/BlazorApp1.Client.csproj" Id="40b438f9-8a78-48f7-aa73-b34fb25e770f" />
+    <Project Path="BlazorApp1/BlazorApp1/BlazorApp1.csproj" Id="bf158cbf-a541-49cc-a68a-6021dd741989" />
+  </Folder>
+  <Project Path="A11yAudit/A11yAudit.csproj" />
+  <Project Path="Docs/Docs.csproj" />
+  <Project Path="FreeA11yChecker.Client/FreeA11yChecker.Client.csproj" />
+  <Project Path="FreeA11yChecker.Console/FreeA11yChecker.Console.csproj" />
+  <Project Path="FreeA11yChecker.DataAccess/FreeA11yChecker.DataAccess.csproj" Id="52ab8249-0ed6-4d8b-813d-57af76f31647" />
+  <Project Path="FreeA11yChecker.DataObjects/FreeA11yChecker.DataObjects.csproj" Id="cca456dc-8a04-41ad-aad2-14ea55df007e" />
+  <Project Path="FreeA11yChecker.EFModels/FreeA11yChecker.EFModels.csproj" Id="727333ee-37e7-4ae7-b0ce-29c8cabec9c5" />
+  <Project Path="FreeA11yChecker.Plugins/FreeA11yChecker.Plugins.csproj" Id="5c6e23bf-43e2-48aa-ac18-4c25e975b440" />
+  <Project Path="FreeA11yChecker.Scanner/FreeA11yChecker.Scanner.csproj" />
+  <Project Path="FreeA11yChecker/FreeA11yChecker.csproj" />
+</Solution>

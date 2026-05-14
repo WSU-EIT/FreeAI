@@ -1,0 +1,23 @@
+{
+  "Subject": "CN=transfer-days.wsu.edu",
+  "Issuer": "CN=R13, O=Let\u0027s Encrypt, C=US",
+  "Thumbprint": "FA4A7E636ABABDB213BD92F2248D7AF56539F6FC",
+  "SerialNumber": "06D49A17387EC17E26E4F40854E51AF1624F",
+  "NotBefore": "2026-02-04T12:56:10-08:00",
+  "NotAfter": "2026-05-05T13:56:09-07:00",
+  "DaysUntilExpiry": 75,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 4096,
+  "SubjectAlternativeNames": [
+    "fall-alive.wsu.edu",
+    "spring-orientation.wsu.edu",
+    "transfer-days.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "fall-alive.wsu.edu",
+    "spring-orientation.wsu.edu",
+    "transfer-days.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

@@ -1,0 +1,63 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "link-empty",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Link has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Ca b-xdsraqo0e2=\u0022\u0022 class=\u0022wsu-g-header__search-icon-link\u0022 href=\u0022https://search.wsu.edu/\u0022 aria-haspopup=\u0022true\u0022 aria-expanded=\u0022true\u0022\u003E\n\t\t\t\t\t\t\u003Cspan b-xdsr...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton b-xdsraqo0e2=\u0022\u0022 class=\u0022wsu-g-header__more-icon-link\u0022\u003E\n\t\t\t\t\t\t\u003Cspan b-xdsraqo0e2=\u0022\u0022 class=\u0022wsu-icon wsu-i-more\u0022\u003E\u003C/span\u003E\n\t\t\t\t\t\u003C/button\u003E",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "button-empty",
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Message": "Button has no text content or accessible name",
+      "Selector": null,
+      "Snippet": "\u003Cbutton b-xdsraqo0e2=\u0022\u0022 class=\u0022wsu-g-header__menu-icon-link wsu-s-nav-vertical--toggle\u0022 area-label=\u0022menu expand or collapse\u0022\u003E\n\t\t\t\t\t\t\u003Cspan b-xdsraqo0e2...",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "skip-link-missing",
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Message": "No skip-to-content link found near top of page",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1"
+    },
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "landmark-main",
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "Selector": null,
+      "Snippet": null,
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

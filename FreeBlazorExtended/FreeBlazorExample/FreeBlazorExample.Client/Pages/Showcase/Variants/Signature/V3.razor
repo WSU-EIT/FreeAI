@@ -1,0 +1,86 @@
+@page "/showcase/signature/v3"
+@using FreeBlazorExtended.Signature
+
+<div class="container-fluid py-4">
+    <h1>Programmatic Signature: Save, Reload, Inspect</h1>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="SaveCurrent">
+            Save current
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ReloadSaved" disabled="@string.IsNullOrWhiteSpace(_savedSignature)">
+            Reload from saved
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="ClearProgrammatically" disabled="@(!_showSignaturePad)">
+            Programmatic Clear
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TogglePad">
+            @(_showSignaturePad ? "Unmount Pad" : "Mount Pad")
+        </button>
+    </div>
+
+    @if (_showSignaturePad) {
+        <Signature @key="_signatureInstance"
+                   @ref="_signatureRef"
+                   IncludeClearButton="true"
+                   @bind-Value="_currentSignature" />
+    } else {
+        <div class="alert alert-secondary" role="status">The signature pad is currently unmounted.</div>
+    }
+
+    <pre class="bg-light border rounded p-3 mt-3 mb-0 small">Current length: @_currentSignature.Length
+Saved length: @_savedSignature.Length
+
+Current value:
+@PreviewValue(_currentSignature)
+
+Saved value:
+@PreviewValue(_savedSignature)</pre>
+</div>
+
+@code {
+    private string _currentSignature = "";
+    private string _savedSignature = "";
+    private bool _showSignaturePad = true;
+    private int _signatureInstance;
+    private FreeBlazorExtended.Signature.Signature? _signatureRef;
+
+    private void SaveCurrent()
+    {
+        _savedSignature = _currentSignature;
+    }
+
+    private void ReloadSaved()
+    {
+        if (string.IsNullOrWhiteSpace(_savedSignature)) {
+            return;
+        }
+
+        _currentSignature = _savedSignature;
+        _signatureInstance++;
+    }
+
+    private async Task ClearProgrammatically()
+    {
+        if (_signatureRef is not null) {
+            await _signatureRef.Clear();
+        }
+    }
+
+    private void TogglePad()
+    {
+        _showSignaturePad = !_showSignaturePad;
+        if (_showSignaturePad) {
+            _signatureInstance++;
+        }
+    }
+
+    private static string PreviewValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) {
+            return "(empty)";
+        }
+
+        return value.Length <= 80 ? value : value[..80] + "...";
+    }
+}

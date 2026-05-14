@@ -1,0 +1,217 @@
+﻿@* EntityWizardStepPreview.App.razor - Step 5: Preview Generated Code *@
+@* Now with editable Monaco editor for each file *@
+
+@{
+    var patternInfo = DataObjects.FMPagePatterns.All.FirstOrDefault(p => p.Pattern == State.Options.SelectedPagePattern);
+}
+
+<div class="row">
+    <div class="col-12">
+        @* Pattern Warning *@
+        @if (patternInfo != null && !patternInfo.IsImplemented) {
+            <div class="alert alert-warning mb-3">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                <strong>Pattern Not Yet Implemented:</strong> 
+                The "<strong>@patternInfo.Name</strong>" pattern is selected but not yet fully implemented.
+                Code will be generated using the standard <strong>CRUD List + Edit</strong> pattern instead.
+            </div>
+        }
+        
+        @* Read-Only Mode Info *@
+        @if (State.Options.IsReadOnly) {
+            <div class="alert alert-info mb-3">
+                <i class="fa-solid fa-lock me-2"></i>
+                <strong>Read-Only Entity:</strong> 
+                This entity is configured as read-only. The following will be excluded:
+                <ul class="mb-0 mt-1 small">
+                    <li>Save API endpoint</li>
+                    <li>Delete API endpoint</li>
+                    <li>Edit page component</li>
+                    <li>"Add New" button on list page</li>
+                </ul>
+            </div>
+        }
+
+        @* Editing Info *@
+        <div class="alert alert-info d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-solid fa-pen-to-square me-1"></i>
+                <strong>Editable Preview:</strong> You can edit the generated code directly. 
+                Changes will be preserved when you save the project.
+            </div>
+            @if (GeneratedFiles.Any(f => f.IsEdited)) {
+                <span class="badge bg-warning text-dark">
+                    @GeneratedFiles.Count(f => f.IsEdited) file(s) modified
+                </span>
+            }
+        </div>
+
+        @if (GeneratedFiles.Count == 0) {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Generating preview...</span>
+                </div>
+                <div class="mt-2 text-muted">Generating code preview...</div>
+            </div>
+        } else {
+            @* File Tabs *@
+            <ul class="nav nav-tabs mb-0" id="preview-tabs" role="tablist">
+                @for (int i = 0; i < GeneratedFiles.Count; i++) {
+                    var file = GeneratedFiles[i];
+                    var tabId = $"tab-{i}";
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link @(i == _selectedFileIndex ? "active" : "") @(file.IsEdited ? "text-warning" : "")"
+                                id="@tabId-tab" type="button" role="tab"
+                                @onclick="@(() => SelectFile(i))">
+                            <i class="fa-solid @GetFileIcon(file.FileType) @GetFileIconColor(file.FileType) me-1"></i>
+                            @GetShortFileName(file.FileName)
+                            @if (file.IsEdited) {
+                                <i class="fa-solid fa-circle text-warning ms-1" style="font-size: 0.5rem;"></i>
+                            }
+                        </button>
+                    </li>
+                }
+            </ul>
+
+            @* Selected File Editor *@
+            <div class="tab-content border border-top-0 rounded-bottom p-3">
+                @if (_selectedFileIndex >= 0 && _selectedFileIndex < GeneratedFiles.Count) {
+                    var selectedFile = GeneratedFiles[_selectedFileIndex];
+                    <FreeManager_App_EntityWizardCodeEditor File="@selectedFile"
+                                                 FileChanged="OnFileChanged"
+                                                 OnRegenerate="@(() => RegenerateFile(_selectedFileIndex))"
+                                                 ReadOnly="@ReadOnlyMode"
+                                                 Height="450px" />
+                }
+            </div>
+        }
+
+        @* Summary *@
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="fa-solid fa-clipboard-check me-1"></i>
+                    Summary
+                </span>
+                @if (GeneratedFiles.Any(f => f.IsEdited)) {
+                    <button class="btn btn-sm btn-outline-warning" @onclick="RevertAllChanges">
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Revert All Changes
+                    </button>
+                }
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6>Project</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Name:</strong> @State.Project.Name</li>
+                            <li><strong>Display:</strong> @(string.IsNullOrWhiteSpace(State.Project.DisplayName) ? State.Project.Name : State.Project.DisplayName)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Entities</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Count:</strong> @State.Entities.Count</li>
+                            <li><strong>Properties:</strong> @State.Entities.Sum(e => e.Properties.Count)</li>
+                            <li><strong>Relationships:</strong> @State.Relationships.Count</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Options</h6>
+                        <ul class="list-unstyled small">
+                            @if (State.Options.IsReadOnly) {
+                                <li><i class="fa-solid fa-lock text-warning me-1"></i> Read-Only</li>
+                            }
+                            @if (State.Options.IncludeAuditFields) {
+                                <li><i class="fa-solid fa-check text-success me-1"></i> Audit Fields</li>
+                            }
+                            @if (State.Options.IncludeTenantId) {
+                                <li><i class="fa-solid fa-check text-success me-1"></i> Multi-Tenant</li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Files</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Total:</strong> @GeneratedFiles.Count files</li>
+                            <li><strong>Lines:</strong> ~@GeneratedFiles.Sum(f => f.Content.Split('\n').Length)</li>
+                            @if (GeneratedFiles.Any(f => f.IsEdited)) {
+                                <li><strong class="text-warning">Modified:</strong> @GeneratedFiles.Count(f => f.IsEdited)</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Migration Note *@
+        <div class="alert alert-warning mt-3">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+            <strong>After Export:</strong> You'll need to run a database migration:
+            <pre class="mb-0 mt-2 bg-dark text-light p-2 rounded"><code>dotnet ef migrations add Add@(State.Entities.FirstOrDefault()?.Name ?? "Entity")Table
+dotnet ef database update</code></pre>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
+    [Parameter] public List<DataObjects.GeneratedFileInfo> GeneratedFiles { get; set; } = new();
+    [Parameter] public EventCallback<List<DataObjects.GeneratedFileInfo>> GeneratedFilesChanged { get; set; }
+    [Parameter] public EventCallback<int> OnRegenerateFile { get; set; }
+    [Parameter] public bool ReadOnlyMode { get; set; } = false;
+
+    private int _selectedFileIndex = 0;
+
+    private void SelectFile(int index) {
+        _selectedFileIndex = index;
+    }
+
+    private async Task OnFileChanged(DataObjects.GeneratedFileInfo file) {
+        // Update the file in the list
+        var index = GeneratedFiles.FindIndex(f => f.FileName == file.FileName);
+        if (index >= 0) {
+            GeneratedFiles[index] = file;
+            await GeneratedFilesChanged.InvokeAsync(GeneratedFiles);
+        }
+    }
+
+    private async Task RegenerateFile(int index) {
+        await OnRegenerateFile.InvokeAsync(index);
+    }
+
+    private async Task RevertAllChanges() {
+        foreach (var file in GeneratedFiles.Where(f => f.IsEdited)) {
+            file.Content = file.OriginalContent;
+            file.IsEdited = false;
+        }
+        await GeneratedFilesChanged.InvokeAsync(GeneratedFiles);
+    }
+
+    private string GetShortFileName(string fileName) {
+        // Get just the file name without extension for tab display
+        var name = System.IO.Path.GetFileNameWithoutExtension(fileName);
+        // Truncate if too long
+        return name.Length > 20 ? name.Substring(0, 17) + "..." : name;
+    }
+
+    private string GetFileIcon(string fileType) => fileType switch {
+        "EFModel" => "fa-database",
+        "DataObjects" => "fa-code",
+        "DataAccess" => "fa-cogs",
+        "Controller" => "fa-server",
+        "RazorPage" => "fa-file-code",
+        "RazorComponent" => "fa-puzzle-piece",
+        _ => "fa-file"
+    };
+
+    private string GetFileIconColor(string fileType) => fileType switch {
+        "EFModel" => "text-warning",
+        "DataObjects" => "text-info",
+        "DataAccess" => "text-success",
+        "Controller" => "text-primary",
+        "RazorPage" or "RazorComponent" => "text-danger",
+        _ => "text-secondary"
+    };
+}

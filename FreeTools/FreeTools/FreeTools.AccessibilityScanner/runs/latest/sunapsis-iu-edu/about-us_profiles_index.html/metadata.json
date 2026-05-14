@@ -1,0 +1,146 @@
+{
+  "PagePath": "/about-us/profiles/index.html",
+  "Url": "https://sunapsis.iu.edu/about-us/profiles/index.html",
+  "FinalUrl": null,
+  "Title": "Profiles: About Us: sunapsis: Indiana University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 47529,
+  "ScreenshotSizeBytes": 745781,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 745781
+    }
+  ],
+  "ImageCount": 20,
+  "ImagesMissingAlt": 17,
+  "Images": [
+    {
+      "SourceUrl": "https://assets.iu.edu/brand/3.x/trident-large.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/search/3.x/search.png",
+      "AltText": "Open Search"
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/web/3.x/css/img/search.png",
+      "AltText": "Search"
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Joe-Compion.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/about-us/profiles/licensing-and-client-engagement%20Team/Marie-OConnell.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Kathy-Abell.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Amy-Cowin-updated.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Anna-Hartwig.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Meghana.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Rushali.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/climis-tim-2022.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/John-Lee.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/santistaffphoto.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/no-photo.webp",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/Tyler-Dell.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/about-us/profiles/AdrianJohn250x250.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/dheeraj_picture.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/images/noman-abu.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sunapsis.iu.edu/about-us/profiles/development-team/Trishna.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://assets.iu.edu/brand/3.3.x/iu-sig-formal.svg",
+      "AltText": "Indiana University"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "access-control-allow-origin": "*",
+    "content-encoding": "gzip",
+    "content-length": "8673",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:12:08 GMT",
+    "vary": "Accept-Encoding",
+    "x-frame-options": "DENY"
+  },
+  "CapturedAt": "2026-02-19T02:12:08.305402Z"
+}

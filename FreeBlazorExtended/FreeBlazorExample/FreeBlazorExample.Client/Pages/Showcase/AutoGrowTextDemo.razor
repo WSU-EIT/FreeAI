@@ -1,0 +1,255 @@
+﻿@page "/showcase/autogrowtext"
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>AutoGrow Text Component</h1>
+            <p class="lead">A textarea component that automatically grows in height as content is entered, providing better usability for variable-length text input.</p>
+        </div>
+    </div>
+
+    <ShowcaseAbout Kind="component"
+        WhatTechnical="A textarea that listens to its own input event and adjusts its CSS height to match its scrollHeight, giving it MinRows as a floor and MaxRows as a ceiling. No JavaScript interop required."
+        WhatEli5="A text box that grows taller as you type so you never have to scroll inside it — but it also won't take over the whole page if someone pastes a novel."
+        Who=@(new[]{ "Form builders adding comment, notes, or description fields", "Developers who want a textarea that feels as natural as a messaging app input", "Any UI where the amount of text the user will enter is unpredictable" })
+        WhenUse=@(new[]{ "Comment boxes, notes fields, bio/description inputs", "Any textarea where a fixed height would either waste whitespace or force internal scrolling", "Forms where content length varies wildly between users" })
+        WhenNot=@(new[]{ "Code editors or very long structured text — use MonacoEditor instead", "Inputs where a fixed height is a deliberate design choice (e.g., a constrained log viewer)" })
+        Why="A fixed-height textarea that forces scroll feels cramped for short content and confusing for long content. Auto-grow matches the input to its content so it always looks just right."
+        TechNotes=@(new[]{ "Height adjustment triggered by the oninput event via a one-liner JS interop call (element.style.height = element.scrollHeight + 'px')", "MinRows sets the initial height via inline style rows attribute; MaxRows caps via max-height with overflow-y:auto", "MaxLength enforced via the native maxlength HTML attribute", "Fully keyboard accessible; no custom event handlers on the host page needed" })
+        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Basic AutoGrow</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Standard auto-growing textarea.</p>
+                    <label for="basicAutoGrow" class="form-label">Enter your message:</label>
+                    <AutoGrowText @bind-Value="@_basicText" Placeholder="Start typing and watch it grow..." />
+                    @if (!string.IsNullOrEmpty(_basicText)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Characters:</strong> @_basicText.Length | <strong>Lines:</strong> @(_basicText.Split('\n').Length)
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">With Min/Max Rows</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">AutoGrow with minimum and maximum row constraints.</p>
+                    <label for="constrainedAutoGrow" class="form-label">Message (2-8 rows):</label>
+                    <AutoGrowText @bind-Value="@_constrainedText" MinimumHeight="60px" Placeholder="Grows from a minimum height..." />
+                    @if (!string.IsNullOrEmpty(_constrainedText)) {
+                        <div class="alert alert-info mt-3 mb-0" role="alert">
+                            <strong>Current height:</strong> ~@(_constrainedText.Split('\n').Length) rows
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Comment Box</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Typical use case for comment input.</p>
+                    <label for="commentBox" class="form-label">Add a comment:</label>
+                    <AutoGrowText @bind-Value="@_commentText" MinimumHeight="60px" Placeholder="Share your thoughts..." />
+                    <button class="btn btn-primary btn-sm mt-2" disabled="@string.IsNullOrEmpty(_commentText)">
+                        Post Comment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Bio/Description</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">User bio with character limit.</p>
+                    <label for="bioBox" class="form-label">Profile Bio (max 300 chars):</label>
+                    <AutoGrowText @bind-Value="@_bioText" Placeholder="Tell us about yourself..." />
+                    <small class="text-muted">@_bioText.Length / 300 characters</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Code Example</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Multi-line code or technical input.</p>
+                    <label for="codeBox" class="form-label">Code snippet:</label>
+                    <AutoGrowText @bind-Value="@_codeText" MinimumHeight="90px" Placeholder="Paste code here..."
+                        Class="form-control font-monospace" />
+                    @if (!string.IsNullOrEmpty(_codeText)) {
+                        <small class="text-muted">Lines: @_codeText.Split('\n').Length</small>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Disabled State</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Read-only auto-grow textarea.</p>
+                    <label for="disabledBox" class="form-label">Status (read-only):</label>
+                    <textarea class="form-control" disabled rows="3">@_disabledText</textarea>
+                    <small class="text-muted mt-2 d-block"><em>AutoGrowText has no Disabled parameter — use a native &lt;textarea disabled&gt; for read-only display.</em></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Parameter Documentation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Value</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>The textarea value (use @@bind-Value for two-way binding)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Placeholder</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>Placeholder text shown when empty</td>
+                                </tr>
+                                <tr>
+                                    <td><code>MinimumHeight</code></td>
+                                    <td>string</td>
+                                    <td>-</td>
+                                    <td>CSS minimum height (e.g. "60px") — replaces fixed-row minimum</td>
+                                </tr>
+                                <tr>
+                                    <td><code>UpdateAfterMilliseconds</code></td>
+                                    <td>int</td>
+                                    <td>300</td>
+                                    <td>Debounce delay in ms before triggering OnValueChanged</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Id</code></td>
+                                    <td>string?</td>
+                                    <td>-</td>
+                                    <td>Optional id attribute for the textarea element</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Class</code></td>
+                                    <td>string</td>
+                                    <td>"form-control"</td>
+                                    <td>CSS classes to apply to the textarea</td>
+                                </tr>
+                                <tr>
+                                    <td><code>OnValueChanged</code></td>
+                                    <td>Delegate?</td>
+                                    <td>-</td>
+                                    <td>Callback (no params) fired after the debounce delay when value changes</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Usage Example</h2>
+                </div>
+                <div class="card-body">
+                    <pre><code class="language-razor">@@page "/feedback"
+
+&lt;div&gt;
+    &lt;h3&gt;Send Us Your Feedback&lt;/h3&gt;
+    &lt;label for="feedbackBox"&gt;Your message:&lt;/label&gt;
+    &lt;AutoGrowText @@bind-Value="@@_feedback"
+        MinimumHeight="90px"
+        Placeholder="Tell us what you think..." /&gt;
+
+    &lt;small&gt;@@_feedback.Length chars&lt;/small&gt;
+    &lt;button class="btn btn-primary" @@onclick="SubmitFeedback"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;
+
+@@code {{
+    private string _feedback = "";
+
+    private async Task SubmitFeedback()
+    {{
+        // Submit feedback to server
+    }}
+}}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Accessibility Notes</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Properly labeled with associated &lt;label&gt; elements</li>
+                        <li>Full keyboard support for navigation and text entry</li>
+                        <li>Screen reader friendly with semantic HTML</li>
+                        <li>Character count announcements for screen readers when MaxLength is set</li>
+                        <li>Clear visual feedback for focus and disabled states</li>
+                        <li>Auto-growing prevents need for manual scrolling</li>
+                        <li>Sufficient color contrast for readability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected string _basicText = "";
+    protected string _constrainedText = "";
+    protected string _commentText = "";
+    protected string _bioText = "";
+    protected string _codeText = "";
+    protected string _disabledText = "This is a read-only display. AutoGrowText has no Disabled parameter — use a native textarea with the disabled attribute for read-only scenarios.";
+}

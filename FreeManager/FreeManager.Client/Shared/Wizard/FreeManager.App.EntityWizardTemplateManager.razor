@@ -1,0 +1,216 @@
+﻿@* EntityWizardTemplateManager.App.razor - Load and save entity templates *@
+
+<div class="template-manager d-flex gap-2 mb-3">
+    @* Load Template Dropdown *@
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-folder-open me-1"></i>
+            Load Template
+        </button>
+        <ul class="dropdown-menu dropdown-menu-start" style="min-width: 300px;">
+            @* Built-in Templates Section *@
+            <li><h6 class="dropdown-header">Built-in Templates</h6></li>
+            @foreach (var template in DataObjects.BuiltInEntityTemplates.All) {
+                <li>
+                    <button class="dropdown-item d-flex align-items-start" 
+                            @onclick="() => LoadTemplate(template)">
+                        <i class="fa-solid @template.Icon text-primary me-2 mt-1"></i>
+                        <div>
+                            <div class="fw-semibold">@template.Name</div>
+                            <small class="text-muted">@template.Description</small>
+                        </div>
+                    </button>
+                </li>
+            }
+            
+            @if (SavedTemplates.Any()) {
+                <li><hr class="dropdown-divider" /></li>
+                <li><h6 class="dropdown-header">My Templates</h6></li>
+                @foreach (var template in SavedTemplates.OrderBy(t => t.Name)) {
+                    <li>
+                        <div class="dropdown-item d-flex align-items-center justify-content-between">
+                            <button class="btn btn-link p-0 text-start flex-grow-1 text-decoration-none text-dark"
+                                    @onclick="() => LoadTemplate(template)">
+                                <i class="fa-solid @template.Icon text-secondary me-2"></i>
+                                @template.Name
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger ms-2" 
+                                    @onclick="() => DeleteTemplate(template)"
+                                    @onclick:stopPropagation="true"
+                                    title="Delete template">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+
+    @* Save Template Button *@
+    <button class="btn btn-outline-secondary" @onclick="OpenSaveModal"
+            disabled="@(!CanSave)">
+        <i class="fa-solid fa-save me-1"></i>
+        Save As Template
+    </button>
+
+    @* Current Template Indicator *@
+    @if (!string.IsNullOrWhiteSpace(CurrentTemplateName)) {
+        <span class="badge bg-info d-flex align-items-center">
+            <i class="fa-solid fa-file-circle-check me-1"></i>
+            @CurrentTemplateName
+            <button class="btn-close btn-close-white ms-2" style="font-size: 0.6rem;"
+                    @onclick="ClearTemplate" title="Clear template"></button>
+        </span>
+    }
+</div>
+
+@* Save Template Modal *@
+@if (_showSaveModal) {
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-save me-2"></i>
+                        Save as Template
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="CloseSaveModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Template Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" @bind="_newTemplateName" 
+                               placeholder="My Custom Template" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" rows="2" @bind="_newTemplateDescription"
+                                  placeholder="Brief description (optional)"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var icon in _iconOptions) {
+                                <button type="button" 
+                                        class="btn @(_newTemplateIcon == icon ? "btn-primary" : "btn-outline-secondary")"
+                                        @onclick="() => _newTemplateIcon = icon">
+                                    <i class="fa-solid @icon"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseSaveModal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTemplate"
+                            disabled="@(string.IsNullOrWhiteSpace(_newTemplateName))">
+                        <i class="fa-solid fa-save me-1"></i>
+                        Save Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public DataObjects.EntityDefinition CurrentEntity { get; set; } = new();
+    [Parameter] public DataObjects.EntityWizardOptions CurrentOptions { get; set; } = new();
+    [Parameter] public List<DataObjects.SavedEntityTemplate> SavedTemplates { get; set; } = new();
+    
+    [Parameter] public EventCallback<DataObjects.SavedEntityTemplate> OnTemplateLoaded { get; set; }
+    [Parameter] public EventCallback<DataObjects.SavedEntityTemplate> OnTemplateSaved { get; set; }
+    [Parameter] public EventCallback<DataObjects.SavedEntityTemplate> OnTemplateDeleted { get; set; }
+
+    private bool _showSaveModal = false;
+    private string _newTemplateName = "";
+    private string _newTemplateDescription = "";
+    private string _newTemplateIcon = "fa-cube";
+    
+    private string? CurrentTemplateName = null;
+
+    private readonly string[] _iconOptions = {
+        "fa-cube", "fa-database", "fa-table", "fa-list", "fa-folder",
+        "fa-user", "fa-users", "fa-building", "fa-box", "fa-cog",
+        "fa-file", "fa-tag", "fa-bookmark", "fa-star", "fa-heart"
+    };
+
+    private bool CanSave => CurrentEntity.Properties.Any(p => !p.IsPrimaryKey);
+
+    private async Task LoadTemplate(DataObjects.SavedEntityTemplate template) {
+        CurrentTemplateName = template.Name;
+        await OnTemplateLoaded.InvokeAsync(template);
+    }
+
+    private void ClearTemplate() {
+        CurrentTemplateName = null;
+    }
+
+    private void OpenSaveModal() {
+        _newTemplateName = "";
+        _newTemplateDescription = "";
+        _newTemplateIcon = "fa-cube";
+        _showSaveModal = true;
+    }
+
+    private void CloseSaveModal() {
+        _showSaveModal = false;
+    }
+
+    private async Task SaveTemplate() {
+        if (string.IsNullOrWhiteSpace(_newTemplateName)) return;
+
+        var template = new DataObjects.SavedEntityTemplate {
+            Name = _newTemplateName.Trim(),
+            Description = _newTemplateDescription?.Trim() ?? "",
+            Icon = _newTemplateIcon,
+            IsBuiltIn = false,
+            CreatedAt = DateTime.UtcNow,
+            Entity = new DataObjects.EntityDefinition {
+                Properties = CurrentEntity.Properties.Where(p => !p.IsPrimaryKey).Select(p => new DataObjects.PropertyDefinition {
+                    Name = p.Name,
+                    Type = p.Type,
+                    IsRequired = p.IsRequired,
+                    IsNullable = p.IsNullable,
+                    DefaultValue = p.DefaultValue,
+                    MaxLength = p.MaxLength,
+                    EnumName = p.EnumName,
+                    IsSystemField = p.IsSystemField,
+                    Description = p.Description,
+                    IsFilterable = p.IsFilterable,
+                    FilterType = p.FilterType
+                }).ToList(),
+                Enums = CurrentEntity.Enums.Select(e => new DataObjects.EnumDefinition {
+                    Name = e.Name,
+                    Values = new List<string>(e.Values),
+                    DefaultValue = e.DefaultValue
+                }).ToList()
+            },
+            Options = new DataObjects.EntityWizardOptions {
+                GenerateListPage = CurrentOptions.GenerateListPage,
+                GenerateEditPage = CurrentOptions.GenerateEditPage,
+                IncludeSoftDelete = CurrentOptions.IncludeSoftDelete,
+                IncludeAuditFields = CurrentOptions.IncludeAuditFields,
+                IncludeTenantId = CurrentOptions.IncludeTenantId,
+                IsReadOnly = CurrentOptions.IsReadOnly,
+                DefaultPageSize = CurrentOptions.DefaultPageSize,
+                GenerateSignalRUpdates = CurrentOptions.GenerateSignalRUpdates
+            }
+        };
+
+        CurrentTemplateName = template.Name;
+        await OnTemplateSaved.InvokeAsync(template);
+        CloseSaveModal();
+    }
+
+    private async Task DeleteTemplate(DataObjects.SavedEntityTemplate template) {
+        await OnTemplateDeleted.InvokeAsync(template);
+        if (CurrentTemplateName == template.Name) {
+            CurrentTemplateName = null;
+        }
+    }
+}

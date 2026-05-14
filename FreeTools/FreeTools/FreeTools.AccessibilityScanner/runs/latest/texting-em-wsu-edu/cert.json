@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=texting.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "8629D6990F48C05849E39A7D437822A4CCED9871",
+  "SerialNumber": "00EB288592C57E8E8E3BD8B2A76E51AA8E",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "texting.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "texting.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

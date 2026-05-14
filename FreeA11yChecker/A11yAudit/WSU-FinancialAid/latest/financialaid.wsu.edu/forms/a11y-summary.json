@@ -1,0 +1,339 @@
+{
+  "TotalViolations": 14,
+  "CriticalCount": 0,
+  "SeriousCount": 5,
+  "ModerateCount": 9,
+  "MinorCount": 0,
+  "AxeCount": 0,
+  "HtmlCheckCount": 9,
+  "HtmlCsCount": 0,
+  "IbmCount": 5,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=226294922534478\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg src=\u0022https://ad.ipredictive.com/d/track/event?upid=116704\u0026amp;url=[url]\u0026amp;p1=remarketing\u0026amp;cache_buster=[timestamp]\u0026amp;ps=1\u0022 height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_single",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_single",
+          "CanonicalRuleId": "aria_banner_single",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role found on the page",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader aria-label=\u0022WSU system\u0022 class=\u0022wsu-header-global  wsu-header-global--style-system\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "table_headers_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "table_headers_exists",
+          "CanonicalRuleId": "table_headers_exists",
+          "Severity": "serious",
+          "Message": "Table has no headers identified",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/article[1]/div[1]/figure[1]/table[1]",
+          "Snippet": "\u003Ctable\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-pdf",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-pdf",
+          "CanonicalRuleId": "link-pdf",
+          "Severity": "moderate",
+          "Message": "Link points to a PDF \u2014 verify accessibility of linked document",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2025/08/25-26-Consortium-Agreement-Form.pdf\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-pdf",
+          "CanonicalRuleId": "link-pdf",
+          "Severity": "moderate",
+          "Message": "Link points to a PDF \u2014 verify accessibility of linked document",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://s3.wp.wsu.edu/uploads/sites/227/2024/07/Permission-to-release-to-private-school-provider-1.pdf\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-pdf",
+          "CanonicalRuleId": "link-pdf",
+          "Severity": "moderate",
+          "Message": "Link points to a PDF \u2014 verify accessibility of linked document",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://s3.wp.wsu.edu/uploads/sites/227/2022/08/Scholarship-Designation-Form-2.0.pdf\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "link-pdf",
+          "CanonicalRuleId": "link-pdf",
+          "Severity": "moderate",
+          "Message": "Link points to a PDF \u2014 verify accessibility of linked document",
+          "Selector": "",
+          "Snippet": "\u003Ca href=\u0022https://wpcdn.web.wsu.edu/wp-financialaid/uploads/sites/2322/2024/10/Spending-Plan-worksheet.pdf\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/a[1]",
+          "Snippet": "\u003Ca href=\u0022#wsu-site-menu\u0022 class=\u0022wsu-skip-to-main skip-to-menu-desktop\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/button[1]",
+          "Snippet": "\u003Cbutton id=\u0022open-modal\u0022 data-panel=\u0022wsu-quicklinks-panel\u0022 class=\u0022wsu-header-utility-bar__quicklinks wsu-slide-in-panel--open\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "table-header",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "table-header",
+          "CanonicalRuleId": "table-header",
+          "Severity": "moderate",
+          "Message": "Data table is missing header cells (\u003Cth\u003E)",
+          "Selector": "",
+          "Snippet": "\u003Ctable\u003E\u003Ctbody\u003E\u003Ctr\u003E\u003Ctd\u003E\u003Cstrong\u003E\u003Ca href=\u0022https://forms.financialaid.wsu.edu/onlineforms/optional/fe/\u0022 target=\u0022_blank\u0022 rel=\u0022noreferrer noopener\u0022\u003EAcademic Year Revision Request\u003C/a\u003E:\u003C/strong\u003E \u003Cbr\u003EThis form may be submitted when you have a specific type of additional or unexpected education-related cost that is not originally included in your cost of attendance. \u003Cstrong\u003EThis includes:\u003C/strong\u003E computer costs, transportation, rent/mortgage, child care costs, etc. This form may also be submitted if your",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "fieldset-missing",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "fieldset-missing",
+          "CanonicalRuleId": "fieldset-missing",
+          "Severity": "moderate",
+          "Message": "Radio/checkbox group is not wrapped in a fieldset",
+          "Selector": "",
+          "Snippet": "\u003Cinput class=\u0022wsu-search-options__option-input\u0022 type=\u0022radio\u0022 name=\u0022wsu-search-type\u0022 value=\u0022site\u0022 checked=\u0022checked\u0022 style=\u0022\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_child_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_child_valid",
+          "CanonicalRuleId": "aria_child_valid",
+          "Severity": "moderate",
+          "Message": "The element with role \u0022list\u0022 does not own any child element with any of the following role(s): \u0022listitem\u0022",
+          "Selector": "/html[1]/body[1]/div[1]/div[2]/footer[1]/div[1]/ul[2]",
+          "Snippet": "\u003Cul class=\u0022wsu-social-icons\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

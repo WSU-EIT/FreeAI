@@ -1,0 +1,13 @@
+@page "/AppBuilder/Dashboard"
+@inject NavigationManager NavigationManager
+
+@* FMEntityDashboard.App.razor - Redirect to unified App Builder *@
+@* This page is deprecated - redirects to /AppBuilder *@
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Redirect to unified App Builder dashboard
+        NavigationManager.NavigateTo(Helpers.BuildUrl("AppBuilder"), replace: true);
+    }
+}

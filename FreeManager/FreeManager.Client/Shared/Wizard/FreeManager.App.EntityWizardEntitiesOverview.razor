@@ -1,0 +1,459 @@
+@* EntityWizardEntitiesOverview.App.razor - Multi-entity management grid *@
+@* Shows all entities in project with add/edit/delete/reorder capabilities *@
+
+<div class="entities-overview">
+    @* Header with Add Entity button *@
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <span class="text-muted">
+                @if (Entities.Count == 0)
+                {
+                    <span>No entities defined yet. Add your first entity to get started.</span>
+                }
+                else
+                {
+                    <span>@Entities.Count @(Entities.Count == 1 ? "entity" : "entities") defined</span>
+                }
+            </span>
+        </div>
+        <button class="btn btn-primary" @onclick="AddEntity">
+            <i class="fa-solid fa-plus me-1"></i>
+            Add Entity
+        </button>
+    </div>
+
+    @* Entity Cards Grid *@
+    <div class="row g-3">
+        @foreach (var entity in Entities.OrderBy(e => e.SortOrder))
+        {
+            var entityCopy = entity;
+            var index = Entities.IndexOf(entity);
+            <div class="col-md-6 col-lg-4">
+                <div class="card entity-card h-100 @(entity.IsJoinTable ? "border-warning" : "")">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid @(entity.IsJoinTable ? "fa-link" : "fa-cube") me-2 @(entity.IsJoinTable ? "text-warning" : "text-primary")"></i>
+                            <strong>@entity.Name</strong>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            @if (index > 0)
+                            {
+                                <button class="btn btn-outline-secondary" @onclick="@(() => MoveUp(entityCopy))" title="Move up">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                </button>
+                            }
+                            @if (index < Entities.Count - 1)
+                            {
+                                <button class="btn btn-outline-secondary" @onclick="@(() => MoveDown(entityCopy))" title="Move down">
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (entity.IsJoinTable)
+                        {
+                            <span class="badge bg-warning text-dark mb-2">
+                                <i class="fa-solid fa-link me-1"></i>Join Table
+                            </span>
+                        }
+
+                        <div class="entity-stats mb-3">
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="stat-value fw-bold text-primary">@entity.Properties.Count</div>
+                                    <div class="stat-label small text-muted">Properties</div>
+                                </div>
+                                <div class="col">
+                                    <div class="stat-value fw-bold text-danger">@entity.Enums.Count</div>
+                                    <div class="stat-label small text-muted">Enums</div>
+                                </div>
+                                <div class="col">
+                                    <div class="stat-value fw-bold text-info">@GetRelationshipCount(entity.Name)</div>
+                                    <div class="stat-label small text-muted">Relations</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-details small text-muted mb-2">
+                            <div><i class="fa-solid fa-key me-1"></i>PK: <code>@entity.PrimaryKeyName</code> (@entity.PrimaryKeyType)</div>
+                            <div><i class="fa-solid fa-table me-1"></i>Table: <code>@(string.IsNullOrEmpty(entity.TableName) ? entity.PluralName : entity.TableName)</code></div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(entity.Description))
+                        {
+                            <p class="card-text small text-muted">@entity.Description</p>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm flex-grow-1" @onclick="@(() => EditEntity(index))">
+                                <i class="fa-solid fa-pen me-1"></i>Edit
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="@(() => DuplicateEntity(entityCopy))" title="Duplicate">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" @onclick="@(() => DeleteEntity(entityCopy))" title="Delete"
+                                    disabled="@(Entities.Count <= 1)">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @* Add Entity Card *@
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-dashed add-entity-card" @onclick="AddEntity" style="cursor: pointer;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted">
+                    <i class="fa-solid fa-plus fa-3x mb-2 opacity-50"></i>
+                    <span>Add Entity</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Quick Add Panel *@
+    @if (_showQuickAdd)
+    {
+        <div class="card mt-4 border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-bolt me-2"></i>Quick Add Entity</span>
+                <button class="btn btn-sm btn-light" @onclick="@(() => _showQuickAdd = false)">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Entity Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" @bind="_quickAddName" @bind:event="oninput"
+                               placeholder="e.g., Customer, Order, Product" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Plural Name</label>
+                        <input type="text" class="form-control" @bind="_quickAddPlural"
+                               placeholder="@(_quickAddName + "s")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Primary Key Type</label>
+                        <select class="form-select" @bind="_quickAddPkType">
+                            <option value="Guid">Guid</option>
+                            <option value="int">int</option>
+                            <option value="long">long</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="quickAddAudit" @bind="_quickAddIncludeAudit" />
+                        <label class="form-check-label" for="quickAddAudit">Include Audit Fields</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="quickAddSoftDelete" @bind="_quickAddIncludeSoftDelete" />
+                        <label class="form-check-label" for="quickAddSoftDelete">Include Soft Delete</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="quickAddJoin" @bind="_quickAddIsJoinTable" />
+                        <label class="form-check-label" for="quickAddJoin">Join Table (M:M)</label>
+                    </div>
+                </div>
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-primary" @onclick="CreateQuickAddEntity" disabled="@string.IsNullOrWhiteSpace(_quickAddName)">
+                        <i class="fa-solid fa-plus me-1"></i>Add Entity
+                    </button>
+                    <button class="btn btn-success" @onclick="CreateQuickAddAndEdit" disabled="@string.IsNullOrWhiteSpace(_quickAddName)">
+                        <i class="fa-solid fa-pen me-1"></i>Add & Edit
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="@(() => _showQuickAdd = false)">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Relationship Summary (if any relationships exist) *@
+    @if (Relationships.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fa-solid fa-project-diagram me-2"></i>
+                Relationships (@Relationships.Count)
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Source → Target</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rel in Relationships.OrderBy(r => r.SortOrder))
+                        {
+                            <tr>
+                                <td><strong>@rel.Name</strong></td>
+                                <td>
+                                    <span class="badge @GetRelationshipTypeBadge(rel.Type)">
+                                        @GetRelationshipTypeLabel(rel.Type)
+                                    </span>
+                                </td>
+                                <td>
+                                    <code>@rel.SourceEntityName</code>
+                                    <i class="fa-solid fa-arrow-right mx-1 text-muted"></i>
+                                    <code>@rel.TargetEntityName</code>
+                                </td>
+                                <td><span class="badge bg-secondary">@rel.OnDelete</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @* Tips *@
+    <div class="alert alert-info mt-4">
+        <i class="fa-solid fa-lightbulb me-2"></i>
+        <strong>Tip:</strong> Define all your entities first, then add relationships between them in the next step.
+        Use "Join Table" for many-to-many relationships that need extra properties (like timestamps or sort order).
+    </div>
+</div>
+
+<style>
+    .entity-card { transition: all 0.2s ease; }
+    .entity-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .add-entity-card { border: 2px dashed #dee2e6; min-height: 200px; }
+    .add-entity-card:hover { border-color: var(--bs-primary); background: rgba(13, 110, 253, 0.05); }
+    .border-dashed { border-style: dashed !important; }
+    .stat-value { font-size: 1.25rem; }
+</style>
+
+@code {
+    [Parameter] public List<DataObjects.EntityDefinition> Entities { get; set; } = new();
+    [Parameter] public EventCallback<List<DataObjects.EntityDefinition>> EntitiesChanged { get; set; }
+    [Parameter] public List<DataObjects.RelationshipDefinition> Relationships { get; set; } = new();
+    [Parameter] public EventCallback<int> OnEditEntity { get; set; }
+
+    private bool _showQuickAdd = false;
+    private string _quickAddName = "";
+    private string _quickAddPlural = "";
+    private string _quickAddPkType = "Guid";
+    private bool _quickAddIncludeAudit = true;
+    private bool _quickAddIncludeSoftDelete = true;
+    private bool _quickAddIsJoinTable = false;
+
+    private void AddEntity()
+    {
+        _showQuickAdd = true;
+        _quickAddName = "";
+        _quickAddPlural = "";
+        _quickAddPkType = "Guid";
+        _quickAddIncludeAudit = true;
+        _quickAddIncludeSoftDelete = true;
+        _quickAddIsJoinTable = false;
+    }
+
+    private async Task CreateQuickAddEntity()
+    {
+        var entity = CreateEntityFromQuickAdd();
+        Entities.Add(entity);
+        await EntitiesChanged.InvokeAsync(Entities);
+        _showQuickAdd = false;
+        ResetQuickAdd();
+    }
+
+    private async Task CreateQuickAddAndEdit()
+    {
+        var entity = CreateEntityFromQuickAdd();
+        Entities.Add(entity);
+        await EntitiesChanged.InvokeAsync(Entities);
+        _showQuickAdd = false;
+        ResetQuickAdd();
+        await OnEditEntity.InvokeAsync(Entities.Count - 1);
+    }
+
+    private DataObjects.EntityDefinition CreateEntityFromQuickAdd()
+    {
+        var name = _quickAddName.Trim();
+        var plural = string.IsNullOrWhiteSpace(_quickAddPlural) ? name + "s" : _quickAddPlural.Trim();
+        var pkName = name + "Id";
+
+        var entity = new DataObjects.EntityDefinition
+        {
+            Name = name,
+            PluralName = plural,
+            TableName = plural,
+            PrimaryKeyName = pkName,
+            PrimaryKeyType = _quickAddPkType,
+            SortOrder = Entities.Count,
+            IsJoinTable = _quickAddIsJoinTable,
+            Properties = new List<DataObjects.PropertyDefinition>()
+        };
+
+        // Add standard Name property for non-join tables
+        if (!_quickAddIsJoinTable)
+        {
+            entity.Properties.Add(new DataObjects.PropertyDefinition
+            {
+                Name = "Name",
+                Type = "string",
+                IsRequired = true,
+                MaxLength = 200,
+                SortOrder = 0
+            });
+        }
+
+        // Add audit fields
+        if (_quickAddIncludeAudit)
+        {
+            entity.Properties.AddRange(DataObjects.StandardFields.Audit.Select((p, i) => new DataObjects.PropertyDefinition
+            {
+                Name = p.Name,
+                Type = p.Type,
+                IsRequired = p.IsRequired,
+                IsNullable = p.IsNullable,
+                DefaultValue = p.DefaultValue,
+                IsSystemField = true,
+                SortOrder = 100 + i
+            }));
+        }
+
+        // Add soft delete fields
+        if (_quickAddIncludeSoftDelete)
+        {
+            entity.Properties.AddRange(DataObjects.StandardFields.SoftDelete.Select((p, i) => new DataObjects.PropertyDefinition
+            {
+                Name = p.Name,
+                Type = p.Type,
+                IsRequired = p.IsRequired,
+                IsNullable = p.IsNullable,
+                DefaultValue = p.DefaultValue,
+                IsSystemField = true,
+                SortOrder = 200 + i
+            }));
+        }
+
+        return entity;
+    }
+
+    private void ResetQuickAdd()
+    {
+        _quickAddName = "";
+        _quickAddPlural = "";
+        _quickAddPkType = "Guid";
+        _quickAddIncludeAudit = true;
+        _quickAddIncludeSoftDelete = true;
+        _quickAddIsJoinTable = false;
+    }
+
+    private async Task EditEntity(int index)
+    {
+        await OnEditEntity.InvokeAsync(index);
+    }
+
+    private async Task DuplicateEntity(DataObjects.EntityDefinition entity)
+    {
+        var copy = new DataObjects.EntityDefinition
+        {
+            Name = entity.Name + "Copy",
+            PluralName = entity.PluralName + "Copies",
+            TableName = entity.TableName + "Copies",
+            PrimaryKeyName = entity.Name + "CopyId",
+            PrimaryKeyType = entity.PrimaryKeyType,
+            SortOrder = Entities.Count,
+            IsJoinTable = entity.IsJoinTable,
+            Description = entity.Description,
+            Properties = entity.Properties.Select(p => new DataObjects.PropertyDefinition
+            {
+                Name = p.Name,
+                Type = p.Type,
+                IsRequired = p.IsRequired,
+                IsNullable = p.IsNullable,
+                DefaultValue = p.DefaultValue,
+                MaxLength = p.MaxLength,
+                EnumName = p.EnumName,
+                SortOrder = p.SortOrder,
+                IsPrimaryKey = p.IsPrimaryKey,
+                IsSystemField = p.IsSystemField,
+                Description = p.Description,
+                IsFilterable = p.IsFilterable,
+                FilterType = p.FilterType
+            }).ToList(),
+            Enums = entity.Enums.Select(e => new DataObjects.EnumDefinition
+            {
+                Name = e.Name,
+                Values = new List<string>(e.Values),
+                DefaultValue = e.DefaultValue
+            }).ToList()
+        };
+
+        Entities.Add(copy);
+        await EntitiesChanged.InvokeAsync(Entities);
+    }
+
+    private async Task DeleteEntity(DataObjects.EntityDefinition entity)
+    {
+        if (Entities.Count <= 1) return;
+        Entities.Remove(entity);
+        ReorderEntities();
+        await EntitiesChanged.InvokeAsync(Entities);
+    }
+
+    private async Task MoveUp(DataObjects.EntityDefinition entity)
+    {
+        var index = Entities.IndexOf(entity);
+        if (index > 0)
+        {
+            Entities.RemoveAt(index);
+            Entities.Insert(index - 1, entity);
+            ReorderEntities();
+            await EntitiesChanged.InvokeAsync(Entities);
+        }
+    }
+
+    private async Task MoveDown(DataObjects.EntityDefinition entity)
+    {
+        var index = Entities.IndexOf(entity);
+        if (index < Entities.Count - 1)
+        {
+            Entities.RemoveAt(index);
+            Entities.Insert(index + 1, entity);
+            ReorderEntities();
+            await EntitiesChanged.InvokeAsync(Entities);
+        }
+    }
+
+    private void ReorderEntities()
+    {
+        for (int i = 0; i < Entities.Count; i++)
+        {
+            Entities[i].SortOrder = i;
+        }
+    }
+
+    private int GetRelationshipCount(string entityName)
+    {
+        return Relationships.Count(r => r.SourceEntityName == entityName || r.TargetEntityName == entityName);
+    }
+
+    private string GetRelationshipTypeBadge(DataObjects.RelationshipType type) => type switch
+    {
+        DataObjects.RelationshipType.OneToMany => "bg-primary",
+        DataObjects.RelationshipType.ManyToMany => "bg-warning text-dark",
+        DataObjects.RelationshipType.SelfReference => "bg-info",
+        DataObjects.RelationshipType.OneToOne => "bg-success",
+        _ => "bg-secondary"
+    };
+
+    private string GetRelationshipTypeLabel(DataObjects.RelationshipType type) => type switch
+    {
+        DataObjects.RelationshipType.OneToMany => "1:N",
+        DataObjects.RelationshipType.ManyToMany => "N:M",
+        DataObjects.RelationshipType.SelfReference => "Self",
+        DataObjects.RelationshipType.OneToOne => "1:1",
+        _ => "?"
+    };
+}

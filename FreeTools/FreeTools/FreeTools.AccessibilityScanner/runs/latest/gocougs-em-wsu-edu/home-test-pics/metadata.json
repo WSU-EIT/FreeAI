@@ -1,0 +1,74 @@
+{
+  "PagePath": "/home-test-pics/",
+  "Url": "https://gocougs.em.wsu.edu/home-test-pics/",
+  "FinalUrl": null,
+  "Title": "Office of the Registrar | gocougs.em.wsu.edu",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 666340,
+  "ScreenshotSizeBytes": 227752,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 3,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 227752
+    }
+  ],
+  "ImageCount": 4,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/752422/picture7.jpg?width=500\u0026height=333.33333333333337",
+      "AltText": "Group veterans posing in the mall"
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/751378/cougar-pride-856.jpg?width=500\u0026height=332.89473684210526",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/751376/campus-1471.jpg?width=500\u0026height=333.5526315789474",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://gocougs.em.wsu.edu/media/751387/wsu-logo-1284.jpg?width=500\u0026height=332.89473684210526",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 2,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:13:55.9862457Z"
+}

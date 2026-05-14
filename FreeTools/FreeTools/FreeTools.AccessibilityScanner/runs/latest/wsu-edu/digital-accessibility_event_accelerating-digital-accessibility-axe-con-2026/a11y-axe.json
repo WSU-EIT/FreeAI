@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 329,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "aria-allowed-attr",
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Message": "Elements must only use supported ARIA attributes",
+      "Selector": "#wsu-navigation-vertical",
+      "Snippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-navigation-vertical wsu-slide-in-panel wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "definition-list",
+      "CanonicalRuleId": "definition-list",
+      "Severity": "serious",
+      "Message": "\u003Cdl\u003E elements must only directly contain properly-ordered \u003Cdt\u003E and \u003Cdd\u003E groups, \u003Cscript\u003E, \u003Ctemplate\u003E or \u003Cdiv\u003E elements",
+      "Selector": ".tribe-events-meta-group-venue \u003E dl",
+      "Snippet": "\u003Cdl\u003E\n\t\t\n\t\t\u003Cdd class=\u0022tribe-venue\u0022\u003E \u003Ca href=\u0022https://wsu.edu/digital-accessibility/venue/webinar/\u0022\u003EWebinar\u003C/a\u003E \u003C/dd\u003E\n\n\t\t\n\t\t\n\t\t\n\t\t\t\u003C/dl\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/definition-list?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-in-text-block",
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Message": "Links must be distinguishable without relying on color",
+      "Selector": "ul:nth-child(8) \u003E li:nth-child(4) \u003E a",
+      "Snippet": "\u003Ca href=\u0022https://www.deque.com/axe-con/sessions/ada-title-ii-panel-discussion/\u0022\u003EADA Title II: Panel Discussion\u003C/a\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

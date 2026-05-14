@@ -1,0 +1,21 @@
+@page "/showcase/networkchart/v1"
+@using FreeBlazorExtended.NetworkChart
+
+<div class="container-fluid py-4">
+    <h1>Default Network Chart</h1>
+
+    <NetworkChart Nodes="_nodes" Relationships="_relationships" />
+</div>
+
+@code {
+    private readonly List<NetworkChart.NetworkNode> _nodes = new()
+    {
+        new() { id = "1", label = "Alice", title = "Alice" },
+        new() { id = "2", label = "Bob", title = "Bob" },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _relationships = new()
+    {
+        new() { id = "r1", from = "1", to = "2", label = "knows", title = "Alice knows Bob" },
+    };
+}

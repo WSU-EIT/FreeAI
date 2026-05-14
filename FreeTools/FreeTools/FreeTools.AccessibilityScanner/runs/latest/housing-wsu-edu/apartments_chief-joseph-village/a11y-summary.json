@@ -1,0 +1,48 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 2,
+  "Critical": 0,
+  "Serious": 2,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 2,
+      "Critical": 0,
+      "Serious": 2,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 0,
+      "Critical": 0,
+      "Serious": 0,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "frame-title",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Frames must have an accessible name",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/frame-title?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ciframe aria-label=\u0022\u0022 class=\u0022YouTubeVideo\u0022 width=\u0022100%\u0022 height=\u0022auto\u0022 src=\u0022https://www.youtube-nocookie.com/embed/B3EutLRTXzk?rel=0\u0022 title=\u0022\u0022\u003E\n    \u003C/i..."
+    }
+  ]
+}

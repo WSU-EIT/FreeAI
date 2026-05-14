@@ -1,0 +1,97 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 6,
+  "Critical": 0,
+  "Serious": 4,
+  "Moderate": 2,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 1,
+      "Critical": 0,
+      "Serious": 1,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 5,
+      "Critical": 0,
+      "Serious": 3,
+      "Moderate": 2,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "2/2",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Links must have discernible text",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca class=\u0022wsu-g-header__search-icon-link\u0022 href=\u0022https://search.wsu.edu/\u0022 aria-haspopup=\u0022true\u0022 aria-expanded=\u0022true\u0022\u003E\n\t\t\t\t\t\t\u003Cspan class=\u0022wsu-icon wsu-i-..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Button has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Cbutton class=\u0022wsu-g-header__more-icon-link\u0022\u003E\n\t\t\t\t\t\t\u003Cspan class=\u0022wsu-icon wsu-i-more\u0022\u003E\u003C/span\u003E\n\t\t\t\t\t\u003C/button\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Page has no \u003Cmain\u003E landmark",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

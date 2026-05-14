@@ -1,0 +1,62 @@
+{
+  "PagePath": "/process/",
+  "Url": "https://curriculumchange.registrar.wsu.edu/process/",
+  "FinalUrl": null,
+  "Title": "Process | Registrar Curriculum",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 650545,
+  "ScreenshotSizeBytes": 174115,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 174115
+    }
+  ],
+  "ImageCount": 1,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://curriculumchange.registrar.wsu.edu/media/756344/accounting_information_systems_and_business_law_professor_susan_gill_talks_with_student.jpg?rmode=max\u0026height=500",
+      "AltText": "Instructor helping a student"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:09:10.022032Z"
+}

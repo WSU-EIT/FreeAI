@@ -1,0 +1,19 @@
+{
+  "Subject": "CN=umbracodev.em.wsu.edu, O=Washington State University, S=Washington, C=US",
+  "Issuer": "CN=InCommon RSA Server CA 2, O=Internet2, C=US",
+  "Thumbprint": "A09443294B230FB379CC26FBEA9A1D487EE7D8C3",
+  "SerialNumber": "00FD31C01B583319C67DC2A6841BE45F94",
+  "NotBefore": "2026-01-11T16:00:00-08:00",
+  "NotAfter": "2027-01-12T15:59:59-08:00",
+  "DaysUntilExpiry": 327,
+  "SignatureAlgorithm": "sha256RSA",
+  "KeySizeBits": 2048,
+  "SubjectAlternativeNames": [
+    "umbracodev.em.wsu.edu"
+  ],
+  "SanWsuDomains": [
+    "umbracodev.em.wsu.edu"
+  ],
+  "SanOtherDomains": [],
+  "ErrorMessage": null
+}

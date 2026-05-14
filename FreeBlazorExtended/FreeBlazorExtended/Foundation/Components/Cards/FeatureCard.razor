@@ -1,0 +1,202 @@
+﻿@*
+    FeatureCard — Foundation summary card with icon, title, description, and optional call-to-action.
+
+    Use this component in landing pages, feature listings, or product showcases where each
+    item needs a visual identity icon, a short pitch, and an optional bullet list of capabilities.
+
+    Required parameters:
+        Title — the feature name; the card is hidden when empty.
+
+    Optional parameters:
+        Description  — one or two sentences that explain what the feature does
+        IconClass    — FontAwesome class for the decorative icon (e.g. "fas fa-robot")
+        Features     — bullet-point list of sub-capabilities; rendered as <ul>
+        Highlighted  — applies a primary-colour border and light background tint
+        ChildContent — render fragment for buttons, links, or any footer content
+
+    Example:
+        <FeatureCard Title="AI Assistant"
+                     Description="Ask questions in plain language and get instant answers."
+                     IconClass="fas fa-robot"
+                     Features="@(new() { "Streaming responses", "Citation links", "Code blocks" })"
+                     Highlighted="true">
+            <a href="/ai" class="btn btn-primary btn-sm">Try it</a>
+        </FeatureCard>
+*@
+@namespace FreeBlazorExtended.Components
+
+@if (!String.IsNullOrWhiteSpace(_title)) {
+    <div class="feature-card @_cardClass" role="region" aria-label="@_title">
+        @if (!String.IsNullOrWhiteSpace(IconClass)) {
+            <div class="feature-icon">
+                <i class="@IconClass"></i>
+            </div>
+        }
+
+        <div class="feature-content">
+            <h3 class="feature-title">@_title</h3>
+
+            @if (!String.IsNullOrWhiteSpace(Description)) {
+                <p class="feature-description">@Description</p>
+            }
+
+            @if (Features?.Any() == true) {
+                <ul class="feature-list">
+                    @foreach (var feature in Features) {
+                        <li>@feature</li>
+                    }
+                </ul>
+            }
+
+            @if (ChildContent != null) {
+                <div class="feature-footer">
+                    @ChildContent
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<style>
+    .feature-card {
+        background-color: var(--bs-light);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        border-color: var(--bs-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card.highlighted {
+        border-color: var(--bs-primary);
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .feature-icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bs-primary-bg-subtle);
+        border-radius: 0.375rem;
+        color: var(--bs-primary);
+        font-size: 1.5rem;
+    }
+
+    .feature-content {
+        flex: 1;
+    }
+
+    .feature-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .feature-description {
+        margin: 0 0 1rem 0;
+        font-size: 0.95rem;
+        color: var(--bs-secondary);
+        line-height: 1.5;
+    }
+
+    .feature-list {
+        margin: 0;
+        padding-left: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--bs-body-color);
+    }
+
+    .feature-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    @@media (max-width: 576px) {
+        .feature-card {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.25rem;
+        }
+    }
+</style>
+
+@code {
+    protected string _title = "";
+    protected string _cardClass = "";
+
+    /// <summary>
+    /// The feature name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// One or two sentences that explain what this feature does and why it matters.
+    /// Rendered below the title in a muted, slightly smaller font.
+    /// Optional — omit for a compact title-only card.
+    /// </summary>
+    [Parameter] public string Description { get; set; } = "";
+
+    /// <summary>
+    /// FontAwesome icon class rendered in the decorative icon box to the left of the content.
+    /// Example: <c>"fas fa-robot"</c>, <c>"fa-solid fa-chart-line"</c>.
+    /// Optional — omit to hide the icon box entirely.
+    /// </summary>
+    [Parameter] public string IconClass { get; set; } = "";
+
+    /// <summary>
+    /// Bullet-point list of sub-capabilities or highlights rendered as an unordered list
+    /// inside the card body. Each string becomes one <c>&lt;li&gt;</c> element.
+    /// Optional — omit when a prose <see cref="Description"/> is sufficient.
+    /// </summary>
+    [Parameter] public List<string> Features { get; set; } = new();
+
+    /// <summary>
+    /// When <c>true</c>, applies a primary-colour border and a light primary background tint
+    /// to distinguish this card from its siblings (e.g. a "recommended" tier).
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Highlighted { get; set; } = false;
+
+    /// <summary>
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for call-to-action buttons, links, or any supplemental UI.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        _title = Title ?? "";
+        _cardClass = Highlighted ? "highlighted" : "";
+    }
+}

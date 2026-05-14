@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en-us"><head><title>
+	Scholarship Manager
+</title><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Server: SCHOLAR3 -->
+
+        <!-- JavaScript -->
+        <script type="text/javascript" src="/scripts/jquery-3.7.1.js"></script>
+        <script type="text/javascript" src="/scripts/jquery-ui-1.14.1.js"></script>
+
+        <script type="text/javascript" src="/scripts/jquery-migrate-1.4.1.js"></script>
+
+        <script type="text/javascript" src="/scripts/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/scripts/bootstrap/addons/bootstrap-tooltip.js"></script>
+        <script type="text/javascript" src="/scripts/bootstrap/addons/bootstrap-popover.js"></script>
+
+        <script type="text/javascript" src="/scripts/jquery.bpopup.js"></script>
+        <script type="text/javascript" src="/scripts/jquery-ui-timepicker-addon.js"></script> 
+        <script type="text/javascript" src="/scripts/jquery.qtip-1.0.0-rc3.min.js"></script>
+        <script type="text/javascript" src="/scripts/jquery.tablesorter.2.29.5.js"></script>
+
+        <script language="JavaScript" type="text/javascript" src="/scripts/ngSessionTimeout.js"></script><script language="JavaScript" type="text/javascript" src="/scripts/wsu/wsu.js"></script><link rel="stylesheet" type="text/css" href="/Scripts/ScholarshipManagerNew.css"><script language="javascript" type="text/javascript" src="/ChameleonSMS/scripts/overLib.js"></script><script language="javascript" type="text/javascript" src="/ChameleonSMS/scripts/ChmJScriptLib.js"></script><script language="javascript" type="text/javascript" src="/ChameleonSMS/scripts/PENodeTreeScript.js"></script><script language="javascript" type="text/javascript" src="/ChameleonSMS/scripts/CSScriptLib.js"></script>
+        <script type="text/javascript" src="/scripts/bootstrap/js/popover.js"></script>
+
+        <!-- CSS & Fonts -->    
+        <link rel="stylesheet" type="text/css" href="/css/scholar-common.css?v=15.5"><link rel="stylesheet" type="text/css" href="/scripts/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/scripts/bootstrap/css/bootstrap-theme.min.css"><link rel="stylesheet" type="text/css" href="/scripts/ScholarBootstrapOverride.css"><link rel="stylesheet" type="text/css" href="../css/google-font-open-sans.css"><link rel="stylesheet" type="text/css" href="/scripts/jquery-ui.min.css"><link rel="stylesheet" href="/css/fontawesome-all.css?v=5.11.2" type="text/css"><link rel="stylesheet" href="/css/font-awesome-animation.min.css" type="text/css"><link href="/css/scholar-notice.css" rel="stylesheet">
+        <style>
+            .well {
+                background-image:none !important;
+            }
+            .label-warning {
+                color:#000000;
+            }
+            .navbar-default {
+                background-image:none !important;
+            }
+            .alert-info {
+                background-image: none !important;
+            }
+            .nav-tabs > li {
+                background-color: #A60F2D;
+            }
+            .panel-success .panel-heading {
+                background-image: none !important;
+            }
+            .panel-default .panel-heading {
+                background-image: none !important;
+            }
+            .panel-primary .panel-heading {
+                background-image: none !important;
+                background-color:#A60F2D;
+                color: #fff !important;
+                border-color: #A60F2D; 
+            }
+            .panel-primary {
+                border-color: #A60F2D ;
+            }
+            .btn {
+                background-image: none !important;
+            }
+            .btn-danger {
+                background-color:#A32824;
+            }
+            .btn-primary {
+                background-color:#A60F2D;
+                color: #fff !important;
+                background-color: #A60F2D;
+                border-color: #A60F2D;
+            }
+                .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:visited, .btn-primary:active:focus {
+                    background-color: #A60F2D;
+                    border-color: black; 
+                    opacity:.9
+                }
+            .notice-primary {
+                border-color: #A60F2D !important
+            }
+            .notice-primary>strong {
+                color: #A60F2D !important
+            }
+            .text-primary {
+                color: #A60F2D !important
+            }
+
+            .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+                text-shadow: 0 -1px 0 #286090;
+                background-image: none !important;
+                background-color:#A60F2D;
+                background-repeat: repeat-x;
+                border-color: #A60F2D;
+            }
+        </style>
+
+
+
+        </head>
+<body>
+
+<main>
+<form name="aspnetForm" method="post" action="./Cmx_Content.aspx?cpId=302" id="aspnetForm" enctype="multipart/form-data">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" style="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" style="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUENTM4MQ8WAh4TVmFsaWRhdGVSZXF1ZXN0TW9kZQIBFgJmD2QWCGYPFgIeBFRleHQFeTwhZG9jdHlwZSBodG1sIHB1YmxpYyAnLS8vVzNDLy9EVEQgWEhUTUwgMS4wIFRyYW5zaXRpb25hbC8vRU4nICdodHRwOi8vd3d3LnczLm9yZy9UUi94aHRtbDEvRFREL3hodG1sMS10cmFuc2l0aW9uYWwuZHRkJz5kAgIPZBYGAgQPFgIfAQVhPHNjcmlwdCBsYW5ndWFnZT0iSmF2YVNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0IiBzcmM9Ii9zY3JpcHRzL25nU2Vzc2lvblRpbWVvdXQuanMiPjwvc2NyaXB0PmQCBQ8WAh8BBVg8c2NyaXB0IGxhbmd1YWdlPSJKYXZhU2NyaXB0IiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiIHNyYz0iL3NjcmlwdHMvd3N1L3dzdS5qcyI+PC9zY3JpcHQ+ZAIHDxYCHwEF+QM8bGluayByZWw9InN0eWxlc2hlZXQiIHR5cGU9InRleHQvY3NzIiBocmVmPSIvU2NyaXB0cy9TY2hvbGFyc2hpcE1hbmFnZXJOZXcuY3NzIi8+PHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0IiBzcmM9Ii9DaGFtZWxlb25TTVMvc2NyaXB0cy9vdmVyTGliLmpzIj48L3NjcmlwdD48c2NyaXB0IGxhbmd1YWdlPSJqYXZhc2NyaXB0IiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiIHNyYz0iL0NoYW1lbGVvblNNUy9zY3JpcHRzL0NobUpTY3JpcHRMaWIuanMiPjwvc2NyaXB0PjxzY3JpcHQgbGFuZ3VhZ2U9ImphdmFzY3JpcHQiIHR5cGU9InRleHQvamF2YXNjcmlwdCIgc3JjPSIvQ2hhbWVsZW9uU01TL3NjcmlwdHMvUEVOb2RlVHJlZVNjcmlwdC5qcyI+PC9zY3JpcHQ+PHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0IiBzcmM9Ii9DaGFtZWxlb25TTVMvc2NyaXB0cy9DU1NjcmlwdExpYi5qcyI+PC9zY3JpcHQ+ZAIED2QWFgIHDxYCHwEFwwM8c3R5bGU+DQpib2R5IHtiYWNrZ3JvdW5kLWNvbG9yOiNmMGYwZjA7In0NCi5zaXRlV3JhcHBlciB7YmFja2dyb3VuZC1jb2xvcjojZjBmMGYwOyJ9DQo8L3N0eWxlPg0KDQo8ZGl2IHN0eWxlPSJtYXgtd2lkdGg6MTIwMHB4OyBiYWNrZ3JvdW5kLWNvbG9yOiNmZmY7bWFyZ2luLWxlZnQ6YXV0bzttYXJnaW4tcmlnaHQ6YXV0bzttYXJnaW4tdG9wOjE0cHg7YmFja2dyb3VuZC1jbGlwOiBwYWRkaW5nLWJveDtib3gtc2hhZG93OiA1cHggMCA1cHggcmdiYSgwLCAwLCAwLCAwLjIpLCAtNXB4IDAgNXB4IHJnYmEoMCwgMCwgMCwgMC4yKTsiPg0KPGltZyBjbGFzcz0iaW1nLXJlc3BvbnNpdmUiIGJvcmRlcj0iMCIgc3JjPSJodHRwczovL3dzdS5zY2hvbGFyc2hpcHMubmd3ZWJzb2x1dGlvbnMuY29tL2ltYWdlcy93c3Uvd3N1X2hlYWRlci5qcGciIHN0eWxlPSJoZWlnaHQ6MTMwcHgiLz4NCjxkaXY+ZAIIDxYCHgdWaXNpYmxlaGQCCg8WAh8CaGQCDg8WAh8BZWQCEA8WAh8BBaEBPGJyPjxicj48YnI+PGJyPg0KPGltZyBjbGFzcz0iaW1nLXJlc3BvbnNpdmUiIHNyYz0iaHR0cHM6Ly93c3Uuc2Nob2xhcnNoaXBzLm5nd2Vic29sdXRpb25zLmNvbS9pbWFnZXMvd3N1L3dzdWZvb3Rlci5wbmciIHN0eWxlPSJtYXJnaW4tdG9wOjQwcHg7IiBib3JkZXI9IjAiPg0KDQpkAhEPFgIfAQXDAzxzdHlsZT4NCmJvZHkge2JhY2tncm91bmQtY29sb3I6I2YwZjBmMDsifQ0KLnNpdGVXcmFwcGVyIHtiYWNrZ3JvdW5kLWNvbG9yOiNmMGYwZjA7In0NCjwvc3R5bGU+DQoNCjxkaXYgc3R5bGU9Im1heC13aWR0aDoxMjAwcHg7IGJhY2tncm91bmQtY29sb3I6I2ZmZjttYXJnaW4tbGVmdDphdXRvO21hcmdpbi1yaWdodDphdXRvO21hcmdpbi10b3A6MTRweDtiYWNrZ3JvdW5kLWNsaXA6IHBhZGRpbmctYm94O2JveC1zaGFkb3c6IDVweCAwIDVweCByZ2JhKDAsIDAsIDAsIDAuMiksIC01cHggMCA1cHggcmdiYSgwLCAwLCAwLCAwLjIpOyI+DQo8aW1nIGNsYXNzPSJpbWctcmVzcG9uc2l2ZSIgYm9yZGVyPSIwIiBzcmM9Imh0dHBzOi8vd3N1LnNjaG9sYXJzaGlwcy5uZ3dlYnNvbHV0aW9ucy5jb20vaW1hZ2VzL3dzdS93c3VfaGVhZGVyLmpwZyIgc3R5bGU9ImhlaWdodDoxMzBweCIvPg0KPGRpdj5kAhIPFgIfAmgWAmYPFgIfAmgWAgIBDw8WAh8CaGRkAhMPZBYCAgEPZBYCZg9kFghmD2QWBAIBDxYCHgtfIUl0ZW1Db3VudAICFgRmD2QWAmYPFQMESG9tZQEvIDxpIGNsYXNzPSdmYXMgZmEtaG9tZSc+PC9pPiBIb21lZAIBD2QWAmYPFQMKQ29udGFjdCBVcxYvU2Nob2xhclhfQ29udGFjdC5hc3B4CkNvbnRhY3QgVXNkAgMPFgIfAmcWAgIBDw8WAh4LTmF2aWdhdGVVcmwFFX4vU2Nob2xhcnNoaXBzL1NlYXJjaGRkAgEPDxYCHwJoZBYEAgUPZBYCZg8WAh4EaHJlZgUefi9TY2hvbGFyWF9TdHVkZW50TGFuZGluZy5hc3B4ZAIPD2QWAgIBD2QWAmYPFgIfBQUXfi9hd2FyZGluZy9teWNvbW1pdHRlZXNkAgIPDxYCHwJoZBYEAgMPZBYCAgMPZBYCZg8WAh8FBR5+L1NjaG9sYXJYX1N0dWRlbnRMYW5kaW5nLmFzcHhkAgUPFgIfBQUXfi9hd2FyZGluZy9teWNvbW1pdHRlZXNkAgMPDxYCHwJoZBYEAgEPFgIfBQUefi9TY2hvbGFyWF9TdHVkZW50TGFuZGluZy5hc3B4ZAIJDxYCHwJoZAIUDxYCHwJoZAIVDw9kFgIeBXN0eWxlBQptYXgtd2lkdGg6FgQCBQ8WAh8BZWQCBw8WAh8BZWQCFg8WAh8BBaEBPGJyPjxicj48YnI+PGJyPg0KPGltZyBjbGFzcz0iaW1nLXJlc3BvbnNpdmUiIHNyYz0iaHR0cHM6Ly93c3Uuc2Nob2xhcnNoaXBzLm5nd2Vic29sdXRpb25zLmNvbS9pbWFnZXMvd3N1L3dzdWZvb3Rlci5wbmciIHN0eWxlPSJtYXJnaW4tdG9wOjQwcHg7IiBib3JkZXI9IjAiPg0KDQpkAggPFgIfAQVFPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiB0eXBlPSJ0ZXh0L2NzcyIgaHJlZj0iL3NjcmlwdHMvd3N1L3dzdS5jc3MiIC8+ZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WAQUbX2N0bDA6U2tpblJlc2V0UGFzc3dvcmRMaW5rI0g2QPkwMZQhhvpeBVwkF4aCfDU=" style="">
+
+<script type="text/javascript">
+<!--
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+// -->
+</script>
+
+
+<script src="/WebResource.axd?d=VU8mDVkXAdbJ90XQRJG5QH0nWYbvx2nTZA_c4YhfhAf0WC0yPnxnZnwXHo-P3RtxPevISKrvAzRS_IsHzR06PAKqoYI1&amp;t=638901397900000000" type="text/javascript"></script>
+
+
+<script src="/ScriptResource.axd?d=j-MkH0wylzaIjhqtBG25O5EgwpnaVvmlYQibm7aQRMV2XOwSYvhD90zd2UHKD7nYinDhoA3Y9wlpsf0E3mmRQsQwzQmqwln3giL2mbV-mX3oOWiM0Pii3Ze1IESkwQA53jHhenLuCg8nwB_w9D6t3UlW4Lg1&amp;t=5c0e0825" type="text/javascript"></script>
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="87F7A110" style="">
+
+<!-- Used to show "Please Wait..." message aftert button clicks. -->
+<script type="text/javascript">
+    function PleaseWait(){
+        document.getElementById('PleaseWaitPanel').style.display = 'block';
+        return true;
+    }
+
+    function showHelp(panelName) {
+        $(document).ready(function(){
+            var helpPanel = document.getElementById(panelName);
+            $(helpPanel).slideToggle();
+        });
+    }
+</script>
+
+<div id="EP_content" class="siteWrapper">
+<span id="_ctl0_skipMain"><a aria-label="skip to main content" class="skip-main" href="#skipMainContent">Skip to main content</a></span>
+
+    
+        <!-- Header HTML -->
+        
+            <style>
+body {background-color:#f0f0f0;"}
+.siteWrapper {background-color:#f0f0f0;"}
+</style>
+
+<div style="max-width:1200px; background-color:#fff;margin-left:auto;margin-right:auto;margin-top:14px;background-clip: padding-box;box-shadow: 5px 0 5px rgba(0, 0, 0, 0.2), -5px 0 5px rgba(0, 0, 0, 0.2);">
+<img class="img-responsive" border="0" src="https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsu_header.jpg" style="height:130px">
+<div>
+
+            <!-- Logout and My Account-->
+        
+            
+
+            <!-- Nav Bar -->
+            <div id="_ctl0_NavigationPanel">
+                
+
+<!-- Not logged in -->
+<div id="_ctl0_nav_ngOpenNavContainer">
+	
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header pull-left">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-4" aria-expanded="false" style="margin-left: 25px">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-4">
+                <ul class="nav navbar-nav">
+                    
+                            <li title="Home"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                        
+                            <li title="Contact Us"><a href="/ScholarX_Contact.aspx">Contact Us</a></li>
+                        
+                    <li id="_ctl0_nav_viewSearch">
+                        <a id="_ctl0_nav_viewSearchLink" href="../Scholarships/Search" style="font-weight: bold;">Scholarship Search</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</div>
+
+<!-- Admin Navigation Bar -->
+
+
+<!-- Committee Nav Bar -->
+
+
+<!-- Student Nav Bar -->
+
+
+
+
+
+<div class="alert alert-info alert-dismissible show" role="alert">
+    <div class="row">
+        <div class="col-xs-8 col-sm-10" style="margin-bottom: 5px; font-size: large; color: black">
+            We use cookies on our website to give you the most relevant experience by remembering your preferences and repeat visits.  By clicking "Accept", you consent to the use of ALL the cookies.
+        </div>
+        <div class="col-xs-4 col-sm-2">
+            <div class="pull-right">
+                <button style="width: 100px; margin-bottom: 5px" class="btn btn-sm btn-default accept-policy pull-right" data-dismiss="alert" aria-label="Accept Cookie Policy">
+                    <span>Accept</span>
+                </button>
+                <div>
+                    <a href="/Help/Privacy" style="width: 100px" class="btn btn-sm btn-default" aria-label="Learn more about out privacy policy">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(".accept-policy").click(function () {
+        var $headers = { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() };
+        var $jsonString = {};
+        $.ajax({
+            type: "GET",
+            /*url: '@Url.Action("SetUserAcceptedCookiePolicy", "_NavBar")',*/
+            url: '/_NavBar/SetUserAcceptedCookiePolicy',
+            headers:$headers,
+            data: $jsonString,
+            success: function (response) {
+                return true;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+                //alert(errorThrown);
+                //alert("An error has occurred during processing your request.");
+            }
+        });
+    });
+</script>
+
+            </div>
+
+            <!-- Academic Year / Session timeout -->
+            
+
+
+        <!-- Main Body Panel -->
+        
+            <div id="_ctl0_BodyPanel" class="bodyContainer" style="max-width:">
+	
+                
+                <div headertext="You did not properly complete the form.  Please correct the following problem(s) and try again. " id="_ctl0_ValidationSummary" class="ValidationSummary" role="alert" style="color:Maroon;display:none;">
+
+	</div>
+                		
+                
+                <div class="container-fluid" id="skipMainContent">
+                    <span><p align="center" class="MsoNormal" style="TEXT-ALIGN: center"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><strong><font size="3"><font color="#990033" face="Tahoma">Scholarship Manager</font></font></strong></span></p>
+
+<p align="center" class="MsoNormal" style="MARGIN: 0in 0in 0pt -22.5pt; TEXT-ALIGN: justify">&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><!--?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /--><o:p></o:p></span><font color="#000000">&nbsp;</font></span></p>
+
+<div align="center" class="MsoNormal" style="MARGIN: 0in 0in 0pt; TEXT-ALIGN: center">
+<hr align="center" size="2" width="100%"></div>
+
+<p><span style="font-size: 10pt; Font-family: Verdana"><strong>Reminder:</strong></span> Information on this site must be used in accordance with Federal Law <a href="http://ferpa.em.wsu.edu/" target="_blank">(FERPA)</a>. For best practices see <a href="http://ferpa.em.wsu.edu/faculty-staff/" target="_blank">Faculty &amp; Staff Guidelines</a>.</p>
+
+<p class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><o:p><font color="#000000">&nbsp;</font></o:p></span></span></p>
+
+<p class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><strong>Committee Members:</strong></span><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><o:p>&nbsp;</o:p></span></font></span></p>
+
+<ul>
+	<li>
+	<div class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000">Review candidates and award scholarships<o:p></o:p></font></span></span></div>
+	</li>
+</ul>
+<br>
+<span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><strong>Faculty/Staff</strong><br>
+&nbsp; <a class="btn btn-default" href="https://nextgensso2.com/sp/startSSO.ping?PartnerIdpId=http://www.okta.com/exk15qnh27jWHxZwv2p8&amp;SpSessionAuthnAdapterId=wsuSM&amp;TargetResource=https://wsu.scholarships.ngwebsolutions.com/scholarx_committeecontent.aspx" style="font-weight:bold; FONT-SIZE: 10pt; FONT-FAMILY: Verdana">Committee Member Faculty/Staff Login</a> &nbsp;<br>
+<br>
+<span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><strong>Non Faculty/Staff</strong><br>
+<strong>&nbsp; </strong><a class="btn btn-default" href="https://wsu.scholarships.ngwebsolutions.com/ScholarX_Committee_MyCommittees.aspx" style="font-weight:bold; FONT-SIZE: 10pt; FONT-FAMILY: Verdana">Committee Member Non Faculty/Staff Login</a><br>
+&nbsp; </span> </span>
+
+<hr align="center" size="2" width="100%"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> </span> </span>
+
+<p class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana">&nbsp;</span></span></span></p>
+<span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> <span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> </span> </span>
+
+<p class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><strong>Administrators:</strong></span><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><o:p>&nbsp;</o:p></span></font></span></span></span></p>
+<span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> <span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> </span> </span>
+
+<ul>
+	<li>
+	<div class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000">Design &amp; publish online scholarship applications <o:p></o:p></font></span></span></span></span></div>
+	</li>
+	<li>
+	<div class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000">Define &amp; maintain campus scholarship offerings <o:p></o:p></font></span></span></span></span></div>
+	</li>
+	<li>
+	<div class="MsoNormal" style="MARGIN: 0in 0in 0pt"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"><font color="#000000">Oversee the online scholarship awarding process <o:p></o:p></font></span></span></span></span></div>
+	</li>
+</ul>
+<span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> <span style="FONT-SIZE: 10pt; FONT-FAMILY: Verdana"> <a class="btn btn-default" href="https://nextgensso2.com/sp/startSSO.ping?PartnerIdpId=http://www.okta.com/exk15qnh27jWHxZwv2p8&amp;SpSessionAuthnAdapterId=wsuSM&amp;TargetResource=https://wsu.scholarships.ngwebsolutions.com/scholarx_adminportal.aspx" style="font-weight:bold; FONT-SIZE: 10pt; FONT-FAMILY: Verdana">Administrator Login</a></span></span>
+
+<p><strong>&nbsp;</strong></p>
+<strong> </strong>
+
+<hr align="center" size="2" width="100%">
+<p><strong><font size="2"><font face="Verdana"><strong>Account Assistance (For Non Faculty/Staff Committee Members Only):</strong> </font></font></strong></p>
+<strong> </strong>
+
+<p><strong><font face="Verdana" size="2"><a href="https://wsu.scholarships.ngwebsolutions.com/ChameleonSMS/Chm_CreateAccount.aspx" target="">Click here</a> to create an account</font></strong></p>
+<strong> </strong>
+
+<p><strong><font face="Verdana" size="2"><a href="https://wsu.scholarships.ngwebsolutions.com/ChameleonSMS/Chm_ResetPassword.aspx" target="">Click here</a>&nbsp;if you have locked your account or forgotten your password</font></strong></p>
+<strong> </strong>
+
+<p><strong><font face="Verdana" size="2"><a href="https://wsu.scholarships.ngwebsolutions.com/ChameleonSMS/Chm_RetrieveUsername.aspx" target="_self">Click here</a> if you have forgotten your user name</font></strong></p>
+<strong> </strong></span>
+     
+                </div>
+                
+                <div role="alert" id="WorkingStatus">
+                    <div id="PleaseWaitPanel" class="transparentBox" style="display:none;">
+                        <div class="pleaseWaitMessage" style="text-align:center">
+                            <img alt="Loading Icon" src="../images/ajax_loader_blue_32.gif" border="0" height="24"> <span class="h3" style="vertical-align: middle; line-height: 33px; white-space:nowrap;">Working...</span>
+                        </div>
+                </div>       
+                </div>
+            
+</div>
+        
+            <div style="clear:both;">
+                <br><br><br><br>
+<img class="img-responsive" src="https://wsu.scholarships.ngwebsolutions.com/images/wsu/wsufooter.png" style="margin-top:40px;" border="0">
+
+
+            </div>
+            
+
+        <script>
+            $(".accept-policy").click(function () {
+                var $headers = { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() };
+                var $jsonString = {};
+                $.ajax({
+                    type: "GET",
+                    url: '/_NavBar/SetUserAcceptedCookiePolicy',
+                    headers: $headers,
+                    data: $jsonString,
+                    success: function (response) {
+                        return true;
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //alert(XMLHttpRequest.responseText);
+                        //alert(errorThrown);
+                        //alert("An error has occurred during processing your request.");
+                    }
+                });
+            });
+        </script>
+
+       
+    
+
+    <!-- timeout warning -->
+    <div role="alert">
+        <div id="ngSessionTimeout" class="transparentBox" style="display:none;">
+            <div class="pleaseWaitMessage" style="width:400px;padding:18px;">
+
+                <div style="font-weight:bold;margin-bottom:20px;">Session Timeout Warning</div>
+
+                <div style="font-weight:bold;margin-bottom:20px;">
+                Your session will timeout in 60 seconds. Please click the<br>
+                <strong>Continue Working</strong> button below to continue your session.
+                </div>
+
+                <input id="ngSessionTimeoutButton" type="button" class="btn btn-sm btn-primary" value="Continue Working" onclick="location.reload();" style="">
+            </div>
+        </div>
+    </div>
+
+</div>
+    
+
+    
+    
+    
+<script type="text/javascript">
+<!--
+var Page_ValidationSummaries =  new Array(document.getElementById("_ctl0_ValidationSummary"));
+// -->
+</script>
+
+
+    
+
+
+    <link rel="stylesheet" type="text/css" href="/scripts/wsu/wsu.css">  
+
+</div></div></form></main>
+
+
+</body></html>

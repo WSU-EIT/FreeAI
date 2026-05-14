@@ -1,0 +1,19 @@
+{
+  "ToolName": "htmlcheck",
+  "Status": "completed",
+  "DurationMs": 0,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "htmlcheck",
+      "RuleId": "table-header-missing",
+      "CanonicalRuleId": "td-has-header",
+      "Severity": "moderate",
+      "Message": "Data table has no header cells (\u003Cth\u003E)",
+      "Selector": null,
+      "Snippet": "\u003Ctable class=\u0022borderedTable\u0022 style=\u0022border-collapse: collapse; width: 114px; min-width: 50px;\u0022\u003E\u003Ccolgroup\u003E\u003Ccol style=\u0022min-width: 25px;\u0022\u003E\u003Ccol style=\u0022min...",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1"
+    }
+  ]
+}

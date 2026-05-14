@@ -1,0 +1,553 @@
+<!DOCTYPE html><html lang="en" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths spine-full" style=""><!--<![endif]--><head>
+	<!-- Google Tag Manager -->
+	<script type="text/javascript" async="" src="https://sc-static.net/scevent.min.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-T3TTSC98LN&amp;cx=c&amp;_slc=1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-C2TCHJ8XTF&amp;cx=c&amp;_slc=1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/destination?id=DC-10179186&amp;cx=c&amp;gtm=4e62h1"></script><script src="https://connect.facebook.net/signals/config/226294922534478?v=2.9.267&amp;r=stable&amp;domain=sfsapps.em.wsu.edu&amp;hme=11930df1a5915abf1511b7a1b05dc5dc237640df2c1076bf5f48ad8551e6a246&amp;ex_m=96%2C188%2C136%2C21%2C68%2C69%2C129%2C64%2C43%2C130%2C73%2C63%2C10%2C144%2C82%2C15%2C95%2C124%2C117%2C71%2C74%2C123%2C141%2C104%2C146%2C7%2C3%2C4%2C6%2C5%2C2%2C83%2C93%2C147%2C152%2C202%2C57%2C168%2C169%2C50%2C240%2C28%2C70%2C214%2C213%2C212%2C30%2C56%2C9%2C59%2C89%2C90%2C91%2C97%2C120%2C29%2C27%2C122%2C119%2C118%2C137%2C72%2C140%2C138%2C139%2C45%2C55%2C113%2C14%2C143%2C40%2C228%2C229%2C227%2C24%2C25%2C26%2C17%2C19%2C39%2C35%2C37%2C36%2C78%2C84%2C88%2C102%2C128%2C131%2C41%2C103%2C22%2C20%2C109%2C65%2C33%2C133%2C132%2C134%2C125%2C23%2C32%2C54%2C101%2C142%2C66%2C16%2C135%2C106%2C77%2C62%2C18%2C31%2C252%2C195%2C182%2C183%2C181%2C255%2C247%2C196%2C99%2C121%2C76%2C111%2C49%2C42%2C44%2C105%2C110%2C116%2C53%2C60%2C115%2C48%2C51%2C47%2C92%2C145%2C0%2C114%2C13%2C112%2C11%2C1%2C52%2C85%2C58%2C61%2C108%2C81%2C80%2C148%2C149%2C86%2C87%2C8%2C94%2C46%2C126%2C79%2C75%2C67%2C107%2C98%2C38%2C127%2C34%2C100%2C12%2C150%2C211%2C210%2C205%2C207%2C208%2C209%2C206%2C194%2C204%2C215%2C175%2C172%2C173%2C167%2C171%2C174%2C170%2C165%2C275%2C242%2C198%2C166%2C164%2C193%2C217%2C189%2C250%2C159%2C158%2C154%2C160%2C157%2C155%2C156%2C153%2C151%2C162%2C163%2C161%2C230%2C274%2C176" async=""></script><script src="https://connect.facebook.net/signals/config/352489839123111?v=2.9.267&amp;r=stable&amp;domain=sfsapps.em.wsu.edu&amp;hme=11930df1a5915abf1511b7a1b05dc5dc237640df2c1076bf5f48ad8551e6a246&amp;ex_m=96%2C188%2C136%2C21%2C68%2C69%2C129%2C64%2C43%2C130%2C73%2C63%2C10%2C144%2C82%2C15%2C95%2C124%2C117%2C71%2C74%2C123%2C141%2C104%2C146%2C7%2C3%2C4%2C6%2C5%2C2%2C83%2C93%2C147%2C152%2C202%2C57%2C168%2C169%2C50%2C240%2C28%2C70%2C214%2C213%2C212%2C30%2C56%2C9%2C59%2C89%2C90%2C91%2C97%2C120%2C29%2C27%2C122%2C119%2C118%2C137%2C72%2C140%2C138%2C139%2C45%2C55%2C113%2C14%2C143%2C40%2C228%2C229%2C227%2C24%2C25%2C26%2C17%2C19%2C39%2C35%2C37%2C36%2C78%2C84%2C88%2C102%2C128%2C131%2C41%2C103%2C22%2C20%2C109%2C65%2C33%2C133%2C132%2C134%2C125%2C23%2C32%2C54%2C101%2C142%2C66%2C16%2C135%2C106%2C77%2C62%2C18%2C31%2C252%2C195%2C182%2C183%2C181%2C255%2C247%2C196%2C99%2C121%2C76%2C111%2C49%2C42%2C44%2C105%2C110%2C116%2C53%2C60%2C115%2C48%2C51%2C47%2C92%2C145%2C0%2C114%2C13%2C112%2C11%2C1%2C52%2C85%2C58%2C61%2C108%2C81%2C80%2C148%2C149%2C86%2C87%2C8%2C94%2C46%2C126%2C79%2C75%2C67%2C107%2C98%2C38%2C127%2C34%2C100%2C12%2C150" async=""></script><script async="" src="https://connect.facebook.net/en_US/fbevents.js"></script><script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-CFV4Y78L3N&amp;cx=c&amp;gtm=4e62h1"></script><script async="" src="//www.googletagmanager.com/gtm.js?id=GTM-K5CHVG"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-T266HC2L"></script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-T266HC2L');</script>
+	<!-- End Google Tag Manager -->
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE">
+    <meta charset="UTF-8">
+    <title>Login | Student Financial Aid | Washington State University</title>
+    <link href="/Compass/Content/font-awesome.css" rel="stylesheet">
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="//repo.wsu.edu/spine/1/favicon.ico">
+
+    <!-- RESPOND -->
+    <meta name="viewport" content="width=device-width, user-scalable=yes">
+
+    <!-- DOCS -->
+    <link type="text/plain" rel="author" href="https://repo.wsu.edu/spine/1/authors.txt">
+    <link type="text/html" rel="help" href="https://brand.wsu.edu/media/web">
+
+    <!-- SCRIPTS and STYLES -->
+    <link rel="stylesheet" id="spine-theme-print-css" href="https://financialaid.wsu.edu/wp-content/themes/spine/css/print.css?ver=0.27.6-1.5.4-39525" type="text/css" media="print">
+    <link href="//cms.em.wsu.edu/css/mobileForms.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.css" type="text/css">
+
+    <link rel="dns-prefetch" href="//ajax.googleapis.com">
+    <link rel="dns-prefetch" href="//repo.wsu.edu">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//s.w.org">
+    <script type="text/javascript">
+        window._wpemojiSettings = { "baseUrl": "https:\/\/s.w.org\/images\/core\/emoji\/2.4\/72x72\/", "ext": ".png", "svgUrl": "https:\/\/s.w.org\/images\/core\/emoji\/2.4\/svg\/", "svgExt": ".svg", "source": { "concatemoji": "https:\/\/financialaid.wsu.edu\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.6" } };
+        !function (a, b, c) { function d(a, b) { var c = String.fromCharCode; l.clearRect(0, 0, k.width, k.height), l.fillText(c.apply(this, a), 0, 0); var d = k.toDataURL(); l.clearRect(0, 0, k.width, k.height), l.fillText(c.apply(this, b), 0, 0); var e = k.toDataURL(); return d === e } function e(a) { var b; if (!l || !l.fillText) return !1; switch (l.textBaseline = "top", l.font = "600 32px Arial", a) { case "flag": return !(b = d([55356, 56826, 55356, 56819], [55356, 56826, 8203, 55356, 56819])) && (b = d([55356, 57332, 56128, 56423, 56128, 56418, 56128, 56421, 56128, 56430, 56128, 56423, 56128, 56447], [55356, 57332, 8203, 56128, 56423, 8203, 56128, 56418, 8203, 56128, 56421, 8203, 56128, 56430, 8203, 56128, 56423, 8203, 56128, 56447]), !b); case "emoji": return b = d([55357, 56692, 8205, 9792, 65039], [55357, 56692, 8203, 9792, 65039]), !b } return !1 } function f(a) { var c = b.createElement("script"); c.src = a, c.defer = c.type = "text/javascript", b.getElementsByTagName("head")[0].appendChild(c) } var g, h, i, j, k = b.createElement("canvas"), l = k.getContext && k.getContext("2d"); for (j = Array("flag", "emoji"), c.supports = { everything: !0, everythingExceptFlag: !0 }, i = 0; i < j.length; i++) c.supports[j[i]] = e(j[i]), c.supports.everything = c.supports.everything && c.supports[j[i]], "flag" !== j[i] && (c.supports.everythingExceptFlag = c.supports.everythingExceptFlag && c.supports[j[i]]); c.supports.everythingExceptFlag = c.supports.everythingExceptFlag && !c.supports.flag, c.DOMReady = !1, c.readyCallback = function () { c.DOMReady = !0 }, c.supports.everything || (h = function () { c.readyCallback() }, b.addEventListener ? (b.addEventListener("DOMContentLoaded", h, !1), a.addEventListener("load", h, !1)) : (a.attachEvent("onload", h), b.attachEvent("onreadystatechange", function () { "complete" === b.readyState && c.readyCallback() })), g = c.source || {}, g.concatemoji ? f(g.concatemoji) : g.wpemoji && g.twemoji && (f(g.twemoji), f(g.wpemoji))) }(window, document, window._wpemojiSettings);
+    </script><script src="https://financialaid.wsu.edu/wp-includes/js/wp-emoji-release.min.js?ver=4.9.6" type="text/javascript" defer=""></script>
+    <style type="text/css">
+        img.wp-smiley,
+        img.emoji {
+            display: inline !important;
+            border: none !important;
+            box-shadow: none !important;
+            height: 1em !important;
+            width: 1em !important;
+            margin: 0 .07em !important;
+            vertical-align: -0.1em !important;
+            background: none !important;
+            padding: 0 !important;
+        }
+    </style>
+    <link rel="stylesheet" id="tablepress-datatables-buttons-css" href="https://financialaid.wsu.edu/wp-content/plugins/tablepress-datatables-buttons/css/buttons.dataTables.min.css?ver=1.0" type="text/css" media="all">
+    <link rel="stylesheet" id="tablepress-responsive-tables-css" href="https://financialaid.wsu.edu/wp-content/plugins/tablepress-responsive-tables/css/responsive.dataTables.min.css?ver=1.3" type="text/css" media="all">
+    <link rel="stylesheet" id="tablepress-default-css" href="https://financialaid.wsu.edu/wp-content/plugins/tablepress/css/default.min.css?ver=1.9" type="text/css" media="all">
+    <style id="tablepress-default-inline-css" type="text/css">
+        .tablepress .row-hover tr:hover td {
+            background-color: #eddccc;
+        }
+
+        .tablepress thead th, .tablepress tfoot th {
+            background-color: #203639;
+            color: #fff;
+        }
+
+        .tablepress .odd td {
+            background-color: #fff;
+        }
+
+        .tablepress .even td {
+            background-color: #eff0f1;
+        }
+    </style>
+    <link rel="stylesheet" id="wsu-spine-css" href="https://repo.wsu.edu/spine/1/spine.min.css?ver=0.29.0-1.7.5-43297" type="text/css" media="all">
+    <link rel="stylesheet" id="spine-theme-css" href="https://financialaid.wsu.edu/wp-content/themes/spine/style.css?ver=0.29.0-1.7.5-43297" type="text/css" media="all">
+    <link rel="stylesheet" id="spine-theme-child-css" href="https://financialaid.wsu.edu/wp-content/themes/wsu-student-financial-services/style.css?ver=0.1.3" type="text/css" media="all">
+    <link rel="stylesheet" id="spine-theme-print-css" href="https://financialaid.wsu.edu/wp-content/themes/spine/css/print.css?ver=0.29.0-1.7.5-43297" type="text/css" media="print">
+    <link rel="stylesheet" id="spine-custom-css-css" href="https://financialaid.wsu.edu/?custom-css=1&amp;csblog=227&amp;cscache=6&amp;csrev=351&amp;ver=0.29.0-1.7.5-43297" type="text/css" media="all">
+    <link rel="stylesheet" id="open-sans-css" href="//fonts.googleapis.com/css?family=Open+Sans%3A300%2C300italic%2C400%2C400italic%2C600%2C600italic%2C700%2C700italic&amp;subset=latin%2Clatin-ext&amp;ver=4.9.6" type="text/css" media="all">
+    <!--[if !IE]><!-->
+    <link rel="stylesheet" id="tablepress-responsive-tables-flip-css" href="https://financialaid.wsu.edu/wp-content/plugins/tablepress-responsive-tables/css/tablepress-responsive-flip.min.css?ver=1.3" type="text/css" media="all">
+    <!--<![endif]-->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        var spineoptions = { "social": { "share_text": "Student Financial Services | Washington State University", "twitter_text": "Student Financial Services", "twitter_handle": "WSUFinancialAid" } };
+        /* ]]> */
+    </script>
+    <script type="text/javascript" src="https://repo.wsu.edu/spine/1/spine.min.js?ver=0.29.0-1.7.5-43297"></script>
+    <link rel="https://api.w.org/" href="https://financialaid.wsu.edu/wp-json/">
+    <meta name="generator" content="WordPress 4.9.6">
+    <link rel="canonical" href="https://financialaid.wsu.edu/">
+    <link rel="alternate" type="application/json+oembed" href="https://financialaid.wsu.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ffinancialaid.wsu.edu%2F">
+    <link rel="alternate" type="text/xml+oembed" href="https://financialaid.wsu.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Ffinancialaid.wsu.edu%2F&amp;format=xml">
+    <meta name="tec-api-version" content="v1">
+    <meta name="tec-api-origin" content="https://financialaid.wsu.edu">
+    <link rel="https://theeventscalendar.com/" href="https://financialaid.wsu.edu/wp-json/tribe/events/v1/">
+    <link rel="alternate" href="https://financialaid.wsu.edu/" hreflang="en">
+    <link rel="alternate" href="https://financialaid.wsu.edu/es/" hreflang="es">
+    <meta name="google-site-verification" content="wdSEjuSaP8OrY5P53F31YPX8Y_nbetjQgzqmFkdTurE">
+    <meta name="msvalidate.01" content="BE07B72295823A461232C309434DF691">
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        var wsu_analytics = { "defaults": { "cookieDomain": ".wsu.edu" }, "wsuglobal": { "ga_code": "UA-55791317-1", "campus": "all", "college": "none", "unit_type": "department", "unit": "none", "subunit": "none", "is_editor": "false", "track_view": "yes", "events": [] }, "app": { "ga_code": "UA-52133513-1", "page_view_type": "Front End", "authenticated_user": "Not Authenticated", "server_protocol": "HTTP\/1.1", "wsuwp_network": "financialaid.wp.wsu.edu", "spine_grid": "fluid", "spine_color": "white", "events": [] }, "site": { "ga_code": "UA-41937626-1", "track_view": "yes", "events": [] } };
+        /* ]]> */
+
+        // Determine if this is a mobile view using the same definition as the WSU Spine - less than 990px.
+        function wsa_spine_type() {
+            if (window.matchMedia) {
+                return window.matchMedia("(max-width: 989px)").matches ? 'spine-mobile' : 'spine-full';
+            }
+
+            return 'spine-full';
+        }
+
+        wsu_analytics.app.spine_type = wsa_spine_type();
+    </script>
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    '//www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-K5CHVG');
+    </script>
+    <!-- End Google Tag Manager -->
+    <!-- COMPATIBILITY -->
+    <!--[if lt IE 9]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <noscript>
+        <style>
+            #spine #spine-sitenav ul ul li {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+
+    <script src="/Compass/bundles/modernizr?v=2twPtszsTL39hTiKwvPlVlNga_BJ8EIzShIX0ej7LAo1"></script>
+
+    <script src="/Compass/bundles/bootstrap?v=X8gnNIYDSsAzCxLBuTaZy64JJqo9mzWM5GPsE4TJLNI1"></script>
+
+    <link href="/Compass/Content/css?v=_kElfl3-vTp3pZLAWB9qOW9SZnnb5Yuw_YPs0IdH_qY1" rel="stylesheet">
+
+
+</head>
+<body class="page opensansy single">
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T266HC2L"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	<!-- End Google Tag Manager (noscript) -->
+    <a href="#wsuwp-main" class="screen-reader-shortcut">Skip to main content</a>
+    <a href="#spine-sitenav" role="navigation" class="screen-reader-shortcut">Skip to navigation</a>
+    <div id="jacket" class="style-skeletal colors-default spacing-default       size-xlarge size-gt-small size-gt-intermediate size-gt-smallish size-gt-medium size-gt-large">
+        <div id="binder" class="fluid folio max-1386">
+            <main id="wsuwp-main" class="spine-blank-template" style="min-height: 720px;">
+                <header class="main-header">
+                    <div class="site-header-group">
+                        <span class="sup-header">
+                            <a href="https://financialaid.wsu.edu" title="Student Financial Aid">Student Financial Aid</a>
+                        </span>
+                        <span class="sub-header">Offer</span>
+                    </div>
+                    <nav class="site-action-links">
+                        <ul>
+                            <li>
+                                <a href="https://financialaid.wsu.edu/contact/">Contact</a>
+                            </li>
+                            <li>
+                                <a href="https://financialaid.wsu.edu/forms/">Forms</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="page-header-group">
+                        <span class="sup-header">Student Financial Services</span>
+                        <span class="sub-header">Welcome to the  Estimated Financial Aid Offer Portal</span>
+                    </div>
+                </header>
+
+                <section class="row single gutter pad-ends">
+                    <div class="column one">
+                        <article class="page type-page status-publish hentry">
+                            
+
+<h1>Initial Estimates - No Longer Available</h1>
+<p>
+    At this time, new financial aid estimates for the 2023-2024 academic year are no longer being created.
+</p>
+<ul>
+    <li>
+        If you need to access one of your previous 2023-2024 Financial Aid estimates, contact Student Financial Services (SFS) at 509-335-9711 or
+        <a href="mailto:financialaid@wsu.edu">financialaid@wsu.edu</a> for assistance.
+    </li>
+    <li>
+        If you submitted a FAFSA or a WASFA and don't have a 2023-2024 WSU Financial Aid Award yet, please check your <a href="http://my.wsu.edu">myWSU</a> account.
+        Further information may still be needed to process your financial aid. If you need help, don't hesitate to contact Student Financial Services.
+    </li>
+</ul>
+<p>
+    <br>
+    <strong>WSU employees/staff only:</strong> To view a student's previous 2023-2024 Financial Aid Estimate, you may login below.
+</p>
+
+<section class="row single builder-section-content gutter pad-tio builder-section-first builder-section-banner builder-section-next-wsuwpsidebarright">
+    <div class="column one">
+        <div class="builder-section-content">
+            <img src="/Compass/Content/images/EstimateGraphic2.jpg" style="width:100%;">
+        </div>
+    </div>
+</section>
+<section class="row">
+    <div class="column one">
+        <h2>Offer Portal</h2>
+        <p>
+            The Estimate Portal is for <strong>new</strong> WSU students and their families to view their online 2023-24 Financial Aid Estimate(s).  If you are a current student, you can use the
+            <a href="https://sfsapps.em.wsu.edu/compass/aidestimate/index" target="_blank">Financial Aid Estimator tool</a> to assist you with estimating costs and aid options but an estimate through this system will not be available.
+        </p>
+        <p><a href="https://www.youtube.com/watch?v=Ro0rdL6IrTU" target="_blank">How to Review your Estimated Financial Aid Offer</a></p>
+    </div>
+</section>
+<section class="side-right gutter">
+    <div class="column one">
+        <h2>To Sign In:</h2>
+        <ul>
+            <li>If you are a student, you will need a WSU Network ID and password to view your Estimate. Your Network ID is usually in the form of firstname.lastname. If you have not created a Network ID, go to <a href="https://admission.wsu.edu/zzusis.html" target="_blank">Create Network ID</a> to do so.</li>
+            <li>If you have forgotten your Network ID or password, please go to <a href="https://reset.wsu.edu/Authentication/ForgotCredentials" target="_blank">WSU Network ID Account Manager</a>.</li>
+            <li>If you are a parent or a third party and want to view a student’s Estimate, click <a href="/Compass/Account/ParentOptions">here</a> for available options. </li>
+        </ul>
+
+        <h3><i class="glyphicons glyphicons-user-lock"></i> Login Required</h3>
+        <p>
+            <a href="https://sso.em.wsu.edu/Login/SSO2?Redirect=https%3a%2f%2fsfsapps.em.wsu.edu%2fCompass%2fSSO/index" class="btn btn-primary"><i class="okta-logo"></i> Okta Single Sign-On</a>
+        </p>
+    </div>
+</section>
+
+
+
+    
+
+                        </article>
+                    </div>
+                </section>
+                <footer class="single row gutter padded-ends pad-ends site-footer">
+                    <div class="column one">
+                        <ul id="menu-footer" class="site-footer-menu">
+                            <li class="menu-item-has-children">
+                                <a href="#">Forms &amp; Helpful Information</a>
+                                <ul class="sub-menu">
+                                    <li><a href="https://financialaid.wsu.edu/forms/">SFS Forms</a></li>
+                                    <li><a title="Submit SFS Docs" href="https://submitsfsdocs.wsu.edu/">Submit SFS Docs</a></li>
+                                    <li><a href="https://financialaid.wsu.edu/helpful-videos/">Helpful Videos</a></li>
+                                    <li><a href="https://financialaid.wsu.edu/graduate/">Graduating from WSU</a></li>
+                                </ul>
+                            </li>
+                            <li class="menu-item-has-children">
+                                <a href="#">Resources &amp; Calculators</a>
+                                <ul class="sub-menu">
+                                    <li><a href="https://financialaid.wsu.edu/documents/2016/06/sap-handbook.pdf">SAP Handbook</a></li>
+                                    <li><a href="https://financialaid.wsu.edu/documents/2016/11/consumer-information-guide.pdf">Consumer Information Guide</a></li>
+                                    <li><a href="https://sfsapps.em.wsu.edu/compass/aidestimate/index">Financial Aid Estimator</a></li>
+                                    <li><a href="https://financialaid.wsu.edu/cost-of-attendanceaid-estimator/npc/">Net Price Calculator</a></li>
+                                    <li><a href="https://housing.wsu.edu/housing-essentials/rate-estimator/">Housing Rate Estimator</a></li>
+                                </ul>
+                            </li>
+                            <li class="menu-item-has-children">
+                                <a href="#">Partnering Offices</a>
+                                <ul class="sub-menu">
+                                    <li><a href="https://admission.wsu.edu/">Admissions</a></li>
+                                    <li><a href="https://studacct.wsu.edu/">University Receivables</a></li>
+                                    <li><a href="https://registrar.wsu.edu/">Office of the Registrar</a></li>
+                                    <li><a href="https://va.wsu.edu/">Veterans Affairs</a></li>
+                                    <li><a href="https://housing.wsu.edu/">Housing &amp; Residence Life</a></li>
+                                    <li><a href="https://deanofstudents.wsu.edu/">Dean of Students</a></li>
+                                    <li><a href="https://ascc.wsu.edu/">Academic Success and Career Center</a></li>
+                                </ul>
+                            </li>
+                            <li class="menu-item-has-children">
+                                <a href="#">About Us</a>
+                                <ul class="sub-menu">
+                                    <li><a href="https://financialaid.wsu.edu/mission-vision/">Mission &amp; Vision</a></li>
+                                    <li><a href="https://financialaid.wsu.edu/outreach/">Outreach Programs</a></li>
+                                    <li><a href="http://sfspartners.wsu.edu/">SFS Partner Portal</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </footer>
+            </main>
+            <div id="spine" class="spine-column white search-closed  bleed shelved" style="min-height: 720px; position: fixed; top: 0px;">
+                <div id="glue" class="spine-glue" style="min-height: 720px;">
+                    <header class="spine-header"><button id="shelve" type="button" aria-label="Site Navigation" aria-haspopup="true" aria-controls="glue" aria-expanded="false"></button>
+                        <a href="https://wsu.edu/" id="wsu-signature">Washington State University</a>
+                    </header>
+                    <section id="wsu-actions" class="spine-actions clearfix">
+                        <div role="navigation">
+                            <ul id="wsu-actions-tabs" class="spine-actions-tabs spine-tabs clearfix">
+                                <li id="wsu-search-tab" class="spine-search-tab closed"><button>Search</button></li>
+                                <li id="wsu-contact-tab" class="spine-contact-tab closed"><button>Contact</button></li>
+                                <li id="wsu-share-tab" class="spine-share-tab closed"><button>Share</button></li>
+                            </ul>
+                        </div>
+                    <section id="wsu-contact" class="spine-contact spine-action closed"><address itemscope="" itemtype="http://schema.org/Organization" class="hcard"><div class="organization-unit fn org"></div> <div class="organization-name">Washington State University</div><div class="address"><div class="street-address">Lighty Building Rm. 380</div><div class="locality">PO Box 641068 <span class="postalcode">Pullman, WA 99164</span></div></div><div class="tel">(509) 335.9711</div><div class="email" rel="email"><a href="mailto:financialaid@wsu.edu">Email us</a></div></address></section><section id="wsu-search" class="spine-search spine-action closed"><form id="default-search"><input name="term" type="text" value="" placeholder="search" title="Type search term here" class="ui-autocomplete-input" autocomplete="off" style=""><button type="submit">Submit</button></form><div id="spine-shortcuts" class="spine-shortcuts"><ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-1" tabindex="0" style="display: none;"></ul></div></section><section id="wsu-share" class="spine-share spine-action closed"><ul><li class="by-facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=https://sfsapps.em.wsu.edu/Compass">Facebook</a></li><li class="by-twitter"><a href="https://twitter.com/intent/tweet?text=Student%20Financial%20Services&amp;url=https://sfsapps.em.wsu.edu/Compass&amp;via=WSUFinancialAid" target="_blank">Twitter</a></li><li class="by-googleplus"><a href="https://plus.google.com/share?url=https://sfsapps.em.wsu.edu/Compass">Google+</a></li><li class="by-linkedin"><a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://sfsapps.em.wsu.edu/Compass&amp;summary=Student%20Financial%20Services%20%7C%20Washington%20State%20University&amp;source=undefined" target="_blank">Linkedin</a></li><li class="by-email"><a href="mailto:?subject=Student%20Financial%20Services%20%7C%20Washington%20State%20University&amp;body=https://sfsapps.em.wsu.edu/Compass">Email</a></li></ul></section></section><!--/#wsu-actions-->
+                    <section id="spine-navigation" class="spine-navigation">
+                        <nav id="spine-sitenav" class="spine-sitenav">
+                            <ul>
+                                <li><a href="http://financialaid.wsu.edu" class="external">Student Financial Services Home</a></li>
+                                <li class="parent">
+                                    <a href="#">Apply for Aid</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/getting-started/" class="external">How to apply</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/fafsa-application/" class="external">FAFSA Application</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/summer-session/" class="external">Summer Session</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/part-time-students/" class="external">Part-Time Students</a></li>
+                                        <li class="parent">
+                                            <a href="#">Undocumented Students</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="https://financialaid.wsu.edu/undocumented-student-aid/" class="external">Financial Aid for Undocumented Students</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/wasfa/" class="external">WASFA Application</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="https://financialaid.wsu.edu/financial-aid-for-studying-abroad/" class="external">Study Abroad</a></li>
+                                        <li><a href="https://va.wsu.edu/" class="external">Veterans</a></li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Financial Aid Options</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/financial-aid-overview/" class="external">Understanding Aid</a></li>
+                                        <li class="parent">
+                                            <a href="#">Grants &amp; Waivers</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="https://financialaid.wsu.edu/state-federal-grants/" class="external">State &amp; Federal Grants</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/institutional-grants-waivers/" class="external">Institutional Grants &amp; Waivers</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/cougar-commitment/" class="external">Cougar Commitment</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/teach-grant/" class="external">TEACH Grant</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="parent">
+                                            <a href="#">Student Jobs</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="https://financialaid.wsu.edu/student-jobs-getting-started/" class="external">Working On Campus</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/get-a-work-study-job/" class="external">Work-Study</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="parent">
+                                            <a href="#">Loans</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="https://financialaid.wsu.edu/student-loans/" class="external">Student Loans</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/parent-loans/" class="external">Parent PLUS Loans</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/graduate-professional-loans/" class="external">Graduate &amp; Professional Loans</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/private-education-loans/" class="external">Private Education Loans</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/borrowing-responsibly/" class="external">Borrowing Responsibly</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="https://financialaid.wsu.edu/post-baccalaureate-aid/" class="external">Post-Baccalaureate Aid</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/student-athletes/" class="external">Student-Athletes</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/consortium-agreements/" class="external">Consortium Agreements</a></li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Scholarships</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/scholarships/" class="external">Find &amp; Apply for Scholarships</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/washington-resident-scholarships/" class="external">Washington Residents</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/nonresident-scholarships/" class="external">Non-Washington Residents</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/us-residents/" class="external">All U.S. Residents</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/international-students/" class="external">International Students</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/college-department-awards/" class="external">College &amp; Department Awards</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/terms-conditions-funds/" class="external">Terms, Conditions &amp; Funds</a></li>
+                                        <li><a href="https://www.applyweb.com/wsunivss/index.ftl" class="external">WSU General Scholarship Application</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/scholarship-search/" class="external">Search for Scholarships</a></li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Your Award</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/awarding-process/" class="external">Awarding Process</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/award-status-to-do-list/" class="external">Award Status &amp; To-do List</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/accepting-your-loans/" class="external">Accepting Your Loans</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/for-parents/" class="external">For Parents</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/special-circumstances/" class="external">Special Circumstances</a></li>
+                                        <li class="parent">
+                                            <a href="#">Maintaining Eligibility</a>
+                                            <ul class="sub-menu">
+                                                <li><a href="https://financialaid.wsu.edu/dropping-classes/" class="external">Dropping Classes</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/canceling-enrollment/" class="external">Canceling Enrollment</a></li>
+                                                <li><a href="https://financialaid.wsu.edu/sap-requirements/" class="external">SAP Requirements</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Cost of Attendance</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/tuition-expenses/" class="external">Tuition &amp; Expenses</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/aid-estimator/" class="external">Aid Estimator &amp; Price Calculator</a></li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Calendar, Deadlines &amp; Announcements</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/category/calendar-announcements/announcements/" class="external">Announcements</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/events/category/deadlines/" class="external">Deadlines &amp; Dates</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/events/category/events/" class="external">Events</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/events/" class="external">Full Calendar</a></li>
+                                    </ul>
+                                </li>
+                                <li class="parent">
+                                    <a href="#">Student Success Resources</a>
+                                    <ul class="sub-menu">
+                                        <li><a href="https://financialaid.wsu.edu/academics-campus-life/" class="external">Academics &amp; Campus Life</a></li>
+                                        <li><a href="https://provost.wsu.edu/invest-in-success/" class="external">Invest In Success</a></li>
+                                        <li><a href="https://financialliteracy.wsu.edu" class="external">Coug Money Matters Financial Literacy</a></li>
+                                        <li><a href="https://financialaid.wsu.edu/student-testimonials/" class="external">Student Testimonials</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="https://financialaid.wsu.edu/es/" class="external">Servicios Financieros Estudiantiles en Español</a></li>
+                                <li><a href="https://financialaid.wsu.edu/contact/" class="external">Contact Us</a></li>
+                            </ul>
+                        </nav>
+                        <nav id="spine-offsitenav" class="spine-offsitenav">
+                            <ul class="navdivider">
+                                <li>
+                                    <a href="/Compass/" id="loginLink">Sign in</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </section>
+                    <footer class="spine-footer">
+                        <nav id="wsu-social-channels" class="spine-social-channels">
+                            <ul>
+                                <li class="facebook-channel"><a href="https://www.facebook.com/WSUStudentFinancialServices">facebook</a></li>
+                                <li class="twitter-channel"><a href="https://twitter.com/WSUFinancialAid">twitter</a></li>
+                                <li class="youtube-channel"><a href="https://www.youtube.com/channel/UCEbrto-xxtuL6GHi47ziwlA">youtube</a></li>
+                                <li class="instagram-channel"><a href="https://www.instagram.com/WSUFinancialAid/">instagram</a></li>
+                            </ul>
+                        </nav>
+                        <nav id="wsu-global-links" class="spine-global-links">
+                            <ul>
+                                <li class="mywsu-link"><a href="https://portal.wsu.edu/">myWSU</a></li>
+                                <li class="access-link"><a href="https://access.wsu.edu/">Access</a></li>
+                                <li class="policies-link"><a href="https://policies.wsu.edu/">Policies</a></li>
+                                <li class="copyright-link"><a href="https://copyright.wsu.edu">©</a></li>
+                            </ul>
+                        </nav>
+                    </footer>
+                </div><!--/glue-->
+            </div><!--/spine-->
+        </div><!--/binder-->
+    </div><!--/jacket-->
+    <div id="contact-details" itemscope="" itemtype="http://schema.org/Organization">
+        <meta itemprop="name" class="required" content="Washington State University">
+        <meta itemprop="department" class="required" content="">
+        <div itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress">
+            <meta itemprop="streetAddress" class="optional" content="Lighty Building Rm. 380">
+            <meta itemprop="addressLocality" class="optional" content="PO Box 641068">
+            <meta itemprop="postalCode" class="required" content="Pullman, WA 99164">
+        </div>
+        <meta itemprop="telephone" class="required" content="(509) 335.9711">
+        <meta itemprop="email" class="required" content="financialaid@wsu.edu">
+        <meta itemprop="ContactPoint" title="Contact Page..." class="optional" content="http://contact.wsu.edu">
+    </div>
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-K5CHVG" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script type="text/javascript" src="https://financialaid.wsu.edu/wp-content/themes/spine/js/spine-theme.js?ver=0.27.6-1.5.4-39525"></script>
+
+    <script src="/Compass/bundles/knockout?v=-KQIB4O-7yy8YuM65vuNlRIyc5pGLr7_4ae94RyK5tA1"></script>
+
+    <script src="/Compass/bundles/bootstrap?v=X8gnNIYDSsAzCxLBuTaZy64JJqo9mzWM5GPsE4TJLNI1"></script>
+
+    
+
+    <script type="text/javascript">
+        window.rootUrl = "/Compass/";
+        $(document).ready(function () {
+            $(".jbutton").button();
+        });
+
+        function koDateTimeBindingHandlers() {
+            ko.bindingHandlers.dateTime = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    ko.utils.registerEventHandler(element, 'change', function () {
+                        var value = valueAccessor();
+
+                        if (element.value !== null && element.value !== undefined && element.value.length > 0) {
+                            value(element.value);
+                        }
+                        else {
+                            value('');
+                        }
+                    });
+                },
+                update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var value = valueAccessor();
+                    var valueUnwrapped = ko.utils.unwrapObservable(value);
+
+                    var output = '';
+                    if (valueUnwrapped !== null && valueUnwrapped !== undefined) {
+                        //output = utils.formatDate(valueUnwrapped);
+                        //moment(registration().CancelDate()).format('M/D/YYYY h:mm:ss a')
+                        output = moment(valueUnwrapped).format('M/D/YYYY h:mm:ss a');
+                    }
+
+                    if ($(element).is('input') === true) {
+                        $(element).val(output);
+                    } else {
+                        $(element).text(output);
+                    }
+                }
+            };
+
+            ko.bindingHandlers.date = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    ko.utils.registerEventHandler(element, 'change', function () {
+                        var value = valueAccessor();
+
+                        if (element.value !== null && element.value !== undefined && element.value.length > 0) {
+                            value(element.value);
+                        }
+                        else {
+                            value('');
+                        }
+                    });
+                },
+                update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var value = valueAccessor();
+                    var valueUnwrapped = ko.utils.unwrapObservable(value);
+
+                    var output = '';
+                    if (valueUnwrapped !== null && valueUnwrapped !== undefined > 0) {
+                        output = moment(valueUnwrapped).format('M/D/YYYY');
+                    }
+
+                    if ($(element).is('input') === true) {
+                        $(element).val(output);
+                    } else {
+                        $(element).text(output);
+                    }
+                }
+            };
+        }
+    </script>
+
+
+<span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span><script type="text/javascript" id="" charset="">if(window.jQuery)jQuery("a").on("click",function(a){a.target.hostname!==location.host&&void 0!==a.target.hostname&&(0<=a.target.hostname.indexOf("wsu.edu")?dataLayer.push({event:"anchor_click",anchorType:"internal",anchorHref:a.target.href}):dataLayer.push({event:"anchor_click",anchorType:"outbound",anchorHref:a.target.href}))});</script>
+<script type="text/javascript" id="" charset="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","352489839123111");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=352489839123111&amp;ev=PageView&amp;noscript=1"></noscript>
+
+<script type="text/javascript" id="" charset="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","226294922534478");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=226294922534478&amp;ev=PageView&amp;noscript=1"></noscript><iframe height="0" width="0" style="display: none; visibility: hidden;"></iframe><iframe height="0" width="0" src="https://10179186.fls.doubleclick.net/activityi;src=10179186;type=allvi0;cat=wsu-u0;ord=8229355134055;npa=0;auiddc=1999543251.1771467032;u1=https%3A%2F%2Fsfsapps.em.wsu.edu%2FCompass;uaa=x86;uab=64;uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37;uamb=0;uam=;uap=Windows;uapv=10.0;uaw=0;pscdl=noapi;frm=0;_tu=KFA;gtm=45fe62h1v9189075724z872260692za20gzb72260692zd72260692xea;gcd=13l3l3l3l1l1;dma=0;dc_fmt=2;tag_exp=103116026~103200004~104527907~104528500~104684208~104684211~115938466~115938469~117455676~117455678;epver=2;dc_random=1771467032_2OPPrisvtpWYozSXMKMYiYI4PvYfODsZLw;_dc_test=1;~oref=https%3A%2F%2Fsfsapps.em.wsu.edu%2FCompass?" style="display: none; visibility: hidden;"></iframe>
+</body></html>

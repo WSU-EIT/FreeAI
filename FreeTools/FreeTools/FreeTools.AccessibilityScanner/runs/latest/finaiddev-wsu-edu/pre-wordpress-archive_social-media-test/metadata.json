@@ -1,0 +1,82 @@
+{
+  "PagePath": "/pre-wordpress-archive/social-media-test/",
+  "Url": "https://finaiddev.wsu.edu/pre-wordpress-archive/social-media-test/",
+  "FinalUrl": null,
+  "Title": "Social Media Test | Student Financial Services Test Site",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 666958,
+  "ScreenshotSizeBytes": 167665,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 167665
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 5,
+  "Images": [
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2443/check.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/3071/compass-tiny.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2506/paw_small.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2535/phoneicon.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2450/submitsfsdocs.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://finaiddev.wsu.edu/media/2457/picture1.png",
+      "AltText": "Picture1"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 8,
+    "Critical": 1,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 7,
+        "Critical": 1,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:20:27.7413976Z"
+}

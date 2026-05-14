@@ -1,0 +1,63 @@
+{
+  "PagePath": "/rr411/grades/final-grades/",
+  "Url": "https://em.wsu.edu/rr411/grades/final-grades/",
+  "FinalUrl": null,
+  "Title": "Final Grades | Registration \u0026 Enrollment 411",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 672310,
+  "ScreenshotSizeBytes": 135297,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 1,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 135297
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 1,
+    "Serious": 1,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 2,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:32:09 GMT",
+    "rollup-content-82489": "Rollup-Content-82489",
+    "strict-transport-security": "max-age=31536000",
+    "x-content-type-options": "nosniff"
+  },
+  "CapturedAt": "2026-02-19T02:32:09.5927064Z"
+}

@@ -1,0 +1,155 @@
+{
+  "PagePath": "/apartments/yakama-village/",
+  "Url": "https://housing.wsu.edu/apartments/yakama-village/",
+  "FinalUrl": null,
+  "Title": "Yakama Village",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 144936,
+  "ScreenshotSizeBytes": 235146,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 11,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 235146
+    }
+  ],
+  "ImageCount": 22,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qkenbefy/yakama-banner.jpg",
+      "AltText": "Yakama exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hw4j12wf/yakama-two-bedroom-townhouse-kitchen.png",
+      "AltText": "Yakama Two Bedroom Townhouse Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qyoflxfo/yakama-one-bedroom-flat-living-room.png",
+      "AltText": "Yakama One Bedroom Flat Living Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wlhdtfme/yakama-one-bedroom-flat-bathroom.png",
+      "AltText": "Yakama One Bedroom Flat Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/zt5jygny/yakama-one-bedroom-flat-closet.png",
+      "AltText": "Yakama One Bedroom Flat Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/f1hec1op/yakama-one-bedroom-flat-kitchen-dining.png",
+      "AltText": "Yakama One Bedroom Flat Kitchen Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/egvhpalv/yakama-one-bedroom-flat-kitchen.png",
+      "AltText": "Yakama One Bedroom Flat Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kwikh4nd/yakama-one-bedroom-townhouse-bathroom.png",
+      "AltText": "Yakama One Bedroom Townhouse Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/c32ht4tx/yakama-one-bedroom-townhouse-bedroom.png",
+      "AltText": "Yakama One Bedroom Townhouse Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/c0od0syz/yakama-one-bedroom-townhouse.png",
+      "AltText": "Yakama One Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/x4ghwd0i/yakama-studio-bathroom.png",
+      "AltText": "Yakama Studio Bathroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/u0slx4s4/yakama-studio-futon.png",
+      "AltText": "Yakama Studio Futon"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jtbdhbn0/yakama-studio-kitchen.png",
+      "AltText": "Yakama Studio Kitchen"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/aymbofw5/yakama-studio-living-area.png",
+      "AltText": "Yakama Studio Living Area"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/nfbfdwfe/yakama-two-bedroom-townhouse-bedroom.png",
+      "AltText": "Yakama Two Bedroom Townhouse Bedroom"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/dfapy0qp/yakama-two-bedroom-townhouse-kitchen-dining.png",
+      "AltText": "Yakama Two Bedroom Townhouse Kitchen Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ydjc1a3b/yakama-two-bedroom-townhouse.jpg",
+      "AltText": "Yakama Two Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lqhj53cm/yakama-one-bedroom-flat.jpg",
+      "AltText": "Yakama One Bedroom Flat"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/oiyn5c1l/yakama-one-bedroom-townhouse.jpg",
+      "AltText": "Yakama One Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/xjyngpd2/yakama-studio.jpg",
+      "AltText": "Yakama Studio"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2igdu21f/yakama-three-bedroom-townhouse.jpg",
+      "AltText": "Yakama Three Bedroom Townhouse"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/vegpsf5u/yakama-two-bedroom-flat.png",
+      "AltText": "Yakama Two Bedroom Flat"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:10:57 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:10:57.1462965Z"
+}

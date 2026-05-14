@@ -1,0 +1,54 @@
+# Wizard
+
+> Three-piece wizard primitive: a numbered stepper, reusable card-header for navigation, and a selection summary.
+
+## What this folder provides
+Building blocks for multi-step wizards. Compose them yourself — there is no `<Wizard>` orchestrator component; you pick the pieces you want.
+
+| Component | Purpose |
+|---|---|
+| `WizardStepper` | Numbered step circles with connector lines, click-to-go-back, per-step "selected value" preview |
+| `WizardStepHeader` | Reusable card-header with Start Over / Back / Next / Finish buttons + optional spinner |
+| `WizardSummary` | Compact alert showing previously-made selections as labeled badges |
+
+## Files in this folder
+| File | Purpose | LoC |
+|---|---|---|
+| `WizardStepper.razor` | Numbered stepper visualization | 78 |
+| `WizardStepHeader.razor` | Step header with nav buttons | 69 |
+| `WizardSummary.razor` | Selection-summary alert | 35 |
+
+## Dependencies
+- **NuGet packages:** none
+- **CSS:** Bootstrap 5
+- **Icons:** FontAwesome (`fa-check`, `fa-arrow-left`, `fa-arrow-right`, `fa-refresh`)
+- **JS:** none (pure CSS/Razor)
+- **Cross-feature dependencies:** none
+
+## Cherry-pick instructions
+1. Copy the `FreeBlazorExtended/Wizard/` folder.
+2. Add `@using FreeBlazorExtended.Wizard` to your `_Imports.razor`.
+3. Compose your wizard logic page-side; this folder gives you the visual primitives.
+
+## Usage
+```razor
+<WizardStepper Steps="_steps" CurrentStep="_step"
+               OnStepClick="@(i => _step = i)" />
+<WizardSummary Selections="_selections" />
+<div class="card">
+    <WizardStepHeader StepNumber="@(_step + 1)" Title="@_steps[_step].Name"
+                      ShowBack="@(_step > 0)" OnBack="@(() => _step--)"
+                      ShowNext="@(_step < _steps.Count - 1)" OnNext="@(() => _step++)"
+                      ShowFinish="@(_step == _steps.Count - 1)" OnFinish="OnFinish" />
+    <div class="card-body">
+        @* current step content *@
+    </div>
+</div>
+```
+
+## Status
+- Implementation: **REAL** — direct port from FreeExamples (originally adapted from FreeCICD Pipeline Wizard)
+- Known gaps: no orchestrator component — you wire step state yourself
+
+## Effort to integrate
+**S** — pure Razor, no JS, no external deps beyond Bootstrap + FontAwesome.

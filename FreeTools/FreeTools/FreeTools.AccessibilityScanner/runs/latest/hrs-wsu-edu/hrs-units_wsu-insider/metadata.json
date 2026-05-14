@@ -1,0 +1,105 @@
+{
+  "PagePath": "/hrs-units/wsu-insider/",
+  "Url": "https://hrs.wsu.edu/hrs-units/wsu-insider/",
+  "FinalUrl": null,
+  "Title": "WSU Insider \u2013 HRS Units \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 96465,
+  "ScreenshotSizeBytes": 300783,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 2,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 300783
+    }
+  ],
+  "ImageCount": 10,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/04/wellcoug-wellness-award-scaled-e1713973601697-990x744.jpg",
+      "AltText": "A glass award."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/01/Bonnie-Wilmoth-e1706631450471-396x297.jpg",
+      "AltText": "Bonnie Wilmoth."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2024/01/Phares-Teddi-e1706037850943-396x297.jpg",
+      "AltText": "Teddi Phares smiling."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/08/chairs-g0c6553740_1920-e1660663615203-396x297.jpg",
+      "AltText": "An empty conference room."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/06/hiring-e1654618715991-396x297.jpg",
+      "AltText": "A person looking at a resume and video chatting on a laptop."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2019/04/aleksandr-eremin-237184-unsplash-e1554249096389-396x297.jpg",
+      "AltText": "Sunflowers."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2022/02/meetings-e1643744348247-396x297.jpg",
+      "AltText": "Someone sitting at a laptop computer and participating in a virtual office meeting."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/12/generic-system-logo1-e1639163462752-396x297.jpg",
+      "AltText": "Washington State University logo."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/11/football-stadium-e1635871081400-396x296.jpg",
+      "AltText": "Fans pack Martin Stadium to watch a Cougar football game."
+    },
+    {
+      "SourceUrl": "https://hrs.wsu.edu/wp-content/uploads/2021/10/Pregame_Aerial_1818-396x297.jpg",
+      "AltText": "Aerial view of a football stadium."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 0,
+    "Serious": 4,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 4,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:19:00 GMT",
+    "link": "\u003Chttps://hrs.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://hrs.wsu.edu/wp-json/wp/v2/hrs_unit/52\u003E; rel=\u0022alternate\u0022; title=\u0022JSON\u0022; type=\u0022application/json\u0022",
+    "server": "nginx/1.14.1",
+    "vary": "Cookie",
+    "x-powered-by": "PHP/8.2.29"
+  },
+  "CapturedAt": "2026-02-19T02:19:00.1432746Z"
+}

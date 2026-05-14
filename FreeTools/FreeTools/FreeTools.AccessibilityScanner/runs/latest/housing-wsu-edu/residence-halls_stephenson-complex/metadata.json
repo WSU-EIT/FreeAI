@@ -1,0 +1,131 @@
+{
+  "PagePath": "/residence-halls/stephenson-complex/",
+  "Url": "https://housing.wsu.edu/residence-halls/stephenson-complex/",
+  "FinalUrl": null,
+  "Title": "Stephenson Complex",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 102896,
+  "ScreenshotSizeBytes": 304396,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 304396
+    }
+  ],
+  "ImageCount": 16,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/s5kpvdly/stephenson-room-side.jpg",
+      "AltText": "Stephenson Room Side"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4wnkqcgv/streit-perham-study-lounge.jpg",
+      "AltText": "Streit Perham Study Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ovwj4cal/stephenson-double.jpg",
+      "AltText": "Stephenson Double"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/wslmqdtf/stephenson-double-closets.jpg",
+      "AltText": "Stephenson Double Closets"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/1mweluq2/tyler-bacon.jpg",
+      "AltText": "Tyler Bacon"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4ohi4vxe/jillian-paxton.jpg",
+      "AltText": "Jillian Paxton"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/5wriim04/toni-martin.jpg",
+      "AltText": "Toni Martin"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2a5be03o/southside-students-eating-2.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/z3qpqm1m/south-central-campus.png",
+      "AltText": "Neighborhood: South Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/eriljyeq/stephenson.png",
+      "AltText": "Stephenson Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0qifw5wq/floor-plan-east-2nd-floor.png",
+      "AltText": "Stephenson east second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/rjvnqjux/floor-plan-east-3rd-13th-floor.png",
+      "AltText": "Stephenson east floors 3 through 13 floor plans"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/0xibpog5/floor-plan-north-2nd-floor.png",
+      "AltText": "stephenson north second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lttlzljn/floor-plan-north-3rd-13th-floor.png",
+      "AltText": "stephenson north 3 through 13"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tmeddmlg/floor-plan-south-2nd-floor.png",
+      "AltText": "stephenson south floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/jbzlvj4k/floor-plan-south-3rd-13th-floor.png",
+      "AltText": "stephenson south 3 through 13"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 0,
+    "Critical": 0,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:16:14 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:16:15.453595Z"
+}

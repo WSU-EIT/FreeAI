@@ -1,0 +1,167 @@
+{
+  "PagePath": "/tenant1/Settings/Departments",
+  "Url": "https://localhost:7271/tenant1/Settings/Departments",
+  "FinalUrl": null,
+  "Title": "FreeExamples",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 73650,
+  "ScreenshotSizeBytes": 414752,
+  "CredentialUsed": "admin",
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 3,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 16376
+    },
+    {
+      "FileName": "02-auth-form-detected.jpg",
+      "Label": "auth-form-detected",
+      "StepNumber": 2,
+      "FileSize": 16376
+    },
+    {
+      "FileName": "03-auth-form-filled.jpg",
+      "Label": "auth-form-filled",
+      "StepNumber": 3,
+      "FileSize": 17245
+    },
+    {
+      "FileName": "04-auth-result.jpg",
+      "Label": "auth-result",
+      "StepNumber": 4,
+      "FileSize": 14184
+    },
+    {
+      "FileName": "05-page-expanded.jpg",
+      "Label": "page-expanded",
+      "StepNumber": 5,
+      "FileSize": 18736
+    },
+    {
+      "FileName": "06-axe-overlay.jpg",
+      "Label": "axe-overlay",
+      "StepNumber": 6,
+      "FileSize": 21667
+    },
+    {
+      "FileName": "07-wave-overlay.jpg",
+      "Label": "wave-overlay",
+      "StepNumber": 7,
+      "FileSize": 26494
+    },
+    {
+      "FileName": "08-htmlcs-overlay.jpg",
+      "Label": "htmlcs-overlay",
+      "StepNumber": 8,
+      "FileSize": 29913
+    },
+    {
+      "FileName": "09-ibm-a11y-overlay.jpg",
+      "Label": "ibm-a11y-overlay",
+      "StepNumber": 9,
+      "FileSize": 31507
+    },
+    {
+      "FileName": "10-structure-overlay.jpg",
+      "Label": "structure-overlay",
+      "StepNumber": 10,
+      "FileSize": 39251
+    },
+    {
+      "FileName": "11-cvd-protanopia.jpg",
+      "Label": "cvd-protanopia",
+      "StepNumber": 11,
+      "FileSize": 21894
+    },
+    {
+      "FileName": "12-cvd-deuteranopia.jpg",
+      "Label": "cvd-deuteranopia",
+      "StepNumber": 12,
+      "FileSize": 22252
+    },
+    {
+      "FileName": "13-cvd-tritanopia.jpg",
+      "Label": "cvd-tritanopia",
+      "StepNumber": 13,
+      "FileSize": 21844
+    },
+    {
+      "FileName": "14-cvd-achromatopsia.jpg",
+      "Label": "cvd-achromatopsia",
+      "StepNumber": 14,
+      "FileSize": 22636
+    },
+    {
+      "FileName": "15-cvd-protanomaly.jpg",
+      "Label": "cvd-protanomaly",
+      "StepNumber": 15,
+      "FileSize": 22141
+    },
+    {
+      "FileName": "16-cvd-deuteranomaly.jpg",
+      "Label": "cvd-deuteranomaly",
+      "StepNumber": 16,
+      "FileSize": 22235
+    },
+    {
+      "FileName": "17-cvd-tritanomaly.jpg",
+      "Label": "cvd-tritanomaly",
+      "StepNumber": 17,
+      "FileSize": 21740
+    },
+    {
+      "FileName": "18-screenreader-view.jpg",
+      "Label": "screenreader-view",
+      "StepNumber": 18,
+      "FileSize": 28261
+    }
+  ],
+  "ImageCount": 0,
+  "ImagesMissingAlt": 0,
+  "Images": [],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 5,
+    "Moderate": 2,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 4,
+        "Critical": 0,
+        "Serious": 2,
+        "Moderate": 2,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "blazor-enhanced-nav": "allow",
+    "cache-control": "no-cache, no-store",
+    "content-security-policy": "frame-ancestors \u0027self\u0027 login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 04 Mar 2026 21:11:19 GMT",
+    "pragma": "no-cache",
+    "server": "Kestrel"
+  },
+  "CapturedAt": "2026-03-04T21:11:20.5236713Z"
+}

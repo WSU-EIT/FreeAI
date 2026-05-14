@@ -1,0 +1,319 @@
+@page "/Compliance/Tree"
+@page "/{TenantCode}/Compliance/Tree"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    <div class="@Model.StickyMenuClass">
+        <h1 class="page-title">
+            <i class="fas fa-sitemap me-2"></i>Domain Tree
+            <StickyMenuIcon />
+        </h1>
+        <div class="btn-group mb-2" role="group">
+            <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                <Language Tag="Back" IncludeIcon="true" />
+            </a>
+            <button class="btn btn-outline-secondary" @onclick="ExpandAll" disabled="@(_root == null)"><i class="fas fa-expand-alt me-1"></i>Expand All</button>
+            <button class="btn btn-outline-secondary" @onclick="CollapseAll" disabled="@(_root == null)"><i class="fas fa-compress-alt me-1"></i>Collapse All</button>
+        </div>
+        <FreeA11yChecker_App_TriageNav Active="tree" />
+    </div>
+
+    <FreeA11yChecker_App_AboutSection Title="About Domain Tree">
+        <p>Group violations across every site by domain &rarr; subdomain &rarr; URL path. Click any node to expand or collapse. Counts at each node aggregate everything underneath. Use this to find which areas of which sites have the worst problems.</p>
+    </FreeA11yChecker_App_AboutSection>
+
+    @* ── Filter row ── *@
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-auto">
+            <label class="form-label small mb-1">Severity</label>
+            <select class="form-select form-select-sm" @bind="_severity" @bind:after="LoadData" aria-label="Filter by severity">
+                <option value="">All</option>
+                <option value="critical">Critical</option>
+                <option value="serious">Serious</option>
+                <option value="moderate">Moderate</option>
+                <option value="minor">Minor</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">WCAG</label>
+            <select class="form-select form-select-sm" @bind="_wcagLevel" @bind:after="RebuildTree" aria-label="Filter by WCAG level">
+                <option value="all">All</option>
+                <option value="a">Level A only</option>
+                <option value="aa">A + AA</option>
+                <option value="aaa">A + AA + AAA</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1 d-block">Scans</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="latestOnlyTree" @bind="_latestOnly" @bind:after="LoadData" />
+                <label class="form-check-label small" for="latestOnlyTree">Latest scan per site</label>
+            </div>
+        </div>
+    </div>
+
+    @if (_loading) {
+        <LoadingMessage />
+    } else if (_root == null || !_root.Children.Any()) {
+        <div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>No violations found for the current filters.</div>
+    } else {
+        <div class="card">
+            <div class="card-body p-2">
+                @foreach (var child in _root.Children.Values.OrderByDescending(n => n.TotalViolations)) {
+                    @RenderNode(child, 0)
+                }
+            </div>
+        </div>
+    }
+}
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "domaintree";
+    private bool _validatedUrl = false;
+    private bool _loadedData = false;
+    private bool _loading = true;
+
+    private string _severity = "";
+    private string _wcagLevel = "aa";
+    private bool _latestOnly = true;
+
+    private List<DataObjects.CrossSiteViolation> _raw = new();
+    private TreeNode? _root;
+    private HashSet<string> _expanded = new();
+
+    public class TreeNode
+    {
+        public string Label { get; set; } = "";
+        public string FullPath { get; set; } = "";
+        public Dictionary<string, TreeNode> Children { get; set; } = new();
+        public List<DataObjects.CrossSiteViolation> Leaves { get; set; } = new();
+        public int TotalViolations { get; set; }
+        public int CriticalCount { get; set; }
+        public int SeriousCount { get; set; }
+        public int ModerateCount { get; set; }
+        public int MinorCount { get; set; }
+        public bool IsPage { get; set; }
+        public string? PageUrl { get; set; }
+        public Guid? PageScanResultId { get; set; }
+        public string? SiteName { get; set; }
+    }
+
+    public void Dispose() { Model.OnChange -= OnDataModelUpdated; }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_validatedUrl) { _validatedUrl = true; await Helpers.ValidateUrl(TenantCode); }
+            if (!_loadedData) { _loadedData = true; await LoadData(); }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) StateHasChanged();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        StateHasChanged();
+        var filter = new {
+            SiteIds = (List<Guid>?)null,
+            UrlPattern = (string?)null,
+            Severity = String.IsNullOrWhiteSpace(_severity) ? null : _severity,
+            CanonicalRuleId = (string?)null,
+            LatestScanOnly = _latestOnly,
+        };
+        var results = await Helpers.GetOrPost<List<DataObjects.CrossSiteViolation>>("api/Data/GetCrossSiteViolations", filter);
+        _raw = results ?? new();
+        RebuildTree();
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void RebuildTree()
+    {
+        var filtered = _wcagLevel == "all"
+            ? _raw
+            : _raw.Where(v => WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, _wcagLevel)).ToList();
+
+        _root = new TreeNode { Label = "ROOT", FullPath = "" };
+
+        foreach (var v in filtered) {
+            if (!Uri.TryCreate(v.PageUrl, UriKind.Absolute, out var uri)) continue;
+
+            // Build domain segments — reversed (com -> wsu -> em) for tree grouping by TLD first.
+            var hostParts = uri.Host.Split('.', StringSplitOptions.RemoveEmptyEntries).Reverse().ToList();
+            var pathParts = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            TreeNode cursor = _root;
+            string accumulatedHost = "";
+            for (int i = 0; i < hostParts.Count; i++) {
+                accumulatedHost = String.IsNullOrEmpty(accumulatedHost) ? hostParts[i] : hostParts[i] + "." + accumulatedHost;
+                string key = "host:" + accumulatedHost;
+                if (!cursor.Children.TryGetValue(key, out var next)) {
+                    next = new TreeNode { Label = accumulatedHost, FullPath = key };
+                    cursor.Children[key] = next;
+                }
+                cursor = next;
+            }
+
+            string pathSoFar = "";
+            for (int i = 0; i < pathParts.Count; i++) {
+                pathSoFar += "/" + pathParts[i];
+                string key = "path:" + uri.Host + pathSoFar;
+                if (!cursor.Children.TryGetValue(key, out var next)) {
+                    next = new TreeNode { Label = pathParts[i], FullPath = key };
+                    cursor.Children[key] = next;
+                }
+                cursor = next;
+            }
+
+            // Leaf node = the page itself
+            string pageKey = "page:" + v.PageScanResultId;
+            if (!cursor.Children.TryGetValue(pageKey, out var pageNode)) {
+                pageNode = new TreeNode {
+                    Label = String.IsNullOrWhiteSpace(v.PageTitle) ? "(page)" : v.PageTitle!,
+                    FullPath = pageKey,
+                    IsPage = true,
+                    PageUrl = v.PageUrl,
+                    PageScanResultId = v.PageScanResultId,
+                    SiteName = v.SiteName,
+                };
+                cursor.Children[pageKey] = pageNode;
+            }
+            pageNode.Leaves.Add(v);
+        }
+
+        AggregateCounts(_root);
+    }
+
+    private void AggregateCounts(TreeNode node)
+    {
+        foreach (var child in node.Children.Values) {
+            AggregateCounts(child);
+        }
+        if (node.IsPage) {
+            node.TotalViolations = node.Leaves.Count;
+            node.CriticalCount = node.Leaves.Count(v => v.Severity.ToLower() == "critical");
+            node.SeriousCount = node.Leaves.Count(v => v.Severity.ToLower() == "serious");
+            node.ModerateCount = node.Leaves.Count(v => v.Severity.ToLower() == "moderate");
+            node.MinorCount = node.Leaves.Count(v => v.Severity.ToLower() == "minor");
+        } else {
+            node.TotalViolations = node.Children.Values.Sum(c => c.TotalViolations);
+            node.CriticalCount = node.Children.Values.Sum(c => c.CriticalCount);
+            node.SeriousCount = node.Children.Values.Sum(c => c.SeriousCount);
+            node.ModerateCount = node.Children.Values.Sum(c => c.ModerateCount);
+            node.MinorCount = node.Children.Values.Sum(c => c.MinorCount);
+        }
+    }
+
+    private void Toggle(string key) { if (!_expanded.Add(key)) _expanded.Remove(key); }
+
+    private void ExpandAll()
+    {
+        _expanded.Clear();
+        if (_root != null) WalkExpand(_root);
+        StateHasChanged();
+    }
+
+    private void WalkExpand(TreeNode n)
+    {
+        foreach (var c in n.Children.Values) {
+            if (c.Children.Any()) {
+                _expanded.Add(c.FullPath);
+                WalkExpand(c);
+            }
+        }
+    }
+
+    private void CollapseAll() { _expanded.Clear(); StateHasChanged(); }
+
+    private RenderFragment RenderNode(TreeNode node, int depth) => builder =>
+    {
+        bool isExpanded = _expanded.Contains(node.FullPath);
+        bool hasChildren = node.Children.Any();
+        string indentStyle = $"padding-left:{depth * 1.25}rem;";
+
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "tree-row d-flex align-items-center py-1 border-bottom");
+        builder.AddAttribute(2, "style", indentStyle);
+
+        // Toggle icon / page bullet
+        builder.OpenElement(3, "span");
+        builder.AddAttribute(4, "class", "me-2 text-muted");
+        builder.AddAttribute(5, "style", "width:1rem; cursor:" + (hasChildren ? "pointer" : "default") + ";");
+        if (hasChildren) {
+            builder.AddAttribute(6, "onclick", EventCallback.Factory.Create(this, () => Toggle(node.FullPath)));
+            builder.AddMarkupContent(7, isExpanded
+                ? "<i class=\"fas fa-chevron-down\"></i>"
+                : "<i class=\"fas fa-chevron-right\"></i>");
+        } else if (node.IsPage) {
+            builder.AddMarkupContent(8, "<i class=\"far fa-file-alt\"></i>");
+        } else {
+            builder.AddMarkupContent(9, "<i class=\"fas fa-folder\"></i>");
+        }
+        builder.CloseElement();
+
+        // Label
+        builder.OpenElement(10, "span");
+        builder.AddAttribute(11, "class", "flex-grow-1");
+        if (node.IsPage && node.PageScanResultId.HasValue) {
+            builder.OpenElement(12, "a");
+            builder.AddAttribute(13, "href", Helpers.BuildUrl("Pages/" + node.PageScanResultId.Value));
+            builder.AddAttribute(14, "title", node.PageUrl);
+            builder.AddContent(15, node.Label);
+            builder.CloseElement();
+            if (!String.IsNullOrWhiteSpace(node.PageUrl)) {
+                builder.AddMarkupContent(16, " <span class=\"text-muted small\">" + System.Net.WebUtility.HtmlEncode(node.PageUrl) + "</span>");
+            }
+        } else {
+            builder.OpenElement(17, "strong");
+            builder.AddAttribute(18, "style", "cursor:" + (hasChildren ? "pointer" : "default") + ";");
+            if (hasChildren) {
+                builder.AddAttribute(19, "onclick", EventCallback.Factory.Create(this, () => Toggle(node.FullPath)));
+            }
+            builder.AddContent(20, node.Label);
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+
+        // Counts
+        builder.OpenElement(21, "span");
+        builder.AddAttribute(22, "class", "ms-2 small");
+        if (node.CriticalCount > 0) {
+            builder.AddMarkupContent(23, $"<span class=\"badge bg-danger me-1\" title=\"Critical\">{node.CriticalCount}</span>");
+        }
+        if (node.SeriousCount > 0) {
+            builder.AddMarkupContent(24, $"<span class=\"badge bg-warning text-dark me-1\" title=\"Serious\">{node.SeriousCount}</span>");
+        }
+        if (node.ModerateCount > 0) {
+            builder.AddMarkupContent(25, $"<span class=\"badge bg-info text-dark me-1\" title=\"Moderate\">{node.ModerateCount}</span>");
+        }
+        if (node.MinorCount > 0) {
+            builder.AddMarkupContent(26, $"<span class=\"badge bg-secondary me-1\" title=\"Minor\">{node.MinorCount}</span>");
+        }
+        builder.AddMarkupContent(27, $"<span class=\"badge bg-dark\" title=\"Total\">{node.TotalViolations}</span>");
+        builder.CloseElement();
+
+        builder.CloseElement();
+
+        if (isExpanded && hasChildren) {
+            foreach (var c in node.Children.Values.OrderByDescending(n => n.TotalViolations)) {
+                builder.AddContent(100, RenderNode(c, depth + 1));
+            }
+        }
+    };
+}

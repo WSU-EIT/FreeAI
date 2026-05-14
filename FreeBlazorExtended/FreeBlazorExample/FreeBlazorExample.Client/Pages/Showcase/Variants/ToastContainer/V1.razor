@@ -1,0 +1,32 @@
+@page "/showcase/toastcontainer/v1"
+@using FreeBlazorExtended.Toast
+@inject FreeBlazorExtended.Foundation.Services.NotificationService Notifications
+
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Default (Bottom-End)</h1>
+    <p class="text-muted mb-4">
+        A global notification stack driven by the injected <code>NotificationService</code>.
+        Click any button below to fire a toast. The container auto-dismisses timed ones and lets
+        you manually close the rest.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-success" @onclick='() => Notifications.ShowSuccess("Record saved successfully.", "Saved")'>
+            <i class="fas fa-check me-1"></i> Success
+        </button>
+        <button class="btn btn-danger" @onclick='() => Notifications.ShowError("Could not connect to the server.", "Error")'>
+            <i class="fas fa-times me-1"></i> Error
+        </button>
+        <button class="btn btn-warning" @onclick='() => Notifications.ShowWarning("Your session expires in 5 minutes.", "Warning")'>
+            <i class="fas fa-triangle-exclamation me-1"></i> Warning
+        </button>
+        <button class="btn btn-primary" @onclick='() => Notifications.ShowInfo("3 new messages waiting.", "Info")'>
+            <i class="fas fa-circle-info me-1"></i> Info
+        </button>
+        <button class="btn btn-secondary" @onclick="() => Notifications.ClearAll()">
+            <i class="fas fa-trash me-1"></i> Clear All
+        </button>
+    </div>
+
+    <ToastContainer />
+</div>

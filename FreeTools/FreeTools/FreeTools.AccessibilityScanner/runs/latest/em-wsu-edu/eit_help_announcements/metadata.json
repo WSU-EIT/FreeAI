@@ -1,0 +1,70 @@
+{
+  "PagePath": "/eit/help/announcements/",
+  "Url": "https://em.wsu.edu/eit/help/announcements/",
+  "FinalUrl": null,
+  "Title": "Announcements | Enrollment IT",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 668020,
+  "ScreenshotSizeBytes": 1206178,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 2,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 1206178
+    }
+  ],
+  "ImageCount": 3,
+  "ImagesMissingAlt": 3,
+  "Images": [
+    {
+      "SourceUrl": "https://em.wsu.edu/media/757799/pw-reset-email.jpg?width=500\u0026height=142.14992927864216",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/757796/email-example2.jpg?width=816\u0026height=199",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://em.wsu.edu/media/757795/email-example.jpg?width=483\u0026height=449",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 10,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 10,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 10,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:10:16.3679399Z"
+}

@@ -1,0 +1,111 @@
+{
+  "PagePath": "/residence-halls/orton/",
+  "Url": "https://housing.wsu.edu/residence-halls/orton/",
+  "FinalUrl": null,
+  "Title": "Orton",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 100392,
+  "ScreenshotSizeBytes": 327330,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 327330
+    }
+  ],
+  "ImageCount": 11,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/g3gpforo/orton-closet.jpg",
+      "AltText": "Orton Closet"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/besfhfhk/orton-exterior.jpg",
+      "AltText": "Orton Exterior"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/mehmhgwf/orton-lounge.jpg",
+      "AltText": "Orton Lounge"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/h2jofi0d/orton-single-room.jpg",
+      "AltText": "Orton Single Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lh5lkgw0/orton-student-room.jpg",
+      "AltText": "Orton Student Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/urhf4oeb/seattle-2.jpg",
+      "AltText": "Seattle Bentley"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/2a5be03o/southside-students-eating-2.png",
+      "AltText": "Nearby Dining"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/nr5hxo0g/orton-exterior-field.png",
+      "AltText": "Neighborhood: South Campus"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/elbfi15c/gg-exterior-side.jpg",
+      "AltText": "Gannon/Goldsworthy Area Desk"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/hfjf3xbn/stephenson-student-5.png",
+      "AltText": "Nearby Recreation"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/kzrlmvbc/floor-plan-orton-2-through-11.png",
+      "AltText": "Orton floors 2-11 floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:15:34 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:15:35.332136Z"
+}

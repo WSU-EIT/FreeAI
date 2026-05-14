@@ -1,0 +1,112 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 9,
+  "Critical": 0,
+  "Serious": 8,
+  "Moderate": 1,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 0,
+      "Serious": 3,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 6,
+      "Critical": 0,
+      "Serious": 5,
+      "Moderate": 1,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 2,
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a",
+      "ExampleSnippet": "\u003Cspan class=\u0022icon-text\u0022 data-bind=\u0022html:Language(\u0027AppTitle\u0027)\u0022\u003EOrientation\u003C/span\u003E"
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "button-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Button has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Cbutton type=\u0022button\u0022 id=\u0022cboxPrevious\u0022\u003E\u003C/button\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "label",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 2,
+      "Message": "Form input has no associated label or aria-label",
+      "HelpUrl": null,
+      "WcagCriteria": "1.3.1",
+      "ExampleSnippet": "\u003Cinput type=\u0022text\u0022 class=\u0022form-control\u0022 id=\u0022local-username\u0022 name=\u0022local-username\u0022 data-bind=\u0022value:Authenticate().username\u0022 style=\u0022\u0022\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "list",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "\u003Cul\u003E and \u003Col\u003E must only directly contain \u003Cli\u003E, \u003Cscript\u003E or \u003Ctemplate\u003E elements",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/list?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cul class=\u0022navbar-nav me-auto\u0022\u003E"
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "No skip-to-content link found near top of page",
+      "HelpUrl": null,
+      "WcagCriteria": "2.4.1",
+      "ExampleSnippet": null
+    }
+  ]
+}

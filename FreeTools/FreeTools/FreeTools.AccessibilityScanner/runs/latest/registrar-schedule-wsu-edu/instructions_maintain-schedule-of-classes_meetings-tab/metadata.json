@@ -1,0 +1,110 @@
+{
+  "PagePath": "/instructions/maintain-schedule-of-classes/meetings-tab/",
+  "Url": "https://registrar.schedule.wsu.edu/instructions/maintain-schedule-of-classes/meetings-tab/",
+  "FinalUrl": null,
+  "Title": "Meetings tab | Academic Room Scheduling",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 701242,
+  "ScreenshotSizeBytes": 849908,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 849908
+    }
+  ],
+  "ImageCount": 13,
+  "ImagesMissingAlt": 7,
+  "Images": [
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759566/meetings-tab-notes-request-field.jpg?width=883\u0026height=106\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/rk5paymi/internalnotes.png?rmode=max\u0026width=295\u0026height=82",
+      "AltText": "Internal Notes"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759572/meetings-tab-facility-id-field.jpg?width=848\u0026height=117\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759544/meetings-tab-meeting-times.jpg?width=854\u0026height=123\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759573/meetings-tab-start-end-dates.jpg?width=848\u0026height=117\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759571/meetings-tab-additional-meetings.jpg?width=848\u0026height=117\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759574/meetings-tab-topic.jpg?width=843\u0026height=118\u0026mode=max",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/wo0anmgn/instructor-role-2025-example-1-blur.png?rmode=max\u0026width=500",
+      "AltText": "Primary 50% and designated Supervising"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/2u4fffu4/instructor-role-2025-example-2-blur.png?rmode=max\u0026width=500",
+      "AltText": "Three instructors one is supervising"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759564/meetings-tab-room-characteristics.jpg?width=808\u0026height=147\u0026mode=max",
+      "AltText": "Room characterisics sample showing multiple characteristics"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/nbxf2eqv/relatedcontent2022.png?rmode=max\u0026width=372\u0026height=154",
+      "AltText": "Related content"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/duoj3nka/mscmeetings2022.png?rmode=max\u0026width=500",
+      "AltText": "Meetings tab"
+    },
+    {
+      "SourceUrl": "https://registrar.schedule.wsu.edu/media/759563/meetings-tab-combined-section.jpg?width=843\u0026height=118\u0026mode=max",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 11,
+    "Critical": 1,
+    "Serious": 10,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 10,
+        "Critical": 0,
+        "Serious": 10,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:25:37.530302Z"
+}

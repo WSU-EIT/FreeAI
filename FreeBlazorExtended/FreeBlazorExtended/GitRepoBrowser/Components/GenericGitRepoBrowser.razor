@@ -1,0 +1,514 @@
+@*
+    Purpose: Multi-platform Git repository browser — the main consumer-facing component.
+    Supported platforms: GitHub, GitHub Enterprise, GitLab, Bitbucket, Gitea.
+    Layout: URL bar + credentials → branch selector → two-column tree/viewer.
+    Dependencies: GitRepoBrowserService (DI), Bootstrap 5, GitTreeNodeItem (sibling component).
+    Accessibility: error messages use role="alert"; spinner has visually-hidden text; inputs are labelled.
+*@
+@namespace FreeBlazorExtended.Components
+@using FreeBlazorExtended.GitRepoBrowser
+@using System.Net.Http.Json
+@inject HttpClient Http
+@implements IDisposable
+
+<div class="git-repo-browser">
+
+    @* ── URL input bar ── *@
+    @if (ShowUrlInput)
+    {
+        <div class="mb-2">
+            <label class="visually-hidden" for="grb-url-input">Repository URL</label>
+            <div class="input-group">
+                <input id="grb-url-input"
+                       type="url"
+                       class="form-control"
+                       placeholder="https://github.com/owner/repo"
+                       @bind="_repoUrlInput"
+                       @bind:event="oninput"
+                       disabled="@_isLoading"
+                       aria-label="Repository URL" />
+
+                <label class="visually-hidden" for="grb-platform-select">Platform override</label>
+                <select id="grb-platform-select"
+                        class="form-select flex-grow-0"
+                        style="max-width: 13rem;"
+                        @bind="_platformOverrideInput"
+                        disabled="@_isLoading"
+                        aria-label="Platform override">
+                    <option value="">Auto-detect</option>
+                    @foreach (var p in Enum.GetValues<GitPlatform>().Where(p => p != GitPlatform.Unknown))
+                    {
+                        <option value="@p">@p</option>
+                    }
+                </select>
+
+                <button class="btn btn-primary"
+                        type="button"
+                        @onclick="ConnectAsync"
+                        disabled="@(_isLoading || string.IsNullOrWhiteSpace(_repoUrlInput))">
+                    @if (_isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1"
+                              role="status" aria-hidden="true"></span>
+                    }
+                    Connect
+                </button>
+            </div>
+        </div>
+    }
+
+    @* ── Credential section (collapsible) ── *@
+    @if (ShowCredentialFields)
+    {
+        <div class="mb-2">
+            <button class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    @onclick="() => _showCredentials = !_showCredentials"
+                    aria-expanded="@_showCredentials.ToString().ToLower()"
+                    aria-controls="grb-credentials">
+                @(_showCredentials ? "▲ Hide" : "▼ Show") Credentials
+            </button>
+
+            @if (_showCredentials)
+            {
+                <div id="grb-credentials" class="mt-2 p-3 border rounded bg-light">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1" for="grb-username">Username <span class="text-muted">(optional)</span></label>
+                            <input id="grb-username"
+                                   type="text"
+                                   class="form-control form-control-sm"
+                                   placeholder="username"
+                                   @bind="_usernameInput"
+                                   autocomplete="username" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small mb-1" for="grb-token">Personal Access Token / Password</label>
+                            <input id="grb-token"
+                                   type="password"
+                                   class="form-control form-control-sm"
+                                   placeholder="ghp_… or app password"
+                                   @bind="_passwordInput"
+                                   autocomplete="current-password" />
+                        </div>
+                    </div>
+                    <div class="form-text text-muted mt-1">
+                        Your credentials are sent securely to the server and never stored in the browser.
+                        GitHub unauthenticated rate limit: 60 requests/hour.
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @* ── Status bar: platform badge + branch selector ── *@
+    @if (_detectedPlatform.HasValue && (_branches.Count > 0 || _detectedPlatform.HasValue))
+    {
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+            <span class="badge @PlatformBadgeClass(_detectedPlatform.Value)" aria-label="Detected platform">
+                @_detectedPlatform.Value
+            </span>
+
+            @if (!string.IsNullOrEmpty(_connectedOwner))
+            {
+                <span class="small text-muted">
+                    @_connectedOwner / <strong>@_connectedRepo</strong>
+                </span>
+            }
+
+            @if (_branches.Count > 0)
+            {
+                <label class="visually-hidden" for="grb-branch-select">Branch</label>
+                <select id="grb-branch-select"
+                        class="form-select form-select-sm w-auto ms-auto"
+                        @bind="_selectedBranch"
+                        @bind:after="OnBranchChangedAsync"
+                        disabled="@_isLoading"
+                        aria-label="Select branch">
+                    @foreach (var b in _branches)
+                    {
+                        <option value="@b.Name">@b.Name@(b.IsDefault ? " (default)" : "")</option>
+                    }
+                </select>
+            }
+        </div>
+    }
+
+    @* ── Error alert ── *@
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> @_errorMessage
+            @if (_isCorsLikely)
+            {
+                <div class="mt-2 small">
+                    <strong>CORS note:</strong> Self-hosted servers (Gitea, GitLab) must set
+                    <code>Access-Control-Allow-Origin</code> to allow requests from this app's origin.
+                    Check your server's CORS configuration, or route requests through a same-origin proxy.
+                </div>
+            }
+            <button type="button" class="btn-close"
+                    @onclick="() => { _errorMessage = null; _isCorsLikely = false; }"
+                    aria-label="Dismiss error"></button>
+        </div>
+    }
+
+    @* ── Loading spinner (global) ── *@
+    @if (_isLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center py-4" role="status">
+            <div class="spinner-border text-primary" aria-hidden="true"></div>
+            <span class="ms-2">Connecting…</span>
+        </div>
+    }
+
+    @* ── Main split: file tree (left) + file viewer (right) ── *@
+    @if (!_isLoading && (_treeNodes.Count > 0 || _selectedFile != null))
+    {
+        <div class="row g-0 border rounded overflow-hidden" style="min-height: 420px;">
+
+            @* Left column: file tree *@
+            <div class="col-4 border-end d-flex flex-column" style="min-width: 0;">
+                <div class="px-2 py-1 bg-light border-bottom small fw-semibold text-muted text-truncate"
+                     title="@_connectedRepo">
+                    / @(string.IsNullOrEmpty(_selectedBranch) ? "" : _selectedBranch)
+                </div>
+                <div class="overflow-auto flex-grow-1" style="max-height: 560px;">
+                    <ul class="list-unstyled mb-0 py-1">
+                        @foreach (var node in _treeNodes
+                                      .OrderBy(n => n.Type != GitNodeType.Directory)
+                                      .ThenBy(n => n.Name))
+                        {
+                            <GitTreeNodeItem Node="node"
+                                             SelectedPath="_selectedFile?.Path"
+                                             OnExpand="ExpandNodeAsync"
+                                             OnSelect="SelectFileAsync" />
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            @* Right column: file viewer *@
+            <div class="col-8 d-flex flex-column" style="min-width: 0;">
+                @if (_isLoadingFile)
+                {
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 py-4" role="status">
+                        <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
+                        <span class="ms-2 small">Loading file…</span>
+                    </div>
+                }
+                else if (_fileContent != null)
+                {
+                    @* File header bar *@
+                    <div class="px-3 py-2 bg-light border-bottom small d-flex align-items-center gap-2 flex-wrap">
+                        <span class="fw-semibold text-truncate flex-grow-1" title="@_fileContent.Path">
+                            @_fileContent.Path
+                        </span>
+                        @if (_fileContent.Size.HasValue)
+                        {
+                            <span class="badge bg-secondary">@FormatSize(_fileContent.Size.Value)</span>
+                        }
+                    </div>
+
+                    @* Content area *@
+                    @if (_fileContent.IsBinary)
+                    {
+                        <div class="alert alert-warning m-3 mb-0">
+                            This file appears to be binary and cannot be displayed as text.
+                            @if (!string.IsNullOrEmpty(_fileContent.MimeTypeHint))
+                            {
+                                <span> Detected type: <code>@_fileContent.MimeTypeHint</code>.</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="overflow-auto flex-grow-1" style="max-height: 520px;">
+                            <pre class="m-0 p-3 git-file-content"
+                                 style="font-size: 0.8rem; tab-size: 4; white-space: pre; word-break: normal;">@_fileContent.RawText</pre>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 text-muted py-4">
+                        <p class="mb-0">Select a file from the tree to view its contents.</p>
+                    </div>
+                }
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@* Scoped styles *@
+<style>
+    .git-tree-row:hover       { background-color: rgba(0, 0, 0, 0.05); }
+    .git-tree-selected        { background-color: #0d6efd20 !important; font-weight: 600; }
+    .git-tree-arrow           { display: inline-block; width: 1.1em; font-size: 0.7rem; color: #666; }
+    .git-tree-arrow-placeholder { display: inline-block; width: 1.1em; }
+    .git-tree-icon            { font-size: 0.9rem; }
+    .git-file-content         { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+</style>
+
+@code {
+
+    // ── Parameters ────────────────────────────────────────────────────────────
+    /// <summary>Pre-fill the URL input on render.</summary>
+    [Parameter] public string?       RepoUrl            { get; set; }
+    [Parameter] public GitPlatform?  PlatformOverride   { get; set; }
+    [Parameter] public string?       Username           { get; set; }
+    [Parameter] public string?       Password           { get; set; }
+    /// <summary>Pre-select a specific branch instead of the default.</summary>
+    [Parameter] public string?       Branch             { get; set; }
+    [Parameter] public bool          ShowUrlInput        { get; set; } = true;
+    [Parameter] public bool          ShowCredentialFields { get; set; } = true;
+    [Parameter] public long          MaxFileSizeBytes   { get; set; } = 512 * 1024;
+    [Parameter] public EventCallback<GitTreeNode> OnFileSelected  { get; set; }
+    [Parameter] public EventCallback<GitBranch>   OnBranchChanged { get; set; }
+
+    // ── Private state ─────────────────────────────────────────────────────────
+    private string        _repoUrlInput        = string.Empty;
+    private string        _usernameInput       = string.Empty;
+    private string        _passwordInput       = string.Empty;
+    private string        _platformOverrideInput = string.Empty;
+    private string        _selectedBranch      = string.Empty;
+    private List<GitBranch>   _branches        = new();
+    private List<GitTreeNode> _treeNodes       = new();
+    private GitTreeNode?  _selectedFile;
+    private GitFileContent?   _fileContent;
+    private GitPlatform?  _detectedPlatform;
+    private string?       _connectedOwner;       // display-only, no credentials
+    private string?       _connectedRepo;
+    private string?       _errorMessage;
+    private bool          _isLoading;
+    private bool          _isLoadingFile;
+    private bool          _isCorsLikely;
+    private bool          _showCredentials;
+
+    private CancellationTokenSource _cts = new();
+
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrWhiteSpace(RepoUrl) && _repoUrlInput != RepoUrl)
+            _repoUrlInput = RepoUrl;
+        if (!string.IsNullOrWhiteSpace(Username))
+            _usernameInput = Username;
+        if (PlatformOverride.HasValue && PlatformOverride.Value != GitPlatform.Unknown)
+            _platformOverrideInput = PlatformOverride.Value.ToString();
+    }
+
+    // ── Event handlers ────────────────────────────────────────────────────────
+    private async Task ConnectAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_repoUrlInput)) return;
+
+        // Cancel any in-flight request
+        await _cts.CancelAsync();
+        _cts.Dispose();
+        _cts = new CancellationTokenSource();
+        var ct = _cts.Token;
+
+        _isLoading        = true;
+        _errorMessage     = null;
+        _isCorsLikely     = false;
+        _detectedPlatform = null;
+        _connectedOwner   = null;
+        _connectedRepo    = null;
+        _branches.Clear();
+        _treeNodes.Clear();
+        _selectedFile = null;
+        _fileContent  = null;
+        StateHasChanged();
+
+        try
+        {
+            // POST credentials to server — cleared from state immediately after
+            var connectResp = await Http.PostAsJsonAsync(
+                "/api/Showcase/GitRepo/connect",
+                new
+                {
+                    repoUrl          = _repoUrlInput,
+                    token            = _passwordInput,
+                    username         = _usernameInput,
+                    platformOverride = _platformOverrideInput
+                },
+                ct);
+
+            // Wipe credentials from component state immediately
+            _passwordInput = string.Empty;
+
+            if (!connectResp.IsSuccessStatusCode)
+            {
+                var err = await connectResp.Content.ReadFromJsonAsync<ServerError>(ct);
+                _errorMessage = err?.Error ?? $"Server error {(int)connectResp.StatusCode}.";
+                return;
+            }
+
+            var info = await connectResp.Content.ReadFromJsonAsync<GitConnectResult>(ct);
+            if (info is null) { _errorMessage = "Empty connect response."; return; }
+
+            if (Enum.TryParse<GitPlatform>(info.Platform, out var platform))
+                _detectedPlatform = platform;
+
+            _connectedOwner = info.Owner;
+            _connectedRepo  = info.Repo;
+
+            // GET branch list
+            var branchResp = await Http.GetFromJsonAsync<List<GitBranch>>(
+                "/api/Showcase/GitRepo/branches", ct);
+            _branches = branchResp ?? [];
+
+            _selectedBranch = !string.IsNullOrWhiteSpace(Branch)
+                              ? Branch
+                              : _branches.FirstOrDefault(b => b.IsDefault)?.Name
+                                ?? _branches.FirstOrDefault()?.Name
+                                ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(_selectedBranch))
+                _treeNodes = await FetchTreeAsync("", _selectedBranch, ct);
+        }
+        catch (OperationCanceledException) { /* user navigated away — no-op */ }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnBranchChangedAsync()
+    {
+        if (string.IsNullOrEmpty(_selectedBranch)) return;
+
+        _isLoading    = true;
+        _errorMessage = null;
+        _treeNodes.Clear();
+        _selectedFile = null;
+        _fileContent  = null;
+        StateHasChanged();
+
+        try
+        {
+            _treeNodes = await FetchTreeAsync("", _selectedBranch, _cts.Token);
+            var branch = _branches.FirstOrDefault(b => b.Name == _selectedBranch);
+            if (branch != null) await OnBranchChanged.InvokeAsync(branch);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { _errorMessage = ex.Message; }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    internal async Task ExpandNodeAsync(GitTreeNode node)
+    {
+        if (node.Type != GitNodeType.Directory) return;
+
+        if (node.IsExpanded)
+        {
+            node.IsExpanded = false;
+            StateHasChanged();
+            return;
+        }
+
+        node.IsExpanded = true;
+        StateHasChanged();
+
+        try
+        {
+            node.Children = await FetchTreeAsync(node.Path, _selectedBranch, _cts.Token);
+        }
+        catch (OperationCanceledException) { node.IsExpanded = false; }
+        catch (Exception ex)
+        {
+            _errorMessage   = ex.Message;
+            node.IsExpanded = false;
+        }
+
+        StateHasChanged();
+    }
+
+    internal async Task SelectFileAsync(GitTreeNode node)
+    {
+        if (node.Type is not (GitNodeType.File or GitNodeType.Symlink)) return;
+
+        _selectedFile  = node;
+        _fileContent   = null;
+        _isLoadingFile = true;
+        _errorMessage  = null;
+        StateHasChanged();
+
+        try
+        {
+            _fileContent = await Http.GetFromJsonAsync<GitFileContent>(
+                $"/api/Showcase/GitRepo/file?path={Uri.EscapeDataString(node.Path)}&branch={Uri.EscapeDataString(_selectedBranch)}",
+                _cts.Token);
+            await OnFileSelected.InvokeAsync(node);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { _errorMessage = ex.Message; }
+        finally
+        {
+            _isLoadingFile = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>Fetches one directory level from the server proxy and maps to GitTreeNode.</summary>
+    private async Task<List<GitTreeNode>> FetchTreeAsync(string path, string branch, CancellationToken ct)
+    {
+        var url  = $"/api/Showcase/GitRepo/tree?path={Uri.EscapeDataString(path)}&branch={Uri.EscapeDataString(branch)}";
+        var dtos = await Http.GetFromJsonAsync<List<TreeNodeDto>>(url, ct) ?? [];
+        return dtos.Select(d => new GitTreeNode
+        {
+            Name        = d.Name ?? "",
+            Path        = d.Path ?? "",
+            Type        = d.Type == "Directory" ? GitNodeType.Directory
+                        : d.Type == "Symlink"   ? GitNodeType.Symlink
+                        : GitNodeType.File,
+            Sha         = d.Sha,
+            Size        = d.Size,
+            DownloadUrl = d.DownloadUrl
+        }).ToList();
+    }
+
+    // ── Static helpers ────────────────────────────────────────────────────────
+    private static string PlatformBadgeClass(GitPlatform platform) => platform switch
+    {
+        GitPlatform.GitHub or GitPlatform.GitHubEnterprise => "bg-dark",
+        GitPlatform.GitLab    => "bg-danger",
+        GitPlatform.Bitbucket => "bg-primary",
+        GitPlatform.Gitea     => "bg-success",
+        _                     => "bg-secondary"
+    };
+
+    private static string FormatSize(long bytes) => bytes switch
+    {
+        < 1024        => $"{bytes} B",
+        < 1024 * 1024 => $"{bytes / 1024.0:0.0} KB",
+        _             => $"{bytes / (1024.0 * 1024.0):0.00} MB"
+    };
+
+    // ── IDisposable ───────────────────────────────────────────────────────────
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+        _passwordInput = string.Empty;
+        // Best-effort: tell server to clear the session
+        _ = Http.DeleteAsync("/api/Showcase/GitRepo/disconnect");
+    }
+
+    // ── Server response DTOs ────────────────────────────────────────
+    private record GitConnectResult(bool Connected, string? Owner, string? Repo, string? Platform, string? DefaultBranch);
+    private record TreeNodeDto(string? Name, string? Path, string? Type, string? Sha, long? Size, string? DownloadUrl);
+    private record ServerError(string? Error);
+}

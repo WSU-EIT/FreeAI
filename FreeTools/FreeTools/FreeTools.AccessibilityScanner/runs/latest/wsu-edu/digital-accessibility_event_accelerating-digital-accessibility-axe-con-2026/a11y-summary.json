@@ -1,0 +1,112 @@
+{
+  "ToolsRun": [
+    "axe",
+    "htmlcheck"
+  ],
+  "ToolsSkipped": [
+    "wave"
+  ],
+  "TotalViolations": 7,
+  "Critical": 1,
+  "Serious": 6,
+  "Moderate": 0,
+  "Minor": 0,
+  "ByTool": {
+    "axe": {
+      "Total": 3,
+      "Critical": 1,
+      "Serious": 2,
+      "Moderate": 0,
+      "Minor": 0
+    },
+    "htmlcheck": {
+      "Total": 4,
+      "Critical": 0,
+      "Serious": 4,
+      "Moderate": 0,
+      "Minor": 0
+    }
+  },
+  "RankedRules": [
+    {
+      "Rank": 1,
+      "CanonicalRuleId": "aria-allowed-attr",
+      "Severity": "critical",
+      "Consensus": "1/1",
+      "ConfidenceScore": 1,
+      "Confidence": "high",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Elements must only use supported ARIA attributes",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/aria-allowed-attr?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdiv id=\u0022wsu-navigation-vertical\u0022 class=\u0022wsu-navigation-vertical wsu-slide-in-panel wsu-slide-in-panel--position-left wsu-slide-in-panel--overlay-none..."
+    },
+    {
+      "Rank": 2,
+      "CanonicalRuleId": "image-alt",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 3,
+      "Message": "Image missing alt attribute",
+      "HelpUrl": null,
+      "WcagCriteria": "1.1.1",
+      "ExampleSnippet": "\u003Cimg height=\u00221\u0022 width=\u00221\u0022 style=\u0022display:none\u0022 src=\u0022https://www.facebook.com/tr?id=352489839123111\u0026amp;ev=PageView\u0026amp;noscript=1\u0022\u003E"
+    },
+    {
+      "Rank": 3,
+      "CanonicalRuleId": "definition-list",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "\u003Cdl\u003E elements must only directly contain properly-ordered \u003Cdt\u003E and \u003Cdd\u003E groups, \u003Cscript\u003E, \u003Ctemplate\u003E or \u003Cdiv\u003E elements",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/definition-list?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Cdl\u003E\n\t\t\n\t\t\u003Cdd class=\u0022tribe-venue\u0022\u003E \u003Ca href=\u0022https://wsu.edu/digital-accessibility/venue/webinar/\u0022\u003EWebinar\u003C/a\u003E \u003C/dd\u003E\n\n\t\t\n\t\t\n\t\t\n\t\t\t\u003C/dl\u003E"
+    },
+    {
+      "Rank": 4,
+      "CanonicalRuleId": "link-in-text-block",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "axe"
+      ],
+      "TotalInstances": 1,
+      "Message": "Links must be distinguishable without relying on color",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-in-text-block?application=axeAPI",
+      "WcagCriteria": null,
+      "ExampleSnippet": "\u003Ca href=\u0022https://www.deque.com/axe-con/sessions/ada-title-ii-panel-discussion/\u0022\u003EADA Title II: Panel Discussion\u003C/a\u003E"
+    },
+    {
+      "Rank": 5,
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": "1/2",
+      "ConfidenceScore": 0.5,
+      "Confidence": "medium",
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "TotalInstances": 1,
+      "Message": "Link has no text content or accessible name",
+      "HelpUrl": null,
+      "WcagCriteria": "4.1.2",
+      "ExampleSnippet": "\u003Ca property=\u0022item\u0022 typeof=\u0022WebPage\u0022 title=\u0022Go to .\u0022 href=\u0022\u0022 class=\u0022post post-page current-item\u0022 aria-current=\u0022page\u0022\u003E\u003Cspan property=\u0022name\u0022\u003E\u003C/span\u003E\u003C/a\u003E"
+    }
+  ]
+}

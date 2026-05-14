@@ -1,0 +1,83 @@
+﻿@*
+    AboutSection — Collapsible contextual help panel with icon, title, subtitle, and body.
+
+    Renders a Bootstrap info-coloured card that the user can expand or collapse by
+    clicking the header. Use it at the top of any page or section to explain the
+    purpose and key concepts without cluttering the main UI.
+
+    Required parameters:
+        ChildContent — the body content shown when expanded.
+
+    Optional parameters:
+        Title        — heading text (default "About This Page")
+        Subtitle     — muted secondary line shown in the header after an em-dash
+        IconClass    — Font Awesome class for the header icon (default "fa-solid fa-circle-info")
+        StartExpanded — when true, renders the panel open on first load (default false)
+
+    Example:
+        <AboutSection Title="What are Source Systems?"
+                      Subtitle="Applications that send access data">
+            <div class="row"><div class="col-md-4">...</div></div>
+        </AboutSection>
+*@
+
+<div class="card shadow-sm mb-3 border-info">
+    <div class="card-header bg-info bg-opacity-10 cursor-pointer py-2" @onclick="Toggle">
+        <div class="d-flex justify-content-between align-items-center">
+            <span>
+                <i class="@IconClass me-2 text-info" aria-hidden="true"></i>
+                <strong>@Title</strong>
+                @if (!string.IsNullOrWhiteSpace(Subtitle)) {
+                    <span class="text-muted ms-2">— @Subtitle</span>
+                }
+            </span>
+            <i class="fa-solid @(_expanded ? "fa-chevron-up" : "fa-chevron-down") text-info" aria-hidden="true"></i>
+        </div>
+    </div>
+    @if (_expanded) {
+        <div class="card-body py-2">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Heading text displayed in the card header. Default: <c>"About This Page"</c>.</summary>
+    [Parameter] public string Title { get; set; } = "About This Page";
+
+    /// <summary>
+    /// Optional secondary descriptor shown after an em-dash in the header.
+    /// Example: <c>"Applications that send access data"</c>.
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// Font Awesome CSS class for the icon rendered to the left of the title.
+    /// Default: <c>"fa-solid fa-circle-info"</c>.
+    /// </summary>
+    [Parameter] public string IconClass { get; set; } = "fa-solid fa-circle-info";
+
+    /// <summary>
+    /// When <c>true</c>, the panel renders in the expanded (open) state on first load.
+    /// Default: <c>false</c> (collapsed). The user can still toggle it by clicking.
+    /// </summary>
+    [Parameter] public bool StartExpanded { get; set; } = false;
+
+    /// <summary>
+    /// Body content rendered inside the card when the panel is expanded.
+    /// <para><b>Required</b> for the component to display anything useful.</para>
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _expanded;
+
+    protected override void OnInitialized()
+    {
+        _expanded = StartExpanded;
+    }
+
+    private void Toggle()
+    {
+        _expanded = !_expanded;
+    }
+}

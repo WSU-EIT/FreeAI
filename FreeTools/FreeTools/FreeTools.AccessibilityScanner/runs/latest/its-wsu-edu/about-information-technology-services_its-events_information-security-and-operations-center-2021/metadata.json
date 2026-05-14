@@ -1,0 +1,138 @@
+{
+  "PagePath": "/about-information-technology-services/its-events/information-security-and-operations-center-2021/",
+  "Url": "https://its.wsu.edu/about-information-technology-services/its-events/information-security-and-operations-center-2021/",
+  "FinalUrl": "https://its.wsu.edu/about-its/its-events/information-security-and-operations-center-2021/",
+  "Title": "Information Security and Operations Center 2021 | Information Technology Services | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 249186,
+  "ScreenshotSizeBytes": 118843,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 118843
+    }
+  ],
+  "ImageCount": 17,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1593.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1611.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1613.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1614.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1625.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1634.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1638.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1654.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1661.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1673.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1679.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1685.jpg",
+      "AltText": "IS and Operations Center Event 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1708.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1724.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1736.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1745.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    },
+    {
+      "SourceUrl": "https://wpcdn.web.wsu.edu/wp-its/uploads/sites/2898/2023/08/IMG_1756.jpg",
+      "AltText": "Information Security and Operations Center 2021"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 7,
+    "Critical": 0,
+    "Serious": 7,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 0,
+        "Serious": 1,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 6,
+        "Critical": 0,
+        "Serious": 6,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:12:11 GMT",
+    "etag": "\u00229ae512fb6c91e9db528a524d8d83ba0c\u0022",
+    "last-modified": "Thu, 19 Feb 2026 02:12:11 GMT",
+    "link": "\u003Chttps://its.wsu.edu/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022, \u003Chttps://its.wsu.edu/wp-json/wp/v2/pages/418\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022, \u003Chttps://its.wsu.edu/?p=418\u003E; rel=shortlink",
+    "server": "nginx",
+    "vary": "Accept-Encoding",
+    "x-tec-api-origin": "https://its.wsu.edu",
+    "x-tec-api-root": "https://its.wsu.edu/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1"
+  },
+  "CapturedAt": "2026-02-19T02:12:11.0603098Z"
+}

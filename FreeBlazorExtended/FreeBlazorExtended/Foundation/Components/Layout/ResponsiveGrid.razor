@@ -1,0 +1,271 @@
+﻿@*
+    ResponsiveGrid — Foundation CSS Grid wrapper for collections of same-kind items.
+
+    Supports two usage modes:
+      • Template mode  — pass a typed Items list and an ItemTemplate render fragment;
+                          the component renders one grid cell per item.
+      • Manual mode    — omit Items and supply ChildContent with pre-built cells.
+
+    The grid column count adapts automatically at tablet and mobile breakpoints.
+    Use "auto-fit" (the default) when items have a natural minimum width and the
+    grid should decide how many fit per row.
+
+    Required parameters: none — all have defaults; at minimum supply ChildContent or Items.
+
+    Optional parameters:
+        Columns      — "1" | "2" | "3" | "4" | "6" | "auto-fit" (default) | "auto-fit-lg" | "auto-fit-sm"
+        Gap          — "sm" | "md" (default) | "lg" | "xl"
+        MinItemWidth — minimum cell width for auto-fit mode (default "250px")
+        Items        — list of data objects to render via ItemTemplate
+        ItemTemplate — RenderFragment<T> that receives each item and returns markup
+        EmptyMessage — text to show when Items is empty and no ChildContent is supplied
+        ChildContent — manual cell content (used when Items is not provided)
+
+    Example (card grid from a data list):
+        <ResponsiveGrid Items="@(_products.Cast<object>().ToList())"
+                        Columns="3" Gap="lg">
+            <ItemTemplate Context="item">
+                @{ var p = (Product)item; }
+                <ProductCard Product="p" />
+            </ItemTemplate>
+        </ResponsiveGrid>
+*@
+@namespace FreeBlazorExtended.Components
+
+<div class="responsive-grid @_gridClass @_gapClass" role="region">
+    @if (Items?.Any() == true) {
+        @foreach (var item in Items) {
+            <div class="grid-item">
+                @if (ItemTemplate != null) {
+                    @ItemTemplate(item)
+                }
+            </div>
+        }
+    } else if (ChildContent != null) {
+        @ChildContent
+    } else if (!String.IsNullOrWhiteSpace(EmptyMessage)) {
+        <div class="grid-empty" role="status">
+            @EmptyMessage
+        </div>
+    }
+</div>
+
+<style>
+    .responsive-grid {
+        display: grid;
+        width: 100%;
+        auto-flow: dense;
+    }
+
+    .responsive-grid.cols-1 {
+        grid-template-columns: 1fr;
+    }
+
+    .responsive-grid.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .responsive-grid.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .responsive-grid.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .responsive-grid.cols-6 {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .responsive-grid.auto-fit {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .responsive-grid.auto-fit-lg {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .responsive-grid.auto-fit-sm {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .responsive-grid.gap-sm {
+        gap: 0.5rem;
+    }
+
+    .responsive-grid.gap-md {
+        gap: 1rem;
+    }
+
+    .responsive-grid.gap-lg {
+        gap: 2rem;
+    }
+
+    .responsive-grid.gap-xl {
+        gap: 3rem;
+    }
+
+    .grid-item {
+        min-width: 0;
+    }
+
+    .grid-empty {
+        grid-column: 1 / -1;
+        padding: 2rem;
+        text-align: center;
+        color: var(--bs-secondary);
+        background-color: var(--bs-light);
+        border: 1px dashed var(--bs-border-color);
+        border-radius: 0.375rem;
+    }
+
+    @@media (max-width: 1200px) {
+        .responsive-grid.cols-4 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .responsive-grid.cols-6 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .responsive-grid.cols-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .responsive-grid.cols-3 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .responsive-grid.cols-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .responsive-grid.cols-6 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .responsive-grid.auto-fit,
+        .responsive-grid.auto-fit-lg {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .responsive-grid.cols-2,
+        .responsive-grid.cols-3,
+        .responsive-grid.cols-4,
+        .responsive-grid.cols-6,
+        .responsive-grid.auto-fit,
+        .responsive-grid.auto-fit-lg,
+        .responsive-grid.auto-fit-sm {
+            grid-template-columns: 1fr;
+        }
+
+        .responsive-grid.gap-lg,
+        .responsive-grid.gap-xl {
+            gap: 1rem;
+        }
+    }
+</style>
+
+@code {
+    protected string _gridClass = "";
+    protected string _gapClass = "";
+
+    /// <summary>
+    /// Number of fixed columns, or an auto-fit variant.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"1"</c> through <c>"4"</c>, <c>"6"</c> — explicit column counts</item>
+    ///   <item><c>"auto-fit"</c> (default) — fills the row with as many 250 px cells as fit</item>
+    ///   <item><c>"auto-fit-lg"</c> — same but 300 px minimum cell width</item>
+    ///   <item><c>"auto-fit-sm"</c> — same but 200 px minimum cell width</item>
+    /// </list>
+    /// Fixed counts collapse to fewer columns at tablet/mobile breakpoints.
+    /// </summary>
+    [Parameter] public string Columns { get; set; } = "auto-fit";
+
+    /// <summary>
+    /// Spacing between grid cells.
+    /// Accepted values: <c>"sm"</c> (0.5 rem), <c>"md"</c> (1 rem, default),
+    /// <c>"lg"</c> (2 rem), <c>"xl"</c> (3 rem).
+    /// </summary>
+    [Parameter] public string Gap { get; set; } = "md";
+
+    /// <summary>
+    /// Minimum cell width used when <see cref="Columns"/> is an auto-fit variant.
+    /// Ignored for fixed column counts. Default: <c>"250px"</c>.
+    /// </summary>
+    [Parameter] public string MinItemWidth { get; set; } = "250px";
+
+    /// <summary>
+    /// The data objects to render. Each item is passed to <see cref="ItemTemplate"/>.
+    /// Cast your typed list to <c>List&lt;object&gt;</c> at the call site:
+    /// <code>Items="@(_items.Cast&lt;object&gt;().ToList())"</code>.
+    /// Optional — omit and use <see cref="ChildContent"/> for manually built cells.
+    /// </summary>
+    [Parameter] public List<object> Items { get; set; } = new();
+
+    /// <summary>
+    /// Render fragment invoked once per item in <see cref="Items"/>.
+    /// The context parameter receives the raw <c>object</c>; cast it to your model type.
+    /// Required when <see cref="Items"/> is non-empty; ignored otherwise.
+    /// </summary>
+    [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
+
+    /// <summary>
+    /// Placeholder text rendered in a full-width empty-state cell when
+    /// <see cref="Items"/> is empty and no <see cref="ChildContent"/> is supplied.
+    /// Optional — omit to render an empty grid silently.
+    /// </summary>
+    [Parameter] public string EmptyMessage { get; set; } = "";
+
+    /// <summary>
+    /// Pre-built grid cells rendered directly when <see cref="Items"/> is not used.
+    /// Each direct child element becomes a cell; the grid applies column placement automatically.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        SetDefaultValues();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultValues();
+    }
+
+    protected void SetDefaultValues()
+    {
+        string columns = (Columns ?? "auto-fit").ToLower();
+
+        _gridClass = columns switch
+        {
+            "1" => "cols-1",
+            "2" => "cols-2",
+            "3" => "cols-3",
+            "4" => "cols-4",
+            "6" => "cols-6",
+            "auto-fit-lg" => "auto-fit-lg",
+            "auto-fit-sm" => "auto-fit-sm",
+            _ => "auto-fit"
+        };
+
+        string gap = (Gap ?? "md").ToLower();
+        _gapClass = gap switch
+        {
+            "sm" => "gap-sm",
+            "lg" => "gap-lg",
+            "xl" => "gap-xl",
+            _ => "gap-md"
+        };
+
+        // If auto-fit is selected, apply min-width
+        if (columns == "auto-fit" && !String.IsNullOrWhiteSpace(MinItemWidth)) {
+            _gridClass = $"auto-fit";
+        }
+    }
+}

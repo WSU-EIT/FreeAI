@@ -1,0 +1,155 @@
+{
+  "PagePath": "/residence-halls/gannongoldsworthy/",
+  "Url": "https://housing.wsu.edu/residence-halls/gannongoldsworthy/",
+  "FinalUrl": null,
+  "Title": "Gannon/Goldsworthy",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 106624,
+  "ScreenshotSizeBytes": 320285,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 4,
+  "ConsoleWarningCount": 5,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 320285
+    }
+  ],
+  "ImageCount": 22,
+  "ImagesMissingAlt": 4,
+  "Images": [
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3ahjgsan/gg-student-room.jpg",
+      "AltText": "GG Student Room"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/siolpm0l/gg-exterior-bball-court.jpg",
+      "AltText": "GG Exterior Bball Court"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/s5olwkue/gg-ping-pong.jpg",
+      "AltText": "GG Ping Pong"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/quufzvgp/gg-room-wide.jpg",
+      "AltText": "GG Room Wide"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/4kjd1fdx/gg-room-aesthetic.jpg",
+      "AltText": "GG Room Aesthetic"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/idih1dsk/gg-room-aesthetic.jpg",
+      "AltText": "GG Room Aesthetic"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/qhpl2r1z/dept-social-badge-800x800.jpg",
+      "AltText": "Amanda Tompkins"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ne1lne50/southside-students-eating-4.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/3lzl3yl5/southside-spark-square.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/srxhjp4u/gg-student-card.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/41knnorh/gannon-1st-floor.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/osvfbg5r/floor-plan-gannon-2nd-floor.png",
+      "AltText": "Gannon second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/52vavonm/floor-plan-gannon-3rd-floor.png",
+      "AltText": "Gannon third floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/112jelry/floor-plan-gannon-4th-floor.png",
+      "AltText": "Gannon fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/tpzcuop4/floor-plan-gannon-5th-floor.png",
+      "AltText": "Gannon fifth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/akcfs0ro/floor-plan-gannon-6th-floor.png",
+      "AltText": "Gannon sixth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/z3wniumb/floor-plan-golds-1st-floor.png",
+      "AltText": "Goldsworthy first floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/lapm1143/floor-plan-golds-2nd-floor.png",
+      "AltText": "Goldsworthy second floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/05mjfzx5/floor-plan-golds-3rd-floor.png",
+      "AltText": "Goldsworthy Third Floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/ujmltwlo/floor-plan-golds-4th-floor.png",
+      "AltText": "Goldsworthy fourth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/31gbjmi3/floor-plan-golds-5th-floor.png",
+      "AltText": "Goldsworthy fifth floor plan"
+    },
+    {
+      "SourceUrl": "https://housing.wsu.edu/media/r1jnurx3/floor-plan-golds-6th-floor.png",
+      "AltText": "Goldsworthy sixth floor plan"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 6,
+    "Critical": 6,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 6,
+        "Critical": 6,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "content-security-policy": "frame-ancestors \u0027self\u0027 https://*.risevision.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 19 Feb 2026 02:14:28 GMT",
+    "frame-ancestors": "self https://*.risevision.com",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=2592000",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SameOrigin"
+  },
+  "CapturedAt": "2026-02-19T02:14:28.0033338Z"
+}

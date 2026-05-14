@@ -1,0 +1,41 @@
+{
+  "ToolName": "axe",
+  "Status": "completed",
+  "DurationMs": 169,
+  "ErrorMessage": null,
+  "Issues": [
+    {
+      "Tool": "axe",
+      "RuleId": "color-contrast",
+      "CanonicalRuleId": "color-contrast",
+      "Severity": "serious",
+      "Message": "Elements must meet minimum color contrast ratio thresholds",
+      "Selector": ".disabled \u003E .icon-text",
+      "Snippet": "\u003Cspan class=\u0022icon-text\u0022\u003E\u003C!--!--\u003ETheme\u003C/span\u003E",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "WcagCriteria": "2.a.a"
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "#themeDropdown",
+      "Snippet": "\u003Ca class=\u0022nav-link dropdown-toggle show\u0022 href=\u0022#\u0022 id=\u0022themeDropdown\u0022 role=\u0022button\u0022 data-bs-toggle=\u0022dropdown\u0022 aria-expanded=\u0022true\u0022\u003E\u003C!--!--\u003E\u003Ci class=\u0022ic...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    },
+    {
+      "Tool": "axe",
+      "RuleId": "link-name",
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Message": "Links must have discernible text",
+      "Selector": "a[data-bs-toggle=\u0022offcanvas\u0022]",
+      "Snippet": "\u003Ca class=\u0022nav-link\u0022 data-bs-toggle=\u0022offcanvas\u0022 href=\u0022#offcanvasUserMenu\u0022 role=\u0022button\u0022 aria-controls=\u0022offcanvasUserMenu\u0022\u003E\u003C!--!--\u003E\u003Ci class=\u0022icon icon-f...",
+      "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+      "WcagCriteria": null
+    }
+  ]
+}

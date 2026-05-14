@@ -1,0 +1,395 @@
+﻿@* EntityWizardQuickStart.App.razor - Pre-built entity patterns for quick setup *@
+@* Provides one-click buttons to populate wizard with common patterns *@
+
+<div class="card shadow-sm mb-3 mt-3 bg-light">
+    <div class="card-body py-2">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="text-muted small me-2">
+                <i class="fa-solid fa-bolt me-1"></i>
+                Quick Start:
+            </span>
+            
+            @foreach (var pattern in _patterns)
+            {
+                var p = pattern;
+                <button class="btn btn-sm @(p.ButtonClass)" 
+                        @onclick="@(() => OnPatternSelected.InvokeAsync(p))"
+                        title="@p.Description">
+                    <i class="fa-solid @p.Icon me-1"></i>
+                    @p.Name
+                </button>
+            }
+            
+            <button class="btn btn-sm btn-outline-secondary" 
+                    @onclick="@(() => _showDetails = !_showDetails)"
+                    title="Show pattern details">
+                <i class="fa-solid @(_showDetails ? "fa-chevron-up" : "fa-chevron-down")"></i>
+            </button>
+        </div>
+        
+        @if (_showDetails)
+        {
+            <div class="mt-3 pt-3 border-top">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2">
+                    @foreach (var pattern in _patterns)
+                    {
+                        var p = pattern;
+                        <div class="col">
+                            <div class="card h-100 pattern-card" style="cursor: pointer;" @onclick="@(() => OnPatternSelected.InvokeAsync(p))">
+                                <div class="card-body py-2 px-3">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fa-solid @p.Icon me-2 @p.IconColorClass"></i>
+                                        <strong class="small">@p.Name</strong>
+                                    </div>
+                                    <p class="small text-muted mb-1">@p.Description</p>
+                                    <div class="small">
+                                        <span class="badge bg-secondary me-1">@p.EntityCount entities</span>
+                                        @if (p.RelationshipCount > 0)
+                                        {
+                                            <span class="badge bg-info">@p.RelationshipCount relation</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .pattern-card { transition: all 0.15s ease; }
+    .pattern-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+</style>
+
+@code {
+    [Parameter] public EventCallback<QuickStartPattern> OnPatternSelected { get; set; }
+    
+    private bool _showDetails = false;
+    
+    private List<QuickStartPattern> _patterns = new()
+    {
+        new QuickStartPattern
+        {
+            Id = "single-item",
+            Name = "Simple Item",
+            Description = "Single entity with Name, Description, Status",
+            Icon = "fa-cube",
+            IconColorClass = "text-primary",
+            ButtonClass = "btn-outline-primary",
+            EntityCount = 1,
+            RelationshipCount = 0,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Item",
+                    PluralName = "Items",
+                    PrimaryKeyType = "Guid",
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Description", Type = "string", IsNullable = true, MaxLength = 1000, SortOrder = 2 },
+                        new() { Name = "Status", Type = "string", IsRequired = true, MaxLength = 50, DefaultValue = "\"Active\"", SortOrder = 3 },
+                        new() { Name = "SortOrder", Type = "int", IsRequired = true, DefaultValue = "0", SortOrder = 4 }
+                    }
+                }
+            }
+        },
+        new QuickStartPattern
+        {
+            Id = "collection-items",
+            Name = "Collection + Items",
+            Description = "Parent-child: Collection with many Items (1:N)",
+            Icon = "fa-layer-group",
+            IconColorClass = "text-success",
+            ButtonClass = "btn-outline-success",
+            EntityCount = 2,
+            RelationshipCount = 1,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Collection",
+                    PluralName = "Collections",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 0,
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Description", Type = "string", IsNullable = true, MaxLength = 1000, SortOrder = 2 },
+                        new() { Name = "IsPublic", Type = "bool", IsRequired = true, DefaultValue = "false", SortOrder = 3 }
+                    }
+                },
+                new DataObjects.EntityDefinition
+                {
+                    Name = "CollectionItem",
+                    PluralName = "CollectionItems",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 1,
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Value", Type = "string", IsNullable = true, MaxLength = 500, SortOrder = 2 },
+                        new() { Name = "SortOrder", Type = "int", IsRequired = true, DefaultValue = "0", SortOrder = 3 }
+                    }
+                }
+            },
+            Relationships = new()
+            {
+                new DataObjects.RelationshipDefinition
+                {
+                    Name = "Collection Items",
+                    Type = DataObjects.RelationshipType.OneToMany,
+                    SourceEntityName = "Collection",
+                    TargetEntityName = "CollectionItem",
+                    SourceNavigationProperty = "Items",
+                    TargetNavigationProperty = "Collection",
+                    ForeignKeyProperty = "CollectionId",
+                    IsRequired = true,
+                    OnDelete = DataObjects.RelationshipDeleteBehavior.Cascade
+                }
+            }
+        },
+        new QuickStartPattern
+        {
+            Id = "category-tree",
+            Name = "Category Tree",
+            Description = "Self-referencing hierarchy (parent/children)",
+            Icon = "fa-sitemap",
+            IconColorClass = "text-warning",
+            ButtonClass = "btn-outline-warning",
+            EntityCount = 1,
+            RelationshipCount = 1,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Category",
+                    PluralName = "Categories",
+                    PrimaryKeyType = "Guid",
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Description", Type = "string", IsNullable = true, MaxLength = 500, SortOrder = 2 },
+                        new() { Name = "Icon", Type = "string", IsNullable = true, MaxLength = 100, SortOrder = 3 },
+                        new() { Name = "SortOrder", Type = "int", IsRequired = true, DefaultValue = "0", SortOrder = 4 },
+                        new() { Name = "IsActive", Type = "bool", IsRequired = true, DefaultValue = "true", SortOrder = 5 }
+                    }
+                }
+            },
+            Relationships = new()
+            {
+                new DataObjects.RelationshipDefinition
+                {
+                    Name = "Category Hierarchy",
+                    Type = DataObjects.RelationshipType.SelfReference,
+                    SourceEntityName = "Category",
+                    TargetEntityName = "Category",
+                    SourceNavigationProperty = "Children",
+                    TargetNavigationProperty = "Parent",
+                    ForeignKeyProperty = "ParentCategoryId",
+                    IsRequired = false,
+                    OnDelete = DataObjects.RelationshipDeleteBehavior.Restrict
+                }
+            }
+        },
+        new QuickStartPattern
+        {
+            Id = "tags-many-to-many",
+            Name = "Items + Tags",
+            Description = "Many-to-many: Items can have multiple Tags",
+            Icon = "fa-tags",
+            IconColorClass = "text-info",
+            ButtonClass = "btn-outline-info",
+            EntityCount = 2,
+            RelationshipCount = 1,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "TaggableItem",
+                    PluralName = "TaggableItems",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 0,
+                    Properties = new()
+                    {
+                        new() { Name = "Title", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Content", Type = "string", IsNullable = true, MaxLength = 4000, SortOrder = 2 },
+                        new() { Name = "Status", Type = "string", IsRequired = true, MaxLength = 50, DefaultValue = "\"Draft\"", SortOrder = 3 }
+                    }
+                },
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Tag",
+                    PluralName = "Tags",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 1,
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 100, SortOrder = 1 },
+                        new() { Name = "Color", Type = "string", IsNullable = true, MaxLength = 20, DefaultValue = "\"#6c757d\"", SortOrder = 2 }
+                    }
+                }
+            },
+            Relationships = new()
+            {
+                new DataObjects.RelationshipDefinition
+                {
+                    Name = "Item Tags",
+                    Type = DataObjects.RelationshipType.ManyToMany,
+                    SourceEntityName = "TaggableItem",
+                    TargetEntityName = "Tag",
+                    SourceNavigationProperty = "Tags",
+                    TargetNavigationProperty = "Items",
+                    JoinEntityName = "TaggableItemTagLink",
+                    OnDelete = DataObjects.RelationshipDeleteBehavior.Cascade
+                }
+            }
+        },
+        new QuickStartPattern
+        {
+            Id = "task-tracker",
+            Name = "Task Tracker",
+            Description = "Project with Tasks, assignee support",
+            Icon = "fa-list-check",
+            IconColorClass = "text-danger",
+            ButtonClass = "btn-outline-danger",
+            EntityCount = 2,
+            RelationshipCount = 1,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Project",
+                    PluralName = "Projects",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 0,
+                    Properties = new()
+                    {
+                        new() { Name = "Name", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Description", Type = "string", IsNullable = true, MaxLength = 2000, SortOrder = 2 },
+                        new() { Name = "StartDate", Type = "DateTime", IsNullable = true, SortOrder = 3 },
+                        new() { Name = "DueDate", Type = "DateTime", IsNullable = true, SortOrder = 4 },
+                        new() { Name = "Status", Type = "string", IsRequired = true, MaxLength = 50, DefaultValue = "\"Active\"", SortOrder = 5 }
+                    }
+                },
+                new DataObjects.EntityDefinition
+                {
+                    Name = "ProjectTask",
+                    PluralName = "ProjectTasks",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 1,
+                    Properties = new()
+                    {
+                        new() { Name = "Title", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "Description", Type = "string", IsNullable = true, MaxLength = 2000, SortOrder = 2 },
+                        new() { Name = "Priority", Type = "string", IsRequired = true, MaxLength = 20, DefaultValue = "\"Medium\"", SortOrder = 3 },
+                        new() { Name = "Status", Type = "string", IsRequired = true, MaxLength = 50, DefaultValue = "\"Open\"", SortOrder = 4 },
+                        new() { Name = "DueDate", Type = "DateTime", IsNullable = true, SortOrder = 5 },
+                        new() { Name = "AssignedToUserId", Type = "Guid", IsNullable = true, SortOrder = 6 },
+                        new() { Name = "EstimatedHours", Type = "decimal", IsNullable = true, SortOrder = 7 }
+                    }
+                }
+            },
+            Relationships = new()
+            {
+                new DataObjects.RelationshipDefinition
+                {
+                    Name = "Project Tasks",
+                    Type = DataObjects.RelationshipType.OneToMany,
+                    SourceEntityName = "Project",
+                    TargetEntityName = "ProjectTask",
+                    SourceNavigationProperty = "Tasks",
+                    TargetNavigationProperty = "Project",
+                    ForeignKeyProperty = "ProjectId",
+                    IsRequired = true,
+                    OnDelete = DataObjects.RelationshipDeleteBehavior.Cascade
+                }
+            }
+        },
+        new QuickStartPattern
+        {
+            Id = "order-lineitems",
+            Name = "Order + LineItems",
+            Description = "E-commerce: Order with line items and totals",
+            Icon = "fa-shopping-cart",
+            IconColorClass = "text-purple",
+            ButtonClass = "btn-outline-secondary",
+            EntityCount = 2,
+            RelationshipCount = 1,
+            Entities = new()
+            {
+                new DataObjects.EntityDefinition
+                {
+                    Name = "Order",
+                    PluralName = "Orders",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 0,
+                    Properties = new()
+                    {
+                        new() { Name = "OrderNumber", Type = "string", IsRequired = true, MaxLength = 50, SortOrder = 1 },
+                        new() { Name = "CustomerName", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 2 },
+                        new() { Name = "CustomerEmail", Type = "string", IsNullable = true, MaxLength = 200, SortOrder = 3 },
+                        new() { Name = "OrderDate", Type = "DateTime", IsRequired = true, DefaultValue = "DateTime.UtcNow", SortOrder = 4 },
+                        new() { Name = "Status", Type = "string", IsRequired = true, MaxLength = 50, DefaultValue = "\"Pending\"", SortOrder = 5 },
+                        new() { Name = "SubTotal", Type = "decimal", IsRequired = true, DefaultValue = "0m", SortOrder = 6 },
+                        new() { Name = "Tax", Type = "decimal", IsRequired = true, DefaultValue = "0m", SortOrder = 7 },
+                        new() { Name = "Total", Type = "decimal", IsRequired = true, DefaultValue = "0m", SortOrder = 8 },
+                        new() { Name = "Notes", Type = "string", IsNullable = true, MaxLength = 2000, SortOrder = 9 }
+                    }
+                },
+                new DataObjects.EntityDefinition
+                {
+                    Name = "OrderLine",
+                    PluralName = "OrderLines",
+                    PrimaryKeyType = "Guid",
+                    SortOrder = 1,
+                    Properties = new()
+                    {
+                        new() { Name = "ProductName", Type = "string", IsRequired = true, MaxLength = 200, SortOrder = 1 },
+                        new() { Name = "ProductSku", Type = "string", IsNullable = true, MaxLength = 50, SortOrder = 2 },
+                        new() { Name = "Quantity", Type = "int", IsRequired = true, DefaultValue = "1", SortOrder = 3 },
+                        new() { Name = "UnitPrice", Type = "decimal", IsRequired = true, SortOrder = 4 },
+                        new() { Name = "LineTotal", Type = "decimal", IsRequired = true, SortOrder = 5 },
+                        new() { Name = "SortOrder", Type = "int", IsRequired = true, DefaultValue = "0", SortOrder = 6 }
+                    }
+                }
+            },
+            Relationships = new()
+            {
+                new DataObjects.RelationshipDefinition
+                {
+                    Name = "Order Lines",
+                    Type = DataObjects.RelationshipType.OneToMany,
+                    SourceEntityName = "Order",
+                    TargetEntityName = "OrderLine",
+                    SourceNavigationProperty = "Lines",
+                    TargetNavigationProperty = "Order",
+                    ForeignKeyProperty = "OrderId",
+                    IsRequired = true,
+                    OnDelete = DataObjects.RelationshipDeleteBehavior.Cascade
+                }
+            }
+        }
+    };
+
+    /// <summary>
+    /// Quick Start Pattern definition
+    /// </summary>
+    public class QuickStartPattern
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Icon { get; set; } = "fa-cube";
+        public string IconColorClass { get; set; } = "text-primary";
+        public string ButtonClass { get; set; } = "btn-outline-primary";
+        public int EntityCount { get; set; }
+        public int RelationshipCount { get; set; }
+        public List<DataObjects.EntityDefinition> Entities { get; set; } = new();
+        public List<DataObjects.RelationshipDefinition> Relationships { get; set; } = new();
+    }
+}

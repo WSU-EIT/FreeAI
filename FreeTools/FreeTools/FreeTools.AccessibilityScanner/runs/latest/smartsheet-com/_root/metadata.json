@@ -1,0 +1,410 @@
+{
+  "PagePath": "/",
+  "Url": "https://smartsheet.com/",
+  "FinalUrl": "https://www.smartsheet.com/",
+  "Title": "Intelligent Work Management Platform | Smartsheet",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 457832,
+  "ScreenshotSizeBytes": 339495,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 4,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 339495
+    }
+  ],
+  "ImageCount": 88,
+  "ImagesMissingAlt": 53,
+  "Images": [
+    {
+      "SourceUrl": "https://aorta.clickagy.com/pixel.gif?clkgypv=jstag\u0026ws=1",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://aorta.clickagy.com/channel-sync/4?clkgypv=jstag\u0026ws=1",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://aorta.clickagy.com/pixel.gif?ch=319\u0026cm=f7ed2989b9ba67a695061771467068",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/smartsheet-logo-blue-new.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-smartsheet-platform-48px.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-08/icon-blue-500-ai-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-automation-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-collaboration-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-dashboards-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-admin-controls-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-integrations-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-brandfolder-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-resource-management-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-control-center-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-dynamic-view-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-bridge-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-workapps-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-12/merchandising-quarterly-disclosures-small_0.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-08/solution-category-project-portfolio-management.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-08/solution-category-strategic-transformation.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-11/solutions-cat-digiit.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-12/solutions-cat-client-delivery-flyout.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-project-management-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-portfolio-management-nav-only_0.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-franchise-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-b2b-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-process-management-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-creative-operations-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-services-delivery-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-government-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-construction-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-finance-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-education-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-nonprofit-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-enterprise-nav-only_0.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/icon-blue-500-retail-nav-only.svg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-08/merchandising-ai.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-11/25_smar_gartner_report_merch_tile-384x216.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2024-06/ENGAGE_Seattle_2024_Header%20768x216.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-10/nav-merchandising-events_1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-10/nav-merchandising-community-light.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/adobe_logo.svg",
+      "AltText": "adobe_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/aws_logo.svg",
+      "AltText": "aws_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/box_logo_space.svg",
+      "AltText": "box_logo_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/docusign_logo.svg",
+      "AltText": "docusign_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/dropbox_logo.svg",
+      "AltText": "dropbox_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/google_logo.svg",
+      "AltText": "google_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/powerbi_logo.svg",
+      "AltText": "powerbi_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/sap_logo.svg",
+      "AltText": "sap_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/jira_logo.svg",
+      "AltText": "jira_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/microsoft_logo.svg",
+      "AltText": "microsoft_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/okta_logo_space.svg",
+      "AltText": "okta_logo_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/salesforce_logo.svg",
+      "AltText": "salesforce_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/slack_logo.svg",
+      "AltText": "slack_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/tableau_logo_mark.svg",
+      "AltText": "tableau_logo_mark.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/workday_logo.svg",
+      "AltText": "workday_logo.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/mclaren_racing_logo_white_space.svg",
+      "AltText": "mclaren_racing_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/roche_logo_white_space.svg",
+      "AltText": "roche_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/uber_logo_white_space.svg",
+      "AltText": "uber_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/sutherland_logo_white_space.svg",
+      "AltText": "sutherland_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/convergint_logo_white_space.svg",
+      "AltText": "convergint_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/directtv_logo_white_space.svg",
+      "AltText": "directtv_logo_white_space.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/mclaren_racing_logo_white_space_left_align.svg",
+      "AltText": "mclaren_racing_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/roche_logo_white_space_left_align.svg",
+      "AltText": "roche_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/uber_logo_white_space_left_align.svg",
+      "AltText": "uber_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/sutherland_logo_white_space_left_align.svg",
+      "AltText": "sutherland_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/convergint_logo_white_space_left_align.svg",
+      "AltText": "convergint_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/directtv_logo_white_space_left_align.svg",
+      "AltText": "directtv_logo_white_space_left_align.svg logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-09/security_badges_tile_background_-_static_mobile.svg",
+      "AltText": "Security badge background"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2024-01/transparent-janet-170h.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-10/transparent-janet-60px.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-11/25_smar_gartner_report_ads_1920x1080-1_no_text_1.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-04/ai-blog-5-signs-team-is-ready-for-ai-thumbnail.jpg",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-06/puma-thumbnail-1920x1080-bb255a5.png",
+      "AltText": "puma-thumbnail"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2025-11/25_smar_ppm_first_party_research_report_web_merchandising_image_1920x1080_2.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2022-10/smartsheet-logo-horizontal.svg",
+      "AltText": "Smartsheet logo"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2023-08/merchandising-ai-footer.png",
+      "AltText": "Smartsheet AI"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/2024-06/ENGAGE_Seattle_2024_Footer%20480x135.png",
+      "AltText": "Engage Footer Nav Graphic"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/Download_on_the_App_Store_Badge_US-UK_135x40_0_0.svg",
+      "AltText": "Download on the Apple App Store"
+    },
+    {
+      "SourceUrl": "https://www.smartsheet.com/sites/default/files/google-play-badge-English.svg",
+      "AltText": "Get it on Google Play"
+    },
+    {
+      "SourceUrl": "https://cdn.bizible.com/ipv?_biz_r=\u0026_biz_h=-1719904874\u0026_biz_u=65286a1c86aa4b36c1e8f6f7d348e130\u0026_biz_l=https%3A%2F%2Fwww.smartsheet.com%2F\u0026_biz_t=1771467067185\u0026_biz_i=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026_biz_n=0\u0026rnd=66528\u0026cdn_o=a\u0026_biz_z=1771467067186",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.bizibly.com/u?_biz_u=65286a1c86aa4b36c1e8f6f7d348e130\u0026_biz_l=https%3A%2F%2Fwww.smartsheet.com%2F\u0026_biz_t=1771467067188\u0026_biz_i=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026rnd=135003\u0026cdn_o=a\u0026_biz_z=1771467067188",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://pt.ispot.tv/v2/TC-4130-1.gif?app=web\u0026type=visit",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://sp.analytics.yahoo.com/sp.pl?a=10000\u0026d=Thu%2C%2019%20Feb%202026%2002%3A11%3A07%20GMT\u0026n=8\u0026b=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026.yp=10204283\u0026f=https%3A%2F%2Fwww.smartsheet.com%2F\u0026enc=UTF-8\u0026yv=1.16.6\u0026tagmgr=gtm",
+      "AltText": "dot image pixel"
+    },
+    {
+      "SourceUrl": "https://t.co/i/adsct?bci=3\u0026dv=America%2FLos_Angeles%26en-US%26Google%20Inc.%26Win32%26255%261280%26720%2624%2624%261280%26720%260%26na\u0026eci=2\u0026event_id=97e3da26-644b-4ae1-addc-c4c0efe3c89a\u0026events=%5B%5B%22pageview%22%2C%7B%7D%5D%5D\u0026integration=advertiser\u0026p_id=Twitter\u0026p_user_id=0\u0026pl_id=65bf2342-7440-49a3-8317-a848a494419a\u0026pt=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026tw_document_href=https%3A%2F%2Fwww.smartsheet.com%2F\u0026tw_iframe_status=0\u0026tw_order_quantity=0\u0026tw_sale_amount=0\u0026txn_id=o1jw4\u0026type=javascript\u0026version=2.3.35",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://analytics.twitter.com/i/adsct?bci=3\u0026dv=America%2FLos_Angeles%26en-US%26Google%20Inc.%26Win32%26255%261280%26720%2624%2624%261280%26720%260%26na\u0026eci=2\u0026event_id=97e3da26-644b-4ae1-addc-c4c0efe3c89a\u0026events=%5B%5B%22pageview%22%2C%7B%7D%5D%5D\u0026integration=advertiser\u0026p_id=Twitter\u0026p_user_id=0\u0026pl_id=65bf2342-7440-49a3-8317-a848a494419a\u0026pt=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026tw_document_href=https%3A%2F%2Fwww.smartsheet.com%2F\u0026tw_iframe_status=0\u0026tw_order_quantity=0\u0026tw_sale_amount=0\u0026txn_id=o1jw4\u0026type=javascript\u0026version=2.3.35",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://www.googleadservices.com/pagead/conversion/744256365/?label=HmeoCJyY9OUDEO3m8eIC\u0026guid=ON\u0026script=0",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://cdn.bizible.com/u?mapType=mkto\u0026mapValue=id%3A464-ONM-149%26token%3A_mch-smartsheet.com-7ffca815f81d01c9945f8c661c781361\u0026_biz_u=65286a1c86aa4b36c1e8f6f7d348e130\u0026_biz_l=https%3A%2F%2Fwww.smartsheet.com%2F\u0026_biz_t=1771467069212\u0026_biz_i=Intelligent%20Work%20Management%20Platform%20%7C%20Smartsheet\u0026_biz_n=1\u0026rnd=137494\u0026cdn_o=a\u0026_biz_z=1771467069212",
+      "AltText": ""
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 24,
+    "Critical": 7,
+    "Serious": 16,
+    "Moderate": 1,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 12,
+        "Critical": 7,
+        "Serious": 5,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 12,
+        "Critical": 0,
+        "Serious": 11,
+        "Moderate": 1,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:11:06.0481924Z"
+}

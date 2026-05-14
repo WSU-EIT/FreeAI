@@ -1,0 +1,1004 @@
+﻿@page "/AppBuilder/EntityWizard"
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+@* FMEntityWizard.App.razor - Entity Builder Wizard main page *@
+@* Guides users through defining entities with relationships and generates CRUD code *@
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid px-2">
+        @* Page Header with Start Over + Undo/Redo *@
+        <div class="@Model.StickyMenuClass">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0 fs-4">
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+                    Entity Builder
+                    @if (_loadedProjectId.HasValue) {
+                        <small class="text-muted fs-6 ms-2">(@_state.Project.Name)</small>
+                    }
+                </h1>
+                <div class="d-flex gap-2 align-items-center">
+                    @* Undo/Redo Buttons *@
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="Undo" disabled="@(!_undoRedo.CanUndo)"
+                                title="@(_undoRedo.CanUndo ? $"Undo: {_undoRedo.LastActionDescription}" : "Nothing to undo")">
+                            <i class="fa-solid fa-undo"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="Redo" disabled="@(!_undoRedo.CanRedo)"
+                                title="Redo">
+                            <i class="fa-solid fa-redo"></i>
+                        </button>
+                    </div>
+                    
+                    @if (_state.Entities.Count > 1 || _state.Relationships.Any())
+                    {
+                        <span class="badge bg-info align-self-center small">
+                            @_state.Entities.Count entities@(_state.Relationships.Any() ? $", {_state.Relationships.Count} rels" : "")
+                        </span>
+                    }
+                    @if (_currentStep > 0) {
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="StartOver">
+                            <i class="fa-solid fa-rotate-left me-1"></i>
+                            Reset
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Quick Start Patterns - Show on step 0 or 1 when starting fresh *@
+        @if (_currentStep <= 1 && !_loadedProjectId.HasValue && _state.Entities.All(e => string.IsNullOrEmpty(e.Name)))
+        {
+            <FreeManager_App_EntityWizardQuickStart OnPatternSelected="OnQuickStartPatternSelected" />
+        }
+
+        @* Template Manager - Load/Save Templates *@
+        <FreeManager_App_EntityWizardTemplateManager CurrentEntity="@_state.Entity"
+                                          CurrentOptions="@_state.Options"
+                                          SavedTemplates="@_savedTemplates"
+                                          OnTemplateLoaded="OnTemplateLoaded"
+                                          OnTemplateSaved="OnTemplateSaved"
+                                          OnTemplateDeleted="OnTemplateDeleted" />
+
+        @* Progress Stepper *@
+        <FreeManager_App_EntityWizardStepper Steps="@_steps" CurrentStep="@_currentStep" OnStepClick="GoToStep" />
+
+        @* Selection Summary *@
+        <FreeManager_App_EntityWizardSummary Selections="@_selections" />
+
+        @* Current Step Content *@
+        <div class="card shadow-sm">
+            @switch (_currentStep) {
+                case 0:
+                    @* Step 1: Project Info *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="1" Title="Project Info"
+                                                Subtitle="Name your project"
+                                                ShowNext="true" NextDisabled="@(!CanProceedStep1())"
+                                                OnNext="NextStep" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardStepProject ProjectName="@_state.Project.Name"
+                                                      ProjectNameChanged="OnProjectNameChanged"
+                                                      DisplayName="@_state.Project.DisplayName"
+                                                      DisplayNameChanged="OnDisplayNameChanged"
+                                                      Description="@_state.Project.Description"
+                                                      DescriptionChanged="OnDescriptionChanged" />
+                    </div>
+                    break;
+
+                case 1:
+                    @* Step 2: Entities Overview (Multi-Entity) *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="2" Title="Entities"
+                                                Subtitle="@($"{_state.Entities.Count} {(_state.Entities.Count == 1 ? "entity" : "entities")} defined")"
+                                                ShowBack="true" ShowNext="true"
+                                                NextDisabled="@(!CanProceedStep2())"
+                                                OnBack="PreviousStep" OnNext="NextStep" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardEntitiesOverview Entities="@_state.Entities"
+                                                           EntitiesChanged="OnEntitiesChanged"
+                                                           Relationships="@_state.Relationships"
+                                                           OnEditEntity="OnEditEntity" />
+                    </div>
+                    break;
+
+                case 2:
+                    @* Step 3: Entity Editor (editing specific entity) *@
+                    @if (_state.SelectedEntityIndex.HasValue && _state.SelectedEntityIndex.Value < _state.Entities.Count)
+                    {
+                        var editingEntity = _state.Entities[_state.SelectedEntityIndex.Value];
+                        <FreeManager_App_EntityWizardStepHeader StepNumber="3" Title="Edit Entity"
+                                                    Subtitle="@editingEntity.Name"
+                                                    ShowBack="true" ShowNext="true"
+                                                    BackButtonText="← Back to Entities"
+                                                    OnBack="BackToEntitiesList" OnNext="FinishEditingEntity" />
+                        <div class="card-body">
+                            @* Entity Name/Settings *@
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <FreeManager_App_EntityWizardStepEntity EntityName="@editingEntity.Name"
+                                                                 EntityNameChanged="@(v => OnCurrentEntityNameChanged(v))"
+                                                                 PluralName="@editingEntity.PluralName"
+                                                                 PluralNameChanged="@(v => OnCurrentEntityPluralChanged(v))"
+                                                                 TableName="@editingEntity.TableName"
+                                                                 TableNameChanged="@(v => OnCurrentEntityTableChanged(v))"
+                                                                 PrimaryKeyType="@editingEntity.PrimaryKeyType"
+                                                                 PrimaryKeyTypeChanged="@(v => OnCurrentEntityPKTypeChanged(v))" />
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6><i class="fa-solid fa-info-circle me-2"></i>Entity Settings</h6>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="isJoinTable" 
+                                                       checked="@editingEntity.IsJoinTable"
+                                                       @onchange="@(e => editingEntity.IsJoinTable = (bool)(e.Value ?? false))" />
+                                                <label class="form-check-label" for="isJoinTable">
+                                                    <i class="fa-solid fa-link me-1"></i>This is a join table (M:M)
+                                                </label>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label small">Description</label>
+                                                <textarea class="form-control form-control-sm" rows="2" 
+                                                          @bind="editingEntity.Description"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @* Properties Editor *@
+                            <FreeManager_App_EntityWizardStepProperties Properties="@editingEntity.Properties"
+                                                             PropertiesChanged="@(p => OnCurrentEntityPropertiesChanged(p))"
+                                                             Enums="@editingEntity.Enums"
+                                                             EnumsChanged="@(e => OnCurrentEntityEnumsChanged(e))"
+                                                             EntityName="@editingEntity.Name"
+                                                             PrimaryKeyType="@editingEntity.PrimaryKeyType" />
+                        </div>
+                    }
+                    else
+                    {
+                        @* Fallback if no entity selected - redirect back *@
+                        <div class="card-body text-center py-5">
+                            <i class="fa-solid fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                            <p>No entity selected for editing.</p>
+                            <button class="btn btn-primary" @onclick="BackToEntitiesList">Back to Entities</button>
+                        </div>
+                    }
+                    break;
+
+                case 3:
+                    @* Step 4: Relationships *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="4" Title="Relationships"
+                                                Subtitle="@($"{_state.Relationships.Count} relationships")"
+                                                ShowBack="true" ShowNext="true"
+                                                OnBack="PreviousStep" OnNext="NextStep" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardRelationshipEditor Entities="@_state.Entities"
+                                                             Relationships="@_state.Relationships"
+                                                             RelationshipsChanged="OnRelationshipsChanged" />
+                    </div>
+                    break;
+
+                case 4:
+                    @* Step 5: Options *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="5" Title="Generation Options"
+                                                Subtitle="Configure what to generate"
+                                                ShowBack="true" ShowNext="true"
+                                                OnBack="PreviousStep" OnNext="NextStep" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardStepOptions Options="@_state.Options" />
+                    </div>
+                    break;
+
+                case 5:
+                    @* Step 6: Preview *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="6" Title="Preview"
+                                                Subtitle="Review and edit generated code"
+                                                ShowBack="true" ShowNext="true"
+                                                NextButtonText="Generate Files"
+                                                NextButtonClass="btn-success"
+                                                OnBack="PreviousStep" OnNext="GenerateCode" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardStepPreview State="@_state" 
+                                                      GeneratedFiles="@_generatedFiles"
+                                                      GeneratedFilesChanged="OnGeneratedFilesChanged"
+                                                      OnRegenerateFile="OnRegenerateFile" />
+                    </div>
+                    break;
+
+                case 6:
+                    @* Step 7: Complete *@
+                    <FreeManager_App_EntityWizardStepHeader StepNumber="7" Title="Complete!"
+                                                HeaderClass="bg-success text-white"
+                                                BadgeIcon="fa-check-circle" BadgeClass="bg-white text-success"
+                                                ShowNext="false" ShowSave="true"
+                                                SaveButtonText="Create Project"
+                                                SaveDisabled="@_saving"
+                                                OnSave="CreateProject" />
+                    <div class="card-body">
+                        <FreeManager_App_EntityWizardStepComplete State="@_state" 
+                                                       GeneratedFiles="@_generatedFiles"
+                                                       IsSaving="@_saving"
+                                                       IsComplete="@_complete"
+                                                       ErrorMessage="@_errorMessage"
+                                                       OnStartOver="StartOver"
+                                                       OnViewProject="ViewProject" />
+                    </div>
+                    break;
+            }
+        </div>
+
+        @* Back to AppBuilder link *@
+        <div class="mt-3">
+            <a href="@(Helpers.BuildUrl("AppBuilder"))" class="btn btn-link text-muted">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Back to App Builder
+            </a>
+        </div>
+    </div>
+}
+
+@code {
+    private string _pageName = "appbuilder-entity-wizard";
+    private bool _loadedData = false;
+    private bool _saving = false;
+    private bool _complete = false;
+    private string _errorMessage = "";
+    private Guid _createdProjectId = Guid.Empty;
+    private Guid? _loadedProjectId = null;
+
+    private int _currentStep = 0;
+    private DataObjects.EntityWizardState _state = new();
+    private List<DataObjects.GeneratedFileInfo> _generatedFiles = new();
+
+    private List<DataObjects.WizardStepInfo> _steps = new();
+    private List<DataObjects.WizardSelectionItem> _selections = new();
+    
+    private List<DataObjects.SavedEntityTemplate> _savedTemplates = new();
+    
+    // Undo/Redo support
+    private EntityWizardUndoRedo _undoRedo = new();
+
+    public void Dispose() {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += OnDataModelUpdated;
+        InitializeSteps();
+        InitializeDefaults();
+        
+        // Record initial state
+        _undoRedo.RecordChange(_state, "Initial state");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (Model.Loaded && Model.LoggedIn && !_loadedData) {
+            _loadedData = true;
+
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+            // Check for templateState query parameter (from Template Setup page)
+            var templateStateBase64 = query["templateState"];
+            if (!string.IsNullOrEmpty(templateStateBase64)) {
+                LoadFromTemplateState(templateStateBase64);
+            }
+            // Check for projectId query parameter to load existing project
+            else {
+                var projectIdStr = query["projectId"];
+                if (Guid.TryParse(projectIdStr, out var projectId)) {
+                    await LoadExistingProject(projectId);
+                }
+            }
+
+            StateHasChanged();
+        }
+        await Task.CompletedTask;
+    }
+
+    private void LoadFromTemplateState(string base64State) {
+        try {
+            var stateJson = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(base64State));
+            var loadedState = System.Text.Json.JsonSerializer.Deserialize<DataObjects.EntityWizardState>(stateJson);
+
+            if (loadedState != null) {
+                _state = loadedState;
+
+                // Ensure all entities have primary keys
+                EnsureAllPrimaryKeys();
+
+                _undoRedo.RecordChange(_state, "Loaded from template");
+                UpdateSelections();
+
+                // Jump directly to Preview step since template is pre-configured
+                _currentStep = 5; // Preview
+                GeneratePreview();
+
+                var entityCount = _state.Entities.Count;
+                var relCount = _state.Relationships.Count;
+                Model.AddMessage(
+                    $"Loaded '{_state.Project.DisplayName ?? _state.Project.Name}' template with {entityCount} entities and {relCount} relationships",
+                    MessageType.Success);
+            }
+        } catch (Exception ex) {
+            Model.ErrorMessage($"Failed to load template state: {ex.Message}");
+        }
+    }
+
+    private async Task LoadExistingProject(Guid projectId) {
+        try {
+            var project = await Helpers.GetOrPost<DataObjects.FMSavedProject>(
+                $"{DataObjects.Endpoints.FreeManager.GetSavedProject}?projectId={projectId}", null);
+            
+            if (project != null && !string.IsNullOrEmpty(project.EntityWizardStateJson)) {
+                var loadedState = System.Text.Json.JsonSerializer.Deserialize<DataObjects.EntityWizardState>(
+                    project.EntityWizardStateJson);
+                
+                if (loadedState != null) {
+                    _state = loadedState;
+                    _loadedProjectId = projectId;
+                    _createdProjectId = projectId;
+                    
+                    // Restore generated files if present
+                    if (_state.GeneratedFiles.Count > 0) {
+                        _generatedFiles = _state.GeneratedFiles;
+                    }
+                    
+                    _undoRedo.RecordChange(_state, "Loaded project");
+                    UpdateSelections();
+                    
+                    // Navigate to Entities step (1) so user sees their data immediately
+                    // Skip project info step since they already named the project
+                    if (_state.Entities.Count > 0) {
+                        _currentStep = 1; // Entities Overview
+                    }
+                    
+                    Model.AddMessage($"Loaded project '{project.Name}' with {_state.Entities.Count} entities", MessageType.Success);
+                }
+            } else {
+                Model.ErrorMessage($"Project not found or has no saved state (projectId: {projectId})");
+                await Helpers.ConsoleLog($"LoadExistingProject: project={project != null}, stateJson=!{string.IsNullOrEmpty(project?.EntityWizardStateJson)}");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading project: {ex.Message}");
+            Model.ErrorMessage($"Failed to load project: {ex.Message}");
+        }
+    }
+
+    private void OnDataModelUpdated() {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private void InitializeSteps() {
+        _steps = new List<DataObjects.WizardStepInfo> {
+            new() { Name = "Project Info", ShortName = "Project", Icon = "fa-folder" },
+            new() { Name = "Entities", ShortName = "Entities", Icon = "fa-cubes" },
+            new() { Name = "Edit Entity", ShortName = "Edit", Icon = "fa-pen" },
+            new() { Name = "Relationships", ShortName = "Relations", Icon = "fa-project-diagram" },
+            new() { Name = "Options", ShortName = "Options", Icon = "fa-cog" },
+            new() { Name = "Preview", ShortName = "Preview", Icon = "fa-eye" },
+            new() { Name = "Complete", ShortName = "Done", Icon = "fa-check" }
+        };
+    }
+
+    private void InitializeDefaults() {
+        _state = new DataObjects.EntityWizardState {
+            Project = new DataObjects.FMCreateProjectRequest {
+                Template = DataObjects.FMProjectTemplate.FullCrud
+            },
+            Entities = new List<DataObjects.EntityDefinition>(),
+            Relationships = new List<DataObjects.RelationshipDefinition>(),
+            Options = new DataObjects.EntityWizardOptions()
+        };
+        
+        // Add a default first entity
+        _state.Entities.Add(new DataObjects.EntityDefinition {
+            PrimaryKeyType = "Guid",
+            SortOrder = 0
+        });
+    }
+
+    // ============================================================
+    // STEP 1 HANDLERS
+    // ============================================================
+
+    private void OnProjectNameChanged(string value) {
+        _state.Project.Name = value;
+        RecordUndoableChange("Changed project name");
+        StateHasChanged();
+    }
+
+    private void OnDisplayNameChanged(string value) {
+        _state.Project.DisplayName = value;
+        StateHasChanged();
+    }
+
+    private void OnDescriptionChanged(string value) {
+        _state.Project.Description = value;
+    }
+
+    // ============================================================
+    // STEP 2 HANDLERS (MULTI-ENTITY)
+    // ============================================================
+
+    private void OnEntitiesChanged(List<DataObjects.EntityDefinition> value) {
+        _state.Entities = value;
+        RecordUndoableChange("Modified entities");
+        StateHasChanged();
+    }
+
+    private void OnEditEntity(int index) {
+        // Set the current entity index for editing
+        if (index >= 0 && index < _state.Entities.Count) {
+            _state.SelectedEntityIndex = index;
+            _currentStep = 2; // Go to Edit Entity step
+        }
+    }
+
+    // ============================================================
+    // STEP 3 HANDLERS (EDIT ENTITY)
+    // ============================================================
+
+    private void OnCurrentEntityNameChanged(string value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.Name = value;
+            RecordUndoableChange($"Renamed entity to {value}");
+            StateHasChanged();
+        }
+    }
+
+    private void OnCurrentEntityPluralChanged(string value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.PluralName = value;
+            StateHasChanged();
+        }
+    }
+
+    private void OnCurrentEntityTableChanged(string value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.TableName = value;
+        }
+    }
+
+    private void OnCurrentEntityPKTypeChanged(string value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.PrimaryKeyType = value;
+            RecordUndoableChange($"Changed PK type to {value}");
+        }
+    }
+
+    private void OnCurrentEntityPropertiesChanged(List<DataObjects.PropertyDefinition> value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.Properties = value;
+            RecordUndoableChange("Modified properties");
+            StateHasChanged();
+        }
+    }
+
+    private void OnCurrentEntityEnumsChanged(List<DataObjects.EnumDefinition> value) {
+        if (_state.SelectedEntityIndex.HasValue) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            entity.Enums = value;
+            RecordUndoableChange("Modified enums");
+            StateHasChanged();
+        }
+    }
+
+    // ============================================================
+    // STEP 4 HANDLERS (RELATIONSHIPS)
+    // ============================================================
+
+    private void OnRelationshipsChanged(List<DataObjects.RelationshipDefinition> value) {
+        _state.Relationships = value;
+        RecordUndoableChange("Modified relationships");
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // QUICK START PATTERN HANDLER
+    // ============================================================
+
+    private void OnQuickStartPatternSelected(FreeManager_App_EntityWizardQuickStart.QuickStartPattern pattern) {
+        // Clear existing state and apply pattern
+        _state.Entities.Clear();
+        _state.Relationships.Clear();
+        
+        // Clone entities from pattern (with new IDs)
+        foreach (var entity in pattern.Entities)
+        {
+            var newEntity = new DataObjects.EntityDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = entity.Name,
+                PluralName = entity.PluralName,
+                TableName = entity.TableName,
+                PrimaryKeyName = entity.Name + "Id",
+                PrimaryKeyType = entity.PrimaryKeyType,
+                SortOrder = entity.SortOrder,
+                Description = entity.Description,
+                IsJoinTable = entity.IsJoinTable,
+                Properties = entity.Properties.Select(p => new DataObjects.PropertyDefinition
+                {
+                    Id = Guid.NewGuid(),
+                    Name = p.Name,
+                    Type = p.Type,
+                    IsRequired = p.IsRequired,
+                    IsNullable = p.IsNullable,
+                    DefaultValue = p.DefaultValue,
+                    MaxLength = p.MaxLength,
+                    SortOrder = p.SortOrder,
+                    Description = p.Description
+                }).ToList(),
+                Enums = entity.Enums.Select(e => new DataObjects.EnumDefinition
+                {
+                    Id = Guid.NewGuid(),
+                    Name = e.Name,
+                    Values = new List<string>(e.Values),
+                    DefaultValue = e.DefaultValue
+                }).ToList()
+            };
+            _state.Entities.Add(newEntity);
+        }
+        
+        // Clone relationships from pattern (with new IDs)
+        foreach (var rel in pattern.Relationships)
+        {
+            _state.Relationships.Add(new DataObjects.RelationshipDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = rel.Name,
+                Type = rel.Type,
+                SourceEntityName = rel.SourceEntityName,
+                TargetEntityName = rel.TargetEntityName,
+                SourceNavigationProperty = rel.SourceNavigationProperty,
+                TargetNavigationProperty = rel.TargetNavigationProperty,
+                ForeignKeyProperty = rel.ForeignKeyProperty,
+                IsRequired = rel.IsRequired,
+                OnDelete = rel.OnDelete,
+                JoinEntityName = rel.JoinEntityName,
+                SortOrder = rel.SortOrder
+            });
+        }
+        
+        // Auto-set project name based on pattern
+        if (string.IsNullOrEmpty(_state.Project.Name))
+        {
+            _state.Project.Name = pattern.Entities.FirstOrDefault()?.PluralName ?? pattern.Name.Replace(" ", "");
+            _state.Project.DisplayName = pattern.Name;
+        }
+        
+        RecordUndoableChange($"Applied Quick Start: {pattern.Name}");
+        UpdateSelections();
+        
+        // Jump to Entities step so user can see and customize
+        _currentStep = 1;
+        
+        Model.AddMessage($"Applied '{pattern.Name}' pattern — {pattern.EntityCount} entities, {pattern.RelationshipCount} relationships", MessageType.Success);
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // SELECTIONS
+    // ============================================================
+
+    private void UpdateSelections() {
+        _selections = new List<DataObjects.WizardSelectionItem>();
+
+        // Project
+        if (!string.IsNullOrWhiteSpace(_state.Project.Name)) {
+            _selections.Add(new() { 
+                Label = "Project", 
+                Value = _state.Project.Name, 
+                Icon = "fa-solid fa-folder" 
+            });
+            _steps[0].SelectedValue = _state.Project.Name;
+        }
+
+        // Entities count
+        if (_state.Entities.Count > 0) {
+            var entityCount = _state.Entities.Count;
+            _selections.Add(new() { 
+                Label = "Entities", 
+                Value = $"{entityCount} entity" + (entityCount != 1 ? "ies" : "y"), 
+                Icon = "fa-solid fa-cubes" 
+            });
+            _steps[1].SelectedValue = $"{entityCount} entities";
+        }
+
+        // Relationships count
+        if (_state.Relationships.Count > 0) {
+            var relationCount = _state.Relationships.Count;
+            _selections.Add(new() { 
+                Label = "Relationships", 
+                Value = $"{relationCount} relation" + (relationCount != 1 ? "s" : ""), 
+                Icon = "fa-solid fa-project-diagram" 
+            });
+            _steps[3].SelectedValue = $"{relationCount} relations";
+        }
+
+        // Options summary
+        var optionsList = new List<string>();
+        if (_state.Options.GenerateListPage) optionsList.Add("List");
+        if (_state.Options.GenerateEditPage) optionsList.Add("Edit");
+        if (_state.Options.IncludeSoftDelete) optionsList.Add("SoftDelete");
+        if (optionsList.Count > 0) {
+            _steps[4].SelectedValue = string.Join(", ", optionsList.Take(2));
+        }
+    }
+
+    // ============================================================
+    // VALIDATION
+    // ============================================================
+
+    private bool CanProceedStep1() {
+        return !string.IsNullOrWhiteSpace(_state.Project.Name) &&
+               System.Text.RegularExpressions.Regex.IsMatch(_state.Project.Name, @"^[A-Za-z][A-Za-z0-9]*$");
+    }
+
+    private bool CanProceedStep2() {
+        // Multi-entity step: check if at least one entity is defined
+        return _state.Entities.Count > 0 && 
+               _state.Entities.All(e => 
+                   !string.IsNullOrWhiteSpace(e.Name) &&
+                   !string.IsNullOrWhiteSpace(e.PluralName) &&
+                   System.Text.RegularExpressions.Regex.IsMatch(e.Name, @"^[A-Za-z][A-Za-z0-9]*$"));
+    }
+
+    private bool CanProceedStep3() {
+        // Must have at least one non-PK property in the current entity
+        if (_state.SelectedEntityIndex.HasValue && _state.SelectedEntityIndex.Value < _state.Entities.Count) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            return entity.Properties.Count(p => !p.IsPrimaryKey) > 0;
+        }
+        return false;
+    }
+
+    // ============================================================
+    // NAVIGATION
+    // ============================================================
+
+    private void NextStep() {
+        UpdateSelections();
+        
+        // Skip "Edit Entity" step (2) when going forward from Entities (1)
+        // User should edit entities from the overview, not via Next
+        if (_currentStep == 1) {
+            _currentStep = 3; // Jump to Relationships
+        }
+        else if (_currentStep < _steps.Count - 1) {
+            _currentStep++;
+        }
+        
+        // Ensure primary keys for all entities when entering Relationships
+        if (_currentStep == 3) {
+            EnsureAllPrimaryKeys();
+        }
+        
+        // Generate preview when entering Preview step
+        if (_currentStep == 5) {
+            GeneratePreview();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void PreviousStep() {
+        if (_currentStep > 0) {
+            // Skip "Edit Entity" step (2) when going backward from Relationships (3)
+            if (_currentStep == 3) {
+                _currentStep = 1; // Jump back to Entities
+            }
+            else {
+                _currentStep--;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void GoToStep(int step) {
+        // Skip step 2 (Edit Entity) - it's only accessed via edit button
+        if (step == 2) return;
+        if (step < _currentStep || step == _currentStep - 1) {
+            _currentStep = step;
+            StateHasChanged();
+        }
+    }
+
+    private void BackToEntitiesList() {
+        _state.SelectedEntityIndex = null;
+        _currentStep = 1; // Go back to Entities Overview
+        StateHasChanged();
+    }
+
+    private void FinishEditingEntity() {
+        // Ensure this entity has a primary key
+        if (_state.SelectedEntityIndex.HasValue) {
+            EnsurePrimaryKey();
+        }
+        _state.SelectedEntityIndex = null;
+        _currentStep = 1; // Go back to Entities Overview
+        StateHasChanged();
+    }
+
+    private void StartOver() {
+        _currentStep = 0;
+        _complete = false;
+        _saving = false;
+        _errorMessage = "";
+        _createdProjectId = Guid.Empty;
+        _generatedFiles.Clear();
+        InitializeSteps();
+        InitializeDefaults();
+        _selections.Clear();
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    private void EnsureAllPrimaryKeys() {
+        // Add primary key to all entities if not present
+        foreach (var entity in _state.Entities) {
+            if (!entity.Properties.Any(p => p.IsPrimaryKey)) {
+                var pkName = entity.Name + "Id";
+                entity.PrimaryKeyName = pkName;
+                
+                entity.Properties.Insert(0, new DataObjects.PropertyDefinition {
+                    Name = pkName,
+                    Type = entity.PrimaryKeyType,
+                    IsRequired = true,
+                    IsPrimaryKey = true,
+                    IsSystemField = true,
+                    SortOrder = -100,
+                    Description = "Primary key"
+                });
+            }
+        }
+    }
+
+    private void EnsurePrimaryKey() {
+        // Add primary key to the currently selected entity if not present
+        if (_state.SelectedEntityIndex.HasValue && _state.SelectedEntityIndex.Value < _state.Entities.Count) {
+            var entity = _state.Entities[_state.SelectedEntityIndex.Value];
+            if (!entity.Properties.Any(p => p.IsPrimaryKey)) {
+                var pkName = entity.Name + "Id";
+                entity.PrimaryKeyName = pkName;
+                
+                entity.Properties.Insert(0, new DataObjects.PropertyDefinition {
+                    Name = pkName,
+                    Type = entity.PrimaryKeyType,
+                    IsRequired = true,
+                    IsPrimaryKey = true,
+                    IsSystemField = true,
+                    SortOrder = -100,
+                    Description = "Primary key"
+                });
+            }
+        }
+    }
+
+    private void GeneratePreview() {
+        // Generate preview of all files, preserving any edited content
+        var newFiles = EntityTemplates.GenerateAllFiles(_state);
+        
+        // If we have existing files with edits, preserve them
+        if (_generatedFiles.Count > 0) {
+            foreach (var newFile in newFiles) {
+                var existingFile = _generatedFiles.FirstOrDefault(f => f.FileName == newFile.FileName);
+                if (existingFile != null && existingFile.IsEdited) {
+                    // Preserve the edited content but update OriginalContent
+                    newFile.Content = existingFile.Content;
+                    newFile.IsEdited = true;
+                }
+            }
+        }
+        
+        _generatedFiles = newFiles;
+    }
+
+    private void OnGeneratedFilesChanged(List<DataObjects.GeneratedFileInfo> files) {
+        _generatedFiles = files;
+        StateHasChanged();
+    }
+
+    private void OnRegenerateFile(int index) {
+        if (index >= 0 && index < _generatedFiles.Count) {
+            var file = _generatedFiles[index];
+            // Regenerate all files and find the matching one
+            var freshFiles = EntityTemplates.GenerateAllFiles(_state);
+            var freshFile = freshFiles.FirstOrDefault(f => f.FileName == file.FileName);
+            if (freshFile != null) {
+                file.Content = freshFile.Content;
+                file.OriginalContent = freshFile.Content;
+                file.IsEdited = false;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task GenerateCode() {
+        // Move to completion step
+        _currentStep = 6;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    private async Task CreateProject() {
+        _saving = true;
+        _errorMessage = "";
+        Model.ClearMessages();
+        Model.Message_Saving();
+        StateHasChanged();
+
+        try {
+            // Include generated files in state (with any edits)
+            _state.GeneratedFiles = _generatedFiles;
+            
+            // Save the wizard state to enable reload/edit
+            var saveRequest = new DataObjects.FMSaveWizardProjectRequest {
+                FMProjectId = _loadedProjectId,
+                Name = _state.Project.Name,
+                DisplayName = _state.Project.DisplayName,
+                Description = _state.Project.Description,
+                EntityWizardStateJson = System.Text.Json.JsonSerializer.Serialize(_state),
+                EntityCount = _state.Entities.Count,
+                RelationshipCount = _state.Relationships.Count
+            };
+            
+            var savedProject = await Helpers.GetOrPost<DataObjects.FMSavedProject>(
+                DataObjects.Endpoints.FreeManager.SaveWizardProject, saveRequest);
+            
+            if (savedProject != null) {
+                _createdProjectId = savedProject.FMProjectId;
+                _loadedProjectId = savedProject.FMProjectId;
+                
+                // Get existing files for this project to determine create vs update
+                var existingFiles = await Helpers.GetOrPost<List<DataObjects.FMAppFileInfo>>(
+                    $"{DataObjects.Endpoints.FreeManager.GetAppFiles}?projectId={savedProject.FMProjectId}", null) ?? new();
+                
+                int savedCount = 0;
+                
+                // Save generated files to the SAME project (using the FMProjectId)
+                foreach (var file in _generatedFiles) {
+                    var existingFile = existingFiles.FirstOrDefault(f => 
+                        f.FilePath.Equals(file.FileName, StringComparison.OrdinalIgnoreCase));
+                    
+                    if (existingFile != null) {
+                        // Update existing file
+                        var updateRequest = new DataObjects.FMSaveFileRequest {
+                            FileId = existingFile.Id,
+                            Content = file.Content,
+                            Comment = "Updated from Entity Wizard"
+                        };
+                        await Helpers.GetOrPost<DataObjects.FMSaveFileResponse>(
+                            DataObjects.Endpoints.FreeManager.SaveAppFile, updateRequest);
+                    } else {
+                        // Create new file
+                        var fileRequest = new DataObjects.FMCreateFileRequest {
+                            ProjectId = savedProject.FMProjectId,
+                            FilePath = file.FileName,
+                            FileType = file.FileType,
+                            Content = file.Content
+                        };
+                        await Helpers.GetOrPost<DataObjects.FMAppFileInfo>(
+                            DataObjects.Endpoints.FreeManager.CreateAppFile, fileRequest);
+                    }
+                    savedCount++;
+                }
+
+                _complete = true;
+                _state.CompletedAt = DateTime.UtcNow;
+                Model.ClearMessages();
+                Model.AddMessage($"Project '{_state.Project.DisplayName ?? _state.Project.Name}' saved with {savedCount} files!", MessageType.Success);
+            } else {
+                _errorMessage = "Failed to save project";
+                Model.ErrorMessage("Failed to save project to database");
+            }
+        } catch (Exception ex) {
+            _errorMessage = ex.Message;
+            Model.ClearMessages();
+            Model.ErrorMessage(ex.Message);
+            await Helpers.ConsoleLog($"Error creating entity project: {ex.Message}");
+        }
+
+        _saving = false;
+        StateHasChanged();
+    }
+
+    private void ViewProject() {
+        // Navigate to unified App Builder dashboard
+        NavigationManager.NavigateTo(Helpers.BuildUrl("AppBuilder"));
+    }
+
+    // ============================================================
+    // TEMPLATE HANDLERS
+    // ============================================================
+
+    private void OnTemplateLoaded(DataObjects.SavedEntityTemplate template) {
+        // Apply template to current state
+        // Keep entity name/plural empty so user fills them in
+        _state.Entity.Properties = template.Entity.Properties.Select(p => new DataObjects.PropertyDefinition {
+            Id = Guid.NewGuid(),
+            Name = p.Name,
+            Type = p.Type,
+            IsRequired = p.IsRequired,
+            IsNullable = p.IsNullable,
+            DefaultValue = p.DefaultValue,
+            MaxLength = p.MaxLength,
+            EnumName = p.EnumName,
+            IsSystemField = p.IsSystemField,
+            Description = p.Description,
+            IsFilterable = p.IsFilterable,
+            FilterType = p.FilterType,
+            SortOrder = p.SortOrder
+        }).ToList();
+
+        _state.Entity.Enums = template.Entity.Enums.Select(e => new DataObjects.EnumDefinition {
+            Id = Guid.NewGuid(),
+            Name = e.Name,
+            Values = new List<string>(e.Values),
+            DefaultValue = e.DefaultValue
+        }).ToList();
+
+        _state.Options = new DataObjects.EntityWizardOptions {
+            GenerateListPage = template.Options.GenerateListPage,
+            GenerateEditPage = template.Options.GenerateEditPage,
+            IncludeSoftDelete = template.Options.IncludeSoftDelete,
+            IncludeAuditFields = template.Options.IncludeAuditFields,
+            IncludeTenantId = template.Options.IncludeTenantId,
+            IsReadOnly = template.Options.IsReadOnly,
+            DefaultPageSize = template.Options.DefaultPageSize,
+            GenerateSignalRUpdates = template.Options.GenerateSignalRUpdates
+        };
+
+        RecordUndoableChange($"Loaded template: {template.Name}");
+        UpdateSelections();
+        StateHasChanged();
+    }
+
+    private void OnTemplateSaved(DataObjects.SavedEntityTemplate template) {
+        // Add to saved templates (in production, would persist to server)
+        _savedTemplates.Add(template);
+        StateHasChanged();
+    }
+
+    private void OnTemplateDeleted(DataObjects.SavedEntityTemplate template) {
+        _savedTemplates.RemoveAll(t => t.TemplateId == template.TemplateId);
+        StateHasChanged();
+    }
+
+    // ============================================================
+    // UNDO/REDO
+    // ============================================================
+
+    private void RecordUndoableChange(string description) {
+        _undoRedo.RecordChange(_state, description);
+    }
+
+    private void Undo() {
+        var restoredState = _undoRedo.Undo();
+        if (restoredState != null) {
+            _state = restoredState;
+            StateHasChanged();
+        }
+    }
+
+    private void Redo() {
+        var restoredState = _undoRedo.Redo();
+        if (restoredState != null) {
+            _state = restoredState;
+            StateHasChanged();
+        }
+    }
+}

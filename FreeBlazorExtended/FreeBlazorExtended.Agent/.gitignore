@@ -1,0 +1,35 @@
+## .NET build artifacts
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Rider / VS Code
+.idea/
+*.DotSettings
+*.DotSettings.user
+.vscode/
+
+## Build / Publish output
+publish/
+PublishProfiles/
+*.Publish.xml
+
+## Test output
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## Logs
+*.log
+logs/

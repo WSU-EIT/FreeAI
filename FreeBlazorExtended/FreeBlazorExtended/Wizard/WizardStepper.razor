@@ -1,0 +1,127 @@
+﻿@*
+    WizardStepper — Numbered step progress bar for multi-step wizard flows.
+
+    Renders a horizontal row of circles connected by lines. Completed steps show a
+    check mark and let the user navigate back by clicking (when OnStepClick is wired).
+    The current step is highlighted in primary colour; future steps are greyed out.
+    Each circle can optionally show a truncated preview of the value chosen in that step.
+
+    Required parameters:
+        Steps       — ordered List<WizardStepInfo> built by the host; must be re-assigned
+                      (not mutated in place) for Blazor to detect changes.
+        CurrentStep — zero-based index of the step currently being displayed.
+
+    Optional parameters:
+        OnStepClick — EventCallback<int> fired when the user clicks a completed step;
+                      the int argument is the zero-based index to return to.
+                      Omit to make all circles non-clickable.
+
+    WizardStepInfo properties:
+        Name          (required) — label shown below the circle.
+        SelectedValue (optional) — short summary of what was chosen; shown beneath the
+                      label on completed and current steps.
+
+    Pattern adapted from FreeCICD Pipeline Wizard.
+*@
+
+<nav aria-label="Wizard progress" role="navigation">
+    <div class="d-flex justify-content-between align-items-start bg-light rounded-3 p-3 mb-3 shadow-sm overflow-auto">
+        @for (int i = 0; i < Steps.Count; i++) {
+            var stepIndex = i;
+            var step = Steps[i];
+            var isCompleted = stepIndex < CurrentStep;
+            var isCurrent = stepIndex == CurrentStep;
+            var isClickable = isCompleted && OnStepClick.HasDelegate;
+
+            <div class="d-flex flex-column align-items-center flex-fill position-relative" style="min-width: 70px;">
+                @* Step Circle *@
+                <button type="button"
+                        class="btn p-0 rounded-circle d-flex align-items-center justify-content-center fw-bold border border-2 @(isCompleted ? "bg-success border-success text-white" : isCurrent ? "bg-primary border-primary text-white shadow" : "bg-white border-secondary text-muted")"
+                        style="width: 36px; height: 36px; z-index: 2;"
+                        disabled="@(!isClickable)"
+                        aria-label="@(isCompleted ? $"Step {stepIndex + 1}: {step.Name} — completed. Click to go back." : isCurrent ? $"Step {stepIndex + 1}: {step.Name} — current step" : $"Step {stepIndex + 1}: {step.Name}")"
+                        aria-current="@(isCurrent ? "step" : null)"
+                        title="@(isClickable ? $"Go back to {step.Name}" : step.Name)"
+                        @onclick="@(() => HandleStepClick(stepIndex))">
+                    @if (isCompleted) {
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    } else if (isCurrent) {
+                        <i class="fa fa-circle fa-xs" aria-hidden="true"></i>
+                    } else {
+                        <span class="small">@(stepIndex + 1)</span>
+                    }
+                </button>
+
+                @* Connector Line *@
+                @if (stepIndex < Steps.Count - 1) {
+                    <div class="position-absolute @(isCompleted ? "bg-success" : "bg-secondary")"
+                         style="height: 3px; top: 18px; left: 50%; width: 100%; z-index: 1; opacity: 0.5;"
+                         aria-hidden="true"></div>
+                }
+
+                @* Step Label *@
+                <div class="text-center mt-2" style="max-width: 90px;">
+                    <div class="small fw-semibold @(isCompleted ? "text-success" : isCurrent ? "text-primary" : "text-muted") text-truncate">
+                        @step.Name
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(step.SelectedValue) && (isCompleted || isCurrent)) {
+                        <div class="text-muted small text-truncate" style="font-size: 0.7rem;" title="@step.SelectedValue">
+                            @TruncateText(step.SelectedValue, 12)
+                        </div>
+                    } else if (isCurrent) {
+                        <div class="text-primary small fst-italic" style="font-size: 0.7rem;">(current)</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</nav>
+
+@code {
+    /// <summary>
+    /// Ordered list of steps that make up the wizard flow.
+    /// <para><b>Required.</b> Each <see cref="WizardStepInfo"/> must have at least a <see cref="WizardStepInfo.Name"/>.</para>
+    /// <para>Replace (do not mutate) the list to trigger a Blazor re-render.</para>
+    /// </summary>
+    [Parameter] public List<WizardStepInfo> Steps { get; set; } = new();
+
+    /// <summary>
+    /// Zero-based index of the currently active step.
+    /// <para><b>Required.</b> Steps before this index are rendered as completed (green check);
+    /// this step is highlighted in primary colour; future steps are muted.</para>
+    /// </summary>
+    [Parameter] public int CurrentStep { get; set; }
+
+    /// <summary>
+    /// Fires when the user clicks a <em>completed</em> step circle to navigate back.
+    /// The <c>int</c> argument is the zero-based index of the clicked step.
+    /// When this callback has no delegate, completed circles are rendered as disabled buttons.
+    /// </summary>
+    [Parameter] public EventCallback<int> OnStepClick { get; set; }
+
+    /// <summary>Describes a single step in the wizard's progress bar.</summary>
+    public class WizardStepInfo
+    {
+        /// <summary>Display name shown beneath the circle. <b>Required.</b></summary>
+        public string Name { get; set; } = "";
+
+        /// <summary>
+        /// Short summary of the value chosen in this step (e.g. the selected option label).
+        /// Shown in a smaller muted line under the step name for completed and current steps.
+        /// Long values are automatically truncated to ~12 characters in the display.
+        /// </summary>
+        public string SelectedValue { get; set; } = "";
+    }
+
+    private async Task HandleStepClick(int stepIndex) {
+        if (stepIndex < CurrentStep && OnStepClick.HasDelegate) {
+            await OnStepClick.InvokeAsync(stepIndex);
+        }
+    }
+
+    private string TruncateText(string text, int maxLength) {
+        if (string.IsNullOrEmpty(text)) return "";
+        if (text.Length <= maxLength) return text;
+        return text[..(maxLength - 2)] + "..";
+    }
+}

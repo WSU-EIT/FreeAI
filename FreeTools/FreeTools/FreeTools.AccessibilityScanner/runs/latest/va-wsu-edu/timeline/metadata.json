@@ -1,0 +1,82 @@
+{
+  "PagePath": "/timeline/",
+  "Url": "https://va.wsu.edu/timeline/",
+  "FinalUrl": null,
+  "Title": "Timeline | WSU Veterans \u0026 Military Affiliated Student Services",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 665770,
+  "ScreenshotSizeBytes": 425749,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 425749
+    }
+  ],
+  "ImageCount": 6,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://va.wsu.edu/media/qxkpy45j/1studentappliesupdated.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": "1 COE"
+    },
+    {
+      "SourceUrl": "https://va.wsu.edu/media/3ovpylnx/6residency.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": "Military residency"
+    },
+    {
+      "SourceUrl": "https://va.wsu.edu/media/h0ddeart/2ecr.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": "2 ECR"
+    },
+    {
+      "SourceUrl": "https://va.wsu.edu/media/xfppar2e/3advisorapproves.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": "3 Advisor Approves"
+    },
+    {
+      "SourceUrl": "https://va.wsu.edu/media/u2jhplcj/4vmassva.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://va.wsu.edu/media/fiuhpcsh/5paymentprocessing.png?rmode=max\u0026width=445\u0026height=294",
+      "AltText": "5Payment"
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 1,
+    "Critical": 1,
+    "Serious": 0,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:20:11.3633834Z"
+}

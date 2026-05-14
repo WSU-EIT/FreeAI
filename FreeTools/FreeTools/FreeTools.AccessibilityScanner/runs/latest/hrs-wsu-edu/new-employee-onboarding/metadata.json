@@ -1,0 +1,106 @@
+{
+  "PagePath": "/new-employee-onboarding/",
+  "Url": "https://hrs.wsu.edu/new-employee-onboarding/",
+  "FinalUrl": "https://hrs.wsu.edu/training/new-employee-onboarding/",
+  "Title": "New Employee Onboarding \u2013 Human Resource Services, Washington State University",
+  "StatusCode": 0,
+  "Success": false,
+  "HtmlSizeBytes": 79286,
+  "ScreenshotSizeBytes": 238233,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 8,
+  "ConsoleWarningCount": 1,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 238233
+    }
+  ],
+  "ImageCount": 12,
+  "ImagesMissingAlt": 1,
+  "Images": [
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2020/03/wsu-statewide.png",
+      "AltText": ""
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/today_90x90.png",
+      "AltText": "Calendar icon with today highlighted."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/calendar_month_90x90.png",
+      "AltText": "Calendar icon with all days highlighted."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/spa_90x90.png",
+      "AltText": "A representation of a spa."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/business_center_90x90.png",
+      "AltText": "A briefcase."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/account_balance_90x90.png",
+      "AltText": "A bank icon."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/diversity_3_90x90.png",
+      "AltText": "Three figures holding hands."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/tips_and_updates_90x90.png",
+      "AltText": "A lightbulb."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/handshake_90x90.png",
+      "AltText": "Handshake icon."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/hive_90x90.png",
+      "AltText": "Hive illustration."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/explore_90x90.png",
+      "AltText": "A compass icon."
+    },
+    {
+      "SourceUrl": "https://hrsdev.hrs.wsu.edu/wp-content/uploads/2022/08/accessibility_new_90x90.png",
+      "AltText": "An standing figure."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 3,
+    "Critical": 0,
+    "Serious": 3,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 0,
+        "Critical": 0,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": null,
+  "CapturedAt": "2026-02-19T02:23:56.6074669Z"
+}

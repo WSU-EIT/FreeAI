@@ -1,0 +1,83 @@
+{
+  "PagePath": "/digital-accessibility/core-concepts/headings/",
+  "Url": "https://wsu.edu/digital-accessibility/core-concepts/headings/",
+  "FinalUrl": null,
+  "Title": "Headings | Digital Accessibility | Washington State University",
+  "StatusCode": 200,
+  "Success": true,
+  "HtmlSizeBytes": 218073,
+  "ScreenshotSizeBytes": 375370,
+  "CredentialUsed": null,
+  "ConsoleErrorCount": 0,
+  "ConsoleWarningCount": 0,
+  "Screenshots": [
+    {
+      "FileName": "01-page-loaded.jpg",
+      "Label": "page-loaded",
+      "StepNumber": 1,
+      "FileSize": 375370
+    }
+  ],
+  "ImageCount": 2,
+  "ImagesMissingAlt": 0,
+  "Images": [
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/2986/2022/05/headings-heading-levels.png",
+      "AltText": "Example showing the different style of heading levels from heading level 1 to 6."
+    },
+    {
+      "SourceUrl": "https://s3.wp.wsu.edu/uploads/sites/2986/2022/05/headings-heading-outline.png",
+      "AltText": "A sample outline using the heading levels with 1 heading level 1, two heading level 2, 4 heading level 3, and 1 heading level 4."
+    }
+  ],
+  "Accessibility": {
+    "ToolsRun": [
+      "axe",
+      "htmlcheck"
+    ],
+    "ToolsSkipped": [
+      "wave"
+    ],
+    "TotalViolations": 4,
+    "Critical": 1,
+    "Serious": 3,
+    "Moderate": 0,
+    "Minor": 0,
+    "ByTool": {
+      "axe": {
+        "Total": 1,
+        "Critical": 1,
+        "Serious": 0,
+        "Moderate": 0,
+        "Minor": 0
+      },
+      "htmlcheck": {
+        "Total": 3,
+        "Critical": 0,
+        "Serious": 3,
+        "Moderate": 0,
+        "Minor": 0
+      }
+    }
+  },
+  "ErrorMessage": null,
+  "Headers": {
+    "cache-control": "max-age=600, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=UTF-8",
+    "date": "Thu, 19 Feb 2026 02:12:22 GMT",
+    "last-modified": "Thu, 19 Feb 2026 02:12:22 GMT",
+    "link": "\u003Chttps://wsu.edu/digital-accessibility/wp-json/\u003E; rel=\u0022https://api.w.org/\u0022\n\u003Chttps://wsu.edu/digital-accessibility/wp-json/wp/v2/pages/20\u003E; rel=\u0022alternate\u0022; type=\u0022application/json\u0022",
+    "server": "nginx",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding\nCookie, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-tec-api-origin": "https://wsu.edu/digital-accessibility",
+    "x-tec-api-root": "https://wsu.edu/digital-accessibility/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1",
+    "x-xss-protection": "1; mode=block"
+  },
+  "CapturedAt": "2026-02-19T02:12:21.8879771Z"
+}

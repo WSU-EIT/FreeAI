@@ -1,0 +1,123 @@
+﻿@* EntityWizardStatsWidget.App.razor - Dashboard stats widget for entity builder *@
+@* Shows entity count, property count, and recent activity *@
+
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <span>
+            <i class="fa-solid fa-chart-bar me-2"></i>
+            Entity Builder Stats
+        </span>
+        <a href="@(Helpers.BuildUrl("AppBuilder/Dashboard"))" class="btn btn-sm btn-outline-light">
+            View Dashboard
+        </a>
+    </div>
+    <div class="card-body">
+        @* Stats Badges Row *@
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center p-3 rounded bg-primary bg-opacity-10">
+                    <div class="stat-value fs-2 fw-bold text-primary">@Stats.TotalEntities</div>
+                    <div class="stat-label text-muted small">Entities</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center p-3 rounded bg-success bg-opacity-10">
+                    <div class="stat-value fs-2 fw-bold text-success">@Stats.TotalProperties</div>
+                    <div class="stat-label text-muted small">Properties</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center p-3 rounded bg-warning bg-opacity-10">
+                    <div class="stat-value fs-2 fw-bold text-warning">@Stats.TotalEnums</div>
+                    <div class="stat-label text-muted small">Enums</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card text-center p-3 rounded bg-info bg-opacity-10">
+                    <div class="stat-value fs-2 fw-bold text-info">@Stats.TotalFilesGenerated</div>
+                    <div class="stat-label text-muted small">Files Generated</div>
+                </div>
+            </div>
+        </div>
+
+        @* Recent Activity *@
+        @if (Stats.RecentActivity.Any()) {
+            <div class="recent-activity">
+                <h6 class="text-muted mb-2">
+                    <i class="fa-solid fa-clock-rotate-left me-1"></i>
+                    Recent Activity
+                </h6>
+                <div class="list-group list-group-flush">
+                    @foreach (var activity in Stats.RecentActivity.Take(5)) {
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <div>
+                                <span class="badge @GetActionBadgeClass(activity.Action) me-2">
+                                    @GetActionIcon(activity.Action)
+                                </span>
+                                <strong>@activity.EntityName</strong>
+                                <span class="text-muted ms-1">@activity.Action.ToLower()</span>
+                            </div>
+                            <small class="text-muted" title="@activity.Timestamp.ToString("f")">
+                                @GetRelativeTime(activity.Timestamp)
+                            </small>
+                        </div>
+                    }
+                </div>
+            </div>
+        } else {
+            <div class="text-center text-muted py-3">
+                <i class="fa-solid fa-inbox fa-2x mb-2 opacity-50"></i>
+                <div>No recent activity</div>
+                <div class="small">Start by creating an entity!</div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+        line-height: 1;
+    }
+</style>
+
+@code {
+    [Parameter] public DataObjects.EntityBuilderStats Stats { get; set; } = new();
+
+    private string GetActionBadgeClass(string action) => action switch {
+        "Created" => "bg-success",
+        "Modified" => "bg-warning text-dark",
+        "Regenerated" => "bg-info",
+        "Deleted" => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    private MarkupString GetActionIcon(string action) {
+        var icon = action switch {
+            "Created" => "fa-plus",
+            "Modified" => "fa-pen",
+            "Regenerated" => "fa-rotate",
+            "Deleted" => "fa-trash",
+            _ => "fa-circle"
+        };
+        return new MarkupString($"<i class=\"fa-solid {icon}\"></i>");
+    }
+
+    private string GetRelativeTime(DateTime timestamp) {
+        var diff = DateTime.UtcNow - timestamp;
+        
+        if (diff.TotalMinutes < 1) return "just now";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
+        return timestamp.ToString("MMM d");
+    }
+}
