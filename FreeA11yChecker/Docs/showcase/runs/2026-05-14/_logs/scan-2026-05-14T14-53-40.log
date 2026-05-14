@@ -1,0 +1,63 @@
+﻿[14:53:40] === FreeA11yChecker run log — started 2026-05-14 14:53:40
+[14:53:40] === Full transcript: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeA11yChecker\Docs\showcase\runs\2026-05-14\_logs\scan-2026-05-14T14-53-40.log
+
+
+[14:53:40]   ╔══════════════════════════════════════════════════╗
+[14:53:40]   ║  FreeA11yChecker Console Scanner v2.0           ║
+[14:53:40]   ║  WCAG 2.2 AA Accessibility Testing             ║
+[14:53:40]   ║  Powered by FreeA11yChecker.Scanner             ║
+[14:53:40]   ╚══════════════════════════════════════════════════╝
+
+[14:53:40]   Sites:       1
+[14:53:40]   Output:      C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeA11yChecker\Docs\showcase\runs\2026-05-14
+[14:53:40]   Settle:      5000ms
+[14:53:40]   Headless:    True
+[14:53:40]   WCAG Level:  wcag21aa
+
+[14:53:41]   [0/0] Authenticating as 'admin'...
+[14:53:41]   [0/0] auth: navigating to http://localhost:5108
+[14:53:45]   [0/0] auth: waiting for any interactive element to mount (Blazor hydration signal, up to 15s)
+[14:53:45]   [0/0] auth: checking for tenant chooser, looking for [SFS] row (up to 15s)
+[14:54:00]   [0/0]   → no tenant chooser row found for '[SFS]' — assuming login form is direct
+[14:54:00]   [0/0] auth: settling 3s for initial Blazor hydration
+[14:54:03]   [0/0] auth: capturing anonymous form screenshot
+[14:54:03]   [0/0] auth: checking page state (URL=http://localhost:5108/Login)
+[14:54:03]   [0/0]   → login form inputs already present, skipping provider-button hunt
+[14:54:03]   [0/0] auth: pre-fill state — URL=http://localhost:5108/Login, email/password input count=2
+[14:54:03]   [0/0] auth: filling username 'admin' via selector '#login-email, input[type='email'], input[name='username']'
+[14:54:03]   [0/0] auth: filling password via selector '#login-password, input[type='password']'
+[14:54:03]   [0/0] auth: capturing credentials-entered screenshot
+[14:54:03]   [0/0] auth: clicking submit
+[14:54:03]   [0/0] auth: waiting for #login-email to become hidden (positive login-success signal, up to 15s)
+[14:54:03]   [0/0] auth: #login-email is hidden — login form went away, flagging success early
+[14:54:03]   [0/0] auth: settling 3s for SPA router redirect
+[14:54:06]   [0/0] auth: verifying authenticated state
+[14:54:07]   [0/0] auth: capturing post-auth screenshot (SUCCESS)
+[14:54:07]   [0/0] Saved auth cookies → C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeA11yChecker\Docs\showcase\runs\2026-05-14\.cookies\localhost.json (will be reused on next iteration)
+[14:54:07]   [1/1] Scanning /...
+[14:54:07]   [1/1]   navigating to http://localhost:5108/ (Load, up to 60000ms)
+[14:54:08]   [1/1]   waiting for page hydration (Blazor / SPA settle)
+[14:54:20]   [1/1]   extracting links for discovery
+[14:54:21]   [1/1]   capturing page-load sequence (10s of PNG screenshots)
+[14:54:31]   [1/1]     → captured 1 unique frame(s) after dedup
+[14:54:31]   [1/1]   expanding collapsed content (details, accordions, tabs)
+[14:54:31]   [1/1]   cataloging images (alt-text audit)
+[14:54:31]   [1/1]   analyzing SSL certificate
+[14:54:31]   [1/1]   running axe-core (Deque)
+[14:54:31]   [1/1]     → axe: 2 issue(s), 22 passed, 0 incomplete
+[14:54:31]   [1/1]   running HtmlChecker (regex pattern audit)
+[14:54:31]   [1/1]     → HtmlChecker: 3 issue(s), 18/20 checks passed
+[14:54:31]   [1/1]   running HTML_CodeSniffer (Squiz)
+[14:54:31]   [1/1]     → HtmlCS: 0 issue(s) (0 err / 0 warn / 0 notice), 84/84 rules clean
+[14:54:31]   [1/1]   running IBM Equal Access
+[14:54:32]   [1/1]     → IBM: 3 issue(s), 755 passed, 22 potential, 1 manual
+[14:54:32]   [1/1]   capturing analysis overlays (axe / quickpeek / htmlcs / ibm / structure)
+[14:54:32]   [1/1]   capturing color-vision deficiency simulations (7 types)
+[14:54:33]   [1/1]   capturing screen reader view
+
+[14:54:34]   Done. 1 pages, 8 violations, 53.2s, 29 files written
+[14:54:34]   Results: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeA11yChecker\Docs\showcase\runs\2026-05-14
+
+[14:54:34]   Per-site summary:
+[14:54:34]        8 violations  http://localhost:5108 (1 pages)
+[14:54:34] [OK]   AI handoff for localhost: C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeA11yChecker\Docs\showcase\runs\2026-05-14\localhost\_ai-handoff.md
