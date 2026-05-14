@@ -1,4 +1,4 @@
-# FreeAI/run-a11y-showcase.ps1
+﻿# FreeAI/run-a11y-showcase.ps1
 #
 # Boots each FreeCRM-based project in InMemory mode, crawls every page
 # (seeds from .razor @page routes + link discovery), runs FreeA11yChecker
@@ -88,7 +88,7 @@ foreach ($t in $allTargets) {
     }
     New-Item -ItemType Directory -Path $runDir -Force | Out-Null
 
-    Write-Host "`n━━━ $($t.Name) → $url ━━━" -ForegroundColor Cyan
+    Write-Host "`n--- $($t.Name) -> $url ---" -ForegroundColor Cyan
 
     if (-not $SkipBuild) {
         Write-Host "  Building..." -NoNewline
@@ -117,7 +117,8 @@ foreach ($t in $allTargets) {
         $results += [pscustomobject]@{ Name=$t.Name; Status="Timeout"; Screenshots=0; Output=$runDir }
         continue
     }
-    Write-Host " OK ($(($proc.TotalProcessorTime.TotalSeconds).ToString('F1'))s CPU)" -ForegroundColor Green
+    $cpuSec = "{0:F1}" -f $proc.TotalProcessorTime.TotalSeconds
+    Write-Host " OK (${cpuSec}s CPU)" -ForegroundColor Green
 
     # Crawl all pages: seeds from .razor @page directives + follows discovered links
     Write-Host "  Crawling all pages..."
@@ -139,5 +140,5 @@ foreach ($t in $allTargets) {
     $results += [pscustomobject]@{ Name=$t.Name; Status=$status; Screenshots=$screenshotCount; Output=$runDir }
 }
 
-Write-Host "`n━━━ Summary ━━━" -ForegroundColor Cyan
+Write-Host "`n--- Summary ---" -ForegroundColor Cyan
 $results | Format-Table -AutoSize
