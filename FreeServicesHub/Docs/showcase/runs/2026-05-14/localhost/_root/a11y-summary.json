@@ -1,0 +1,306 @@
+{
+  "TotalViolations": 12,
+  "CriticalCount": 1,
+  "SeriousCount": 6,
+  "ModerateCount": 5,
+  "MinorCount": 0,
+  "AxeCount": 3,
+  "HtmlCheckCount": 5,
+  "HtmlCsCount": 0,
+  "IbmCount": 4,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "image-alt",
+      "Severity": "critical",
+      "Consensus": 2,
+      "Confidence": 0.6666666666666666,
+      "ToolsFound": [
+        "axe",
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "image-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "critical",
+          "Message": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element\u0027s default semantics were not overridden with role=\u0022none\u0022 or role=\u0022presentation\u0022",
+          "Selector": "img",
+          "Snippet": "\u003Cimg class=\u0022user-menu-icon\u0022 src=\u0022http://localhost:5105/File/View/2c66bdc4-2d15-4225-bbb7-8e0519d97e16\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/image-alt?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag111",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "img-alt",
+          "CanonicalRuleId": "image-alt",
+          "Severity": "serious",
+          "Message": "Image missing alt attribute",
+          "Selector": "",
+          "Snippet": "\u003Cimg class=\u0022user-menu-icon\u0022 src=\u0022http://localhost:5105/File/View/2c66bdc4-2d15-4225-bbb7-8e0519d97e16\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "skip-link",
+          "CanonicalRuleId": "skip-link",
+          "Severity": "moderate",
+          "Message": "No skip-to-content link found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "link-name",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "link-name",
+          "CanonicalRuleId": "link-name",
+          "Severity": "serious",
+          "Message": "Fix all of the following:\n  Element is in tab order and does not have accessible text\n\nFix any of the following:\n  Element does not have text that is visible to screen readers\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute",
+          "Selector": "#themeDropdown",
+          "Snippet": "\u003Ca class=\u0022nav-link dropdown-toggle\u0022 href=\u0022#\u0022 id=\u0022themeDropdown\u0022 role=\u0022button\u0022 data-bs-toggle=\u0022dropdown\u0022 aria-expanded=\u0022false\u0022\u003E\u003C!--!--\u003E\u003Ci class=\u0022icon icon-fa fa-regular fa-sun\u0022\u003E\u003C/i\u003E\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag244, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "link-name",
+          "CanonicalRuleId": "link-name",
+          "Severity": "serious",
+          "Message": "Fix all of the following:\n  Element is in tab order and does not have accessible text\n\nFix any of the following:\n  Element does not have text that is visible to screen readers\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute",
+          "Selector": "a[data-bs-toggle=\u0022offcanvas\u0022]",
+          "Snippet": "\u003Ca class=\u0022nav-link\u0022 data-bs-toggle=\u0022offcanvas\u0022 href=\u0022#offcanvasUserMenu\u0022 role=\u0022button\u0022 aria-controls=\u0022offcanvasUserMenu\u0022\u003E\u003Cimg class=\u0022user-menu-icon\u0022 src=\u0022http://localhost:5105/File/View/2c66bdc4-2d15-4225-bbb7-8e0519d97e16\u0022\u003E\u003C/a\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/link-name?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag244, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "input_label_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "input_label_exists",
+          "CanonicalRuleId": "input_label_exists",
+          "Severity": "serious",
+          "Message": "Form control with \u0022button\u0022 role has no associated label",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]/nav[1]/div[1]/div[1]/form[1]/ul[1]/li[1]/a[1]",
+          "Snippet": "\u003Ca aria-expanded=\u0022false\u0022 data-bs-toggle=\u0022dropdown\u0022 role=\u0022button\u0022 id=\u0022themeDropdown\u0022 href=\u0022#\u0022 class=\u0022nav-link dropdown-toggle\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "input_label_exists",
+          "CanonicalRuleId": "input_label_exists",
+          "Severity": "serious",
+          "Message": "Form control with \u0022button\u0022 role has no associated label",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]/nav[1]/div[1]/div[1]/form[1]/ul[1]/li[2]/a[1]",
+          "Snippet": "\u003Ca aria-controls=\u0022offcanvasUserMenu\u0022 role=\u0022button\u0022 href=\u0022#offcanvasUserMenu\u0022 data-bs-toggle=\u0022offcanvas\u0022 class=\u0022nav-link\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "img_alt_valid",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "img_alt_valid",
+          "CanonicalRuleId": "img_alt_valid",
+          "Severity": "serious",
+          "Message": "The image has neither an accessible name nor is marked as decorative or redundant",
+          "Selector": "/html[1]/body[1]/div[1]/header[1]/nav[1]/div[1]/div[1]/form[1]/ul[1]/li[2]/a[1]/img[1]",
+          "Snippet": "\u003Cimg src=\u0022http://localhost:5105/File/View/2c66bdc4-2d15-4225-bbb7-8e0519d97e16\u0022 class=\u0022user-menu-icon\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "heading-empty",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "heading-empty",
+          "CanonicalRuleId": "heading-empty",
+          "Severity": "moderate",
+          "Message": "Heading element is empty",
+          "Selector": "",
+          "Snippet": "\u003Ch5 class=\u0022offcanvas-title\u0022 id=\u0022offcanvasQuickActionLabel\u0022\u003E\u003C/h5\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "heading-empty",
+          "CanonicalRuleId": "heading-empty",
+          "Severity": "moderate",
+          "Message": "Heading element is empty",
+          "Selector": "",
+          "Snippet": "\u003Ch5 class=\u0022offcanvas-title\u0022 id=\u0022offcanvasUserMenuLabel\u0022\u003E\u003C/h5\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "landmark-main",
+          "CanonicalRuleId": "landmark-one-main",
+          "Severity": "moderate",
+          "Message": "No \u003Cmain\u003E landmark found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[1]/div[3]/div[1]/h1[1]",
+          "Snippet": "\u003Ch1 class=\u0022page-title\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}

@@ -2,35 +2,31 @@
 
 > **Category:** Showcase
 > **Purpose:** Visual evidence of the project working — screenshots, console output, logs.
-> Artifacts live in showcase/ alongside this file.
+> Artifacts live in `showcase/runs/` alongside this file.
 
 ---
 
-## Screenshot Captures
+## How to capture
 
-Blazor pages are captured using [FreeTools](../../FreeTools/README.md) or a dedicated ShowcaseTool project.
+Run from the FreeAI root:
 
-Run pipeline:
-`
-dotnet run --project ../../FreeTools/FreeTools/FreeTools.AppHost -- --target {PROJECT}
-`
+```powershell
+.\run-a11y-showcase.ps1
+```
 
-Outputs land in: Docs/showcase/screenshots/{Route}/default.png
-
-> **Status:** Not yet captured. Run the pipeline above to populate this folder.
+This boots the app with `DatabaseType=InMemory`, scans with FreeA11yChecker (admin/admin), and writes results to `Docs/showcase/runs/YYYY-MM-DD/`.
 
 ---
 
 ## Showcase index
 
-| Artifact | Type | Date | Notes |
-|----------|------|------|-------|
-| *(none yet)* | | | |
+### 2026-05-14 — Boot attempt (timed out)
 
----
+FreeLLM did not respond within the 90-second boot timeout. The app likely requires additional configuration (LLM API key, model endpoint, or non-InMemory database) before it can serve HTTP traffic.
 
-## How to update this
+App boot logs are captured for diagnosis:
 
-1. Run the capture process described above
-2. Copy artifacts into the appropriate showcase/ subfolder
-3. Update the index table above with the artifact path, type, date, and any notes
+| Artifact | Type | Notes |
+|----------|------|-------|
+| [runs/2026-05-14/app-stdout.txt](showcase/runs/2026-05-14/app-stdout.txt) | Log | App boot stdout |
+| [runs/2026-05-14/app-stderr.txt](showcase/runs/2026-05-14/app-stderr.txt) | Log | App boot stderr |
