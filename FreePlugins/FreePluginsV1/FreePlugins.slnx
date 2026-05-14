@@ -1,4 +1,4 @@
-<Solution>
+﻿<Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
@@ -15,4 +15,5 @@
   <Project Path="FreePlugins.Client/FreePlugins.Client.csproj" />
   <Project Path="FreePlugins.UIExamplePlugin/FreePlugins.UIExamplePlugin.csproj" />
   <Project Path="FreePlugins/FreePlugins.csproj" />
+  <Project Path="../Docs/Docs.csproj" />
 </Solution>

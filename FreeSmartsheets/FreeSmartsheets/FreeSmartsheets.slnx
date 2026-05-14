@@ -1,4 +1,4 @@
-<Solution>
+﻿<Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
@@ -13,4 +13,5 @@
   <Project Path="FreeSmartsheets.EFModels/FreeSmartsheets.EFModels.csproj" Id="EDFEB0A7-F903-4CAE-A823-6DEEE82A4189" />
   <Project Path="FreeSmartsheets.Plugins/FreeSmartsheets.Plugins.csproj" Id="03858AC7-E4ED-4017-80FD-99772ECB7256" />
   <Project Path="FreeSmartsheets/FreeSmartsheets.csproj" />
+  <Project Path="../../Docs/Docs.csproj" />
 </Solution>

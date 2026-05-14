@@ -1,0 +1,17 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="FreeAI/FreeAI.csproj" />
+  <Project Path="FreeAI.Client/FreeAI.Client.csproj" />
+  <Project Path="FreeAI.DataAccess/FreeAI.DataAccess.csproj" />
+  <Project Path="FreeAI.DataObjects/FreeAI.DataObjects.csproj" />
+  <Project Path="FreeAI.EFModels/FreeAI.EFModels.csproj" />
+  <Project Path="FreeAI.Plugins/FreeAI.Plugins.csproj" />
+  <Project Path="FreeAI.LocalTests/FreeAI.LocalTests.csproj" />
+  <Project Path="Docs/Docs.csproj" />
+</Solution>
+

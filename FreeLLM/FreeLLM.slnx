@@ -1,0 +1,16 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="FreeLLM/FreeLLM.csproj" />
+  <Project Path="FreeLLM.Client/FreeLLM.Client.csproj" />
+  <Project Path="FreeLLM.DataAccess/FreeLLM.DataAccess.csproj" />
+  <Project Path="FreeLLM.DataObjects/FreeLLM.DataObjects.csproj" />
+  <Project Path="FreeLLM.EFModels/FreeLLM.EFModels.csproj" />
+  <Project Path="FreeLLM.Plugins/FreeLLM.Plugins.csproj" />
+  <Project Path="Docs/Docs.csproj" />
+</Solution>
+
