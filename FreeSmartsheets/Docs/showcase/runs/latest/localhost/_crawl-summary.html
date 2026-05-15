@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crawl Summary — localhost</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body { padding-bottom: 3rem; }
+    .stat-card { border-left: 4px solid var(--bs-primary); }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 600; line-height: 1; }
+    .stat-card .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--bs-secondary-color); }
+    .thumb { cursor: pointer; transition: transform 0.15s ease; }
+    .thumb:hover { transform: scale(1.02); }
+    .thumb img { width: 100%; height: 120px; object-fit: cover; object-position: top center; background: #f0f0f0; }
+    .thumb .thumb-label { font-size: 0.7rem; padding: 0.25rem 0.4rem; color: var(--bs-secondary-color); word-break: break-word; }
+    .violation-msg { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; }
+    .msg-short { display: inline; }
+    .msg-full  { display: none; }
+    .msg-expanded .msg-short { display: none; }
+    .msg-expanded .msg-full  { display: inline; }
+    .sev-critical { background: #dc3545; color: #fff; }
+    .sev-serious  { background: #fd7e14; color: #fff; }
+    .sev-moderate { background: #ffc107; color: #000; }
+    .sev-minor    { background: #6c757d; color: #fff; }
+    .path-link { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; }
+    [data-bs-theme='dark'] .thumb img { background: #2a2a2a; }
+    .lightbox-img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand sticky-top bg-body-tertiary border-bottom mb-4">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">Crawl Summary — <code>localhost</code></span>
+    <button id="themeToggle" class="btn btn-sm btn-outline-secondary ms-auto" type="button" aria-label="Toggle dark mode">Dark mode</button>
+  </div>
+</nav>
+<div class="container-fluid">
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-primary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Base URL</div>
+      <div class="stat-value text-primary"><a href="http://localhost:5106" target="_blank" rel="noopener">http://localhost:5106</a></div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-success);">
+    <div class="card-body py-2">
+      <div class="stat-label">Authenticated</div>
+      <div class="stat-value text-success">Yes</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-info);">
+    <div class="card-body py-2">
+      <div class="stat-label">Pages Scanned</div>
+      <div class="stat-value text-info">42</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-info);">
+    <div class="card-body py-2">
+      <div class="stat-label">Paths Discovered</div>
+      <div class="stat-value text-info">42</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-success);">
+    <div class="card-body py-2">
+      <div class="stat-label">Total Violations</div>
+      <div class="stat-value text-success">0</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-secondary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Critical</div>
+      <div class="stat-value text-secondary">0</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-secondary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Serious</div>
+      <div class="stat-value text-secondary">0</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-secondary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Duration</div>
+      <div class="stat-value text-secondary">3.3 min</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-secondary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Max Depth</div>
+      <div class="stat-value text-secondary">5</div>
+    </div>
+  </div>
+</div>
+<div class="col-6 col-md-4 col-lg-3 col-xl-2">
+  <div class="card stat-card h-100" style="border-left-color: var(--bs-secondary);">
+    <div class="card-body py-2">
+      <div class="stat-label">Generated</div>
+      <div class="stat-value text-secondary">2026-05-14 16:49:23</div>
+    </div>
+  </div>
+</div>
+</div>
+<h2 class="h4 mb-3">Per-page results</h2>
+<div class="accordion mb-5" id="pageAccordion">
+<div class="accordion-item" id="page-1">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="false" aria-controls="collapse-1">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-1" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<h4 class="h5 mt-2">Screenshots</h4>
+<h5 class="h6 mt-3 text-body-secondary">Authentication <span class="badge bg-secondary">1</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./_root/00c-login-FAILED.jpeg" data-label="00c-login-FAILED" role="button" tabindex="0">
+      <img src="./_root/00c-login-FAILED.jpeg" alt="00c-login-FAILED" loading="lazy">
+      <div class="thumb-label" title="00c-login-FAILED.jpeg">00c-login-FAILED<br><span class="text-body-tertiary">37 KB</span></div>
+    </div>
+  </div>
+</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./_root/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">821 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-2">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/About</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-2" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./About/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">831 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-3">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Authorization/AccessDenied</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-3" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Authorization_AccessDenied/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">873 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-4">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Authorization/InvalidUser</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-4" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Authorization_InvalidUser/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">871 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-5">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Authorization/NoLocalAccount</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-5" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Authorization_NoLocalAccount/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">877 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-6">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-6" aria-expanded="false" aria-controls="collapse-6">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/ChangePassword</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-6" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./ChangePassword/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">849 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-7">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-7" aria-expanded="false" aria-controls="collapse-7">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/DatabaseOffline</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-7" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DatabaseOffline/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">851 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-8">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-8" aria-expanded="false" aria-controls="collapse-8">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/DoubleClick</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-8" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<h4 class="h5 mt-2">Screenshots</h4>
+<h5 class="h6 mt-3 text-body-secondary">Page Load Sequence <span class="badge bg-secondary">1</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/01-page-load-00000ms.png" data-label="01-page-load-00000ms" role="button" tabindex="0">
+      <img src="./DoubleClick/01-page-load-00000ms.png" alt="01-page-load-00000ms" loading="lazy">
+      <div class="thumb-label" title="01-page-load-00000ms.png">01-page-load-00000ms<br><span class="text-body-tertiary">225 KB</span></div>
+    </div>
+  </div>
+</div>
+<h5 class="h6 mt-3 text-body-secondary">Analysis Overlays <span class="badge bg-secondary">5</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/03-axe-overlay.png" data-label="03-axe-overlay" role="button" tabindex="0">
+      <img src="./DoubleClick/03-axe-overlay.png" alt="03-axe-overlay" loading="lazy">
+      <div class="thumb-label" title="03-axe-overlay.png">03-axe-overlay<br><span class="text-body-tertiary">224 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/04-quickpeek-overlay.png" data-label="04-quickpeek-overlay" role="button" tabindex="0">
+      <img src="./DoubleClick/04-quickpeek-overlay.png" alt="04-quickpeek-overlay" loading="lazy">
+      <div class="thumb-label" title="04-quickpeek-overlay.png">04-quickpeek-overlay<br><span class="text-body-tertiary">273 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/05-htmlcs-overlay.png" data-label="05-htmlcs-overlay" role="button" tabindex="0">
+      <img src="./DoubleClick/05-htmlcs-overlay.png" alt="05-htmlcs-overlay" loading="lazy">
+      <div class="thumb-label" title="05-htmlcs-overlay.png">05-htmlcs-overlay<br><span class="text-body-tertiary">224 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/06-ibm-overlay.png" data-label="06-ibm-overlay" role="button" tabindex="0">
+      <img src="./DoubleClick/06-ibm-overlay.png" alt="06-ibm-overlay" loading="lazy">
+      <div class="thumb-label" title="06-ibm-overlay.png">06-ibm-overlay<br><span class="text-body-tertiary">226 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/07-structure-overlay.png" data-label="07-structure-overlay" role="button" tabindex="0">
+      <img src="./DoubleClick/07-structure-overlay.png" alt="07-structure-overlay" loading="lazy">
+      <div class="thumb-label" title="07-structure-overlay.png">07-structure-overlay<br><span class="text-body-tertiary">272 KB</span></div>
+    </div>
+  </div>
+</div>
+<h5 class="h6 mt-3 text-body-secondary">Color Vision Simulation <span class="badge bg-secondary">7</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/08-cvd-protanopia.png" data-label="08-cvd-protanopia" role="button" tabindex="0">
+      <img src="./DoubleClick/08-cvd-protanopia.png" alt="08-cvd-protanopia" loading="lazy">
+      <div class="thumb-label" title="08-cvd-protanopia.png">08-cvd-protanopia<br><span class="text-body-tertiary">242 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/09-cvd-deuteranopia.png" data-label="09-cvd-deuteranopia" role="button" tabindex="0">
+      <img src="./DoubleClick/09-cvd-deuteranopia.png" alt="09-cvd-deuteranopia" loading="lazy">
+      <div class="thumb-label" title="09-cvd-deuteranopia.png">09-cvd-deuteranopia<br><span class="text-body-tertiary">243 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/10-cvd-tritanopia.png" data-label="10-cvd-tritanopia" role="button" tabindex="0">
+      <img src="./DoubleClick/10-cvd-tritanopia.png" alt="10-cvd-tritanopia" loading="lazy">
+      <div class="thumb-label" title="10-cvd-tritanopia.png">10-cvd-tritanopia<br><span class="text-body-tertiary">242 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/11-cvd-achromatopsia.png" data-label="11-cvd-achromatopsia" role="button" tabindex="0">
+      <img src="./DoubleClick/11-cvd-achromatopsia.png" alt="11-cvd-achromatopsia" loading="lazy">
+      <div class="thumb-label" title="11-cvd-achromatopsia.png">11-cvd-achromatopsia<br><span class="text-body-tertiary">240 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/12-cvd-protanomaly.png" data-label="12-cvd-protanomaly" role="button" tabindex="0">
+      <img src="./DoubleClick/12-cvd-protanomaly.png" alt="12-cvd-protanomaly" loading="lazy">
+      <div class="thumb-label" title="12-cvd-protanomaly.png">12-cvd-protanomaly<br><span class="text-body-tertiary">242 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/13-cvd-deuteranomaly.png" data-label="13-cvd-deuteranomaly" role="button" tabindex="0">
+      <img src="./DoubleClick/13-cvd-deuteranomaly.png" alt="13-cvd-deuteranomaly" loading="lazy">
+      <div class="thumb-label" title="13-cvd-deuteranomaly.png">13-cvd-deuteranomaly<br><span class="text-body-tertiary">243 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/14-cvd-tritanomaly.png" data-label="14-cvd-tritanomaly" role="button" tabindex="0">
+      <img src="./DoubleClick/14-cvd-tritanomaly.png" alt="14-cvd-tritanomaly" loading="lazy">
+      <div class="thumb-label" title="14-cvd-tritanomaly.png">14-cvd-tritanomaly<br><span class="text-body-tertiary">242 KB</span></div>
+    </div>
+  </div>
+</div>
+<h5 class="h6 mt-3 text-body-secondary">Screen Reader View <span class="badge bg-secondary">1</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/15-screenreader-view.png" data-label="15-screenreader-view" role="button" tabindex="0">
+      <img src="./DoubleClick/15-screenreader-view.png" alt="15-screenreader-view" loading="lazy">
+      <div class="thumb-label" title="15-screenreader-view.png">15-screenreader-view<br><span class="text-body-tertiary">202 KB</span></div>
+    </div>
+  </div>
+</div>
+<h5 class="h6 mt-3 text-body-secondary">Other <span class="badge bg-secondary">3</span></h5>
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 mb-3">
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/07b-wireframe-blueprint.png" data-label="07b-wireframe-blueprint" role="button" tabindex="0">
+      <img src="./DoubleClick/07b-wireframe-blueprint.png" alt="07b-wireframe-blueprint" loading="lazy">
+      <div class="thumb-label" title="07b-wireframe-blueprint.png">07b-wireframe-blueprint<br><span class="text-body-tertiary">442 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/16-reduced-motion.png" data-label="16-reduced-motion" role="button" tabindex="0">
+      <img src="./DoubleClick/16-reduced-motion.png" alt="16-reduced-motion" loading="lazy">
+      <div class="thumb-label" title="16-reduced-motion.png">16-reduced-motion<br><span class="text-body-tertiary">232 KB</span></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card thumb h-100" data-src="./DoubleClick/17-forced-colors.png" data-label="17-forced-colors" role="button" tabindex="0">
+      <img src="./DoubleClick/17-forced-colors.png" alt="17-forced-colors" loading="lazy">
+      <div class="thumb-label" title="17-forced-colors.png">17-forced-colors<br><span class="text-body-tertiary">218 KB</span></div>
+    </div>
+  </div>
+</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">16</span></h4>
+<div class="table-responsive mb-3">
+<table class="table table-sm table-striped align-top">
+<thead><tr><th style="width:80px">Tool</th><th style="width:90px">Severity</th><th style="width:180px">Rule</th><th>Message</th></tr></thead><tbody>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-serious">serious</span></td>
+  <td><code>skip_main_exists</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The page does not provide a way to quickly navigate to the main content (ARIA &quot;main&quot; landmark or a skip link)</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>landmark-main</code></td>
+  <td><div class="violation-msg"><span class="msg-short">No &lt;main&gt; landmark found</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>landmark-nav</code></td>
+  <td><div class="violation-msg"><span class="msg-short">No &lt;nav&gt; landmark found</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>skip-link</code></td>
+  <td><div class="violation-msg"><span class="msg-short">No skip-to-content link found</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>tabindex</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Positive tabindex value disrupts natural tab order</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>tabindex</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Positive tabindex value disrupts natural tab order</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>tabindex</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Positive tabindex value disrupts natural tab order</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>tabindex</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Positive tabindex value disrupts natural tab order</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">htmlcheck</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>tabindex</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Positive tabindex value disrupts natural tab order</span>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>aria_content_in_landmark</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Content is not within a landmark element</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/h1[1]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>aria_content_in_landmark</code></td>
+  <td><div class="violation-msg"><span class="msg-short">Content is not within a landmark element</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/div[2]/ul[1]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>element_tabbable_role_valid</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The tabbable element&#39;s role &#39;listitem&#39; is not a widget role</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/ul[1]/li[1]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>element_tabbable_role_valid</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The tabbable element&#39;s role &#39;listitem&#39; is not a widget role</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/ul[1]/li[2]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>element_tabbable_role_valid</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The tabbable element&#39;s role &#39;listitem&#39; is not a widget role</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/ul[1]/li[3]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>element_tabbable_role_valid</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The tabbable element&#39;s role &#39;listitem&#39; is not a widget role</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/ul[1]/li[4]</code></div>
+  </div></td>
+</tr>
+<tr>
+  <td><span class="badge bg-dark">ibm</span></td>
+  <td><span class="badge sev-moderate">moderate</span></td>
+  <td><code>element_tabbable_role_valid</code></td>
+  <td><div class="violation-msg"><span class="msg-short">The tabbable element&#39;s role &#39;listitem&#39; is not a widget role</span>
+    <div class="small text-body-secondary mt-1">Selector: <code>/html[1]/body[1]/ul[1]/li[5]</code></div>
+  </div></td>
+</tr>
+</tbody></table></div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">9</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/a11y-axe.json" target="_blank" rel="noopener"><code>a11y-axe.json</code></a>
+    <span class="badge bg-light text-dark border">2 B</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/a11y-htmlcheck.json" target="_blank" rel="noopener"><code>a11y-htmlcheck.json</code></a>
+    <span class="badge bg-light text-dark border">4 KB</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/a11y-htmlcs.json" target="_blank" rel="noopener"><code>a11y-htmlcs.json</code></a>
+    <span class="badge bg-light text-dark border">2 B</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/a11y-ibm.json" target="_blank" rel="noopener"><code>a11y-ibm.json</code></a>
+    <span class="badge bg-light text-dark border">5 KB</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/a11y-summary.json" target="_blank" rel="noopener"><code>a11y-summary.json</code></a>
+    <span class="badge bg-light text-dark border">12 KB</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">789 B</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/metadata.json" target="_blank" rel="noopener"><code>metadata.json</code></a>
+    <span class="badge bg-light text-dark border">361 B</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/page.html" target="_blank" rel="noopener"><code>page.html</code></a>
+    <span class="badge bg-light text-dark border">93 KB</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DoubleClick/report.md" target="_blank" rel="noopener"><code>report.md</code></a>
+    <span class="badge bg-light text-dark border">7 KB</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-9">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-9" aria-expanded="false" aria-controls="collapse-9">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/DynamicComponent</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-9" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./DynamicComponent/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">799 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-10">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-10" aria-expanded="false" aria-controls="collapse-10">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Error</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-10" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Error/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">777 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-11">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-11" aria-expanded="false" aria-controls="collapse-11">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/InvalidTenantCode</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-11" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./InvalidTenantCode/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">801 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-12">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-12" aria-expanded="false" aria-controls="collapse-12">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Login</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-12" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Login/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">777 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-13">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-13" aria-expanded="false" aria-controls="collapse-13">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Logout</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-13" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Logout/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">779 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-14">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-14" aria-expanded="false" aria-controls="collapse-14">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/MissingTenantCode</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-14" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./MissingTenantCode/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">801 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-15">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-15" aria-expanded="false" aria-controls="collapse-15">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Monaco</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-15" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Monaco/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">779 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-16">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-16" aria-expanded="false" aria-controls="collapse-16">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/not-found</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-16" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./not-found/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">785 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-17">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-17" aria-expanded="false" aria-controls="collapse-17">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/PasswordChanged</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-17" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./PasswordChanged/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">797 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-18">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-18" aria-expanded="false" aria-controls="collapse-18">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Plugins</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-18" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Plugins/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">781 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-19">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-19" aria-expanded="false" aria-controls="collapse-19">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/ProcessLogin</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-19" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./ProcessLogin/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">791 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-20">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-20" aria-expanded="false" aria-controls="collapse-20">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Profile</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-20" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Profile/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">781 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-21">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-21" aria-expanded="false" aria-controls="collapse-21">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/ServerUpdated</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-21" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./ServerUpdated/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">793 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-22">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-22" aria-expanded="false" aria-controls="collapse-22">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-22" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">783 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-23">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-23" aria-expanded="false" aria-controls="collapse-23">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddDepartment</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-23" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddDepartment/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">811 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-24">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-24" aria-expanded="false" aria-controls="collapse-24">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddDepartmentGroup</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-24" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddDepartmentGroup/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">821 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-25">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-25" aria-expanded="false" aria-controls="collapse-25">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddTag</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-25" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddTag/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">797 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-26">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-26" aria-expanded="false" aria-controls="collapse-26">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddTenant</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-26" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddTenant/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">803 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-27">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-27" aria-expanded="false" aria-controls="collapse-27">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddUser</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-27" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddUser/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">799 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-28">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-28" aria-expanded="false" aria-controls="collapse-28">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AddUserGroup</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-28" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AddUserGroup/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">809 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-29">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-29" aria-expanded="false" aria-controls="collapse-29">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/AppSettings</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-29" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_AppSettings/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">807 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-30">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-30" aria-expanded="false" aria-controls="collapse-30">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/DeletedRecords</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-30" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_DeletedRecords/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">813 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-31">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-31" aria-expanded="false" aria-controls="collapse-31">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/DepartmentGroups</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-31" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_DepartmentGroups/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">817 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-32">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-32" aria-expanded="false" aria-controls="collapse-32">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Departments</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-32" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Departments/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">807 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-33">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-33" aria-expanded="false" aria-controls="collapse-33">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Files</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-33" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Files/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">795 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-34">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-34" aria-expanded="false" aria-controls="collapse-34">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Language</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-34" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Language/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">801 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-35">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-35" aria-expanded="false" aria-controls="collapse-35">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Tags</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-35" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Tags/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">793 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-36">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-36" aria-expanded="false" aria-controls="collapse-36">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Tenants</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-36" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Tenants/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">799 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-37">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-37" aria-expanded="false" aria-controls="collapse-37">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/UDF</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-37" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_UDF/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">791 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-38">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-38" aria-expanded="false" aria-controls="collapse-38">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/UserGroups</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-38" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_UserGroups/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">805 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-39">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-39" aria-expanded="false" aria-controls="collapse-39">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Settings/Users</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-39" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Settings_Users/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">795 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-40">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-40" aria-expanded="false" aria-controls="collapse-40">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/Setup</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-40" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./Setup/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">777 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-41">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-41" aria-expanded="false" aria-controls="collapse-41">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/SortTest</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-41" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./SortTest/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">783 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+<div class="accordion-item" id="page-42">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-42" aria-expanded="false" aria-controls="collapse-42">
+      <div class="d-flex flex-wrap gap-2 align-items-center w-100">
+        <code class="path-link">/TimerTest</code>
+        <span class="badge bg-primary">0 total</span>
+      </div>
+    </button>
+  </h2>
+  <div id="collapse-42" class="accordion-collapse collapse" data-bs-parent="#pageAccordion">
+    <div class="accordion-body">
+<div class="text-muted small mb-3">No screenshots captured.</div>
+<h4 class="h5 mt-3">Violations <span class="badge bg-secondary">0</span></h4>
+<div class="text-muted small mb-3">No violations parsed from JSON artifacts.</div>
+<h4 class="h5 mt-3">Artifacts <span class="badge bg-secondary">1</span></h4>
+<ul class="list-group list-group-flush mb-3">
+  <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+    <a href="./TimerTest/error.log" target="_blank" rel="noopener"><code>error.log</code></a>
+    <span class="badge bg-light text-dark border">785 B</span>
+  </li>
+</ul>
+    </div>
+  </div>
+</div>
+</div>
+<h2 class="h4 mb-3">All discovered paths</h2>
+<div class="card mb-4"><div class="card-body">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-1">
+  <div class="col"><a href="#page-1" class="path-link text-decoration-none"><code>/</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-2" class="path-link text-decoration-none"><code>/About</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-3" class="path-link text-decoration-none"><code>/Authorization/AccessDenied</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-4" class="path-link text-decoration-none"><code>/Authorization/InvalidUser</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-5" class="path-link text-decoration-none"><code>/Authorization/NoLocalAccount</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-6" class="path-link text-decoration-none"><code>/ChangePassword</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-7" class="path-link text-decoration-none"><code>/DatabaseOffline</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-8" class="path-link text-decoration-none"><code>/DoubleClick</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-9" class="path-link text-decoration-none"><code>/DynamicComponent</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-10" class="path-link text-decoration-none"><code>/Error</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-11" class="path-link text-decoration-none"><code>/InvalidTenantCode</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-12" class="path-link text-decoration-none"><code>/Login</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-13" class="path-link text-decoration-none"><code>/Logout</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-14" class="path-link text-decoration-none"><code>/MissingTenantCode</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-15" class="path-link text-decoration-none"><code>/Monaco</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-16" class="path-link text-decoration-none"><code>/not-found</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-17" class="path-link text-decoration-none"><code>/PasswordChanged</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-18" class="path-link text-decoration-none"><code>/Plugins</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-19" class="path-link text-decoration-none"><code>/ProcessLogin</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-20" class="path-link text-decoration-none"><code>/Profile</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-21" class="path-link text-decoration-none"><code>/ServerUpdated</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-22" class="path-link text-decoration-none"><code>/Settings</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-23" class="path-link text-decoration-none"><code>/Settings/AddDepartment</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-24" class="path-link text-decoration-none"><code>/Settings/AddDepartmentGroup</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-25" class="path-link text-decoration-none"><code>/Settings/AddTag</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-26" class="path-link text-decoration-none"><code>/Settings/AddTenant</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-27" class="path-link text-decoration-none"><code>/Settings/AddUser</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-28" class="path-link text-decoration-none"><code>/Settings/AddUserGroup</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-29" class="path-link text-decoration-none"><code>/Settings/AppSettings</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-30" class="path-link text-decoration-none"><code>/Settings/DeletedRecords</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-31" class="path-link text-decoration-none"><code>/Settings/DepartmentGroups</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-32" class="path-link text-decoration-none"><code>/Settings/Departments</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-33" class="path-link text-decoration-none"><code>/Settings/Files</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-34" class="path-link text-decoration-none"><code>/Settings/Language</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-35" class="path-link text-decoration-none"><code>/Settings/Tags</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-36" class="path-link text-decoration-none"><code>/Settings/Tenants</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-37" class="path-link text-decoration-none"><code>/Settings/UDF</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-38" class="path-link text-decoration-none"><code>/Settings/UserGroups</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-39" class="path-link text-decoration-none"><code>/Settings/Users</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-40" class="path-link text-decoration-none"><code>/Setup</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-41" class="path-link text-decoration-none"><code>/SortTest</code></a> <span class="badge bg-success">scanned</span></div>
+  <div class="col"><a href="#page-42" class="path-link text-decoration-none"><code>/TimerTest</code></a> <span class="badge bg-success">scanned</span></div>
+</div>
+</div></div>
+</div>
+<div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lightboxLabel">Screenshot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="lightboxImage" class="lightbox-img" src="" alt="">
+      </div>
+      <div class="modal-footer">
+        <a id="lightboxOpen" href="#" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Open in new tab</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function () {
+    var modalEl = document.getElementById('lightboxModal');
+    var modal = new bootstrap.Modal(modalEl);
+    var img = document.getElementById('lightboxImage');
+    var label = document.getElementById('lightboxLabel');
+    var openLink = document.getElementById('lightboxOpen');
+    document.querySelectorAll('.thumb').forEach(function (t) {
+      t.addEventListener('click', function () {
+        var src = t.getAttribute('data-src');
+        var cap = t.getAttribute('data-label') || 'Screenshot';
+        img.src = src; label.textContent = cap; openLink.href = src;
+        modal.show();
+      });
+    });
+    document.querySelectorAll('.msg-toggle').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        var cell = b.closest('.violation-msg');
+        if (cell) cell.classList.toggle('msg-expanded');
+      });
+    });
+    var tt = document.getElementById('themeToggle');
+    tt.addEventListener('click', function () {
+      var html = document.documentElement;
+      var next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-bs-theme', next);
+      tt.textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+    });
+  })();
+</script>
+</body></html>

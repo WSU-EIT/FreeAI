@@ -1,0 +1,362 @@
+{
+  "TotalViolations": 16,
+  "CriticalCount": 0,
+  "SeriousCount": 1,
+  "ModerateCount": 15,
+  "MinorCount": 0,
+  "AxeCount": 0,
+  "HtmlCheckCount": 8,
+  "HtmlCsCount": 0,
+  "IbmCount": 8,
+  "RankedRules": [
+    {
+      "CanonicalRuleId": "skip-link",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 1,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "skip-link",
+          "CanonicalRuleId": "skip-link",
+          "Severity": "moderate",
+          "Message": "No skip-to-content link found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "skip_main_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "skip_main_exists",
+          "CanonicalRuleId": "skip_main_exists",
+          "Severity": "serious",
+          "Message": "The page does not provide a way to quickly navigate to the main content (ARIA \u0022main\u0022 landmark or a skip link)",
+          "Selector": "/html[1]/body[1]",
+          "Snippet": "\u003Cbody\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "tabindex",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "tabindex",
+          "CanonicalRuleId": "tabindex",
+          "Severity": "moderate",
+          "Message": "Positive tabindex value disrupts natural tab order",
+          "Selector": "",
+          "Snippet": "tabindex=\u00221\u0022",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "tabindex",
+          "CanonicalRuleId": "tabindex",
+          "Severity": "moderate",
+          "Message": "Positive tabindex value disrupts natural tab order",
+          "Selector": "",
+          "Snippet": "tabindex=\u00222\u0022",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "tabindex",
+          "CanonicalRuleId": "tabindex",
+          "Severity": "moderate",
+          "Message": "Positive tabindex value disrupts natural tab order",
+          "Selector": "",
+          "Snippet": "tabindex=\u00223\u0022",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "tabindex",
+          "CanonicalRuleId": "tabindex",
+          "Severity": "moderate",
+          "Message": "Positive tabindex value disrupts natural tab order",
+          "Selector": "",
+          "Snippet": "tabindex=\u00224\u0022",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "tabindex",
+          "CanonicalRuleId": "tabindex",
+          "Severity": "moderate",
+          "Message": "Positive tabindex value disrupts natural tab order",
+          "Selector": "",
+          "Snippet": "tabindex=\u00225\u0022",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "element_tabbable_role_valid",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element\u0027s role \u0027listitem\u0027 is not a widget role",
+          "Selector": "/html[1]/body[1]/ul[1]/li[1]",
+          "Snippet": "\u003Cli class=\u0022selected\u0022 tabindex=\u00221\u0022 id=\u0022stack\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element\u0027s role \u0027listitem\u0027 is not a widget role",
+          "Selector": "/html[1]/body[1]/ul[1]/li[2]",
+          "Snippet": "\u003Cli tabindex=\u00222\u0022 id=\u0022query\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element\u0027s role \u0027listitem\u0027 is not a widget role",
+          "Selector": "/html[1]/body[1]/ul[1]/li[3]",
+          "Snippet": "\u003Cli tabindex=\u00223\u0022 id=\u0022cookies\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element\u0027s role \u0027listitem\u0027 is not a widget role",
+          "Selector": "/html[1]/body[1]/ul[1]/li[4]",
+          "Snippet": "\u003Cli tabindex=\u00224\u0022 id=\u0022headers\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "element_tabbable_role_valid",
+          "CanonicalRuleId": "element_tabbable_role_valid",
+          "Severity": "moderate",
+          "Message": "The tabbable element\u0027s role \u0027listitem\u0027 is not a widget role",
+          "Selector": "/html[1]/body[1]/ul[1]/li[5]",
+          "Snippet": "\u003Cli tabindex=\u00225\u0022 id=\u0022routing\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_content_in_landmark",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/h1[1]",
+          "Snippet": "\u003Ch1\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_content_in_landmark",
+          "CanonicalRuleId": "aria_content_in_landmark",
+          "Severity": "moderate",
+          "Message": "Content is not within a landmark element",
+          "Selector": "/html[1]/body[1]/div[2]/ul[1]",
+          "Snippet": "\u003Cul\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "landmark-one-main",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "landmark-main",
+          "CanonicalRuleId": "landmark-one-main",
+          "Severity": "moderate",
+          "Message": "No \u003Cmain\u003E landmark found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "landmark-nav",
+      "Severity": "moderate",
+      "Consensus": 1,
+      "Confidence": 0.5,
+      "ToolsFound": [
+        "htmlcheck"
+      ],
+      "Instances": [
+        {
+          "Tool": "htmlcheck",
+          "RuleId": "landmark-nav",
+          "CanonicalRuleId": "landmark-nav",
+          "Severity": "moderate",
+          "Message": "No \u003Cnav\u003E landmark found",
+          "Selector": "",
+          "Snippet": "",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    }
+  ]
+}
