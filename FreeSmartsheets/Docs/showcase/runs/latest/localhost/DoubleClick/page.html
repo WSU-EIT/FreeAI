@@ -1,0 +1,1263 @@
+<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta charset="utf-8">
+    <title>Internal Server Error</title>
+    <style>
+        :root {
+    --color-text: #222;
+    --color-background: #fff;
+    --color-border: #ddd;
+    --color-link: #105e85;
+    --color-link-hover: #157eb0;
+
+    --color-heading-main: #44525e;
+    --color-heading-stacktrace: #363636;
+    --color-table-heading: #44525e;
+
+    --color-tab-link: #105e85;
+    --color-tab-selected: #fff;
+    --color-tab-selected-background: #105e85;
+
+    --color-code-background: #fbfbfb;
+    --color-code-highlight: #c70000;
+    --color-code-context-linenum: #606060;
+    --color-code-context: #606060;
+    --color-code-context-button-background: #ddd;
+}
+
+/* Intentional double at-signs here to escape properly when included in cshtml */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-text: #dcdcdc;
+        --color-background: #222;
+        --color-border: #444;
+        --color-link: #4db7ea;
+        --color-link-hover: #88cfea;
+
+        --color-heading-main: #a9bac7;
+        --color-heading-stacktrace: #c7c7c7;
+        --color-table-heading: #a9bac7;
+
+        --color-tab-link: #4db7ea;
+        --color-tab-selected: #222;
+        --color-tab-selected-background: #4db7ea;
+
+        --color-code-background: #1c1c1c;
+        --color-code-highlight: #ff8787;
+        --color-code-context-linenum: #9B9B9B;
+        --color-code-context: #9B9B9B;
+        --color-code-context-button-background: #444;
+    }
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
+    font-size: .813em;
+    color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+h1 {
+    color: var(--color-heading-main);
+    margin: 15px 0 15px 0;
+}
+
+h2 {
+    margin: 10px 5px 0 0;
+    padding: 5px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+h3 {
+    color: var(--color-heading-stacktrace);
+    margin: 5px 5px 0 0;
+    font-weight: normal;
+}
+
+code {
+    font-family: Consolas, "Courier New", courier, monospace;
+    font-weight: bold;
+}
+
+a {
+    color: var(--color-link);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+/* Exception title & message */
+body .titleerror {
+    padding: 3px 3px 6px 3px;
+    display: block;
+    font-size: 1.5em;
+    font-weight: 100;
+}
+
+/* Exception location */
+body .location {
+    margin: 3px 0 10px 30px;
+    font-size: 1.1em;
+}
+
+/* Tab navigation */
+#header {
+    font-size: 18px;
+    padding: 15px 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0;
+}
+#header li {
+    display: inline;
+    margin: 5px;
+    padding: 5px;
+    color: var(--color-tab-link);
+    cursor: pointer;
+}
+#header .selected {
+    color: var(--color-tab-selected);
+    background: var(--color-tab-selected-background);
+}
+
+/* Stack page */
+#stackpage .details {
+    font-size: 1.2em;
+    padding: 3px;
+}
+#stackpage ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#stackpage .frame {
+    padding: 0;
+    margin: 0 0 0 30px;
+    word-break: break-word;
+}
+#stackpage .frame h3 {
+    padding: 2px;
+    margin: 0;
+}
+
+/* Stack frame source */
+#stackpage .source {
+    padding: 0 0 0 30px;
+}
+#stackpage .source ol li {
+    font-family: Consolas, "Courier New", courier, monospace;
+    white-space: pre-wrap;
+    background-color: var(--color-code-background);
+}
+
+/* Stack frame source: highlighted line */
+#stackpage .source .highlight {
+    border-left: 3px solid var(--color-code-highlight);
+    margin-left: -3px;
+    font-weight: bold;
+}
+#stackpage .source .highlight li span {
+    color: var(--color-code-highlight);
+}
+
+/* Stack frame source: context lines */
+#stackpage .source .collapsible {
+    color: var(--color-code-context-linenum);
+}
+#stackpage .source .collapsible li span {
+    color: var(--color-code-context);
+}
+
+.expandCollapseButton {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    color: inherit;
+    background: var(--color-code-context-button-background);
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+}
+
+/* Table */
+.page table {
+    border-collapse: collapse;
+    margin: 0 0 20px;
+    font-size: 1.1em;
+}
+.page th {
+    padding: 10px 10px 5px 10px;
+    color: var(--color-table-heading);
+    text-align: left;
+}
+.page td {
+    padding: 3px 10px;
+}
+.page tr {
+    border-bottom: 1px solid var(--color-border);
+}
+.page tr > :not(:last-child) {
+    border-right: 1px solid var(--color-border);
+}
+.page tr > :first-child {
+    min-width: 150px;
+}
+.page tr > :last-child {
+    word-break: break-word;
+}
+
+.page p {
+    font-size: 1.1em;
+}
+
+/* Raw exception details */
+.rawExceptionBlock {
+    font-size: 1.2em;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+.showRawException {
+    display: inline-block;
+    color: var(--color-link);
+    background: transparent;
+    font: inherit;
+    border: 0;
+    padding: 10px 0;
+    cursor: pointer;
+}
+.showRawException:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+    </style>
+<style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+<body>
+    <h1>An unhandled exception occurred while processing the request.</h1>
+        <div class="titleerror">
+            ArgumentException: An item with the same key has already been added. Key: 00000000-0000-0000-0000-000000000001        </div>
+            <p class="location">System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.TryInsert(TKey key, TValue value, InsertionBehavior behavior)</p>
+    <ul id="header">
+        <li id="stack" tabindex="1" class="selected">
+            Stack
+        </li>
+        <li id="query" tabindex="2">
+            Query
+        </li>
+        <li id="cookies" tabindex="3">
+            Cookies
+        </li>
+        <li id="headers" tabindex="4">
+            Headers
+        </li>
+        <li id="routing" tabindex="5">
+            Routing
+        </li>
+    </ul>
+
+    <div id="stackpage" class="page" style="">
+        <ul>
+                <li>
+                    <h2>ArgumentException: An item with the same key has already been added. Key: 00000000-0000-0000-0000-000000000001</h2>
+                    <ul>
+                            <li class="frame" id="frame1">
+                                    <h3>System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.TryInsert(TKey key, TValue value, InsertionBehavior behavior)</h3>
+
+                            </li>
+                            <li class="frame" id="frame2">
+                                    <h3>System.Collections.Generic.Dictionary&lt;TKey, TValue&gt;.Add(TKey key, TValue value)</h3>
+
+                            </li>
+                            <li class="frame" id="frame3">
+                                    <h3>Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTable&lt;TKey&gt;.Create(IUpdateEntry entry, IDiagnosticsLogger&lt;Update&gt; updateLogger)</h3>
+
+                            </li>
+                            <li class="frame" id="frame4">
+                                    <h3>Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryStore.ExecuteTransaction(IList&lt;IUpdateEntry&gt; entries, IDiagnosticsLogger&lt;Update&gt; updateLogger)</h3>
+
+                            </li>
+                            <li class="frame" id="frame5">
+                                    <h3>Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryDatabase.SaveChanges(IList&lt;IUpdateEntry&gt; entries)</h3>
+
+                            </li>
+                            <li class="frame" id="frame6">
+                                    <h3>Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IList&lt;IUpdateEntry&gt; entriesToSave)</h3>
+
+                            </li>
+                            <li class="frame" id="frame7">
+                                    <h3>Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(StateManager stateManager, bool acceptAllChangesOnSuccess)</h3>
+
+                            </li>
+                            <li class="frame" id="frame8">
+                                    <h3>Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager+&lt;&gt;c.&lt;SaveChanges&gt;b__114_0(DbContext _, ValueTuple&lt;StateManager, bool&gt; t)</h3>
+
+                            </li>
+                            <li class="frame" id="frame9">
+                                    <h3>Microsoft.EntityFrameworkCore.Storage.NonRetryingExecutionStrategy.Execute&lt;TState, TResult&gt;(TState state, Func&lt;DbContext, TState, TResult&gt; operation, Func&lt;DbContext, TState, ExecutionResult&lt;TResult&gt;&gt; verifySucceeded)</h3>
+
+                            </li>
+                            <li class="frame" id="frame10">
+                                    <h3>Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(bool acceptAllChangesOnSuccess)</h3>
+
+                            </li>
+                            <li class="frame" id="frame11">
+                                    <h3>Microsoft.EntityFrameworkCore.DbContext.SaveChanges(bool acceptAllChangesOnSuccess)</h3>
+
+                            </li>
+                            <li class="frame" id="frame12">
+                                    <h3>Microsoft.EntityFrameworkCore.DbContext.SaveChanges()</h3>
+
+                            </li>
+                            <li class="frame" id="frame13">
+                                    <h3>FreeSmartsheets.DataAccess.SeedTestData() in <code title="C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.DataAccess\DataAccess.SeedTestData.cs">DataAccess.SeedTestData.cs</code></h3>
+
+                                    <button class="expandCollapseButton" data-frameid="frame13">+</button>
+                                    <div class="source">
+                                            <ol start="23" class="collapsible" style="display: none;">
+                                                    <li><span>                TenantId = _guid1,</span></li>
+                                                    <li><span>                TenantCode = "admin",</span></li>
+                                                    <li><span>                Enabled = true,</span></li>
+                                                    <li><span>                Name = "Admin",</span></li>
+                                                    <li><span>                LastModified = now,</span></li>
+                                                    <li><span>            });</span></li>
+                                            </ol>
+
+                                        <ol start="29" class="highlight">
+                                                <li><span>            data.SaveChanges();</span></li>
+                                        </ol>
+
+                                            <ol start="30" class="collapsible" style="display: none;">
+                                                    <li><span>            SeedTestData_CreateDefaultTenantData(_guid1);</span></li>
+                                                    <li><span>        }</span></li>
+                                                    <li><span></span></li>
+                                                    <li><span>        var defaultTenant = data.Tenants.FirstOrDefault(x =&gt; x.TenantId == _guid2);</span></li>
+                                                    <li><span>        if (defaultTenant == null) {</span></li>
+                                                    <li><span>            data.Tenants.Add(new Tenant {</span></li>
+                                            </ol>
+                                    </div>
+                            </li>
+                            <li class="frame" id="frame14">
+                                    <h3>FreeSmartsheets.DataAccess..ctor(string ConnectionString, string DatabaseType, string LocalModeUrl, IServiceProvider serviceProvider, string CookiePrefix, bool UseBackgroundService) in <code title="C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.DataAccess\DataAccess.cs">DataAccess.cs</code></h3>
+
+                                    <button class="expandCollapseButton" data-frameid="frame14">+</button>
+                                    <div class="source">
+                                            <ol start="131" class="collapsible" style="display: none;">
+                                                    <li><span>                        }</span></li>
+                                                    <li><span>                        return;</span></li>
+                                                    <li><span>                    }</span></li>
+                                                    <li><span>                }</span></li>
+                                                    <li><span></span></li>
+                                                    <li><span>                // Make sure the default data exists and is up to date.</span></li>
+                                            </ol>
+
+                                        <ol start="137" class="highlight">
+                                                <li><span>                SeedTestData();</span></li>
+                                        </ol>
+
+                                            <ol start="138" class="collapsible" style="display: none;">
+                                                    <li><span></span></li>
+                                                    <li><span>                GlobalSettings.StartupRun = true;</span></li>
+                                                    <li><span>                GlobalSettings.RunningSince = DateTimeOffset.UtcNow.ToUnixTimeSeconds();</span></li>
+                                                    <li><span>            } else {</span></li>
+                                                    <li><span>                _open = true;</span></li>
+                                                    <li><span>            }</span></li>
+                                            </ol>
+                                    </div>
+                            </li>
+                            <li class="frame" id="frame15">
+                                    <h3>InvokeStub_DataAccess..ctor(object , Span&lt;object&gt; )</h3>
+
+                            </li>
+                            <li class="frame" id="frame16">
+                                    <h3>System.Reflection.ConstructorInvoker.InvokeWithManyArgs(Span&lt;object&gt; arguments)</h3>
+
+                            </li>
+                            <li class="frame" id="frame17">
+                                    <h3>System.Reflection.ConstructorInvoker.Invoke(Span&lt;object&gt; arguments)</h3>
+
+                            </li>
+                            <li class="frame" id="frame18">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher.CreateInstance(IServiceProvider provider)</h3>
+
+                            </li>
+                            <li class="frame" id="frame19">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, object[] parameters)</h3>
+
+                            </li>
+                            <li class="frame" id="frame20">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance&lt;T&gt;(IServiceProvider provider, object[] parameters)</h3>
+
+                            </li>
+                            <li class="frame" id="frame21">
+                                    <h3>FreeSmartsheets.Program+&lt;&gt;c__DisplayClass7_0.&lt;Main&gt;b__3(IServiceProvider x) in <code title="C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets\Program.cs">Program.cs</code></h3>
+
+                                    <button class="expandCollapseButton" data-frameid="frame21">+</button>
+                                    <div class="source">
+                                            <ol start="115" class="collapsible" style="display: none;">
+                                                    <li><span>                }</span></li>
+                                                    <li><span>            }</span></li>
+                                                    <li><span></span></li>
+                                                    <li><span>            string _localModeUrl = String.Empty + builder.Configuration.GetValue&lt;string&gt;("LocalModeUrl");</span></li>
+                                                    <li><span>            string _connectionString = String.Empty + builder.Configuration.GetConnectionString("AppData");</span></li>
+                                                    <li><span>            string _databaseType = String.Empty + builder.Configuration.GetValue&lt;string&gt;("DatabaseType");</span></li>
+                                            </ol>
+
+                                        <ol start="121" class="highlight">
+                                                <li><span>            builder.Services.AddTransient&lt;IDataAccess&gt;(x =&gt; ActivatorUtilities.CreateInstance&lt;DataAccess&gt;(x, _connectionString, _databaseType, _localModeUrl, x.GetRequiredService&lt;IServiceProvider&gt;(), cookiePrefix, backgroundServiceEnabled));</span></li>
+                                        </ol>
+
+                                            <ol start="122" class="collapsible" style="display: none;">
+                                                    <li><span></span></li>
+                                                    <li><span>            if (backgroundServiceEnabled) {</span></li>
+                                                    <li><span>                // Create a logger for the background process and add the hosted service for the background processor.</span></li>
+                                                    <li><span>                var logFilePath = builder.Configuration.GetValue&lt;string&gt;("BackgroundService:LogFilePath");</span></li>
+                                                    <li><span>                string logFile = !String.IsNullOrWhiteSpace(logFilePath) ? System.IO.Path.Combine(logFilePath, "BackgroundService.log") : String.Empty;</span></li>
+                                                    <li><span>                var loggerFactory = LoggerFactory.Create(builder =&gt; {</span></li>
+                                            </ol>
+                                    </div>
+                            </li>
+                            <li class="frame" id="frame22">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor&lt;TArgument, TResult&gt;.VisitCallSite(ServiceCallSite callSite, TArgument argument)</h3>
+
+                            </li>
+                            <li class="frame" id="frame23">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)</h3>
+
+                            </li>
+                            <li class="frame" id="frame24">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine+&lt;&gt;c__DisplayClass2_0.&lt;RealizeService&gt;b__0(ServiceProviderEngineScope scope)</h3>
+
+                            </li>
+                            <li class="frame" id="frame25">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)</h3>
+
+                            </li>
+                            <li class="frame" id="frame26">
+                                    <h3>Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)</h3>
+
+                            </li>
+                            <li class="frame" id="frame27">
+                                    <h3>Microsoft.AspNetCore.Components.ComponentFactory+&lt;&gt;c__DisplayClass11_0.&lt;CreatePropertyInjector&gt;g__Initialize|1(IServiceProvider serviceProvider, IComponent component)</h3>
+
+                            </li>
+                            <li class="frame" id="frame28">
+                                    <h3>Microsoft.AspNetCore.Components.ComponentFactory.InstantiateComponent(IServiceProvider serviceProvider, Type componentType, IComponentRenderMode callerSpecifiedRenderMode, Nullable&lt;int&gt; parentComponentId)</h3>
+
+                            </li>
+                            <li class="frame" id="frame29">
+                                    <h3>Microsoft.AspNetCore.Components.RenderTree.Renderer.InstantiateComponent(Type componentType)</h3>
+
+                            </li>
+                            <li class="frame" id="frame30">
+                                    <h3>Microsoft.AspNetCore.Components.HtmlRendering.Infrastructure.StaticHtmlRenderer.BeginRenderingComponent(Type componentType, ParameterView initialParameters)</h3>
+
+                            </li>
+                            <li class="frame" id="frame31">
+                                    <h3>Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, bool waitForQuiescence)</h3>
+
+                            </li>
+                            <li class="frame" id="frame32">
+                                    <h3>System.Runtime.CompilerServices.ValueTaskAwaiter&lt;TResult&gt;.GetResult()</h3>
+
+                            </li>
+                            <li class="frame" id="frame33">
+                                    <h3>Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)</h3>
+
+                            </li>
+                            <li class="frame" id="frame34">
+                                    <h3>Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)</h3>
+
+                            </li>
+                            <li class="frame" id="frame35">
+                                    <h3>Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext+&lt;&gt;c+&lt;&lt;InvokeAsync&gt;b__10_0&gt;d.MoveNext()</h3>
+
+                            </li>
+                            <li class="frame" id="frame36">
+                                    <h3>Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)</h3>
+
+                            </li>
+                            <li class="frame" id="frame37">
+                                    <h3>Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)</h3>
+
+                            </li>
+                            <li class="frame" id="frame38">
+                                    <h3>Microsoft.AspNetCore.Diagnostics.StatusCodePagesMiddleware.Invoke(HttpContext context)</h3>
+
+                            </li>
+                            <li class="frame" id="frame39">
+                                    <h3>Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)</h3>
+
+                            </li>
+                    </ul>
+                </li>
+                <li>
+                    <br>
+                    <div class="rawExceptionBlock">
+                        <button class="showRawException" data-exceptiondetailid="exceptionDetail1">Show raw exception details</button>
+                        <div id="exceptionDetail1" class="rawExceptionDetails" style="display: none;">
+                            <pre class="rawExceptionStackTrace">System.ArgumentException: An item with the same key has already been added. Key: 00000000-0000-0000-0000-000000000001
+   at System.Collections.Generic.Dictionary`2.TryInsert(TKey key, TValue value, InsertionBehavior behavior)
+   at System.Collections.Generic.Dictionary`2.Add(TKey key, TValue value)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTable`1.Create(IUpdateEntry entry, IDiagnosticsLogger`1 updateLogger)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryStore.ExecuteTransaction(IList`1 entries, IDiagnosticsLogger`1 updateLogger)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryDatabase.SaveChanges(IList`1 entries)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IList`1 entriesToSave)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(StateManager stateManager, Boolean acceptAllChangesOnSuccess)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.&lt;&gt;c.&lt;SaveChanges&gt;b__114_0(DbContext _, ValueTuple`2 t)
+   at Microsoft.EntityFrameworkCore.Storage.NonRetryingExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
+   at FreeSmartsheets.DataAccess.SeedTestData() in C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.DataAccess\DataAccess.SeedTestData.cs:line 29
+   at FreeSmartsheets.DataAccess..ctor(String ConnectionString, String DatabaseType, String LocalModeUrl, IServiceProvider serviceProvider, String CookiePrefix, Boolean UseBackgroundService) in C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.DataAccess\DataAccess.cs:line 137
+   at InvokeStub_DataAccess..ctor(Object, Span`1)
+   at System.Reflection.ConstructorInvoker.InvokeWithManyArgs(Span`1 arguments)
+   at System.Reflection.ConstructorInvoker.Invoke(Span`1 arguments)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance[T](IServiceProvider provider, Object[] parameters)
+   at FreeSmartsheets.Program.&lt;&gt;c__DisplayClass7_0.&lt;Main&gt;b__3(IServiceProvider x) in C:\Users\pepkad\source\repos\WSU-EIT\FreeAI\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets\Program.cs:line 121
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.&lt;&gt;c__DisplayClass2_0.&lt;RealizeService&gt;b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.AspNetCore.Components.ComponentFactory.&lt;&gt;c__DisplayClass11_0.&lt;CreatePropertyInjector&gt;g__Initialize|1(IServiceProvider serviceProvider, IComponent component)
+   at Microsoft.AspNetCore.Components.ComponentFactory.InstantiateComponent(IServiceProvider serviceProvider, Type componentType, IComponentRenderMode callerSpecifiedRenderMode, Nullable`1 parentComponentId)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.InstantiateComponent(Type componentType)
+   at Microsoft.AspNetCore.Components.HtmlRendering.Infrastructure.StaticHtmlRenderer.BeginRenderingComponent(Type componentType, ParameterView initialParameters)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.&lt;&gt;c.&lt;&lt;InvokeAsync&gt;b__10_0&gt;d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.StatusCodePagesMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)</pre>
+                        </div>
+                    </div>
+                </li>
+        </ul>
+    </div>
+
+    <div id="querypage" class="page" style="display: none;">
+            <p>No query string data.</p>
+    </div>
+
+    <div id="cookiespage" class="page" style="display: none;">
+            <p>No cookie data.</p>
+    </div>
+
+    <div id="headerspage" class="page" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                            <tr>
+                                <td>Accept</td>
+                                <td>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</td>
+                            </tr>
+                            <tr>
+                                <td>Accept-Encoding</td>
+                                <td>gzip, deflate, br, zstd</td>
+                            </tr>
+                            <tr>
+                                <td>Accept-Language</td>
+                                <td>en-US</td>
+                            </tr>
+                            <tr>
+                                <td>Connection</td>
+                                <td>keep-alive</td>
+                            </tr>
+                            <tr>
+                                <td>Host</td>
+                                <td>localhost:5106</td>
+                            </tr>
+                            <tr>
+                                <td>sec-ch-ua</td>
+                                <td>"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"</td>
+                            </tr>
+                            <tr>
+                                <td>sec-ch-ua-mobile</td>
+                                <td>?0</td>
+                            </tr>
+                            <tr>
+                                <td>sec-ch-ua-platform</td>
+                                <td>"Windows"</td>
+                            </tr>
+                            <tr>
+                                <td>Sec-Fetch-Dest</td>
+                                <td>document</td>
+                            </tr>
+                            <tr>
+                                <td>Sec-Fetch-Mode</td>
+                                <td>navigate</td>
+                            </tr>
+                            <tr>
+                                <td>Sec-Fetch-Site</td>
+                                <td>none</td>
+                            </tr>
+                            <tr>
+                                <td>Sec-Fetch-User</td>
+                                <td>?1</td>
+                            </tr>
+                            <tr>
+                                <td>Upgrade-Insecure-Requests</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>User-Agent</td>
+                                <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36</td>
+                            </tr>
+                </tbody>
+            </table>
+    </div>
+
+    <div id="routingpage" class="page" style="display: none;">
+        <h2>Endpoint</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Display Name</td>
+                        <td>/DoubleClick (/DoubleClick)</td>
+                    </tr>
+                        <tr>
+                            <td>Route Pattern</td>
+                            <td>/DoubleClick</td>
+                        </tr>
+                        <tr>
+                            <td>Route Order</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Route HTTP Method</td>
+                            <td>GET, POST</td>
+                        </tr>
+                </tbody>
+            </table>
+        <h2>Endpoint Metadata</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Antiforgery.RequireAntiforgeryTokenAttribute">RequireAntiforgeryTokenAttribute</span></td>
+                            <td>
+Microsoft.AspNetCore.Antiforgery.RequireAntiforgeryTokenAttribute                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="System.Runtime.CompilerServices.NullableContextAttribute">NullableContextAttribute</span></td>
+                            <td>
+System.Runtime.CompilerServices.NullableContextAttribute                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="System.Runtime.CompilerServices.NullableAttribute">NullableAttribute</span></td>
+                            <td>
+System.Runtime.CompilerServices.NullableAttribute                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Routing.SuppressLinkGenerationMetadata">SuppressLinkGenerationMetadata</span></td>
+                            <td>
+SuppressLinkGeneration: True                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Routing.HttpMethodMetadata">HttpMethodMetadata</span></td>
+                            <td>
+HttpMethods: GET,POST, Cors: False                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.Endpoints.ComponentTypeMetadata">ComponentTypeMetadata</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.Endpoints.ComponentTypeMetadata                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.Endpoints.RootComponentMetadata">RootComponentMetadata</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.Endpoints.RootComponentMetadata                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.Endpoints.ConfiguredRenderModesMetadata">ConfiguredRenderModesMetadata</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.Endpoints.ConfiguredRenderModesMetadata                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.ResourceAssetCollection">ResourceAssetCollection</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.ResourceAssetCollection                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.Endpoints.ResourcePreloadCollection">ResourcePreloadCollection</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.Endpoints.ResourcePreloadCollection                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.Endpoints.ResourceCollectionUrlMetadata">ResourceCollectionUrlMetadata</span></td>
+                            <td>
+Microsoft.AspNetCore.Components.Endpoints.ResourceCollectionUrlMetadata                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Components.ImportMapDefinition">ImportMapDefinition</span></td>
+                            <td>
+{<br>
+  "imports": {<br>
+    "./Shared/Highcharts.razor.js": "./Shared/Highcharts.binshxw88r.razor.js",<br>
+    "./Shared/UploadFile.razor.js": "./Shared/UploadFile.dv5vy9hepo.razor.js",<br>
+    "./Shared/UserDefinedFields.razor.js": "./Shared/UserDefinedFields.9pjvca2av2.razor.js",<br>
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.5c2gp224fj.js",<br>
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.pdf.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.pdf.n1mvvrfiip.js",<br>
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.sortable-list.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.sortable-list.ezlxc6gzv3.js",<br>
+    "./_content/Blazor.Bootstrap/blazor.bootstrap.theme-switcher.js": "./_content/Blazor.Bootstrap/blazor.bootstrap.theme-switcher.pisakkcwob.js",<br>
+    "./_content/Blazor.Bootstrap/pdfjs-4.0.379.min.js": "./_content/Blazor.Bootstrap/pdfjs-4.0.379.min.j8zp7bt7w3.js",<br>
+    "./_content/Blazor.Bootstrap/pdfjs-4.0.379.worker.min.js": "./_content/Blazor.Bootstrap/pdfjs-4.0.379.worker.min.79hai7knhw.js",<br>
+    "./_content/BlazorMonaco/jsInterop.js": "./_content/BlazorMonaco/jsInterop.3rwx0l4qnu.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/_commonjsHelpers-CT9FvmAN.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/_commonjsHelpers-CT9FvmAN.0qkzxcfpna.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/abap-D-t0cyap.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/abap-D-t0cyap.y41s58hgcc.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/apex-CcIm7xu6.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/apex-CcIm7xu6.kj8jnj8b8b.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/css.worker-cO8rX8Iy.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/css.worker-cO8rX8Iy.zbbjsp2td6.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/editor.worker-DM0G1eFj.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/editor.worker-DM0G1eFj.iz4uwwgikj.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/html.worker-BruuIJkK.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/html.worker-BruuIJkK.czqim4ygft.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/json.worker-DghZTZS7.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/json.worker-DghZTZS7.bpye42qbzr.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/ts.worker-C4E4vgbE.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/assets/ts.worker-C4E4vgbE.lxjvupmfr7.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/azcli-BA0tQDCg.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/azcli-BA0tQDCg.sbwg0431ef.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/monaco.contribution.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/basic-languages/monaco.contribution.slqvseq8l0.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/bat-C397hTD6.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/bat-C397hTD6.d16phbmfhg.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/bicep-DF5aW17k.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/bicep-DF5aW17k.bb770rt345.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cameligo-plsz8qhj.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cameligo-plsz8qhj.7atggcyvmw.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/clojure-Y2auQMzK.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/clojure-Y2auQMzK.blnukqjblr.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/coffee-Bu45yuWE.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/coffee-Bu45yuWE.mzj0xz6iuz.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cpp-CkKPQIni.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cpp-CkKPQIni.hcfzcoaf4y.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/csharp-CX28MZyh.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/csharp-CX28MZyh.7n5mf66pl2.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/csp-D8uWnyxW.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/csp-D8uWnyxW.8t94827gb8.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/css-CaeNmE3S.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/css-CaeNmE3S.57qv739bjp.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cssMode-CGp6dFmI.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cssMode-CGp6dFmI.srdlhv6c1z.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cypher-DVThT8BS.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/cypher-DVThT8BS.bm1so3k3o1.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/dart-CmGfCvrO.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/dart-CmGfCvrO.6ezniqibh4.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/dockerfile-CZqqYdch.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/dockerfile-CZqqYdch.32vv6x5yuo.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ecl-30fUercY.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ecl-30fUercY.z64y7f27qp.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor.api-i0YVFWkl.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor.api-i0YVFWkl.trh8bto88o.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.g1j1hz1y1a.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/elixir-xjPaIfzF.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/elixir-xjPaIfzF.0mekfb355x.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/flow9-DqtmStfK.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/flow9-DqtmStfK.kbzadqbyw3.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/freemarker2-CJME-ah8.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/freemarker2-CJME-ah8.hc28dq83m0.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/fsharp-BOMdg4U1.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/fsharp-BOMdg4U1.esuft57hvk.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/go-D_hbi-Jt.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/go-D_hbi-Jt.1gpd5ovzmq.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/graphql-CKUU4kLG.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/graphql-CKUU4kLG.qv8rgjts4p.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/handlebars-NccI6MVO.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/handlebars-NccI6MVO.8n4fd1d29s.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/hcl-DTaboeZW.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/hcl-DTaboeZW.6yyn3tmgrk.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/html-K7M-xuod.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/html-K7M-xuod.wor7jnl0yq.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/htmlMode-DtjCNH-N.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/htmlMode-DtjCNH-N.t2cmfmoa2c.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ini-CsNwO04R.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ini-CsNwO04R.t82ahri0wa.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/java-CI4ZMsH9.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/java-CI4ZMsH9.evklba7n1a.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/javascript-CUpTMdAr.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/javascript-CUpTMdAr.zg1pz2sipz.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/jsonMode-CJjR_ECa.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/jsonMode-CJjR_ECa.ifarun2w6e.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/julia-BwzEvaQw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/julia-BwzEvaQw.1svkjoixzg.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/kotlin-BLeVJFaw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/kotlin-BLeVJFaw.t48jggbd8z.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/monaco.contribution.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/css/monaco.contribution.fucjyu1qfl.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/monaco.contribution.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/html/monaco.contribution.a57sb7zq0m.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/monaco.contribution.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/json/monaco.contribution.leji8x1azo.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/monaco.contribution.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/language/typescript/monaco.contribution.x62ejb0dks.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/less-C0eDYdqa.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/less-C0eDYdqa.v9hbsqq0av.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lexon-iON-Kj97.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lexon-iON-Kj97.gmht4fzle6.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/liquid-STktYroN.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/liquid-STktYroN.wdxc2tb5xr.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.4c9epzzkcu.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lspLanguageFeatures-A02kBDb6.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lspLanguageFeatures-A02kBDb6.7ys9cgefbh.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lua-DtygF91M.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/lua-DtygF91M.v4l657o28m.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/m3-CsR4AuFi.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/m3-CsR4AuFi.ujavabw4ce.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/markdown-C_rD0bIw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/markdown-C_rD0bIw.ngblbztmb9.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mdx-C6mq4H94.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mdx-C6mq4H94.83ng60cmr3.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mips-CiYP61RB.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mips-CiYP61RB.c2v5qlhodi.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/msdax-C38-sJlp.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/msdax-C38-sJlp.vpb6tadywi.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mysql-CdtbpvbG.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/mysql-CdtbpvbG.mfyn9fsta3.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages-loader.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages-loader.jtjdlggvxb.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.de.j4ww27ct92.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.es.4p2xcjr9j3.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.fr.25zckatyd3.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.it.126x4eacry.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ja.13838jxvfx.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ko.zesmhoe0gt.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.ru.3la8m105yw.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-cn.leggyg0cis.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/nls.messages.zh-tw.e4zn2qs5it.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/objective-c-CntZFaHX.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/objective-c-CntZFaHX.j0nf7xy7ee.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pascal-r6kuqfl_.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pascal-r6kuqfl_.jdv7iogabb.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pascaligo-BiXoTmXh.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pascaligo-BiXoTmXh.bnd4z7x3zs.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/perl-DABw_TcH.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/perl-DABw_TcH.66dnui7vyr.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pgsql-me_jFXeX.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pgsql-me_jFXeX.tfsbp95cud.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/php-D_kh-9LK.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/php-D_kh-9LK.ldvjbalzf0.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pla-VfZjczW0.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pla-VfZjczW0.ybdrkrp4kw.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/postiats-BBSzz8Pk.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/postiats-BBSzz8Pk.xp11vah7on.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/powerquery-Dt-g_2cc.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/powerquery-Dt-g_2cc.0f73eux9u9.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/powershell-B-7ap1zc.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/powershell-B-7ap1zc.3ho8a1xaaf.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/protobuf-BmtuEB1A.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/protobuf-BmtuEB1A.905vnfsa0v.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pug-BRpRNeEb.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/pug-BRpRNeEb.9knn4yfgnt.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/python-B-Y2SC3b.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/python-B-Y2SC3b.v9olr549zn.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/qsharp-BzsFaUU9.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/qsharp-BzsFaUU9.6enz7iz0m5.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/r-f8dDdrp4.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/r-f8dDdrp4.ytmq1vlu69.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/razor-JzN5FpSg.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/razor-JzN5FpSg.a2lpd1j1u7.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/redis-fvZQY4PI.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/redis-fvZQY4PI.3ogen0ame0.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/redshift-45Et0LQi.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/redshift-45Et0LQi.omquid35ft.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/restructuredtext-C7UUFKFD.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/restructuredtext-C7UUFKFD.8cyntluwmv.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ruby-CZO8zYTz.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/ruby-CZO8zYTz.3e4org7ret.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/rust-Bfetafyc.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/rust-Bfetafyc.1ubvs081zc.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sb-3GYllVck.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sb-3GYllVck.kpkd98478y.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scala-foMgrKo1.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scala-foMgrKo1.5qgx63lwp2.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scheme-CHdMtr7p.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scheme-CHdMtr7p.rtlkjy8vtt.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scss-C1cmLt9V.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/scss-C1cmLt9V.trengwc0ie.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/shell-ClXCKCEW.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/shell-ClXCKCEW.2dq3k26t2v.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/solidity-MZ6ExpPy.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/solidity-MZ6ExpPy.e27cwnsyx5.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sophia-DWkuSsPQ.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sophia-DWkuSsPQ.e6oa864dsm.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sparql-AUGFYSyk.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sparql-AUGFYSyk.z05hf5a64p.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sql-32GpJSV2.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/sql-32GpJSV2.10fkscgje7.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/st-CuDFIVZ_.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/st-CuDFIVZ_.aul2u3zu8u.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/swift-n-2HociN.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/swift-n-2HociN.xt4g7h8jl5.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/systemverilog-Ch4vA8Yt.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/systemverilog-Ch4vA8Yt.1nu5j2xveo.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/tcl-D74tq1nH.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/tcl-D74tq1nH.7ailzm0nea.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/tsMode-i88JHxDY.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/tsMode-i88JHxDY.xmrgbttviz.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/twig-C6taOxMV.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/twig-C6taOxMV.tta4hpkg05.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/typescript-4zug7YwV.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/typescript-4zug7YwV.87xp4nv42s.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/typespec-D-PIh9Xw.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/typespec-D-PIh9Xw.lzq49dth0d.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/vb-Dyb2648j.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/vb-Dyb2648j.1pe0nzzb5d.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/wgsl-BhLXMOR0.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/wgsl-BhLXMOR0.2i6dmytskz.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/workers-CbP2cVmy.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/workers-CbP2cVmy.mndmkp5r6w.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/xml-DRHZuZwg.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/xml-DRHZuZwg.l8q5gbfrd6.js",<br>
+    "./_content/BlazorMonaco/lib/monaco-editor/min/vs/yaml-CkWIGXBM.js": "./_content/BlazorMonaco/lib/monaco-editor/min/vs/yaml-CkWIGXBM.2e33dx4jqv.js",<br>
+    "./_content/FreeBlazor/AutoComplete.razor.js": "./_content/FreeBlazor/AutoComplete.2gw1h67cm8.razor.js",<br>
+    "./_content/FreeBlazor/AutoGrowText.razor.js": "./_content/FreeBlazor/AutoGrowText.ak6kkq8b6f.razor.js",<br>
+    "./_content/FreeBlazor/GeneratePassword.razor.js": "./_content/FreeBlazor/GeneratePassword.l99n7rseq7.razor.js",<br>
+    "./_content/FreeBlazor/GetInput.razor.js": "./_content/FreeBlazor/GetInput.aaej6qtqi5.razor.js",<br>
+    "./_content/FreeBlazor/HtmlEditor.razor.js": "./_content/FreeBlazor/HtmlEditor.flg8xu1igj.razor.js",<br>
+    "./_content/FreeBlazor/TogglePasswordInput.razor.js": "./_content/FreeBlazor/TogglePasswordInput.q27049tccw.razor.js",<br>
+    "./_content/FreeBlazor/ckEditor/adapters/jquery.js": "./_content/FreeBlazor/ckEditor/adapters/jquery.kem07i7mdx.js",<br>
+    "./_content/FreeBlazor/ckEditor/build-config.js": "./_content/FreeBlazor/ckEditor/build-config.y0jx7osk9f.js",<br>
+    "./_content/FreeBlazor/ckEditor/ckeditor.js": "./_content/FreeBlazor/ckEditor/ckeditor.w76sfwedj7.js",<br>
+    "./_content/FreeBlazor/ckEditor/config.js": "./_content/FreeBlazor/ckEditor/config.8xg3h3ne9e.js",<br>
+    "./_content/FreeBlazor/ckEditor/lang/en.js": "./_content/FreeBlazor/ckEditor/lang/en.s6a62zst0d.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/a11yhelp.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/a11yhelp.21ve2voibe.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/af.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/af.h8v8h9kt2r.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ar.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ar.fo3qpi3rj7.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/az.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/az.a826vw8lkj.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/bg.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/bg.6dbfvd6qx8.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ca.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ca.04vc5vplid.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cs.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cs.4m077v7iys.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cy.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/cy.t0p3hi6zfo.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/da.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/da.f6ghtbhv4a.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de-ch.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de-ch.j6pu1o46ye.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/de.u2cv0j8acb.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/el.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/el.0qzbn3b4cx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-au.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-au.2zafnhjmrp.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-gb.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en-gb.3bdlj312sh.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/en.on080wvzyr.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eo.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eo.ted0mmin6c.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es-mx.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es-mx.h5ncnwzak9.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/es.mzuv38avue.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/et.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/et.sfo6dp8k9y.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/eu.z0v19tcncu.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fa.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fa.p0bd2gqdmp.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fi.v5yf976acv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fo.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fo.8mjtz89xvd.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr-ca.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr-ca.9gknkibd81.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/fr.pux0dr8vrg.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gl.ixvqaol5ih.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/gu.t7hn0fbxpb.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/he.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/he.1igw4lo4th.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hi.esy9sjqh82.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hr.nkun7nkwum.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hu.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/hu.rz5xbb7nud.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/id.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/id.q49tf66rwy.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/it.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/it.3orbmp688t.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ja.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ja.w8gjkizjd5.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/km.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/km.29h2trwdfu.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ko.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ko.uddr6vxrl6.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ku.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ku.0k7rpr1ulm.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lt.jlenvwmcnv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lv.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/lv.vg2ca5t5ow.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mk.p9meg4r2wf.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/mn.vf4zrwra8v.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nb.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nb.xqxv29nkxv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/nl.pfwmbp1yxd.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/no.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/no.796pgea5ia.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/oc.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/oc.kce8bvqrx4.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pl.pzpmy1eraq.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt-br.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt-br.mt1u0qhzmo.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/pt.c71cp595i1.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ro.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ro.9vcp6dnxrp.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ru.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ru.5rxjx0airm.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/si.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/si.my0vqvs2wz.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sk.bt53hj24qs.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sl.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sl.9ev52uy4th.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sq.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sq.623wiv0593.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr-latn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr-latn.c43ma5piu5.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sr.pygpt7u19v.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sv.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/sv.zbr00idbb1.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/th.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/th.hh60lke3v3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tr.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tr.c5o1nl9vmu.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tt.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/tt.u3haosholv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ug.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/ug.krv5fc07xf.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/uk.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/uk.58uch94j1m.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/vi.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/vi.c4irqqt18m.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh-cn.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh-cn.h1pharotxa.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh.js": "./_content/FreeBlazor/ckEditor/plugins/a11yhelp/dialogs/lang/zh.cxp2336vyl.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/about/dialogs/about.js": "./_content/FreeBlazor/ckEditor/plugins/about/dialogs/about.33s7si6ho7.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/clipboard/dialogs/paste.js": "./_content/FreeBlazor/ckEditor/plugins/clipboard/dialogs/paste.z7ntypqy0e.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/colordialog/dialogs/colordialog.js": "./_content/FreeBlazor/ckEditor/plugins/colordialog/dialogs/colordialog.s4g8mtvs7t.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/dialog/dialogDefinition.js": "./_content/FreeBlazor/ckEditor/plugins/dialog/dialogDefinition.jowyo6217k.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/div/dialogs/div.js": "./_content/FreeBlazor/ckEditor/plugins/div/dialogs/div.sjhiy6yuhg.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/find/dialogs/find.js": "./_content/FreeBlazor/ckEditor/plugins/find/dialogs/find.j1lo1lrrhl.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/button.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/button.76br5no4hn.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/checkbox.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/checkbox.gcrkdv7fhx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/form.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/form.g1gxbri36l.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/hiddenfield.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/hiddenfield.ks5fqixdxb.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/radio.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/radio.gbg0ytiitp.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/select.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/select.6l23xmpvnw.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textarea.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textarea.xc7dan92h2.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textfield.js": "./_content/FreeBlazor/ckEditor/plugins/forms/dialogs/textfield.tddx2kexc3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/iframe/dialogs/iframe.js": "./_content/FreeBlazor/ckEditor/plugins/iframe/dialogs/iframe.7ndozg8qhv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/image/dialogs/image.js": "./_content/FreeBlazor/ckEditor/plugins/image/dialogs/image.wgfre0bkl9.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/image2/dialogs/image2.js": "./_content/FreeBlazor/ckEditor/plugins/image2/dialogs/image2.6m8b15n7tx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/anchor.js": "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/anchor.x2e7t7qgkf.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/link.js": "./_content/FreeBlazor/ckEditor/plugins/link/dialogs/link.zfzvkyv5rz.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/liststyle/dialogs/liststyle.js": "./_content/FreeBlazor/ckEditor/plugins/liststyle/dialogs/liststyle.7fi8nbakxx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromgdocs/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromgdocs/filter/default.u9ek2n3uzx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromlibreoffice/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromlibreoffice/filter/default.r5xqimfuks.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/pastefromword/filter/default.js": "./_content/FreeBlazor/ckEditor/plugins/pastefromword/filter/default.m78ldvjlqt.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/common.js": "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/common.79axtziw2t.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/image.js": "./_content/FreeBlazor/ckEditor/plugins/pastetools/filter/image.3j2v65jz21.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/scayt/dialogs/options.js": "./_content/FreeBlazor/ckEditor/plugins/scayt/dialogs/options.bfvea7b1mt.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/smiley/dialogs/smiley.js": "./_content/FreeBlazor/ckEditor/plugins/smiley/dialogs/smiley.8dcn7bac46.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/af.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/af.c38k2xlxh8.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ar.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ar.bq8lja5gw3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/az.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/az.x31w2662b8.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/bg.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/bg.0lp8zbf010.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ca.3f4kjmqwvo.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cs.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cs.cxz6x0kym3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cy.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/cy.aau5euqgas.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/da.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/da.lg2xd20tp3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de-ch.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de-ch.u8bh72qpxl.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/de.fkq24y9vkr.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/el.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/el.9gvbc0xwa3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-au.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-au.khq76j5bj5.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-ca.uo5ekaw5mi.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-gb.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en-gb.jt8k63ztv6.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/en.jo0l2f8xxb.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eo.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eo.fpt05xr66p.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es-mx.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es-mx.r4br79qgeu.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/es.1k1p6ivmyg.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/et.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/et.ct5vibj8yz.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eu.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/eu.6ituk9vuow.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fa.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fa.eoyzj4v5eq.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fi.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fi.3liziazx2p.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr-ca.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr-ca.6tlv1y663a.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/fr.m92q750bgf.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/gl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/gl.oldqw0tmxy.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/he.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/he.9ul72vd89d.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hr.17r792iwgd.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hu.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/hu.thjlwg5d5w.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/id.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/id.9svaawgbqs.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/it.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/it.piydgs0kxc.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ja.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ja.8zxxkkr98j.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/km.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/km.ddyihj88oz.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ko.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ko.f1qf9u4480.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ku.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ku.77bncxue4h.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lt.14zcnggv44.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lv.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/lv.feq99v37qm.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nb.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nb.puzvxuop0z.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/nl.i16h05zlup.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/no.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/no.8xze7hjhvv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/oc.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/oc.9u29q3ucf3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pl.be6frdylx5.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt-br.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt-br.bdd7z4oopo.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/pt.45u3s2sttn.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ro.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ro.51h83r5nxv.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ru.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ru.fzpdrei8cx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/si.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/si.eohetxtajq.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sk.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sk.6q7v906vk3.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sl.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sl.z8ttavml1m.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sq.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sq.p1uedb7yl1.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr-latn.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr-latn.1nrwh804qi.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sr.laxhfgp8qc.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sv.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/sv.1b3d0q2o9m.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/th.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/th.73tdpq17fx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tr.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tr.35l6ffej5k.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tt.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/tt.9ug9zbcwkt.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ug.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/ug.f0qznvxcwu.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/uk.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/uk.cqe12t5ud4.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/vi.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/vi.35tu22q0qx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh-cn.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh-cn.o732xv7amn.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/lang/zh.cvdnu14cdc.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/specialchar.js": "./_content/FreeBlazor/ckEditor/plugins/specialchar/dialogs/specialchar.xz5i7sxqfp.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/table/dialogs/table.js": "./_content/FreeBlazor/ckEditor/plugins/table/dialogs/table.tjlpau0pkx.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/tabletools/dialogs/tableCell.js": "./_content/FreeBlazor/ckEditor/plugins/tabletools/dialogs/tableCell.z627466z6s.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/templates/dialogs/templates.js": "./_content/FreeBlazor/ckEditor/plugins/templates/dialogs/templates.2i79muphep.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/templates/templatedefinition.js": "./_content/FreeBlazor/ckEditor/plugins/templates/templatedefinition.jowyo6217k.js",<br>
+    "./_content/FreeBlazor/ckEditor/plugins/templates/templates/default.js": "./_content/FreeBlazor/ckEditor/plugins/templates/templates/default.woq2x31dlq.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/js/sample.js": "./_content/FreeBlazor/ckEditor/samples/js/sample.o9wkvayatx.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/js/sf.js": "./_content/FreeBlazor/ckEditor/samples/js/sf.51srjoi1mb.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/old/assets/uilanguages/languages.js": "./_content/FreeBlazor/ckEditor/samples/old/assets/uilanguages/languages.65exdczdnn.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/old/dialog/assets/my_dialog.js": "./_content/FreeBlazor/ckEditor/samples/old/dialog/assets/my_dialog.lnco34y632.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/old/sample.js": "./_content/FreeBlazor/ckEditor/samples/old/sample.cmu88iwocf.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/abstracttoolbarmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/abstracttoolbarmodifier.a39wi0jqoy.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/fulltoolbareditor.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/fulltoolbareditor.qp5cpxc5lx.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbarmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbarmodifier.uq56uzbnph.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbartextmodifier.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/js/toolbartextmodifier.djmt9vypns.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/codemirror.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/codemirror.nmzs0hdcq8.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/javascript.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/javascript.9rzyumrztz.js",<br>
+    "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/show-hint.js": "./_content/FreeBlazor/ckEditor/samples/toolbarconfigurator/lib/codemirror/show-hint.qlla3479c2.js",<br>
+    "./_content/FreeBlazor/ckEditor/styles.js": "./_content/FreeBlazor/ckEditor/styles.9l6pg925xq.js",<br>
+    "./_content/FreeBlazor/ckEditor/vendor/promise.js": "./_content/FreeBlazor/ckEditor/vendor/promise.kq0twi1itf.js",<br>
+    "./_content/MudBlazor/MudBlazor.min.js": "./_content/MudBlazor/MudBlazor.min.f96y5mhlyw.js",<br>
+    "./_content/Radzen.Blazor/Radzen.Blazor.js": "./_content/Radzen.Blazor/Radzen.Blazor.aoevka8j7h.js",<br>
+    "./_content/Radzen.Blazor/Radzen.Blazor.min.js": "./_content/Radzen.Blazor/Radzen.Blazor.min.q41bokt5qf.js",<br>
+    "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",<br>
+    "./_framework/blazor.server.js": "./_framework/blazor.server.cj5793hgrt.js",<br>
+    "./_framework/blazor.web.js": "./_framework/blazor.web.ej96puwv3k.js",<br>
+    "./_framework/dotnet.js": "./_framework/dotnet.25i7jc6pjn.js",<br>
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",<br>
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",<br>
+    "./js/bootstrap/js/bootstrap.bundle.js": "./js/bootstrap/js/bootstrap.bundle.coucdleqvw.js",<br>
+    "./js/bootstrap/js/bootstrap.bundle.min.js": "./js/bootstrap/js/bootstrap.bundle.min.kq3enx1zfc.js",<br>
+    "./js/bootstrap/js/bootstrap.esm.js": "./js/bootstrap/js/bootstrap.esm.dvuf5es4er.js",<br>
+    "./js/bootstrap/js/bootstrap.esm.min.js": "./js/bootstrap/js/bootstrap.esm.min.w0gms4gy0v.js",<br>
+    "./js/bootstrap/js/bootstrap.js": "./js/bootstrap/js/bootstrap.i62jd590hj.js",<br>
+    "./js/bootstrap/js/bootstrap.min.js": "./js/bootstrap/js/bootstrap.min.7g5exmj95a.js",<br>
+    "./js/jquery/jquery-3.7.0.min.js": "./js/jquery/jquery-3.7.0.min.skkcmj0da5.js",<br>
+    "./js/sortablejs/Sortable.js": "./js/sortablejs/Sortable.jhm3o1xz4r.js",<br>
+    "./js/sortablejs/Sortable.min.js": "./js/sortablejs/Sortable.min.n39if9i3yn.js",<br>
+    "./js/sortablejs/sortable.1.13.0.min.js": "./js/sortablejs/sortable.1.13.0.min.o9y166nr9q.js",<br>
+    "_framework/resource-collection.js": "./_framework/resource-collection.Hh62n.js",<br>
+    "_framework/resource-collection.js.gz": "./_framework/resource-collection.Hh62n.js.gz"<br>
+  },<br>
+  "integrity": {<br>
+    "./_framework/resource-collection.Hh62n.js": "sha256-DhXin/mnYDD8BQ31psF+GV2wlHcB0utdS6ygUoDgb0Y=",<br>
+    "./_framework/resource-collection.Hh62n.js.gz": "sha256-DhXin/mnYDD8BQ31psF+GV2wlHcB0utdS6ygUoDgb0Y="<br>
+  }<br>
+}                            </td>
+                        </tr>
+                        <tr>
+                            <td><span title="Microsoft.AspNetCore.Routing.RouteEndpointBuilder+RouteDiagnosticsMetadata">RouteDiagnosticsMetadata</span></td>
+                            <td>
+Route: /DoubleClick                            </td>
+                        </tr>
+                </tbody>
+            </table>
+        <h2>Route Values</h2>
+            <p>No route values.</p>
+    </div>
+
+    <script>
+        //<!--
+        (function (window, undefined) {
+    "use strict";
+
+    function ns(selector, element) {
+        return new NodeCollection(selector, element);
+    }
+
+    function NodeCollection(selector, element) {
+        this.items = [];
+        element = element || window.document;
+
+        var nodeList;
+
+        if (typeof (selector) === "string") {
+            nodeList = element.querySelectorAll(selector);
+            for (var i = 0, l = nodeList.length; i < l; i++) {
+                this.items.push(nodeList.item(i));
+            }
+        }
+    }
+
+    NodeCollection.prototype = {
+        each: function (callback) {
+            for (var i = 0, l = this.items.length; i < l; i++) {
+                callback(this.items[i], i);
+            }
+            return this;
+        },
+
+        children: function (selector) {
+            var children = [];
+
+            this.each(function (el) {
+                children = children.concat(ns(selector, el).items);
+            });
+
+            return ns(children);
+        },
+
+        hide: function () {
+            this.each(function (el) {
+                el.style.display = "none";
+            });
+
+            return this;
+        },
+
+        toggle: function () {
+            this.each(function (el) {
+                el.style.display = el.style.display === "none" ? "" : "none";
+            });
+
+            return this;
+        },
+
+        show: function () {
+            this.each(function (el) {
+                el.style.display = "";
+            });
+
+            return this;
+        },
+
+        addClass: function (className) {
+            this.each(function (el) {
+                var existingClassName = el.className,
+                    classNames;
+                if (!existingClassName) {
+                    el.className = className;
+                } else {
+                    classNames = existingClassName.split(" ");
+                    if (classNames.indexOf(className) < 0) {
+                        el.className = existingClassName + " " + className;
+                    }
+                }
+            });
+
+            return this;
+        },
+
+        removeClass: function (className) {
+            this.each(function (el) {
+                var existingClassName = el.className,
+                    classNames, index;
+                if (existingClassName === className) {
+                    el.className = "";
+                } else if (existingClassName) {
+                    classNames = existingClassName.split(" ");
+                    index = classNames.indexOf(className);
+                    if (index > 0) {
+                        classNames.splice(index, 1);
+                        el.className = classNames.join(" ");
+                    }
+                }
+            });
+
+            return this;
+        },
+
+        attr: function (name) {
+            if (this.items.length === 0) {
+                return null;
+            }
+
+            return this.items[0].getAttribute(name);
+        },
+
+        on: function (eventName, handler) {
+            this.each(function (el, idx) {
+                var callback = function (e) {
+                    e = e || window.event;
+                    if (!e.which && e.keyCode) {
+                        e.which = e.keyCode; // Normalize IE8 key events
+                    }
+                    handler.apply(el, [e]);
+                };
+
+                if (el.addEventListener) { // DOM Events
+                    el.addEventListener(eventName, callback, false);
+                } else if (el.attachEvent) { // IE8 events
+                    el.attachEvent("on" + eventName, callback);
+                } else {
+                    el["on" + type] = callback;
+                }
+            });
+
+            return this;
+        },
+
+        click: function (handler) {
+            return this.on("click", handler);
+        },
+
+        keypress: function (handler) {
+            return this.on("keypress", handler);
+        }
+    };
+
+    function frame(el) {
+        ns(".source .collapsible", el).toggle();
+    }
+
+    function expandCollapseButton(el) {
+        var frameId = el.getAttribute("data-frameId");
+        frame(document.getElementById(frameId));
+        if (el.innerText === "+") {
+            el.innerText = "-";
+        }
+        else {
+            el.innerText = "+";
+        }
+    }
+
+    function tab(el) {
+        var unselected = ns("#header .selected").removeClass("selected").attr("id");
+        var selected = ns("#" + el.id).addClass("selected").attr("id");
+
+        ns("#" + unselected + "page").hide();
+        ns("#" + selected + "page").show();
+    }
+
+    ns(".rawExceptionDetails").hide();
+    ns(".collapsible").hide();
+    ns(".page").hide();
+    ns("#stackpage").show();
+
+    ns(".expandCollapseButton")
+        .click(function () {
+            expandCollapseButton(this);
+        })
+        .keypress(function (e) {
+            if (e.which === 13) {
+                expandCollapseButton(this);
+            }
+        });
+
+    ns("#header li")
+        .click(function () {
+            tab(this);
+        })
+        .keypress(function (e) {
+            if (e.which === 13) {
+                tab(this);
+            }
+        });
+
+    ns(".showRawException")
+        .click(function () {
+            var exceptionDetailId = this.getAttribute("data-exceptionDetailId");
+            ns("#" + exceptionDetailId).toggle();
+        });
+})(window);
+        //-->
+    </script>
+
+
+</body></html>
