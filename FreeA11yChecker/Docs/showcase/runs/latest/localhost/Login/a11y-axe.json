@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "axe",
+    "RuleId": "document-title",
+    "CanonicalRuleId": "document-title",
+    "Severity": "serious",
+    "Message": "Fix any of the following:\n  Document does not have a non-empty \u003Ctitle\u003E element",
+    "Selector": "html",
+    "Snippet": "\u003Chtml lang=\u0022en\u0022\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
+    "WcagCriteria": "wcag2a, wcag242",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

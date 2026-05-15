@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "ibm",
+    "RuleId": "aria_content_in_landmark",
+    "CanonicalRuleId": "aria_content_in_landmark",
+    "Severity": "moderate",
+    "Message": "Content is not within a landmark element",
+    "Selector": "/html[1]/body[1]/a[1]",
+    "Snippet": "\u003Ca class=\u0022skip-link\u0022 href=\u0022#main-content\u0022\u003E",
+    "HelpUrl": "",
+    "WcagCriteria": "",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

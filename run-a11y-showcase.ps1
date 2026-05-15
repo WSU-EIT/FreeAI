@@ -83,8 +83,12 @@ foreach ($t in $allTargets) {
     $url         = "http://localhost:$($t.Port)"
 
     # Wipe latest/ before each run so old pages don't linger — git history tracks diffs
+    # scan.log may be locked by a previous process; skip locked files and continue
     if (Test-Path $runDir) {
-        Remove-Item $runDir -Recurse -Force
+        Get-ChildItem $runDir -Recurse -Force | Sort-Object FullName -Descending | ForEach-Object {
+            try { Remove-Item $_.FullName -Force -ErrorAction Stop } catch { }
+        }
+        try { Remove-Item $runDir -Force -ErrorAction Stop } catch { }
     }
     New-Item -ItemType Directory -Path $runDir -Force | Out-Null
 
