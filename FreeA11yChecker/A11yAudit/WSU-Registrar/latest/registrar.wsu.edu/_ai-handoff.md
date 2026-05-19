@@ -1,26 +1,26 @@
 # Accessibility Fix Pack — registrar.wsu.edu
 
-**Generated:** 2026-05-13 10:23:16  
+**Generated:** 2026-05-19 14:33:17  
 **Source root:** *(not provided — no source cross-references)*  
-**Scan output:** `C:\Users\pepkad\source\repos\FreeA11yChecker\A11yAudit\runs\WSU-Registrar\registrar.wsu.edu`  
+**Scan output:** `C:\Users\pepkad\source\repos\WSU-EIT\FreeAi\FreeA11yChecker\A11yAudit\runs\WSU-Registrar\registrar.wsu.edu`  
 
 ## Summary
 
 - **6** pages scanned
-- **175** raw violations across all 4 tools
+- **183** raw violations across all 4 tools
 - **0** IBM PASS-style noise items filtered out at report time
-- **175** real violations remaining
-- **22** distinct rule failures
+- **183** real violations remaining
+- **20** distinct rule failures
 - **3** rules affect ≥70% of pages (likely shared layout/nav — fix in MainLayout / NavMenu first)
 
 ## ✅ What's working — pass rate per tool
 
-Aggregate across all 6 scanned pages. **Overall pass rate: 0.0%** (0 of 35 rule checks passed).
+Aggregate across all 6 scanned pages. **Overall pass rate: 0.0%** (0 of 43 rule checks passed).
 
 | Tool | Rules passed | Total checks | Pass rate |
 |------|-------------:|-------------:|----------:|
 | **axe** | 0 | 0 | 🔴 0.0% |
-| **ibm** | 0 | 35 | 🔴 0.0% |
+| **ibm** | 0 | 43 | 🔴 0.0% |
 | **htmlcheck** | 0 | 0 | 🔴 0.0% |
 | **htmlcs** | 0 | 0 | 🔴 0.0% |
 
@@ -33,27 +33,25 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 | # | Rule | Severity | Pages | Occurrences | Likely scope |
 |---|------|----------|-------|-------------|--------------|
 | 1 | `aria-allowed-attr` (axe) | 🔴 critical | 5/6 | 5 | site-wide (layout) |
-| 2 | `label` (axe) | 🔴 critical | 1/6 | 1 | single page |
-| 3 | `label_name_visible` (ibm) | 🟠 serious | 5/6 | 5 | site-wide (layout) |
-| 4 | `aria_banner_label_unique` (ibm) | 🟠 serious | 3/6 | 6 | shared component |
-| 5 | `link-empty` (htmlcheck) | 🟠 serious | 2/6 | 85 | shared component |
-| 6 | `link-in-text-block` (axe) | 🟠 serious | 2/6 | 31 | shared component |
-| 7 | `listitem` (axe) | 🟠 serious | 1/6 | 8 | single page |
-| 8 | `table_headers_exists` (ibm) | 🟠 serious | 1/6 | 3 | single page |
-| 9 | `document-title` (axe) | 🟠 serious | 1/6 | 1 | single page |
-| 10 | `title-missing` (htmlcheck) | 🟠 serious | 1/6 | 1 | single page |
-| 11 | `page_title_exists` (ibm) | 🟠 serious | 1/6 | 1 | single page |
-| 12 | `skip_main_exists` (ibm) | 🟠 serious | 1/6 | 1 | single page |
-| 13 | `list` (axe) | 🟠 serious | 1/6 | 1 | single page |
-| 14 | `input_label_exists` (ibm) | 🟠 serious | 1/6 | 1 | single page |
+| 2 | `select-name` (axe) | 🔴 critical | 1/6 | 2 | single page |
+| 3 | `label` (axe) | 🔴 critical | 1/6 | 1 | single page |
+| 4 | `label_name_visible` (ibm) | 🟠 serious | 6/6 | 6 | site-wide (layout) |
+| 5 | `aria_banner_label_unique` (ibm) | 🟠 serious | 4/6 | 8 | shared component |
+| 6 | `link-empty` (htmlcheck) | 🟠 serious | 3/6 | 86 | shared component |
+| 7 | `link-in-text-block` (axe) | 🟠 serious | 2/6 | 31 | shared component |
+| 8 | `input_label_exists` (ibm) | 🟠 serious | 2/6 | 3 | shared component |
+| 9 | `listitem` (axe) | 🟠 serious | 1/6 | 8 | single page |
+| 10 | `table_headers_exists` (ibm) | 🟠 serious | 1/6 | 3 | single page |
+| 11 | `aria_contentinfo_label_unique` (ibm) | 🟠 serious | 1/6 | 2 | single page |
+| 12 | `document-title` (axe) | 🟠 serious | 1/6 | 1 | single page |
+| 13 | `page_title_exists` (ibm) | 🟠 serious | 1/6 | 1 | single page |
+| 14 | `list` (axe) | 🟠 serious | 1/6 | 1 | single page |
 | 15 | `aria_content_in_landmark` (ibm) | 🟡 moderate | 5/6 | 10 | site-wide (layout) |
-| 16 | `aria_landmark_name_unique` (ibm) | 🟡 moderate | 3/6 | 6 | shared component |
+| 16 | `aria_landmark_name_unique` (ibm) | 🟡 moderate | 4/6 | 8 | shared component |
 | 17 | `table-header` (htmlcheck) | 🟡 moderate | 1/6 | 3 | single page |
 | 18 | `aria_child_valid` (ibm) | 🟡 moderate | 1/6 | 2 | single page |
 | 19 | `skip-link` (htmlcheck) | 🟡 moderate | 1/6 | 1 | single page |
-| 20 | `landmark-main` (htmlcheck) | 🟡 moderate | 1/6 | 1 | single page |
-| 21 | `landmark-nav` (htmlcheck) | 🟡 moderate | 1/6 | 1 | single page |
-| 22 | `label-missing` (htmlcheck) | 🟡 moderate | 1/6 | 1 | single page |
+| 20 | `label-missing` (htmlcheck) | 🟡 moderate | 1/6 | 1 | single page |
 
 ## Per-rule fix instructions
 
@@ -85,6 +83,35 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ---
 
+### 🔴 `select-name` (axe) — CRITICAL
+
+- **Pages affected:** 1 of 6
+- **Total occurrences:** 2
+- **How to fix:** Give the `<select>` an accessible name via `<label>` or `aria-label`.
+- **Reference:** <https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI>
+
+**Sample violation:**
+
+- Page: `/academic-calendar`
+- Selector: `#year`
+- Message: Fix any of the following:
+  Element does not have an implicit (wrapped) <label>
+  Element does not have an explicit <label>
+  aria-label attribute does not exist or is empty
+  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty
+  Element has no title attribute
+  Element's default semantics were not overridden with role="none" or role="presentation"
+
+```html
+<select class="form-select" id="year">
+```
+
+**All affected pages** (2 total):
+
+- `/academic-calendar` — 2 occurrence(s)
+
+---
+
 ### 🔴 `label` (axe) — CRITICAL
 
 - **Pages affected:** 1 of 6
@@ -113,8 +140,8 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ### 🟠 `label_name_visible` (ibm) — SERIOUS
 
-- **Pages affected:** 5 of 6
-- **Total occurrences:** 5
+- **Pages affected:** 6 of 6
+- **Total occurrences:** 6
 
 **Sample violation:**
 
@@ -126,9 +153,10 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 <a aria-label="Go to Washington State University Homepage" href="https://wsu.edu" class="wsu-wordmark">
 ```
 
-**All affected pages** (5 total):
+**All affected pages** (6 total):
 
 - `/` — 1 occurrence(s)
+- `/academic-calendar` — 1 occurrence(s)
 - `/academic-regulations` — 1 occurrence(s)
 - `/commencement` — 1 occurrence(s)
 - `/enrollment-verifications` — 1 occurrence(s)
@@ -138,21 +166,22 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ### 🟠 `aria_banner_label_unique` (ibm) — SERIOUS
 
-- **Pages affected:** 3 of 6
-- **Total occurrences:** 6
+- **Pages affected:** 4 of 6
+- **Total occurrences:** 8
 
 **Sample violation:**
 
-- Page: `/commencement`
-- Selector: `/html[1]/body[1]/div[1]/header[1]`
+- Page: `/academic-calendar`
+- Selector: `/html[1]/body[1]/div[1]/div[1]/header[1]`
 - Message: Multiple elements with "banner" role do not have unique labels
 
 ```html
-<header class="wsu-header-global">
+<header class="wsu-header-global wsu-header-global--dark">
 ```
 
-**All affected pages** (6 total):
+**All affected pages** (8 total):
 
+- `/academic-calendar` — 2 occurrence(s)
 - `/commencement` — 2 occurrence(s)
 - `/enrollment-verifications` — 2 occurrence(s)
 - `/transcripts` — 2 occurrence(s)
@@ -161,8 +190,8 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ### 🟠 `link-empty` (htmlcheck) — SERIOUS
 
-- **Pages affected:** 2 of 6
-- **Total occurrences:** 85
+- **Pages affected:** 3 of 6
+- **Total occurrences:** 86
 
 **Sample violation:**
 
@@ -174,9 +203,10 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 <a href="mailto:official.transcripts@wsu.edu" title="Email Transcripts"> </a>
 ```
 
-**All affected pages** (85 total):
+**All affected pages** (86 total):
 
 - `/` — 1 occurrence(s)
+- `/academic-calendar` — 1 occurrence(s)
 - `/academic-regulations` — 84 occurrence(s)
 
 ---
@@ -204,6 +234,28 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 - `/` — 8 occurrence(s)
 - `/academic-regulations` — 23 occurrence(s)
+
+---
+
+### 🟠 `input_label_exists` (ibm) — SERIOUS
+
+- **Pages affected:** 2 of 6
+- **Total occurrences:** 3
+
+**Sample violation:**
+
+- Page: `/academic-calendar`
+- Selector: `/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/main[1]/article[1]/div[1]/div[1]/div[1]/div[1]/div[1]/select[1]`
+- Message: Form control element <select> has no associated label
+
+```html
+<select id="year" class="form-select">
+```
+
+**All affected pages** (3 total):
+
+- `/academic-calendar` — 2 occurrence(s)
+- `/academic-regulations` — 1 occurrence(s)
 
 ---
 
@@ -254,6 +306,27 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ---
 
+### 🟠 `aria_contentinfo_label_unique` (ibm) — SERIOUS
+
+- **Pages affected:** 1 of 6
+- **Total occurrences:** 2
+
+**Sample violation:**
+
+- Page: `/academic-calendar`
+- Selector: `/html[1]/body[1]/div[1]/div[1]/div[2]`
+- Message: Multiple elements with "contentinfo" role do not have unique labels
+
+```html
+<div role="contentinfo" class="wsu-g-footer-wrapper">
+```
+
+**All affected pages** (2 total):
+
+- `/academic-calendar` — 2 occurrence(s)
+
+---
+
 ### 🟠 `document-title` (axe) — SERIOUS
 
 - **Pages affected:** 1 of 6
@@ -269,24 +342,7 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
   Document does not have a non-empty <title> element
 
 ```html
-<html lang="en" class="wsu-has-js wsu-reduce-motion" style="--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: &quot;64%&quot;;">
-```
-
----
-
-### 🟠 `title-missing` (htmlcheck) — SERIOUS
-
-- **Pages affected:** 1 of 6
-- **Total occurrences:** 1
-
-**Sample violation:**
-
-- Page: `/academic-calendar`
-- Selector: ``
-- Message: Page is missing a <title> element
-
-```html
-
+<html lang="en" class="wsu-has-js wsu-reduce-motion" style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: &quot;100%&quot;;">
 ```
 
 ---
@@ -303,24 +359,7 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 - Message: Missing <title> element in <head> element
 
 ```html
-<html style="--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: "64%";" class="wsu-has-js wsu-reduce-motion" lang="en">
-```
-
----
-
-### 🟠 `skip_main_exists` (ibm) — SERIOUS
-
-- **Pages affected:** 1 of 6
-- **Total occurrences:** 1
-
-**Sample violation:**
-
-- Page: `/academic-calendar`
-- Selector: `/html[1]/body[1]`
-- Message: The page does not provide a way to quickly navigate to the main content (ARIA "main" landmark or a skip link)
-
-```html
-<body class="light" data-bs-theme="" id="body-element">
+<html style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: "100%";" class="wsu-has-js wsu-reduce-motion" lang="en">
 ```
 
 ---
@@ -341,23 +380,6 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ```html
 <ol>
-```
-
----
-
-### 🟠 `input_label_exists` (ibm) — SERIOUS
-
-- **Pages affected:** 1 of 6
-- **Total occurrences:** 1
-
-**Sample violation:**
-
-- Page: `/academic-regulations`
-- Selector: `/html[1]/body[1]/div[1]/div[2]/div[1]/main[1]/div[1]/div[1]/form[1]/div[1]/input[1]`
-- Message: Form control element <input> has no associated label
-
-```html
-<input style="" value="" id="ROARSearch" name="ROARSearch" type="text">
 ```
 
 ---
@@ -389,21 +411,22 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 
 ### 🟡 `aria_landmark_name_unique` (ibm) — MODERATE
 
-- **Pages affected:** 3 of 6
-- **Total occurrences:** 6
+- **Pages affected:** 4 of 6
+- **Total occurrences:** 8
 
 **Sample violation:**
 
-- Page: `/commencement`
-- Selector: `/html[1]/body[1]/div[1]/header[1]`
+- Page: `/academic-calendar`
+- Selector: `/html[1]/body[1]/div[1]/div[1]/header[1]`
 - Message: Multiple elements with "banner" landmarks within the same parent region are not distinguished from one another because they have the same "" label
 
 ```html
-<header class="wsu-header-global">
+<header class="wsu-header-global wsu-header-global--dark">
 ```
 
-**All affected pages** (6 total):
+**All affected pages** (8 total):
 
+- `/academic-calendar` — 2 occurrence(s)
 - `/commencement` — 2 occurrence(s)
 - `/enrollment-verifications` — 2 occurrence(s)
 - `/transcripts` — 2 occurrence(s)
@@ -468,40 +491,6 @@ Fix in this order — each rule's fix likely cascades to clear all listed occurr
 - Page: `/academic-calendar`
 - Selector: ``
 - Message: No skip-to-content link found
-
-```html
-
-```
-
----
-
-### 🟡 `landmark-main` (htmlcheck) — MODERATE
-
-- **Pages affected:** 1 of 6
-- **Total occurrences:** 1
-
-**Sample violation:**
-
-- Page: `/academic-calendar`
-- Selector: ``
-- Message: No <main> landmark found
-
-```html
-
-```
-
----
-
-### 🟡 `landmark-nav` (htmlcheck) — MODERATE
-
-- **Pages affected:** 1 of 6
-- **Total occurrences:** 1
-
-**Sample violation:**
-
-- Page: `/academic-calendar`
-- Selector: ``
-- Message: No <nav> landmark found
 
 ```html
 

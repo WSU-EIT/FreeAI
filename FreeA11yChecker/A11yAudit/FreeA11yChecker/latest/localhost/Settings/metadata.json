@@ -1,14 +1,14 @@
 {
-  "Url": "http://localhost:5108/Settings",
-  "PageTitle": "",
+  "Url": "http://localhost:5111/Settings",
+  "PageTitle": "FreeA11yChecker",
   "StatusCode": 200,
-  "HtmlSizeBytes": 67601,
+  "HtmlSizeBytes": 125171,
   "Language": "en",
-  "DurationMs": 37548,
-  "ImageCount": 0,
-  "ScreenshotCount": 17,
-  "AxePassCount": 4,
-  "AxeIncompleteCount": 0,
-  "AxeInapplicableCount": 57,
-  "ScannedAt": "2026-05-19T17:20:34.8643807Z"
+  "DurationMs": 29827,
+  "ImageCount": 1,
+  "ScreenshotCount": 18,
+  "AxePassCount": 30,
+  "AxeIncompleteCount": 1,
+  "AxeInapplicableCount": 31,
+  "ScannedAt": "2026-05-19T21:06:23.9117164Z"
 }

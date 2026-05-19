@@ -12,7 +12,7 @@
 | URL | https://its.wsu.edu/how-can-we-help-contact-its/ |
 | Title | How Can We Help? | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 86.1 KB |
+| HTML Size | 86.3 KB |
 | Screenshots | 17 (2.8 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>196.4 KB</sub>
+<br /><sub>193.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>163.2 KB</sub>
+<br /><sub>160.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,7 +96,7 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>161.8 KB</sub>
+<br /><sub>163.3 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
@@ -119,7 +119,7 @@
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>162.8 KB</sub>
+<br /><sub>161.9 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,7 +128,7 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>163.4 KB</sub>
+<br /><sub>163.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
@@ -208,13 +208,13 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (153.7 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (155.3 KB) |
 | `07-structure-overlay.png` | structure-overlay (233.6 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (196.4 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (163.2 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (161.8 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (193.8 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (160.6 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (163.3 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (161.7 KB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (159.8 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (162.8 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (163.4 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (161.9 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (163.2 KB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (163.2 KB) |
 | `15-screenreader-view.png` | screenreader-view (265.3 KB) |
 | `16-reduced-motion.png` | reduced-motion (158.9 KB) |

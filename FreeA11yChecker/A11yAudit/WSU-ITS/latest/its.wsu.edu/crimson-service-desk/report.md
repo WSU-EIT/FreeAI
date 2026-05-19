@@ -12,8 +12,8 @@
 | URL | https://its.wsu.edu/crimson-service-desk/ |
 | Title | Crimson Service Desk | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 97.5 KB |
-| Screenshots | 18 (19.0 MB) |
+| HTML Size | 97.9 KB |
+| Screenshots | 18 (18.9 MB) |
 | Images | 4 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 15 |
@@ -39,7 +39,7 @@
 <img src="02-page-expanded.jpeg" width="400" alt="page-expanded" />
 </a>
 <br /><strong>2. page-expanded</strong>
-<br /><sub>771.6 KB</sub>
+<br /><sub>774.3 KB</sub>
 </td>
 </tr>
 <tr>
@@ -216,7 +216,7 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (691.2 KB) |
-| `02-page-expanded.jpeg` | page-expanded (771.6 KB) |
+| `02-page-expanded.jpeg` | page-expanded (774.3 KB) |
 | `03-axe-overlay.png` | axe-overlay (1.2 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (1.3 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.2 MB) |

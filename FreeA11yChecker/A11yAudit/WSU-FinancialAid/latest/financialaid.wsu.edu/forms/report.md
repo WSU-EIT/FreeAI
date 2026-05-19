@@ -12,7 +12,7 @@
 | URL | https://financialaid.wsu.edu/forms/ |
 | Title | Financial Aid Forms | Student Financial Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 84.4 KB |
+| HTML Size | 84.6 KB |
 | Screenshots | 17 (6.2 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>388.7 KB</sub>
+<br /><sub>388.1 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>384.3 KB</sub>
+<br /><sub>386.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,14 +96,14 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>388.3 KB</sub>
+<br /><sub>385.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>10. cvd-tritanopia</strong>
-<br /><sub>385.9 KB</sub>
+<br /><sub>385.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>382.3 KB</sub>
+<br /><sub>381.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>386.8 KB</sub>
+<br /><sub>386.7 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,7 +128,7 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>388.6 KB</sub>
+<br /><sub>388.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
@@ -212,13 +212,13 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (368.8 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (370.3 KB) |
 | `07-structure-overlay.png` | structure-overlay (475.3 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (388.7 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (384.3 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (388.3 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (385.9 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (382.3 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (386.8 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (388.6 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (388.1 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (386.1 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (385.9 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (385.0 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (381.4 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (386.7 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (388.4 KB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (386.2 KB) |
 | `15-screenreader-view.png` | screenreader-view (422.3 KB) |
 | `16-reduced-motion.png` | reduced-motion (373.8 KB) |

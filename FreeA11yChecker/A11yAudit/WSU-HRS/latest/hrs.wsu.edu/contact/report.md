@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/contact/ |
 | Title | Contact HRS – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 118.8 KB |
+| HTML Size | 119.1 KB |
 | Screenshots | 17 (16.6 MB) |
 | Images | 2 |
 | Images Missing Alt | 0 |
@@ -32,7 +32,7 @@
 <img src="01-page-load-00000ms.png" width="400" alt="Page Load +0ms" />
 </a>
 <br /><strong>1. Page Load +0ms</strong>
-<br /><sub>681.4 KB</sub>
+<br /><sub>680.7 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="03-axe-overlay.png">
@@ -112,7 +112,7 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>821.6 KB</sub>
+<br /><sub>820.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>939.9 KB</sub>
+<br /><sub>939.1 KB</sub>
 </td>
 <td></td>
 </tr>
@@ -210,7 +210,7 @@
 
 | File | Description |
 |------|-------------|
-| `01-page-load-00000ms.png` | Page Load +0ms (681.4 KB) |
+| `01-page-load-00000ms.png` | Page Load +0ms (680.7 KB) |
 | `03-axe-overlay.png` | axe-overlay (1.1 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (1.1 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.1 MB) |
@@ -220,13 +220,13 @@
 | `08-cvd-protanopia.png` | cvd-protanopia (1.0 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (1.0 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (1.0 MB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (821.6 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (820.9 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (1.0 MB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (1.0 MB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (1.0 MB) |
 | `15-screenreader-view.png` | screenreader-view (291.1 KB) |
 | `16-reduced-motion.png` | reduced-motion (1.1 MB) |
-| `17-forced-colors.png` | forced-colors (939.9 KB) |
+| `17-forced-colors.png` | forced-colors (939.1 KB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

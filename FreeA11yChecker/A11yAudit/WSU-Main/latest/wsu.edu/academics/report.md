@@ -12,8 +12,8 @@
 | URL | https://wsu.edu/academics/ |
 | Title | WSU Academics | Washington State University | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 129.1 KB |
-| Screenshots | 21 (73.6 MB) |
+| HTML Size | 129.3 KB |
+| Screenshots | 22 (74.5 MB) |
 | Images | 14 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 27 |
@@ -32,169 +32,175 @@
 <img src="01-page-load-00000ms.png" width="400" alt="Page Load +0ms" />
 </a>
 <br /><strong>1. Page Load +0ms</strong>
+<br /><sub>1.1 MB</sub>
+</td>
+<td align="center" width="50%">
+<a href="01-page-load-03859ms.png">
+<img src="01-page-load-03859ms.png" width="400" alt="Page Load +3859ms" />
+</a>
+<br /><strong>2. Page Load +3859ms</strong>
+<br /><sub>1.0 MB</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="01-page-load-04613ms.png">
+<img src="01-page-load-04613ms.png" width="400" alt="Page Load +4613ms" />
+</a>
+<br /><strong>3. Page Load +4613ms</strong>
 <br /><sub>1.0 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-03896ms.png">
-<img src="01-page-load-03896ms.png" width="400" alt="Page Load +3896ms" />
+<a href="01-page-load-08376ms.png">
+<img src="01-page-load-08376ms.png" width="400" alt="Page Load +8376ms" />
 </a>
-<br /><strong>2. Page Load +3896ms</strong>
-<br /><sub>1.1 MB</sub>
+<br /><strong>4. Page Load +8376ms</strong>
+<br /><sub>1.0 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-04685ms.png">
-<img src="01-page-load-04685ms.png" width="400" alt="Page Load +4685ms" />
+<a href="01-page-load-09141ms.png">
+<img src="01-page-load-09141ms.png" width="400" alt="Page Load +9141ms" />
 </a>
-<br /><strong>3. Page Load +4685ms</strong>
+<br /><strong>5. Page Load +9141ms</strong>
 <br /><sub>1.2 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-08684ms.png">
-<img src="01-page-load-08684ms.png" width="400" alt="Page Load +8684ms" />
+<a href="01-page-load-09884ms.png">
+<img src="01-page-load-09884ms.png" width="400" alt="Page Load +9884ms" />
 </a>
-<br /><strong>4. Page Load +8684ms</strong>
+<br /><strong>6. Page Load +9884ms</strong>
 <br /><sub>1.2 MB</sub>
 </td>
 </tr>
 <tr>
-<td align="center" width="50%">
-<a href="01-page-load-09471ms.png">
-<img src="01-page-load-09471ms.png" width="400" alt="Page Load +9471ms" />
-</a>
-<br /><strong>5. Page Load +9471ms</strong>
-<br /><sub>894.7 KB</sub>
-</td>
 <td align="center" width="50%">
 <a href="03-axe-overlay.png">
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
-<br /><strong>6. axe-overlay</strong>
-<br /><sub>4.8 MB</sub>
+<br /><strong>7. axe-overlay</strong>
+<br /><sub>5.1 MB</sub>
 </td>
-</tr>
-<tr>
 <td align="center" width="50%">
 <a href="04-quickpeek-overlay.png">
 <img src="04-quickpeek-overlay.png" width="400" alt="quickpeek-overlay" />
 </a>
-<br /><strong>7. quickpeek-overlay</strong>
-<br /><sub>4.9 MB</sub>
-</td>
-<td align="center" width="50%">
-<a href="05-htmlcs-overlay.png">
-<img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
-</a>
-<br /><strong>8. htmlcs-overlay</strong>
-<br /><sub>4.8 MB</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="50%">
-<a href="06-ibm-overlay.png">
-<img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
-</a>
-<br /><strong>9. ibm-overlay</strong>
-<br /><sub>5.0 MB</sub>
-</td>
-<td align="center" width="50%">
-<a href="07-structure-overlay.png">
-<img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
-</a>
-<br /><strong>10. structure-overlay</strong>
+<br /><strong>8. quickpeek-overlay</strong>
 <br /><sub>5.2 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
+<a href="05-htmlcs-overlay.png">
+<img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
+</a>
+<br /><strong>9. htmlcs-overlay</strong>
+<br /><sub>5.1 MB</sub>
+</td>
+<td align="center" width="50%">
+<a href="06-ibm-overlay.png">
+<img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
+</a>
+<br /><strong>10. ibm-overlay</strong>
+<br /><sub>4.8 MB</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<a href="07-structure-overlay.png">
+<img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
+</a>
+<br /><strong>11. structure-overlay</strong>
+<br /><sub>5.0 MB</sub>
+</td>
+<td align="center" width="50%">
 <a href="07b-wireframe-blueprint.png">
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
-<br /><strong>11. wireframe-blueprint</strong>
-<br /><sub>1.5 MB</sub>
+<br /><strong>12. wireframe-blueprint</strong>
+<br /><sub>1.4 MB</sub>
 </td>
+</tr>
+<tr>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
-<br /><strong>12. cvd-protanopia</strong>
+<br /><strong>13. cvd-protanopia</strong>
+<br /><sub>4.5 MB</sub>
+</td>
+<td align="center" width="50%">
+<a href="09-cvd-deuteranopia.png">
+<img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
+</a>
+<br /><strong>14. cvd-deuteranopia</strong>
 <br /><sub>4.6 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="09-cvd-deuteranopia.png">
-<img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
-</a>
-<br /><strong>13. cvd-deuteranopia</strong>
-<br /><sub>4.7 MB</sub>
-</td>
-<td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
-<br /><strong>14. cvd-tritanopia</strong>
+<br /><strong>15. cvd-tritanopia</strong>
 <br /><sub>4.8 MB</sub>
 </td>
-</tr>
-<tr>
 <td align="center" width="50%">
 <a href="11-cvd-achromatopsia.png">
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
-<br /><strong>15. cvd-achromatopsia</strong>
+<br /><strong>16. cvd-achromatopsia</strong>
 <br /><sub>3.0 MB</sub>
 </td>
+</tr>
+<tr>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
-<br /><strong>16. cvd-protanomaly</strong>
+<br /><strong>17. cvd-protanomaly</strong>
 <br /><sub>4.7 MB</sub>
 </td>
-</tr>
-<tr>
 <td align="center" width="50%">
 <a href="13-cvd-deuteranomaly.png">
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
-<br /><strong>17. cvd-deuteranomaly</strong>
+<br /><strong>18. cvd-deuteranomaly</strong>
 <br /><sub>4.8 MB</sub>
 </td>
+</tr>
+<tr>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
-<br /><strong>18. cvd-tritanomaly</strong>
-<br /><sub>4.9 MB</sub>
+<br /><strong>19. cvd-tritanomaly</strong>
+<br /><sub>4.8 MB</sub>
 </td>
-</tr>
-<tr>
 <td align="center" width="50%">
 <a href="15-screenreader-view.png">
 <img src="15-screenreader-view.png" width="400" alt="screenreader-view" />
 </a>
-<br /><strong>19. screenreader-view</strong>
-<br /><sub>495.3 KB</sub>
-</td>
-<td align="center" width="50%">
-<a href="16-reduced-motion.png">
-<img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
-</a>
-<br /><strong>20. reduced-motion</strong>
-<br /><sub>5.1 MB</sub>
+<br /><strong>20. screenreader-view</strong>
+<br /><sub>494.5 KB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
+<a href="16-reduced-motion.png">
+<img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
+</a>
+<br /><strong>21. reduced-motion</strong>
+<br /><sub>4.9 MB</sub>
+</td>
+<td align="center" width="50%">
 <a href="17-forced-colors.png">
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
-<br /><strong>21. forced-colors</strong>
-<br /><sub>5.1 MB</sub>
+<br /><strong>22. forced-colors</strong>
+<br /><sub>5.0 MB</sub>
 </td>
-<td></td>
 </tr>
 </table>
 
@@ -255,27 +261,28 @@
 
 | File | Description |
 |------|-------------|
-| `01-page-load-00000ms.png` | Page Load +0ms (1.0 MB) |
-| `01-page-load-03896ms.png` | Page Load +3896ms (1.1 MB) |
-| `01-page-load-04685ms.png` | Page Load +4685ms (1.2 MB) |
-| `01-page-load-08684ms.png` | Page Load +8684ms (1.2 MB) |
-| `01-page-load-09471ms.png` | Page Load +9471ms (894.7 KB) |
-| `03-axe-overlay.png` | axe-overlay (4.8 MB) |
-| `04-quickpeek-overlay.png` | quickpeek-overlay (4.9 MB) |
-| `05-htmlcs-overlay.png` | htmlcs-overlay (4.8 MB) |
-| `06-ibm-overlay.png` | ibm-overlay (5.0 MB) |
-| `07-structure-overlay.png` | structure-overlay (5.2 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.5 MB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (4.6 MB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (4.7 MB) |
+| `01-page-load-00000ms.png` | Page Load +0ms (1.1 MB) |
+| `01-page-load-03859ms.png` | Page Load +3859ms (1.0 MB) |
+| `01-page-load-04613ms.png` | Page Load +4613ms (1.0 MB) |
+| `01-page-load-08376ms.png` | Page Load +8376ms (1.0 MB) |
+| `01-page-load-09141ms.png` | Page Load +9141ms (1.2 MB) |
+| `01-page-load-09884ms.png` | Page Load +9884ms (1.2 MB) |
+| `03-axe-overlay.png` | axe-overlay (5.1 MB) |
+| `04-quickpeek-overlay.png` | quickpeek-overlay (5.2 MB) |
+| `05-htmlcs-overlay.png` | htmlcs-overlay (5.1 MB) |
+| `06-ibm-overlay.png` | ibm-overlay (4.8 MB) |
+| `07-structure-overlay.png` | structure-overlay (5.0 MB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.4 MB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (4.5 MB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (4.6 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (4.8 MB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (3.0 MB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (4.7 MB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (4.8 MB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (4.9 MB) |
-| `15-screenreader-view.png` | screenreader-view (495.3 KB) |
-| `16-reduced-motion.png` | reduced-motion (5.1 MB) |
-| `17-forced-colors.png` | forced-colors (5.1 MB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (4.8 MB) |
+| `15-screenreader-view.png` | screenreader-view (494.5 KB) |
+| `16-reduced-motion.png` | reduced-motion (4.9 MB) |
+| `17-forced-colors.png` | forced-colors (5.0 MB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

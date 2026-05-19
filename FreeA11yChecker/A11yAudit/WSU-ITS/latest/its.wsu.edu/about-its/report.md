@@ -12,8 +12,8 @@
 | URL | https://its.wsu.edu/about-its/ |
 | Title | About ITS | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 85.7 KB |
-| Screenshots | 17 (23.8 MB) |
+| HTML Size | 85.9 KB |
+| Screenshots | 17 (22.4 MB) |
 | Images | 1 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 8 |
@@ -39,7 +39,7 @@
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>1.7 MB</sub>
+<br /><sub>276.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>478.6 KB</sub>
+<br /><sub>477.3 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -206,12 +206,12 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (139.5 KB) |
-| `03-axe-overlay.png` | axe-overlay (1.7 MB) |
+| `03-axe-overlay.png` | axe-overlay (276.6 KB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (1.8 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.7 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (1.7 MB) |
 | `07-structure-overlay.png` | structure-overlay (1.8 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (478.6 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (477.3 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (1.3 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (1.7 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (1.7 MB) |

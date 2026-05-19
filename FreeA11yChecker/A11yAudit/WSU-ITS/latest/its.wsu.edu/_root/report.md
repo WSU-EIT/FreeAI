@@ -12,8 +12,8 @@
 | URL | https://its.wsu.edu/ |
 | Title | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 102.5 KB |
-| Screenshots | 17 (32.6 MB) |
+| HTML Size | 102.7 KB |
+| Screenshots | 17 (32.8 MB) |
 | Images | 10 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 17 |
@@ -39,7 +39,7 @@
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>1.8 MB</sub>
+<br /><sub>2.0 MB</sub>
 </td>
 </tr>
 <tr>
@@ -216,7 +216,7 @@ Data ... |
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (1.3 MB) |
-| `03-axe-overlay.png` | axe-overlay (1.8 MB) |
+| `03-axe-overlay.png` | axe-overlay (2.0 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (2.3 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (2.2 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (2.2 MB) |

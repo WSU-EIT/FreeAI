@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/recognition/ |
 | Title | Recognition – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 82.4 KB |
+| HTML Size | 82.6 KB |
 | Screenshots | 17 (6.2 MB) |
 | Images | 7 |
 | Images Missing Alt | 0 |
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>402.9 KB</sub>
+<br /><sub>402.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -220,7 +220,7 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (377.2 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (378.4 KB) |
 | `07-structure-overlay.png` | structure-overlay (432.3 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (402.9 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (402.8 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (389.1 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (384.0 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (383.0 KB) |

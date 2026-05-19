@@ -1,0 +1,19 @@
+[
+  {
+    "Tool": "axe",
+    "RuleId": "nested-interactive",
+    "CanonicalRuleId": "nested-interactive",
+    "Severity": "serious",
+    "Message": "Fix any of the following:\n  Element has focusable descendants",
+    "Selector": ".nav-scrollable",
+    "Snippet": "\u003Cdiv class=\u0022nav-scrollable\u0022 role=\u0022button\u0022 tabindex=\u00220\u0022 onclick=\u0022document.querySelector(\u0027.navbar-toggler\u0027).click()\u0022 b-qa4lg9le9h=\u0022\u0022\u003E",
+    "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/nested-interactive?application=axeAPI",
+    "WcagCriteria": "wcag2a, wcag412",
+    "ContrastForeground": null,
+    "ContrastBackground": null,
+    "ContrastRatio": null,
+    "ContrastExpected": null,
+    "ContrastFontSize": null,
+    "ContrastFontWeight": null
+  }
+]

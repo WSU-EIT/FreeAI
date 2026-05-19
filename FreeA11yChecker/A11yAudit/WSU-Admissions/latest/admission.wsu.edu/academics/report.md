@@ -12,8 +12,8 @@
 | URL | https://admission.wsu.edu/academics/ |
 | Title | Degree Finder | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 96.7 KB |
-| Screenshots | 17 (33.2 MB) |
+| HTML Size | 96.9 KB |
+| Screenshots | 17 (33.4 MB) |
 | Images | 16 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 13 |
@@ -32,14 +32,14 @@
 <img src="01-page-load-00000ms.png" width="400" alt="Page Load +0ms" />
 </a>
 <br /><strong>1. Page Load +0ms</strong>
-<br /><sub>416.9 KB</sub>
+<br /><sub>420.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="03-axe-overlay.png">
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>2.3 MB</sub>
 </td>
 </tr>
 <tr>
@@ -55,7 +55,7 @@
 <img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
 </a>
 <br /><strong>4. htmlcs-overlay</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>2.3 MB</sub>
 </td>
 </tr>
 <tr>
@@ -64,7 +64,7 @@
 <img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
 </a>
 <br /><strong>5. ibm-overlay</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>2.3 MB</sub>
 </td>
 <td align="center" width="50%">
 <a href="07-structure-overlay.png">
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>2.3 MB</sub>
 </td>
 <td></td>
 </tr>
@@ -223,11 +223,11 @@
 
 | File | Description |
 |------|-------------|
-| `01-page-load-00000ms.png` | Page Load +0ms (416.9 KB) |
-| `03-axe-overlay.png` | axe-overlay (2.2 MB) |
+| `01-page-load-00000ms.png` | Page Load +0ms (420.8 KB) |
+| `03-axe-overlay.png` | axe-overlay (2.3 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (2.3 MB) |
-| `05-htmlcs-overlay.png` | htmlcs-overlay (2.2 MB) |
-| `06-ibm-overlay.png` | ibm-overlay (2.2 MB) |
+| `05-htmlcs-overlay.png` | htmlcs-overlay (2.3 MB) |
+| `06-ibm-overlay.png` | ibm-overlay (2.3 MB) |
 | `07-structure-overlay.png` | structure-overlay (2.4 MB) |
 | `07b-wireframe-blueprint.png` | wireframe-blueprint (2.0 MB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (2.2 MB) |
@@ -239,7 +239,7 @@
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (2.2 MB) |
 | `15-screenreader-view.png` | screenreader-view (357.9 KB) |
 | `16-reduced-motion.png` | reduced-motion (2.3 MB) |
-| `17-forced-colors.png` | forced-colors (2.2 MB) |
+| `17-forced-colors.png` | forced-colors (2.3 MB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

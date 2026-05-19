@@ -12,7 +12,7 @@
 | URL | https://wsu.edu/athletics/ |
 | Title | WSU Athletics | Washington State University | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 121.4 KB |
+| HTML Size | 121.6 KB |
 | Screenshots | 22 (77.3 MB) |
 | Images | 14 |
 | Images Missing Alt | 0 |
@@ -35,42 +35,42 @@
 <br /><sub>1.0 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-03842ms.png">
-<img src="01-page-load-03842ms.png" width="400" alt="Page Load +3842ms" />
+<a href="01-page-load-03852ms.png">
+<img src="01-page-load-03852ms.png" width="400" alt="Page Load +3852ms" />
 </a>
-<br /><strong>2. Page Load +3842ms</strong>
+<br /><strong>2. Page Load +3852ms</strong>
 <br /><sub>1.4 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-04588ms.png">
-<img src="01-page-load-04588ms.png" width="400" alt="Page Load +4588ms" />
+<a href="01-page-load-04616ms.png">
+<img src="01-page-load-04616ms.png" width="400" alt="Page Load +4616ms" />
 </a>
-<br /><strong>3. Page Load +4588ms</strong>
+<br /><strong>3. Page Load +4616ms</strong>
 <br /><sub>1.4 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-08296ms.png">
-<img src="01-page-load-08296ms.png" width="400" alt="Page Load +8296ms" />
+<a href="01-page-load-08380ms.png">
+<img src="01-page-load-08380ms.png" width="400" alt="Page Load +8380ms" />
 </a>
-<br /><strong>4. Page Load +8296ms</strong>
+<br /><strong>4. Page Load +8380ms</strong>
 <br /><sub>1.4 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-09058ms.png">
-<img src="01-page-load-09058ms.png" width="400" alt="Page Load +9058ms" />
+<a href="01-page-load-09130ms.png">
+<img src="01-page-load-09130ms.png" width="400" alt="Page Load +9130ms" />
 </a>
-<br /><strong>5. Page Load +9058ms</strong>
+<br /><strong>5. Page Load +9130ms</strong>
 <br /><sub>1.2 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-09822ms.png">
-<img src="01-page-load-09822ms.png" width="400" alt="Page Load +9822ms" />
+<a href="01-page-load-09899ms.png">
+<img src="01-page-load-09899ms.png" width="400" alt="Page Load +9899ms" />
 </a>
-<br /><strong>6. Page Load +9822ms</strong>
+<br /><strong>6. Page Load +9899ms</strong>
 <br /><sub>1.2 MB</sub>
 </td>
 </tr>
@@ -103,7 +103,7 @@
 <img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
 </a>
 <br /><strong>10. ibm-overlay</strong>
-<br /><sub>4.9 MB</sub>
+<br /><sub>5.0 MB</sub>
 </td>
 </tr>
 <tr>
@@ -261,15 +261,15 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (1.0 MB) |
-| `01-page-load-03842ms.png` | Page Load +3842ms (1.4 MB) |
-| `01-page-load-04588ms.png` | Page Load +4588ms (1.4 MB) |
-| `01-page-load-08296ms.png` | Page Load +8296ms (1.4 MB) |
-| `01-page-load-09058ms.png` | Page Load +9058ms (1.2 MB) |
-| `01-page-load-09822ms.png` | Page Load +9822ms (1.2 MB) |
+| `01-page-load-03852ms.png` | Page Load +3852ms (1.4 MB) |
+| `01-page-load-04616ms.png` | Page Load +4616ms (1.4 MB) |
+| `01-page-load-08380ms.png` | Page Load +8380ms (1.4 MB) |
+| `01-page-load-09130ms.png` | Page Load +9130ms (1.2 MB) |
+| `01-page-load-09899ms.png` | Page Load +9899ms (1.2 MB) |
 | `03-axe-overlay.png` | axe-overlay (4.9 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (5.1 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (4.9 MB) |
-| `06-ibm-overlay.png` | ibm-overlay (4.9 MB) |
+| `06-ibm-overlay.png` | ibm-overlay (5.0 MB) |
 | `07-structure-overlay.png` | structure-overlay (5.3 MB) |
 | `07b-wireframe-blueprint.png` | wireframe-blueprint (1.7 MB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (4.8 MB) |

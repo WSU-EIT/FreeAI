@@ -12,8 +12,8 @@
 | URL | https://registrar.wsu.edu/ |
 | Title | Office of the Registrar |
 | Status | ✅ 200 |
-| HTML Size | 48.2 KB |
-| Screenshots | 17 (5.6 MB) |
+| HTML Size | 48.0 KB |
+| Screenshots | 17 (5.4 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 13 |
@@ -39,7 +39,7 @@
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>334.0 KB</sub>
+<br /><sub>324.2 KB</sub>
 </td>
 </tr>
 <tr>
@@ -48,14 +48,14 @@
 <img src="04-quickpeek-overlay.png" width="400" alt="quickpeek-overlay" />
 </a>
 <br /><strong>3. quickpeek-overlay</strong>
-<br /><sub>367.7 KB</sub>
+<br /><sub>357.5 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="05-htmlcs-overlay.png">
 <img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
 </a>
 <br /><strong>4. htmlcs-overlay</strong>
-<br /><sub>332.8 KB</sub>
+<br /><sub>323.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -64,14 +64,14 @@
 <img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
 </a>
 <br /><strong>5. ibm-overlay</strong>
-<br /><sub>334.2 KB</sub>
+<br /><sub>324.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="07-structure-overlay.png">
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>446.4 KB</sub>
+<br /><sub>436.4 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>317.7 KB</sub>
+<br /><sub>305.5 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>361.5 KB</sub>
+<br /><sub>351.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,14 +96,14 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>367.5 KB</sub>
+<br /><sub>356.0 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>10. cvd-tritanopia</strong>
-<br /><sub>361.5 KB</sub>
+<br /><sub>353.3 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>351.4 KB</sub>
+<br /><sub>342.0 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>362.1 KB</sub>
+<br /><sub>352.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,14 +128,14 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>363.6 KB</sub>
+<br /><sub>353.6 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
 <br /><strong>14. cvd-tritanomaly</strong>
-<br /><sub>360.2 KB</sub>
+<br /><sub>350.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -144,14 +144,14 @@
 <img src="15-screenreader-view.png" width="400" alt="screenreader-view" />
 </a>
 <br /><strong>15. screenreader-view</strong>
-<br /><sub>302.1 KB</sub>
+<br /><sub>296.5 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="16-reduced-motion.png">
 <img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
 </a>
 <br /><strong>16. reduced-motion</strong>
-<br /><sub>336.8 KB</sub>
+<br /><sub>326.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>317.3 KB</sub>
+<br /><sub>307.6 KB</sub>
 </td>
 <td></td>
 </tr>
@@ -204,22 +204,22 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (114.4 KB) |
-| `03-axe-overlay.png` | axe-overlay (334.0 KB) |
-| `04-quickpeek-overlay.png` | quickpeek-overlay (367.7 KB) |
-| `05-htmlcs-overlay.png` | htmlcs-overlay (332.8 KB) |
-| `06-ibm-overlay.png` | ibm-overlay (334.2 KB) |
-| `07-structure-overlay.png` | structure-overlay (446.4 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (317.7 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (361.5 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (367.5 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (361.5 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (351.4 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (362.1 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (363.6 KB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (360.2 KB) |
-| `15-screenreader-view.png` | screenreader-view (302.1 KB) |
-| `16-reduced-motion.png` | reduced-motion (336.8 KB) |
-| `17-forced-colors.png` | forced-colors (317.3 KB) |
+| `03-axe-overlay.png` | axe-overlay (324.2 KB) |
+| `04-quickpeek-overlay.png` | quickpeek-overlay (357.5 KB) |
+| `05-htmlcs-overlay.png` | htmlcs-overlay (323.0 KB) |
+| `06-ibm-overlay.png` | ibm-overlay (324.4 KB) |
+| `07-structure-overlay.png` | structure-overlay (436.4 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (305.5 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (351.6 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (356.0 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (353.3 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (342.0 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (352.0 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (353.6 KB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (350.1 KB) |
+| `15-screenreader-view.png` | screenreader-view (296.5 KB) |
+| `16-reduced-motion.png` | reduced-motion (326.6 KB) |
+| `17-forced-colors.png` | forced-colors (307.6 KB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

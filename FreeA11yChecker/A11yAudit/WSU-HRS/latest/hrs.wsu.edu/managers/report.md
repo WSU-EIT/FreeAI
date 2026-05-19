@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/managers/ |
 | Title | Managers – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 75.6 KB |
+| HTML Size | 75.8 KB |
 | Screenshots | 17 (2.5 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -71,7 +71,7 @@
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>201.7 KB</sub>
+<br /><sub>201.8 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,7 +96,7 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>141.1 KB</sub>
+<br /><sub>141.0 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
@@ -210,10 +210,10 @@
 | `04-quickpeek-overlay.png` | quickpeek-overlay (155.3 KB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (129.4 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (131.0 KB) |
-| `07-structure-overlay.png` | structure-overlay (201.7 KB) |
+| `07-structure-overlay.png` | structure-overlay (201.8 KB) |
 | `07b-wireframe-blueprint.png` | wireframe-blueprint (167.5 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (151.7 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (141.1 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (141.0 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (139.5 KB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (136.2 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (140.8 KB) |

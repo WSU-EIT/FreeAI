@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/careers/ |
 | Title | Careers – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 85.0 KB |
+| HTML Size | 85.1 KB |
 | Screenshots | 17 (10.9 MB) |
 | Images | 2 |
 | Images Missing Alt | 0 |
@@ -71,7 +71,7 @@
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>773.6 KB</sub>
+<br /><sub>773.5 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>625.6 KB</sub>
+<br /><sub>625.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -216,8 +216,8 @@
 | `04-quickpeek-overlay.png` | quickpeek-overlay (744.9 KB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (715.4 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (716.9 KB) |
-| `07-structure-overlay.png` | structure-overlay (773.6 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (625.6 KB) |
+| `07-structure-overlay.png` | structure-overlay (773.5 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (625.9 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (700.6 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (703.3 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (714.5 KB) |

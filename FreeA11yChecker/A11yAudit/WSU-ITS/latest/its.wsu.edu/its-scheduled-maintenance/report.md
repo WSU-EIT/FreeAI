@@ -12,7 +12,7 @@
 | URL | https://its.wsu.edu/its-scheduled-maintenance/ |
 | Title | ITS Scheduled Maintenance | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 91.3 KB |
+| HTML Size | 91.5 KB |
 | Screenshots | 17 (3.2 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>207.1 KB</sub>
+<br /><sub>204.7 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -96,14 +96,14 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>190.5 KB</sub>
+<br /><sub>189.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>10. cvd-tritanopia</strong>
-<br /><sub>186.7 KB</sub>
+<br /><sub>187.8 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>184.4 KB</sub>
+<br /><sub>181.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>186.8 KB</sub>
+<br /><sub>189.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,7 +128,7 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>189.2 KB</sub>
+<br /><sub>188.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
@@ -210,13 +210,13 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (170.3 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (171.7 KB) |
 | `07-structure-overlay.png` | structure-overlay (258.5 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (207.1 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (204.7 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (187.3 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (190.5 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (186.7 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (184.4 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (186.8 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (189.2 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (189.8 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (187.8 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (181.4 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (189.0 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (188.4 KB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (186.8 KB) |
 | `15-screenreader-view.png` | screenreader-view (356.3 KB) |
 | `16-reduced-motion.png` | reduced-motion (175.5 KB) |

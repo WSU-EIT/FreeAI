@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/employees/leave/ |
 | Title | Leave Policies and Programs – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 87.7 KB |
+| HTML Size | 88.0 KB |
 | Screenshots | 17 (8.6 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>535.7 KB</sub>
+<br /><sub>536.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -213,7 +213,7 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (512.0 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (513.7 KB) |
 | `07-structure-overlay.png` | structure-overlay (648.4 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (535.7 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (536.8 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (540.4 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (540.5 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (537.3 KB) |

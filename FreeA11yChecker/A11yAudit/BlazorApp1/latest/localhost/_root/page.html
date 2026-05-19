@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en" style="--blazor-load-percentage: 100%; --blazor-load-percentage-text: &quot;100%&quot;;"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <link href="_framework/dotnet.r6wpwlfc73.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous">
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.43atpzeawx.css">
+    <link rel="stylesheet" href="app.khy4lop6wu.css">
+    <link rel="stylesheet" href="BlazorApp1.hwo04cdlyf.styles.css">
+    <script type="importmap">{
+  "imports": {
+    "./Components/Account/Shared/PasskeySubmit.razor.js": "./Components/Account/Shared/PasskeySubmit.pr21mg9rrw.razor.js",
+    "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_framework/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",
+    "./_framework/blazor.server.js": "./_framework/blazor.server.cj5793hgrt.js",
+    "./_framework/blazor.web.js": "./_framework/blazor.web.ej96puwv3k.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.r6wpwlfc73.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.js": "./lib/bootstrap/dist/js/bootstrap.bundle.4094rpi4f9.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.min.js": "./lib/bootstrap/dist/js/bootstrap.bundle.min.hd3gran6i8.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.js": "./lib/bootstrap/dist/js/bootstrap.esm.ltid2c489k.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.min.js": "./lib/bootstrap/dist/js/bootstrap.esm.min.8vyfqsqgz1.js",
+    "./lib/bootstrap/dist/js/bootstrap.min.js": "./lib/bootstrap/dist/js/bootstrap.min.4d85u1mtcx.js",
+    "./lib/bootstrap/dist/js/bootstrap.js": "./lib/bootstrap/dist/js/bootstrap.u9q1upor1n.js",
+    "_framework/resource-collection.js": "./_framework/resource-collection.BvAeP.js",
+    "_framework/resource-collection.js.gz": "./_framework/resource-collection.BvAeP.js.gz"
+  },
+  "integrity": {
+    "./_framework/resource-collection.BvAeP.js": "sha256-GGfqdW63WmZqBrOgaFHtfHfrVKGpZQJ7Vm2jUGEAzj4=",
+    "./_framework/resource-collection.BvAeP.js.gz": "sha256-GGfqdW63WmZqBrOgaFHtfHfrVKGpZQJ7Vm2jUGEAzj4="
+  }
+}</script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!--!--><!--!--><!--!--><title>Home</title><!--!--><!--!--><style id="a11y-font-override">* { font-family: Arial, sans-serif !important; }</style></head>
+
+<body><!--!--><!--!--><!--!--><!--!--><!--!--><!--!--><div class="page" b-qig53hgue4=""><!--!--><a class="visually-hidden-focusable" href="#main-content" b-qig53hgue4="">Skip to main content</a>
+    <div class="sidebar" b-qig53hgue4=""><!--!--><!--!--><div class="top-row ps-3 navbar navbar-dark" b-qa4lg9le9h=""><div class="container-fluid" b-qa4lg9le9h=""><a class="navbar-brand" href="/" b-qa4lg9le9h="">BlazorApp1</a></div></div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" b-qa4lg9le9h="" style="">
+
+<div class="nav-scrollable" role="button" tabindex="0" onclick="document.querySelector('.navbar-toggler').click()" b-qa4lg9le9h=""><nav class="nav flex-column" b-qa4lg9le9h=""><div class="nav-item px-3" b-qa4lg9le9h=""><!--!--><a href="" class="nav-link active" aria-current="page"><!--!--><span class="bi bi-house-door-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Home
+            </a></div><!--!-->
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><!--!--><a href="counter" class="nav-link"><!--!--><span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Counter
+            </a></div><!--!-->
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><!--!--><a href="weather" class="nav-link"><!--!--><span class="bi bi-list-nested-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Weather
+            </a></div><!--!-->
+
+        <div class="nav-item px-3" b-qa4lg9le9h=""><!--!--><a href="auth" class="nav-link"><!--!--><span class="bi bi-lock-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Auth Required
+            </a></div><!--!-->
+
+        <!--!--><div class="nav-item px-3" b-qa4lg9le9h=""><!--!--><a href="Account/Manage" class="nav-link"><!--!--><span class="bi bi-person-fill-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> admin@example.com</a></div><!--!-->
+                <div class="nav-item px-3" b-qa4lg9le9h=""><form action="Account/Logout" method="post" b-qa4lg9le9h=""><!--!--><input type="hidden" name="__RequestVerificationToken" value="CfDJ8EnaDGRwO5pFsWAy6QmiZNmthJKnAzxoB1xFIbn8n5nC3gMdnRxrA387aDNPdeHP2YX4RkoNMCeWNuIy-fEA6LAe1z_AmziC226PLthi_0vSD6KTh6LMVvJIOcFQb9UBKCQBccV_9ToRLTwo0xb7jx-PkhRza3GJURw2T5-FHTXNmNJzQ5sDZ6fk-RrN0EcTlg" style=""><!--!-->
+                        <input type="hidden" name="ReturnUrl" value="" b-qa4lg9le9h="" style=""><!--!-->
+                        <!--!--><button type="submit" class="nav-link" b-qa4lg9le9h=""><span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true" b-qa4lg9le9h=""></span> Logout
+                        </button></form></div></nav></div></div><!--!-->
+
+    <main id="main-content" b-qig53hgue4=""><!--!--><div class="top-row px-4" b-qig53hgue4=""><a href="https://learn.microsoft.com/aspnet/core/" target="_blank" b-qig53hgue4="">About</a></div>
+
+        <article class="content px-4" b-qig53hgue4=""><!--!--><!--!--><!--!--><!--!-->
+
+<!--!--><h1 tabindex="-1">Hello, world!</h1>
+
+Welcome to your new app.
+</article></main></div><!--!-->
+
+<!--!--><div id="blazor-error-ui" data-nosnippet="" b-qig53hgue4="">
+    An unhandled error has occurred.
+    <a href="." class="reload" b-qig53hgue4="">Reload</a>
+    <span class="dismiss" b-qig53hgue4="">🗙</span></div><!--!-->
+        <!--!-->
+    <script src="_framework/blazor.web.ej96puwv3k.js"></script>
+    <script src="Components/Account/Shared/PasskeySubmit.pr21mg9rrw.razor.js" type="module"></script></body></html>
