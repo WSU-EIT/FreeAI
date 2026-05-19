@@ -1,45 +1,40 @@
 ﻿# FreeGLBA
 
-**GLBA Compliance Data Access Tracking System**
+GLBA (Gramm-Leach-Bliley Act) compliance data-access tracking system built on the FreeCRM framework with ASP.NET Core and Blazor WebAssembly (.NET 10). Tracks who accessed protected financial data — when, by whom, and for what purpose — and provides audit-ready reports and a real-time access dashboard. Ships a NuGet client library (`FreeGLBA.NugetClient`) so any other application can emit GLBA access events with a single method call.
 
-A free, open-source solution for tracking and auditing access to protected financial information as required by the Gramm-Leach-Bliley Act (GLBA).
+## What it does
 
-## About
+- **Access event logging** — record who accessed which financial record, when, and why (single or bulk events)
+- **Real-time dashboard** — live access statistics and pattern monitoring via SignalR
+- **Compliance reports** — exportable audit reports for GLBA review
+- **REST API** — integrate any system via HTTP
+- **NuGet client** — `dotnet add package FreeGLBA.Client` gives any .NET app a typed `GlbaClient`
 
-FreeGLBA helps educational institutions and financial organizations maintain compliance with GLBA requirements by providing:
+## Projects
 
-- **Centralized Access Logging** - Track who accessed what data, when, and why
-- **Real-time Dashboard** - Monitor access patterns and statistics
-- **Compliance Reporting** - Generate audit-ready reports
-- **API Integration** - Easy integration with existing systems via REST API
-- **Bulk Access Tracking** - Track access to multiple subjects in a single event
+| Project | Description |
+|---------|-------------|
+| [`FreeGLBA`](FreeGLBA/README.md) | ASP.NET Core host; REST API, auth, SignalR, background service |
+| [`FreeGLBA.Client`](FreeGLBA.Client/README.md) | Blazor WASM client; dashboard, log viewer, settings |
+| [`FreeGLBA.DataAccess`](FreeGLBA.DataAccess/README.md) | Business logic; EF Core, access-event repositories, auth helpers |
+| [`FreeGLBA.DataObjects`](FreeGLBA.DataObjects/README.md) | Shared DTOs; `GlbaEventRequest`, endpoint constants |
+| [`FreeGLBA.EFModels`](FreeGLBA.EFModels/README.md) | EF Core DbContext; access-event log and core framework tables |
+| [`FreeGLBA.NugetClient`](FreeGLBA.NugetClient/README.md) | NuGet package; `GlbaClient` for external system integration |
+| [`FreeGLBA.NugetClientPublisher`](FreeGLBA.NugetClientPublisher/README.md) | Tool for publishing the NuGet package |
+| [`FreeGLBA.Plugins`](FreeGLBA.Plugins/README.md) | Roslyn dynamic C# plugin runtime |
+| [`FreeGLBA.TestClient`](FreeGLBA.TestClient/README.md) | Integration test client (project reference) |
+| [`FreeGLBA.TestClientWithNugetPackage`](FreeGLBA.TestClientWithNugetPackage/README.md) | Integration test client (NuGet package) |
 
-## Technology Stack
-
-- **.NET 10** - Latest .NET runtime
-- **Blazor Server** - Interactive web UI with server-side rendering
-- **Entity Framework Core** - Database access (SQL Server, PostgreSQL, SQLite)
-- **SignalR** - Real-time notifications
-
-## Quick Start
-
-### Prerequisites
-- .NET 10 SDK
-- SQL Server, PostgreSQL, or SQLite
-
-### Running Locally
+## Quick start
 
 ```bash
-git clone https://github.com/WSU-EIT/FreeGLBA.git
 cd FreeGLBA/FreeGLBA
 dotnet run
 ```
 
-Navigate to `https://localhost:5001`
+Boots with `DatabaseType=InMemory` — no database setup required. Navigate to `http://localhost:5001`.
 
-### Client Library
-
-For integrating your applications with FreeGLBA:
+### Client library
 
 ```bash
 dotnet add package FreeGLBA.Client
@@ -47,60 +42,37 @@ dotnet add package FreeGLBA.Client
 
 ```csharp
 var client = new GlbaClient("https://your-server.com", "your-api-key");
-await client.LogAccessAsync(new GlbaEventRequest
-{
-    UserId = "jsmith",
+await client.LogAccessAsync(new GlbaEventRequest {
+    UserId    = "jsmith",
     SubjectId = "S12345678",
     AccessType = "View",
-    Purpose = "Enrollment verification"
+    Purpose   = "Enrollment verification"
 });
 ```
 
-## Project Structure
+## Current state
 
-| Project | Description |
-|---------|-------------|
-| [`FreeGLBA`](FreeGLBA/README.md) | Main server application (ASP.NET Core, Blazor Server) |
-| [`FreeGLBA.Client`](FreeGLBA.Client/README.md) | Blazor WebAssembly UI components |
-| [`FreeGLBA.DataAccess`](FreeGLBA.DataAccess/README.md) | Business logic and data access layer |
-| [`FreeGLBA.DataObjects`](FreeGLBA.DataObjects/README.md) | DTOs, configuration, and API endpoints |
-| [`FreeGLBA.EFModels`](FreeGLBA.EFModels/README.md) | Entity Framework Core database models |
-| [`FreeGLBA.NugetClient`](FreeGLBA.NugetClient/README.md) | Client library for API integration (NuGet package) |
-| [`FreeGLBA.NugetClientPublisher`](FreeGLBA.NugetClientPublisher/README.md) | NuGet package publishing tool |
-| [`FreeGLBA.Plugins`](FreeGLBA.Plugins/README.md) | Dynamic C# plugin system |
-| [`FreeGLBA.TestClient`](FreeGLBA.TestClient/README.md) | Test client (project reference) |
-| [`FreeGLBA.TestClientWithNugetPackage`](FreeGLBA.TestClientWithNugetPackage/README.md) | Test client (NuGet package) |
-| [`Docs`](Docs/README.md) | Documentation and guides |
+- Boots and serves all pages in InMemory mode
+- Full multi-page crawl captured: **903 screenshots across 50 pages** in `Docs/showcase/runs/latest/`
+- Login with `admin`/`admin` requires seeded data — public pages are accessible without authentication
+- Documentation complete: see [`Docs/`](Docs/)
 
-## Documentation
+## Build details
 
-- [Server Setup](Docs/README.md)
-- [Client Library](FreeGLBA.NugetClient/README.md)
-- [API Reference](FreeGLBA.DataObjects/README.md)
-- [Database Models](FreeGLBA.EFModels/README.md)
-- [Plugin System](FreeGLBA.Plugins/README.md)
-- [Data Access Layer](FreeGLBA.DataAccess/README.md)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+| Property | Value |
+|---|---|
+| Target framework | net10.0 |
+| Database backends | SQL Server, PostgreSQL, SQLite, InMemory |
+| Auth providers | Cookie, OpenID Connect, Microsoft, Google, Facebook, Apple |
+| Real-time | SignalR (local or Azure SignalR Service) |
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Released under the [MIT License](https://opensource.org/licenses/MIT).
 
----
+## About
 
-## About the Team
+Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
 
-**FreeGLBA** is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.
-
-We build software solutions to support enrollment management, student services, and compliance needs across the university.
-
-🔗 **Meet Our Team**: [https://em.wsu.edu/eit/meet-our-staff/](https://em.wsu.edu/eit/meet-our-staff/)
-
-📧 **Contact**: [GitHub Issues](https://github.com/WSU-EIT/FreeGLBA/issues)
-
----
-
-*Go Cougs! 🐾*
+- Website: https://em.wsu.edu/eit/
+- GitHub: https://github.com/WSU-EIT
