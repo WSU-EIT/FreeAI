@@ -12,8 +12,8 @@
 | URL | https://hrs.wsu.edu/employees/benefits/ |
 | Title | Benefits – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 88.5 KB |
-| Screenshots | 17 (9.1 MB) |
+| HTML Size | 88.6 KB |
+| Screenshots | 17 (9.0 MB) |
 | Images | 10 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 32 |
@@ -39,7 +39,7 @@
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>595.9 KB</sub>
+<br /><sub>585.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -48,14 +48,14 @@
 <img src="04-quickpeek-overlay.png" width="400" alt="quickpeek-overlay" />
 </a>
 <br /><strong>3. quickpeek-overlay</strong>
-<br /><sub>634.2 KB</sub>
+<br /><sub>625.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="05-htmlcs-overlay.png">
 <img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
 </a>
 <br /><strong>4. htmlcs-overlay</strong>
-<br /><sub>595.5 KB</sub>
+<br /><sub>586.7 KB</sub>
 </td>
 </tr>
 <tr>
@@ -64,14 +64,14 @@
 <img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
 </a>
 <br /><strong>5. ibm-overlay</strong>
-<br /><sub>597.1 KB</sub>
+<br /><sub>588.3 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="07-structure-overlay.png">
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>680.1 KB</sub>
+<br /><sub>672.8 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>562.6 KB</sub>
+<br /><sub>561.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>600.8 KB</sub>
+<br /><sub>593.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,14 +96,14 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>600.6 KB</sub>
+<br /><sub>598.6 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>10. cvd-tritanopia</strong>
-<br /><sub>600.4 KB</sub>
+<br /><sub>591.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>445.9 KB</sub>
+<br /><sub>451.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>597.9 KB</sub>
+<br /><sub>595.4 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,14 +128,14 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>600.9 KB</sub>
+<br /><sub>597.7 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
 <br /><strong>14. cvd-tritanomaly</strong>
-<br /><sub>600.7 KB</sub>
+<br /><sub>592.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -144,14 +144,14 @@
 <img src="15-screenreader-view.png" width="400" alt="screenreader-view" />
 </a>
 <br /><strong>15. screenreader-view</strong>
-<br /><sub>395.4 KB</sub>
+<br /><sub>401.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="16-reduced-motion.png">
 <img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
 </a>
 <br /><strong>16. reduced-motion</strong>
-<br /><sub>505.9 KB</sub>
+<br /><sub>522.2 KB</sub>
 </td>
 </tr>
 <tr>
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>564.8 KB</sub>
+<br /><sub>536.5 KB</sub>
 </td>
 <td></td>
 </tr>
@@ -176,10 +176,10 @@
 | 4 | https://hrs.wsu.edu/wp-content/uploads/2019/01/spa.jpg | A stylized icon representing a spa. |
 | 5 | https://hrs.wsu.edu/wp-content/uploads/2019/01/person.jpg | An icon representing a person. |
 | 6 | https://hrs.wsu.edu/wp-content/uploads/2019/01/flower.jpg | A red outline of a flower. |
-| 7 | https://hrs.wsu.edu/wp-content/uploads/2026/04/Blog-post-sizing-1200-x-900-px... |  |
-| 8 | https://hrs.wsu.edu/wp-content/uploads/2026/03/2026-EAP1-720x720.png |  |
-| 9 | https://hrs.wsu.edu/wp-content/uploads/2026/03/reminder-720x540.png |  |
-| 10 | https://hrs.wsu.edu/wp-content/uploads/2025/03/Blog-post-sizing-3-edited-720x... |  |
+| 7 | https://hrs.wsu.edu/wp-content/uploads/2026/05/Blog-post-sizing-1200-x-900-px... | ittle boy with cardboard wings, on a ... |
+| 8 | https://hrs.wsu.edu/wp-content/uploads/2026/05/EAP-Neuro-6.25.26-720x720.png | Silhouette of a head looking downward... |
+| 9 | https://hrs.wsu.edu/wp-content/uploads/2026/04/Blog-post-sizing-1200-x-900-px... |  |
+| 10 | https://hrs.wsu.edu/wp-content/uploads/2026/03/2026-EAP1-720x720.png |  |
 
 ## Accessibility
 
@@ -219,22 +219,22 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (159.5 KB) |
-| `03-axe-overlay.png` | axe-overlay (595.9 KB) |
-| `04-quickpeek-overlay.png` | quickpeek-overlay (634.2 KB) |
-| `05-htmlcs-overlay.png` | htmlcs-overlay (595.5 KB) |
-| `06-ibm-overlay.png` | ibm-overlay (597.1 KB) |
-| `07-structure-overlay.png` | structure-overlay (680.1 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (562.6 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (600.8 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (600.6 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (600.4 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (445.9 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (597.9 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (600.9 KB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (600.7 KB) |
-| `15-screenreader-view.png` | screenreader-view (395.4 KB) |
-| `16-reduced-motion.png` | reduced-motion (505.9 KB) |
-| `17-forced-colors.png` | forced-colors (564.8 KB) |
+| `03-axe-overlay.png` | axe-overlay (585.6 KB) |
+| `04-quickpeek-overlay.png` | quickpeek-overlay (625.9 KB) |
+| `05-htmlcs-overlay.png` | htmlcs-overlay (586.7 KB) |
+| `06-ibm-overlay.png` | ibm-overlay (588.3 KB) |
+| `07-structure-overlay.png` | structure-overlay (672.8 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (561.2 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (593.1 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (598.6 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (591.6 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (451.9 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (595.4 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (597.7 KB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (592.0 KB) |
+| `15-screenreader-view.png` | screenreader-view (401.9 KB) |
+| `16-reduced-motion.png` | reduced-motion (522.2 KB) |
+| `17-forced-colors.png` | forced-colors (536.5 KB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

@@ -12,8 +12,8 @@
 | URL | https://admission.wsu.edu/life/ |
 | Title | Life at WSU | Admissions | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 119.4 KB |
-| Screenshots | 18 (30.2 MB) |
+| HTML Size | 119.6 KB |
+| Screenshots | 18 (30.6 MB) |
 | Images | 6 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 45 |
@@ -87,7 +87,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>8. wireframe-blueprint</strong>
-<br /><sub>1.2 MB</sub>
+<br /><sub>1.7 MB</sub>
 </td>
 </tr>
 <tr>
@@ -236,7 +236,7 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.6 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (1.6 MB) |
 | `07-structure-overlay.png` | structure-overlay (1.7 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.2 MB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.7 MB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (2.0 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (2.1 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (2.1 MB) |

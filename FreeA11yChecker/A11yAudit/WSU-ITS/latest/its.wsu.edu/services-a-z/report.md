@@ -12,8 +12,8 @@
 | URL | https://its.wsu.edu/services-a-z/ |
 | Title | Services A-Z | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 141.1 KB |
-| Screenshots | 17 (45.1 MB) |
+| HTML Size | 141.3 KB |
+| Screenshots | 17 (45.2 MB) |
 | Images | 1 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 7 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>1.3 MB</sub>
+<br /><sub>1.4 MB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>2.7 MB</sub>
+<br /><sub>2.6 MB</sub>
 </td>
 </tr>
 <tr>
@@ -210,8 +210,8 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (3.0 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (3.0 MB) |
 | `07-structure-overlay.png` | structure-overlay (3.3 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.3 MB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (2.7 MB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.4 MB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (2.6 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (3.0 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (3.0 MB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (1.9 MB) |

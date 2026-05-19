@@ -12,7 +12,7 @@
 | URL | https://its.wsu.edu/news/ |
 | Title | News | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 89.3 KB |
+| HTML Size | 89.5 KB |
 | Screenshots | 17 (6.2 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>439.8 KB</sub>
+<br /><sub>432.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>388.4 KB</sub>
+<br /><sub>391.3 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,7 +112,7 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>385.8 KB</sub>
+<br /><sub>385.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
@@ -135,7 +135,7 @@
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
 <br /><strong>14. cvd-tritanomaly</strong>
-<br /><sub>389.1 KB</sub>
+<br /><sub>387.5 KB</sub>
 </td>
 </tr>
 <tr>
@@ -209,14 +209,14 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (366.4 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (368.1 KB) |
 | `07-structure-overlay.png` | structure-overlay (500.2 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (439.8 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (388.4 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (432.4 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (391.3 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (386.8 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (388.7 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (385.8 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (385.2 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (387.7 KB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (388.2 KB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (389.1 KB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (387.5 KB) |
 | `15-screenreader-view.png` | screenreader-view (334.1 KB) |
 | `16-reduced-motion.png` | reduced-motion (371.5 KB) |
 | `17-forced-colors.png` | forced-colors (362.5 KB) |

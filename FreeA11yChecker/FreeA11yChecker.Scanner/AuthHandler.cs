@@ -243,18 +243,26 @@ public static class AuthHandler
                     "button:has-text('Local')",                         // last-resort match (avoid matching Okta buttons)
                 };
                 bool clicked = false;
+                // Wait once for ANY provider button to appear rather than racing each selector
+                // with a 2s window. Blazor WASM hydration + tenant API call can take 3-8s on
+                // a cold start, so 2s per-selector was consistently losing that race.
+                string combinedProviderSel = string.Join(", ", localBtnSelectors);
+                try {
+                    await Page.WaitForSelectorAsync(combinedProviderSel, new PageWaitForSelectorOptions {
+                        State = WaitForSelectorState.Visible,
+                        Timeout = 10000,
+                    });
+                } catch { /* none appeared in 10s — fall through and attempt fill anyway */ }
                 foreach (string sel in localBtnSelectors) {
                     try {
                         ILocator btn = Page.Locator(sel).First;
-                        await btn.WaitForAsync(new LocatorWaitForOptions {
-                            State = WaitForSelectorState.Visible,
-                            Timeout = 2000,
-                        });
-                        OnStep?.Invoke($"auth: clicking provider-selection button matched by '{sel}'");
-                        await btn.ClickAsync(new LocatorClickOptions { Timeout = 5000 });
-                        clicked = true;
-                        break;
-                    } catch { /* try next selector */ }
+                        if (await btn.CountAsync() > 0 && await btn.IsVisibleAsync()) {
+                            OnStep?.Invoke($"auth: clicking provider-selection button matched by '{sel}'");
+                            await btn.ClickAsync(new LocatorClickOptions { Timeout = 5000 });
+                            clicked = true;
+                            break;
+                        }
+                    } catch { /* try next */ }
                 }
 
                 if (clicked) {
@@ -603,6 +611,11 @@ public static class AuthHandler
                         await Page.WaitForTimeoutAsync(2000);
                     }
                     await loc.FillAsync(value, new LocatorFillOptions { Timeout = 15000 });
+                    // Re-fire input event after fill so Blazor WASM @bind:event="oninput"
+                    // listeners pick up the change. FillAsync uses a batched value write that
+                    // can miss Blazor's listener if it attached after the fill fired. No-op on
+                    // standard SSR forms where no JS listener is waiting.
+                    try { await loc.EvaluateAsync("el => el.dispatchEvent(new Event('input', {bubbles:true}))"); } catch { }
                     return true;
                 }
                 OnStep?.Invoke($"  → {fieldKind}: configured selector '{configuredSelector}' not in DOM, falling back to cascade");
@@ -618,6 +631,7 @@ public static class AuthHandler
                 int count = await loc.CountAsync();
                 if (count > 0 && await loc.IsVisibleAsync()) {
                     await loc.FillAsync(value, new LocatorFillOptions { Timeout = 5000 });
+                    try { await loc.EvaluateAsync("el => el.dispatchEvent(new Event('input', {bubbles:true}))"); } catch { }
                     OnStep?.Invoke($"  → {fieldKind}: filled via fallback selector '{selector}'");
                     return true;
                 }

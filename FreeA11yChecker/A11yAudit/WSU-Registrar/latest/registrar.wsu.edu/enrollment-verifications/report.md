@@ -13,7 +13,7 @@
 | Title | Page Not Found | Enrollment Management |
 | Status | ✅ 404 |
 | HTML Size | 30.2 KB |
-| Screenshots | 17 (667.3 KB) |
+| Screenshots | 17 (665.7 KB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 8 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>45.7 KB</sub>
+<br /><sub>44.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>32.8 KB</sub>
+<br /><sub>32.3 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>36.6 KB</sub>
+<br /><sub>36.3 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>35.8 KB</sub>
+<br /><sub>36.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -209,12 +209,12 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (30.7 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (32.3 KB) |
 | `07-structure-overlay.png` | structure-overlay (53.5 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (45.7 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (32.8 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (44.9 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (32.3 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (35.6 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (36.1 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (36.6 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (35.8 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (36.3 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (36.0 KB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (36.1 KB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (36.3 KB) |
 | `15-screenreader-view.png` | screenreader-view (80.3 KB) |

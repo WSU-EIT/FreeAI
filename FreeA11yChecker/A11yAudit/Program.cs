@@ -1,19 +1,24 @@
-﻿// A11yAudit — One-click accessibility scan orchestrator
+﻿// A11yAudit — Accessibility scan orchestrator (the primary entry point)
 //
-// Auto-discovers appsettings.*.json files in the A11yAudit folder and scans each target.
-// Targets with "External": true skip server launch — great for scanning any live website.
+// Set this as the startup project in Visual Studio and press F5, or run:
+//   dotnet run --project A11yAudit
 //
-// Usage:
-//   F5 in Visual Studio (set A11yAudit as startup project)
-//   dotnet run                          -> scan all targets
-//   dotnet run -- BlazorApp1            -> scan only BlazorApp1
-//   dotnet run -- FreeA11yChecker       -> scan only FreeA11yChecker
-//   dotnet run -- --external-only       -> scan only external (non-localhost) targets
-//   dotnet run -- --local-only          -> scan only local (localhost) targets
+// Auto-discovers every appsettings.*.json in this folder. Local targets get their
+// server started and stopped automatically. External targets are just health-checked.
+// Add a new scan target by dropping an appsettings.<Name>.json here — no code changes.
 //
-// To scan an external site, create appsettings.<name>.json with:
-//   { "External": true, "Scanner": { "Sites": { "<name>": { "BaseUrl": "https://example.com/", ... } } } }
-// No server project needed — the orchestrator just runs the scanner directly.
+// Args:
+//   (none)                  scan all targets
+//   BlazorApp1              scan only that target by name
+//   --local-only            local servers only (BlazorApp1, FreeA11yChecker)
+//   --external-only         external sites only (WSU-Main, WSU-Admissions, etc.)
+//
+// Local target appsettings fields:
+//   "External": false           (default — A11yAudit starts/stops the server)
+//   "ServerEnvironment": "Xyz"  sets ASPNETCORE_ENVIRONMENT on the server process
+//
+// External target appsettings fields:
+//   "External": true            A11yAudit just verifies the URL is reachable
 
 using System.Diagnostics;
 using System.Net.Http;
@@ -113,8 +118,8 @@ async Task<int> ScanTarget(ScanTarget target)
         else
         {
             // Local project — launch the server
-            WriteStep($"Starting {target.Name} server...");
-            server = StartServer(target.ServerProject);
+            WriteStep($"Starting {target.Name} server{(string.IsNullOrEmpty(target.ServerEnvironment) ? "" : $" (env: {target.ServerEnvironment})")}...");
+            server = StartServer(target.ServerProject, target.ServerEnvironment);
             if (server == null) return 1;
 
             WriteStep($"Waiting for {target.Name} at {target.HealthUrl}...");
@@ -168,19 +173,21 @@ async Task<int> ScanTarget(ScanTarget target)
 // Process management
 // ================================================================
 
-Process? StartServer(string projectDir)
+Process? StartServer(string projectDir, string serverEnvironment = "")
 {
     try
     {
         var psi = new ProcessStartInfo
         {
             FileName = "dotnet",
-            Arguments = "run --no-build --launch-profile https",
+            Arguments = "run --launch-profile https",
             WorkingDirectory = projectDir,
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
         };
+        if (!string.IsNullOrEmpty(serverEnvironment))
+            psi.EnvironmentVariables["ASPNETCORE_ENVIRONMENT"] = serverEnvironment;
         var proc = Process.Start(psi);
         if (proc == null)
         {
@@ -250,20 +257,18 @@ int RunScanner(string consoleProjectDir, string configFile, string outputDir)
     var psi = new ProcessStartInfo
     {
         FileName = "dotnet",
-        Arguments = $"run --no-build -- scan",
+        Arguments = $"run -- scan",
         WorkingDirectory = consoleProjectDir,
         UseShellExecute = false,
         RedirectStandardOutput = true,
         RedirectStandardError = true,
     };
 
-    // The Console reads appsettings.json from AppContext.BaseDirectory (bin folder).
-    // We need to swap configs in BOTH the project dir and the bin output dir,
-    // because `dotnet run --no-build` copies project-dir config to bin on launch.
-    string binDir = Path.Combine(consoleProjectDir, "bin", "Debug", "net10.0");
+    // Patch only the project-dir appsettings.json. `dotnet run` (with build) copies
+    // project-dir configs into the bin folder as part of the build step, so we don't
+    // need to also patch the bin dir — that was only necessary with --no-build.
     string[] configLocations = [
         Path.Combine(consoleProjectDir, "appsettings.json"),
-        Path.Combine(binDir, "appsettings.json"),
     ];
 
     var backups = new List<(string config, string backup)>();
@@ -413,6 +418,7 @@ List<ScanTarget> DiscoverTargets(string projectDir, string slnDir)
             var root = doc.RootElement;
 
             bool external = root.TryGetProperty("External", out var extProp) && extProp.GetBoolean();
+            string serverEnv = root.TryGetProperty("ServerEnvironment", out var envProp) ? envProp.GetString() ?? "" : "";
 
             // Find the site name and BaseUrl from Scanner.Sites
             if (!root.TryGetProperty("Scanner", out var scanner)) continue;
@@ -450,7 +456,8 @@ List<ScanTarget> DiscoverTargets(string projectDir, string slnDir)
                     ConfigFile: configFile,
                     HealthUrl: baseUrl,
                     EvidenceDir: Path.Combine(projectDir, name, "latest"),
-                    External: external));
+                    External: external,
+                    ServerEnvironment: serverEnv));
             }
         }
         catch (Exception ex)
@@ -463,4 +470,4 @@ List<ScanTarget> DiscoverTargets(string projectDir, string slnDir)
     return result;
 }
 
-record ScanTarget(string Name, string ServerProject, string ConfigFile, string HealthUrl, string EvidenceDir, bool External = false);
+record ScanTarget(string Name, string ServerProject, string ConfigFile, string HealthUrl, string EvidenceDir, bool External = false, string ServerEnvironment = "");

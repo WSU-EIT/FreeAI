@@ -12,8 +12,8 @@
 | URL | https://wsu.edu/admissions/ |
 | Title | WSU Admissions | Washington State University | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 120.8 KB |
-| Screenshots | 19 (35.5 MB) |
+| HTML Size | 121.0 KB |
+| Screenshots | 19 (35.2 MB) |
 | Images | 11 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 28 |
@@ -35,19 +35,19 @@
 <br /><sub>1.2 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-03024ms.png">
-<img src="01-page-load-03024ms.png" width="400" alt="Page Load +3024ms" />
+<a href="01-page-load-03809ms.png">
+<img src="01-page-load-03809ms.png" width="400" alt="Page Load +3809ms" />
 </a>
-<br /><strong>2. Page Load +3024ms</strong>
+<br /><strong>2. Page Load +3809ms</strong>
 <br /><sub>1.1 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-08307ms.png">
-<img src="01-page-load-08307ms.png" width="400" alt="Page Load +8307ms" />
+<a href="01-page-load-08478ms.png">
+<img src="01-page-load-08478ms.png" width="400" alt="Page Load +8478ms" />
 </a>
-<br /><strong>3. Page Load +8307ms</strong>
+<br /><strong>3. Page Load +8478ms</strong>
 <br /><sub>1.2 MB</sub>
 </td>
 <td align="center" width="50%">
@@ -103,7 +103,7 @@
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>10. cvd-protanopia</strong>
-<br /><sub>2.0 MB</sub>
+<br /><sub>2.1 MB</sub>
 </td>
 </tr>
 <tr>
@@ -167,7 +167,7 @@
 <img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
 </a>
 <br /><strong>18. reduced-motion</strong>
-<br /><sub>2.3 MB</sub>
+<br /><sub>2.1 MB</sub>
 </td>
 </tr>
 <tr>
@@ -176,7 +176,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>19. forced-colors</strong>
-<br /><sub>2.3 MB</sub>
+<br /><sub>2.2 MB</sub>
 </td>
 <td></td>
 </tr>
@@ -236,15 +236,15 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (1.2 MB) |
-| `01-page-load-03024ms.png` | Page Load +3024ms (1.1 MB) |
-| `01-page-load-08307ms.png` | Page Load +8307ms (1.2 MB) |
+| `01-page-load-03809ms.png` | Page Load +3809ms (1.1 MB) |
+| `01-page-load-08478ms.png` | Page Load +8478ms (1.2 MB) |
 | `03-axe-overlay.png` | axe-overlay (2.3 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (2.4 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (2.3 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (2.3 MB) |
 | `07-structure-overlay.png` | structure-overlay (2.3 MB) |
 | `07b-wireframe-blueprint.png` | wireframe-blueprint (1.5 MB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (2.0 MB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (2.1 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (2.1 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (2.1 MB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (1.4 MB) |
@@ -252,8 +252,8 @@
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (2.1 MB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (2.1 MB) |
 | `15-screenreader-view.png` | screenreader-view (471.0 KB) |
-| `16-reduced-motion.png` | reduced-motion (2.3 MB) |
-| `17-forced-colors.png` | forced-colors (2.3 MB) |
+| `16-reduced-motion.png` | reduced-motion (2.1 MB) |
+| `17-forced-colors.png` | forced-colors (2.2 MB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

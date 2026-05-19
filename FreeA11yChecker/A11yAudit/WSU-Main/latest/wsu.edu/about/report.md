@@ -12,8 +12,8 @@
 | URL | https://wsu.edu/about/ |
 | Title | About WSU | Washington State University | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 134.3 KB |
-| Screenshots | 22 (35.3 MB) |
+| HTML Size | 134.6 KB |
+| Screenshots | 22 (33.8 MB) |
 | Images | 16 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 30 |
@@ -35,42 +35,42 @@
 <br /><sub>1.0 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-03194ms.png">
-<img src="01-page-load-03194ms.png" width="400" alt="Page Load +3194ms" />
+<a href="01-page-load-03058ms.png">
+<img src="01-page-load-03058ms.png" width="400" alt="Page Load +3058ms" />
 </a>
-<br /><strong>2. Page Load +3194ms</strong>
+<br /><strong>2. Page Load +3058ms</strong>
 <br /><sub>1.0 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-03997ms.png">
-<img src="01-page-load-03997ms.png" width="400" alt="Page Load +3997ms" />
+<a href="01-page-load-03830ms.png">
+<img src="01-page-load-03830ms.png" width="400" alt="Page Load +3830ms" />
 </a>
-<br /><strong>3. Page Load +3997ms</strong>
+<br /><strong>3. Page Load +3830ms</strong>
 <br /><sub>1.1 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-04800ms.png">
-<img src="01-page-load-04800ms.png" width="400" alt="Page Load +4800ms" />
+<a href="01-page-load-04598ms.png">
+<img src="01-page-load-04598ms.png" width="400" alt="Page Load +4598ms" />
 </a>
-<br /><strong>4. Page Load +4800ms</strong>
+<br /><strong>4. Page Load +4598ms</strong>
 <br /><sub>1.1 MB</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<a href="01-page-load-08878ms.png">
-<img src="01-page-load-08878ms.png" width="400" alt="Page Load +8878ms" />
+<a href="01-page-load-08314ms.png">
+<img src="01-page-load-08314ms.png" width="400" alt="Page Load +8314ms" />
 </a>
-<br /><strong>5. Page Load +8878ms</strong>
-<br /><sub>1.4 MB</sub>
+<br /><strong>5. Page Load +8314ms</strong>
+<br /><sub>1.3 MB</sub>
 </td>
 <td align="center" width="50%">
-<a href="01-page-load-09651ms.png">
-<img src="01-page-load-09651ms.png" width="400" alt="Page Load +9651ms" />
+<a href="01-page-load-09064ms.png">
+<img src="01-page-load-09064ms.png" width="400" alt="Page Load +9064ms" />
 </a>
-<br /><strong>6. Page Load +9651ms</strong>
+<br /><strong>6. Page Load +9064ms</strong>
 <br /><sub>1.4 MB</sub>
 </td>
 </tr>
@@ -112,14 +112,14 @@
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>11. structure-overlay</strong>
-<br /><sub>2.0 MB</sub>
+<br /><sub>2.1 MB</sub>
 </td>
 <td align="center" width="50%">
 <a href="07b-wireframe-blueprint.png">
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>12. wireframe-blueprint</strong>
-<br /><sub>1.2 MB</sub>
+<br /><sub>1.3 MB</sub>
 </td>
 </tr>
 <tr>
@@ -167,7 +167,7 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>18. cvd-deuteranomaly</strong>
-<br /><sub>1.9 MB</sub>
+<br /><sub>1.7 MB</sub>
 </td>
 </tr>
 <tr>
@@ -176,14 +176,14 @@
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
 <br /><strong>19. cvd-tritanomaly</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>1.7 MB</sub>
 </td>
 <td align="center" width="50%">
 <a href="15-screenreader-view.png">
 <img src="15-screenreader-view.png" width="400" alt="screenreader-view" />
 </a>
 <br /><strong>20. screenreader-view</strong>
-<br /><sub>503.3 KB</sub>
+<br /><sub>503.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -192,14 +192,14 @@
 <img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
 </a>
 <br /><strong>21. reduced-motion</strong>
-<br /><sub>2.2 MB</sub>
+<br /><sub>1.8 MB</sub>
 </td>
 <td align="center" width="50%">
 <a href="17-forced-colors.png">
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>22. forced-colors</strong>
-<br /><sub>2.3 MB</sub>
+<br /><sub>1.8 MB</sub>
 </td>
 </tr>
 </table>
@@ -263,27 +263,27 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (1.0 MB) |
-| `01-page-load-03194ms.png` | Page Load +3194ms (1.0 MB) |
-| `01-page-load-03997ms.png` | Page Load +3997ms (1.1 MB) |
-| `01-page-load-04800ms.png` | Page Load +4800ms (1.1 MB) |
-| `01-page-load-08878ms.png` | Page Load +8878ms (1.4 MB) |
-| `01-page-load-09651ms.png` | Page Load +9651ms (1.4 MB) |
+| `01-page-load-03058ms.png` | Page Load +3058ms (1.0 MB) |
+| `01-page-load-03830ms.png` | Page Load +3830ms (1.1 MB) |
+| `01-page-load-04598ms.png` | Page Load +4598ms (1.1 MB) |
+| `01-page-load-08314ms.png` | Page Load +8314ms (1.3 MB) |
+| `01-page-load-09064ms.png` | Page Load +9064ms (1.4 MB) |
 | `03-axe-overlay.png` | axe-overlay (2.0 MB) |
 | `04-quickpeek-overlay.png` | quickpeek-overlay (2.1 MB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (2.0 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (2.0 MB) |
-| `07-structure-overlay.png` | structure-overlay (2.0 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.2 MB) |
+| `07-structure-overlay.png` | structure-overlay (2.1 MB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.3 MB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (1.6 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (1.7 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (1.7 MB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (1.2 MB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (1.6 MB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (1.9 MB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (2.2 MB) |
-| `15-screenreader-view.png` | screenreader-view (503.3 KB) |
-| `16-reduced-motion.png` | reduced-motion (2.2 MB) |
-| `17-forced-colors.png` | forced-colors (2.3 MB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (1.7 MB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (1.7 MB) |
+| `15-screenreader-view.png` | screenreader-view (503.1 KB) |
+| `16-reduced-motion.png` | reduced-motion (1.8 MB) |
+| `17-forced-colors.png` | forced-colors (1.8 MB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

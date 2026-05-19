@@ -1,8 +1,8 @@
 # Accessibility Fix Pack — hrs.wsu.edu
 
-**Generated:** 2026-05-13 10:09:33  
+**Generated:** 2026-05-19 14:20:16  
 **Source root:** *(not provided — no source cross-references)*  
-**Scan output:** `C:\Users\pepkad\source\repos\FreeA11yChecker\A11yAudit\runs\WSU-HRS\hrs.wsu.edu`  
+**Scan output:** `C:\Users\pepkad\source\repos\WSU-EIT\FreeAi\FreeA11yChecker\A11yAudit\runs\WSU-HRS\hrs.wsu.edu`  
 
 ## Summary
 

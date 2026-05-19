@@ -13,7 +13,7 @@
 | Title | Academic Regulations | Office of the Registrar |
 | Status | ✅ 200 |
 | HTML Size | 214.2 KB |
-| Screenshots | 17 (107.5 MB) |
+| Screenshots | 17 (107.3 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 131 |
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>6.6 MB</sub>
+<br /><sub>6.5 MB</sub>
 </td>
 <td></td>
 </tr>
@@ -226,7 +226,7 @@
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (6.8 MB) |
 | `15-screenreader-view.png` | screenreader-view (3.5 MB) |
 | `16-reduced-motion.png` | reduced-motion (6.9 MB) |
-| `17-forced-colors.png` | forced-colors (6.6 MB) |
+| `17-forced-colors.png` | forced-colors (6.5 MB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

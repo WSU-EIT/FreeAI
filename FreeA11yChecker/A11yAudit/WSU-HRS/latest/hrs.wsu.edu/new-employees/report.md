@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/new-employees/ |
 | Title | New Employees – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 84.1 KB |
+| HTML Size | 84.4 KB |
 | Screenshots | 17 (5.5 MB) |
 | Images | 12 |
 | Images Missing Alt | 0 |
@@ -71,7 +71,7 @@
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>389.5 KB</sub>
+<br /><sub>390.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>345.8 KB</sub>
+<br /><sub>345.7 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>339.4 KB</sub>
+<br /><sub>339.2 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,7 +96,7 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>335.7 KB</sub>
+<br /><sub>336.0 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
@@ -225,10 +225,10 @@
 | `04-quickpeek-overlay.png` | quickpeek-overlay (368.6 KB) |
 | `05-htmlcs-overlay.png` | htmlcs-overlay (333.6 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (335.1 KB) |
-| `07-structure-overlay.png` | structure-overlay (389.5 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (345.8 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (339.4 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (335.7 KB) |
+| `07-structure-overlay.png` | structure-overlay (390.1 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (345.7 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (339.2 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (336.0 KB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (336.7 KB) |
 | `11-cvd-achromatopsia.png` | cvd-achromatopsia (311.3 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (333.1 KB) |

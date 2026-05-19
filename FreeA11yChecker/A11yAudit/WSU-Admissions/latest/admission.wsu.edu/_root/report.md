@@ -12,7 +12,7 @@
 | URL | https://admission.wsu.edu/ |
 | Title | Admissions | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 129.2 KB |
+| HTML Size | 129.4 KB |
 | Screenshots | 18 (36.8 MB) |
 | Images | 9 |
 | Images Missing Alt | 0 |

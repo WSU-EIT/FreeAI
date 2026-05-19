@@ -1,13 +1,13 @@
 {
-  "TotalViolations": 7,
-  "CriticalCount": 0,
-  "SeriousCount": 4,
+  "TotalViolations": 15,
+  "CriticalCount": 2,
+  "SeriousCount": 10,
   "ModerateCount": 3,
   "MinorCount": 0,
-  "AxeCount": 1,
-  "HtmlCheckCount": 4,
+  "AxeCount": 3,
+  "HtmlCheckCount": 2,
   "HtmlCsCount": 0,
-  "IbmCount": 2,
+  "IbmCount": 10,
   "RankedRules": [
     {
       "CanonicalRuleId": "skip-link",
@@ -38,6 +38,186 @@
       ]
     },
     {
+      "CanonicalRuleId": "select-name",
+      "Severity": "critical",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "axe"
+      ],
+      "Instances": [
+        {
+          "Tool": "axe",
+          "RuleId": "select-name",
+          "CanonicalRuleId": "select-name",
+          "Severity": "critical",
+          "Message": "Fix any of the following:\n  Element does not have an implicit (wrapped) \u003Clabel\u003E\n  Element does not have an explicit \u003Clabel\u003E\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element\u0027s default semantics were not overridden with role=\u0022none\u0022 or role=\u0022presentation\u0022",
+          "Selector": "#year",
+          "Snippet": "\u003Cselect class=\u0022form-select\u0022 id=\u0022year\u0022\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "axe",
+          "RuleId": "select-name",
+          "CanonicalRuleId": "select-name",
+          "Severity": "critical",
+          "Message": "Fix any of the following:\n  Element does not have an implicit (wrapped) \u003Clabel\u003E\n  Element does not have an explicit \u003Clabel\u003E\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element\u0027s default semantics were not overridden with role=\u0022none\u0022 or role=\u0022presentation\u0022",
+          "Selector": "#term",
+          "Snippet": "\u003Cselect class=\u0022form-select\u0022 id=\u0022term\u0022\u003E\u003Coption value=\u00221\u0022\u003ESpring\u003C/option\u003E\u003Coption value=\u00222\u0022 selected=\u0022\u0022\u003ESummer\u003C/option\u003E\u003Coption value=\u00223\u0022\u003EFall\u003C/option\u003E\u003C/select\u003E",
+          "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=axeAPI",
+          "WcagCriteria": "wcag2a, wcag412",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_banner_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global wsu-header-global--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_banner_label_unique",
+          "CanonicalRuleId": "aria_banner_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022banner\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-site wsu-header-site--dark\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "input_label_exists",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "input_label_exists",
+          "CanonicalRuleId": "input_label_exists",
+          "Severity": "serious",
+          "Message": "Form control element \u003Cselect\u003E has no associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/main[1]/article[1]/div[1]/div[1]/div[1]/div[1]/div[1]/select[1]",
+          "Snippet": "\u003Cselect id=\u0022year\u0022 class=\u0022form-select\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "input_label_exists",
+          "CanonicalRuleId": "input_label_exists",
+          "Severity": "serious",
+          "Message": "Form control element \u003Cselect\u003E has no associated label",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/main[1]/article[1]/div[1]/div[1]/div[1]/div[1]/div[2]/select[1]",
+          "Snippet": "\u003Cselect id=\u0022term\u0022 class=\u0022form-select\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
+      "CanonicalRuleId": "aria_contentinfo_label_unique",
+      "Severity": "serious",
+      "Consensus": 1,
+      "Confidence": 0.3333333333333333,
+      "ToolsFound": [
+        "ibm"
+      ],
+      "Instances": [
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_contentinfo_label_unique",
+          "CanonicalRuleId": "aria_contentinfo_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[2]",
+          "Snippet": "\u003Cdiv role=\u0022contentinfo\u0022 class=\u0022wsu-g-footer-wrapper\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        },
+        {
+          "Tool": "ibm",
+          "RuleId": "aria_contentinfo_label_unique",
+          "CanonicalRuleId": "aria_contentinfo_label_unique",
+          "Severity": "serious",
+          "Message": "Multiple elements with \u0022contentinfo\u0022 role do not have unique labels",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[2]/footer[1]",
+          "Snippet": "\u003Cfooter class=\u0022wsu-footer-global\u0022\u003E",
+          "HelpUrl": "",
+          "WcagCriteria": "",
+          "ContrastForeground": null,
+          "ContrastBackground": null,
+          "ContrastRatio": null,
+          "ContrastExpected": null,
+          "ContrastFontSize": null,
+          "ContrastFontWeight": null
+        }
+      ]
+    },
+    {
       "CanonicalRuleId": "document-title",
       "Severity": "serious",
       "Consensus": 1,
@@ -53,7 +233,7 @@
           "Severity": "serious",
           "Message": "Fix any of the following:\n  Document does not have a non-empty \u003Ctitle\u003E element",
           "Selector": "html",
-          "Snippet": "\u003Chtml lang=\u0022en\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 style=\u0022--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: \u0026quot;64%\u0026quot;;\u0022\u003E",
+          "Snippet": "\u003Chtml lang=\u0022en\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 style=\u0022--blazor-load-percentage: 100%; --blazor-load-percentage-text: \u0026quot;100%\u0026quot;;\u0022\u003E",
           "HelpUrl": "https://dequeuniversity.com/rules/axe/4.10/document-title?application=axeAPI",
           "WcagCriteria": "wcag2a, wcag242",
           "ContrastForeground": null,
@@ -66,7 +246,7 @@
       ]
     },
     {
-      "CanonicalRuleId": "title-missing",
+      "CanonicalRuleId": "link-name",
       "Severity": "serious",
       "Consensus": 1,
       "Confidence": 0.3333333333333333,
@@ -76,12 +256,12 @@
       "Instances": [
         {
           "Tool": "htmlcheck",
-          "RuleId": "title-missing",
-          "CanonicalRuleId": "title-missing",
+          "RuleId": "link-empty",
+          "CanonicalRuleId": "link-name",
           "Severity": "serious",
-          "Message": "Page is missing a \u003Ctitle\u003E element",
+          "Message": "Link has no text content",
           "Selector": "",
-          "Snippet": "",
+          "Snippet": "\u003Ca class=\u0022wsu-button-ui-search\u0022 href=\u0022https://search.wsu.edu/\u0022 title=\u0022WSU Search Page\u0022\u003E\u003C/a\u003E",
           "HelpUrl": "",
           "WcagCriteria": "",
           "ContrastForeground": null,
@@ -109,7 +289,7 @@
           "Severity": "serious",
           "Message": "Missing \u003Ctitle\u003E element in \u003Chead\u003E element",
           "Selector": "/html[1]",
-          "Snippet": "\u003Chtml style=\u0022--blazor-load-percentage: 64.34108527131784%; --blazor-load-percentage-text: \u002264%\u0022;\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 lang=\u0022en\u0022\u003E",
+          "Snippet": "\u003Chtml style=\u0022--blazor-load-percentage: 100%; --blazor-load-percentage-text: \u0022100%\u0022;\u0022 class=\u0022wsu-has-js wsu-reduce-motion\u0022 lang=\u0022en\u0022\u003E",
           "HelpUrl": "",
           "WcagCriteria": "",
           "ContrastForeground": null,
@@ -122,7 +302,7 @@
       ]
     },
     {
-      "CanonicalRuleId": "skip_main_exists",
+      "CanonicalRuleId": "label_name_visible",
       "Severity": "serious",
       "Consensus": 1,
       "Confidence": 0.3333333333333333,
@@ -132,12 +312,12 @@
       "Instances": [
         {
           "Tool": "ibm",
-          "RuleId": "skip_main_exists",
-          "CanonicalRuleId": "skip_main_exists",
+          "RuleId": "label_name_visible",
+          "CanonicalRuleId": "label_name_visible",
           "Severity": "serious",
-          "Message": "The page does not provide a way to quickly navigate to the main content (ARIA \u0022main\u0022 landmark or a skip link)",
-          "Selector": "/html[1]/body[1]",
-          "Snippet": "\u003Cbody class=\u0022light\u0022 data-bs-theme=\u0022\u0022 id=\u0022body-element\u0022\u003E",
+          "Message": "Accessible name does not match or contain the visible label text",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/header[1]/div[1]/a[1]",
+          "Snippet": "\u003Ca aria-label=\u0022Go to Washington State University Homepage\u0022 href=\u0022https://wsu.edu\u0022 class=\u0022wsu-wordmark\u0022\u003E",
           "HelpUrl": "",
           "WcagCriteria": "",
           "ContrastForeground": null,
@@ -150,22 +330,22 @@
       ]
     },
     {
-      "CanonicalRuleId": "landmark-one-main",
+      "CanonicalRuleId": "aria_landmark_name_unique",
       "Severity": "moderate",
       "Consensus": 1,
       "Confidence": 0.3333333333333333,
       "ToolsFound": [
-        "htmlcheck"
+        "ibm"
       ],
       "Instances": [
         {
-          "Tool": "htmlcheck",
-          "RuleId": "landmark-main",
-          "CanonicalRuleId": "landmark-one-main",
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
           "Severity": "moderate",
-          "Message": "No \u003Cmain\u003E landmark found",
-          "Selector": "",
-          "Snippet": "",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-global wsu-header-global--dark\u0022\u003E",
           "HelpUrl": "",
           "WcagCriteria": "",
           "ContrastForeground": null,
@@ -174,26 +354,15 @@
           "ContrastExpected": null,
           "ContrastFontSize": null,
           "ContrastFontWeight": null
-        }
-      ]
-    },
-    {
-      "CanonicalRuleId": "landmark-nav",
-      "Severity": "moderate",
-      "Consensus": 1,
-      "Confidence": 0.3333333333333333,
-      "ToolsFound": [
-        "htmlcheck"
-      ],
-      "Instances": [
+        },
         {
-          "Tool": "htmlcheck",
-          "RuleId": "landmark-nav",
-          "CanonicalRuleId": "landmark-nav",
+          "Tool": "ibm",
+          "RuleId": "aria_landmark_name_unique",
+          "CanonicalRuleId": "aria_landmark_name_unique",
           "Severity": "moderate",
-          "Message": "No \u003Cnav\u003E landmark found",
-          "Selector": "",
-          "Snippet": "",
+          "Message": "Multiple elements with \u0022banner\u0022 landmarks within the same parent region are not distinguished from one another because they have the same \u0022\u0022 label",
+          "Selector": "/html[1]/body[1]/div[1]/div[1]/div[1]/header[1]",
+          "Snippet": "\u003Cheader class=\u0022wsu-header-site wsu-header-site--dark\u0022\u003E",
           "HelpUrl": "",
           "WcagCriteria": "",
           "ContrastForeground": null,

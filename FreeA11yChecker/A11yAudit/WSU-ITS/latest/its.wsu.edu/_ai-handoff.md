@@ -1,8 +1,8 @@
 # Accessibility Fix Pack — its.wsu.edu
 
-**Generated:** 2026-05-13 10:12:57  
+**Generated:** 2026-05-19 14:23:30  
 **Source root:** *(not provided — no source cross-references)*  
-**Scan output:** `C:\Users\pepkad\source\repos\FreeA11yChecker\A11yAudit\runs\WSU-ITS\its.wsu.edu`  
+**Scan output:** `C:\Users\pepkad\source\repos\WSU-EIT\FreeAi\FreeA11yChecker\A11yAudit\runs\WSU-ITS\its.wsu.edu`  
 
 ## Summary
 

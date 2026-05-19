@@ -12,7 +12,7 @@
 | URL | https://admission.wsu.edu/cost-and-aid/ |
 | Title | Page not found | Admissions | Washington State University |
 | Status | ✅ 404 |
-| HTML Size | 79.3 KB |
+| HTML Size | 79.5 KB |
 | Screenshots | 18 (2.7 MB) |
 | Images | 0 |
 | Images Missing Alt | 0 |
@@ -87,7 +87,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>8. wireframe-blueprint</strong>
-<br /><sub>136.9 KB</sub>
+<br /><sub>139.7 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,14 +96,14 @@
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>9. cvd-protanopia</strong>
-<br /><sub>143.5 KB</sub>
+<br /><sub>141.4 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="09-cvd-deuteranopia.png">
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>10. cvd-deuteranopia</strong>
-<br /><sub>147.7 KB</sub>
+<br /><sub>146.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>11. cvd-tritanopia</strong>
-<br /><sub>145.7 KB</sub>
+<br /><sub>148.6 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="11-cvd-achromatopsia.png">
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>12. cvd-achromatopsia</strong>
-<br /><sub>141.2 KB</sub>
+<br /><sub>139.4 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,14 +128,14 @@
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>13. cvd-protanomaly</strong>
-<br /><sub>146.1 KB</sub>
+<br /><sub>147.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="13-cvd-deuteranomaly.png">
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>14. cvd-deuteranomaly</strong>
-<br /><sub>146.9 KB</sub>
+<br /><sub>146.1 KB</sub>
 </td>
 </tr>
 <tr>
@@ -226,13 +226,13 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (137.1 KB) |
 | `06-ibm-overlay.png` | ibm-overlay (138.4 KB) |
 | `07-structure-overlay.png` | structure-overlay (193.4 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (136.9 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (143.5 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (147.7 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (145.7 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (141.2 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (146.1 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (146.9 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (139.7 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (141.4 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (146.1 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (148.6 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (139.4 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (147.2 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (146.1 KB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (147.8 KB) |
 | `15-screenreader-view.png` | screenreader-view (211.0 KB) |
 | `16-reduced-motion.png` | reduced-motion (143.1 KB) |

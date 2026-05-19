@@ -12,7 +12,7 @@
 | URL | https://its.wsu.edu/information-security-services/ |
 | Title | Office of Information Security and Assurance | Information Technology Services | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 85.6 KB |
+| HTML Size | 85.8 KB |
 | Screenshots | 17 (16.6 MB) |
 | Images | 1 |
 | Images Missing Alt | 0 |
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>815.1 KB</sub>
+<br /><sub>815.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>963.5 KB</sub>
+<br /><sub>962.4 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,7 +112,7 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>721.2 KB</sub>
+<br /><sub>721.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
@@ -210,11 +210,11 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.1 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (1.1 MB) |
 | `07-structure-overlay.png` | structure-overlay (1.2 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (815.1 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (963.5 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (815.2 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (962.4 KB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (1.0 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (1.1 MB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (721.2 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (721.9 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (1.0 MB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (1.0 MB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (1.1 MB) |

@@ -12,7 +12,7 @@
 | URL | https://hrs.wsu.edu/training/ |
 | Title | Learning & Organizational Development – Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 91.1 KB |
+| HTML Size | 91.3 KB |
 | Screenshots | 17 (10.3 MB) |
 | Images | 7 |
 | Images Missing Alt | 0 |
@@ -39,7 +39,7 @@
 <img src="03-axe-overlay.png" width="400" alt="axe-overlay" />
 </a>
 <br /><strong>2. axe-overlay</strong>
-<br /><sub>646.4 KB</sub>
+<br /><sub>646.2 KB</sub>
 </td>
 </tr>
 <tr>
@@ -48,14 +48,14 @@
 <img src="04-quickpeek-overlay.png" width="400" alt="quickpeek-overlay" />
 </a>
 <br /><strong>3. quickpeek-overlay</strong>
-<br /><sub>690.1 KB</sub>
+<br /><sub>689.9 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="05-htmlcs-overlay.png">
 <img src="05-htmlcs-overlay.png" width="400" alt="htmlcs-overlay" />
 </a>
 <br /><strong>4. htmlcs-overlay</strong>
-<br /><sub>645.2 KB</sub>
+<br /><sub>645.0 KB</sub>
 </td>
 </tr>
 <tr>
@@ -64,14 +64,14 @@
 <img src="06-ibm-overlay.png" width="400" alt="ibm-overlay" />
 </a>
 <br /><strong>5. ibm-overlay</strong>
-<br /><sub>646.7 KB</sub>
+<br /><sub>646.5 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="07-structure-overlay.png">
 <img src="07-structure-overlay.png" width="400" alt="structure-overlay" />
 </a>
 <br /><strong>6. structure-overlay</strong>
-<br /><sub>768.1 KB</sub>
+<br /><sub>771.7 KB</sub>
 </td>
 </tr>
 <tr>
@@ -80,14 +80,14 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>667.7 KB</sub>
+<br /><sub>666.2 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
 <img src="08-cvd-protanopia.png" width="400" alt="cvd-protanopia" />
 </a>
 <br /><strong>8. cvd-protanopia</strong>
-<br /><sub>648.3 KB</sub>
+<br /><sub>650.3 KB</sub>
 </td>
 </tr>
 <tr>
@@ -96,14 +96,14 @@
 <img src="09-cvd-deuteranopia.png" width="400" alt="cvd-deuteranopia" />
 </a>
 <br /><strong>9. cvd-deuteranopia</strong>
-<br /><sub>658.2 KB</sub>
+<br /><sub>658.1 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="10-cvd-tritanopia.png">
 <img src="10-cvd-tritanopia.png" width="400" alt="cvd-tritanopia" />
 </a>
 <br /><strong>10. cvd-tritanopia</strong>
-<br /><sub>659.8 KB</sub>
+<br /><sub>659.6 KB</sub>
 </td>
 </tr>
 <tr>
@@ -112,14 +112,14 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>571.1 KB</sub>
+<br /><sub>571.0 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
 <img src="12-cvd-protanomaly.png" width="400" alt="cvd-protanomaly" />
 </a>
 <br /><strong>12. cvd-protanomaly</strong>
-<br /><sub>651.9 KB</sub>
+<br /><sub>651.8 KB</sub>
 </td>
 </tr>
 <tr>
@@ -128,14 +128,14 @@
 <img src="13-cvd-deuteranomaly.png" width="400" alt="cvd-deuteranomaly" />
 </a>
 <br /><strong>13. cvd-deuteranomaly</strong>
-<br /><sub>658.5 KB</sub>
+<br /><sub>658.3 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="14-cvd-tritanomaly.png">
 <img src="14-cvd-tritanomaly.png" width="400" alt="cvd-tritanomaly" />
 </a>
 <br /><strong>14. cvd-tritanomaly</strong>
-<br /><sub>660.1 KB</sub>
+<br /><sub>659.9 KB</sub>
 </td>
 </tr>
 <tr>
@@ -151,7 +151,7 @@
 <img src="16-reduced-motion.png" width="400" alt="reduced-motion" />
 </a>
 <br /><strong>16. reduced-motion</strong>
-<br /><sub>639.1 KB</sub>
+<br /><sub>638.9 KB</sub>
 </td>
 </tr>
 <tr>
@@ -160,7 +160,7 @@
 <img src="17-forced-colors.png" width="400" alt="forced-colors" />
 </a>
 <br /><strong>17. forced-colors</strong>
-<br /><sub>627.7 KB</sub>
+<br /><sub>627.6 KB</sub>
 </td>
 <td></td>
 </tr>
@@ -217,22 +217,22 @@
 | File | Description |
 |------|-------------|
 | `01-page-load-00000ms.png` | Page Load +0ms (263.3 KB) |
-| `03-axe-overlay.png` | axe-overlay (646.4 KB) |
-| `04-quickpeek-overlay.png` | quickpeek-overlay (690.1 KB) |
-| `05-htmlcs-overlay.png` | htmlcs-overlay (645.2 KB) |
-| `06-ibm-overlay.png` | ibm-overlay (646.7 KB) |
-| `07-structure-overlay.png` | structure-overlay (768.1 KB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (667.7 KB) |
-| `08-cvd-protanopia.png` | cvd-protanopia (648.3 KB) |
-| `09-cvd-deuteranopia.png` | cvd-deuteranopia (658.2 KB) |
-| `10-cvd-tritanopia.png` | cvd-tritanopia (659.8 KB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (571.1 KB) |
-| `12-cvd-protanomaly.png` | cvd-protanomaly (651.9 KB) |
-| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (658.5 KB) |
-| `14-cvd-tritanomaly.png` | cvd-tritanomaly (660.1 KB) |
+| `03-axe-overlay.png` | axe-overlay (646.2 KB) |
+| `04-quickpeek-overlay.png` | quickpeek-overlay (689.9 KB) |
+| `05-htmlcs-overlay.png` | htmlcs-overlay (645.0 KB) |
+| `06-ibm-overlay.png` | ibm-overlay (646.5 KB) |
+| `07-structure-overlay.png` | structure-overlay (771.7 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (666.2 KB) |
+| `08-cvd-protanopia.png` | cvd-protanopia (650.3 KB) |
+| `09-cvd-deuteranopia.png` | cvd-deuteranopia (658.1 KB) |
+| `10-cvd-tritanopia.png` | cvd-tritanopia (659.6 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (571.0 KB) |
+| `12-cvd-protanomaly.png` | cvd-protanomaly (651.8 KB) |
+| `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (658.3 KB) |
+| `14-cvd-tritanomaly.png` | cvd-tritanomaly (659.9 KB) |
 | `15-screenreader-view.png` | screenreader-view (393.8 KB) |
-| `16-reduced-motion.png` | reduced-motion (639.1 KB) |
-| `17-forced-colors.png` | forced-colors (627.7 KB) |
+| `16-reduced-motion.png` | reduced-motion (638.9 KB) |
+| `17-forced-colors.png` | forced-colors (627.6 KB) |
 | `metadata.json` | Machine-readable scan data |
 | `a11y-summary.json` | Merged cross-tool accessibility summary |
 

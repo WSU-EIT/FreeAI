@@ -12,8 +12,8 @@
 | URL | https://hrs.wsu.edu/ |
 | Title | Human Resource Services, Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 93.3 KB |
-| Screenshots | 17 (18.3 MB) |
+| HTML Size | 92.7 KB |
+| Screenshots | 17 (17.6 MB) |
 | Images | 6 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 9 |
@@ -80,7 +80,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>7. wireframe-blueprint</strong>
-<br /><sub>659.3 KB</sub>
+<br /><sub>621.8 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="08-cvd-protanopia.png">
@@ -112,7 +112,7 @@
 <img src="11-cvd-achromatopsia.png" width="400" alt="cvd-achromatopsia" />
 </a>
 <br /><strong>11. cvd-achromatopsia</strong>
-<br /><sub>791.0 KB</sub>
+<br /><sub>765.6 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="12-cvd-protanomaly.png">
@@ -144,7 +144,7 @@
 <img src="15-screenreader-view.png" width="400" alt="screenreader-view" />
 </a>
 <br /><strong>15. screenreader-view</strong>
-<br /><sub>303.2 KB</sub>
+<br /><sub>320.7 KB</sub>
 </td>
 <td align="center" width="50%">
 <a href="16-reduced-motion.png">
@@ -171,11 +171,11 @@
 | # | Source URL | Alt Text |
 |--:|-----------|----------|
 | 1 | https://hrs.wsu.edu/wp-content/uploads/2021/02/all-campus-homepage-header_138... |  |
-| 2 | https://hrs.wsu.edu/wp-content/uploads/2024/11/Coug-Banner-in-Spring_3970-190... |  |
-| 3 | https://hrs.wsu.edu/wp-content/uploads/2026/04/grounded1-720x540.png |  |
-| 4 | https://hrs.wsu.edu/wp-content/uploads/2026/04/Blog-post-sizing-1200-x-900-px... |  |
-| 5 | https://hrs.wsu.edu/wp-content/uploads/2026/04/Blog-post-sizing-1200-x-900-px... |  |
-| 6 | https://hrs.wsu.edu/wp-content/uploads/2026/04/Tim_Wirth_F23_01-540x720.jpg | A photo of a man smiling. |
+| 2 | https://hrs.wsu.edu/wp-content/uploads/2026/05/impact-720x540.png | Yellow sunburst background with text ... |
+| 3 | https://hrs.wsu.edu/wp-content/uploads/2026/05/WFS-720x540.png | smoke from a wildfire in the foothills. |
+| 4 | https://hrs.wsu.edu/wp-content/uploads/2026/05/Leadership-WA-ST1-720x540.png | torn blue paper with a typed message ... |
+| 5 | https://hrs.wsu.edu/wp-content/uploads/2026/05/Blog-post-sizing-1200-x-900-px... | ittle boy with cardboard wings, on a ... |
+| 6 | https://hrs.wsu.edu/wp-content/uploads/2026/05/EAP-Neuro-6.25.26-720x720.png | Silhouette of a head looking downward... |
 
 ## Accessibility
 
@@ -216,15 +216,15 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (1.2 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (1.2 MB) |
 | `07-structure-overlay.png` | structure-overlay (1.3 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (659.3 KB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (621.8 KB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (1.2 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (1.2 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (1.2 MB) |
-| `11-cvd-achromatopsia.png` | cvd-achromatopsia (791.0 KB) |
+| `11-cvd-achromatopsia.png` | cvd-achromatopsia (765.6 KB) |
 | `12-cvd-protanomaly.png` | cvd-protanomaly (1.2 MB) |
 | `13-cvd-deuteranomaly.png` | cvd-deuteranomaly (1.2 MB) |
 | `14-cvd-tritanomaly.png` | cvd-tritanomaly (1.2 MB) |
-| `15-screenreader-view.png` | screenreader-view (303.2 KB) |
+| `15-screenreader-view.png` | screenreader-view (320.7 KB) |
 | `16-reduced-motion.png` | reduced-motion (1.2 MB) |
 | `17-forced-colors.png` | forced-colors (1.1 MB) |
 | `metadata.json` | Machine-readable scan data |

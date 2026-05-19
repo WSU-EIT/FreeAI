@@ -12,8 +12,8 @@
 | URL | https://admission.wsu.edu/visits/ |
 | Title | Visit & Explore | Admissions | Washington State University |
 | Status | ✅ 200 |
-| HTML Size | 128.3 KB |
-| Screenshots | 18 (43.0 MB) |
+| HTML Size | 128.0 KB |
+| Screenshots | 18 (42.5 MB) |
 | Images | 12 |
 | Images Missing Alt | 0 |
 | A11y Violations | Warning 49 |
@@ -87,7 +87,7 @@
 <img src="07b-wireframe-blueprint.png" width="400" alt="wireframe-blueprint" />
 </a>
 <br /><strong>8. wireframe-blueprint</strong>
-<br /><sub>2.0 MB</sub>
+<br /><sub>1.6 MB</sub>
 </td>
 </tr>
 <tr>
@@ -243,7 +243,7 @@
 | `05-htmlcs-overlay.png` | htmlcs-overlay (2.5 MB) |
 | `06-ibm-overlay.png` | ibm-overlay (2.5 MB) |
 | `07-structure-overlay.png` | structure-overlay (2.7 MB) |
-| `07b-wireframe-blueprint.png` | wireframe-blueprint (2.0 MB) |
+| `07b-wireframe-blueprint.png` | wireframe-blueprint (1.6 MB) |
 | `08-cvd-protanopia.png` | cvd-protanopia (2.9 MB) |
 | `09-cvd-deuteranopia.png` | cvd-deuteranopia (2.9 MB) |
 | `10-cvd-tritanopia.png` | cvd-tritanopia (2.9 MB) |
