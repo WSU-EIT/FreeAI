@@ -305,12 +305,12 @@ public static class ScannerEngine
                         }
                     }
 
-                    // Prepend any auth-flow screenshots to the FIRST page scanned, so
-                    // they appear before the per-page 01-page-loaded.jpeg and downstream
-                    // overlays. Subsequent pages do not re-attach them.
+                    // Prepend auth-flow screenshots to EVERY page so each folder contains
+                    // the full evidence chain: anonymous state → credentials entered →
+                    // post-auth landing → actual page content. This proves both that the
+                    // page requires login and that the scan ran authenticated.
                     if (authScreenshots.Count > 0) {
                         pageResult.Screenshots.InsertRange(0, authScreenshots);
-                        authScreenshots.Clear();
                     }
 
                     output.Pages.Add(pageResult);
