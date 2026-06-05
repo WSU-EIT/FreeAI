@@ -474,7 +474,7 @@ Because it's hand-maintained without a formatter. Space-after-colon, leading zer
 
 - [051 — The Author House Style](051_house-code-style.md) — the C#/brace/casing house conventions this doc mirrors for CSS
 - [055 — The C# Coding Style Reference](055_csharp-style-reference.md) — the equivalent reference for server- and client-side C#
-- [056 — The Razor Coding Style Reference](056_razor-style-reference.md) — markup and `.razor` component conventions (where most styling classes are applied)
+- [056 — The Razor Coding Style Reference](056_razor-blazor-style-reference.md) — markup and `.razor` component conventions (where most styling classes are applied)
 - [058 — The JavaScript Coding Style Reference](058_javascript-style-reference.md) — the sibling reference for our hand-written JS (which reads the theme markers this CSS writes)
 - [041 — The Upgrade-Safe Model](041_upgrade-safe-model.md) — why the `.App.` override split exists, of which `site.App.css` is one instance
 - [054 — Living on a Fork: Staying in Sync Upstream](054_fork-sync-discipline.md) — the fork-sync process that makes the override layer necessary

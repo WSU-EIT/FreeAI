@@ -35,6 +35,8 @@
 
 **A note on scope.** Everything here is drawn from hand-written code under `FreeCRM/CRM.Client/`. No rule cites vendored/third-party files (Bootstrap, FontAwesome, jQuery, `*.min.*`). When this doc says "the team does X," it means the actual, observable pattern in real components — not an aspiration.
 
+**How these rules are enforced (important).** Unlike C#, `.razor` files are **not** formatted by the `dotnet format` command line — that tool only processes `.cs` files. The `[*.razor]` rules in our `.editorconfig` (e.g. same-line braces) take effect only when you format a `.razor` file **inside the IDE** (Visual Studio's Razor editor reads `.editorconfig`). In practice that means: there is no command-line / CI auto-formatter for Razor, so these conventions are kept by **formatting-in-the-editor and code review**, not by a build gate. See [053 — The Machine Referee: editorconfig and What It Enforces](053_editorconfig-enforcement.md) for the C# side, which *is* CLI-enforceable.
+
 ---
 
 <a id="anatomy"></a>
@@ -1125,9 +1127,9 @@ Deliberately. The order is by *purpose* (teardown, then data gate, then setup, t
 ## 10. Related Docs
 
 - [051 — The Author House Style](051_house-code-style.md) — the general C# brace/casing/`String.Empty` rules referenced throughout this doc.
-- 055 — The C# Reference *(planned)* — deep C# syntax rules that apply *inside* the `@code` block; defer to it rather than re-deriving syntax here.
-- 057 — The CSS Style Reference *(planned)* — the Bootstrap-first / custom-class rules behind Section 5's markup.
-- 058 — The JavaScript Style Reference *(planned)* — JS-interop conventions reached from `@code` (e.g. `DelayedFocus`).
+- [055 — The C# Style Reference](055_csharp-style-reference.md) — deep C# syntax rules that apply *inside* the `@code` block; defer to it rather than re-deriving syntax here.
+- [057 — The CSS Style Reference](057_css-style-reference.md) — the Bootstrap-first / custom-class rules behind Section 5's markup.
+- [058 — The JavaScript Style Reference](058_javascript-style-reference.md) — JS-interop conventions reached from `@code` (e.g. `DelayedFocus`).
 - [032 — Building From the Shared Component Shelf](032_shared-components.md) — the catalog of shared components you invoke in Section 6.
 - [033 — Charts, Code Editors, Rich Text, and PDFs](033_rich-components.md) — the rich components and their binding shapes.
 - [035 — Validated, Translated, and Reachable](035_validation-localization-a11y.md) — the validation/localization/accessibility model behind Rules 7.14–7.16.

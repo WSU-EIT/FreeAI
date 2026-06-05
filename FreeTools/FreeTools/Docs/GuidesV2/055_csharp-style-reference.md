@@ -1191,7 +1191,7 @@ The headline: **FreeCRM does not throw exceptions to its callers.** Operations r
 <a id="razor"></a>
 ## 16. Razor / Blazor: the C# Parts
 
-A **Razor / Blazor component** (`.razor` file) mixes HTML markup with C# in a `@code { }` block at the bottom. **Most of the Razor/Blazor conventions live in the sibling doc [056](056_razor-blazor-reference.md)** — directives, markup, `@bind`, component invocation, the page lifecycle, SignalR handlers, and the `.App.` component pattern. Here we cover only the parts that are genuinely *C#*.
+A **Razor / Blazor component** (`.razor` file) mixes HTML markup with C# in a `@code { }` block at the bottom. **Most of the Razor/Blazor conventions live in the sibling doc [056](056_razor-blazor-style-reference.md)** — directives, markup, `@bind`, component invocation, the page lifecycle, SignalR handlers, and the `.App.` component pattern. Here we cover only the parts that are genuinely *C#*.
 
 **Rule 16a — The C# style rules apply unchanged inside `@code` blocks.** Same-line control-flow braces, own-line method braces, early `return;`, `== null` checks, `String.IsNullOrWhiteSpace`, object initializers with trailing commas, `new List<T>()` — all of [§3](#braces), [§7](#nullability), and [§13](#controlflow) hold inside `@code`. The Blazor code-behind is held to the identical standard as the server code.
 [EditTag.razor:168-172](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L168-L172)
@@ -1217,7 +1217,7 @@ A **Razor / Blazor component** (`.razor` file) mixes HTML markup with C# in a `@
 
 **Rule 16c — Expression-bodied (`=>`) members and the no-`Async`-suffix rule apply to `@code` too.** The model's event raisers (`NotifyDataChanged() => OnChange?.Invoke();`) and `[Parameter]` defaults (`= String.Empty`, `= true`) follow the same C# rules covered above.
 
-For everything else about `.razor` files (the `@page`/`@inject` header order, the `Model.View == _pageName` render guard, subscribe-in-`OnInitialized`/unsubscribe-in-`Dispose`, two-way `Value`/`ValueChanged` binding, `@bind:event="oninput"`, and the `*_App` extension components), **see [056 — The Razor / Blazor Reference](056_razor-blazor-reference.md).**
+For everything else about `.razor` files (the `@page`/`@inject` header order, the `Model.View == _pageName` render guard, subscribe-in-`OnInitialized`/unsubscribe-in-`Dispose`, two-way `Value`/`ValueChanged` binding, `@bind:event="oninput"`, and the `*_App` extension components), **see [056 — The Razor / Blazor Reference](056_razor-blazor-style-reference.md).**
 
 ---
 
@@ -1331,7 +1331,7 @@ It's a deliberate legacy exception for the SignalR hub (`crmHub`, `IsrHub`, `sig
 So that appending or reordering a property changes only one line in the diff (you don't have to also edit the previous line to add a comma). It's the same reasoning behind one-property-per-line. A few legacy initializers omit it; the trailing-comma form is preferred. See [§13 Rule 13h](#controlflow).
 
 **Q15. Why do `.razor` pages load data in `OnAfterRenderAsync` instead of `OnInitialized`, and guard with a `_loadedData` flag?**
-The shared `BlazorDataModel` finishes loading *after* the component initializes, and these pages need `Model.LoggedIn`, feature flags, and tenant validation to be ready first. `OnAfterRenderAsync` runs after the model is populated; the `_loadedData` boolean stops it re-loading on every re-render. This is a Blazor-lifecycle detail covered fully in [056](056_razor-blazor-reference.md); the C# member-ordering side is in [§16](#razor).
+The shared `BlazorDataModel` finishes loading *after* the component initializes, and these pages need `Model.LoggedIn`, feature flags, and tenant validation to be ready first. `OnAfterRenderAsync` runs after the model is populated; the `_loadedData` boolean stops it re-loading on every re-render. This is a Blazor-lifecycle detail covered fully in [056](056_razor-blazor-style-reference.md); the C# member-ordering side is in [§16](#razor).
 
 ---
 
@@ -1342,10 +1342,10 @@ The shared `BlazorDataModel` finishes loading *after* the component initializes,
 - [052 — Where Code Lives and How Comments Sound](052_files-and-comment-voice.md) — file layout and comment voice
 - [053 — The Machine Referee: editorconfig and What It Enforces](053_editorconfig-enforcement.md) — which of these rules the formatter applies vs. which are enforced by hand
 - **Sibling references (being written alongside this one):**
-  - [056 — The Razor / Blazor Reference](056_razor-blazor-reference.md) — component directives, lifecycle, `@bind`, SignalR handlers, `.App.` components
-  - [057 — The CSS Reference](057_css-reference.md)
-  - [058 — The JavaScript Reference](058_javascript-reference.md)
-  - [059 — The SQL Reference](059_sql-reference.md)
+  - [056 — The Razor / Blazor Reference](056_razor-blazor-style-reference.md) — component directives, lifecycle, `@bind`, SignalR handlers, `.App.` components
+  - [057 — The CSS Reference](057_css-style-reference.md)
+  - [058 — The JavaScript Reference](058_javascript-style-reference.md)
+  - [059 — The SQL Reference](059_sql-style-reference.md)
 
 ---
 *GuidesV2 055 · The C# Style Reference · drafted 2026-06-05 from byte-level citation-verified evidence against the hand-written FreeCRM source (`CRM`, `CRM.Client`, `CRM.DataAccess`, `CRM.DataObjects`). Every rule links to its proof in the real source tree. `CRM.EFModels` (scaffolded) and `CRM.Client/DynamicBlazorSupport/` (vendored `Try.Core`) are excluded as style sources.*

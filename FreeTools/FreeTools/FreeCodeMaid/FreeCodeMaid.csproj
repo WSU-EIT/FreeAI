@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FreeCodeMaid</RootNamespace>
+    <AssemblyName>FreeCodeMaid</AssemblyName>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreeTools.Core\FreeTools.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Ship the default rule set next to the tool for reference / copying into a target repo. -->
+    <None Update="freecodemaid.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

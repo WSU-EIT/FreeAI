@@ -273,5 +273,13 @@ return int.TryParse(value, out _);
 - [053 — The Machine Referee: editorconfig and What It Enforces](053_editorconfig-enforcement.md) — the editorconfig that enforces it
 - [054 — Living on a Fork: Staying in Sync Upstream](054_fork-sync-discipline.md) — staying in sync with upstream
 
+**The per-language deep references** — this doc is the overview; these go exhaustive on each language we write, every rule linked to real source with a FAQ:
+
+- [055 — The C# Style Reference](055_csharp-style-reference.md) — the complete C# standard
+- [056 — The Razor / Blazor / HTML Style Reference](056_razor-blazor-style-reference.md) — `.razor` files, the `.App.razor` layer, and the `@code` pattern
+- [057 — The CSS Style Reference](057_css-style-reference.md) — Bootstrap-first, plus our small hand-written CSS surface
+- [058 — The JavaScript Style Reference](058_javascript-style-reference.md) — the `.razor.js` interop modules (and why there's no TypeScript)
+- [059 — The SQL Style Reference](059_sql-style-reference.md) — EF-first, plus the idempotent multi-engine migrations
+
 ---
 *GuidesV2 051 · The Author House Style · drafted 2026-06-04 from source (`FreeCRM/.editorconfig`, `CRM.Client/DataModel.cs`, `CRM.Client/Helpers.cs`, and the authoritative styling research doc 0001).*
