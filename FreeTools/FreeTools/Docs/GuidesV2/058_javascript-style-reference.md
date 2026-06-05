@@ -511,9 +511,9 @@ Not as a drive-by. The `?v=` cache-buster is used in 2 of 3 imports, the `.Razor
 ## 7. Related Docs
 
 - [051 — The Author House Style](051_house-code-style.md) — the C# braces/casing/empty-string/field-naming rules; this doc is the JavaScript counterpart in the same band.
-- 055 — The C# Code Style *(planned sibling in Band 05x)* — the C# language conventions that the interop call-site code in §3 follows.
-- 056 — The Razor Component Style *(planned sibling in Band 05x)* — the `.razor` component conventions; every `.razor.js` module here is paired with a `.razor` component.
-- 057 — The CSS Style *(planned sibling in Band 05x)* — styling conventions; note `Highcharts.razor.js` loads `highcharts.css` at runtime and uses Highcharts' `styledMode`.
+- [055 — The C# Style Reference](055_csharp-style-reference.md) — the C# language conventions that the interop call-site code in §3 follows.
+- [056 — The Razor / Blazor / HTML Style Reference](056_razor-blazor-style-reference.md) — the `.razor` component conventions; every `.razor.js` module here is paired with a `.razor` component.
+- [057 — The CSS Style Reference](057_css-style-reference.md) — styling conventions; note `Highcharts.razor.js` loads `highcharts.css` at runtime and uses Highcharts' `styledMode`.
 - [033 — Charts, Code Editors, Rich Text, and PDFs](033_rich-components.md) — the rich components (Monaco, Highcharts) whose interop modules this doc documents.
 - [047 — Growing the Shared Library](047_custom-components.md) — authoring new shared components, where a new interop module might originate.
 

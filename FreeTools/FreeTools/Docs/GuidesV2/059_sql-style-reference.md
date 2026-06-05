@@ -609,7 +609,7 @@ No. Each step runs in its own try/catch; a failure is logged into `output.Messag
 <a id="related-docs"></a>
 ## 10. Related Docs
 
-- [055 — C# Language Conventions](055_csharp-conventions.md) — the C# patterns these SQL strings are embedded in (raw string literals, `String.Empty`, naming).
+- [055 — C# Language Conventions](055_csharp-style-reference.md) — the C# patterns these SQL strings are embedded in (raw string literals, `String.Empty`, naming).
 - [025 — EF Models and the Records That Never Truly Vanish](025_ef-models-soft-delete.md) — the EF entity model and soft-delete strategy that is the *default* this doc tells you to prefer.
 - [023 — The Partial Data-Access Layer](023_partial-data-access.md) — how `DataAccess` is split into partial files (where the raw-SQL call sites and the migration runner live).
 - [021 — Anatomy of the Data Stack](021_data-stack-anatomy.md) — the big-picture map of how a request reaches the database.

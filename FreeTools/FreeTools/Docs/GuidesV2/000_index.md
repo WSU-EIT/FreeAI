@@ -4,7 +4,7 @@
 > **Category:** Index
 > **Purpose:** The master plan and table of contents for GuidesV2 — a from-scratch documentation set for FreeCRM, its house conventions, and FreeTools.
 > **Audience:** Everyone — written so a non-engineer with decision authority can follow it (see "How These Docs Are Written").
-> **Status:** 🟢 Live. As of 2026-06-05, all 57 docs are ✅ **drafted** — full content written and grounded in the real FreeCRM/FreeTools source (review & polish ongoing).
+> **Status:** 🟢 Live. As of 2026-06-05, all 62 docs are ✅ **drafted** — full content written and grounded in the real FreeCRM/FreeTools source (review & polish ongoing). The newest additions are the five per-language deep references `055`–`059`, each rule linked to real source.
 
 ---
 
@@ -105,12 +105,18 @@ A single journey, in nine bands, from first login to long-term stewardship:
 | `047_custom-components.md` ✅ | Growing the Shared Library | Authoring new reusable components that respect the wrapper, state, and style conventions. |
 
 ### 05x — The House Style: Code Conventions
+*`051`–`054` cover the cross-cutting conventions and how they're enforced; **`055`–`059` are the per-language deep references** (one per language we actually write — C#, Razor/Blazor/HTML, CSS, JavaScript, SQL), each rule shown with a verbatim example linked to the real source line, plus a FAQ. Written for an intern getting caught up on our standards.*
 | Doc | Title | Covers |
 |-----|-------|--------|
 | `051_house-code-style.md` ✅ | The Author House Style | The opinionated rules for braces, capitalization, empty-string handling, and field naming, sourced from the framework's author. |
 | `052_files-and-comment-voice.md` ✅ | Where Code Lives and How Comments Sound | File-organization conventions and the consistent voice our code comments use. |
 | `053_editorconfig-enforcement.md` ✅ | The Machine Referee: editorconfig and What It Enforces | The shared settings file that auto-applies style — and the few places the author's hand overrides it on purpose. |
 | `054_fork-sync-discipline.md` ✅ | Living on a Fork: Staying in Sync Upstream | Keeping our copy aligned with the original author's repo without drift or lost work. |
+| `055_csharp-style-reference.md` ✅ | The C# Style Reference | The complete, citation-backed C# standard: whitespace, braces, naming, types/nullability, member ordering, partials & the `.App.` convention, methods/async, control flow, comments, and error handling — every rule linked to real source. |
+| `056_razor-blazor-style-reference.md` ✅ | The Razor / Blazor / HTML Style Reference | Writing `.razor` files: file anatomy & directives, the `.App.razor` override layer, markup/HTML, components & binding, and the `@code` lifecycle + DataModel-subscription pattern. |
+| `057_css-style-reference.md` ✅ | The CSS Style Reference | The Bootstrap-first reality and our small hand-written CSS surface: the `site`/`themes`/`tags` + `.App` stylesheet layering, scoped `.razor.css`, and code style. |
+| `058_javascript-style-reference.md` ✅ | The JavaScript Style Reference | Why there's almost no JS and no TypeScript: the collocated `.razor.js` interop-module convention, how C# loads/calls it, and JS code style. |
+| `059_sql-style-reference.md` ✅ | The SQL Style Reference | EF-first, plus the idempotent multi-engine migration system — existence-guarded DDL per dialect (SQL Server/SQLite/PostgreSQL/MySQL) and running raw SQL through EF safely. |
 
 ### 06x — The Team Operating System: How We Decide
 *The collaboration mechanics. Several are marked 🛠 because their process should ship as a reusable `/command`.*
@@ -147,7 +153,7 @@ A single journey, in nine bands, from first login to long-term stewardship:
 | `087_security-and-roadmap.md` ✅ | Trust and Trajectory | The security posture across FreeCRM and FreeTools, plus where the project is headed. |
 | `088_contributing-back.md` ✅ | Becoming a Steward | How an experienced practitioner contributes fixes and features back upstream. |
 
-**Total: 57 planned docs across 9 bands** (this index is the 58th file).
+**Total: 62 planned docs across 9 bands** (this index is the 63rd file).
 
 ---
 
