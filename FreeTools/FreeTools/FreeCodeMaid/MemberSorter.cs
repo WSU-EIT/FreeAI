@@ -127,10 +127,15 @@ public sealed class MemberComparer : IComparer<MemberDeclarationSyntax>
 
     private static Dictionary<string, int> Rank(List<string> list)
     {
+        // Each entry may list several kinds separated by commas; all kinds in one entry share the
+        // same rank, so they sort together (e.g. "Property,Indexer,Method" interleaves alphabetically).
         var d = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         for (int i = 0; i < list.Count; i++)
         {
-            d[list[i]] = i;
+            foreach (var kind in list[i].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                d[kind] = i;
+            }
         }
         return d;
     }
