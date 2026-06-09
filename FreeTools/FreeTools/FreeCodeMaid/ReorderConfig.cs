@@ -29,23 +29,32 @@ public sealed class ReorderConfig
     /// Off by default to match FreeCRM (purely alphabetical).</summary>
     public bool StaticMembersFirst { get; set; } = false;
 
-    // ---- Spacing ----------------------------------------------------------
-
-    /// <summary>Blank lines inserted between two reordered members of different kinds / block members.</summary>
-    public int BlankLinesBetweenMembers { get; set; } = 1;
-
-    /// <summary>Blank lines between two consecutive single-line members of the same kind — keeps the
-    /// dense field block and simple auto-property DTOs tight.</summary>
-    public int BlankLinesBetweenFields { get; set; } = 0;
+    /// <summary>
+    /// If sorting would move more than this fraction (0..1) of a type's sortable members, the type is
+    /// treated as deliberately ordered BY PURPOSE and left completely untouched. This keeps the tool
+    /// from flattening hand-curated orderings (controllers, nested DTOs, plugin examples) while still
+    /// tidying types that are already mostly alphabetical. Set to 1.0 to always sort.
+    /// </summary>
+    public double MaxFractionReordered { get; set; } = 0.35;
 
     // ---- Ordering tables --------------------------------------------------
 
-    /// <summary>The order member kinds are emitted in (groups appear top-to-bottom in this order).</summary>
+    /// <summary>
+    /// The order member kinds are emitted in (top-to-bottom). Entries may list several kinds
+    /// separated by commas; kinds in the same entry share a rank and therefore sort TOGETHER.
+    /// The default reproduces the FreeCRM convention: fields stay grouped at the top in their
+    /// original (by-purpose) order, and properties + indexers + methods form one interleaved
+    /// alphabetical list.
+    /// </summary>
     public List<string> KindOrder { get; set; } =
     [
-        "Const", "Field", "Constructor", "Destructor", "Delegate", "Event",
-        "Enum", "Interface", "Property", "Indexer", "Operator", "ConversionOperator",
-        "Method", "Struct", "Class", "Record"
+        "Const",
+        "Field",
+        "Constructor,Destructor",
+        "Delegate,Event",
+        "Property,Indexer,Method",
+        "Operator,ConversionOperator",
+        "Enum,Interface,Struct,Class,Record"
     ];
 
     /// <summary>Accessibility order, used only when <see cref="GroupByVisibility"/> is true.</summary>
@@ -54,11 +63,16 @@ public sealed class ReorderConfig
         "public", "internal", "protected internal", "protected", "private protected", "private"
     ];
 
-    /// <summary>Kinds whose members keep their original relative order (never alphabetized).
-    /// Constructors/operators are order-sensitive to humans, so they are left as written.</summary>
+    /// <summary>
+    /// Kinds whose members keep their original relative order (never alphabetized). By default only
+    /// properties, indexers and methods are sorted; everything else is preserved as the author wrote
+    /// it. Crucially this includes <b>Field</b> and <b>Const</b>: the author groups fields by purpose
+    /// (services, then state) rather than alphabetically, so we must not reorder them.
+    /// </summary>
     public List<string> DoNotSortKinds { get; set; } =
     [
-        "Constructor", "Destructor", "Operator", "ConversionOperator"
+        "Const", "Field", "Constructor", "Destructor", "Delegate", "Event",
+        "Operator", "ConversionOperator", "Enum", "Interface", "Struct", "Class", "Record"
     ];
 
     // ---- Safety / scope ---------------------------------------------------

@@ -13,10 +13,12 @@ public readonly record struct ReorgResult(
     string? Error);
 
 /// <summary>
-/// Reorganizes the members of every type in a C# source string using Roslyn, moving each member
-/// together with its attached comment / XML-doc block. It only rewrites a type when the member
-/// ORDER actually changes, leaves whitespace-only concerns to the formatter, and refuses to write
-/// any result that fails the safety check (a member went missing, or a syntax error was introduced).
+/// Reorganizes the members of every type in a C# source string using Roslyn. It is built for
+/// MINIMAL change: it only reorders the kinds the rules say to sort (by default properties +
+/// methods, interleaved alphabetically), it leaves every member's original trivia (comments,
+/// XML docs, and the author's blank-line spacing) untouched, and it only rewrites a type when the
+/// member order actually changes. Members that don't move stay byte-identical. Hard safety rails
+/// abort any file that would lose a member or introduce a syntax error.
 /// </summary>
 public sealed class Reorganizer
 {
@@ -33,11 +35,9 @@ public sealed class Reorganizer
         }
 
         var originalRoot = tree.GetRoot();
-
-        // If the original file already has syntax errors, don't touch it.
         bool originalHadErrors = tree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
 
-        var rewriter = new Rewriter(config, eol);
+        var rewriter = new Rewriter(config);
         var newRoot = rewriter.Visit(originalRoot);
         if (newRoot is null)
         {
@@ -46,13 +46,12 @@ public sealed class Reorganizer
 
         if (rewriter.TypesReordered == 0)
         {
-            // Nothing was reordered (already in order, or every type was skipped).
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped, null);
         }
 
         var newText = newRoot.ToFullString();
 
-        // Safety net 1: the result must parse, and must not have NEW errors.
+        // Safety net 1: result must parse, and must not introduce NEW errors.
         var newTree = CSharpSyntaxTree.ParseText(newText);
         bool newHasErrors = newTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
         if (newHasErrors && !originalHadErrors)
@@ -61,7 +60,7 @@ public sealed class Reorganizer
                 "aborted: reorder would introduce a syntax error");
         }
 
-        // Safety net 2: the exact same set of members must still be present (none lost/duplicated).
+        // Safety net 2: the exact same set of members must still be present.
         if (!MembersPreserved(originalRoot, newTree.GetRoot()))
         {
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped,
@@ -91,7 +90,7 @@ public sealed class Reorganizer
         return true;
     }
 
-    // Order-independent signature so reordering does not flag a difference, but a dropped or
+    // Order-independent signature so reordering doesn't flag a difference, but a dropped or
     // duplicated member does.
     private static List<string> CollectSignatures(SyntaxNode root)
     {
@@ -110,19 +109,20 @@ public sealed class Reorganizer
 
     private sealed class Rewriter : CSharpSyntaxRewriter
     {
-        private readonly ReorderConfig _config;
-        private readonly SyntaxTrivia _newline;
         private readonly MemberComparer _comparer;
 
         public int TypesReordered { get; private set; }
         public int TypesSkipped { get; private set; }
 
-        public Rewriter(ReorderConfig config, string eol)
+        public Rewriter(ReorderConfig config)
         {
-            _config = config;
-            _newline = SyntaxFactory.EndOfLine(eol);
             _comparer = new MemberComparer(config);
+            _config = config;
+            _doNotSort = new HashSet<string>(config.DoNotSortKinds, StringComparer.OrdinalIgnoreCase);
         }
+
+        private readonly ReorderConfig _config;
+        private readonly HashSet<string> _doNotSort;
 
         public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
             => Reorder((TypeDeclarationSyntax)base.VisitClassDeclaration(node)!);
@@ -150,92 +150,71 @@ public sealed class Reorganizer
                 return type;
             }
 
-            // Stable sort: equal members keep their original relative order.
+            // Stable sort: members the rules treat as equal keep their original relative order.
             var ordered = members.OrderBy(m => m, _comparer).ToList();
             if (members.SequenceEqual(ordered))
             {
-                return type; // already in the desired order
+                return type; // already in the desired order — leave the type byte-for-byte alone
             }
 
+            // If sorting would disturb a large fraction of the sortable members, this type is
+            // deliberately ordered by purpose (a controller, a nested DTO, a plugin). Leave it alone.
+            int sortable = members.Count(m => !_doNotSort.Contains(MemberClassifier.KindOf(m)));
+            if (sortable > 0)
+            {
+                int moved = 0;
+                for (int i = 0; i < ordered.Count; i++)
+                {
+                    if (!ReferenceEquals(members[i], ordered[i]))
+                    {
+                        moved++;
+                    }
+                }
+                if ((double)moved / sortable > _config.MaxFractionReordered)
+                {
+                    TypesSkipped++;
+                    return type;
+                }
+            }
+
+            // MINIMAL change: keep every member's ORIGINAL trivia (comments, XML docs, the author's
+            // own blank-line spacing). We only nudge the member that ends up first, stripping any
+            // leading blank lines so we don't open the type body with an empty line.
             var rebuilt = new List<MemberDeclarationSyntax>(ordered.Count);
             for (int i = 0; i < ordered.Count; i++)
             {
                 var m = ordered[i];
-                var kept = ExtractKeptLeading(m);
-
-                SyntaxTriviaList lead;
                 if (i == 0)
                 {
-                    lead = kept;
+                    m = m.WithLeadingTrivia(TrimLeadingBlankLines(m.GetLeadingTrivia()));
                 }
-                else
-                {
-                    int blanks = BlankLinesBefore(ordered[i - 1], m);
-                    lead = SyntaxFactory.TriviaList(Enumerable.Repeat(_newline, blanks).Concat(kept));
-                }
-
-                rebuilt.Add(NormalizeTrailing(m.WithLeadingTrivia(lead)));
+                rebuilt.Add(m);
             }
 
             TypesReordered++;
             return type.WithMembers(SyntaxFactory.List(rebuilt));
         }
 
-        private int BlankLinesBefore(MemberDeclarationSyntax prev, MemberDeclarationSyntax cur)
+        private static SyntaxTriviaList TrimLeadingBlankLines(SyntaxTriviaList lead)
         {
-            // Keep consecutive single-line members of the same kind dense (the field block, and
-            // simple auto-property DTOs). Everything else gets the normal between-member gap.
-            bool dense = IsCompact(prev) && IsCompact(cur)
-                && MemberClassifier.KindOf(prev) == MemberClassifier.KindOf(cur);
-            return dense ? _config.BlankLinesBetweenFields : _config.BlankLinesBetweenMembers;
-        }
-
-        private MemberDeclarationSyntax NormalizeTrailing(MemberDeclarationSyntax m)
-        {
-            var trail = m.GetTrailingTrivia();
-            int end = trail.Count;
-            while (end > 0 &&
-                   (trail[end - 1].IsKind(SyntaxKind.EndOfLineTrivia) || trail[end - 1].IsKind(SyntaxKind.WhitespaceTrivia)))
+            int i = 0;
+            while (i < lead.Count)
             {
-                end--;
-            }
-            var kept = trail.Take(end).Append(_newline);
-            return m.WithTrailingTrivia(SyntaxFactory.TriviaList(kept));
-        }
-
-        // Keep the member's attached comment/doc block (with its indentation) and its own indent,
-        // but drop the leading blank-line separators — those are regenerated as the gap between members.
-        private static SyntaxTriviaList ExtractKeptLeading(MemberDeclarationSyntax m)
-        {
-            var lead = m.GetLeadingTrivia();
-
-            int firstComment = -1;
-            for (int i = 0; i < lead.Count; i++)
-            {
-                if (IsComment(lead[i]))
+                if (lead[i].IsKind(SyntaxKind.EndOfLineTrivia))
                 {
-                    firstComment = i;
-                    break;
+                    i++;
+                    continue;
                 }
-            }
-
-            if (firstComment >= 0)
-            {
-                int start = firstComment;
-                if (start > 0 && lead[start - 1].IsKind(SyntaxKind.WhitespaceTrivia))
+                // a blank line written as whitespace + newline
+                if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia)
+                    && i + 1 < lead.Count && lead[i + 1].IsKind(SyntaxKind.EndOfLineTrivia))
                 {
-                    start--; // include the indentation in front of the comment
+                    i += 2;
+                    continue;
                 }
-                return SyntaxFactory.TriviaList(lead.Skip(start));
+                break;
             }
-
-            // No comment: keep only the trailing whitespace run (the member's own indentation).
-            int wsStart = lead.Count;
-            while (wsStart > 0 && lead[wsStart - 1].IsKind(SyntaxKind.WhitespaceTrivia))
-            {
-                wsStart--;
-            }
-            return SyntaxFactory.TriviaList(lead.Skip(wsStart));
+            return SyntaxFactory.TriviaList(lead.Skip(i));
         }
 
         private static bool HasMemberLevelDirectives(TypeDeclarationSyntax type)
@@ -257,14 +236,5 @@ public sealed class Reorganizer
             }
             return false;
         }
-
-        private static bool IsCompact(MemberDeclarationSyntax m)
-            => m.ToString().IndexOf('\n') < 0;
-
-        private static bool IsComment(SyntaxTrivia t)
-            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
-            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
     }
 }
