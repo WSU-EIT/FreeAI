@@ -10,6 +10,7 @@ public readonly record struct ReorgResult(
     bool Changed,
     int TypesReordered,
     int TypesSkipped,
+    int BracesCollapsed,
     string? Error);
 
 /// <summary>
@@ -31,43 +32,54 @@ public sealed class Reorganizer
         }
         catch (Exception ex)
         {
-            return new ReorgResult(null, false, 0, 0, "parse error: " + ex.Message);
+            return new ReorgResult(null, false, 0, 0, 0, "parse error: " + ex.Message);
         }
 
         var originalRoot = tree.GetRoot();
         bool originalHadErrors = tree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
 
+        // Pass 1: reorder members.
         var rewriter = new Rewriter(config);
-        var newRoot = rewriter.Visit(originalRoot);
-        if (newRoot is null)
+        var afterReorg = rewriter.Visit(originalRoot);
+        if (afterReorg is null)
         {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, "rewrite produced null");
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, "rewrite produced null");
         }
 
-        if (rewriter.TypesReordered == 0)
+        // Pass 2: collapse wrapped-parameter braces to "){" (the author's hand style).
+        int bracesCollapsed = 0;
+        SyntaxNode finalRoot = afterReorg;
+        if (config.CollapseWrappedParameterBrace)
         {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, null);
+            var braceRewriter = new BraceCollapseRewriter();
+            finalRoot = braceRewriter.Visit(afterReorg) ?? afterReorg;
+            bracesCollapsed = braceRewriter.BracesCollapsed;
         }
 
-        var newText = newRoot.ToFullString();
+        var newText = finalRoot.ToFullString();
+        if (string.Equals(newText, sourceText, StringComparison.Ordinal))
+        {
+            // Nothing actually changed (already in order, braces already collapsed).
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, null);
+        }
 
         // Safety net 1: result must parse, and must not introduce NEW errors.
         var newTree = CSharpSyntaxTree.ParseText(newText);
         bool newHasErrors = newTree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
         if (newHasErrors && !originalHadErrors)
         {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped,
-                "aborted: reorder would introduce a syntax error");
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0,
+                "aborted: change would introduce a syntax error");
         }
 
         // Safety net 2: the exact same set of members must still be present.
         if (!MembersPreserved(originalRoot, newTree.GetRoot()))
         {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped,
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0,
                 "aborted: member set changed (safety check failed)");
         }
 
-        return new ReorgResult(newText, true, rewriter.TypesReordered, rewriter.TypesSkipped, null);
+        return new ReorgResult(newText, true, rewriter.TypesReordered, rewriter.TypesSkipped, bracesCollapsed, null);
     }
 
     private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
@@ -105,6 +117,94 @@ public sealed class Reorganizer
             list.Add(sig);
         }
         return list;
+    }
+
+    /// <summary>
+    /// When a method/constructor/operator/local-function parameter list is wrapped across multiple
+    /// lines, glue the closing ")" and the body's opening "{" together as "){" on one line — the
+    /// FreeCRM author's hand style. `dotnet format` splits these to ")" + "{"; this restores them.
+    /// Only fires when the parameters are ALREADY wrapped onto multiple lines, so single-line
+    /// declarations keep their normal brace-on-new-line (Allman) form.
+    /// </summary>
+    private sealed class BraceCollapseRewriter : CSharpSyntaxRewriter
+    {
+        public int BracesCollapsed { get; private set; }
+
+        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            var v = (MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            var v = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+        {
+            var v = (OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+        {
+            var v = (ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+        {
+            var v = (LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        private SyntaxNode Collapse(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
+        {
+            BracesCollapsed++;
+            var cp = pl.CloseParenToken;
+            var ob = body.OpenBraceToken;
+            return node.ReplaceTokens([cp, ob], (orig, rewritten) =>
+            {
+                if (orig == cp) return rewritten.WithTrailingTrivia();
+                if (orig == ob) return rewritten.WithLeadingTrivia();
+                return rewritten;
+            });
+        }
+
+        private static bool ShouldCollapse(ParameterListSyntax? pl, BlockSyntax body)
+        {
+            if (pl is null)
+            {
+                return false;
+            }
+            // Only when the parameter list is wrapped across multiple lines.
+            if (!pl.ToString().Contains('\n'))
+            {
+                return false;
+            }
+            var cp = pl.CloseParenToken;
+            var ob = body.OpenBraceToken;
+            bool onSeparateLines = cp.TrailingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia))
+                                || ob.LeadingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
+            if (!onSeparateLines)
+            {
+                return false; // already ")" + "{" on the same line
+            }
+            // Never collapse across a comment sitting between ) and {.
+            if (cp.TrailingTrivia.Any(IsComment) || ob.LeadingTrivia.Any(IsComment))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsComment(SyntaxTrivia t)
+            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
+            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
     }
 
     private sealed class Rewriter : CSharpSyntaxRewriter

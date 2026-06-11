@@ -1,9 +1,14 @@
 # FreeCodeMaid
 
-A Roslyn-based **C# member reorganizer** for the FreeTools suite. It fills the one gap that
-`.editorconfig` + `dotnet format` cannot: **reordering the members of a type** (CodeMaid's signature
-feature) — while **preserving each member's comment / XML-doc block** and following a **modular,
-customizable rule set**.
+A Roslyn-based **C# member reorganizer + brace fixer** for the FreeTools suite. It fills the gaps that
+`.editorconfig` + `dotnet format` cannot:
+
+1. **Reordering the members of a type** (CodeMaid's signature feature) — while **preserving each
+   member's comment / XML-doc block** and following a **modular, customizable rule set**.
+2. **The wrapped-parameter `){` brace style** — when a parameter list is wrapped across multiple lines,
+   FreeCodeMaid glues the closing `)` and the body's `{` together as `){` (the FreeCRM author's hand
+   style). `dotnet format` always *splits* these to `)` + `{`, and no editorconfig setting can
+   reproduce `){`, so FreeCodeMaid restores it.
 
 It is the deliberate counterpart to the per-language style references in GuidesV2 (`055`–`059`).
 
@@ -28,6 +33,29 @@ make that work:
 Sorting uses, in order: **kind** (the `KindOrder` table) → optional **accessibility**
 (`GroupByVisibility`, off) → optional **static-first** (`StaticMembersFirst`, off) → **alphabetical**
 with a leading `_` ignored (so `_connectionString` sorts as `connectionString`).
+
+## Brace style: the wrapped-parameter `){` rule
+
+When a method/constructor's parameter list is wrapped across multiple lines, FreeCodeMaid joins the
+closing `)` and the body's `{` onto one line as `){` (`CollapseWrappedParameterBrace`, **on by
+default**). Single-line declarations keep the normal brace-on-its-own-line form — only *already-wrapped*
+ones are touched, and a comment between `)` and `{` is left alone.
+
+**One command does the whole pipeline.** With `--apply`, FreeCodeMaid runs `dotnet format whitespace`
+for you **first** (because `dotnet format` splits `){` apart), then does its own member reorder and
+`){` restore — so the collapse is always the last word:
+
+```
+FreeCodeMaid <repo> --apply      # 1. dotnet format whitespace  2. reorder members  3. restore "){"
+```
+
+The formatter step only runs in `--apply` mode and needs the `dotnet` CLI plus an `.editorconfig` in
+the target; if it can't run, FreeCodeMaid warns and continues with its own passes. Pass `--no-format`
+(or set `RunFormatterFirst: false`) to reorganize only.
+
+> Note: the `){` collapse enforces the style on **every** wrapped declaration, so it will also
+> standardize wrapped methods the author happened to write in plain Allman style — making the
+> convention uniform. Set `CollapseWrappedParameterBrace: false` to disable just that.
 
 ## Safety (it would rather do nothing than do harm)
 
