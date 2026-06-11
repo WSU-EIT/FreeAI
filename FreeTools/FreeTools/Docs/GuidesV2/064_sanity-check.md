@@ -54,7 +54,7 @@ The mid-check is most valuable on **large or unclear changes** — new features,
 
 **Home 2 — the final check, just before you commit.** Once the decisions feel done, [Sanity] runs a last sweep asking *"Did we miss anything?"* — step 5 of the discussion flow. This is the gap hunt. In the same focus group it surfaced three concrete loose ends (an unresolved `table-dark` styling question, a "which examples are authoritative" caveat, and an unassigned owner) before anyone was allowed to call the meeting closed.
 
-**As its own standalone pass.** You do not need a full meeting to use it. Before opening any pull request, before locking any design, you can run the two questions solo — that is the `/sanity-check` slash-command this doc backs. The ADA-tooling meeting ([201]) is a pure example: the *entire* session was one sanity check, opened by [Sanity] with *"Stop. Before we write a single line of code..."* and run to a verdict.
+**As its own standalone pass.** You do not need a full meeting to use it. Before opening any pull request, before locking any design, you can run the two questions solo — that is the `/sanity-check` slash-command this doc backs. You can apply it to anything from a tooling choice to a feature plan: run the two questions, sort the findings, and reach a verdict before any code is written.
 
 **When to skip it.** Match the effort to the change, the same way [061] does:
 
@@ -110,7 +110,7 @@ The two headline questions each unpack into a short checklist. You do not have t
 - **What did we *not* decide?** The strongest tell that a plan is healthy is a list of expensive things you chose *not* to do. The styling check passed precisely because that list was long: no mass reformat, no CI gate, no rewrite, no editing the upstream file.
 - **Is there a one-line version?** Could a note in the contributing docs replace the automated gate? In the styling check, the highest-leverage "enforcement" turned out to be a passive instruction — *"don't run blanket `dotnet format` on this repo"* — not a new system.
 - **Does the standard tool fail on the reference?** A specific, reusable smell: *"If the standard enforcement tool fails on the reference implementation, the tool is wrong, not the code."* When your proposed automation would reject code that already ships and works, that automation is over-built.
-- **Are we designing ourselves into it?** The opening move of the ADA check: *"are we building this because it's the right approach, or because we designed ourselves into it?"* Forget the plan; ask what a fresh person would actually do.
+- **Are we designing ourselves into it?** Ask whether you are building this because it is the right approach, or because you designed yourselves into it. Forget the plan; ask what a fresh person would actually do.
 - **What's the blast radius?** Borrowed from [Architect]'s lens — how many files, people, and future merges does this touch? Big blast radius demands a big justification.
 
 **Headline 2 — "What did we miss?"** (the gap hunt)
@@ -118,7 +118,7 @@ The two headline questions each unpack into a short checklist. You do not have t
 - **The edge cases.** The deleted record, the empty field, the second tenant, the second language. Our features carry soft-delete, multi-tenancy, and localization in *every* layer (see [005 — A Guided Tour of One Working Feature](005_first-feature.md)); a plan that ignores them has a gap.
 - **The foot-guns left in the repo.** Not just "did we do the work" but "did we leave a trap for the next person." The styling check caught that an unedited `.editorconfig` would actively *suggest the wrong style* to whoever opened the project next — a booby trap that needed a loud warning.
 - **The unassigned owner and timing.** A decision with no owner is a wish. [Sanity]'s final sweep explicitly asked *"Who actually does the edits and when — this sprint or backlog?"* and refused to close until both were answered.
-- **The honest limitation.** What does this approach *not* cover, stated plainly? The ADA check's verdict insisted reports admit that *"automation catches ~30-60% of issues"* rather than imply full coverage. Naming the limit is part of not missing it.
+- **The honest limitation.** What does this approach *not* cover, stated plainly? For example, the ADA scanning guide (see [075 — ADA Scanning](075_ada-scanning.md)) insists every report admit that automation only catches ~30–60% of issues rather than imply full coverage. Naming the limit is part of not missing it.
 - **The tool we are *not* using.** A deliberate inversion: *"Is there a tool we're NOT using that we should be?"* Asking what is absent often finds the real gap faster than re-examining what is present.
 
 ---
@@ -141,10 +141,9 @@ Here is the procedure, whether you are interrupting a meeting or running `/sanit
 
 5. **Give a verdict and either pull the cord or open the gate.** If every finding is resolved, assigned, or escalated, the skeptic says some version of *"I'm satisfied — boundaries holding. Continue."* and the work proceeds. If a real concern is unanswered, the skeptic holds: the decision does not commit until it is addressed.
 
-The two worked examples make the rhythm concrete:
+The worked example makes the rhythm concrete:
 
 - **Embedded in a focus group ([0005]).** [Sanity] fired *twice* — a **mid-check** that confirmed the plan had not ballooned ("notice what we *didn't* decide"), then a **final check** that surfaced three gaps (the `table-dark` question, the authoritative-examples caveat, the missing owner), each resolved or assigned before the meeting closed. One escalation went up to the CTO.
-- **As a whole standalone session ([201]).** The *entire* meeting was a sanity check on tooling: it opened by discarding the existing plan ("Pretend none of that exists"), validated the core choice against what professionals actually do, asked the inversion ("a tool we're NOT using?"), acknowledged the honest limitation (30–60% coverage), and closed with a clean verdict plus one added phase.
 
 ---
 
@@ -164,7 +163,7 @@ A sanity check is deliberately lightweight, so its output is small — but it is
 
 3. **Optionally, an escalation to the human.** If the pass found a fork the team should not break itself, the output includes a `⏸️ CTO Input Needed` block with the question and the trade-offs laid out — exactly what the next doc, [067 — Decision Records and the CTO Brief](067_decisions-and-briefs.md), is built to receive.
 
-A note on weight: when the sanity check is its own meeting, it gets written up like any decision (verdict, decisions, next steps — see the ADA check [201] for the full shape). When it is a mid-check inside a larger session, the output is just a few lines in that session's transcript plus any rows it adds to the next-steps table. **Match the artifact to the stakes** — do not generate a formal report for a five-minute solo pass; do capture the verdict and any assigned gaps for a decision the team will live with.
+A note on weight: when the sanity check is its own meeting, it gets written up like any decision (verdict, decisions, next steps). When it is a mid-check inside a larger session, the output is just a few lines in that session's transcript plus any rows it adds to the next-steps table. **Match the artifact to the stakes** — do not generate a formal report for a five-minute solo pass; do capture the verdict and any assigned gaps for a decision the team will live with.
 
 ---
 
@@ -183,7 +182,7 @@ The sanity check has its own failure modes, on both sides. Watch for these.
 **Under-checking — when the pass is too shallow to catch anything.**
 
 - **Skipping the "what did we miss?" half.** Many teams remember to ask "are we overcomplicating?" and forget the gap hunt entirely — then ship with the deleted-record case unhandled. Both questions, every real pass.
-- **Confirmation, not skepticism.** Running the check to *approve* a plan you have already fallen in love with. The honest move is the ADA opener: discard your own plan first, then ask what you would actually do from scratch.
+- **Confirmation, not skepticism.** Running the check to *approve* a plan you have already fallen in love with. The honest move is to discard your own plan first, then ask what you would actually do from scratch.
 - **No owner, no verdict.** Surfacing gaps and then not assigning or resolving them. A finding with no bucket is a finding that gets forgotten. Every item must land somewhere before the verdict.
 - **Guessing instead of escalating.** When the team hits a genuine fork — an upstream-relationship call, a high-impact trade-off — and quietly picks one rather than flagging it for the [CTO]. If it is the human's call, make it the human's call.
 
@@ -198,4 +197,4 @@ The single most useful instinct, drawn straight from the transcripts: a healthy 
 - [063 — Running a Focus Group](063_focus-group.md) — where it fits in a focus group
 
 ---
-*GuidesV2 064 · drafted from source 2026-06-05 · the skeptical "are we overcomplicating / what did we miss" pass, grounded in the [Sanity] role and the real focus-group and ADA sanity-check transcripts.*
+*GuidesV2 064 · drafted from source 2026-06-05 · the skeptical "are we overcomplicating / what did we miss" pass, grounded in the [Sanity] role and the real focus-group transcript.*

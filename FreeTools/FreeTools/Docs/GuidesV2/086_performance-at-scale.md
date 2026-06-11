@@ -42,7 +42,7 @@ Why it matters: the three subsystems above are exactly the three that get *more 
 
 You cannot tune what you cannot see. Before changing anything, learn what "normal" looks like, because the app has a steady built-in rhythm that you can measure against.
 
-**The background poll (the heartbeat you can count).** The client's `MainLayout.razor` starts two repeating timers in `OnAfterRenderAsync`. One fires every **500 milliseconds** to run lightweight UI watchers, and one fires every **10 seconds** to call `CheckForUpdates`:
+**The background poll (the heartbeat you can count).** The client's `MainLayout.razor` starts two repeating timers in `OnInitializedAsync`. One fires every **500 milliseconds** to run lightweight UI watchers, and one fires every **10 seconds** to call `CheckForUpdates`:
 
 ```csharp
 updateTimer = new System.Threading.Timer(async (object? stateInfo) => {

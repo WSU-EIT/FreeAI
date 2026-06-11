@@ -270,7 +270,7 @@ What to take from this:
 
 - `data` is the **`DbContext`** — the live database session, of type `EFDataModel`. `data.Tags` is the table; `FirstOrDefaultAsync(...)` is a LINQ query that EF Core turns into SQL and runs against whichever database is configured. The result, `rec`, is a `Tag` **entity** (note: the bare name, so the EF type).
 - The permission branch is the rule made visible: admins can see everything; everyone else only sees records where `Deleted != true`. Soft-deleted rows are hidden, not gone (more in [section 8](#pitfalls)).
-- The big object initializer is **the translation**: each entity field is copied onto a brand-new `DataObjects.Tag`. This is the box-packing step. `GetNewActionResponse(true)` stamps a successful envelope:
+- The big object initializer is **the translation**: each entity field is copied onto a brand-new `DataObjects.Tag`. This is the box-packing step. It is *mostly* a verbatim field-by-field copy, with one twist: the audit fields aren't copied raw. `AddedBy` and `LastModifiedBy` are passed through `LastModifiedDisplayName(...)`, which takes the stored user-ID GUID and resolves it into a human-readable display name (falling back to the stored value if it isn't a known user). So what lands on the DTO for those two fields is a name, not the raw id. `GetNewActionResponse(true)` stamps a successful envelope:
 
   ```csharp
   public DataObjects.BooleanResponse GetNewActionResponse(bool result = false, string? message = null)
@@ -386,7 +386,7 @@ public partial class Tag
 
 Compare it to the DTO from [section 3](#dto):
 
-- **Same business fields** (`Name`, `Style`, `Enabled`, the audit columns, the soft-delete columns). This is why the translation in [section 5](#data-access) is a straight field-by-field copy.
+- **Same business fields** (`Name`, `Style`, `Enabled`, the audit columns, the soft-delete columns). This is why the translation in [section 5](#data-access) is mostly a straight field-by-field copy — the one exception being the audit fields `AddedBy` and `LastModifiedBy`, which on the read path are run through `LastModifiedDisplayName(...)` to turn a stored user-ID GUID into a display name rather than copied verbatim.
 - **No `ActionResponse`.** The entity is storage only; pass/fail envelopes are a transport concern.
 - **An extra `TagItems` navigation property.** This is a **navigation property**: an in-memory link to related rows (the join rows that attach this tag to appointments, services, or email templates). It is marked `virtual` so EF Core can load it lazily. The DTO has no equivalent because the browser does not need the raw join rows. Navigation properties are storage-only and must never leak into a DTO.
 - `Name` is non-nullable here (`= null!`) but nullable on the DTO — the database requires a value; the DTO tolerates its absence and the data-access layer fills the gap.

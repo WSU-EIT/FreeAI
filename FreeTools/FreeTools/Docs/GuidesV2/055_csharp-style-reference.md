@@ -46,7 +46,7 @@
 - A **type** is a class, struct, interface, or enum. An **interface** is a contract — a list of method signatures a class promises to provide.
 - **PascalCase** capitalizes the first letter of every word (`AppointmentNoteId`); **camelCase** is the same but with a lowercase first letter (`connectionString`).
 
-**These rules are proven, not opinions.** Most style guides are somebody's preference. This one was reverse-engineered from the real FreeCRM source and then *citation-verified at the byte level* — someone opened every cited file and confirmed each line and snippet matches. The studied projects are the four hand-written ones: `CRM`, `CRM.Client`, `CRM.DataAccess`, and `CRM.DataObjects` (118 hand-written `.cs` files total). Two areas are explicitly **out of scope as style sources** and you should never copy their style:
+**These rules are proven, not opinions.** Most style guides are somebody's preference. This one was reverse-engineered from the real FreeCRM source and then *citation-verified at the byte level* — someone opened every cited file and confirmed each line and snippet matches. The studied projects are the four hand-written ones: `CRM`, `CRM.Client`, `CRM.DataAccess`, and `CRM.DataObjects` (118 `.cs` files total across the four projects, including the 13 vendored `Try.Core`/`DynamicBlazorSupport` files excluded below as a style source — 105 hand-written). Two areas are explicitly **out of scope as style sources** and you should never copy their style:
 
 - **`CRM.EFModels`** — machine-scaffolded Entity Framework model classes. (Entity Framework, or "EF," is the library that maps C# objects to database tables.)
 - **`CRM.Client/DynamicBlazorSupport/`** (namespace `Try.Core`) — vendored third-party code adapted from an open-source Blazor REPL. It uses a different brace style (Allman), `init` setters, `switch` expressions, and collection-expression `[]` syntax — none of which are FreeCRM house style.
@@ -703,8 +703,11 @@ Proof it is *not* alphabetical: `Added` comes after `UseInServices`, and `Delete
 **Rule 9d — DataController field block: grouped BY MUTABILITY / PURPOSE, not alphabetical.** First the injected/per-request mutable fields (in roughly constructor-wiring order), then `readonly` fields, then `_`-prefixed string constants, separated by blank lines.
 [DataController.cs:11-22](FreeCRM/CRM/Controllers/DataController.cs#L11-L22) (shown in [§5 Rule 5c/5e](#naming-fields))
 
-**Rule 9e — Client `DataModel` & `Helpers` fields: ALPHABETICAL** (within blank-line-delimited purpose groups). `BlazorDataModel` carries ~60 fields, so alphabetical is the only way to find one fast. There are minor local slips (e.g. `_ApplicationUrl` is slightly out of strict order), so treat it as "alphabetical by intent." Code-generation markers `// {{ModuleItemStart:...}}` interrupt the run but the wrapped fields stay in their correct alphabetical slot.
+**Rule 9e — Client `DataModel` fields: ALPHABETICAL** (within blank-line-delimited purpose groups). `BlazorDataModel` carries ~60 fields, so alphabetical is the only way to find one fast. There are minor local slips (e.g. `_ApplicationUrl` is slightly out of strict order), so treat it as "alphabetical by intent." Code-generation markers `// {{ModuleItemStart:...}}` interrupt the run but the wrapped fields stay in their correct alphabetical slot.
 [DataModel.cs:51-116](FreeCRM/CRM.Client/DataModel.cs#L51-L116)
+
+The static `Helpers` class is the exception: its fields are **grouped BY PURPOSE, not alphabetical.** The injected service handles come first in `Init()`-injection order (`DialogService`, `Http`, `_initialized`, `jsRuntime`, `LocalStorage`, `Model`, `Tooltips`, `NavManager` — note `NavManager` follows `Tooltips`, so the run is *not* alphabetical), then a separate blank-line-delimited group of state flags (`_savingUserPreferences`, `_switchingTenant`, `_validatingUrl`).
+[Helpers.cs:34-45](FreeCRM/CRM.Client/Helpers.cs#L34-L45)
 
 **Rule 9f — `.razor @code` block: BY-PURPOSE in functional waves** — `[Parameter]` properties → private state fields → lifecycle methods (`Dispose`, `OnAfterRenderAsync`, `OnInitialized`, the model-changed handler) → action/CRUD handlers (`Back`, `Delete`, `Load…`, `Save`) → the `SignalRUpdate` handler last. This reads top-to-bottom in the order the component lives its life. (Note: lifecycle methods are grouped alphabetically with `Dispose` pulled to the front, *not* in Blazor runtime order.)
 [EditTag.razor:141-367](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L141-L367)
@@ -718,7 +721,8 @@ Proof it is *not* alphabetical: `Added` comes after `UseInServices`, and `Delete
 | `DataObjects` DTO **members** | By-purpose: PK → TenantId → business → audit → soft-delete | 9c |
 | `DataObjects` DTO **classes** | Alphabetical | 9c |
 | `DataController.cs` fields | Grouped by mutability (DI → readonly → constants) | 9d |
-| `DataModel.cs` & `Helpers.cs` fields | Alphabetical (within purpose-groups) | 9e |
+| `DataModel.cs` fields | Alphabetical (within purpose-groups) | 9e |
+| `Helpers.cs` fields | By-purpose: services (injection order) → state flags | 9e |
 | `.razor` `@code` | By-purpose: params → state → lifecycle → handlers → SignalR | 9f |
 
 ---
@@ -1090,7 +1094,7 @@ An **attribute** is metadata in square brackets attached to a class or member, e
 
 The headline: **FreeCRM does not throw exceptions to its callers.** Operations report success or failure inside a returned object, and the API returns a structured JSON payload every time instead of an opaque 500 error.
 
-**Rule 15a — Every DataAccess method returns a data/response object, never throws to the caller.** `throw` is reserved for unrecoverable low-level setup — it appears only twice in the entire `CRM.DataAccess` project (a missing connection string at [DataAccess.cs:148](FreeCRM/CRM.DataAccess/DataAccess.cs#L148), a null extension argument at [Utilities.cs:769](FreeCRM/CRM.DataAccess/Utilities.cs#L769)). Controllers contain zero `throw` statements.
+**Rule 15a — Every DataAccess method returns a data/response object, never throws to the caller.** `throw` is reserved for unrecoverable low-level setup — it appears only twice in the entire `CRM.DataAccess` project (a missing connection string at [DataAccess.cs:147](FreeCRM/CRM.DataAccess/DataAccess.cs#L147), a null extension argument at [Utilities.cs:769](FreeCRM/CRM.DataAccess/Utilities.cs#L769)). Controllers contain zero `throw` statements.
 
 **Rule 15b — `BooleanResponse` is the standard "did it work + why not" object: exactly `Messages` (list) + `Result` (bool).** `Messages` defaults to a new list so callers can always `.Add(...)` without a null check. (A lighter `SimpleResponse` uses a single `string? Message` instead of a list.)
 [DataObjects.cs:121-125](FreeCRM/CRM.DataObjects/DataObjects.cs#L121-L125)

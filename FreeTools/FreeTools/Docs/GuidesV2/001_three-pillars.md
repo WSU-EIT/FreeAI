@@ -65,7 +65,7 @@ A useful mental note: pillars 1 and 2 live in the **FreeCRM** repository and shi
 | `CRM.DataAccess` | The business logic — the methods that read and write data, authenticate users, send email, generate PDFs, and so on. |
 | `CRM.Plugins` | The extension system that lets you add behavior without modifying the core (see plugins below). |
 
-These reference each other in layers. For example, `CRM.DataAccess` references `CRM.DataObjects`, `CRM.EFModels`, and `CRM.Plugins`; the web `CRM` project references `CRM.DataAccess`, `CRM.Plugins`, and `CRM.Client`. The shared namespace across these projects is simply `CRM` — every core file begins with `namespace CRM;`.
+These reference each other in layers. For example, `CRM.DataAccess` references `CRM.DataObjects`, `CRM.EFModels`, and `CRM.Plugins`; the web `CRM` project references `CRM.DataAccess`, `CRM.Plugins`, and `CRM.Client`. The namespaces follow a `CRM`-rooted family rather than one flat namespace: the data layers (`CRM.DataObjects`, `CRM.DataAccess`) and the web host's `Program.cs` / `Classes\*.cs` use the bare `namespace CRM;`, while the others use sub-namespaces — `CRM.Client` uses `namespace CRM.Client;`, the web host's controllers use `namespace CRM.Server.Controllers;`, `CRM.EFModels` uses `namespace CRM.EFModels;`, and `CRM.Plugins` uses `namespace Plugins;`.
 
 **Databases it speaks.** The `CRM.EFModels` project ships drivers for SQL Server, SQLite, MySQL, and PostgreSQL, plus an **InMemory** option used for quick local runs and tests. The database type is chosen at startup; if no connection is configured, the app redirects you to a setup page rather than crashing.
 
@@ -128,7 +128,7 @@ Notice the commented-out `MyCustomUserProperty` line: the framework is literally
 
 The upgrade tool is the *reason* the `.App.cs` convention exists. The README's upgrade section says it plainly: it works for apps that *"have already migrated to use .app. files for all of your app-specific code."* In other words: keep your code in `.App.cs` files, and upgrading to a newer FreeCRM is a supported, repeatable process. Don't, and you are on your own to merge by hand.
 
-**Other conventions you'll meet quickly:** a single shared `CRM` namespace; partial classes split by topic (the `CRM.DataAccess` project has files like `DataAccess.Users.cs`, `DataAccess.Invoices.cs`, `DataAccess.Tags.cs` — all the *same* `DataAccess` class, sliced by feature); and a parallel `DataController.*.cs` set on the API side. These topic-sliced files keep each piece small and findable. The deeper vocabulary is catalogued in [006 — Speaking the Local Dialect](006_local-dialect.md).
+**Other conventions you'll meet quickly:** a `CRM`-rooted namespace family (the data layers sit in the bare `CRM` namespace, while projects like the client and controllers use sub-namespaces such as `CRM.Client` and `CRM.Server.Controllers`); partial classes split by topic (the `CRM.DataAccess` project has files like `DataAccess.Users.cs`, `DataAccess.Invoices.cs`, `DataAccess.Tags.cs` — all the *same* `DataAccess` class, sliced by feature); and a parallel `DataController.*.cs` set on the API side. These topic-sliced files keep each piece small and findable. The deeper vocabulary is catalogued in [006 — Speaking the Local Dialect](006_local-dialect.md).
 
 <a id="freetools-cli"></a>
 ## 5. FreeTools: The CLI
@@ -144,7 +144,7 @@ The upgrade tool is the *reason* the `.App.cs` convention exists. The README's u
 dotnet run --project FreeTools.AppHost -- --target YourProjectName
 ```
 
-`FreeTools.AppHost` is the Aspire entry point that orchestrates everything; `--target` names the project folder to analyze (it defaults to the bundled `BlazorApp1` sample).
+`FreeTools.AppHost` is the Aspire entry point that orchestrates everything; `--target` names the project folder to analyze (it defaults to the bundled `FreeExamples` sample).
 
 **The pipeline, phase by phase.** FreeTools is not one program but a coordinated set of small console tools that run in dependency order:
 
@@ -196,7 +196,7 @@ The reinforcing relationships in one breath: **the framework defines the structu
 - **Expecting `partial class` to mean "a separate class."** Files like `DataAccess.Users.cs` and `DataAccess.Invoices.cs` are all the *same* `DataAccess` class, split for readability. Don't go looking for many different classes — look for many slices of one.
 - **Renaming by hand.** Trying to find-and-replace "FreeCRM" yourself will miss project GUIDs and break the solution. Use `Rename FreeCRM.exe`, which handles project files, GUIDs, and namespaces together.
 - **Deleting modules by deleting files.** Use `Remove Modules from FreeCRM.exe` (`remove:` / `keep:` / `remove:all`). The README warns it *"may still leave remnants,"* but it is far safer than manual deletion — and remnants can be reported as issues.
-- **Running FreeTools from the wrong place.** Your target project must be a *sibling folder* to FreeTools and named via `--target`. If you run it without that layout, it analyzes the bundled `BlazorApp1` sample instead of your app.
+- **Running FreeTools from the wrong place.** Your target project must be a *sibling folder* to FreeTools and named via `--target`. If you run it without that layout, it analyzes the bundled `FreeExamples` sample instead of your app.
 - **Ignoring large-file warnings.** When the report flags files over ~450 lines, that isn't just style — those files are harder for both humans and AI tools to work with. Treat the warning as a refactor hint.
 
 <a id="next-steps"></a>

@@ -109,7 +109,7 @@ These are the real components in `FreeCRM/CRM.Client/Shared/`. They fall into a 
 
 **Why it matters:** Real features are not one component; they are several nested together. "Compose" just means *put components inside other components* so the small jobs add up to a working screen. The shelf is designed for this — pieces are deliberately tiny so they combine cleanly.
 
-**Pattern A — nesting inline pieces.** Components freely contain other components. `RequiredIndicator`, a four-line file, is literally just `Icon` and `Language` stacked:
+**Pattern A — nesting inline pieces.** Components freely contain other components. `RequiredIndicator`, a four-line file, is literally just a `required-flag` icon element and a `Language` tag:
 
 ```razor
 <div class="required-indicator">
@@ -148,7 +148,7 @@ public static async Task SelectFile(Action<Guid> OnFileSelected, string Title = 
 }
 ```
 
-So in a page you write `await Helpers.SelectFile(OnFileSelected: id => { _logoId = id; });` and the dialog, the file grid, and the close-on-pick behaviour are all handled for you. The same `Helpers.OpenAsync` pattern powers `GetInputDialog`, `GeneratePasswordDialog`, `TagSelector`, `UploadFile`, `ModalMessage`, and the rest. **Takeaway:** for dialogs, call the matching `Helpers` method and pass a callback; do not hand-roll the dialog plumbing.
+So in a page you write `await Helpers.SelectFile(OnFileSelected: id => { _logoId = id; });` and the dialog, the file grid, and the close-on-pick behaviour are all handled for you. The same pattern — a Helpers method wrapping Radzen DialogService.OpenAsync<T> — powers `GetInputDialog`, `GeneratePasswordDialog`, `TagSelector`, `UploadFile`, `ModalMessage`, and the rest. **Takeaway:** for dialogs, call the matching `Helpers` method and pass a callback; do not hand-roll the dialog plumbing.
 
 ---
 

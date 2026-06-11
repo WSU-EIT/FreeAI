@@ -362,7 +362,7 @@ These are the unwritten rules the core upholds. Follow them in your own tools an
 
 **1. Zero external dependencies.** The core deliberately pulls in *no* NuGet packages. That keeps builds fast, removes a whole class of version conflicts, and means the core can be dropped into any .NET project. Do not add a dependency to the core to solve a problem that belongs in one tool — put it in the tool instead.
 
-**2. Static and stateless.** Every class is `static` and stores no data between calls. You never write `new CliArgs()`; you call `CliArgs.GetOption(...)` directly. The design avoids hidden state — a method's output depends only on its inputs (plus environment variables, which are explicitly named). The library's own doc frames it as:
+**2. Static and stateless.** Every class is `static` and stores no data between calls. You never write `new CliArgs()`; you call `CliArgs.GetOption(...)` directly. The design avoids hidden state — a method's output depends only on its inputs (plus environment variables, which are explicitly named). The library's own README states the principle plainly — "All utilities are static for simplicity" ([FreeTools.Core/README.md#L147](../../FreeTools.Core/README.md#L147)). In practice that means:
 
 ```csharp
 // Good: stateless utility

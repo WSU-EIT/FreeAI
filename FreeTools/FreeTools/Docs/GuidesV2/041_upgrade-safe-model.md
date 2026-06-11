@@ -100,7 +100,7 @@ This is not limited to data access. The same two-sheet idea repeats across every
 |---|---|---|
 | Server-side data access | `DataAccess.cs`, `DataAccess.*.cs` | `DataAccess.App.cs` |
 | Shared data objects (DTOs) | `DataObjects.cs`, `DataObjects.*.cs` | `DataObjects.App.cs` |
-| Browser data model | (generated) `BlazorDataModel` | `DataModel.App.cs` |
+| Browser data model | `DataModel.cs` (`BlazorDataModel`) | `DataModel.App.cs` |
 | App startup / hosting | `Program.cs` | `Program.App.cs` |
 | Configuration | `ConfigurationHelper.cs` | `ConfigurationHelper.App.cs` |
 | Global settings | `GlobalSettings.cs` | `GlobalSettings.App.cs` |
@@ -334,7 +334,7 @@ Each of these *looks* like it works today and *fails* at the next upgrade. They 
 
 - **Skipping the migration prerequisite.** Running `Upgrade FreeCRM.exe` against an app whose custom code is *not* yet in `.App.` files is exactly the case the README warns is unsupported — the tool can only carry forward what lives on your sheet.
 
-- **Assuming the tool handles everything.** The README is explicit about edge cases: *"There are edge cases that cannot be updated with this tool, such as having additional projects in your solution. The tool will copy those projects, but any references in other projects must be added manually."* Treat the contract as the happy path and the tool's printed report as your checklist for the rest.
+- **Assuming the tool handles everything.** The README is explicit about edge cases: *"There are edge cases that cannot be updated with this tool, such as having additional project in your solution. The tool will copy those projects, but any references in other projects must be added manually."* Treat the contract as the happy path and the tool's printed report as your checklist for the rest.
 
 ---
 

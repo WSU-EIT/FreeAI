@@ -26,7 +26,7 @@
 <a id="why-this-matters"></a>
 ## 1. Why This Matters
 
-Most of this band (the 06x docs) is about a deliberately theatrical habit: when we make a decision, we pretend a small **team** of named specialists is in the room and let them argue. That practice is called **roleplay** — one human (you, the CTO) prompts the AI to answer *as if* it were several different experts, each with one job to worry about. The full roster lives in [061 — The Roleplay Team and Its Roles](061_roleplay-team.md), and the source of truth for who's on the team is the guide `Docs/Guides/001_roleplay.md`.
+Most of this band (the 06x docs) is about a deliberately theatrical habit: when we make a decision, we pretend a small **team** of named specialists is in the room and let them argue. That practice is called **roleplay** — one human (you, the CTO) prompts the AI to answer *as if* it were several different experts, each with one job to worry about. The full roster lives in [061 — The Roleplay Team and Its Roles](061_roleplay-team.md), which is the in-repo source of truth for who's on the team.
 
 The full team is powerful, but it is also expensive. Convening every voice for a five-second question is like calling an all-hands meeting to ask "is this method name okay?" You get a wall of cross-talk, mid-discussion sanity checks, and a written summary — for something that needed one sentence from one person.
 
@@ -50,7 +50,7 @@ Reach for a single-role consult when **all** of these are true:
 - **The answer won't ripple far.** Low "blast radius" — a term [Architect] uses for *how much else a change could break*. If the answer can only touch one corner of the code, one role can field it.
 - **You already roughly know the shape of the answer** and just want it confirmed or refined by the owner.
 
-Concretely, this maps onto the "Change Size" ladder from `001_roleplay.md`:
+Concretely, this maps onto the "Change Size" ladder from [061 — The Roleplay Team and Its Roles](061_roleplay-team.md):
 
 | Change Size | Examples | Approach |
 |-------------|----------|----------|
@@ -59,12 +59,12 @@ Concretely, this maps onto the "Change Size" ladder from `001_roleplay.md`:
 | **Medium** | New endpoint, UI component | Planning checklist (see [062](062_discussion-planning-modes.md)) |
 | **Large/Unclear** | New feature, architecture change | Full discussion / focus group |
 
-**Use the full team instead when:** requirements are ambiguous, several valid approaches exist, the decision is high-impact, or two concerns are in tension (e.g. [Backend] wants one schema, [Frontend] needs another). Those are exactly the four "Pause for CTO" signals from the roleplay guide — and they're a sign you've outgrown a single-role ask. When in doubt, start with Discussion mode; you can always narrow to one role once you know who owns the question.
+**Use the full team instead when:** requirements are ambiguous, several valid approaches exist, the decision is high-impact, or two concerns are in tension (e.g. [Backend] wants one schema, [Frontend] needs another). The first three echo the "Pause for CTO" conditions from the roleplay guide — the team is genuinely split, requirements are ambiguous, or the decision is high-impact — and any of them is a sign you've outgrown a single-role ask. When in doubt, start with Discussion mode; you can always narrow to one role once you know who owns the question.
 
 <a id="choose-role"></a>
 ## 3. Choosing the Right Role
 
-Picking the right role is most of the work. Ask: *whose job is it to worry about this?* The standard team, taken verbatim from `001_roleplay.md`, maps cleanly onto question types:
+Picking the right role is most of the work. Ask: *whose job is it to worry about this?* The standard team, taken verbatim from [061 — The Roleplay Team and Its Roles](061_roleplay-team.md), maps cleanly onto question types:
 
 | If your question is about… | Ask this role | Because its focus is… |
 |----------------------------|---------------|-----------------------|
@@ -78,7 +78,7 @@ Picking the right role is most of the work. Ask: *whose job is it to worry about
 Two notes that matter:
 
 - **[CTO] is you, the human.** It is not a role the AI plays — it's the seat that makes final decisions. You don't "ask [CTO]"; you *are* the [CTO] doing the asking.
-- **The roster adapts to the project.** The names above are the defaults for a web app like FreeCRM. The roleplay guide explicitly says to swap roles to fit the work — e.g. an API-only project might use `[API]`, `[Database]`, `[Consumer]`, `[Ops]`; a CLI tool might use `[Core]`, `[UX]`, `[Ops]`, `[Docs]`. Pick the role that owns the concern *in your project's vocabulary*.
+- **The roster adapts to the project.** The names above are the defaults for a web app like FreeCRM. The roleplay guide explicitly says to swap roles to fit the work — e.g. an API-only project might use `[API]`, `[Database]`, `[Consumer]`, `[Ops]`; a library might use `[PublicAPI]`, `[Internals]`, `[Perf]`, `[Docs]`. Pick the role that owns the concern *in your project's vocabulary*.
 
 If two roles could plausibly own the question, that is itself a signal — see [§7 Pitfalls](#pitfalls). Often the cleaner move is to ask **[Architect]** first ("who owns this?") or to fall back to the full team.
 
@@ -89,7 +89,7 @@ The mechanics are simple — the discipline is in the framing. A good single-rol
 
 **Step by step:**
 
-1. **Name the role explicitly.** Put it in brackets so the AI knows to answer in-character: `ask [Backend]: …`. The brackets are the same convention used throughout `001_roleplay.md`.
+1. **Name the role explicitly.** Put it in brackets so the AI knows to answer in-character: `ask [Backend]: …`. The brackets are the same convention used throughout [061 — The Roleplay Team and Its Roles](061_roleplay-team.md).
 2. **State the one question.** One concern, not three. If you have three, you probably want the team.
 3. **Give just enough context.** Point at the file or area in question. Use the project's real file names — for example a code partial like `FreeManager.App.EntityWizard.State.cs`, following the mandatory `{ProjectName}.App.{Feature}.{Extension}` naming rule from the style guide.
 4. **Say what "answered" looks like.** A recommendation? A yes/no? A short list of risks? Telling the role what you need keeps the reply tight.
@@ -130,7 +130,7 @@ That escape hatch is what keeps a one-role ask honest: a single voice answers wh
 <a id="role-scope"></a>
 ## 5. What the Role Owns
 
-Each role has a **focus** (the thing it cares about) and a set of **key questions** (the lens it brings). These are not invented for this doc — they're lifted straight from the team table in `001_roleplay.md`. Knowing them tells you both *what to expect back* and *where the role's authority ends.*
+Each role has a **focus** (the thing it cares about) and a set of **key questions** (the lens it brings). These are not invented for this doc — they're lifted straight from the team table in [061 — The Roleplay Team and Its Roles](061_roleplay-team.md). Knowing them tells you both *what to expect back* and *where the role's authority ends.*
 
 | Role | What it owns (focus) | The questions it asks |
 |------|----------------------|-----------------------|
@@ -149,7 +149,7 @@ A useful mental model: each role is a **specialist consultant**, not a **manager
 <a id="the-output"></a>
 ## 6. The Answer You Get Back
 
-A single-role consult is intentionally lightweight, so the output is too. Unlike a focus group — which produces a written meeting doc with a transcript, decisions, and next steps (see the template in `001_roleplay.md` and [067 — Decision Records and the CTO Brief](067_decisions-and-briefs.md)) — a one-role ask usually returns just **a short, in-character answer.** No formal artifact is required.
+A single-role consult is intentionally lightweight, so the output is too. Unlike a focus group — which produces a written meeting doc with a transcript, decisions, and next steps (see the template in [061 — The Roleplay Team and Its Roles](061_roleplay-team.md) and [067 — Decision Records and the CTO Brief](067_decisions-and-briefs.md)) — a one-role ask usually returns just **a short, in-character answer.** No formal artifact is required.
 
 What a good answer looks like:
 
@@ -174,7 +174,7 @@ The discipline here is restraint: don't manufacture a meeting doc for a one-sent
 
 **Treating the answer as a ruling.** A single role *advises*; it does not *decide.* The decision seat is [CTO] — you. Taking one role's recommendation as gospel skips the human judgment the whole system is built around. The answer is an input to your call, not the call itself.
 
-**Skipping the team when you should have convened it.** Single-role asks are seductive because they're fast, and it's tempting to chain a dozen of them instead of one honest discussion. If you're firing off many related single-role questions about one change, stop — that change wanted a planning checklist or a focus group from the start. The four "convene the team" signals from `001_roleplay.md` are your guardrail: ambiguous requirements, multiple valid approaches, high impact, or a split.
+**Skipping the team when you should have convened it.** Single-role asks are seductive because they're fast, and it's tempting to chain a dozen of them instead of one honest discussion. If you're firing off many related single-role questions about one change, stop — that change wanted a planning checklist or a focus group from the start. The "pause for CTO" conditions from [061 — The Roleplay Team and Its Roles](061_roleplay-team.md) are your guardrail: the team is genuinely split, requirements are ambiguous, or the decision is high-impact.
 
 **Over-ceremony in the other direction.** The opposite failure: writing a full meeting doc or ADR for a trivial confirmation. Match the artifact to the weight of the answer. Most single-role answers leave no paper trail, and that's correct.
 
@@ -189,4 +189,4 @@ The discipline here is restraint: don't manufacture a meeting doc for a one-sent
 - [062 — Discussion Mode, Planning Mode](062_discussion-planning-modes.md) — when one voice beats the room
 
 ---
-*GuidesV2 · 065 · drafted from source (`Docs/Guides/001_roleplay.md` and the 06x band) · 2026-06-05.*
+*GuidesV2 · 065 · drafted from source ([061 — The Roleplay Team and Its Roles](061_roleplay-team.md) and the 06x band) · 2026-06-05.*
