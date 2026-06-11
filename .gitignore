@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Local-only reference clone of upstream CodeMaid (NOT part of this repo).
+# Kept locally as a structural reference while building FreeCodeReorganizer; never checked in.
+/_codemaid-reference/
+
 # User-specific files
 *.rsuser
 *.suo

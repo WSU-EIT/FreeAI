@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FreeTools.Core\FreeTools.Core.csproj" />
+    <ProjectReference Include="..\..\FreeTools.Core\FreeTools.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
