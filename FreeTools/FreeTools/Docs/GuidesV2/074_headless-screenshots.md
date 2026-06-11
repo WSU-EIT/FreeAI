@@ -248,14 +248,14 @@ page-snapshots/
 
 ```json
 {
-  "route": "/Account/Login",
-  "url": "https://localhost:5001/Account/Login",
-  "statusCode": 200,
-  "fileSize": 45231,
-  "isSuspiciouslySmall": false,
-  "retryAttempted": false,
-  "consoleErrors": [],
-  "isSuccess": true
+  "Route": "/Account/Login",
+  "Url": "https://localhost:5001/Account/Login",
+  "StatusCode": 200,
+  "FileSize": 45231,
+  "IsSuspiciouslySmall": false,
+  "RetryAttempted": false,
+  "ConsoleErrors": [],
+  "IsSuccess": true
 }
 ```
 

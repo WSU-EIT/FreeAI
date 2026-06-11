@@ -36,7 +36,7 @@ Let's define the three words you'll see throughout this doc:
 
 The clever part is *how* the host runs a plugin. It does **not** require you to pre-compile the plugin into a DLL. Instead the engine reads the raw C# text and compiles it **in memory at runtime** using the Roslyn compiler (`Microsoft.CodeAnalysis.CSharp`). That means a customer can edit a plugin file in Notepad, restart the app, and their new code is live — no build server, no NuGet package, no redeploy.
 
-The project's own README puts it plainly: *"if you are creating a solution that will be given to customers or clients that will not have the ability to modify the source code of the application, then the plugin architecture provides a way for those customers to add custom functionality."* It is also useful even for in-house builds, because a plugin can be scoped to a single tenant (see [§6](#capabilities-permissions)) — so you can deliver one customer's special-case logic without polluting everyone else's app with `if (tenant == ...)` branches.
+The project's own plugin docs (`PluginFiles/Plugins.md`) put it plainly: *"if you are creating a solution that will be given to customers or clients that will not have the ability to modify the source code of the application, then the plugin architecture provides a way for those customers to add custom functionality."* It is also useful even for in-house builds, because a plugin can be scoped to a single tenant (see [§6](#capabilities-permissions)) — so you can deliver one customer's special-case logic without polluting everyone else's app with `if (tenant == ...)` branches.
 
 FreeCRM ships four built-in plugin **types** out of the box: **Auth**, **BackgroundProcess**, **Example**, and **UserUpdate**. The next section explains what each one is for.
 
@@ -218,10 +218,11 @@ The loader (`Plugins.cs → Load`) looks in the `PluginFiles` folder for files w
 - **`.cs`** — a normal C# source file. Use this when the plugin compiles cleanly as part of your solution and references libraries you already have.
 - **`.plugin`** — a plain-text file that the build system ignores. Use this when the code would *break the build* — for example because it references an external DLL that isn't in your solution. A `.cs` file in the project would cause compile errors; a `.plugin` file sidesteps that because the IDE doesn't try to compile it, yet the runtime loader still reads it.
 
-For each file the loader also checks for two optional sidecar files with the same base name:
+For each file the loader also checks for an optional sidecar file with the same base name:
 
 - **`<name>.assemblies`** — a list of extra DLLs the plugin needs (see [§6](#capabilities-permissions)).
-- (For Blazor UI plugins only) the loader additionally scans a `BlazorComponents` subfolder for `.razor`/`.blazor` files with optional `.json` config — covered in [047](047_custom-components.md).
+
+Separately, *after* the per-file loop, the loader does a one-time scan of a `BlazorComponents` subfolder for `.razor`/`.blazor` files (each with optional `.json` config keyed to the Blazor file's own name) — this folder scan is independent of any plugin file's base name, and is covered in [047](047_custom-components.md).
 
 ### How a file becomes a registered plugin
 

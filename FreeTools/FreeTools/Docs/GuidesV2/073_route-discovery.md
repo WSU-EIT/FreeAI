@@ -155,7 +155,7 @@ The inventory is a means, not an end. Its whole purpose is to feed the next tool
 2. **The endpoint poker** reads `pages.csv` and sends an HTTP GET to each route, recording whether the page responded.
 3. **The headless screenshotter** reads the same `pages.csv` and captures an image of each page (no visible browser window needed).
 
-Both downstream tools consume the CSV through a shared helper in the tooling core library, `RouteParser`. Understanding what that helper does explains how the raw inventory becomes a clean, testable list:
+The endpoint poker consumes the CSV through a shared helper in the tooling core library, `RouteParser`; the screenshotter uses an equivalent in-house parser that applies the same rules (and still calls `RouteParser`'s `HasParameter` check). Understanding what that parsing does explains how the raw inventory becomes a clean, testable list:
 
 - **It reads the `Route` column** (column index 1 — the second column) and skips blank routes, so the component files with no `@page` line drop out automatically.
 - **It skips parameterized routes by default.** A "parameterized" route has a placeholder in curly braces, like `/User/{id}` — you cannot just open it, because `{id}` has to be filled in with a real value. `RouteParser` recognizes these and sets them aside as *skipped* rather than trying to visit a broken address:

@@ -959,7 +959,7 @@ Proof: [EditTag.razor:356-363](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.ra
         }
 ```
 
-Proof (helper): [Helpers.cs:6307-6366](FreeCRM/CRM.Client/Helpers.cs#L6307-L6366) (signature 6307-6314; primary lookup 6320-6329; fallback 6331-6338; not-found humanize with `AllCaps` 6359-6366). Code use: [EditTag.razor:310](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L310); markup use: [Tags.razor:13](FreeCRM/CRM.Client/Pages/Settings/Tags/Tags.razor#L13). The `<Language>` component itself calls `Helpers.Text(Tag.Trim(), false, null, MarkUndefinedStrings)` at [Language.razor:72](FreeCRM/CRM.Client/Shared/Language.razor#L72). See [035](035_validation-localization-a11y.md) for the localization model.
+Proof (helper): [Helpers.cs:6302-6360](FreeCRM/CRM.Client/Helpers.cs#L6302-L6360) (signature 6302-6309; primary lookup 6314-6322; fallback 6325-6332; not-found humanize with `AllCaps` 6353-6360, line 6356). Code use: [EditTag.razor:310](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L310); markup use: [Tags.razor:13](FreeCRM/CRM.Client/Pages/Settings/Tags/Tags.razor#L13). The `<Language>` component itself calls `Helpers.Text(Tag.Trim(), false, null, MarkUndefinedStrings)` at [Language.razor:72](FreeCRM/CRM.Client/Shared/Language.razor#L72). See [035](035_validation-localization-a11y.md) for the localization model.
 
 **Rule 7.15 — Validation collects errors into a list, sets a focus target, and shows them via the model.** In `Save`, accumulate `List<string> errors`, track the id of the first invalid field in `string focus`, push field errors via `Helpers.MissingRequiredField("Key")`, and if any errors exist call `Model.ErrorMessages(errors)` + `await Helpers.DelayedFocus(focus)` and `return` *before* saving. All errors surface at once, and focus jumps to the first offending field.
 
@@ -976,7 +976,7 @@ Proof (helper): [Helpers.cs:6307-6366](FreeCRM/CRM.Client/Helpers.cs#L6307-L6366
         }
 ```
 
-Proof: [EditTag.razor:274-328](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L274-L328); `MissingRequiredField` at [Helpers.cs:4664-4668](FreeCRM/CRM.Client/Helpers.cs#L4664-L4668). Sub-modules contribute errors too — `EditTag.Save` merges `AppModule.Save(_tag)`'s messages and focus ([EditTag.razor:313-322](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L313-L322)).
+Proof: [EditTag.razor:274-328](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L274-L328); `MissingRequiredField` at [Helpers.cs:4660-4664](FreeCRM/CRM.Client/Helpers.cs#L4660-L4664). Sub-modules contribute errors too — `EditTag.Save` merges `AppModule.Save(_tag)`'s messages and focus ([EditTag.razor:313-322](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L313-L322)).
 
 **Rule 7.16 — Flag required inputs with `Helpers.MissingValue(...)`, a `<RequiredIndicator />`, `Required="true"` labels, and stable ids.** Wrap a required input's CSS class in `Helpers.MissingValue(value, "form-control")`, label it `<Language Tag="Key" Required="true" />`, show a `<RequiredIndicator />` near the top of the form, and give every input a stable `id` matching its `<label for=...>` and the `DelayedFocus` target. `MissingValue` appends the `m-r` marker class when the bound value is empty, so empty required fields flag visually as you type (the input uses `@bind:event="oninput"`).
 
@@ -990,7 +990,7 @@ Proof: [EditTag.razor:274-328](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.ra
             </div>
 ```
 
-Proof: [EditTag.razor:65-71](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L65-L71); `<RequiredIndicator />` at [EditTag.razor:58](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L58); `MissingValue(string?, ...)` at [Helpers.cs:4762-4769](FreeCRM/CRM.Client/Helpers.cs#L4762-L4769); the `m-r` marker class returned by `MissingValueClass` at [Helpers.cs:4774-4778](FreeCRM/CRM.Client/Helpers.cs#L4774-L4778) (literal on line 4776). `MissingValue` is overloaded for `DateTime?`, `decimal?`, `Guid?`, `int?`, `object[]?`, and `string?` so any field type can be flagged. Accessibility is doc [035](035_validation-localization-a11y.md).
+Proof: [EditTag.razor:65-71](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L65-L71); `<RequiredIndicator />` at [EditTag.razor:58](FreeCRM/CRM.Client/Pages/Settings/Tags/EditTag.razor#L58); `MissingValue(string?, ...)` at [Helpers.cs:4758-4765](FreeCRM/CRM.Client/Helpers.cs#L4758-L4765); the `m-r` marker class returned by `MissingValueClass` at [Helpers.cs:4770-4774](FreeCRM/CRM.Client/Helpers.cs#L4770-L4774) (literal on line 4772). `MissingValue` is overloaded for `DateTime?`, `decimal?`, `Guid?`, `int?`, `object[]?`, and `string?` so any field type can be flagged. Accessibility is doc [035](035_validation-localization-a11y.md).
 
 ---
 

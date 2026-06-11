@@ -45,7 +45,7 @@ The real focus-group transcript in `Docs/GuidesV2/0005_meeting.team_focus_group.
 
 **Why it matters:** roleplay is overhead. Spending it on a typo is waste; *not* spending it on a new feature is how you get a week of rework. The skill is matching the size of the conversation to the size of the change.
 
-The project's own guidance (`Docs/Guides/001_roleplay.md`) lines this up directly:
+The team's roleplay convention (this guide, [061](061_roleplay-team.md)) lines this up directly:
 
 | Change size | Examples | Approach |
 |-------------|----------|----------|
@@ -72,7 +72,7 @@ If none of those are true, skip it. A roleplay on a trivial change just adds cer
 
 **Why it matters:** each voice is a *single, narrow concern* made into a character. The value isn't the personality — it's that nothing important falls through the cracks, because every important concern has an owner who can't be talked out of caring about it.
 
-These are the six discussion voices plus the human, taken directly from `Docs/Guides/001_roleplay.md`:
+These are the six discussion voices plus the human, taken directly from the team's roleplay convention:
 
 | Role | What it guards | The question it always asks |
 |------|----------------|----------------------------|
@@ -91,7 +91,7 @@ A few notes that make these click:
 - **[JrDev]** is permission to ask the dumb question. In 0005 it's `[JrDev]` who asks whether the team is treating a *habit* as if it were a *rule* — a question that reframed the whole discussion. The naive question is often the load-bearing one.
 - **[CTO] is you.** The AI never decides the things that aren't its to decide. When the team is split or the call is high-stakes, the session pauses and hands the decision up to the human (see Section 4).
 
-**Adapt the cast to the project.** The roles above fit a Blazor/CRM web app, but the same idea scales. `001_roleplay.md` suggests swaps — for an API-only project: `[API]`, `[Database]`, `[Consumer]`, `[Ops]`; for a library: `[PublicAPI]`, `[Internals]`, `[Perf]`, `[Docs]`. The principle is constant: pick a small set of voices that, between them, cover every concern that could sink the change.
+**Adapt the cast to the project.** The roles above fit a Blazor/CRM web app, but the same idea scales. The roleplay convention suggests swaps — for an API-only project: `[API]`, `[Database]`, `[Consumer]`, `[Ops]`; for a library: `[PublicAPI]`, `[Internals]`, `[Perf]`, `[Docs]`. The principle is constant: pick a small set of voices that, between them, cover every concern that could sink the change.
 
 ---
 
@@ -100,7 +100,7 @@ A few notes that make these click:
 
 **Why it matters:** an unstructured argument goes in circles. A structured one reaches a decision. The flow below is the cheapest path from "fuzzy problem" to "decision on paper."
 
-The ordered flow, straight from `001_roleplay.md`:
+The ordered flow, straight from the roleplay convention:
 
 1. **[Architect] frames the problem** — states what's being decided and the constraints, so everyone is arguing about the same thing.
 2. **Specialists weigh in** — `[Backend]`, `[Frontend]`, `[Quality]` each give their perspective on the part they own.
@@ -109,7 +109,7 @@ The ordered flow, straight from `001_roleplay.md`:
 5. **[Sanity] final check** — "Did we miss anything?" — a last sweep for gaps before closing.
 6. **Summary** — the session ends with explicit decisions and next steps, not a vibe.
 
-**Pausing for the CTO.** When the team is genuinely split, requirements are ambiguous, or the decision is high-impact, the session *stops* and asks the human. The transcript uses a clear, copy-pasteable block for this — reproduced faithfully from `001_roleplay.md`:
+**Pausing for the CTO.** When the team is genuinely split, requirements are ambiguous, or the decision is high-impact, the session *stops* and asks the human. The transcript uses a clear, copy-pasteable block for this — reproduced faithfully from the team's roleplay convention:
 
 ```markdown
 ---
@@ -149,7 +149,7 @@ The healthy pattern is **disagree, then converge.** If every voice nods along im
 
 **Why it matters:** a session that ends in a feeling produces nothing reusable. A session that ends in a *written artifact* produces a decision you can point at, hand off, and revisit. The artifact — not the conversation — is the deliverable.
 
-A roleplay produces a **meeting document**. The basic shape, from `001_roleplay.md`:
+A roleplay produces a **meeting document**. The basic shape, from the roleplay convention:
 
 ```markdown
 # {NUM} — Meeting: {Topic}
@@ -213,4 +213,4 @@ The simplest health test: at the end, can you point to a decision that's *better
 - [068 — The Documentation Template Library](068_template-library.md) — the meeting, ADR, and planning templates
 
 ---
-*GuidesV2 061 · drafted from source (`Docs/Guides/001_roleplay.md`, `Docs/GuidesV2/0005_meeting.team_focus_group.md`) · 2026-06-05.*
+*GuidesV2 061 · drafted from source (`Docs/GuidesV2/0005_meeting.team_focus_group.md`, this guide `Docs/GuidesV2/061_roleplay-team.md`) · 2026-06-05.*

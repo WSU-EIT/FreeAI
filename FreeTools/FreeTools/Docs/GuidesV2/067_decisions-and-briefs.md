@@ -158,7 +158,7 @@ The path from "we have a choice to make" to "the CTO has ruled" runs in a fixed 
 
 **What the artifacts are.** A finished decision produces one or two Markdown files: a **decision record** (a numbered `.md` doc, or an inline ADR block inside a PR), and — when escalation is needed — a **CTO brief** (a one-page numbered `.md` doc). Both are plain text, version-controlled, and live alongside the code they govern.
 
-**Where they live.** In this repository the worked example sits in `FreeAI/FreeTools/FreeTools/Docs/Guides/` — the focus-group record at [`0005_meeting.team_focus_group.md`](0005_meeting.team_focus_group.md) and the brief at [`0006_brief.cto_final.md`](0006_brief.cto_final.md). They are committed to git, so the rationale travels with the codebase forever and is auditable.
+**Where they live.** In this repository the worked example sits in `FreeAI/FreeTools/FreeTools/Docs/GuidesV2/` — the focus-group record at [`0005_meeting.team_focus_group.md`](0005_meeting.team_focus_group.md) and the brief at [`0006_brief.cto_final.md`](0006_brief.cto_final.md). They are committed to git, so the rationale travels with the codebase forever and is auditable.
 
 **How they're numbered and named.** Docs carry a numeric ID prefix and a short descriptive slug; the **Category** in the header (`Decision`, `Meeting`, `Brief`) tells you the type at a glance. The numbering links related docs into a chain — `0003 → 0004 → 0005 → 0006` reads as one connected story, and each doc's **Trail** line spells the lineage out so a reader can walk it.
 
@@ -181,4 +181,4 @@ The flagship brief is, at the time of writing, still honestly open — its Resol
 - [066 — Explaining to the Intern-CTO](066_explain-to-the-cto.md) — the CTO brief format
 
 ---
-*GuidesV2 067 · drafted from source (`Docs/GuidesV2/0006_brief.cto_final.md`, `0005_meeting.team_focus_group.md`, `0003_meeting.cto_premeeting_briefing.md`, `003_templates.md`) on 2026-06-05.*
+*GuidesV2 067 · drafted from source (`Docs/GuidesV2/0006_brief.cto_final.md`, `0005_meeting.team_focus_group.md`, `0003_meeting.cto_premeeting_briefing.md`, `068_template-library.md`) on 2026-06-05.*

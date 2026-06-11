@@ -243,7 +243,7 @@ await Helpers.PdfViewer(fileId, AllowDownload: true);
 The helper builds the file URL for you, including the auth token, in the form
 `{ApplicationUrl}File/View/{FileId}?TenantId={...}&Token={...}` — that is how the viewer reads a tenant-scoped, authenticated file. It then opens the dialog through Radzen's `DialogService` at 95% width and near-full-screen height, matching the HTML-editor dialog.
 
-**Download honors permissions.** The `AllowDownload` flag controls whether the Download button appears. In the generic file-open path (`Helpers.OpenFile` → `PdfViewer`), downloading is gated to admins:
+**Download honors permissions.** The `AllowDownload` flag controls whether the Download button appears. In the generic file-open path (`Helpers.ViewOrDownloadFile` → `PdfViewer`), downloading is gated to admins:
 
 ```csharp
 await PdfViewer(file.FileId, "", "", "", Model.User.Admin);
@@ -251,7 +251,7 @@ await PdfViewer(file.FileId, "", "", "", Model.User.Admin);
 
 When the Download button is clicked, the component calls `Helpers.DownloadFile(fileId)` to stream the original file to the browser.
 
-**Where it fits.** `Helpers.OpenFile` inspects a file and routes images to an image viewer, text to a text viewer, and PDFs here — so in most features you call `OpenFile` and the PDF viewer appears automatically for PDF content. Reach for `Helpers.PdfViewer` directly only when you already know the file is a PDF.
+**Where it fits.** `Helpers.ViewOrDownloadFile` inspects a file and routes images to an image viewer, text to a text viewer, and PDFs here — so in most features you call `ViewOrDownloadFile` and the PDF viewer appears automatically for PDF content. Reach for `Helpers.PdfViewer` directly only when you already know the file is a PDF.
 
 ---
 

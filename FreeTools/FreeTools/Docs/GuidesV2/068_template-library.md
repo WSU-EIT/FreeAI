@@ -36,7 +36,7 @@ There are three concrete payoffs, and they are the reason this band of the guide
 - **Speed.** The author starts from a 90%-finished shape instead of an empty file. The thinking goes into the *content*, not the *container*.
 - **Lowered cognitive load.** Because the structure is decided for you, you cannot accidentally forget the "Rollback" section of a runbook or the "Alternatives" line of a decision — the template already asks for them. The skeleton is a checklist in disguise.
 
-All of these skeletons live in one canonical file in the project: `Docs/Guides/003_templates.md`, titled *"Templates: Ready-to-Use Document Templates."* Its own purpose line says it best — *"Copy-paste templates for all common doc types"* with the outcome *"Grab the right template, fill it in, done."* This GuidesV2 doc is the plain-language tour of that library: what each template is for, when to reach for it, and how to use one well.
+This GuidesV2 doc is the canonical, plain-language home for these skeletons: what each template is for, when to reach for it, and how to use one well. (They originated in the project's older guides set — since retired — and the copies reproduced here are the live versions.)
 
 <a id="when-to-use"></a>
 ## 2. When to Use Which Template
@@ -209,7 +209,7 @@ By convention **[Quality]** is the default maintainer of process docs — the ro
 - **Numbering:** each new doc takes the next available number; **gaps are fine and you never renumber** an existing doc, because other docs link to it by number.
 - **Lifecycle:** docs are *versioned with code* — they live in Git next to what they describe, and the rule is *"docs as part of done"*: a PR that changes behavior updates the docs in the same change. Obsolete docs are **moved to an `archive/` folder, keeping their number — never deleted**, so cross-references don't break.
 
-The real-world proof that this works is sitting in the same `Docs/Guides/` folder: a single decision ran through the exact chain — pre-meeting briefing (`0003`), team introduction (`0004`), the full focus-group transcript (`0005`), and the one-page CTO brief (`0006`) — each file stamped with the Predicted/Actual/Resolution header these templates prescribe. The library is not theoretical; it is how this project's own decisions are recorded.
+The real-world proof that this works is sitting in the `Docs/GuidesV2/` folder: a single decision ran through the exact chain — pre-meeting briefing (`0003`), team introduction (`0004`), the full focus-group transcript (`0005`), and the one-page CTO brief (`0006`) — each file stamped with the Predicted/Actual/Resolution header these templates prescribe. The library is not theoretical; it is how this project's own decisions are recorded.
 
 <a id="contributing"></a>
 ## 8. Contributing New Templates
@@ -233,4 +233,4 @@ The real-world proof that this works is sitting in the same `Docs/Guides/` folde
 - [062 — Discussion Mode, Planning Mode](062_discussion-planning-modes.md) — planning checklists live here
 
 ---
-*GuidesV2 · 068 · drafted from source (FreeTools `Docs/Guides/003_templates.md`, `002_docsguide.md`, `001_roleplay.md`, and the `0003`–`0006` roleplay artifacts).*
+*GuidesV2 · 068 · drafted from the in-repo `Docs/GuidesV2/0003`–`0006` roleplay artifacts and the `061`–`067` team-process docs (the original template set was part of the project's now-retired older guides folder).*

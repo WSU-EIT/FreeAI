@@ -179,7 +179,7 @@ When you are far behind â€” for example, an older app jumping several versions â
 
 **What it does and does not handle.** The tool migrates the code it can and then hands you a written report of what it could not finish. The README is explicit about its known limits:
 
-> "There are edge cases that cannot be updated with this tool, such as having additional projects in your solution. The tool will copy those projects, but any references in other projects must be added manually."
+> "There are edge cases that cannot be updated with this tool, such as having additional project in your solution. The tool will copy those projects, but any references in other projects must be added manually."
 
 So extra projects are copied but their cross-project references are *your* job to re-add. Treat the tool as doing the bulk move, and its report (covered next) as your checklist for the remainder.
 

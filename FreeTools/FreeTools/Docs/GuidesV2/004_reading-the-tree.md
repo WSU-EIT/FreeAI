@@ -174,7 +174,7 @@ Filenames in this codebase are not arbitrary — they are signposts. Read the na
 
 **Signal 2 — the `.App.` tag means "this file is yours, not the framework's."** This is the single most important naming convention in FreeCRM. A file with `.App.` in the middle of its name — for example `DataAccess.App.cs`, `Program.App.cs`, `DataObjects.App.cs`, or `NavigationMenu.App.razor` — is reserved for *your* application-specific code. Files *without* `.App.` are framework files that a future framework upgrade may overwrite. Files *with* `.App.` are never overwritten; the upgrade tooling preserves them.
 
-You can see the intent stated in the code itself. The top of `CRM.DataObjects/DataObjects.App.cs` reads:
+You can see the intent stated in the code itself. An excerpt from `CRM.DataObjects/DataObjects.App.cs`:
 
 ```csharp
 namespace CRM;

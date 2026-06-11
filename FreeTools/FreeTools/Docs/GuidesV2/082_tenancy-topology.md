@@ -175,10 +175,10 @@ So the same switch that *reads* the code on the way in also *writes* it on the w
 
 ### 3.4 Helping lost visitors
 
-If a visitor hits the bare domain in code mode with no tenant, the **MissingTenantCode** page can optionally list every tenant so they can pick one. That list only appears when the operator enables `ShowTenantListingWhenMissingTenantCode`:
+If a visitor hits the bare domain in code mode with no tenant, the **MissingTenantCode** page can optionally list every tenant so they can pick one. That list only appears when the operator enables `ShowTenantListingWhenMissingTenantCode`. The check is a plain C# `if` inside the page's `OnAfterRenderAsync` method, not page markup:
 
-```razor
-@if (Model.ShowTenantListingWhenMissingTenantCode) {
+```csharp
+if (Model.ShowTenantListingWhenMissingTenantCode) {
     await GetTenantCodes();
 }
 ```

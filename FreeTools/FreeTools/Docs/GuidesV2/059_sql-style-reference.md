@@ -88,7 +88,7 @@ public partial class DataMigration
 
 — [DataObjects.cs:163](FreeCRM/CRM.DataObjects/DataObjects.cs#L163-L167). The `Migration` list is the ordered SQL **steps**; `MigrationId` is the id used to track whether this migration has already been applied.
 
-**One migration per file, today.** Each of the four files currently defines exactly **one** migration, with `MigrationId = "001"` (one `output.Add(...)` per file — [DataMigrations.SQLServer.cs:766](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L766), [DataMigrations.SQLite.cs:592](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L592), [DataMigrations.PostgreSQL.cs:615](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L615), [DataMigrations.MySQL.cs:611](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L611)). Inside that one migration, `m1` is a long list of individual SQL statements. Future migrations would be added as `m2`, `m3`, … and appended to `output` (see Section 5).
+**One migration per file, today.** Each of the four files currently defines exactly **one** migration, with `MigrationId = "001"` (one `output.Add(...)` per file — [DataMigrations.SQLServer.cs:764](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L764), [DataMigrations.SQLite.cs:590](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L590), [DataMigrations.PostgreSQL.cs:613](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L613), [DataMigrations.MySQL.cs:609](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L609)). Inside that one migration, `m1` is a long list of individual SQL statements. Future migrations would be added as `m2`, `m3`, … and appended to `output` (see Section 5).
 
 **They run on startup.** The runner is invoked when the database is opened at application startup — only when the database is not in-memory and migrations are enabled — `if (!_inMemoryDatabase && _useMigrations)` at [DataAccess.cs:93](FreeCRM/CRM.DataAccess/DataAccess.cs#L93-L94), and again in the `EnsureCreated()` fallback branch at [DataAccess.cs:103](FreeCRM/CRM.DataAccess/DataAccess.cs#L103-L104). That "run on every startup" fact is the reason the next section exists.
 
@@ -120,7 +120,7 @@ BEGIN
 END
 ```
 
-— [DataMigrations.SQLServer.cs:119](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L119-L134). (The C# wrapper — `m1.Add(` and the opening `"""` — sits on lines 117–118; the SQL proper is lines 119–134.)
+— [DataMigrations.SQLServer.cs:118](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L118-L133). (The C# wrapper — `m1.Add(` and the opening `"""` — sits on lines 116–117; the SQL proper is lines 118–133.)
 
 Every `CREATE TABLE` in all four files is guarded this way. There are no exceptions for tables. The one DDL category that is **not** self-guarded in the SQL is standalone `CREATE INDEX`, which relies on the runner's per-step try/catch instead — covered in Section 4 and Section 5, because it is the exception that proves the rule.
 
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
 ```
 — [DataMigrations.SQLite.cs:12](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L12-L15).
 
-> **Quoting and types differ per engine.** Identifiers are quoted with `[brackets]` (SQL Server), `` `backticks` `` (MySQL), and `"double quotes"` (PostgreSQL & SQLite). Type names differ too: a GUID (globally-unique id) is `uniqueidentifier` on SQL Server ([DataMigrations.SQLServer.cs:122](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L122)), `char(36)` on MySQL ([DataMigrations.MySQL.cs:22](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L22)), `uuid` on PostgreSQL ([DataMigrations.PostgreSQL.cs:22](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L22)), and `TEXT` on SQLite ([DataMigrations.SQLite.cs:21](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L21)). A boolean is `bit` / `tinyint(1)` / `boolean` / `INTEGER` respectively.
+> **Quoting and types differ per engine.** Identifiers are quoted with `[brackets]` (SQL Server), `` `backticks` `` (MySQL), and `"double quotes"` (PostgreSQL & SQLite). Type names differ too: a GUID (globally-unique id) is `uniqueidentifier` on SQL Server ([DataMigrations.SQLServer.cs:121](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L121)), `char(36)` on MySQL ([DataMigrations.MySQL.cs:21](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L21)), `uuid` on PostgreSQL ([DataMigrations.PostgreSQL.cs:21](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L21)), and `TEXT` on SQLite ([DataMigrations.SQLite.cs:20](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L20)). A boolean is `bit` / `tinyint(1)` / `boolean` / `INTEGER` respectively.
 
 ### 4b. Foreign-key / constraint guards
 
@@ -209,13 +209,13 @@ CONSTRAINT "FK_Payments_Users" FOREIGN KEY ("UserId") REFERENCES "Users" ("UserI
 ```
 — [DataMigrations.PostgreSQL.cs:493](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L493-L496). SQLite does the same inline, e.g. [DataMigrations.SQLite.cs:323](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L323-L324) and [DataMigrations.SQLite.cs:344](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L344).
 
-> **⚠ A real defect to know about (and not copy).** The **first six** SQL Server FK blocks are *inverted* — they use `IF EXISTS(...)` instead of `IF NOT EXISTS(...)`, which means those FKs are only added when they already exist (i.e. effectively never, on a fresh database). They live in the `Appointments` module at lines [560](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L560), 571, 583, 593, 604, and 614:
+> **⚠ A real defect to know about (and not copy).** The **first six** SQL Server FK blocks are *inverted* — they use `IF EXISTS(...)` instead of `IF NOT EXISTS(...)`, which means those FKs are only added when they already exist (i.e. effectively never, on a fresh database). They live in the `Appointments` module at lines [559](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L559), 570, 582, 592, 603, and 613:
 > ```sql
 > IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME='FK_AppointmentNotes_Appointments')
 > BEGIN
 >     ALTER TABLE [dbo].[AppointmentNotes]  WITH CHECK ADD  CONSTRAINT [FK_AppointmentNotes_Appointments] ...
 > ```
-> Everything from line [625](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L625) onward correctly uses `IF NOT EXISTS`. The **intended** idiom is `IF NOT EXISTS`; the inverted blocks are a bug, not a pattern to follow.
+> Everything from line [624](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L624) onward correctly uses `IF NOT EXISTS`. The **intended** idiom is `IF NOT EXISTS`; the inverted blocks are a bug, not a pattern to follow.
 
 ### 4c. Column-existence checks before `ALTER … ADD`
 
@@ -264,7 +264,7 @@ BEGIN
 	END
 END
 ```
-— [DataMigrations.SQLServer.cs:755](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L755-L762).
+— [DataMigrations.SQLServer.cs:754](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L754-L761).
 
 **SQLite** — `INSERT … EXCEPT SELECT` (insert only the rows not already present), unquoted identifiers in the `SELECT`:
 ```sql
@@ -273,7 +273,7 @@ VALUES ('001', '1.0.0')
 EXCEPT
 SELECT * FROM __EFMigrationsHistory WHERE MigrationId='001'
 ```
-— [DataMigrations.SQLite.cs:585](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L585-L588).
+— [DataMigrations.SQLite.cs:584](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L584-L587).
 
 **PostgreSQL** — the same `INSERT … EXCEPT SELECT` idiom, but with **fully quoted** identifiers and a trailing semicolon:
 ```sql
@@ -282,14 +282,14 @@ VALUES ('001', '1.0.0')
 EXCEPT
 SELECT * FROM "__EFMigrationsHistory" WHERE "MigrationId"='001';
 ```
-— [DataMigrations.PostgreSQL.cs:608](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L608-L611).
+— [DataMigrations.PostgreSQL.cs:607](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L607-L610).
 
 **MySQL** — `INSERT IGNORE` (a duplicate-key insert is silently dropped by the primary key):
 ```sql
 INSERT IGNORE INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`)
 VALUES ('001', '1.0.0');
 ```
-— [DataMigrations.MySQL.cs:605](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L605-L606).
+— [DataMigrations.MySQL.cs:604](FreeCRM/CRM.DataAccess/DataMigrations.MySQL.cs#L604-L605).
 
 After all the steps are assembled, the migration is packaged with its id and returned:
 ```csharp
@@ -300,7 +300,7 @@ output.Add(new DataObjects.DataMigration {
 
 return output;
 ```
-— [DataMigrations.SQLServer.cs:765](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L765-L770); identical packaging in all four files ([DataMigrations.SQLite.cs:591](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L591-L596), [DataMigrations.PostgreSQL.cs:614](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L614-L619)).
+— [DataMigrations.SQLServer.cs:764](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L764-L769); identical packaging in all four files ([DataMigrations.SQLite.cs:590](FreeCRM/CRM.DataAccess/DataMigrations.SQLite.cs#L590-L595), [DataMigrations.PostgreSQL.cs:613](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L613-L618)).
 
 > `__EFMigrationsHistory` is borrowed from EF Core's own convention, but here it is **hand-managed**, not managed by EF. The `ProductVersion` is hard-coded `'1.0.0'`.
 
@@ -402,7 +402,7 @@ if (output.DefaultLocation == true && rec.DefaultLocation != true) {
 ```
 — [DataAccess.Locations.cs:198](FreeCRM/CRM.DataAccess/DataAccess.Locations.cs#L198-L201).
 
-**Why not just use EF here?** This statement clears the "default" flag on every *other* location for a tenant in one server-side `UPDATE`. Loading every row into EF's change tracker just to flip one column would be slow and pointless. EF LINQ and raw SQL live **side-by-side in the same method** — the raw call is the deliberate exception, not the default. You can see the pairing clearly in user deletion, where `data.Users.Remove(rec)` at [DataAccess.Users.cs:227](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L227) sits beside `ExecuteSqlRawAsync("DELETE FROM AppointmentUsers ...")` at [DataAccess.Users.cs:231](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L231), and in the purge utility at [DataAccess.Utilities.cs:673](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L673). When a user is deleted, roughly 30 such `UPDATE`s run in a row to re-stamp audit columns across every table ([DataAccess.Users.cs:148](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L148-L210)).
+**Why not just use EF here?** This statement clears the "default" flag on every *other* location for a tenant in one server-side `UPDATE`. Loading every row into EF's change tracker just to flip one column would be slow and pointless. EF LINQ and raw SQL live **side-by-side in the same method** — the raw call is the deliberate exception, not the default. You can see the pairing clearly in user deletion, where `data.Users.Remove(rec)` at [DataAccess.Users.cs:227](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L227) sits beside `ExecuteSqlRawAsync("DELETE FROM AppointmentUsers ...")` at [DataAccess.Users.cs:231](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L231), and in the purge utility at [DataAccess.Utilities.cs:672](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L672). When a user is deleted, roughly 30 such `UPDATE`s run in a row to re-stamp audit columns across every table ([DataAccess.Users.cs:148](FreeCRM/CRM.DataAccess/DataAccess.Users.cs#L148-L210)).
 
 ### 6b. Always parameterize: `{0}`/`{1}` placeholders, never string concatenation
 
@@ -419,7 +419,7 @@ await data.Database.ExecuteSqlRawAsync("UPDATE Appointments SET AddedBy={0} WHER
 Two precision points:
 
 - **Placeholders are bare `{0}` with no surrounding quotes**, even for text columns (`SET LastModifiedBy={0}`). EF supplies the parameter *and* its quoting; adding your own quotes would be wrong.
-- **Literal constants are written directly** — `SET LocationId = NULL`, `SET DefaultLocation=0` — because `NULL`/`0`/`1` are constants in your code, not user data. Only *data* goes through placeholders. ([DataAccess.Locations.cs:200](FreeCRM/CRM.DataAccess/DataAccess.Locations.cs#L200), [DataAccess.Utilities.cs:673](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L673).)
+- **Literal constants are written directly** — `SET LocationId = NULL`, `SET DefaultLocation=0` — because `NULL`/`0`/`1` are constants in your code, not user data. Only *data* goes through placeholders. ([DataAccess.Locations.cs:200](FreeCRM/CRM.DataAccess/DataAccess.Locations.cs#L200), [DataAccess.Utilities.cs:672](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L672).)
 
 A verified search of the whole project found **zero** raw-SQL strings built with concatenation or interpolation — this rule has no exceptions in runtime code. (The migration DDL strings in Section 2–5 are *not* parameterized, but that is safe for a different reason: they are hard-coded literals containing no user input at all.)
 
@@ -490,7 +490,7 @@ BEGIN
         [DepartmentGroupName] [nvarchar](200) NULL,
         [TenantId] [uniqueidentifier] NOT NULL,
 ```
-— [DataMigrations.SQLServer.cs:119](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L119-L124). PostgreSQL and SQLite even mix casing within one column block (`uuid NOT NULL`, `TIMESTAMP NOT NULL`, `character varying(200)`, `boolean`) — they follow the provider, not a single house style ([DataMigrations.PostgreSQL.cs:22](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L22-L30)). The takeaway: **do not impose one casing rule across engines — match the dialect the rest of that file uses.**
+— [DataMigrations.SQLServer.cs:118](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L118-L123). PostgreSQL and SQLite even mix casing within one column block (`uuid NOT NULL`, `TIMESTAMP NOT NULL`, `character varying(200)`, `boolean`) — they follow the provider, not a single house style ([DataMigrations.PostgreSQL.cs:21](FreeCRM/CRM.DataAccess/DataMigrations.PostgreSQL.cs#L21-L29)). The takeaway: **do not impose one casing rule across engines — match the dialect the rest of that file uses.**
 
 ### 7c. Comments: C# `//` markers outside the SQL, not `--` inside it
 
@@ -514,7 +514,7 @@ m1.Add(
 ```
 — [DataMigrations.SQLServer.cs:75](FreeCRM/CRM.DataAccess/DataMigrations.SQLServer.cs#L75-L96). These markers are tooling delimiters, so they must live in the C# host code, not inside the executed SQL. A search of `DataMigrations.SQLServer.cs` found **no** `--` or `/* */` SQL comments at all.
 
-Plain explanatory `//` comments *do* appear above raw-SQL runtime calls to say *why* EF is being bypassed — e.g. `// Clear out this location in any appointments` at [DataAccess.Utilities.cs:672](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L672) and the default-location comment at [DataAccess.Locations.cs:198](FreeCRM/CRM.DataAccess/DataAccess.Locations.cs#L198). Comments explain intent in C#; they never go inside the SQL string.
+Plain explanatory `//` comments *do* appear above raw-SQL runtime calls to say *why* EF is being bypassed — e.g. `// Clear out this location in any appointments` at [DataAccess.Utilities.cs:671](FreeCRM/CRM.DataAccess/DataAccess.Utilities.cs#L671) and the default-location comment at [DataAccess.Locations.cs:198](FreeCRM/CRM.DataAccess/DataAccess.Locations.cs#L198). Comments explain intent in C#; they never go inside the SQL string.
 
 ---
 
@@ -538,7 +538,7 @@ The left column is wrong for this codebase; the right column matches the convent
 | `CREATE TABLE [DepartmentGroups](...)` (bare) | `IF OBJECT_ID(N'[DepartmentGroups]') IS NULL BEGIN CREATE TABLE … END` (SQL Server) |
 | `CREATE TABLE "T" (...)` (bare, non-SQL-Server) | `CREATE TABLE IF NOT EXISTS "T" (...)` |
 | `ALTER TABLE … ADD CONSTRAINT FK_…` (bare) | wrap in `IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME='…')` (SQL Server) or declare inline in the guarded `CREATE TABLE` (others) |
-| `IF EXISTS(...)` around a fresh-DB FK add | `IF NOT EXISTS(...)` — the inverted form is the known bug at `SQLServer.cs:560–614` |
+| `IF EXISTS(...)` around a fresh-DB FK add | `IF NOT EXISTS(...)` — the inverted form is the known bug at `SQLServer.cs:559–613` |
 | Bare `INSERT` into `__EFMigrationsHistory` | dialect-idempotent insert: `IF NOT EXISTS … INSERT` / `INSERT … EXCEPT SELECT` / `INSERT IGNORE` |
 
 **Injection safety**

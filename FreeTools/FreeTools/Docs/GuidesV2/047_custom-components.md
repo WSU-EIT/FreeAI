@@ -73,7 +73,7 @@ The three contracts, at a glance:
 | **State** | "I take inputs as parameters, support two-way binding where it makes sense, react to the shared model, and tear myself down cleanly." | `[Parameter]`, `EventCallback<T>`, `@inject BlazorDataModel Model`, `@implements IDisposable` |
 | **Style** | "I use the app's translation and theming machinery instead of hard-coded text and colors." | `<Language Tag="..." />`, `<Icon />`, CSS classes / `styledMode` rather than inline colors |
 
-Here is the smallest component on the shelf that touches all the moving parts you will use — `Tooltip.razor`, copied faithfully:
+Here is the smallest component on the shelf that touches all the moving parts you will use — `Tooltip.razor`, adapted and condensed (the real source uses Allman braces and multi-line `[Parameter]` attributes):
 
 ```razor
 @implements IDisposable
@@ -108,7 +108,7 @@ Here is the smallest component on the shelf that touches all the moving parts yo
 }
 ```
 
-Notice the shape already: a small markup block at the top, then an `@code { }` block holding `[Parameter]` inputs, private fields (the `_`-prefixed convention), lifecycle methods (`OnInitialized`), and helper calls (`Helpers.Tooltip`). The next three sections unpack the three contracts one at a time.
+Notice the shape already: a small markup block at the top, then an `@code { }` block holding `[Parameter]` inputs, protected `_`-prefixed backing fields, lifecycle methods (`OnInitialized`), and helper calls (`Helpers.Tooltip`). The next three sections unpack the three contracts one at a time.
 
 ---
 
@@ -149,7 +149,7 @@ export function CopyPasswordToClipboard(password) {
 
 ### 4.3 Loading the module — the exact pattern, and why the `?v=` is there
 
-You load the module once, on the component's first render, and keep the reference. This is the literal pattern from `MonacoEditor.razor` — copy its shape:
+You load the module once, on the component's first render, and keep the reference. This is adapted from the pattern in `MonacoEditor.razor` — copy its shape:
 
 ```razor
 @inject IJSRuntime jsRuntime
@@ -360,7 +360,7 @@ If you must inject component-scoped CSS, follow `MonacoEditor.razor`, which buil
 <a id="example"></a>
 ## 7. Worked Example and Checklist
 
-**Why this matters:** the contracts click into place once you see them assembled. Here is a compact, faithful walk-through of the round-trip that the chart component uses — JavaScript calling *back* into C# — because that is the trickiest convention and the one most worth seeing whole. The snippets below are copied directly from `Highcharts.razor` and `Highcharts.razor.js`.
+**Why this matters:** the contracts click into place once you see them assembled. Here is a compact, faithful walk-through of the round-trip that the chart component uses — JavaScript calling *back* into C# — because that is the trickiest convention and the one most worth seeing whole. The snippets below are adapted and condensed from `Highcharts.razor` and `Highcharts.razor.js` (the real source uses Allman braces and multi-line `[Parameter]` attributes).
 
 **Step 1 — Hold the references you will need to dispose.** On the C# side, keep both the JS module and a `DotNetObjectReference` to yourself:
 

@@ -82,7 +82,7 @@ That single `data` field (`private EFDataModel data;`) is how every domain file 
 | `DataAccess.Locations.cs` | Location CRUD |
 | `DataAccess.Settings.cs` | Per-tenant settings storage |
 | `DataAccess.SignalR.cs` | SignalR active-user tracking (live updates to the browser) |
-| `DataAccess.Utilities.cs` | Shared helpers (`AdminUser`, `GetTenantSettings`, `GetSetting<T>`, …) |
+| `DataAccess.Utilities.cs` | Shared helpers (`AdminUser`, `StringValue`, `GuidValue`, …) |
 | `DataMigrations.*.cs` | Per-provider SQL migration scripts (SQLite, SQL Server, MySQL, PostgreSQL) |
 
 There are around 30 such files in total; the table above is the orientation set, not the full list.

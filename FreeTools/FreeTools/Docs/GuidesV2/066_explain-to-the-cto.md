@@ -17,7 +17,7 @@
 | 3 | [Inputs You Need First](#inputs) | The raw material to gather before you re-explain: the technical truth, the audience, and the actual decision |
 | 4 | [The Re-Explanation Steps](#steps) | The ordered procedure: name the decision, strip the jargon, lead with why, spell out the call |
 | 5 | [Roles & Who Does What](#roles) | Explainer, decider, and reviewer — who translates, who decides, who checks the translation is honest |
-| 6 | [The Output Format](#output) | The shape of the finished brief, modeled on the real CTO brief in the `Guides/` set |
+| 6 | [The Output Format](#output) | The shape of the finished brief, modeled on the real CTO brief in the GuidesV2 numbered meeting set |
 | 7 | [Pitfalls & Quality Checks](#pitfalls) | The ways re-explanation goes wrong, and the checklist that catches each one |
 | 8 | [Related Docs](#related-docs) | Parent, sibling, prerequisite, and next-step docs |
 
@@ -47,12 +47,12 @@ A worked example of all three is already in our repo. The real CTO brief — `Do
 
 Reach for `/explain-to-cto` whenever a technical thing has to cross the line from *people who built it* to *a person who must decide about it*. The concrete triggers:
 
-- **A decision needs to go up.** The team has done the analysis and reached a recommendation, but the final call belongs to someone with less technical depth. This is the headline case — the focus group ([063](063_focus-group.md)) finishes, and its conclusions now have to be handed to the CTO as something they can ratify. The `Guides/` set models this exactly: the focus group (`0005`) fed the CTO brief (`0006`).
+- **A decision needs to go up.** The team has done the analysis and reached a recommendation, but the final call belongs to someone with less technical depth. This is the headline case — the focus group ([063](063_focus-group.md)) finishes, and its conclusions now have to be handed to the CTO as something they can ratify. The GuidesV2 numbered meeting set (0003→0004→0005→0006) models this exactly: the focus group (`0005`) fed the CTO brief (`0006`).
 - **Someone bounced off a term.** A reader — reviewer, stakeholder, new teammate — read something and clearly did not follow it, or asked "wait, what *is* a wrapper?" That is a signal the original was written at the wrong altitude. Re-explain the term in place.
 - **You are writing for a mixed audience.** Anything that will be read by both engineers and non-engineers (a release note, a fork-sync summary, an architecture overview) should pass through this lens so the non-engineers are not left behind.
 - **A choice has trade-offs the decider must weigh.** When there is a genuine fork in the road — adopt-or-don't, single-tenant-or-multi, enforce-in-CI-or-by-hand — and the person weighing it is not the person who understands the internals, this process is how you make the trade-offs legible.
 
-**When *not* to use it.** If the audience is fully technical and no decision is leaving the engineering room, skip it — re-explaining to peers who already share the vocabulary just adds length. And do not use it to *avoid* precision: the goal is plain language that is still exactly correct, never plain language that is vague. (The matching idea in the original `Guides/001_roleplay.md` is "match the change size to the approach" — tiny things you just do; you do not convene the whole apparatus for a typo.)
+**When *not* to use it.** If the audience is fully technical and no decision is leaving the engineering room, skip it — re-explaining to peers who already share the vocabulary just adds length. And do not use it to *avoid* precision: the goal is plain language that is still exactly correct, never plain language that is vague. (The matching idea in [061](061_roleplay-team.md) is "match the change size to the approach" — tiny things you just do; you do not convene the whole apparatus for a typo.)
 
 ---
 
@@ -155,4 +155,4 @@ The meta-check, borrowed from the [Sanity] role: after the draft is done, ask *"
 - [061 — The Roleplay Team and Its Roles](061_roleplay-team.md) — the CTO role on the team
 
 ---
-*GuidesV2 066 · Explaining to the Intern-CTO · drafted 2026-06-04 from source (the intern-CTO reader model in `Docs/GuidesV2/000_index.md`, the CTO brief `Docs/GuidesV2/0006_brief.cto_final.md`, the CTO pre-brief `0003`, the focus group `0005`, and the roleplay roles in `Docs/Guides/001_roleplay.md`).*
+*GuidesV2 066 · Explaining to the Intern-CTO · drafted 2026-06-04 from source (the intern-CTO reader model in `Docs/GuidesV2/000_index.md`, the CTO brief `Docs/GuidesV2/0006_brief.cto_final.md`, the CTO pre-brief `0003`, the focus group `0005`, and the roleplay roles in the historical `Guides/001_roleplay.md`, the old guides set that no longer ships — see the in-repo `Docs/GuidesV2/061_roleplay-team.md`).*

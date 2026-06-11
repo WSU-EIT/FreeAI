@@ -265,7 +265,7 @@ Break any link and live updates stop while saves keep working.
 
 **Symptom: "My edits save, but my coworker doesn't see them until they refresh."**
 - *Cause:* the coworker's browser isn't receiving pushes — usually a dropped/unstarted connection, or it never joined the tenant group.
-- *Fix:* have the coworker refresh. A refresh re-runs the whole `MainLayout` setup: rebuild connection → `StartAsync()` → `JoinTenantId`. You can confirm the connection's health with the model's own helper:
+- *Fix:* have the coworker refresh. A refresh re-runs the whole `MainLayout` setup: rebuild connection → `StartAsync()` → `JoinTenantId`. You can confirm the connection's health with MainLayout's own helper:
 
 ```csharp
 public bool IsSignalRConnected =>

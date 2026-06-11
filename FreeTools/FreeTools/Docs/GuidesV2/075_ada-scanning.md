@@ -81,7 +81,7 @@ The scanner runs up to three independent accessibility engines on every page and
 | `htmlcheck` | A **custom C# checker** built into the tool | Pure C# string/regex parsing of the saved HTML | Nothing — no network, no install |
 | `wave` | **WAVE API** by WebAIM, a hosted third-party engine | An HTTPS call to `wave.webaim.org` | A paid API key in config |
 
-> **Note on the meeting doc:** the original design meeting (doc 200) proposed `pa11y` as the third tool. The shipped code uses **WAVE API** instead as the optional third result engine. The Pa11y/HTML_CodeSniffer engine still appears in the tool — but as a *screenshot overlay* (`htmlcs-overlay`), not as a result file.
+> **Note on the third tool:** the shipped code uses **WAVE API** as the optional third result engine. The Pa11y/HTML_CodeSniffer engine still appears in the tool — but as a *screenshot overlay* (`htmlcs-overlay`), not as a result file.
 
 **axe-core delivery.** axe-core is JavaScript. The tool downloads it once from a CDN and caches it next to the project as `axe.min.js`, then reuses the cached copy on every later run:
 
@@ -97,9 +97,9 @@ The `Scanner` block controls everything (defaults shown reflect the real `Scanne
 
 | Key | Default | Meaning |
 |-----|---------|---------|
-| `SettleDelayMs` | `5000` | How long to wait after load before scanning, so dynamic content settles |
-| `TimeoutMs` | `30000` | Page navigation timeout |
-| `MaxConcurrency` | `25` | How many sites to scan in parallel |
+| `SettleDelayMs` | `3000` | How long to wait after load before scanning, so dynamic content settles |
+| `TimeoutMs` | `10000` | Page navigation timeout |
+| `MaxConcurrency` | `5` | How many sites to scan in parallel |
 | `Headless` | `true` | Run the browser invisibly; set `false` to watch it |
 | `WcagLevel` | `"wcag21aa"` | Which WCAG version/level axe targets |
 | `WaveApiKey` | `""` | WAVE API key — empty disables WAVE |
@@ -187,7 +187,7 @@ A practical triage order:
 
 1. **Sort by confidence, then severity.** The `Violations by Confidence` table already does this. Start at the top: 🟢 high-confidence 🔴 critical rows are findings multiple independent engines agree on *and* that block access. These are the safest, highest-value fixes — almost never false positives.
 2. **Group by rule, not by instance.** The ranking groups by `CanonicalRuleId` and shows `TotalInstances`. One rule like `image-alt` might appear 89 times across a site. That is usually *one* root cause (a template, a content pattern) — fix it once and clear dozens of instances.
-3. **Prefer template-level fixes.** Because the same shared header, footer, or component appears on every page, a single fix often resolves the issue site-wide. Check whether a top rule appears on most pages (the site rollup's "Pages Affected" column tells you) — broad spread points to a shared component.
+3. **Prefer template-level fixes.** Because the same shared header, footer, or component appears on every page, a single fix often resolves the issue site-wide. Check whether a top rule appears on most pages (the site rollup's "Pages" column, rendered as N/total, tells you) — broad spread points to a shared component.
 4. **Defer low-confidence findings to manual review.** A 🔵 low-confidence row (only one tool flagged it, and other capable tools did not) is a candidate for a human to confirm before any code changes. It is not necessarily wrong — it may be something only that engine checks — but it warrants a look rather than a blind fix.
 
 Each finding already carries everything a work item needs: the rule id, the WCAG success criterion, a `HelpUrl` to documentation, the CSS `Selector`, and an HTML `Snippet`. Copying those into a ticket gives an engineer a self-contained task.
