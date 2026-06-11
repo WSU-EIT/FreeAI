@@ -15,6 +15,20 @@
   // This auto-skips controllers, nested DTOs, plugin examples, etc. Set to 1.0 to always sort.
   "MaxFractionReordered": 0.35,
 
+  // --- Brace style ---
+  // When a method/constructor parameter list is wrapped across multiple lines, glue the closing ")"
+  // and the body's opening "{" together as "){" (the FreeCRM author's hand style). dotnet format
+  // splits these to ")" + "{" and the editorconfig can't reproduce "){", so FreeCodeMaid restores it.
+  // Only fires on declarations whose parameters are ALREADY wrapped onto multiple lines; single-line
+  // declarations keep the normal brace-on-its-own-line form. Set false to leave braces alone.
+  "CollapseWrappedParameterBrace": true,
+
+  // Run "dotnet format whitespace" on the target BEFORE FreeCodeMaid's own passes, so ONE command does
+  // the whole standardization (cleanup -> reorder members -> restore "){"). Only runs in --apply mode;
+  // needs the dotnet CLI on PATH and an .editorconfig in the target. Pass --no-format (or set false)
+  // to reorganize only.
+  "RunFormatterFirst": true,
+
   // --- Ordering tables ---
   // Member kinds are emitted top-to-bottom in this order. Entries may list several kinds separated
   // by commas; kinds in one entry share a rank and sort TOGETHER. The default reproduces the FreeCRM

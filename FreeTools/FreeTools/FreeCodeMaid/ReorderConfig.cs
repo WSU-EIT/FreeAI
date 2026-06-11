@@ -37,6 +37,28 @@ public sealed class ReorderConfig
     /// </summary>
     public double MaxFractionReordered { get; set; } = 0.35;
 
+    // ---- Brace style ------------------------------------------------------
+
+    /// <summary>
+    /// When a method/constructor's parameter list is wrapped across multiple lines, put the closing
+    /// ")" and the body's opening "{" together on one line as "){" — the FreeCRM author's hand style.
+    /// `dotnet format` (per `csharp_new_line_before_open_brace`) splits these to ")" + "{" on
+    /// separate lines and the editorconfig has no rule to reproduce "){", so FreeCodeMaid restores it.
+    /// Only affects declarations whose parameters are ALREADY wrapped onto multiple lines; single-line
+    /// declarations keep the normal brace-on-its-own-line form. Set false to leave braces alone.
+    /// </summary>
+    public bool CollapseWrappedParameterBrace { get; set; } = true;
+
+    /// <summary>
+    /// Run <c>dotnet format whitespace</c> on the target BEFORE FreeCodeMaid's own passes, so a single
+    /// FreeCodeMaid invocation does the whole standardization (whitespace cleanup → member reorder →
+    /// restore <c>){</c>). It must run first because <c>dotnet format</c> splits <c>){</c> apart, and
+    /// FreeCodeMaid then puts it back. Only runs in <c>--apply</c> mode (the formatter writes files).
+    /// Requires the <c>dotnet</c> CLI on PATH and an <c>.editorconfig</c> in the target. If the
+    /// formatter can't run, FreeCodeMaid warns and continues with its own passes.
+    /// </summary>
+    public bool RunFormatterFirst { get; set; } = true;
+
     // ---- Ordering tables --------------------------------------------------
 
     /// <summary>
