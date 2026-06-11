@@ -11,7 +11,15 @@ public readonly record struct ReorgResult(
     int TypesReordered,
     int TypesSkipped,
     int BracesCollapsed,
-    string? Error);
+    string? Error,
+    IReadOnlyList<TypeReorder> Reorders,
+    IReadOnlyList<string> BraceMethods);
+
+/// <summary>
+/// Describes one type whose members were reordered: the type name, plus the member-name order
+/// BEFORE and AFTER the reorder (so a report can show exactly what moved).
+/// </summary>
+public readonly record struct TypeReorder(string TypeName, IReadOnlyList<string> Before, IReadOnlyList<string> After);
 
 /// <summary>
 /// Reorganizes the members of every type in a C# source string using Roslyn. It is built for
@@ -32,7 +40,8 @@ public sealed class Reorganizer
         }
         catch (Exception ex)
         {
-            return new ReorgResult(null, false, 0, 0, 0, "parse error: " + ex.Message);
+            return new ReorgResult(null, false, 0, 0, 0, "parse error: " + ex.Message,
+                Array.Empty<TypeReorder>(), Array.Empty<string>());
         }
 
         var originalRoot = tree.GetRoot();
@@ -43,15 +52,16 @@ public sealed class Reorganizer
         var afterReorg = rewriter.Visit(originalRoot);
         if (afterReorg is null)
         {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, "rewrite produced null");
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, "rewrite produced null",
+                Array.Empty<TypeReorder>(), Array.Empty<string>());
         }
 
         // Pass 2: collapse wrapped-parameter braces to "){" (the author's hand style).
         int bracesCollapsed = 0;
         SyntaxNode finalRoot = afterReorg;
+        var braceRewriter = new BraceCollapseRewriter();
         if (config.CollapseWrappedParameterBrace)
         {
-            var braceRewriter = new BraceCollapseRewriter();
             finalRoot = braceRewriter.Visit(afterReorg) ?? afterReorg;
             bracesCollapsed = braceRewriter.BracesCollapsed;
         }
@@ -60,7 +70,8 @@ public sealed class Reorganizer
         if (string.Equals(newText, sourceText, StringComparison.Ordinal))
         {
             // Nothing actually changed (already in order, braces already collapsed).
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, null);
+            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, null,
+                Array.Empty<TypeReorder>(), Array.Empty<string>());
         }
 
         // Safety net 1: result must parse, and must not introduce NEW errors.
@@ -69,17 +80,20 @@ public sealed class Reorganizer
         if (newHasErrors && !originalHadErrors)
         {
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0,
-                "aborted: change would introduce a syntax error");
+                "aborted: change would introduce a syntax error",
+                Array.Empty<TypeReorder>(), Array.Empty<string>());
         }
 
         // Safety net 2: the exact same set of members must still be present.
         if (!MembersPreserved(originalRoot, newTree.GetRoot()))
         {
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0,
-                "aborted: member set changed (safety check failed)");
+                "aborted: member set changed (safety check failed)",
+                Array.Empty<TypeReorder>(), Array.Empty<string>());
         }
 
-        return new ReorgResult(newText, true, rewriter.TypesReordered, rewriter.TypesSkipped, bracesCollapsed, null);
+        return new ReorgResult(newText, true, rewriter.TypesReordered, rewriter.TypesSkipped, bracesCollapsed, null,
+            rewriter.Reorders, braceRewriter.BraceMethods);
     }
 
     private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
@@ -128,7 +142,12 @@ public sealed class Reorganizer
     /// </summary>
     private sealed class BraceCollapseRewriter : CSharpSyntaxRewriter
     {
+        private readonly List<string> _braceMethods = new();
+
         public int BracesCollapsed { get; private set; }
+
+        /// <summary>The method/ctor/local-function names whose wrapped braces were collapsed.</summary>
+        public IReadOnlyList<string> BraceMethods => _braceMethods;
 
         public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
@@ -163,6 +182,7 @@ public sealed class Reorganizer
         private SyntaxNode Collapse(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
         {
             BracesCollapsed++;
+            _braceMethods.Add(LabelFor(node));
             var cp = pl.CloseParenToken;
             var ob = body.OpenBraceToken;
             return node.ReplaceTokens([cp, ob], (orig, rewritten) =>
@@ -172,6 +192,13 @@ public sealed class Reorganizer
                 return rewritten;
             });
         }
+
+        private static string LabelFor(SyntaxNode node) => node switch
+        {
+            LocalFunctionStatementSyntax lf => lf.Identifier.Text,
+            MemberDeclarationSyntax m => MemberClassifier.NameOf(m),
+            _ => "(method)"
+        };
 
         private static bool ShouldCollapse(ParameterListSyntax? pl, BlockSyntax body)
         {
@@ -210,9 +237,13 @@ public sealed class Reorganizer
     private sealed class Rewriter : CSharpSyntaxRewriter
     {
         private readonly MemberComparer _comparer;
+        private readonly List<TypeReorder> _reorders = new();
 
         public int TypesReordered { get; private set; }
         public int TypesSkipped { get; private set; }
+
+        /// <summary>One entry per type whose members were actually reordered.</summary>
+        public IReadOnlyList<TypeReorder> Reorders => _reorders;
 
         public Rewriter(ReorderConfig config)
         {
@@ -292,6 +323,10 @@ public sealed class Reorganizer
             }
 
             TypesReordered++;
+            _reorders.Add(new TypeReorder(
+                type.Identifier.Text,
+                members.Select(MemberClassifier.NameOf).ToList(),
+                ordered.Select(MemberClassifier.NameOf).ToList()));
             return type.WithMembers(SyntaxFactory.List(rebuilt));
         }
 

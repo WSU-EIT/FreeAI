@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  VSIX manifest for FreeCodeReorganizer.
+
+  Structure mirrors the real CodeMaid VS2022 manifest so it installs on the
+  same range of products:
+    * InstallationTarget Microsoft.VisualStudio.Community  [17.0, 19.0)
+        17.x = VS 2022, 18.x/19.x covers VS 2026 -> works in BOTH.
+    * .NET Framework dependency [4.7.2,)  (matches TargetFramework net472).
+    * CoreEditor prerequisite (we edit the active text buffer).
+    * One VsPackage asset built from this project (%CurrentProject%).
+
+  Identity GUID below is freshly generated and unique to this extension.
+  VERIFY IN VS: open this in the manifest designer once to confirm it parses.
+-->
+<PackageManifest Version="2.0.0"
+                 xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
+                 xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="FreeCodeReorganizer.474fa023-ccd6-4673-884e-c90dab427906"
+              Version="1.0"
+              Language="en-US"
+              Publisher="WSU-EIT / FreeTools" />
+    <DisplayName>FreeCodeReorganizer</DisplayName>
+    <Description xml:space="preserve">Reorganizes C# class members alphabetically and restores the wrapped-parameter `){` brace style — the open, maintained CodeMaid-style cleanup for VS 2022/2026.</Description>
+    <Tags>c#, cleanup, reorganize, members, sort, codemaid, roslyn, formatting</Tags>
+  </Metadata>
+  <Installation>
+    <!-- 17.0..19.0 spans VS 2022 (17.x) through VS 2026 (18.x/19.x). -->
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP"
+                DisplayName="Microsoft .NET Framework"
+                d:Source="Manual"
+                Version="[4.7.2,)" />
+  </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor"
+                  Version="[17.0,19.0)"
+                  DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+  <Assets>
+    <!-- The package (our AsyncPackage assembly + generated .pkgdef). -->
+    <Asset Type="Microsoft.VisualStudio.VsPackage"
+           d:Source="Project"
+           d:ProjectName="%CurrentProject%"
+           Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+</PackageManifest>

@@ -15,6 +15,10 @@ CliArgs.HasFlag(argsList, "--check", "--dry-run"); // accepted for clarity; chec
 bool verbose = CliArgs.HasFlag(argsList, "--verbose", "-v");
 string? configPath = CliArgs.GetOption(argsList, "--config=");
 bool noFormat = CliArgs.HasFlag(argsList, "--no-format");
+// --report=<path> both enables the report AND sets its path; bare --report enables it with a
+// default path. Parse the "=path" form first (GetOption removes it), then the bare flag.
+string? reportPath = CliArgs.GetOption(argsList, "--report=");
+bool report = reportPath is not null || CliArgs.HasFlag(argsList, "--report");
 string target = CliArgs.GetPositional(argsList, 0) ?? Directory.GetCurrentDirectory();
 
 ConsoleOutput.PrintBanner("FreeCodeMaid", "1.0");
@@ -64,6 +68,7 @@ if (apply && config.RunFormatterFirst)
 }
 
 int changed = 0, unchanged = 0, skipped = 0, errors = 0, typesSkipped = 0, bracesTotal = 0;
+var reportEntries = new List<(string RelativePath, ReorgResult Result)>();
 
 foreach (var item in items)
 {
@@ -122,6 +127,10 @@ foreach (var item in items)
 
     changed++;
     bracesTotal += result.BracesCollapsed;
+    if (report)
+    {
+        reportEntries.Add((item.RelativePath, result));
+    }
     var summary = DescribeChange(result);
     if (apply)
     {
@@ -151,6 +160,25 @@ Console.WriteLine($"  Files skipped:       {skipped}");
 Console.WriteLine($"  Types left in place: {typesSkipped} (contain #region / #if directives)");
 Console.WriteLine($"  Errors:              {errors}");
 ConsoleOutput.PrintDivider();
+
+if (report)
+{
+    string resolvedReportPath = reportPath is not null
+        ? Path.GetFullPath(reportPath)
+        : Path.Combine(Path.GetFullPath(target), "freecodemaid-report.md");
+    int typesReorderedTotal = reportEntries.Sum(e => e.Result.TypesReordered);
+    string markdown = ReportWriter.Build(
+        Path.GetFullPath(target), apply, changed, typesReorderedTotal, bracesTotal, reportEntries);
+    try
+    {
+        File.WriteAllText(resolvedReportPath, markdown, new UTF8Encoding(false));
+        Console.WriteLine($"Report written to: {resolvedReportPath}");
+    }
+    catch (Exception ex)
+    {
+        ConsoleOutput.WriteLine($"  ERROR writing report to {resolvedReportPath}: {ex.Message}", isError: true);
+    }
+}
 
 if (errors > 0)
 {
@@ -244,6 +272,8 @@ static void PrintHelp()
     Console.WriteLine("  --config=<file>    Use a specific freecodemaid.json. Otherwise the tool searches");
     Console.WriteLine("                     upward from <path> for one, then falls back to built-in defaults.");
     Console.WriteLine("  --no-format        Skip the 'dotnet format whitespace' cleanup step (reorganize only).");
+    Console.WriteLine("  --report[=<file>]  Write a Markdown report of exactly what changed. With no path,");
+    Console.WriteLine("                     writes <path>\\freecodemaid-report.md. Off by default.");
     Console.WriteLine("  --verbose, -v      List skipped/unchanged files too.");
     Console.WriteLine("  --help, -h         Show this help.");
     Console.WriteLine();
