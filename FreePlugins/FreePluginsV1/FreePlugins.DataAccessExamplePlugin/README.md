@@ -79,3 +79,7 @@ context.LogError("Error message", exception);
 ## Source
 
 This plugin is a compiled version of the file-based `Example3.cs` plugin, demonstrating how to access context and metadata in NuGet-based plugins.
+
+---
+
+## 🧭 Briefing — **How:** a compiled **General** plugin (`ContextInfoPlugin`) that reads its own metadata and uses `IPluginContext` to resolve services (`GetService<T>`) and log (`LogInfo/Warning/Error`). Marked `ContainsSensitiveData = true`. **Tech:** [the DataAccessExamplePlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.DataAccessExamplePlugin). **Why/Different:** the reference for **how a plugin talks to the host** — DI services + logging through the context object, without a direct host dependency. **Diagram:** `Execute(context) ▶ read context.Plugin metadata · context.GetService<T>() · context.LogInfo() ▶ PluginResult`.

@@ -115,3 +115,38 @@ If you are hosting on IIS and want to ensure that the background service is alwa
 set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
 for the application settings to true. The Preload Enabled flag is only available
 if you have installed the Application Initialization feature for IIS.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+`FreeBlazorExample` is the **showcase host** — a full FreeCRM-scaffold Blazor app (multi-tenant, auth, plugins, background service) whose real purpose is to demonstrate every component in the `FreeBlazorExtended` library across ~17 `/showcase` pages. Like the rest of the suite, it's a forkable scaffold: two console tools rename it and strip optional modules.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Where |
+|---|---|---|
+| FreeCRM scaffold (Blazor WASM, .NET 10) | The host app | this solution |
+| The component library | What the showcase pages demonstrate | [FreeBlazorExtended/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended) |
+| Rename / Remove-Modules tools | Fork the scaffold into a new app | `"Rename FreeBlazorExample.exe"` · `"Remove Modules…"` |
+
+**Why does this exist?**
+So every component in the library has a *runnable* demo — you can interact with the KanbanBoard, CommandPalette, etc. before deciding to adopt them — on top of a real multi-tenant app, not a toy.
+
+**What does it accomplish that other tools don't?**
+- A **single showcase** that exercises the whole library on a production-grade scaffold, with each demo page accessibility-verified.
+- **Fork-by-tool**: rename and module-removal are automated and GUID-safe.
+
+**Terminology & "can I see it?"**
+- **Showcase page** — a `/showcase/*` route demonstrating one component/feature.
+- **Scaffold** — the ready-made FreeCRM app this is built on.
+
+**The hard part, drawn** — the showcase wires the library into a real app:
+
+```
+  FreeBlazorExample (FreeCRM scaffold host)
+        │ references FreeBlazorExtended (the library)
+        ▼ /showcase/* pages instantiate each component with live data + DI services
+   you interact with KanbanBoard · Calendar · CommandPalette · … in a real multi-tenant app
+```

@@ -71,3 +71,25 @@ The interactive demo lives at `/showcase/feature105-agent-monitoring` in the Fre
 
 ## Effort to integrate
 **L** — service is large (712 LoC) and a production deployment requires the sibling Worker Service, a SignalR hub, auth via registration keys, and EF persistence for command history.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This is the hub-side of Feature 105: register agents, record heartbeats (CPU/mem/disk), and dispatch commands (start/stop/restart a Windows Service; recycle an IIS app pool) to connected `FreeBlazorExtended.Agent` workers over SignalR (`AgentHub`). If no worker is connected, it falls back to an in-memory simulation so the demo still works.
+
+> **Honest status:** the API surface is real but **in-memory** (`ConcurrentDictionary`, no EF yet), and the worker currently *logs* `"Would execute X"` rather than actually shelling out — the real `ServiceController` / IIS calls are written and ready to swap in (see Known gaps above).
+
+**What tech & where?** [AgentMonitoringService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/AgentMonitoring/AgentMonitoringService.cs) (the service) · [AgentHub.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/AgentMonitoring/AgentHub.cs) (the SignalR bridge) · [AgentMonitoring.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/AgentMonitoring/AgentMonitoring.cs) (the models).
+
+**Why does this exist?** To manage a fleet of Windows hosts — restart a stuck service, recycle an app pool — from a web dashboard instead of RDP-ing into each box.
+
+**What does it beat?** It's *two-way* (acts on hosts, not just monitors), and it degrades gracefully to a simulation so the showcase never breaks.
+
+**Terminology:** **`AgentHub`** — the SignalR hub the remote workers connect to.
+
+**The hard part, drawn:**
+```
+  dashboard command ─▶ AgentHub (SignalR) ─▶ connected worker  ─▶ ServiceController / IIS (ready to wire)
+                                       └─ no worker? ─▶ in-memory simulation (keeps the demo alive)
+```

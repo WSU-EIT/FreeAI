@@ -77,3 +77,7 @@ For demonstration, this plugin toggles the user's email between uppercase and lo
 ## Source
 
 This plugin is a compiled version of the file-based `UserUpdate.cs` plugin, demonstrating how to convert user update plugins to the NuGet-based architecture.
+
+---
+
+## 🧭 Briefing — **How:** a compiled **UserUpdate** plugin (`UserSyncPlugin`, `ICompiledUserUpdatePlugin`) whose `UpdateUserAsync(context)` receives the user, modifies it, and returns it — the hook for syncing user data from an external system on save/login. Marked `ContainsSensitiveData`. **Tech:** [the UserUpdateExamplePlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.UserUpdateExamplePlugin). **Why/Different:** the pattern for **enriching user records from LDAP/HR/APIs** at the moment a user is saved (the demo just toggles email case). **Diagram:** `user saved ▶ UpdateUserAsync(context.User) ▶ look up external system · modify props ▶ return updated user`.

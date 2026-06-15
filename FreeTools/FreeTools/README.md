@@ -210,3 +210,35 @@ dotnet run -- --target YourProjectFolderName
 We build internal tools and automation to support enrollment management processes across WSU.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This folder is the **tool suite** itself: a set of small .NET CLIs that analyze, test, and document FreeCRM-based projects, plus the Aspire orchestrator that runs them as one pipeline (discover routes → inventory code → HTTP-test → screenshot → report). A shared `FreeTools.Core` library gives them common CLI/console/route plumbing.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Pipeline orchestrator | Run all tools in order | [FreeTools.AppHost/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeTools.AppHost) |
+| Shared utilities | Args, console, routes, paths | [FreeTools.Core/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeTools.Core) |
+| The analysis tools | Map / inventory / poke / snapshot / report | [the tool folders](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools) |
+
+**Why does this exist?** So the analysis tools live and version together, and can run either as a pipeline (via AppHost) or individually for a single task.
+
+**What does it accomplish that other tools don't?**
+- Tools that are **independently runnable** *and* **composable** into one orchestrated pipeline.
+- A **dependency-free shared core** (`FreeTools.Core`) so each tool stays small.
+
+**Terminology & "can I see it?"**
+- **Pipeline tool** vs **standalone tool** — part of the orchestrated run vs. run on its own.
+- *See it:* the full pipeline diagram is in the ASCII above; the [top-level FreeTools README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/README.md) has the boss briefing.
+
+**The hard part, drawn** — the suite at a glance:
+
+```
+  AppHost ─▶ [ EndpointMapper · WorkspaceInventory ] ─▶ EndpointPoker ─▶ BrowserSnapshot ─▶ WorkspaceReporter
+                     (all share FreeTools.Core for args / console / route parsing)
+  standalone: ForkCRM (clone+rename)   ·   AppExtractor (extract .App layer)   ·   AccessibilityScanner
+```

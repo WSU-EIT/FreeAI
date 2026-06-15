@@ -27,7 +27,7 @@ namespace FreeCodeReorganizer.Commands
     /// docView.TextBuffer, VS.MessageBox.ShowWarningAsync — are the documented Community toolkit
     /// API, but the exact member names/shapes could not be compiled in the scaffold environment.
     /// </summary>
-    [Command(PackageIds.ReorganizeDocument)]
+    [Command(PackageGuids.FreeCodeReorganizerCmdSet, PackageIds.ReorganizeDocument)]
     internal sealed class ReorganizeDocumentCommand : BaseCommand<ReorganizeDocumentCommand>
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
@@ -81,7 +81,7 @@ namespace FreeCodeReorganizer.Commands
             Core.ReorgResult result = await Task.Run(() => Core.Reorganizer.Run(text, config, eol));
 
             // 6. Back on the UI thread for any buffer edit / message box.
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             // 6a. Engine reported an error -> warn and stop (buffer untouched).
             if (result.Error is not null) {

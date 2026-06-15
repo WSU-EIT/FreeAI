@@ -149,3 +149,47 @@ See each component's individual `README.md` for component-specific dependencies
   HTML_CodeSniffer, IBM Equal Access — all clean)
 - Showcase Feature 105 demonstrates the full Azure-DevOps-runner-style
   agent management surface
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is a **Razor class library** — a toolbox of ready-made Blazor UI parts. It bundles ~20 self-contained interactive components (drag-and-drop KanbanBoard, Calendar, Ctrl+K CommandPalette, NetworkChart, Timeline…), a "Foundation" set of 25 building blocks (cards, tables, forms, layout), 6 feature **services** (toast notifications, dynamic forms, calendar events, real-time sync, agent monitoring, tree, user prefs), and a Windows agent-management feature. Each component lives in its own folder with its own README and is **independently cherry-pickable** — copy the folder, add a `@using`, and go. Pure UI components need no setup; the feature services are registered in DI. The sister `FreeBlazorExample` app demonstrates every one across 17 `/showcase` pages.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| ~20 reusable components | Each is a self-contained `.razor` | [KanbanBoard/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/KanbanBoard) · [Calendar/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/Calendar) · [CommandPalette/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/CommandPalette) |
+| Foundation (25 building blocks) | Cards, tables, forms, layout, feedback | [Foundation/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/Foundation) |
+| 6 feature services (DI) | Toasts, forms, sync, agents, tree, prefs | [Foundation/Services/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/Foundation/Services) |
+| Windows agent feature | Remote service/IIS control (Feature 105) | [AgentMonitoring/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/AgentMonitoring) |
+
+**Why does this exist?**
+To stop every app re-inventing the same widgets. A kanban board, a command palette, a signature pad — each is genuinely fiddly to build well. This collects proven, accessible versions into one library you can pull from a piece at a time.
+
+**What does it accomplish that other tools don't?**
+- **Cherry-pickable, not all-or-nothing**: each component folder is independently mergeable (copy + two shared files), so you take only what you need.
+- **Controlled-component design**: components report events and render what you give them — they don't hide state — so they never silently drift out of sync with your data.
+- **Honesty built in**: a "Known gaps" section says plainly what's demo-grade vs production-ready (e.g. services persist in-memory until you add EF Core).
+- **Accessible**: every showcase page is WCAG 2.1 AA-verified by four engines.
+
+**Terminology & "can I see it?"**
+- **Razor class library** — a shareable package of Blazor components.
+- **Cherry-pick** — copy one component into your project rather than depending on the whole library.
+- **Controlled component** — the caller owns the data; the component only renders + raises events.
+- *See it:* the `/showcase` pages in `FreeBlazorExample` demonstrate all 17 features.
+
+**The hard part, drawn** — how you actually consume a piece of this library:
+
+```
+  pick ONE component (e.g. Signature/)
+        │ Option A: cherry-pick ─▶ copy folder + Foundation/Helpers.cs + DataObjects.cs
+        │ Option B: reference ───▶ <ProjectReference Include="FreeBlazorExtended.csproj"/>
+        ▼ add  @using FreeBlazorExtended.<Name>  to _Imports.razor
+   pure UI component? ──▶ just use it (no DI)
+   feature service?   ──▶ builder.Services.AddSingleton<…Service>()  in Program.cs
+        ▼ (.razor.js sidecars auto-resolve via _content/FreeBlazorExtended/<Name>/)
+   component renders in YOUR app, raising events back to YOUR state
+```

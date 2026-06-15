@@ -76,3 +76,23 @@ To force an `Error` or `Skipped` state on a specific stage, set `stage.State = P
 
 ## Effort to integrate
 **M** — one Razor file, two public nested types, one `_Imports` line. No services, no JS, no migrations. Caller owns the state machine that drives `CurrentStageIndex`.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A horizontal row of stage circles connected by lines — the Domino's/FedEx/Azure-DevOps "where in the process are we?" visual. Each stage is color-coded (green=done, blue=in-progress, gray=pending, red=error, struck-through=skipped). State is inferred from `CurrentStageIndex`, or you can force a stage to Error/Skipped. Read-only; optional click-to-inspect panel.
+
+**What tech & where?** One file — [PipelineTracker.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/PipelineTracker/PipelineTracker.razor) (Bootstrap + FontAwesome; no JS).
+
+**Why does this exist?** To show progress through a fixed set of stages (an order, a deployment, an approval) at a glance.
+
+**What does it beat?** It's a pure **status display** (vs. `Wizard`, which is interactive, and `Timeline`, which is vertical) — drop in a stage list and a current index, done.
+
+**Terminology:** **Stage state** — Pending / InProgress / Completed / Error / Skipped, either inferred or forced.
+
+**The hard part, drawn:**
+```
+  Stages + CurrentStageIndex ─▶  ①✔──②✔──③●──④○──⑤○   (done · done · now · pending · pending)
+        force stage.State = Error/Skipped to override     click ─▶ OnStageClick / details panel
+```

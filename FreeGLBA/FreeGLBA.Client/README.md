@@ -178,6 +178,37 @@ protected override async Task OnInitializedAsync()
 
 *Note: WebAssembly required - IE11 not supported*
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser dashboard, in C#/WebAssembly. It shows a live event counter and recent-events feed (pushed by SignalR as events arrive), lets admins register source systems and rotate their API keys, browse/filter/search the access log, and generate compliance reports. It talks to the server through typed endpoint constants and an injected `HttpClient`.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WebAssembly (.NET 10) | The dashboard UI in the browser | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.Client/Program.cs) |
+| API helpers + SignalR | Calls + live "NewEvent" updates | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.Client/Helpers.cs) |
+| MudBlazor / Radzen | Data grids and charts | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.Client/Program.cs) |
+
+**Why does this exist?**
+So compliance staff get a real-time, filterable view of access activity — and a place to manage source systems and pull audit reports — without touching the database.
+
+**What does it accomplish that other tools don't?**
+- **Live** dashboard: SignalR pushes each new event the moment it's logged.
+- One screen to **register systems and rotate API keys**, plus filtered CSV/PDF export of the audit log.
+
+**Terminology & "can I see it?"**
+- **SignalR** — the live channel that pushes "NewEvent" to the dashboard.
+- **Source system management** — registering external apps and issuing/rotating their keys.
+
+**The hard part, drawn** — a logged event reaches the dashboard live:
+
+```
+  server logs an AccessEvent ──SignalR "NewEvent"──▶ dashboard updates the feed + counter in real time
+  admin actions ─▶ Http GET/POST Endpoints.FreeGLBA.* ─▶ events · stats · source systems · reports
+```
+
 ## About
 
 FreeGLBA is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

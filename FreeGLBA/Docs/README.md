@@ -97,6 +97,37 @@ When adding documentation:
 3. Include code examples where applicable
 4. Update this README with new files
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A documentation-only project (no runtime code). It holds the team's guides, style standards, architecture notes, and component docs — and, notably, the FreeGLBA-specific design docs: the database-schema doc, the implementation/customization guide, and the **NuGet client library project plan**.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Markdown reference set | The team's documentation | [the Docs project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeGLBA/Docs) |
+| Platform vs. app-specific split | Separates shared FreeCRM from GLBA design | `006_architecture.freecrm_overview.md` · `006_architecture.unique_features.md` |
+
+**Why does this exist?**
+So design intent and conventions are written down next to the code, and a new developer (or auditor) can understand the system without reverse-engineering it.
+
+**What does it accomplish that other tools don't?**
+- Keeps the **shared-platform** docs and the **GLBA-specific** design (data model, NuGet plan) clearly separated.
+
+**Terminology & "can I see it?"**
+- **Data-model doc** — the human-readable description of the audit schema.
+- **Implementation guide** — how to customize/extend FreeGLBA.
+
+**The hard part, drawn** — how the doc set is organized:
+
+```
+  Docs/ ├─ 006_architecture.freecrm_overview.md   ← the shared platform
+        ├─ 006_architecture.unique_features.md    ← GLBA-specific extension points
+        ├─ FreeGLBA_DataModel_Documentation.md     ← the audit schema, explained
+        └─ FreeGLBA_NuGet_Package_ProjectPlan.md   ← the client-library plan
+```
+
 ## About
 
 FreeGLBA is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

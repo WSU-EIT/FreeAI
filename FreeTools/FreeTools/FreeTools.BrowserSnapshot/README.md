@@ -228,3 +228,35 @@ pwsh bin/Debug/net10.0/playwright.ps1 install
 ---
 
 *Part of the FreeTools suite*
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** It reads the route list (`pages.csv`) and uses Playwright to take a full-page screenshot of each page — **twice** (once logged-out, once logged-in). The hard part is timing: Blazor SPAs render *after* the HTML loads, so it waits for the network to go quiet (`NetworkIdle`) plus a settle delay before capturing, and if a screenshot comes back suspiciously small (< 10 KB, i.e. probably blank) it waits and retries. It also records JavaScript console errors and writes a `metadata.json` next to each shot.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Microsoft.Playwright | Headless browser screenshots | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.BrowserSnapshot/Program.cs) |
+| SPA-aware timing + auto-retry | Avoid blank Blazor captures | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.BrowserSnapshot/Program.cs) |
+
+**Why does this exist?** To produce a reliable **visual record of every page** — for documentation, regression review, and the report's "screenshot health" section.
+
+**What does it accomplish that other tools don't?**
+- **SPA-correct timing** (NetworkIdle + settle delay) so it captures the *rendered* page, not the loading spinner.
+- **Auto-retry** on blank shots and **two-pass** (public + authenticated) capture, with per-shot **metadata** the report uses to flag failures.
+
+**Terminology & "can I see it?"**
+- **NetworkIdle** — waiting until the page stops making network requests (a proxy for "done rendering").
+- **Two-pass** — capturing every page once anonymous, once logged-in.
+
+**The hard part, drawn** — capturing a Blazor page without getting a blank:
+
+```
+  navigate(route) ─▶ wait NetworkIdle (network quiet) ─▶ settle delay (default 3s) ─▶ screenshot
+        screenshot < 10KB? ─▶ wait extra 3s + retry once
+        record status · JS console errors · fileSize ─▶ default.png + metadata.json
+        (then repeat the whole pass authenticated ─▶ logged-in.png)
+```

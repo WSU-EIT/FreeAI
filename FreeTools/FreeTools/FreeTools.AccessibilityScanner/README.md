@@ -148,6 +148,24 @@ Each page produces a `metadata.json` with:
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A standalone accessibility auditor. You list sites + pages in `appsettings.json`; it renders each page in headless Chromium (Playwright), screenshots it, and detects WCAG issues with axe-core (or the WAVE API if a key is set), writing per-page `issues.json` + a summary report.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AccessibilityScanner/Program.cs) (Playwright 1.56 + axe-core / optional WAVE).
+
+**Why does this exist?** A lightweight, config-driven WCAG check across multiple sites in one run — handy inside the FreeTools pipeline (vs. the full standalone platform in `FreeA11yChecker`).
+
+**What does it beat?** **Multi-site, authenticated, parallel** scanning from a single config file, with optional WAVE-API analysis layered on top of axe-core.
+
+**Terminology:** **WCAG** — the accessibility standard; **axe-core / WAVE** — two accessibility rule engines.
+
+**The hard part, drawn:**
+```
+  appsettings Sites/Pages ─▶ Playwright render each page (auth if configured)
+        ─▶ axe-core (+ WAVE if key) ─▶ issues.json + screenshot per page ─▶ run-report.md
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

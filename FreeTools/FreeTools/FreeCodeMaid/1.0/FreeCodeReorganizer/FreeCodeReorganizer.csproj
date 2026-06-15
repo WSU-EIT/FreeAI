@@ -3,35 +3,50 @@
   FreeCodeReorganizer  -  Visual Studio extension (VSIX) project
   ============================================================================
 
-  THIS PROJECT BUILDS IN VISUAL STUDIO ONLY.
+  This is an in-process VSSDK extension. It requires Visual Studio 2022 or 2026 with the
+  "Visual Studio extension development" workload installed (it supplies the VSSDK build
+  tools / .targets that turn this into a .vsix).
 
-  It is a classic in-process VSSDK extension. It requires:
-    * Visual Studio 2022 or 2026
-    * The "Visual Studio extension development" workload
-      (which supplies the VSSDK build tools / .targets that turn this into a
-      .vsix). A plain `dotnet build` / `dotnet restore` from a CI box WITHOUT
-      that workload will NOT produce a usable .vsix and may not even restore.
+  IT DOES NOT REQUIRE OPENING VISUAL STUDIO TO BUILD. Use VS's *Framework* MSBuild from the
+  command line (NOT `dotnet build`, which uses .NET MSBuild and cannot run the Framework-only
+  VSSDK targets):
 
-  To build:  open the solution in VS -> set this as the startup project ->
-             press F5 to launch the Experimental Instance, OR build in
-             Release to get  bin\Release\FreeCodeReorganizer.vsix.
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    $msb = & $vswhere -latest -prerelease -requires Microsoft.Component.MSBuild `
+                      -find "MSBuild\**\Bin\MSBuild.exe"
+    & $msb FreeCodeReorganizer.csproj /t:Rebuild /restore /p:Configuration=Release
+
+  Output: bin\Release\net48\FreeCodeReorganizer.vsix  (CLI builds set DeployExtension=false;
+  VS F5 deploys to the experimental hive instead). See README.md "Building &amp; installing".
 
   It wraps the already-built engine FreeCodeReorganizer.Core (Roslyn-based
   member reorganizer) via a single static call:
       FreeCodeReorganizer.Core.Reorganizer.Run(text, config, eol)
 
-  -------------------------------------------------------------------------
-  VERIFY IN VS: the exact package versions below could not be restored or
-  compiled in the scaffolding environment. If restore fails, bump to the
-  newest 17.x that VS offers in the NuGet UI. See the "Roslyn version
-  conflict risk" note in README.md before shipping.
-  -------------------------------------------------------------------------
+  =========================================================================
+  Package versions below are a starting point; if NuGet restore complains,
+  bump to the newest 17.x available. See the "Roslyn version conflict risk"
+  note in README.md before shipping.
+  =========================================================================
 -->
-<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+<!--
+  NOTE on the project shape: this is an SDK-style project, but written with EXPLICIT
+  Sdk.props / Sdk.targets imports instead of the Sdk="..." attribute. That lets us import
+  Microsoft.VsSDK.targets (the VSSDK packaging logic that compiles the .vsct, generates the
+  .pkgdef, and packs the .vsix) AFTER the .NET SDK targets. The Microsoft.VSSDK.BuildTools
+  NuGet auto-import only sets environment variables; it does NOT import the packaging targets
+  for SDK-style projects, so a plain build would compile the DLL but never produce a .vsix.
+  We import it by hand below using the package's GeneratePathProperty path.
+-->
+<Project ToolsVersion="Current">
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <!-- VSIX extensions for VS 2022/2026 run on the .NET Framework CLR. -->
-    <TargetFramework>net472</TargetFramework>
+    <!-- VSIX extensions for VS 2022/2026 run on the .NET Framework CLR.
+         net48: Community.VisualStudio.Toolkit.17 (17.0.507) ships only a
+         lib/net48 assembly, and a net472 target cannot consume it. net48 loads
+         fine in VS 2022/2026 and is forward-compatible with the net472 VS SDK. -->
+    <TargetFramework>net48</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
@@ -52,7 +67,12 @@
 
     <!-- We deploy the VSIX, we don't start a standalone program. -->
     <StartAction>Program</StartAction>
-    <DeployExtension>true</DeployExtension>
+    <!-- Deploy into VS's experimental hive ONLY when building inside Visual Studio (F5 debugging).
+         A command-line build just packs bin\Release\net48\FreeCodeReorganizer.vsix and skips the
+         Exp-hive deploy (which otherwise fails with VSSDK1081 trying to write under
+         ...\18.0_xxxExp\Extensions). -->
+    <DeployExtension Condition="'$(BuildingInsideVisualStudio)' == 'true'">true</DeployExtension>
+    <DeployExtension Condition="'$(BuildingInsideVisualStudio)' != 'true'">false</DeployExtension>
 
     <RootNamespace>FreeCodeReorganizer</RootNamespace>
     <AssemblyName>FreeCodeReorganizer</AssemblyName>
@@ -98,7 +118,7 @@
 
     <!-- The build tooling that compiles the .vsct, generates the .pkgdef,
          and packs the .vsix. Must be a 17.x. -->
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.9.3168">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.9.3168" GeneratePathProperty="true">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -109,5 +129,15 @@
          targets the VS17 (2022+) SDK. -->
     <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.507" />
   </ItemGroup>
+
+  <!-- The .NET SDK targets (normally auto-imported by Sdk="..."); we import them
+       explicitly so the VSSDK packaging targets can come AFTER them. -->
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <!-- The VSSDK packaging targets: VSCTCompile, GeneratePkgDef, GenerateVsixManifest,
+       CreateVsixContainer. Imported from the restored Microsoft.VSSDK.BuildTools package
+       (GeneratePathProperty exposes $(PkgMicrosoft_VSSDK_BuildTools)). This is what actually
+       produces bin\Release\net48\FreeCodeReorganizer.vsix. -->
+  <Import Project="$(PkgMicrosoft_VSSDK_BuildTools)\tools\VSSDK\Microsoft.VsSDK.targets" />
 
 </Project>

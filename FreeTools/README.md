@@ -281,3 +281,47 @@ dotnet build FreeTools.slnx
 We build internal tools and automation to support enrollment management processes across WSU.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** FreeTools is a suite of CLI tools that **automatically analyze and document a Blazor web app**. An Aspire orchestrator (`AppHost`) starts the target app and runs a pipeline: discover every route (EndpointMapper), inventory the whole codebase with Roslyn (WorkspaceInventory), HTTP-test each route (EndpointPoker), screenshot each page with Playwright (BrowserSnapshot), and assemble a markdown report (WorkspaceReporter). Standalone tools round it out: ForkCRM (clone + rename FreeCRM), AppExtractor (extract your customization layer), and AccessibilityScanner.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| .NET Aspire orchestrator | Runs the whole pipeline in order | [FreeTools.AppHost/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AppHost/Program.cs) |
+| Route discovery (`@page` scan) | List every Blazor route → `pages.csv` | [FreeTools.EndpointMapper/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.EndpointMapper/Program.cs) |
+| Roslyn codebase inventory | File metrics, types, routes → CSV | [FreeTools.WorkspaceInventory/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceInventory/Program.cs) |
+| Playwright screenshots | A picture of every page | [FreeTools.BrowserSnapshot/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.BrowserSnapshot/Program.cs) |
+| Report assembly | One markdown dashboard | [FreeTools.WorkspaceReporter/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceReporter/Program.cs) |
+
+**Why does this exist?** To keep **living, accurate documentation** of a Blazor app — its routes, code metrics, screenshots, and health — generated automatically and versioned per git branch, instead of hand-maintained docs that rot.
+
+**What does it accomplish that other tools don't?**
+- A **whole pipeline in one command** (static analysis + HTTP + screenshots + report), not separate disconnected tools.
+- **SPA-aware** screenshotting that waits for Blazor to actually render (most screenshot tools capture a blank loading shell).
+- Built around the **FreeCRM extension pattern** (`.App.` hook files) so the framework can be upgraded without re-diffing every file.
+
+**Terminology & "can I see it?"**
+- **Pipeline** — the ordered set of analysis steps.
+- **Route** — a page URL (`@page`) in the app.
+- **Aspire** — .NET's multi-process orchestration framework.
+- *See it:* a generated report lands at `Docs/runs/{Project}/{Branch}/latest/{Project}-Report.md`.
+
+**The hard part, drawn** — one command turns a running app into a full report:
+
+```
+  AppHost (Aspire) ─▶ Phase 0: start the target web app
+        ▼ Phase 1 (parallel):  EndpointMapper → pages.csv   ·   WorkspaceInventory → inventory.csv
+        ▼ Phase 2:  EndpointPoker → snapshots/*.html         (HTTP GET each route)
+        ▼ Phase 3:  BrowserSnapshot → snapshots/*.png + metadata.json   (Playwright, SPA-aware)
+        ▼ Phase 4:  WorkspaceReporter → {Project}-Report.md  (metrics + route map + screenshot health)
+        ▼ all written to Docs/runs/{Project}/{Branch}/latest/
+```
+
+---
+
+*Note: the section above is the boss-questions briefing; the detailed solution overview and the FreeCRM extension pattern are documented in full earlier in this README.*

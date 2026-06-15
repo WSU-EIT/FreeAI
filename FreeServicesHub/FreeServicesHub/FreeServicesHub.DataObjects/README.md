@@ -58,6 +58,38 @@ The `SensitiveAttribute` marks properties that should be excluded from logs and 
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A pure "data shapes" library shared by the server, the browser client, *and* (in spirit) the agent. It carries the fleet-monitor vocabulary: `Agent`, `AgentHeartbeat` (CPU/RAM/disk metrics), `DiskMetric`, `HubJob`, `ApiClientToken`, and the `SignalRUpdate` envelope used for hub↔client and hub↔agent messages. A `SensitiveAttribute` marks fields that must be kept out of logs.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Agent/heartbeat DTOs | The fleet data shapes | [FreeServicesHub.App.DataObjects.Agents.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataObjects/FreeServicesHub.App.DataObjects.Agents.cs) |
+| Agent settings DTOs | Hub-pushed settings payloads | [FreeServicesHub.App.DataObjects.AgentSettings.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataObjects/FreeServicesHub.App.DataObjects.AgentSettings.cs) |
+
+**Why does this exist?**
+So the hub, the dashboard, and the tests all agree on exactly what an `Agent`, a `AgentHeartbeat`, and a `SignalRUpdate` look like — a mismatch is a build error, not a dropped heartbeat.
+
+**What does it accomplish that other tools don't?**
+- The whole telemetry contract is **shared, typed** — no loose JSON guessed at on either side.
+- `SensitiveAttribute` keeps secrets out of logs by marking them on the shape itself.
+
+**Terminology & "can I see it?"**
+- **DTO** — a plain data shape with no behavior.
+- **`SignalRUpdate`** — the message envelope for real-time pushes (settings report/updated, etc.).
+
+**The hard part, drawn** — one telemetry contract, all participants:
+
+```
+  Agent ─┐                                              ┌─ Hub server
+         ├── DataObjects: Agent · AgentHeartbeat ───────┤
+  Dashboard ─┘  HubJob · ApiClientToken · SignalRUpdate └─ Tests
+                  → everyone serializes the SAME shapes (no drift)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

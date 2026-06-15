@@ -155,3 +155,33 @@ using FreeTools.Core;
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The shared utility library every FreeTools CLI references: command-line argument + environment-variable parsing, thread-safe console output (banners, dividers), route-CSV parsing, and route-to-file-path helpers. Static methods, no external dependencies.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| CLI arg / env parsing | Read flags, options, env vars | [CliArgs.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.Core/CliArgs.cs) |
+| Thread-safe console | Clean output during parallel runs | [ConsoleOutput.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.Core/ConsoleOutput.cs) |
+| Route parsing + path utils | Read `pages.csv`, build safe paths | [RouteParser.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.Core/RouteParser.cs) · [PathSanitizer.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.Core/PathSanitizer.cs) |
+
+**Why does this exist?** So each tool stays small and consistent — they don't each re-implement arg parsing, console formatting, or route handling.
+
+**What does it accomplish that other tools don't?**
+- **Zero external dependencies** and **thread-safe console output**, so tools that run captures in parallel don't produce garbled logs.
+
+**Terminology & "can I see it?"**
+- **Static utility** — a stateless helper you call without creating an object.
+
+**The hard part, drawn** — one shared core, every tool:
+
+```
+  FreeTools.Core (CliArgs · ConsoleOutput · RouteParser · PathSanitizer)
+        ▲
+  EndpointMapper · EndpointPoker · BrowserSnapshot · WorkspaceInventory · WorkspaceReporter ── all reference it
+```

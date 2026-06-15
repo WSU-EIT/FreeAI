@@ -102,6 +102,46 @@ Blazor WebAssembly client for the FreeA11yChecker accessibility auditing platfor
 | `Microsoft.CodeAnalysis.CSharp` | In-browser Roslyn compilation for plugin editing |
 | `FreeBlazor` | WSU-EIT shared Blazor component library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The whole web UI is C# compiled to **WebAssembly** and run *inside your browser* — dashboards, per-page violation review, site management, manual-check wizards, PDF report links, and a live scan monitor. A single shared state object (`BlazorDataModel`) holds the current user, tenant, site list, and the SignalR connection; `Helpers.cs` makes all the API calls to the server. It even embeds a Roslyn C# compiler so plugin components can be edited and previewed in the browser.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WebAssembly (.NET 10) | C# UI running client-side | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/Program.cs) |
+| Shared state bag | Current user, tenant, sites, SignalR conn | [DataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/DataModel.cs) |
+| API + SignalR client | Every server call lives here | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/Helpers.cs) |
+| The screens | Dashboards, rule hotlist, page detail | [Pages/App/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.Client/Pages/App) |
+| In-browser Roslyn compile | Edit/preview plugin components live | [DynamicBlazorSupport/CompilationService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/DynamicBlazorSupport/CompilationService.cs) |
+| MudBlazor / Radzen | UI component & chart libraries | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/Program.cs) |
+
+**Why does this exist?**
+A rich web app that runs client-side is cheap to host (it ships as static files), scales trivially, and only talks to the server for data and real-time updates — a good fit for an auditing dashboard many teams hit at once.
+
+**What does it accomplish that other tools don't?**
+- A **live scan monitor**: SignalR pushes each page's result to the dashboard as the scan runs.
+- A cross-site **"rule hotlist"** that ranks the most common violations across every site in the tenant.
+- In-browser plugin editing — write a C# component and see it compiled by Roslyn *in the browser*, no rebuild.
+
+**Terminology & "can I see it?"**
+- **WebAssembly (WASM)** — a format that lets compiled C# run at near-native speed in the browser.
+- **Hydration** — the moment the downloaded C# "wakes up" and the page becomes interactive.
+- **State bag** — one shared object every page reads/writes so the UI stays consistent.
+
+**The hard part, drawn** — a click becomes a server call and the screen updates:
+
+```
+  You ──click──▶  *.razor page  ──calls──▶  Helpers.cs  ──HTTP──▶  server API  ──▶  DB
+                       ▲                        │
+                       │ StateHasChanged()      └── SignalR subscribe ──▶ live scan ticks ──┐
+                       │                                                                      │
+                       └──────────────  BlazorDataModel  ◀───────────────────────────────────┘
+                          (shared state: current user, tenant, site list, live connection)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

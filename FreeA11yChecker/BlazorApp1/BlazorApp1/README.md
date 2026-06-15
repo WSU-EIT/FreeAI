@@ -64,6 +64,39 @@ Throwaway Blazor WebAssembly + Server app used as a scan target by the FreeA11yC
 | `Microsoft.EntityFrameworkCore.InMemory` | InMemory database (no setup required) |
 | `Microsoft.AspNetCore.Components.WebAssembly.Server` | Serves the WASM client |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A deliberately plain Blazor app that exists only as a *guinea pig* for the scanner. It's the stock .NET template with two tweaks: an **InMemory database** (no setup) and a **seeded admin user** so the scanner can log in immediately and exercise authenticated pages.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor Identity + InMemory EF Core | Login flow with zero DB setup | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/BlazorApp1/BlazorApp1/Program.cs) |
+| Seeded admin user | Lets the scanner authenticate immediately | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/BlazorApp1/BlazorApp1/Program.cs) |
+| Stock template pages | A known surface to audit | [the BlazorApp1 project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/BlazorApp1/BlazorApp1) |
+
+**Why does this exist?**
+It gives the scanner a real, login-protected Blazor app to test against — including the *anonymous-vs-authenticated* evidence flow — without depending on any external website.
+
+**What does it accomplish that other tools don't?**
+- It isn't a product; it's a **controlled test fixture** with known, seedable accessibility characteristics — so scanner results are predictable and the auth path is always testable.
+
+**Terminology & "can I see it?"**
+- **InMemory database** — a throwaway database that lives in RAM; nothing to install.
+- **Seeded user** — a login account created automatically at startup (`admin@example.com` / `Admin1234!`).
+- **Scan target / fixture** — an app that exists to be tested, not shipped.
+
+**The hard part, drawn** — a known target the scanner can log into:
+
+```
+  Program.cs ─▶ InMemory Identity + seed admin@example.com
+       └─▶ stock pages (counter / weather / auth) = a predictable surface
+                       │
+                       ▼  scanned (and logged into) by  ─▶  FreeA11yChecker scanner
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -68,6 +68,39 @@ Contains the entire in-browser UI: the `Index.App.razor` component (the core LLM
 
 Part of the **FreeLLM** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser UI, all in C#/WebAssembly. The heart is `Index.App.razor`: a file explorer with filters, the prompt builder, the balanced chunker, and clipboard export. Around it are shared components (a Monaco code editor, a sortable file list) and the usual settings/auth pages. As you tick files and type instructions, a **debounced** rebuild (300 ms) keeps the assembled prompt up to date without lag.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| The workflow component | File listing → filter → chunk → copy | [Index.App.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/Index.App.razor) |
+| Debounced orchestrator | Rebuild the package smoothly | [Index.App.razor › UpdateSummary()](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/Index.App.razor) |
+| Client DI / startup | MudBlazor, Radzen, Monaco, SignalR | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Program.cs) |
+
+**Why does this exist?**
+So the entire prompt-curation experience runs client-side (cheap to host, snappy) and only calls the server to read files.
+
+**What does it accomplish that other tools don't?**
+- **Debounced rebuilds** keep a large prompt responsive as you edit.
+- **Drag-to-sort** file ordering and an in-browser **Monaco** editor for previewing code.
+
+**Terminology & "can I see it?"**
+- **Debounce** — wait until you stop changing things, then do the expensive rebuild once.
+- **Monaco** — the same editor engine that powers VS Code, embedded in the page.
+
+**The hard part, drawn** — the live build loop:
+
+```
+  You ─▶ Index.App.razor: pick folder → filter → tick files
+            │ UpdateSummary()  [debounced 300 ms]
+            ▼  fetch metadata/contents → rebuild the package
+        SplitSummaryIntoChunks() ──▶ === Chunk X of N === ──▶ clipboard
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

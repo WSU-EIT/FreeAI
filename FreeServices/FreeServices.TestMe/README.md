@@ -422,6 +422,37 @@ Test 3 is designed to work without admin privileges:
 
 ---
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** An automated integration harness that validates the whole FreeServices lifecycle end-to-end, with four tests: **(1)** console-mode lifecycle (any OS, no elevation), **(2)** real platform-service install → start → monitor → stop → uninstall, **(3)** the Installer's CLI non-interactive path (configure/remove), and **(4)** a CLI feature showcase (service-account lifecycle). Each test cleans, builds, launches, watches the output for the expected heartbeats, validates, and tears down — fully unattended.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Test harness (4 modes) | Drive + validate the lifecycle | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.TestMe/Program.cs) |
+| CI config injection | `FileTransform@2` injects pipeline vars | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.TestMe/Program.cs) |
+
+**Why does this exist?** To *prove* — locally and in CI — that the service actually builds, installs, starts, and emits output on every platform, rather than assuming it does.
+
+**What does it accomplish that other tools don't?**
+- **Black-box lifecycle verification**: it watches the real process output for heartbeats, the way the service actually runs.
+- **The same tests run as a CI gate** on Windows + Linux + macOS agents (via `FileTransform@2` injecting `variables.yml` into `appsettings.json`), so a broken service fails the pipeline.
+
+**Terminology & "can I see it?"**
+- **Heartbeat** — one interval's output line the test counts to confirm the service is alive.
+- **Elevation** — admin/sudo, required only by the real-service tests (2 & 4).
+
+**The hard part, drawn** — automated, unattended lifecycle proof:
+
+```
+  dotnet run -- --test=2
+        ▼ clean → build → install (sc.exe/systemctl/launchctl) → start
+        ▼ watch process output for N heartbeats (within timeout)
+        ▼ stop → uninstall → assert clean teardown ─▶ PASS / FAIL
+   (Test 1 = console mode, any OS;  Tests 2 & 4 = real service, need admin/sudo)
+```
+
 ## License
 
 [MIT License](../LICENSE) — Washington State University, Enrollment Information Technology.

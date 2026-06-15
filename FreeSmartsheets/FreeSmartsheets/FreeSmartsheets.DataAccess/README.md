@@ -54,6 +54,39 @@ Server-side data access layer for FreeSmartsheets. Contains all business logic, 
 | Target Framework | `net10.0` |
 | Output Type | Class Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The server-only data layer. It implements `IDataAccess` as partial classes by domain (Users, Tenants, Tags, Auth, Plugins…), runs EF Core against the configured database, scopes every query by `TenantId`, and provides JWT, Graph/AD, and migration support. This is **where the Smartsheet methods will live** — the design (`GetWorkspaces()` calling the Smartsheet SDK) is documented in [Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/Docs/003_architecture.md), but **no Smartsheet code exists here yet**; today it's the standard FreeCRM data layer plus a `ProcessBackgroundTasksApp` hook for future Smartsheet work.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core data access | All database I/O, tenant-scoped | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataAccess/DataAccess.cs) |
+| Authentication + JWT | Login, sessions, OAuth callbacks | [DataAccess.Authenticate.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataAccess/DataAccess.Authenticate.cs) |
+| Microsoft Graph / AD | Directory lookups | [GraphAPI.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataAccess/GraphAPI.cs) |
+| Smartsheet methods *(planned)* | Inventory queries — **not yet implemented** | [Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/Docs/003_architecture.md) |
+
+**Why does this exist?**
+To keep all data access, business logic, and (future) Smartsheet integration in one server-only layer so the UI and DTOs stay thin and database-agnostic.
+
+**What does it accomplish that other tools don't?**
+- One code path across **five** database engines, with tenant isolation throughout.
+- A clear, single home for the Smartsheet integration (the `ProcessBackgroundTasksApp` hook + a future `GetWorkspaces`), so the design has an obvious place to land.
+
+**Terminology & "can I see it?"**
+- **Partial class** — one class (`DataAccess`) split across many files by topic.
+- **Tenant isolation** — every query carries a `TenantId` so orgs can't see each other's data.
+
+**The hard part, drawn** — today's layer and where Smartsheet plugs in:
+
+```
+  Controllers ─▶ IDataAccess (DataAccess.*) ─ EF Core ─▶ SQL Server | PostgreSQL | MySQL | SQLite | InMemory
+                       ├─ Authenticate (local/OAuth) · JWT · Graph/AD
+                       └─ ProcessBackgroundTasksApp hook  ◀── Smartsheet GetWorkspaces() goes here (planned)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

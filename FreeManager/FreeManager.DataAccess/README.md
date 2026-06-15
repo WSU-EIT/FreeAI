@@ -60,6 +60,38 @@ Implements `IDataAccess` through a large set of partial classes organized by fea
 | Target framework | `net10.0` |
 | Output type | Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The server-only data layer. Beyond the usual FreeCRM responsibilities (EF Core over 5 databases, auth, JWT, Graph/AD, encryption, PDF), it adds the **App Builder persistence** — saving/loading projects, generated files (with version history), builds, and Entity Wizard state — and a Roslyn C# execution helper used by plugins.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core data access | All database I/O, tenant-scoped | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataAccess/DataAccess.cs) |
+| Entity Wizard persistence | Save/load wizard state | [FreeManager.App.DataAccess.EntityWizardPersistence.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataAccess/FreeManager.App.DataAccess.EntityWizardPersistence.cs) |
+| Roslyn C# execution | Compile/run plugin & dynamic code | [DataAccess.CSharpCode.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataAccess/DataAccess.CSharpCode.cs) |
+
+**Why does this exist?**
+To keep all data access *and* the App Builder's save/build/version logic in one server-only layer, so the UI and DTOs stay thin and database-agnostic.
+
+**What does it accomplish that other tools don't?**
+- One code path across **five** database engines, with tenant isolation throughout.
+- Stores **generated files with version history** (`FMAppFile` / `FMAppFileVersion`) so a project's output is tracked over time.
+
+**Terminology & "can I see it?"**
+- **Partial class** — `DataAccess` split across many files by feature.
+- **Persistence** — saving the wizard's in-progress model so you can reopen it.
+
+**The hard part, drawn** — data layer + App Builder storage:
+
+```
+  Controllers ─▶ IDataAccess (DataAccess.*) ─ EF Core ─▶ SQL Server | MySQL | PostgreSQL | SQLite | InMemory
+                       ├─ App Builder: Projects · Builds · Files (+ versions) · EntityWizard state
+                       └─ auth / JWT / Graph · Roslyn (DataAccess.CSharpCode) · QuestPDF
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

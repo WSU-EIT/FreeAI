@@ -6,12 +6,12 @@
   same range of products:
     * InstallationTarget Microsoft.VisualStudio.Community  [17.0, 19.0)
         17.x = VS 2022, 18.x/19.x covers VS 2026 -> works in BOTH.
-    * .NET Framework dependency [4.7.2,)  (matches TargetFramework net472).
+    * .NET Framework dependency [4.7.2,)  (satisfied by the project's net48 target).
     * CoreEditor prerequisite (we edit the active text buffer).
     * One VsPackage asset built from this project (%CurrentProject%).
 
   Identity GUID below is freshly generated and unique to this extension.
-  VERIFY IN VS: open this in the manifest designer once to confirm it parses.
+  Confirmed: this manifest parses and packs into a valid .vsix via the command-line build.
 -->
 <PackageManifest Version="2.0.0"
                  xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"

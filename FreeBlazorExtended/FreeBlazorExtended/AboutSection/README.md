@@ -50,3 +50,22 @@ This repo also has `Shared/ShowcaseAbout.razor` in the FreeBlazorExample showcas
 
 ## Effort to integrate
 **S** — single ~50-line file, no JS, no external deps.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A collapsible "About this page" card: click the header to expand/collapse, and fill the body with any markup you like via `ChildContent`. Pure UI, ~50 lines, no dependencies.
+
+**What tech & where?** One file — [AboutSection.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/AboutSection/AboutSection.razor) (Bootstrap 5 + FontAwesome 6 for styling).
+
+**Why does this exist?** So every page can carry a consistent, friendly "what is this?" explainer without re-writing the markup each time.
+
+**What does it beat?** It's *flexible* (any body content) where the sister `ShowcaseAbout` is *structured* (fixed What/Who/Why fields) — pick flexibility here, consistency there.
+
+**Terminology:** **`ChildContent`** — the caller-supplied body markup Blazor drops inside the card.
+
+**The hard part, drawn:**
+```
+  click header ─▶ toggle expand/collapse ─▶ renders YOUR ChildContent (any markup)
+```

@@ -65,3 +65,23 @@ The original FreeExamples version injected the host's `BlazorDataModel` + `Radze
 
 ## Effort to integrate
 **S** — single `.razor` + a small POCO, no JS, no DI.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A file-*picker* tile grid: shows files as tiles (thumbnail/icon + name + size), and clicking one fires `OnFileSelected`. Optional Cancel/Refresh buttons and a `Loading` spinner. Fully controlled — you own the file list and the selection callback.
+
+**What tech & where?** [SelectFile.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/SelectFile/SelectFile.razor) (the picker) · [FileItem.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/SelectFile/FileItem.cs) (the shared file shape, also used by RenderFiles).
+
+**Why does this exist?** To let a user pick from a set of existing files (vs. `RenderFiles`, which *displays* them) without coupling to a dialog framework.
+
+**What does it beat?** It's **fully controlled and dependency-free** — the original needed host state + Radzen's dialog service; this one has no DI, no Radzen, and lets *you* decide how to present it (inline, your own modal, etc.).
+
+**Terminology:** **Controlled** — caller owns `Files` and reacts to `OnFileSelected`.
+
+**The hard part, drawn:**
+```
+  you give: Files (List<FileItem>) ─▶ tile grid ─▶ click a tile ─▶ OnFileSelected(file)
+        Loading=true ─▶ spinner     optional Cancel/Refresh buttons ─▶ OnCancel/OnRefresh
+```

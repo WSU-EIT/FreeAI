@@ -100,3 +100,23 @@ snapshots/
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Phase 2. It reads `pages.csv`, makes an HTTP GET to every route (in parallel), and saves each page's raw HTML response to disk — a fast, browser-free baseline for regression comparison.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.EndpointPoker/Program.cs) (built-in `HttpClient`, configurable thread count).
+
+**Why does this exist?** A quick "does every page respond, and what HTML does it return?" check — diff the saved HTML across runs to spot regressions before doing the slower screenshot pass.
+
+**What does it beat?** It's the **fast, no-browser** pass — pure HTTP — so it catches broken/erroring routes cheaply before BrowserSnapshot spends time rendering them.
+
+**Terminology:** **Regression baseline** — saved output you compare future runs against.
+
+**The hard part, drawn:**
+```
+  pages.csv ─▶ parallel HTTP GET each route (up to MAX_THREADS) ─▶ snapshots/{route}/default.html
+        (substitutes {TenantCode}; later runs diff against these)
+```

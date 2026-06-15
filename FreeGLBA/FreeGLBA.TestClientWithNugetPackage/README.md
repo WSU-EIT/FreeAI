@@ -70,6 +70,35 @@ dotnet add package FreeGLBA.Client --version X.Y.Z
 | Use Case | Development/debugging | Package validation |
 | Debugging | Full source debugging | Package symbols only |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A console app that exercises the **published** `FreeGLBA.Client` NuGet package — referencing it the same way an outside team would, so it validates that the released package actually works before announcing a new version.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Console validation harness | Runs against the published package | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.TestClientWithNugetPackage/Program.cs) |
+| NuGet package reference | Tests exactly what consumers install | `FreeGLBA.Client` (from nuget.org) |
+
+**Why does this exist?**
+To catch packaging problems (missing files, broken dependencies, wrong version) that a project reference would hide — a final check before release.
+
+**What does it accomplish that other tools don't?**
+- Validates the package **as an external consumer sees it** (symbols only, no source) — the counterpart to `TestClient`, which uses a project reference for development.
+
+**Terminology & "can I see it?"**
+- **Package reference** — depending on a built, versioned NuGet package (vs. the source project).
+- **Package validation** — confirming the shipped artifact works, not just the source.
+
+**The hard part, drawn** — pre-release confidence:
+
+```
+  FreeGLBA.TestClientWithNugetPackage ──NuGet pkg──▶ FreeGLBA.Client (published) ──▶ server
+        proves the SHIPPED package works before a release is announced
+```
+
 ## About
 
 Part of the [FreeGLBA](../README.md) project.

@@ -44,6 +44,25 @@ It also provides an in-memory cache layer via `System.Runtime.Caching`.
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A pure "data shapes" library shared by the server and the browser client. It holds the DTOs that cross that boundary — including the API-demo shapes (`ApiTestRequest`, `ApiTestResponse`, `PongResponse`) that the NuGet client and server both use — plus an in-memory cache helper.
+
+**What tech & where?** [the DataObjects project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.DataObjects) (`System.Runtime.Caching`).
+
+**Why does this exist?** So a contract-breaking change fails at build time, not at runtime — the server and the browser (and the NuGet client) all compile against the same shapes.
+
+**What does it beat?** One shared definition of the API contract used by C# on the server *and* in the browser *and* in the published client library.
+
+**Terminology:** **DTO** — a plain data shape with no behavior.
+
+**The hard part, drawn:**
+```
+  Server ─┐                                  ┌─ Browser client
+          ├─ DataObjects (ApiTestRequest …) ──┤
+  NuGet client ─────────────────────────────┘   all three bind the SAME shapes
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

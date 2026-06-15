@@ -90,6 +90,39 @@ services.GetCompiledPlugins();
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This is the **SDK** a plugin author references — and *only* this; no dependency on the host app. It defines the interfaces a plugin implements (`IPlugin`, `IPluginAuth`, `IPluginBackgroundProcess`, `IPluginUserUpdate`), the `PluginResult` they return, the `[Plugin]` attribute that declares metadata, a context object plugins use to log and resolve services, 16 typed input prompts with a fluent builder, and DI helpers to register/discover plugins.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Plugin interfaces | The contracts a plugin implements | [IPluginInterfaces.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions/IPluginInterfaces.cs) · [IPluginBase.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions/IPluginBase.cs) |
+| Plugin context | Logging + service resolution for plugins | [IPluginContext.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions/IPluginContext.cs) |
+| DI registration helpers | `AddPlugin<T>()` / `AddPluginsFromAssembly()` | [the Abstractions project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions) |
+
+**Why does this exist?** So anyone can build a distributable plugin against a **stable, host-free contract** — reference the NuGet package, implement an interface, publish.
+
+**What does it accomplish that other tools don't?**
+- A **clean contract with no host dependency** — plugins are decoupled from the app's internals.
+- **16 typed prompt types** via a fluent builder — rich input UIs declared in code.
+- **Auto-discovery**: `AddPluginsFromAssembly` registers every `[Plugin]`-decorated type.
+
+**Terminology & "can I see it?"**
+- **`PluginResult`** — the standard return: success flag + messages + objects.
+- **Marker interface** (`ICompiledPlugin`) — flags a NuGet plugin and pins its `PluginType`.
+- **Prompt builder** — fluent helpers to declare the inputs a plugin needs.
+
+**The hard part, drawn** — author once, the host discovers it:
+
+```
+  your NuGet plugin ──references──▶ FreePlugins.Abstractions (this SDK)
+        implements IPlugin/IPluginAuth/… + [Plugin] attribute + declares Prompts (16 types)
+        ▼
+  host: AddPlugin<T>() / AddPluginsFromAssembly() ─▶ registered ─▶ runs returning PluginResult
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

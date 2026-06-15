@@ -97,6 +97,39 @@ README.txt
 | Target framework | `net10.0` |
 | Output type | `Exe` |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+`FreeManager.exe` is the command-line side of the code generator. `new <name>` produces a single module from a template (`Empty` / `Skeleton` / `Starter` / `FullCrud`); `app <name>` generates a whole multi-entity application (`FreeBase` / `FreeTracker` / `FreeAudit`). Run it with no arguments for a rich interactive menu (Spectre.Console); pass verbs for fully scripted, non-interactive generation. The output mirrors the FreeCRM folder layout exactly.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| `System.CommandLine` verbs | `new` / `app` / `list` / `help` parsing | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Cli/Program.cs) |
+| Spectre.Console menu | Interactive wizards when run with no args | [MenuService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Cli/MenuService.cs) |
+| Template generators | The actual file-producing templates | [CliProjectTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Cli/CliProjectTemplates.cs) |
+
+**Why does this exist?**
+So project/app generation can be **scripted** — in CI, in a setup script, or at a developer's terminal — without opening the web App Builder.
+
+**What does it accomplish that other tools don't?**
+- The same generation idea as the web App Builder, but **automatable**: one command scaffolds an entire layered app.
+- **Progressive templates** from a 2-entity starter up to a 4-entity audit app with API-key auth and compliance reports.
+
+**Terminology & "can I see it?"**
+- **Verb** — a CLI sub-command (`new`, `app`, `list`).
+- **Template** — a named recipe deciding how many files/entities to emit.
+
+**The hard part, drawn** — a command becomes a layered project:
+
+```
+  FreeManager.exe new Tasks -t FullCrud        FreeManager.exe app Assets -t FreeTracker
+          │ System.CommandLine verbs  (or the Spectre.Console interactive menu)
+          ▼ CliProjectTemplates / application templates
+   generated .App. files ─▶ <name>/  <name>.Client/  <name>.DataAccess/  <name>.DataObjects/  <name>.EFModels/
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

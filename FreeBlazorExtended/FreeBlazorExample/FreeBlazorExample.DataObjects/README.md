@@ -31,6 +31,25 @@ Referenced by both the ASP.NET Core server and the Blazor WebAssembly client. De
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A pure "data shapes" library shared by the showcase server and browser client: DTOs, typed endpoint constants, response envelopes, the `BlazorDataModel` client-state class, and app settings. No EF/HTTP/auth.
+
+**What tech & where?** [DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.DataObjects/DataObjects.cs).
+
+**Why does this exist?** So both halves of the app compile against the same shapes — a contract break fails at build time.
+
+**What does it beat?** One shared model for C# server *and* C# browser, no TypeScript types to drift.
+
+**Terminology:** **DTO** — a plain data shape with no behavior.
+
+**The hard part, drawn:**
+```
+  Server ─┐                          ┌─ Browser (WASM)
+          ├─ DataObjects (shared C#) ─┤   → both bind the SAME types (no drift)
+  DB ◀────┘  User · Tenant · Endpoints └─▶ BlazorDataModel (client state)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

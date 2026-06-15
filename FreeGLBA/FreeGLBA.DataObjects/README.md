@@ -259,6 +259,37 @@ public async Task<List<SourceSystem>> GetSourceSystemsAsync()
 
 ---
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A pure "data shapes" library — and it holds the **GLBA external-API contract**: `GlbaEventRequest` (the event payload), `GlbaEventResponse` / `GlbaBatchResponse`, and typed endpoint-name constants. Both the FreeGLBA server *and* the published NuGet client reference matching shapes, so the wire format can't drift.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| GLBA event DTOs | The request/response payloads | [FreeGLBA.App.DataObjects.ExternalApi.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataObjects/FreeGLBA.App.DataObjects.ExternalApi.cs) |
+| Endpoint constants | Compile-safe API route names | [FreeGLBA.App.Endpoints.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataObjects/FreeGLBA.App.Endpoints.cs) |
+
+**Why does this exist?**
+So the server, the browser client, and the external NuGet client all speak the *same* event shape — a contract break shows up at build time, not as a silently-dropped audit event in production.
+
+**What does it accomplish that other tools don't?**
+- The audit-event contract (`GlbaEventRequest` with `SourceEventId`, `SubjectId`, `AccessType`, `Purpose`…) is a **shared, typed** definition — not loose JSON each side guesses at.
+
+**Terminology & "can I see it?"**
+- **DTO** — a plain data shape with no behavior.
+- **Endpoint constant** — a typed route name (no hard-coded URL strings).
+
+**The hard part, drawn** — one event contract, three consumers:
+
+```
+  NuGet client ─┐                                              ┌─ Server ingestion API
+                ├── GlbaEventRequest / Response (shared DTOs) ──┤
+  Browser UI ───┘   FreeGLBA.App.Endpoints (route names)        └─ all serialize the SAME shapes
+                         → no contract drift across systems
+```
+
 ## About
 
 **FreeGLBA** is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

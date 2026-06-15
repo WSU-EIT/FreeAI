@@ -198,3 +198,23 @@ Docs/runs/**/*.html
 We build internal tools and automation to support enrollment management processes across WSU.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+> ⚠️ **Heads-up (content mismatch):** the documentation above is actually for **FreeTools** (a Blazor analysis CLI), not FreePlugins — this `Docs/README.md` was seeded from the FreeTools template and never replaced. Treat the content above as *not* describing this project.
+
+**How does this work?** For real FreePlugins documentation, use the project READMEs, not this file. Start with the [FreePluginsV1 solution README](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/README.md) (the two plugin models), then the [Abstractions SDK README](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions/README.md) (the contracts) and the [Integration bridge README](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions.Integration/README.md).
+
+**Why does this exist?** This folder is meant to hold FreePlugins docs; right now it carries a leftover FreeTools template — flagged here so nobody is misled.
+
+**What's actually here vs. intended?** The files describe FreeTools' route discovery and screenshot pipeline; FreePlugins' real story is its dual (file-based + compiled) plugin system.
+
+**The hard part, drawn** — where to actually look:
+
+```
+  this Docs/README.md  ✗ (FreeTools template — ignore)
+        ▼ instead read:
+  FreePluginsV1/README.md ─▶ Abstractions/README.md ─▶ Abstractions.Integration/README.md
+```

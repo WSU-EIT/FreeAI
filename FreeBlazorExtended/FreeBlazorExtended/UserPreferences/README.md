@@ -86,3 +86,25 @@ The page is unchanged — the same calls (`GetUserPreferences`, `SaveUserPrefere
 
 ## Effort to integrate
 **S** — four C# files, one DI line, zero components. EF wiring is one entity, one fluent-API block, and one migration step.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** One preferences record per (tenant, user). Common settings (theme, density) are real fields; everything else lives in a `PerEntityJson` blob you read back as a typed object (`GetPerEntityPreference<T>`). A `RecentItemsJson` list auto-caps at 20 (oldest falls off). Persistence is pluggable via `IUserPreferencesStore` — **real SQL via EF Core** on the server, an in-memory fallback in the WASM client.
+
+**What tech & where?** [UserPreferencesService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/UserPreferences/UserPreferencesService.cs) · [IUserPreferencesStore.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/UserPreferences/IUserPreferencesStore.cs) (the swap point) · [InMemoryUserPreferencesStore.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/UserPreferences/InMemoryUserPreferencesStore.cs).
+
+**Why does this exist?** So every page can save UX state (last view, filters, theme) without each feature inventing its own settings table.
+
+**What does it beat?** It's the **only feature service here with real SQL persistence** (the others are in-memory), and the JSON blob means new per-entity settings need *no schema change*. The two-store pattern keeps the same code working in WASM (in-memory) and on the server (SQL).
+
+**Terminology:** **Two-store pattern** — one interface, two implementations (SQL vs in-memory), chosen at DI time. **Ring buffer** — the 20-item recent list that drops the oldest.
+
+**The hard part, drawn:**
+```
+  GetUserPreferences(tenant,user) ─▶ IUserPreferencesStore
+        server ─▶ EF Core ─▶ SQL UserPreferences table
+        WASM   ─▶ InMemoryUserPreferencesStore (fallback)
+  PerEntityJson blob ─▶ GetPerEntityPreference<T>()   ·   RecentItems capped at 20 (oldest off)
+```

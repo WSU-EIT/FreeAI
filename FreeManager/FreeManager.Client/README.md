@@ -70,6 +70,41 @@ This project is the in-browser UI. It contains all pages, components, the App Bu
 | Target framework | `net10.0` |
 | Output type | Library (served by `FreeManager` host) |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser UI, including the App Builder / Entity Wizard code-generation suite. The actual generator is `EntityTemplates.GenerateAllFiles(EntityWizardState)` — spread across `FreeManager.App.EntityTemplates.*` partials, one per output layer (DataObjects, EFModel, DataAccess, Controller). The wizard supports live preview (Monaco editor), undo/redo, CSV/JSON import of entity definitions, and a library of reusable page patterns (Kanban, Timeline, Dashboard…).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| The code generator | Turns the model into source files | [FreeManager.App.EntityTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/FreeManager.App.EntityTemplates.cs) |
+| Entity Wizard UI | The 7-step model-definition flow | [Pages/FreeManager.App.EntityWizard.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/Pages/FreeManager.App.EntityWizard.razor) |
+| Project-level templates | Whole-project generation | [FreeManager.App.ProjectTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/FreeManager.App.ProjectTemplates.cs) |
+| API helpers | Server calls + navigation | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/Helpers.cs) |
+
+**Why does this exist?**
+So the entire code-generation experience — define, preview, save, export — runs client-side, with the generator living next to the UI that drives it.
+
+**What does it accomplish that other tools don't?**
+- The generator runs **in the browser**, with live Monaco preview of every file before you export.
+- **Per-layer partial templates** (`.Controller`, `.DataAccess`, `.DataObjects`, `.EFModel`) keep the generated code maintainable and consistent.
+- **Undo/redo** and **CSV/JSON import** make modeling fast; a **page-pattern library** emits common UIs (Kanban, Timeline…).
+
+**Terminology & "can I see it?"**
+- **Page pattern** — a prebuilt UI shape (Kanban, Dashboard) the generator can emit.
+- **State bag** (`BlazorDataModel`) — the shared client state every page reads/writes.
+
+**The hard part, drawn** — model to previewed, exportable files:
+
+```
+  Entity Wizard (7 steps) ─▶ EntityWizardState
+          │ EntityTemplates.GenerateAllFiles()
+          ▼   partials: .DataObjects · .EFModel · .DataAccess · .Controller · page patterns
+   generated .App. files ─▶ live preview (Monaco) · undo/redo · import CSV/JSON ─▶ save / export
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

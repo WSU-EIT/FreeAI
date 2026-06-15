@@ -90,6 +90,55 @@ The **Index page** (`/`) is the core workflow. On load it embeds `Index.App.razo
 
 Part of the **FreeLLM** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+FreeLLM is a "prompt packager." You point it at a folder on your machine; it lists the files (skipping `bin/`, `obj/`, hidden), lets you filter and tick the ones you want, counts the lines and characters, then assembles a single structured prompt — a manifest of selected files, an 8-step instruction scaffold, the full file contents, and your edit instructions. Because LLMs have a size limit, it then splits that big prompt into **N balanced chunks** (a greedy line-count packer), each labeled `=== Chunk X of N ===`, and copies them to your clipboard ready to paste into ChatGPT / Azure OpenAI / etc. File contents are fetched through three small server endpoints that cache results for 5 minutes.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WASM workflow component | The entire curation UI | [Index.App.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/Index.App.razor) |
+| Greedy chunk balancer | Split the prompt into even pieces | [Index.App.razor › SplitSummaryIntoChunks()](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/Index.App.razor) |
+| Three file endpoints + 5-min cache | Enumerate / count / read local files | [DataController.App.FreeLLM.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM/Controllers/DataController.App.FreeLLM.cs) |
+| Endpoint constants + file DTOs | The shared client/server contract | [DataObjects.App.FreeLLM.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.DataObjects/DataObjects.App.FreeLLM.cs) |
+| Roslyn plugin runtime | Extend at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Plugins/Plugins.cs) |
+
+**Why does this exist?**
+Pasting a codebase into an LLM by hand is tedious and error-prone: you forget files, blow past the size limit, and lose the structure the model needs. FreeLLM makes a clean, consistent, *size-safe* prompt package in a few clicks.
+
+**What does it accomplish that other tools don't?**
+- **Balanced chunking** so a large codebase fits an LLM's window in even pieces, not one giant blob that gets truncated.
+- **Live size feedback** — per-file line counts color-coded by threshold (green < 1000, blue < 2000, amber < 3000, red ≥ 3000) so you see the cost before you build.
+- **A consistent prompt scaffold** (manifest + 8-step instructions + contents) — every prompt has the structure models respond best to.
+- **Smart defaults** — it pre-ticks canonical entry-point files (`Program.cs`, `App.razor`, `DataAccess.cs`…).
+
+**Terminology & "can I see it?"**
+- **Prompt package** — the assembled text you paste into an LLM.
+- **Chunk** — one size-bounded slice of that package.
+- **Greedy packing** — fill each chunk up to the line budget before starting the next.
+- **Debounce** — wait 300 ms after your last change before rebuilding, so typing stays smooth.
+- *See it:* the whole workflow is one component — [Index.App.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/Index.App.razor).
+
+**The hard part, drawn** — a folder becomes paste-ready, size-safe chunks:
+
+```
+  you ─▶ enter a folder path
+            │ POST GetFiles   (skip bin/obj/hidden)
+            ▼
+   file list + checkboxes + line/char badges  (green<1k · blue<2k · amber<3k · red≥3k)
+            │ tick files → POST GetFileMetadata (counts) / GetFileContents (text)  [5-min cache]
+            ▼
+  ┌──────────────── assemble the prompt package ────────────────┐
+  │ file manifest + 8-step instruction scaffold + full contents │
+  │ + your before/after edit instructions                       │
+  └───────────────────────────┬─────────────────────────────────┘
+            │ SplitSummaryIntoChunks(): greedy line-count packing into N pieces
+            ▼
+   === Chunk 1 of N ===  …  === Chunk N of N ===  ──▶ copied to clipboard
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

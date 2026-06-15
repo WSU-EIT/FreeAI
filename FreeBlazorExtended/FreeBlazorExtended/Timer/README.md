@@ -69,3 +69,24 @@ Counts down from a configurable `Duration` to zero using `System.Timers.Timer` (
 
 ## Effort to integrate
 **S** — one Razor file, one `@using`, no DI, no JS, no migrations.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A countdown timer: counts from a `Duration` to zero on a 1-second tick, shows the remaining time big, optionally draws a progress bar (turns red in the final 10%), and has Start/Pause/Reset buttons. Fires `OnElapsed` exactly once at zero (and an optional `OnTick` each second). Pure C#, no JavaScript.
+
+**What tech & where?** One file — [Timer.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Timer/Timer.razor) (uses `System.Timers.Timer`; Bootstrap for the bar).
+
+**Why does this exist?** A reusable countdown (exam timer, session expiry, cooldown) you can drop in and drive with `@ref`.
+
+**What does it beat?** **Correct lifecycle** is the hard part it gets right: it disposes the timer cleanly (a `_disposed` guard blocks mid-tick callbacks) and an `_elapsedFired` flag means `OnElapsed` can't double-fire — common bugs in hand-rolled timers. *(No millisecond precision; no audible alert.)*
+
+**Terminology:** **Tick** — the per-second callback; **elapsed** — the one-shot event at zero.
+
+**The hard part, drawn:**
+```
+  Start ─▶ System.Timers.Timer (1s) ─▶ decrement remaining ─▶ OnTick(remaining) each second
+        progress bar reddens in last 10%
+        remaining == 0 ─▶ OnElapsed() ONCE (guarded by _elapsedFired)   Dispose ─▶ clean stop
+```

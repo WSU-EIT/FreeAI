@@ -261,6 +261,43 @@ public class DashboardService
 | `DataAccess.Authenticate.cs` | User authentication logic |
 | `DataAccess.JWT.cs` | JWT token creation and validation |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The server-side business-logic layer. Beyond the usual FreeCRM responsibilities (EF Core over 4 databases, auth, JWT, Graph/AD, encryption, PDF), it owns the **GLBA event processing**: `ProcessGlbaEventAsync` validates an incoming event, rejects duplicates (matching `SourceEventId`), writes the `AccessEvent`, and bumps the source system's statistics. It also manages **API keys** for source systems (validate / generate / rotate) and generates compliance reports with QuestPDF.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| GLBA event processing | Validate · dedupe · store · update stats | [FreeGLBA.App.DataAccess.ExternalApi.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/FreeGLBA.App.DataAccess.ExternalApi.cs) |
+| API-key management | Validate / generate / rotate source keys | [FreeGLBA.App.DataAccess.ApiKey.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/FreeGLBA.App.DataAccess.ApiKey.cs) |
+| EF Core + migrations | All DB I/O across 4 engines | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/DataAccess.cs) |
+| QuestPDF | Compliance report PDFs | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/DataAccess.cs) |
+
+**Why does this exist?**
+To keep the compliance logic — *what counts as a valid event, how duplicates are rejected, how reports are built* — in one server-only layer, so the API controllers and the client stay thin.
+
+**What does it accomplish that other tools don't?**
+- **Idempotent ingestion**: duplicate events (same `SourceEventId`) are detected and skipped, so a client that retries can't double-count.
+- **Source-system key lifecycle** (generate/rotate) built in, not bolted on.
+- One code path across **four** database engines (+ InMemory).
+
+**Terminology & "can I see it?"**
+- **Idempotent** — doing the same call twice has the same effect as doing it once.
+- **`SourceEventId`** — the caller's own ID for an event, used to detect resends.
+
+**The hard part, drawn** — turning a raw event into a clean, deduplicated record:
+
+```
+  GlbaController ─▶ ProcessGlbaEventAsync(request, sourceSystemId)
+        │ validate required fields
+        │ already seen this SourceEventId for this source? ─yes─▶ status = "duplicate" (skip)
+        │ no
+        ▼ create AccessEvent  ·  bump SourceSystem.EventCount / LastEventReceivedAt
+        ▼ EF Core save ─▶ returns EventId (status = "accepted")
+```
+
 ## About
 
 FreeGLBA is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

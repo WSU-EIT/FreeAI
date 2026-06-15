@@ -201,6 +201,40 @@ public partial class AccessEventItem
 | `EFModels/PluginCache.cs` | Plugin cache entity |
 | `EFModelOverrides.cs` | Partial class extensions |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library *defines the database*. Alongside the core FreeCRM tables it adds the **GLBA audit tables**: `AccessEvent` (who accessed whose data, when, how, why), `SourceSystem` (each registered external system, its API key, and its event stats), `DataSubject`, and `ComplianceReport`. One model targets four engines (+ InMemory).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core DbContext | The schema (core + GLBA tables) | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.EFModels/EFModels/EFDataModel.cs) |
+| Access-event entity | The audit record | [FreeGLBA.App.AccessEvent.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.EFModels/EFModels/FreeGLBA.App.AccessEvent.cs) |
+| Source-system entity | Registered systems + API key + stats | [FreeGLBA.App.SourceSystem.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.EFModels/EFModels/FreeGLBA.App.SourceSystem.cs) |
+
+**Why does this exist?**
+One schema that stores the compliance audit trail on whatever database the institution already runs.
+
+**What does it accomplish that other tools don't?**
+- The audit trail is **first-class, queryable data** (`AccessEvent` rows), not a flat log file — so dashboards and reports are just queries.
+- **Five engines from one model**, InMemory included for tests.
+
+**Terminology & "can I see it?"**
+- **Entity** — a C# class mapped to one table (`AccessEvent` → the audit table).
+- **`SourceEventId`** — the dedup key stored on each access event.
+
+**The hard part, drawn** — the audit schema at the center:
+
+```
+  EFDataModel (DbContext)
+       └ GLBA ▶ AccessEvent (who / whose / when / how / why) · SourceSystem (apikey + stats)
+                · DataSubject · ComplianceReport
+       └ core ▶ User · Tenant · Department · Setting · PluginCache
+       └ providers ▶ SQL Server · PostgreSQL · MySQL · SQLite · InMemory
+```
+
 ## About
 
 **FreeGLBA** is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

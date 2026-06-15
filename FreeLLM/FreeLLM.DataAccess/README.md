@@ -39,6 +39,40 @@ Implements `IDataAccess` which is injected into the ASP.NET Core controllers. Co
 
 Part of the **FreeLLM** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The server-only data layer. It implements `IDataAccess` (injected into the controllers) with EF Core repositories for every table, authentication helpers (local, LDAP/AD, Microsoft Graph), a periodic background worker, PDF generation (QuestPDF), CSV import/export, and JWT issuance.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core data access | All database I/O | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.DataAccess/DataAccess.cs) |
+| Authentication | Local / LDAP / Graph login | [DataAccess.Authenticate.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.DataAccess/DataAccess.Authenticate.cs) |
+| Background-task hook | App-specific periodic work | [DataAccess.App.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.DataAccess/DataAccess.App.cs) |
+
+**Why does this exist?**
+To keep all data access, business logic, and integrations server-side so the UI and DTOs stay thin and database-agnostic.
+
+**What does it accomplish that other tools don't?**
+- One code path across **five** database engines.
+- A **background-task hook** (`ProcessBackgroundTasksApp`) for scheduled/periodic work.
+- Enterprise auth (LDAP/AD/Graph) ready out of the box.
+
+**Terminology & "can I see it?"**
+- **Repository** — the methods that read/write one kind of record.
+- **Hosted service** — code the web host runs on a timer in the background.
+
+**The hard part, drawn** — one server layer, many backends:
+
+```
+  Controllers ─▶ IDataAccess (DataAccess.*)  ─ EF Core ─▶ SQL Server | MySQL | PostgreSQL | SQLite | InMemory
+                       ├─ DataAccess.Authenticate (local / LDAP / Graph)
+                       ├─ ProcessBackgroundTasksApp hook (periodic work)
+                       └─ QuestPDF · CSV · JWT
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).
