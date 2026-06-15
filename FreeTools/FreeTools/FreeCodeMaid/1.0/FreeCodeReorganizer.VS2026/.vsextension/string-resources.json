@@ -1,0 +1,24 @@
+{
+  "FreeCodeReorganizer.ReorganizeDocument.DisplayName": "Reorganize Document",
+
+  "FreeCodeReorganizer.Settings.Category.DisplayName": "FreeCodeReorganizer",
+  "FreeCodeReorganizer.Settings.Category.Description": "Member reordering and brace style that mirror the FreeCRM house layout. Standard formatting stays owned by .editorconfig; these settings cover only what it can't express.",
+
+  "FreeCodeReorganizer.Settings.SortAlphabetically.DisplayName": "Sort alphabetically",
+  "FreeCodeReorganizer.Settings.SortAlphabetically.Description": "Sort members alphabetically within each kind group (properties, indexers and methods are interleaved into one alphabetical list).",
+
+  "FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.DisplayName": "Ignore leading underscore in sort",
+  "FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.Description": "When comparing names, ignore a single leading underscore so _connectionString sorts as \"connectionString\".",
+
+  "FreeCodeReorganizer.Settings.GroupByVisibility.DisplayName": "Group by visibility",
+  "FreeCodeReorganizer.Settings.GroupByVisibility.Description": "Group members by accessibility (public first) before sorting alphabetically. Off by default — FreeCRM interleaves public/private in pure alphabetical order.",
+
+  "FreeCodeReorganizer.Settings.StaticMembersFirst.DisplayName": "Static members first",
+  "FreeCodeReorganizer.Settings.StaticMembersFirst.Description": "Within a kind group, place static members before instance members. Off by default to match FreeCRM (purely alphabetical).",
+
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName": "Collapse wrapped-parameter brace",
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description": "When a parameter list is wrapped across multiple lines, glue the closing ) and the body's opening { together as \"){\" on one line — the FreeCRM author's hand style.",
+
+  "FreeCodeReorganizer.Settings.MaxPercentReordered.DisplayName": "Max percent reordered",
+  "FreeCodeReorganizer.Settings.MaxPercentReordered.Description": "If sorting would move more than this percent (0..100) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 100 to always sort."
+}

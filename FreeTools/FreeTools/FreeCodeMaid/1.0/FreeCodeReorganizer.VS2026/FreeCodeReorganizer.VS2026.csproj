@@ -1,0 +1,36 @@
+<!--
+  FreeCodeReorganizer.VS2026 — the NATIVE Visual Studio 2026 front-end, built on the modern
+  VisualStudio.Extensibility (out-of-process) model. This is the "native to 2026" rebuild of the
+  classic VSIX in ../FreeCodeReorganizer:
+    * Settings are declared as native Setting.* contributions -> they appear in VS 2026's Unified
+      Settings UI with NO "not migrated" banner.
+    * The command uses the new async model + the Editor object model to read/replace the document.
+    * Runs OUT-OF-PROCESS, so the engine's bundled Roslyn can't conflict with Visual Studio's own.
+  The reorganize logic is reused unchanged from the shared FreeCodeReorganizer.Core engine.
+
+  Build (modern .NET; produces bin\Release\net8.0-windows8.0\FreeCodeReorganizer.VS2026.vsix):
+      dotnet build -c Release
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <RootNamespace>FreeCodeReorganizer.VS2026</RootNamespace>
+    <AssemblyName>FreeCodeReorganizer.VS2026</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The new-model SDK + build tooling (packs the .vsix). 17.x versioning even for VS 2026. -->
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The shared Roslyn reorganize engine (netstandard2.0) — reused as-is. -->
+    <ProjectReference Include="..\FreeCodeReorganizer.Core\FreeCodeReorganizer.Core.csproj" />
+  </ItemGroup>
+
+</Project>
