@@ -47,6 +47,24 @@
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A runtime C# compiler: at startup it reads `.cs`/`.plugin` files from `PluginFiles/`, compiles them with Roslyn, caches the assemblies in the `PluginCaches` table, and exposes the four plugin types (`Auth`, `BackgroundProcess`, `Example`, `UserUpdate`). External DLLs load via `.assemblies` manifests.
+
+**What tech & where?** [the Plugins project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.Plugins) (Roslyn + `Basic.Reference.Assemblies.Net100`).
+
+**Why does this exist?** So the example app can be extended without recompiling the core.
+
+**What does it beat?** Real runtime compilation with a **DB-cached** result (fast warm starts) and external-DLL support.
+
+**Terminology:** **Roslyn** — the official C# compiler as a library; **`.assemblies` manifest** — lists extra DLLs a plugin needs.
+
+**The hard part, drawn:**
+```
+  startup ─▶ read PluginFiles/*.cs/.plugin ─▶ Roslyn compile ─▶ cache in PluginCaches table
+        types: Auth · BackgroundProcess · Example · UserUpdate
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

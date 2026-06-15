@@ -131,3 +131,34 @@ Override built-in language tags or add custom ones in the `AppLanguage` dictiona
 ---
 
 *Part of the [FreeTools](https://github.com/WSU-EIT/FreeTools) suite — developed by [Enrollment Information Technology](https://em.wsu.edu/eit/meet-our-staff/) at Washington State University.*
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** FreeExamples is the **working sample app** of the FreeTools suite — a full FreeCRM-based Blazor app that the analysis tools target, and that demonstrates real patterns: multi-tenant data, plugins with runtime compilation, a background service, an API-key-protected external API with a matching NuGet client, SignalR, and an in-browser C#/Razor code playground.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| FreeCRM scaffold (Blazor WASM, .NET 10) | The host app | [the FreeExamples solution](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples) |
+| API-key middleware + NuGet client | A protected external API + its client library | [FreeExamples.NuGetClient/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.NuGetClient) |
+| Database migration tool | Same-schema DB copy | [FreeExamples.DatabaseMigration/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.DatabaseMigration) |
+
+**Why does this exist?** To be both the **default analysis target** for the FreeTools pipeline *and* a reference implementation of FreeCRM patterns developers can copy from.
+
+**What does it beat?** It bundles several **production patterns in one runnable app** — API-key auth + client library, a robust DB-migration tool, a code playground — rather than scattering them across separate samples.
+
+**Terminology & "can I see it?"**
+- **Reference implementation** — a complete, correct example you learn from.
+- *See it:* `dotnet run --project FreeExamples` → `https://localhost:7271`.
+
+**The hard part, drawn** — one sample app, many patterns:
+
+```
+  FreeExamples (FreeCRM scaffold)
+        ├─ multi-tenant · plugins (runtime compile) · background service · SignalR · code playground
+        ├─ API-key middleware ──▶ FreeExamples.NuGetClient (the consumer library)
+        └─ DatabaseMigration tool   ← the whole app is the FreeTools pipeline's default --target
+```

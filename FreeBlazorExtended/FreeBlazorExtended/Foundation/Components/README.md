@@ -24,3 +24,11 @@ Reusable UI primitives shared across FreeBlazorExtended feature folders and show
 
 - All components in this subtree use the `FreeBlazorExtended.Components` namespace.
 - These primitives are intended to stay generic so feature folders can compose them without bringing in feature-specific dependencies.
+
+---
+
+### 🧭 Plain-English Briefing — The Boss Questions
+
+**In one line:** this is the catalog of shared, generic UI building blocks (Cards, Feedback, Forms, Layout, Tables, namespace `FreeBlazorExtended.Components`) that the feature components compose so they don't each reinvent the basics.
+
+**Why it exists:** to keep one set of reusable, feature-agnostic primitives. **See the full picture** in the parent [Foundation README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Foundation/README.md); each subfolder (`Cards/`, `Tables/`, …) has its own brief below it.

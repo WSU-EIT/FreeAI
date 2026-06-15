@@ -41,6 +41,36 @@ Owns the database schema. `EFDataModel` is the `DbContext`; entity classes map o
 
 Part of the **FreeLLM** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library *defines the database*: the `EFDataModel` DbContext plus one entity class per table (users, tenants, departments, groups, settings, file storage, plugin cache). One model targets SQL Server, SQLite, MySQL, and PostgreSQL, with an in-memory option for testing.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core DbContext | The schema as `DbSet<T>` | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.EFModels/EFModels/EFDataModel.cs) |
+| 5 provider packages | One model, five engines | [the EFModels project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeLLM/FreeLLM.EFModels) |
+
+**Why does this exist?**
+One schema that runs on whatever database is already in place — no per-engine rewrite.
+
+**What does it accomplish that other tools don't?**
+- **Five engines from one model**, with zero-setup InMemory for first runs and tests.
+
+**Terminology & "can I see it?"**
+- **DbContext** — the C# object that represents the database and its tables.
+- **Entity** — a C# class mapped to one table.
+
+**The hard part, drawn** — one model, five databases:
+
+```
+  EFDataModel (DbContext)
+       └ DbSet ▶ User · Tenant · Department · UserGroup · Setting · FileStorage · PluginCache
+       └ providers ▶ SQL Server · SQLite · MySQL · PostgreSQL · InMemory
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

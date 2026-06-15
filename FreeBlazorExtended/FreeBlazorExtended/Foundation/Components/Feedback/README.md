@@ -15,3 +15,7 @@ Feedback-state components for loading, empty, success, and error scenarios.
 
 - These components are intended for consistent state messaging across dashboards, forms, and feature modules.
 - Keep caller-provided messages short so the components remain scannable and accessible.
+
+---
+
+### 🧭 Briefing — **In one line:** four state components — `LoadingSpinner` (with optional overlay), `EmptyState`, `SuccessMessage`, and `ErrorMessage` (title + details) — for consistent loading/empty/success/error UI across the app. **Why:** so every page signals state the same way. See the parent [Foundation Components README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Foundation/Components/README.md).

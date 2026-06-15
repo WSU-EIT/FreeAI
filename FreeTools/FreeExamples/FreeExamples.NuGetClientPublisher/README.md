@@ -102,6 +102,24 @@ dotnet user-secrets set "NuGet:ApiKey" "your-nuget-api-key"
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** An interactive console tool that packs and publishes the `FreeExamples.Client` NuGet package. It wraps `dotnet pack` / `dotnet nuget push` behind a menu, starts in **dry-run mode**, can look up existing versions on NuGet.org, and reads its config from `appsettings.json` + user secrets (API key never committed).
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.NuGetClientPublisher/Program.cs).
+
+**Why does this exist?** Publishing a package by hand is easy to get wrong; this makes the pack-and-push repeatable and safe (preview before you push).
+
+**What does it beat?** **Dry-run by default** and a version-lookup before pushing, so you don't accidentally publish or overwrite. (A near-twin of `FreeGLBA.NugetClientPublisher`.)
+
+**Terminology:** **Pack** — build the `.nupkg`; **push** — upload it to NuGet.org.
+
+**The hard part, drawn:**
+```
+  (dry-run ON) ─▶ Verify build ─▶ Pack (.nupkg) ─▶ look up live versions
+        toggle LIVE ─▶ Push to NuGet.org   (API key from user secrets)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

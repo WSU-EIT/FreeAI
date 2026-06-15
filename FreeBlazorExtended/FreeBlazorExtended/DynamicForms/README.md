@@ -45,3 +45,24 @@ The interactive demo lives at `/showcase/feature101-dynamic-forms` in the FreeBl
 
 ## Effort to integrate
 **S** — two C# files, three Razor components, one DI line, no external services or hub.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Forms are *data*, not code: a `FormDefinition` is a list of field definitions (type, label, validation rules, visibility conditions) stored as JSON. A builder UI defines them, a renderer fills them out at runtime, and a small expression evaluator shows/hides fields based on other fields' values — **no recompile to add a field**.
+
+**What tech & where?** [FormService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/DynamicForms/FormService.cs) (CRUD + validation + conditional-visibility engine) · [Components/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/DynamicForms/Components) (FormBuilder, DynamicFormRenderer, ConditionalField).
+
+**Why does this exist?** So non-developers (or per-tenant config) can define questionnaires/intake forms without a code change.
+
+**What does it beat?** Validation and conditional logic live **as data on each field**, so adding a field or a rule is a config edit, not a deployment. *(Honest: in-memory only — submissions are lost on restart until you add an EF `DbSet`.)*
+
+**Terminology:** **Conditional field** — a field whose visibility is computed from other fields' current values.
+
+**The hard part, drawn:**
+```
+  FormDefinition (JSON fields + rules) ─▶ DynamicFormRenderer
+        │ each field: validate by its own rules (min/max/regex as DATA)
+        ▼ ConditionalField consults the evaluator ─▶ show/hide based on other answers ─▶ submission
+```

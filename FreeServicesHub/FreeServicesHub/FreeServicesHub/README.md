@@ -69,6 +69,43 @@ The main SPA routes are served from `FreeServicesHub.Client` (see that project's
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the **hub** — the central server every agent reports to. It serves the Blazor dashboard, runs the SignalR hub agents connect to, and exposes the REST API for agent registration, heartbeat saving, and job dispatch. It authenticates agents with Bearer tokens (and users with OAuth/OIDC/local + LDAP), loads Roslyn plugins, runs an optional background processor, and includes a server-side agent monitor and a `/health` endpoint.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| SignalR hub | Receives heartbeats, pushes settings | [Hubs/signalrHub.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub/Hubs/signalrHub.cs) |
+| Agent REST API | Register / save-heartbeat / jobs | [Controllers/FreeServicesHub.App.API.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub/Controllers/FreeServicesHub.App.API.cs) |
+| Server-side agent monitor | Tracks which agents are reporting | [FreeServicesHub.App.AgentMonitorService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub/FreeServicesHub.App.AgentMonitorService.cs) |
+| Host wiring | DI, auth, SignalR, plugin loading | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub/Program.cs) |
+
+**Why does this exist?**
+A single server that securely accepts live telemetry from many agents, stores it, serves the real-time dashboard, and exposes the management API — the hub everything points at.
+
+**What does it accomplish that other tools don't?**
+- **Token-gated agent endpoints** — agents authenticate with a Bearer JWT issued at registration.
+- **Both transports** — SignalR for live heartbeats, plus HTTP endpoints so a disconnected agent can still deliver buffered snapshots.
+- **CI-friendly** — a `/health` endpoint returns `{ status, timestamp }` for readiness checks.
+
+**Terminology & "can I see it?"**
+- **Hub** (`freeserviceshubHub`) — the SignalR endpoint agents connect to.
+- **`Agents` group** — the SignalR group every connected agent joins, so the hub can broadcast to all of them.
+
+**The hard part, drawn** — the receive-and-serve side:
+
+```
+  Agents ──SignalR SendHeartbeat──▶ signalrHub ─┐
+  Agents ──HTTP /SaveHeartbeat (fallback)──────▶ ├─▶ DataAccess.SaveHeartbeat ─▶ EF Core
+                                                 │        │
+  AgentMonitorService watches for silent agents ─┘        ▼
+  Browser dashboard ◀── SignalR live updates ──── /AgentDashboard reflects the whole fleet
+  /RegisterAgent (issue Bearer JWT)   ·   /api/agent/jobs (queue Ping / CollectStats)   ·   /health
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

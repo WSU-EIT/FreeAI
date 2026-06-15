@@ -69,6 +69,41 @@ All routes support an optional `/{TenantCode}/` prefix.
 | Target Framework | `net10.0` |
 | Output Type | WebAssembly browser application |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser-side UI, all in C#/WebAssembly. A singleton `BlazorDataModel` holds the app state (current user, tenant, settings) and notifies every page via `OnChange`; `Helpers.GetOrPost<T>` makes the typed API calls. A standout real feature: a `DynamicBlazorSupport` subsystem compiles Blazor *plugin* components **in the browser** with Roslyn, backed by an in-memory virtual filesystem. (The Smartsheet inventory pages themselves aren't built yet — see the [top-level status](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/README.md).)
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WebAssembly (.NET 10) | C# UI in the browser | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Client/Program.cs) |
+| API client + SignalR helpers | Every server call + live updates | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Client/Helpers.cs) |
+| In-browser Roslyn compiler | Compile plugin components at runtime | [DynamicBlazorSupport/CompilationService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Client/DynamicBlazorSupport/CompilationService.cs) |
+
+**Why does this exist?**
+A complete multi-tenant admin UI you get for free, client-rendered (cheap to host), ready to host the Smartsheet inventory screens once the data layer exists.
+
+**What does it accomplish that other tools don't?**
+- **In-browser compilation** of plugin UI — write a `.razor` plugin and it renders without a server round-trip or rebuild.
+- Optional **precompile-on-load** of all plugin components for snappier first use.
+- Every route works with or without a `/{TenantCode}` prefix.
+
+**Terminology & "can I see it?"**
+- **State bag** (`BlazorDataModel`) — one shared object every page reads/writes.
+- **Virtual filesystem** — an in-memory stand-in for files the browser compiler needs.
+
+**The hard part, drawn** — compiling a plugin component in the browser:
+
+```
+  .razor plugin ─▶ VirtualProjectFileSystem (in-memory) ─▶ CompilationService (Roslyn in WASM)
+                                                              ▼
+                                                     rendered inline — no server, no rebuild
+  (page interactions) You ─▶ *.razor ─▶ Helpers.GetOrPost<T> ─HTTP─▶ server API ─▶ DB
+                                          └ BlazorDataModel.OnChange keeps the UI in sync
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -71,6 +71,44 @@ None — this project has no local project references. It is a standalone class 
 | NuGet Package ID | `FreeGLBA.Client` |
 | Current Version | `1.1.0` |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the **published `FreeGLBA.Client` NuGet package** — the drop-in library external apps add to report access events. It wraps the FreeGLBA REST API in a typed `GlbaClient`: set an endpoint + API key, then call `LogAccessAsync` (or convenience methods like `LogViewAsync`, `LogExportAsync`, `LogBulkViewAsync`). It handles the `Bearer` header, automatic exponential-backoff retry on transient 5xx errors, typed exceptions, and DI registration.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Typed HTTP client | All the log/query methods | [GlbaClient.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.NugetClient/GlbaClient.cs) |
+| DI registration | `AddGlbaClient(options => …)` with `HttpClientFactory` | [Extensions/ServiceCollectionExtensions.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.NugetClient/Extensions/ServiceCollectionExtensions.cs) |
+| SourceLink | Step into package source while debugging | [GlbaClient.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.NugetClient/GlbaClient.cs) |
+
+**Why does this exist?**
+So an integrating team doesn't hand-roll HTTP calls, retries, and error handling. `dotnet add package FreeGLBA.Client` and one method call makes any .NET app GLBA-compliant.
+
+**What does it accomplish that other tools don't?**
+- **Typed exceptions** (`GlbaAuthenticationException`, `GlbaValidationException`, `GlbaDuplicateException`) so callers handle failures precisely.
+- **Fire-and-forget option** (`TryLogAccessAsync` returns `false` instead of throwing) for paths that must never break on a logging hiccup.
+- **Batch + bulk** helpers and built-in **retry** — production-grade, not a sample.
+
+**Terminology & "can I see it?"**
+- **NuGet package** — a shareable, versioned .NET library (`FreeGLBA.Client`, currently 1.1.0).
+- **Exponential backoff** — retry after 1s, 2s, 4s… so a brief server blip self-heals.
+
+**The hard part, drawn** — one call, with retry and typed failures:
+
+```
+  your app ─▶ GlbaClient.LogAccessAsync(event)
+                 │ add Bearer {api-key}  ·  POST /api/glba/events
+                 ▼
+            transient 5xx? ──▶ retry (backoff, default 3×) ──┐
+                 │ success                                    │ still failing
+                 ▼                                            ▼
+            returns EventId                         throws typed exception
+                                                    (or TryLog… returns false)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -42,3 +42,22 @@ The interactive demo lives at `/showcase/feature103-calendar` in the FreeBlazorE
 
 ## Effort to integrate
 **S** — two C# files, one DI line, no Razor components to wire, no external services.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A service that stores events and answers "what's happening between these two dates?" — expanding recurrence rules (daily/weekly/monthly/yearly, with an `Until` date or a `Count` cap) on demand and flagging same-resource conflicts. In-memory today.
+
+**What tech & where?** [CalendarEventService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Calendar/CalendarEventService.cs) (range queries, recurrence, conflicts) · [CalendarEvent.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Calendar/CalendarEvent.cs) (the models).
+
+**Why does this exist?** To get recurring events and conflict detection without pulling in a heavyweight third-party calendar library.
+
+**What does it beat?** Recurrence is **expanded on demand within the window you ask for** (not pre-materialized), and it detects resource double-booking — with soft-delete so history stays intact. *(Honest: ships no Razor UI — render inline; no iCal import/export; in-memory only.)*
+
+**Terminology:** **Recurrence expansion** — turning one "every Monday" rule into the individual dated occurrences inside a date range.
+
+**The hard part, drawn:**
+```
+  query(range) ─▶ expand each recurrence rule INTO that window ─▶ check same-resource overlaps ─▶ events (+ conflicts)
+```

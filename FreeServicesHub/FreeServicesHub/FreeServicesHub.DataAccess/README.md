@@ -59,6 +59,40 @@ Supported database back-ends: SQL Server, SQLite, MySQL, PostgreSQL, InMemory (f
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The server-side data layer. Beyond the usual FreeCRM duties (EF Core over 5 engines, auth, JWT, PDF), it owns the **fleet-monitor data**: registering agents and tracking their status/last-heartbeat, persisting each `AgentHeartbeat` (CPU/RAM/disk + service-info JSON), validating one-time registration keys (SHA-256 hashed) and issuing API tokens, and dispatching `HubJob` records that agents poll for.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Heartbeat storage | Persist each agent snapshot | [FreeServicesHub.App.DataAccess.Heartbeats.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataAccess/FreeServicesHub.App.DataAccess.Heartbeats.cs) |
+| Agent registration + tokens | Validate keys, issue Bearer tokens | [FreeServicesHub.App.DataAccess.Registration.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataAccess/FreeServicesHub.App.DataAccess.Registration.cs) |
+| Agent management | List/status/last-heartbeat | [FreeServicesHub.App.DataAccess.Agents.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataAccess/FreeServicesHub.App.DataAccess.Agents.cs) |
+| EF Core core | All other DB I/O across 5 engines | [DataAccess.App.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.DataAccess/DataAccess.App.cs) |
+
+**Why does this exist?**
+To keep all the monitoring logic — *what a valid registration is, how heartbeats are stored, how jobs are dispatched* — in one server-only layer, so the hub controllers and the dashboard stay thin.
+
+**What does it accomplish that other tools don't?**
+- **Hashed one-time registration keys** (SHA-256) — the key isn't stored in the clear, and a token replaces it after enrollment.
+- **Time-series heartbeat storage** ready for charting, plus a job queue for two-way agent control.
+- One code path across **five** database engines.
+
+**Terminology & "can I see it?"**
+- **`AgentHeartbeat`** — one stored snapshot row (CPU/RAM/disk).
+- **Registration key** — a one-time secret an agent uses to enroll, stored only as a hash.
+
+**The hard part, drawn** — enroll once, then stream heartbeats:
+
+```
+  agent ─▶ Registration: validate one-time key (compare SHA-256) ─▶ issue ApiClientToken
+  agent ─▶ Heartbeats:   save AgentHeartbeat (CPU/RAM/disk + service JSON) · update Agent.LastHeartbeat
+  hub   ─▶ Jobs:         queue HubJob ─▶ agent polls ─▶ status: queued → assigned → complete
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

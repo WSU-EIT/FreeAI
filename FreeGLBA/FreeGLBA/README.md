@@ -72,6 +72,42 @@ Standard platform pages (login, settings, users, departments, etc.) are inherite
 | Target Framework | `net10.0` |
 | Output Type | Web executable |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The web server. It serves the Blazor dashboard, but its compliance-critical job is the **GLBA ingestion API**: a middleware checks every incoming event's `Authorization: Bearer` API key against the registered source systems, then the controller hands the event to the data layer to validate, de-duplicate, and store. It also runs SignalR (live dashboard), loads Roslyn plugins, and exposes OpenAPI docs (Scalar) in development.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| API-key middleware | Authenticate each source system | [FreeGLBA.App.ApiKeyMiddleware.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA/Controllers/FreeGLBA.App.ApiKeyMiddleware.cs) |
+| GLBA event endpoints | `POST events` / `events/batch` / `stats` | [FreeGLBA.App.GlbaController.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA/Controllers/FreeGLBA.App.GlbaController.cs) |
+| Host wiring | DI, auth, SignalR, OpenAPI (Scalar) | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA/Program.cs) |
+
+**Why does this exist?**
+A single host that securely *receives* events from many external systems, serves the live dashboard, and exposes the reports — the compliance hub everything else points at.
+
+**What does it accomplish that other tools don't?**
+- **Per-source-system API keys** validated in middleware *before* the controller runs — unregistered callers never touch the data layer.
+- **Batch ingestion** (up to 1,000 events) and **two auth modes**: API key for ingestion, user JWT for the dashboard.
+- Built-in **Scalar OpenAPI** docs at `/scalar/glba-api` for integrators.
+
+**Terminology & "can I see it?"**
+- **Middleware** — code that runs on every request before the controller (here, the API-key check).
+- **Bearer token** — the API key sent in the `Authorization` header.
+
+**The hard part, drawn** — the guarded ingestion path:
+
+```
+  POST /api/glba/events   (Authorization: Bearer {api-key})
+        │
+        ▼  ApiKeyMiddleware  ── not a registered Source System? ──▶ 401 Unauthorized
+        │  registered ✓ (attaches SourceSystem to the request)
+        ▼  GlbaController.PostEvent ──▶ DataAccess.ProcessGlbaEventAsync ──▶ EF Core
+        └──────────────────────────────────────────────────────────▶ SignalR → live dashboard
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

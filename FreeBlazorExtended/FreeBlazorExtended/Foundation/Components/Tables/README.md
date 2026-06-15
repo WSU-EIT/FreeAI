@@ -16,3 +16,7 @@ Composable table primitives for selection, expansion, pagination, visibility, an
 
 - These components are intended to compose together through shared options and caller-managed data.
 - `DataTableOptions.cs` in the Foundation root holds the common configuration model for this area.
+
+---
+
+### 🧭 Briefing — **In one line:** five composable table parts — `DataTable` (generic table with search), `TablePagination`, `ColumnSelector` (toggle columns), `ExpandableRows`, and `BulkActions` (act on selected rows) — wired together through shared `DataTableOptions` and caller-owned data. **Why:** so any list view gets selection/expansion/paging without rebuilding a grid. See the parent [Foundation Components README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Foundation/Components/README.md).

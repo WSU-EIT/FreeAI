@@ -66,6 +66,37 @@ A `HelloWorld.plugin` / `HelloWorld.dll` pair demonstrates external assembly loa
 | Implicit usings | enabled |
 | User Secrets ID | `e534f0ca-6a41-412e-bea9-d68886a17773` |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The web host that runs **both** plugin systems. At startup it compiles the file-based plugins in the `Plugins/` folder with Roslyn, and loads the compiled NuGet plugins through the integration bridge. A background processor fires `BackgroundProcess` plugins on a timer, and a custom authentication handler defers logins to `Auth` plugins.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Plugin interface definitions (host) | The contracts the host invokes | [PluginsInterfaces.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins/PluginsInterfaces.cs) |
+| Roslyn file-plugin runtime | Compiles `Plugins/*.cs` at startup | [FreePlugins.Plugins/Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Plugins/Plugins.cs) |
+| Bundled example plugins | Ready-made `.cs` plugins to study | [the host project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins) (`Plugins/Example1.cs`, etc.) |
+
+**Why does this exist?** One host that can load every plugin style — so the workspace can demonstrate file-based, compiled, and external-DLL plugins together.
+
+**What does it accomplish that other tools don't?**
+- Runs **file-based + compiled + external-DLL** plugins in the same app.
+- A **background processor** that drives `BackgroundProcess` plugins on a configurable interval, and an **auth handler** that delegates login to `Auth` plugins.
+
+**Terminology & "can I see it?"**
+- **Background processor** — the timer-driven host service that runs background plugins.
+- **`.assemblies` sidecar** — a file listing external DLLs a `.plugin` needs (see the bundled `HelloWorld` pair).
+
+**The hard part, drawn** — startup loads everything, then runs it:
+
+```
+  startup ─▶ Roslyn-compile Plugins/*.cs (+ HelloWorld.dll via .assemblies)
+          ─▶ LoadCompiledPlugins() pulls in NuGet plugins (integration bridge)
+        BackgroundProcessor (timer) ─▶ fires BackgroundProcess plugins each tick
+        CustomAuthenticationHandler ─▶ delegates Login/Logout to Auth plugins
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

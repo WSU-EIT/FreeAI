@@ -117,3 +117,23 @@ authoring environment). Treat the following as "verify in VS":
 | `FreeCodeReorganizerPackage.cs` | `AsyncPackage` entry point; registers commands + the options page. |
 | `Commands/ReorganizeDocumentCommand.cs` | Reads the active buffer, runs the engine, replaces the text. |
 | `Options/GeneralOptions.cs` | Tools > Options model; builds a `ReorderConfig`. |
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The Visual Studio extension (VSIX) front-end. It adds a **Reorganize Document** command (default `Ctrl+K, Ctrl+R`, plus Edit-menu and right-click) that reads the active C# buffer, runs the shared `FreeCodeReorganizer.Core` engine, and replaces the text — alphabetizing members and restoring the wrapped-parameter `){` brace, with hard safety rails that abort if a member would be dropped or a syntax error introduced.
+
+**What tech & where?** [the VSIX project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer) (`AsyncPackage` + `VSCommandTable.vsct` + the Core engine; Community.VisualStudio.Toolkit).
+
+**Why does this exist?** So the reorganizer is one keystroke away in the editor — the "install it like CodeMaid" experience — rather than a separate CLI run.
+
+**What does it beat?** It's a **minimal, safe** reorganize (comments and blank-line grouping preserved; only rewrites a type when order actually changes) with a *Tools → Options* page mapping directly to the engine's `ReorderConfig`.
+
+**Terminology:** **Experimental Instance** — the sandboxed VS hive F5 launches for testing the extension. **Chord** — the two-key shortcut `Ctrl+K, Ctrl+R`.
+
+**The hard part, drawn:**
+```
+  Ctrl+K, Ctrl+R ─▶ read active .cs buffer ─▶ FreeCodeReorganizer.Core.Run() ─▶ replace text
+        engine aborts if a member would vanish / syntax breaks ─▶ status bar reports the result
+```

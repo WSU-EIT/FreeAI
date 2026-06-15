@@ -50,6 +50,38 @@ xUnit integration tests that start the hub server in-process (using `WebApplicat
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+xUnit integration tests that boot the **whole hub in-process** (`WebApplicationFactory<Program>` with an InMemory database) and exercise the real HTTP and SignalR API end-to-end: register an agent, send a heartbeat with a Bearer token, verify it's stored; connect to the SignalR hub and send a heartbeat that way; run the full job lifecycle; and confirm tenants can't see each other's data.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| In-process hub (`WebApplicationFactory`) | Run the real server in a test | [HeartbeatTests.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.Tests.Integration/HeartbeatTests.cs) |
+| SignalR client tests | Exercise the live hub channel | [SignalRTests.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.Tests.Integration/SignalRTests.cs) |
+
+**Why does this exist?**
+To prove the agent↔hub contract actually works through the real HTTP/SignalR stack — registration, auth, heartbeat persistence, jobs, tenant isolation — not just unit-tested in isolation.
+
+**What does it accomplish that other tools don't?**
+- **End-to-end** coverage of both transports (REST *and* SignalR) against the real server, with an InMemory DB so no setup is needed.
+- Explicit **tenant-isolation** and **auth (401)** tests — the security-critical paths get their own checks.
+
+**Terminology & "can I see it?"**
+- **Integration test** — exercises multiple layers together (vs. one unit in isolation).
+- **`WebApplicationFactory`** — spins the ASP.NET app up inside the test process.
+
+**The hard part, drawn** — the real stack under test:
+
+```
+  xUnit test ─▶ HubFixture starts the hub in-process (WebApplicationFactory + InMemory DB, seeded key)
+        ├─ HTTP: register agent ─▶ POST heartbeat (Bearer) ─▶ assert persisted
+        ├─ SignalR: connect /freeserviceshubHub ─▶ join "Agents" ─▶ SendHeartbeat ─▶ assert
+        └─ assert: unauth ⇒ 401  ·  tenant A can't see tenant B  ·  job queue→assign→complete
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

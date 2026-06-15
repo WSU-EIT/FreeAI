@@ -65,3 +65,23 @@ Call `_palette.Open()` / `_palette.Close()` to drive it programmatically (e.g. f
 
 ## Effort to integrate
 **S** — drop the folder in, supply a `List<CommandItem>`, wire `OnCommandInvoked`.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The VS Code / Spotlight "Ctrl+K to do anything" palette. You hand it a list of `CommandItem`s; it shows a search overlay that filters and groups them by category, supports arrow-key navigation + Enter, and remembers recent picks. A tiny JS file wires the global hotkey so the palette is always one keystroke away.
+
+**What tech & where?** [CommandPalette.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/CommandPalette/CommandPalette.razor) (the UI) · [CommandPalette.razor.js](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/CommandPalette/CommandPalette.razor.js) (35-line global keydown listener).
+
+**Why does this exist?** To give any app a universal "what do you want to do?" launcher — reusable and generic over the caller's own commands.
+
+**What does it beat?** The caller owns routing (`OnCommandInvoked`), and the hotkey works as **Ctrl on Windows/Linux and Cmd on macOS** with no config. *(Honest: substring match, not fuzzy ranking; recent-history is in-memory.)*
+
+**Terminology:** **`CommandItem`** — one entry (label, category, icon, id) you supply to the palette.
+
+**The hard part, drawn:**
+```
+  Ctrl/Cmd+K (JS sidecar) ─▶ open overlay ─▶ filter+group your CommandItems ─▶ arrows+Enter ─▶ OnCommandInvoked(item)
+                                                                                  └─ you route it
+```

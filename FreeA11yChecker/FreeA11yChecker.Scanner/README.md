@@ -58,6 +58,56 @@ None — this library has no project references.
 |---|---|
 | `Microsoft.Playwright` | Headless browser automation (Chromium via Microsoft Edge) |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library is the engine room. It exposes one static class, `ScannerEngine`, with three entry points — scan all sites, one site, or one page. For each page it runs a ~26-step pipeline: launch a real browser with Playwright, log in if credentials are supplied (then *save the login cookies so later pages skip the login*), load the page and wait for it to fully render, run the four accessibility engines, merge their output with `ConsensusScorer`, and capture overlays, 7 color-blindness simulations, and a screen-reader view. It writes nothing to a database — it hands a `PageScanResult` back to whoever called it (the web app stores it; the CLI writes it to disk).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Playwright (headless Edge) | Drives the real browser | [ScannerEngine.cs#L37-L42](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ScannerEngine.cs#L37-L42) |
+| Storage-state auth reuse | Log in once per crawl, not once per page | [ScannerEngine.cs#L91-L130](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ScannerEngine.cs#L91-L130) |
+| axe-core / IBM / HTML CodeSniffer / HtmlChecker | The four engines | [AxeCoreRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/AxeCoreRunner.cs) · [IbmEqualAccessRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/IbmEqualAccessRunner.cs) · [HtmlCodeSnifferRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/HtmlCodeSnifferRunner.cs) · [HtmlChecker.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/HtmlChecker.cs) |
+| Consensus scoring | Reconcile + rank the four engines | [ConsensusScorer.cs#L75-L156](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ConsensusScorer.cs#L75-L156) |
+| CVD simulation (SVG filters) | 7 color-blindness renderings | [CvdSimulator.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/CvdSimulator.cs) |
+| Markdown report generation | Per-page / site / run reports | [ReportGenerator.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ReportGenerator.cs) |
+
+**Why does this exist?**
+So the *exact same* scanning logic powers both the website and the command-line tool. By keeping zero dependency on the database or web host, one well-tested engine produces identical results whether a developer runs it locally or the server runs it on a schedule.
+
+**What does it accomplish that other tools don't?**
+- It runs four engines and reconciles their different "languages" — each tool names the same rule differently (`img-alt`, `H37`, `img_alt_missing` all mean *missing alt text*) — into one canonical, confidence-ranked list. See the normalization map at the top of `ConsensusScorer.cs`.
+- Real browser, real rendering: it waits for Blazor/SPA pages to hydrate before checking, so it audits what users actually see, not raw HTML.
+- It captures the visual evidence (overlays, CVD, screen-reader view) in the same pass.
+
+**Terminology & "can I see it?"**
+- **Pipeline** — the ordered ~26 steps `ScanPage` runs per page (heavily commented in [ScannerEngine.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ScannerEngine.cs)).
+- **Storage state** — Playwright's saved cookies/localStorage; saved after a successful login and reused so a 5-page crawl logs in once, not five times.
+- **Canonical rule ID** — the single ID all four engines' findings get mapped to.
+
+**The hard part, drawn** — four engines, four vocabularies, one ranked list:
+
+```
+ ScannerEngine.ScanPage(page)
+        │ navigate → wait for hydration → capture the live DOM
+        ▼
+ ┌──────────── the SAME DOM handed to all four engines ─────────────┐
+ │  axe-core      IBM Equal     HTML CodeSniffer     HtmlChecker     │
+ │     │              │                │                  │          │
+ │  issues         issues           issues            issues        │  each with its OWN rule IDs
+ └─────┴──────────────┴────────────────┴──────────────────┴─────────┘
+                        │  ConsensusScorer.Merge(axe, htmlcheck, htmlcs, ibm)
+                        ▼
+   1) NormalizeRuleId():  "img-alt" · "...H37" · "img_alt_missing"  →  "image-alt"
+   2) group by canonical id  →  tools that AGREE = consensus count
+   3) confidence = agree ÷ (tools that COULD check this rule)
+   4) sort by: confidence ↓, then severity ↓, then instance-count ↓
+                        ▼
+        A11yPageSummary.RankedRules  ──▶  returned to caller (web stores it / CLI writes it)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

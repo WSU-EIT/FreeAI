@@ -43,6 +43,37 @@ None — this project has no local project references.
 | Target Framework | `net10.0` |
 | Output Type | Class Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A **runtime C# compiler**. At startup it scans `PluginFiles/` for `.cs` and `.plugin` files, compiles each in-memory with Roslyn, and exposes `ExecuteDynamicCSharpCode<T>()` to invoke plugin methods on demand. It supports external DLLs via `.assemblies` sidecars, Blazor UI plugins (`.razor` files sent to the browser for in-browser compilation), and AES-encrypts plugin code marked `ContainsSensitiveData = true` before it leaves the server.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Roslyn (`Microsoft.CodeAnalysis.CSharp`) | Compile plugin C# at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Plugins/Plugins.cs) |
+| `Basic.Reference.Assemblies.Net100` | .NET 10 reference assemblies for the compile | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Plugins/Plugins.cs) |
+
+**Why does this exist?**
+So one deployment can be extended per-customer — including custom Smartsheet reporting widgets once that integration lands — without forking or redeploying the core app.
+
+**What does it accomplish that other tools don't?**
+- **Real compilation at runtime** for five plugin types (`Auth`, `BackgroundProcess`, `UserUpdate`, `Example`, `Blazor`).
+- Blazor UI plugins compiled **in the browser**; sensitive code AES-protected; external DLLs via sidecars.
+
+**Terminology & "can I see it?"**
+- **Roslyn** — the official C# compiler exposed as a library.
+- **Sidecar** — a `.assemblies` file listing extra DLLs a plugin needs.
+
+**The hard part, drawn** — source files become live plugins:
+
+```
+  startup ─▶ Plugins.Load("PluginFiles/") ─▶ Roslyn compile .cs/.plugin (+ .assemblies sidecars)
+        Blazor (.razor) plugins ─▶ sent to the browser for in-browser compile
+        ContainsSensitiveData ─▶ AES-encrypt before sending  ;  ExecuteDynamicCSharpCode<T>() runs a method
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

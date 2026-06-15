@@ -67,6 +67,38 @@ Set `"DatabaseType"` in `appsettings.json` to `SqlServer`, `MySQL`, `PostgreSQL`
 | Target framework | `net10.0` |
 | Output type | Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library *defines the database*: the `EFDataModel` DbContext, the core FreeCRM tables, **plus the App Builder tables** — `FMProject` (a saved project), `FMAppFile`/`FMAppFileVersion` (generated source files with version history), and `FMBuild` (an export/build record). One model targets five database engines.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core DbContext | The schema (core + App Builder tables) | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.EFModels/EFModels/EFDataModel.cs) |
+| 5 provider packages | One model, five engines | [the EFModels project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeManager/FreeManager.EFModels) |
+
+**Why does this exist?**
+One schema that runs on whatever database is in place — and that stores the App Builder's projects and generated files alongside the platform tables.
+
+**What does it accomplish that other tools don't?**
+- **Versioned storage of generated files** (`FMAppFileVersion`) — the output of code generation is tracked, not just dumped to disk.
+- **Five engines from one model**, InMemory included for tests.
+
+**Terminology & "can I see it?"**
+- **DbContext** — the C# object representing the database and its tables.
+- **`FM*` tables** — the App Builder's own storage (Projects, Files, Builds).
+
+**The hard part, drawn** — platform tables + the App Builder's own store:
+
+```
+  EFDataModel (DbContext)
+       └ core ▶ User · Tenant · Department · Setting · FileStorage · PluginCache
+       └ App Builder ▶ FMProject · FMAppFile / FMAppFileVersion (gen'd files + history) · FMBuild
+       └ providers ▶ SQL Server · MySQL · PostgreSQL · SQLite · InMemory
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

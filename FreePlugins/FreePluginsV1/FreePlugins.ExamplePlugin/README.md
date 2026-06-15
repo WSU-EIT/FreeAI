@@ -97,3 +97,25 @@ builder.Services.AddPluginsFromAssembly(typeof(AllPromptsPlugin).Assembly);
 ## Source
 
 This plugin is a compiled version of the file-based `Example1.cs` plugin, demonstrating how to convert existing plugins to the NuGet-based architecture.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The "kitchen-sink" compiled plugin: it declares **all 16 prompt types**, a button callback, dynamically-loaded select options, conditional field visibility (a checkbox reveals the hidden fields), and file upload with base64 decoding. On Execute it echoes everything entered.
+
+**What tech & where?** [the ExamplePlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.ExamplePlugin) (`AllPromptsPlugin`, implementing `IPlugin` from the Abstractions SDK).
+
+**Why does this exist?** As the copy-paste reference for authoring a compiled plugin — it shows every capability of the prompt system in one place.
+
+**What does it beat?** It exercises **the entire prompt API** (all 16 types + callbacks + conditional visibility) — the most complete single example of the system.
+
+**Terminology:** **Prompt** — an input the plugin asks for before running; **conditional visibility** — fields that appear based on another field's value.
+
+**The hard part, drawn:**
+```
+  register AddPlugin<AllPromptsPlugin>() ─▶ host renders Button + Checkbox
+        check the box ─▶ all 16 hidden prompts appear (date, file, multiselect, …)
+        Button1 ─▶ callback   ·   SelectFromFunction ─▶ options loaded dynamically
+        Execute ─▶ PluginResult echoing every value
+```

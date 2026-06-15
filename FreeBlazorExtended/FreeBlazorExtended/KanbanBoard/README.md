@@ -87,3 +87,26 @@ React-style. The component is a pure projection of `Cards` + `Columns`:
 
 ## Effort to integrate
 **L** — one Razor file, three public nested types, one `_Imports` line. No JS, no services, no migrations. The "L" reflects the SignalR refactor and the controlled-component contract: the caller must implement the `Cards` mutation logic in `OnCardMoved` themselves; nothing happens automatically.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A Trello/Jira-style drag-and-drop board. When you drop a card, the component doesn't move it — it *announces* the move via `OnCardMoved`. Your page decides what to do (save, sync, re-order) and hands back an updated `Cards` list to redraw. This "the board reports, you decide" design is a **controlled component**. Uses HTML5-native drag-and-drop (no JavaScript), with built-in search and WIP limits.
+
+**What tech & where?** One file — [KanbanBoard.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/KanbanBoard/KanbanBoard.razor) (HTML5 `draggable` attributes surfaced as C# callbacks; zero NuGet packages).
+
+**Why does this exist?** Teams wanted a board inside their own Blazor apps without a heavy third-party widget or writing JavaScript.
+
+**What does it beat?** Commercial board widgets own their data and bury you in sync callbacks. This one is deliberately **stateless about your data** — your `Cards` list is the single source of truth, so it can never silently drift out of sync with your database or other users' screens.
+
+**Terminology:** **Controlled component** — it renders what you give it and raises events; it never mutates your data. **`OnCardMoved`** — the event carrying `{ CardId, From, To, NewSortOrder }`.
+
+**The hard part, drawn:**
+```
+  you drag a card ─▶ HTML5 drop event (C# callback) ─▶ KanbanBoard fires OnCardMoved {Card, From, To, Sort}
+        │                                                          │ board does NOT move the card
+        │ 5. board re-renders from the NEW list                    ▼
+        └──────── YOUR page: update card.Column · renumber · persist · (optional) SignalR broadcast
+                            then pass the new Cards list back ─────┘   (Cards is the single source of truth)
+```

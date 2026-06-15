@@ -467,3 +467,49 @@ FreeServices/
 **FreeServices** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeServices/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** FreeServices is a toolkit for building, deploying, and managing **background services across Windows, Linux, and macOS from one C# codebase**. The *same compiled binary* runs as a console app, a Windows Service (`sc.exe`), a Linux systemd daemon, or a macOS launchd agent — the host picks the right mode by detecting the OS at startup. An **Installer** (with identical interactive-menu and CLI interfaces) builds, installs, starts/stops, and removes the service on any OS; a **TestMe** harness automates the full lifecycle; and an **Azure DevOps pipeline** proves it runs on all three OSes in parallel.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Cross-platform Generic Host | Auto-detect OS → right service mode | [FreeServices.Service/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Service/Program.cs) |
+| The example service | A system monitor (replace with your logic) | [SystemMonitorService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Service/SystemMonitorService.cs) |
+| Installer (dual CLI/menu) | Build / install / start / stop / remove | [FreeServices.Installer/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Installer/Program.cs) |
+| Platform-aware config defaults | Pick runtime + paths per OS | [InstallerConfig.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Installer/InstallerConfig.cs) |
+| Integration test harness | Prove the full lifecycle works | [FreeServices.TestMe/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.TestMe/Program.cs) |
+
+**Why does this exist?** Deploying a background service used to mean: publish by hand, RDP/SSH into the box, run platform-specific commands (`sc.exe`/`systemctl`/`launchctl`) from memory, and *hope* — with no CI proof it even starts. FreeServices makes every step programmable, cross-platform, and pipeline-verifiable.
+
+**What does it accomplish that other tools don't?**
+- **One binary, three OS service managers**, chosen automatically — no per-platform code.
+- **Dual interface that's truly identical**: the interactive menu and the CLI flags call the *same* `RunAction()` with the same config, so a developer's local menu and a pipeline's headless command behave the same.
+- **A pipeline that proves it**: builds, launches, verifies heartbeat output, and tears down on Windows + Linux + macOS in parallel.
+
+**Terminology & "can I see it?"**
+- **Windows Service / systemd / launchd** — the three OSes' ways of running a background process.
+- **Generic Host / `BackgroundService`** — .NET's standard model for a long-running service.
+- **`RunAction()`** — the one dispatcher both the menu and the CLI call.
+
+**The hard part, drawn** — one codebase, three platforms, one install command:
+
+```
+  FreeServices.Service (one binary)
+        ▼ Program.cs detects the OS at startup
+   Windows ─▶ AddWindowsService()  (sc.exe / SCM)
+   Linux   ─▶ AddSystemd()         (systemd unit, sd_notify READY)
+   macOS   ─▶ ConsoleLifetime      (launchd plist, KeepAlive)
+        ▲ your ExecuteAsync() loop is IDENTICAL in all modes
+   ───────────────────────────────────────────────────────────────
+   Installer.RunAction("deploy")  ─▶ build → install (sc.exe | systemctl | launchctl) → start
+        menu option 2  ≡  `dotnet run -- deploy`  (same code, same output)
+```
+
+## ⓘ Briefing note
+
+*The boss-questions briefing is above; the full architecture, prototype history, pipeline details, and platform tables are documented earlier in this README.*

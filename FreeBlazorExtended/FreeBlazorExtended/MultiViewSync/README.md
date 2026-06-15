@@ -100,3 +100,27 @@ The interactive demo lives at `/showcase/feature102-multi-view-sync` in the Free
 
 ## Effort to integrate
 **S** — both the service and the hub now ship with the feature. A real-world deployment still needs client `HubConnection` wiring, EF persistence, and auth on the audience-join path.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A "presenter drives many screens" system — like ProPresenter. One **presenter** ("Master") controls a session (active item, blank-screen toggle, hidden-text reveal); many **audience** browsers ("Slaves") join the session over SignalR and re-render instantly when the presenter changes something.
+
+> **Honest status:** the session state machine and the `PresentationHub` are real and mapped, but the *showcase page is single-process* and doesn't wire a `HubConnection`, so the demo only proves the in-memory state machine. Real use also needs `[Authorize]` on `JoinSession` (currently anyone who knows a session ID can subscribe).
+
+**What tech & where?** [RealtimeSyncService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/MultiViewSync/RealtimeSyncService.cs) (session state) · [PresentationHub.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/MultiViewSync/PresentationHub.cs) (SignalR, group-per-session, Master/Slave gating).
+
+**Why does this exist?** For synchronized multi-screen experiences (lyrics/slides/kiosks) driven from one control surface.
+
+**What does it beat?** Per-session SignalR groups + Master/Slave roles are built in — you wire the `HubConnection` and it just syncs.
+
+**Terminology:** **Master/Slave** — the presenter vs. the audience views. **Session group** — the SignalR group all of one session's screens share.
+
+**The hard part, drawn:**
+```
+  Presenter (Master) ─▶ SetActiveItem ─▶ PresentationHub (session group)
+                                              │ broadcast
+                                              ▼
+        Audience screens (Slaves) ─ ActiveItemChanged / SessionUpdated ─▶ all re-render together
+```

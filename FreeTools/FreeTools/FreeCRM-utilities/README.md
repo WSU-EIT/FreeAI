@@ -107,3 +107,23 @@ The fork process:
 
 - [FreeCRM Repository](https://github.com/WSU-EIT/FreeCRM)
 - See PROJECT.md for more context on how these fit into the FreeManager workflow
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The Windows tools that *forking* a FreeCRM project relies on: `Rename FreeCRM.exe` (renames all namespaces/files), `Remove Modules from FreeCRM.exe` (strips optional modules), and an all-in-one `Fork-FreeCRM.ps1` script (clone → remove → rename → output) with a `.cmd` wrapper.
+
+**What tech & where?** [Fork-FreeCRM.ps1](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeCRM-utilities/Fork-FreeCRM.ps1) + the two Windows `.exe` utilities in [this folder](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCRM-utilities).
+
+**Why does this exist?** These are the low-level building blocks; `FreeTools.ForkCRM` wraps them in a cross-platform CLI, but you can also run them directly from PowerShell.
+
+**What does it beat?** A **scriptable, PowerShell-native** path to fork FreeCRM (vs. the .NET `ForkCRM` tool) — useful in Windows automation.
+
+**Terminology:** **Module selection** — `remove:all` or `keep:<Module>` to control which optional features survive.
+
+**The hard part, drawn:**
+```
+  Fork-FreeCRM.ps1 -NewName MyApp -ModuleSelection keep:Tags -OutputDirectory C:\...\MyApp
+        ▼ clone FreeCRM ─▶ Remove Modules exe ─▶ Rename exe ─▶ copy result (no .git) ─▶ ready project
+```

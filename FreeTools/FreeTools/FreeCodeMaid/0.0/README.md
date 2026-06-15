@@ -108,3 +108,32 @@ dotnet run --project FreeCodeMaid -- C:\src\FreeCRM --apply    # write changes
 Drop a `freecodemaid.json` in the repo root (a fully-commented copy ships next to this README). Every
 rule above is adjustable: the kind order and grouping, alphabetical vs. visibility grouping,
 static-first, the by-purpose threshold, and the exclude / skip globs.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A command-line C# tidier that does the two things `.editorconfig` + `dotnet format` *can't*: (1) **reorder a type's members** (alphabetize properties+methods, keeping each member's comments/XML-docs attached), and (2) restore the FreeCRM house **`){` brace** when a parameter list wraps across lines. With `--apply` it runs `dotnet format whitespace` first, then its reorder, then the `){` fix. It's deliberately calibrated to barely change a well-ordered repo.
+
+**What tech & where?** [the FreeCodeMaid 0.0 project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/0.0) (Roslyn `Microsoft.CodeAnalysis.CSharp`).
+
+**Why does this exist?** To enforce ordering and a brace style that no formatter setting can express — without a human re-sorting members by hand.
+
+**What does it accomplish that other tools don't?**
+- **It would rather do nothing than do harm**: it skips by-purpose types (if sorting would move > 35% of members), skips `#region`/generated files, and **aborts any file** if its own re-parse finds a member went missing or a syntax error appeared.
+- On the real FreeCRM repo it changes **8 files (~620 lines)**, builds with 0 errors, and is **idempotent** (a second run does nothing).
+
+**Terminology & "can I see it?"**
+- **By-purpose ordering** — members grouped by intent (services, then state), which it leaves alone.
+- **Idempotent** — running it twice has the same effect as once.
+
+**The hard part, drawn** — tidy safely, or not at all:
+
+```
+  FreeCodeMaid <repo> --apply
+        ▼ 1. dotnet format whitespace   (editorconfig owns normal formatting)
+        ▼ 2. reorder members (alphabetical; comments stay attached)
+        │    would move >35% of a type's members? ─▶ SKIP (it's by-purpose)
+        ▼ 3. restore wrapped-parameter `){`
+        ▼ re-parse output: member missing or syntax error? ─▶ ABORT this file (write nothing)
+```

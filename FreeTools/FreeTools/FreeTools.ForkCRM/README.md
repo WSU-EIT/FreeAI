@@ -134,3 +134,25 @@ dotnet build
 | LibGit2Sharp | 0.30.0 | In-memory git clone (no `git` CLI required) |
 | `Remove Modules from FreeCRM.exe` | external | Module stripping |
 | `Rename FreeCRM.exe` | external | Project rename |
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A one-command project starter: it clones FreeCRM from GitHub (in-memory, via LibGit2Sharp — no `git` CLI needed), strips the optional modules you don't want, renames everything from `CRM` to your chosen name, and writes a clean, ready-to-build project to your output folder.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.ForkCRM/Program.cs) (LibGit2Sharp clone; wraps the Windows `Remove Modules`/`Rename` exes from [FreeCRM-utilities](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCRM-utilities)).
+
+**Why does this exist?** Starting a new FreeCRM app by hand (clone → remove modules → rename) is fiddly and error-prone. This makes it `--name MyProject --modules remove:all --output …`.
+
+**What does it beat?** It **automates the whole three-step fork** with in-memory git (no CLI dependency), leaving a project that builds immediately — this is how the suite's other apps (FreeManager, FreeGLBA…) were created.
+
+**Terminology:** **Fork** — making your own renamed copy of the framework; **module** — an optional feature area you can drop.
+
+**The hard part, drawn:**
+```
+  ForkCRM --name MyProject --modules keep:Tags --output C:\repos\MyProject
+        ▼ LibGit2Sharp clone FreeCRM → temp
+        ▼ Remove Modules from FreeCRM.exe  ·  Rename FreeCRM.exe MyProject
+        ▼ strip .git/artifacts ─▶ write MyProject\ (server + Client + DataAccess + … + .slnx) ready to build
+```

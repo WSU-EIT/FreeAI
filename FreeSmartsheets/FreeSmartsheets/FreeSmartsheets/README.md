@@ -65,6 +65,42 @@ All routes support an optional `/{TenantCode}/` prefix. Standard platform routes
 | Target Framework | `net10.0` |
 | Output Type | Web executable |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the web server (the HTTP entry point). On startup it loads Roslyn plugins, registers the data-access service, wires authentication (OpenID Connect + Google/Microsoft/Apple/Facebook + custom cookie auth), optionally starts a background processor, serves the Blazor WASM client, and maps the SignalR hub. The Smartsheet API key is read from `appsettings.json` and *handed to the data layer* — which is where the Smartsheet calls will live once implemented.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| ASP.NET Core host + DI + auth | Boots the app, wires providers | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets/Program.cs) |
+| SignalR hub | Real-time UI updates | [Program.cs#L238](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets/Program.cs#L238) |
+| REST API controllers | What the browser calls | [Controllers/DataController.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets/Controllers/DataController.cs) |
+| Plugin interfaces | Plugin contract the host loads | [PluginsInterfaces.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets/PluginsInterfaces.cs) |
+
+**Why does this exist?**
+A single host that delivers the UI, the API, real-time updates, and plugin loading — and will surface the Smartsheet inventory once the data-layer calls are built.
+
+**What does it accomplish that other tools don't?**
+- Full enterprise auth stack (OIDC + four OAuth providers + custom cookie) out of the box.
+- Optional **Azure SignalR** fallback for scale; local SignalR otherwise.
+- The Smartsheet API key is centralized in config and injected into the data layer (one place to wire the integration).
+
+**Terminology & "can I see it?"**
+- **SignalR hub** (`/freesmartsheetsHub`) — pushes live updates to browsers.
+- **Background processor** — periodic server-side worker (off unless enabled in config).
+
+**The hard part, drawn** — the host's startup and request flow:
+
+```
+  startup ─▶ load Roslyn plugins · register IDataAccess · wire OIDC/OAuth · map freesmartsheetsHub
+        │ (Smartsheet API key read from appsettings → passed to the data layer)
+        ▼
+  Browser (Blazor WASM) ─REST─▶ DataController ─▶ IDataAccess ─ EF Core ─▶ DB
+        ▲────────────── freesmartsheetsHub (SignalR live updates) ─────────────┘
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

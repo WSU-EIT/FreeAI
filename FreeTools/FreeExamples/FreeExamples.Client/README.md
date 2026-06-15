@@ -43,6 +43,28 @@
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The browser UI (Blazor WebAssembly) for all the examples — dashboards, files, signatures, settings — and its standout feature: an in-browser **code playground** that compiles C#/Razor *in the browser* with Roslyn (via the `DynamicBlazorSupport` subsystem) and renders the result, with a Monaco (VS Code) editor.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| In-browser Roslyn compile | The code playground | [DynamicBlazorSupport/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.Client/DynamicBlazorSupport) |
+| BlazorMonaco | The in-browser code editor | [the Client project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.Client) |
+
+**Why does this exist?** A live, interactive gallery of Blazor patterns — including the ability to write and run C#/Razor right in the page.
+
+**What does it beat?** A **real in-browser compiler**: type code, compile with Roslyn-in-WASM, see it render — no server round-trip.
+
+**Terminology:** **Code playground** — an editor + live compile/preview in the browser; **WASM** — WebAssembly, which runs the compiled C#.
+
+**The hard part, drawn:**
+```
+  you type C#/Razor in Monaco ─▶ DynamicBlazorSupport (Roslyn in WASM) compiles ─▶ rendered inline
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

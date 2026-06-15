@@ -15,3 +15,7 @@ Layout primitives for page scaffolding, grid rendering, and sidebar-based compos
 
 - These layouts are useful when feature folders need repeatable scaffolding without duplicating CSS and markup.
 - Sidebar regions are optional so a caller can scale from simple to denser page shells.
+
+---
+
+### 🧭 Briefing — **In one line:** four layout scaffolds — `PageContainer` (header/main/footer), `ResponsiveGrid`, `TwoColumnLayout`, and `ThreeColumnLayout` (optional left/right sidebars) — for repeatable page structure without duplicating CSS. **Why:** so feature pages share consistent scaffolding. See the parent [Foundation Components README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Foundation/Components/README.md).

@@ -281,6 +281,37 @@ var authPlugins = _plugins.AllPlugins
 
 - **FreeGLBA.DataAccess** - Uses plugins for extensibility
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A **runtime C# compiler**. At startup it loads `.cs`/`.plugin` files from the `/Plugins` folder, reads each plugin's `Properties()` metadata, compiles with Roslyn, caches the result, and runs plugins via their `Execute(objects, prompts)` method. Plugins can declare UI prompts (text/password/checkbox) collected before they run, and reference external DLLs via a `.assemblies` sidecar.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Roslyn (`Microsoft.CodeAnalysis.CSharp`) | Compile plugin C# at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.Plugins/Plugins.cs) |
+| AES encryption | Protect sensitive plugin data | [Encryption.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.Plugins/Encryption.cs) |
+
+**Why does this exist?**
+So custom compliance behavior — a `Report` plugin, a `BackgroundProcess` alert, custom `Auth` — can be added without recompiling or redeploying the core app.
+
+**What does it accomplish that other tools don't?**
+- **Real runtime compilation** for five plugin types (`Auth`, `BackgroundProcess`, `Report`, `UserUpdate`, `Example`).
+- **Prompt-driven** plugins (declare inputs the host renders) and external-DLL support via `.assemblies`.
+
+**Terminology & "can I see it?"**
+- **`Properties()` / `Execute()`** — the two methods every plugin implements (metadata + the work).
+- **Sidecar** — a `.assemblies` file listing extra DLLs the plugin needs.
+
+**The hard part, drawn** — a source file becomes a callable, prompt-driven plugin:
+
+```
+  startup ─▶ Plugins.Load("/Plugins") ─▶ read Properties() ─▶ Roslyn compile ─▶ cache
+        run ─▶ collect declared prompts (text/password/checkbox)
+             ─▶ ExecuteDynamicCSharpCode<T>() invokes Execute(objects, prompts) ─▶ result
+```
+
 ## About
 
 FreeGLBA is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.

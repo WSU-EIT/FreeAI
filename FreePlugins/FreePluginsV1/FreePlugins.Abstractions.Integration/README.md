@@ -58,6 +58,36 @@ When a plugin request arrives the host checks `CompiledPluginHelper.ShouldUseCom
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The **bridge** that lets the new compiled-NuGet plugins run in the *existing* Roslyn file-based pipeline without changing it. At startup, `LoadCompiledPlugins()` copies the DI-registered compiled plugins into a static registry; a converter turns each plugin's metadata into the file-based `Plugin` shape so it looks identical to the host; and `IDataAccess` extension methods dispatch execution to the right interface method.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Compiled-plugin registry + host hook | Hold + load compiled plugins at startup | [the Integration project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions.Integration) |
+| Metadata → `Plugin` converter | Make compiled plugins look file-based | [the Integration project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions.Integration) |
+
+**Why does this exist?** To add the compiled-plugin system **without rewriting** the working file-based one — the two coexist behind one interface.
+
+**What does it accomplish that other tools don't?**
+- A **non-invasive adapter**: the existing data layer and UI treat compiled and file-based plugins the same.
+- A single dispatch decision (`ShouldUseCompiledExecution`) routes each request down the right path.
+
+**Terminology & "can I see it?"**
+- **Bridge/adapter** — code that makes one system speak another's protocol.
+- **Registry** — the in-memory list of loaded compiled plugins.
+
+**The hard part, drawn** — one request, two possible engines:
+
+```
+  plugin request ─▶ CompiledPluginHelper.ShouldUseCompiledExecution(id)?
+        ├─ yes ─▶ IDataAccess.ExecuteCompiled… ─▶ resolve type from DI ─▶ call interface method
+        └─ no  ─▶ existing Roslyn file-plugin execution (unchanged)
+   (both appear identically in the UI via PluginMetadata → Plugin conversion)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

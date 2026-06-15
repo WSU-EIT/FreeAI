@@ -42,6 +42,39 @@ Shared DTO (Data Transfer Object) and contract library for FreeSmartsheets. Refe
 | Target Framework | `net10.0` |
 | Output Type | Class Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A pure "data shapes" library shared by the server and the browser. It holds all request/response DTOs, plus `ConfigurationHelper` (carries config into DI), `GlobalSettings` (app constants), `Caching` (a small in-memory cache), and `BlazorDataModelLoader` (the boot payload the server sends the client on first load).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Shared C# DTOs (.NET 10) | The contract between client and server | [DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataObjects/DataObjects.cs) |
+| Config carrier | Connection strings, flags, modules into DI | [ConfigurationHelper.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataObjects/ConfigurationHelper.cs) |
+| In-memory cache | Short-lived caching helper | [Caching.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.DataObjects/Caching.cs) |
+
+**Why does this exist?**
+So the two halves of the app compile against the *same* shapes — a contract break fails at build time, not in production. (Smartsheet-specific DTOs would be added in `DataObjects.App.cs` when that integration is built.)
+
+**What does it accomplish that other tools don't?**
+- One model used by C# on the server **and** in the browser — no separate TypeScript types to drift.
+- A single boot payload (`BlazorDataModelLoader`) hydrates the whole client in one round-trip.
+
+**Terminology & "can I see it?"**
+- **DTO** — a plain data shape with no behavior.
+- **Boot payload** — everything the client needs at startup, sent once.
+
+**The hard part, drawn** — one vocabulary, both sides:
+
+```
+  Server ─┐                                ┌─ Browser (WASM)
+          ├─ DataObjects (shared C#) ───────┤
+  DB ◀────┘  User · Tenant · Department · Tag └─▶ UI binds the SAME types
+             BooleanResponse · BlazorDataModelLoader (one-shot boot payload)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

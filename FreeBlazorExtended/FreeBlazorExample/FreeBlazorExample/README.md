@@ -40,6 +40,26 @@ Routes are defined in `FreeBlazorExample.Client`. Showcase pages live under `/sh
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The web server for the showcase. It does the usual FreeCRM host duties (auth, plugins, serves the WASM client) **plus** the wiring two of the library's features need: it maps **three** SignalR hubs (`/freeblazorexampleHub`, `/agentHub`, `/presentationHub`) and registers all seven FreeBlazorExtended feature services in DI.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample/Program.cs) (hubs + feature-service registration) · [Controllers/DataController.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample/Controllers/DataController.cs).
+
+**Why does this exist?** So the showcase can run the *real* server-side parts of the library — the AgentHub (Feature 105) and PresentationHub (Feature 102) — not just the in-browser components.
+
+**What does it beat?** It's the one place that shows **how to wire the library's SignalR-backed features** end-to-end (hubs mapped + services registered), which the feature READMEs reference as the canonical example.
+
+**Terminology:** **Hub mapping** — exposing a SignalR endpoint (`MapHub`) clients connect to.
+
+**The hard part, drawn:**
+```
+  FreeBlazorExample host
+        ├─ MapHub: /freeblazorexampleHub · /agentHub (Feature 105) · /presentationHub (Feature 102)
+        ├─ register 7 feature services (AgentMonitoring, RealtimeSync, Calendar, Form, UserPrefs, Tree, Notification)
+        └─ load plugins · serve the WASM showcase client
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

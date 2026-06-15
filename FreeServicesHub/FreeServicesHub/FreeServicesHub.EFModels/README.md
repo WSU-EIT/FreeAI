@@ -67,6 +67,40 @@ None (no project references — referenced by DataAccess).
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library *defines the database*. Alongside core FreeCRM tables it adds the **fleet-monitor tables**: `Agent` (each registered machine), `AgentHeartbeat` (a time-series row per heartbeat), `RegistrationKey` (one-time, SHA-256-hashed enrollment keys), `ApiClientToken` (Bearer tokens issued to agents), `HubJob` (dispatched jobs), and `CiCdTokenUsage` (pipeline-token audit). One model targets five engines, with an initial migration applied at startup.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core DbContext | The schema (core + agent tables) | [FreeServicesHub.App.EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.EFModels/EFModels/FreeServicesHub.App.EFDataModel.cs) |
+| Agent entity | The registered machine record | [FreeServicesHub.App.Agent.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.EFModels/EFModels/FreeServicesHub.App.Agent.cs) |
+| Heartbeat entity (time-series) | One row per heartbeat | [FreeServicesHub.App.AgentHeartbeat.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.EFModels/EFModels/FreeServicesHub.App.AgentHeartbeat.cs) |
+
+**Why does this exist?**
+One schema that stores the fleet's enrollment, heartbeats, and jobs on whatever database the institution already runs.
+
+**What does it accomplish that other tools don't?**
+- The heartbeat history is **first-class time-series data** (`AgentHeartbeat` rows) — so the dashboard charts are just queries.
+- Security-relevant tables are explicit: **hashed registration keys** and **issued tokens** are their own entities.
+
+**Terminology & "can I see it?"**
+- **Time-series** — many rows over time for the same agent (the basis of the trend charts).
+- **Entity** — a C# class mapped to one table.
+
+**The hard part, drawn** — the monitoring schema:
+
+```
+  EFDataModel (DbContext)
+       └ fleet ▶ Agent (machine) ─1:N─ AgentHeartbeat (CPU/RAM/disk over time)
+                · RegistrationKey (hashed) · ApiClientToken (issued) · HubJob · CiCdTokenUsage
+       └ core  ▶ User · Tenant · Department · Setting · PluginCache
+       └ providers ▶ SQL Server · SQLite · MySQL · PostgreSQL · InMemory
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

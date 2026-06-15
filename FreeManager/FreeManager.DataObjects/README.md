@@ -51,6 +51,37 @@ Contains all data transfer objects, endpoint URL constants, configuration helper
 | Target framework | `net10.0` |
 | Output type | Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A shared "data shapes" library — and crucially, the home of the **code-generation model**. Alongside the usual DTOs, it defines `EntityWizardState`, `EntityDefinition`, and `PropertyDefinition` (the structured description of what to generate) plus the built-in `ApplicationTemplates` (FreeBase / FreeTracker / FreeAudit). Because it targets plain `net10.0`, both the server and the browser client reference it.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Code-generation model | The structured "what to generate" | [FreeManager.App.DataObjects.EntityWizard.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataObjects/FreeManager.App.DataObjects.EntityWizard.cs) |
+| Core shared DTOs + endpoint constants | The client/server contract | [DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataObjects/DataObjects.cs) |
+
+**Why does this exist?**
+So the wizard UI, the generator, and the persistence layer all speak the *same* model — `EntityWizardState` is defined once and shared, so a change to the model can't silently break one side.
+
+**What does it accomplish that other tools don't?**
+- The generator's input (`EntityWizardState`) and the app templates are **shared, typed models** — not loose JSON — so the whole pipeline is compile-checked.
+
+**Terminology & "can I see it?"**
+- **EntityWizardState** — the full description of a project: entities, properties, relationships, options.
+- **Application template** — a predefined `EntityWizardState` (FreeBase/Tracker/Audit) you can start from.
+
+**The hard part, drawn** — one model drives the whole pipeline:
+
+```
+  Browser wizard ─┐                                          ┌─ Generator (EntityTemplates)
+                  ├─ EntityWizardState (shared, typed model) ─┤
+  Persistence ◀───┘  EntityDefinition · PropertyDefinition    └─▶ emits the .App. source files
+                     ApplicationTemplates (FreeBase/Tracker/Audit)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

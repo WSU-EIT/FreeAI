@@ -128,6 +128,24 @@ Green = `.App.` files. Gray = supporting files (config, docs, etc.).
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** It scans a FreeCRM fork and copies out **just your customization layer** — every file containing `.App.` (plus configured whole folders, named files, and root solution/config files) — preserving folder structure. Supports a dry-run to preview first.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AppExtractor/Program.cs) (config-driven via `appsettings.json` + CLI flags).
+
+**Why does this exist?** FreeCRM keeps your code in `.App.*` files separate from framework files. When FreeCRM updates, you extract your `.App.*` layer, pull the new base, and re-apply — making upgrades clean.
+
+**What does it beat?** It **mechanically separates your code from the framework's** by the `.App.` naming convention, so a framework upgrade doesn't mean diffing every file.
+
+**Terminology:** **`.App.` layer** — your customizations, kept in separately-named files the framework never touches.
+
+**The hard part, drawn:**
+```
+  scan FreeCRM fork ─▶ match `.App.` files (+ whole dirs + named/root files) ─▶ copy to output (same paths)
+        --dry-run ─▶ preview only      → safe upgrade: extract → pull new base → re-apply
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

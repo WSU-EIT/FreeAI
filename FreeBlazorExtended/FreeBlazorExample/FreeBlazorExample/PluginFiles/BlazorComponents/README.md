@@ -70,3 +70,24 @@ When components are rendered in built-in sections they are sorted first
 by SortOrder then by Name. So, if you want to control the sorting of your
 components you should include a json configuration file with the SortOrder
 property specified, or make sure the names will sort in the order you want.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Drop a `.razor`/`.blazor` file here and the app compiles and renders it at runtime — the **filename decides where it appears** (`Button_Index_…` = a button on Index; `Top_Index_…` = injected at the top of Index; `TabGeneralTop_Settings_…` = a specific tab). An optional same-named `.json` sets tenant scope and sort order.
+
+**What tech & where?** the runtime Roslyn plugin host — [FreeBlazorExample.Plugins](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.Plugins) · [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.Plugins/Plugins.cs).
+
+**Why does this exist?** So the UI can be customized per tenant **without rebuilding the core app**.
+
+**What does it beat?** **Convention over configuration** — the filename is the wiring; no registration code, no rebuild.
+
+**Terminology:** **Slot** — a named spot on a page (`Top`, `Bottom`, a tab) where injected content lands. **Sidecar** — the optional `.json` metadata.
+
+**The hard part, drawn:**
+```
+  Button_{Page}_{Name}.razor ─drop in─▶ compiled at runtime ─▶ button on {Page}
+  {Slot}_{Page}_{Name}.razor ─drop in─▶ compiled at runtime ─▶ injected into {Slot} of {Page}
+        optional {Name}.json ─▶ LimitToTenants[] · SortOrder
+```
