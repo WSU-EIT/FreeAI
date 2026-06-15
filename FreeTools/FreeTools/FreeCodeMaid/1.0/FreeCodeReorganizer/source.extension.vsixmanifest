@@ -20,7 +20,7 @@
     <Identity Id="FreeCodeReorganizer.474fa023-ccd6-4673-884e-c90dab427906"
               Version="1.0"
               Language="en-US"
-              Publisher="WSU-EIT / FreeTools" />
+              Publisher="WSU-EIT" />
     <DisplayName>FreeCodeReorganizer</DisplayName>
     <Description xml:space="preserve">Reorganizes C# class members alphabetically and restores the wrapped-parameter `){` brace style — the open, maintained CodeMaid-style cleanup for VS 2022/2026.</Description>
     <Tags>c#, cleanup, reorganize, members, sort, codemaid, roslyn, formatting</Tags>
