@@ -36,7 +36,7 @@ internal class ReorganizeDocumentCommand : Command
     /// <inheritdoc/>
     public override CommandConfiguration CommandConfiguration => new("%FreeCodeReorganizer.ReorganizeDocument.DisplayName%")
     {
-        Placements = [CommandPlacement.KnownPlacements.ExtensionsMenu],
+        // No direct Placements: this command is placed via the FreeCodeReorganizer menu (ReorganizerMenus).
         Icon = new(ImageMoniker.KnownValues.OfficeWebExtension, IconSettings.IconAndText),
         // Default chord: Ctrl+K, Ctrl+R. Pairs with VS's built-in Ctrl+K, Ctrl+D (Format Document)
         // for the "format-then-reorganize" two-keystroke flow.

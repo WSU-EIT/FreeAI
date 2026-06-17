@@ -28,7 +28,7 @@ internal class ReorganizeRepositoryCommand : Command
     /// <inheritdoc/>
     public override CommandConfiguration CommandConfiguration => new("%FreeCodeReorganizer.ReorganizeRepository.DisplayName%")
     {
-        Placements = [CommandPlacement.KnownPlacements.ExtensionsMenu],
+        // No direct Placements: placed via the nested "Repository" submenu (ReorganizerMenus).
         Icon = new(ImageMoniker.KnownValues.OfficeWebExtension, IconSettings.IconAndText),
         // Deliberately NO keyboard shortcut: a repo-wide rewrite should be an explicit menu action,
         // never something a stray keystroke can trigger.
