@@ -58,10 +58,13 @@ internal class ReorganizeDocumentCommand : Command
         }
 
         ITextDocumentSnapshot document = textView.Document;
-        if (document.Uri is null ||
-            !document.Uri.LocalPath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+        string path = document.Uri?.LocalPath ?? string.Empty;
+        bool isRazor = path.EndsWith(".razor", StringComparison.OrdinalIgnoreCase) ||
+                       path.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase);
+        bool isCs = path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase);
+        if (!isCs && !isRazor)
         {
-            this.logger.TraceInformation("Reorganize: active document is not a .cs file.");
+            this.logger.TraceInformation("Reorganize: active document is not a .cs / .razor / .cshtml file.");
             return;
         }
 
@@ -70,14 +73,32 @@ internal class ReorganizeDocumentCommand : Command
 
         Core.ReorderConfig config = await this.BuildConfigAsync(cancellationToken);
 
-        Core.ReorgResult result = Core.Reorganizer.Run(text, config, eol);
-        if (result.Error is not null)
+        // Razor files: only the @code blocks are reorganized; all markup stays byte-identical.
+        string? error;
+        bool changed;
+        string? newText;
+        if (isRazor)
         {
-            this.logger.TraceEvent(TraceEventType.Warning, 0, "Reorganize failed: " + result.Error);
+            Core.RazorReorgResult r = Core.RazorReorganizer.Run(text, config, eol);
+            error = r.Error;
+            changed = r.Changed;
+            newText = r.NewText;
+        }
+        else
+        {
+            Core.ReorgResult r = Core.Reorganizer.Run(text, config, eol);
+            error = r.Error;
+            changed = r.Changed;
+            newText = r.NewText;
+        }
+
+        if (error is not null)
+        {
+            this.logger.TraceEvent(TraceEventType.Warning, 0, "Reorganize failed: " + error);
             return;
         }
 
-        if (!result.Changed || result.NewText is null)
+        if (!changed || newText is null)
         {
             this.logger.TraceInformation("Reorganize: already organized — no changes.");
             return;
@@ -85,33 +106,13 @@ internal class ReorganizeDocumentCommand : Command
 
         // Replace the whole document in one edit. document.Text is the full-document range.
         await this.Extensibility.Editor().EditAsync(
-            batch => textView.Document.AsEditable(batch).Replace(textView.Document.Text, result.NewText!),
+            batch => textView.Document.AsEditable(batch).Replace(textView.Document.Text, newText!),
             cancellationToken);
 
-        this.logger.TraceInformation(
-            $"Reorganize: {result.TypesReordered} type(s) reordered, {result.BracesCollapsed} brace(s) collapsed.");
+        this.logger.TraceInformation("Reorganize: document reorganized.");
     }
 
-    /// <summary>Reads the native settings into a Core.ReorderConfig (engine defaults for everything else).</summary>
-    private async Task<Core.ReorderConfig> BuildConfigAsync(CancellationToken cancellationToken)
-    {
-        SettingsExtensibility settings = this.Extensibility.Settings();
-
-        bool sortAlphabetically = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.SortAlphabetically, cancellationToken)).ValueOrDefault(true);
-        bool ignoreUnderscore = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.IgnoreLeadingUnderscoreInSort, cancellationToken)).ValueOrDefault(true);
-        bool groupByVisibility = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.GroupByVisibility, cancellationToken)).ValueOrDefault(false);
-        bool staticMembersFirst = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.StaticMembersFirst, cancellationToken)).ValueOrDefault(false);
-        bool collapseBrace = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.CollapseWrappedParameterBrace, cancellationToken)).ValueOrDefault(true);
-        int maxPercent = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.MaxPercentReordered, cancellationToken)).ValueOrDefault(35);
-
-        return new Core.ReorderConfig
-        {
-            SortAlphabetically = sortAlphabetically,
-            IgnoreLeadingUnderscoreInSort = ignoreUnderscore,
-            GroupByVisibility = groupByVisibility,
-            StaticMembersFirst = staticMembersFirst,
-            CollapseWrappedParameterBrace = collapseBrace,
-            MaxFractionReordered = maxPercent / 100.0,
-        };
-    }
+    /// <summary>Reads the native settings into a Core.ReorderConfig (shared with the repository command).</summary>
+    private Task<Core.ReorderConfig> BuildConfigAsync(CancellationToken cancellationToken)
+        => ConfigReader.ReadAsync(this.Extensibility, cancellationToken);
 }
