@@ -1,6 +1,8 @@
 {
   "FreeCodeReorganizer.ReorganizeDocument.DisplayName": "Reorganize Document",
   "FreeCodeReorganizer.ReorganizeRepository.DisplayName": "Reorganize Repository",
+  "FreeCodeReorganizer.Menu.DisplayName": "FreeCodeReorganizer",
+  "FreeCodeReorganizer.Menu.Repository.DisplayName": "Repository",
 
   "FreeCodeReorganizer.Settings.Category.DisplayName": "FreeCodeReorganizer",
   "FreeCodeReorganizer.Settings.Category.Description": "Member reordering and brace style that mirror the FreeCRM house layout. Standard formatting stays owned by .editorconfig; these settings cover only what it can't express.",
