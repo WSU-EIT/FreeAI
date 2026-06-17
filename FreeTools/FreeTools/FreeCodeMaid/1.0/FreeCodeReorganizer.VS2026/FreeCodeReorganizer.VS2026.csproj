@@ -20,6 +20,8 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <RootNamespace>FreeCodeReorganizer.VS2026</RootNamespace>
     <AssemblyName>FreeCodeReorganizer.VS2026</AssemblyName>
+    <!-- Bumped so this build is unambiguously newer than any earlier 1.0.0.0 install. -->
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
