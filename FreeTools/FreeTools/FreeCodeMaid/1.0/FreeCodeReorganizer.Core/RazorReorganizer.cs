@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -69,6 +70,18 @@ public sealed class RazorReorganizer
                 reorganized++;
             }
 
+            // Markup pass: re-indent (or collapse) elements whose attributes are wrapped across lines.
+            // This only ever rewrites leading whitespace INSIDE a start tag, so rendered output cannot
+            // change; a strict "only whitespace differs" guard backs that up before we accept the result.
+            if (config.IndentWrappedRazorAttributes)
+            {
+                string reindented = ReindentMarkupAttributes(text, config);
+                if (StripWhitespace(reindented) == StripWhitespace(text))
+                {
+                    text = reindented;
+                }
+            }
+
             bool changed = text != razorText;
             return new RazorReorgResult(changed ? text : razorText, changed, reorganized, null);
         }
@@ -92,8 +105,12 @@ public sealed class RazorReorganizer
             GroupByVisibility = config.GroupByVisibility,
             StaticMembersFirst = config.StaticMembersFirst,
             CollapseWrappedParameterBrace = config.CollapseWrappedParameterBrace,
+            MaxLineWidth = config.MaxLineWidth,
             MaxFractionReordered = config.MaxFractionReordered,
             SkipTypesWithDirectives = config.SkipTypesWithDirectives,
+            RespectRegions = config.RespectRegions,
+            SkipTypesWithModuleMarkers = config.SkipTypesWithModuleMarkers,
+            ModuleMarkerTokens = config.ModuleMarkerTokens,
             VisibilityOrder = config.VisibilityOrder,
             KindOrder =
             [
@@ -181,4 +198,176 @@ public sealed class RazorReorganizer
 
         return wrappedOutput.Substring(first + 1, last - first - 1);
     }
+
+    // ---- Markup attribute re-indentation -----------------------------------------------------------
+
+    // An attribute on its own line: name="..." / name='...' / name=value, or a bare boolean attribute,
+    // or the closing ">" / "/>" of the start tag. Quote nesting inside the value is irrelevant — we
+    // detect lines structurally and only ever rewrite their leading whitespace.
+    private static readonly Regex AttrNameEquals = new(@"^[@A-Za-z_:][\w:.\-]*\s*=", RegexOptions.Compiled);
+    private static readonly Regex AttrBoolOrName = new(@"^[@A-Za-z_:][\w:.\-]*\s*/?>?$", RegexOptions.Compiled);
+    private static readonly Regex TagOpenStart = new(@"^<[A-Za-z][\w.]*", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Re-indents the continuation attribute lines of any start tag whose attributes are wrapped across
+    /// multiple lines, so each sits at the element's indent + two levels ("double tab"). If the whole tag
+    /// would fit on one line within <see cref="ReorderConfig.MaxLineWidth"/>, it is collapsed instead.
+    /// Lines inside @code / @functions blocks are left alone. Only leading whitespace is ever changed.
+    /// </summary>
+    private static string ReindentMarkupAttributes(string text, ReorderConfig config)
+    {
+        List<(int open, int close)> blocks = FindCodeBlocks(text);
+        string[] lines = text.Split('\n');
+        int[] starts = new int[lines.Length];
+        int offset = 0;
+        for (int i = 0; i < lines.Length; i++)
+        {
+            starts[i] = offset;
+            offset += lines[i].Length + 1; // + the '\n' we split on
+        }
+
+        bool InCode(int lineIndex)
+        {
+            int s = starts[lineIndex];
+            foreach ((int open, int close) in blocks)
+            {
+                if (s > open && s < close)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        var output = new List<string>(lines.Length);
+        int li = 0;
+        while (li < lines.Length)
+        {
+            string raw = lines[li];
+            string content = TrimCr(raw, out string cr);
+
+            if (!InCode(li) && IsTagOpener(content, out string baseIndent))
+            {
+                var group = new List<int>();
+                bool closed = false;
+                int j = li + 1;
+                while (j < lines.Length && !InCode(j))
+                {
+                    string trimmed = TrimCr(lines[j], out _).Trim();
+                    if (!IsAttributeLine(trimmed))
+                    {
+                        break;
+                    }
+
+                    group.Add(j);
+                    if (trimmed.EndsWith(">", StringComparison.Ordinal))
+                    {
+                        closed = true;
+                        j++;
+                        break;
+                    }
+
+                    j++;
+                }
+
+                if (closed && group.Count > 0)
+                {
+                    string unit = baseIndent.Contains("\t") ? "\t" : "    ";
+
+                    var single = new StringBuilder(content.Trim());
+                    foreach (int g in group)
+                    {
+                        single.Append(' ').Append(TrimCr(lines[g], out _).Trim());
+                    }
+
+                    if (baseIndent.Length + single.Length <= config.MaxLineWidth)
+                    {
+                        // Collapse the whole start tag onto one line.
+                        output.Add(baseIndent + single + cr);
+                    }
+                    else
+                    {
+                        // Keep wrapped; double-tab every continuation line.
+                        output.Add(raw);
+                        string doubleTab = baseIndent + unit + unit;
+                        foreach (int g in group)
+                        {
+                            string gContent = TrimCr(lines[g], out string gcr);
+                            output.Add(doubleTab + gContent.TrimStart() + gcr);
+                        }
+                    }
+
+                    li = j;
+                    continue;
+                }
+            }
+
+            output.Add(raw);
+            li++;
+        }
+
+        return string.Join("\n", output);
+    }
+
+    /// <summary>A line that opens an element tag and does NOT close it on the same line.</summary>
+    private static bool IsTagOpener(string content, out string baseIndent)
+    {
+        baseIndent = LeadingWhitespace(content);
+        string trimmed = content.Trim();
+        if (trimmed.Length < 2 || trimmed[0] != '<')
+        {
+            return false;
+        }
+
+        if (trimmed.StartsWith("</", StringComparison.Ordinal)
+            || trimmed.StartsWith("<!", StringComparison.Ordinal)
+            || trimmed.StartsWith("<?", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!TagOpenStart.IsMatch(trimmed))
+        {
+            return false;
+        }
+
+        // If the tag already closes on this line, it is single-line — leave it alone.
+        return !trimmed.EndsWith(">", StringComparison.Ordinal);
+    }
+
+    private static bool IsAttributeLine(string trimmed)
+    {
+        if (trimmed == ">" || trimmed == "/>")
+        {
+            return true;
+        }
+
+        return AttrNameEquals.IsMatch(trimmed) || AttrBoolOrName.IsMatch(trimmed);
+    }
+
+    private static string LeadingWhitespace(string s)
+    {
+        int i = 0;
+        while (i < s.Length && (s[i] == ' ' || s[i] == '\t'))
+        {
+            i++;
+        }
+
+        return s.Substring(0, i);
+    }
+
+    private static string TrimCr(string s, out string cr)
+    {
+        if (s.Length > 0 && s[s.Length - 1] == '\r')
+        {
+            cr = "\r";
+            return s.Substring(0, s.Length - 1);
+        }
+
+        cr = string.Empty;
+        return s;
+    }
+
+    private static string StripWhitespace(string s) => Regex.Replace(s, @"\s+", string.Empty);
 }

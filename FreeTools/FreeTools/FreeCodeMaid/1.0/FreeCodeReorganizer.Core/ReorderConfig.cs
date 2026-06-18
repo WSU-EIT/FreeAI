@@ -37,17 +37,48 @@ public sealed class ReorderConfig
     /// </summary>
     public double MaxFractionReordered { get; set; } = 0.35;
 
-    // ---- Brace style ------------------------------------------------------
+    // ---- Brace / wrapping style -------------------------------------------
 
     /// <summary>
-    /// When a method/constructor's parameter list is wrapped across multiple lines, put the closing
-    /// ")" and the body's opening "{" together on one line as "){" — the FreeCRM author's hand style.
-    /// `dotnet format` (per `csharp_new_line_before_open_brace`) splits these to ")" + "{" on
-    /// separate lines and the editorconfig has no rule to reproduce "){", so the reorganizer restores it.
-    /// Only affects declarations whose parameters are ALREADY wrapped onto multiple lines; single-line
-    /// declarations keep the normal brace-on-its-own-line form. Set false to leave braces alone.
+    /// Reformat a method/constructor whose parameter list is ALREADY wrapped across multiple lines into
+    /// the FreeCRM author's hand style:
+    /// <code>
+    ///     public DataController          &lt;- name alone on the declaration line
+    ///     (                              &lt;- '(' alone, at the member's indent
+    ///         IDataAccess daInjection,   &lt;- each parameter one level deeper
+    ///         Plugins.IPlugins diPlugins
+    ///     ){                             &lt;- ')' glued to the body's '{' as "){"
+    /// </code>
+    /// `dotnet format` can't express any of this (it puts '(' on the name line and splits ")" + "{"),
+    /// so the reorganizer restores it. Only fires when the parameters are ALREADY on multiple lines —
+    /// single-line declarations are never force-wrapped. If the whole signature would instead fit on one
+    /// line within <see cref="MaxLineWidth"/>, it is collapsed back to a single line (normal Allman brace).
+    /// Set false to leave parameter braces and indentation completely alone.
     /// </summary>
     public bool CollapseWrappedParameterBrace { get; set; } = true;
+
+    /// <summary>
+    /// Re-indent the wrapped attributes of a Razor/Blazor element so every continuation attribute sits
+    /// at the element's indent PLUS two levels ("double tab"). The first attribute stays on the tag line;
+    /// the rest line up at base+2, which keeps them visually deeper than the element's child body (base+1):
+    /// <code>
+    ///     &lt;PagedRecordset ActionHandlers="ActionHandlers"
+    ///             CenterItems="CenterItems"          &lt;- base + 2 levels
+    ///             Configuration="Config" /&gt;
+    /// </code>
+    /// Only re-indents elements whose attributes are ALREADY wrapped across lines, and ONLY touches
+    /// leading whitespace inside the start tag — every byte of rendered markup is preserved. If the whole
+    /// tag would fit on one line within <see cref="MaxLineWidth"/>, it is collapsed to a single line.
+    /// </summary>
+    public bool IndentWrappedRazorAttributes { get; set; } = true;
+
+    /// <summary>
+    /// The line width (in characters) at or below which an ALREADY-wrapped parameter list or Razor start
+    /// tag is collapsed back onto a single line instead of being kept in the multi-line house style.
+    /// Anything whose single-line form is wider than this stays wrapped. Never causes a single-line
+    /// declaration to be wrapped — the reorganizer does not force-wrap. Default 120.
+    /// </summary>
+    public int MaxLineWidth { get; set; } = 120;
 
     // ---- Ordering tables --------------------------------------------------
 
@@ -89,7 +120,34 @@ public sealed class ReorderConfig
 
     // ---- Safety / scope ---------------------------------------------------
 
-    /// <summary>Skip any type that contains <c>#region</c> / <c>#if</c> / <c>#pragma</c> directives
-    /// between its members — reordering across those would scramble them.</summary>
+    /// <summary>Skip any type that contains <c>#if</c> / <c>#pragma</c> (and, when
+    /// <see cref="RespectRegions"/> is off, <c>#region</c>) directives between its members — reordering
+    /// across those would scramble them.</summary>
     public bool SkipTypesWithDirectives { get; set; } = true;
+
+    /// <summary>
+    /// Respect <c>#region</c> / <c>#endregion</c> boundaries. When true (the default), a type whose only
+    /// directives are regions is left completely untouched so the regions — and the members inside them —
+    /// keep their exact layout. When false, region directives are ignored and members may be reordered
+    /// across them (a re-parse safety net still aborts anything that would unbalance the region pairing).
+    /// </summary>
+    public bool RespectRegions { get; set; } = true;
+
+    /// <summary>
+    /// Skip any type that contains paired template markers like FreeCRM's
+    /// <c>// {{ModuleItemStart:X}}</c> / <c>// {{ModuleItemEnd:X}}</c> comments. Those markers PIN
+    /// members to fixed positions — the template/plugin system splices code in and out by them — so
+    /// reordering across them would break the Start/End pairing. Any type that has even one such marker
+    /// is left entirely byte-for-byte alone. This is a safety rail, on by default; it is NOT a style
+    /// choice and shouldn't normally be turned off.
+    /// </summary>
+    public bool SkipTypesWithModuleMarkers { get; set; } = true;
+
+    /// <summary>The comment substrings that identify a "pinned" template region (see
+    /// <see cref="SkipTypesWithModuleMarkers"/>). A type whose comments contain ANY of these is skipped.</summary>
+    public List<string> ModuleMarkerTokens { get; set; } =
+    [
+        "{{ModuleItemStart",
+        "{{ModuleItemEnd"
+    ];
 }

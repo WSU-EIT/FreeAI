@@ -17,10 +17,19 @@ for (int i = 0; i < args.Length; i++)
         case "--group-by-visibility" when i + 1 < args.Length: config.GroupByVisibility = ParseBool(args[++i], false); break;
         case "--static-first" when i + 1 < args.Length: config.StaticMembersFirst = ParseBool(args[++i], false); break;
         case "--collapse-brace" when i + 1 < args.Length: config.CollapseWrappedParameterBrace = ParseBool(args[++i], true); break;
+        case "--razor-attrs" when i + 1 < args.Length: config.IndentWrappedRazorAttributes = ParseBool(args[++i], true); break;
+        case "--respect-regions" when i + 1 < args.Length: config.RespectRegions = ParseBool(args[++i], true); break;
         case "--max-percent" when i + 1 < args.Length:
             if (int.TryParse(args[++i], out int p))
             {
                 config.MaxFractionReordered = Math.Clamp(p, 0, 100) / 100.0;
+            }
+
+            break;
+        case "--max-width" when i + 1 < args.Length:
+            if (int.TryParse(args[++i], out int w))
+            {
+                config.MaxLineWidth = Math.Max(20, w);
             }
 
             break;

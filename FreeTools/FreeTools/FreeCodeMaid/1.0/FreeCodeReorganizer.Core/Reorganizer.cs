@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -39,19 +40,20 @@ public sealed class Reorganizer
         bool originalHadErrors = tree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
 
         // Pass 1: reorder members.
-        var rewriter = new Rewriter(config);
+        var rewriter = new Rewriter(config, eol);
         var afterReorg = rewriter.Visit(originalRoot);
         if (afterReorg is null) {
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, "rewrite produced null");
         }
 
-        // Pass 2: collapse wrapped-parameter braces to "){" (the author's hand style).
+        // Pass 2: reformat wrapped parameter lists into the author's hand style ("(" alone, params one
+        // level deeper, ")" glued to the body "{" as "){"), or collapse short ones back to a single line.
         int bracesCollapsed = 0;
         SyntaxNode finalRoot = afterReorg;
         if (config.CollapseWrappedParameterBrace) {
-            var braceRewriter = new BraceCollapseRewriter();
-            finalRoot = braceRewriter.Visit(afterReorg) ?? afterReorg;
-            bracesCollapsed = braceRewriter.BracesCollapsed;
+            var paramRewriter = new WrappedParameterRewriter(config, eol);
+            finalRoot = paramRewriter.Visit(afterReorg) ?? afterReorg;
+            bracesCollapsed = paramRewriter.SignaturesReformatted;
         }
 
         var newText = finalRoot.ToFullString();
@@ -110,86 +112,183 @@ public sealed class Reorganizer
     }
 
     /// <summary>
-    /// When a method/constructor/operator/local-function parameter list is wrapped across multiple
-    /// lines, glue the closing ")" and the body's opening "{" together as "){" on one line — the
-    /// FreeCRM author's hand style. `dotnet format` splits these to ")" + "{"; this restores them.
-    /// Only fires when the parameters are ALREADY wrapped onto multiple lines, so single-line
-    /// declarations keep their normal brace-on-new-line (Allman) form.
+    /// Reformats a method/constructor/operator/local-function whose parameter list is ALREADY wrapped
+    /// across multiple lines into the FreeCRM author's hand style — "(" alone on its own line at the
+    /// member's indent, each parameter one level deeper, ")" glued to the body's "{" as "){" — OR, when
+    /// the whole signature would fit on a single line within <see cref="ReorderConfig.MaxLineWidth"/>,
+    /// collapses it back onto one line (normal Allman brace). Single-line declarations are never wrapped.
+    /// Members whose parameter list carries comments or preprocessor directives are left alone.
     /// </summary>
-    private sealed class BraceCollapseRewriter : CSharpSyntaxRewriter
+    private sealed class WrappedParameterRewriter : CSharpSyntaxRewriter
     {
-        public int BracesCollapsed { get; private set; }
+        private readonly int _maxWidth;
+        private readonly string _eol;
+
+        public WrappedParameterRewriter(ReorderConfig config, string eol)
+        {
+            _maxWidth = config.MaxLineWidth;
+            _eol = eol;
+        }
+
+        public int SignaturesReformatted { get; private set; }
 
         public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            var v = (MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
+            => Apply((MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!);
 
         public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-        {
-            var v = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
+            => Apply((ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!);
 
         public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
-        {
-            var v = (OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
+            => Apply((OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!);
 
         public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
-        {
-            var v = (ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
+            => Apply((ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!);
 
         public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+            => Apply((LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!);
+
+        private SyntaxNode Apply(SyntaxNode node)
         {
-            var v = (LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+            ParameterListSyntax? pl = ParamsOf(node);
+            BlockSyntax? body = BodyOf(node);
+            if (pl is null || body is null || pl.Parameters.Count < 1) {
+                return node;
+            }
+
+            string plText = pl.ToString();
+            // Only reformat lists that are ALREADY wrapped, and never touch one carrying comments or
+            // directives (we'd risk dropping them).
+            if (!plText.Contains("\n")
+                || plText.Contains("//") || plText.Contains("/*") || plText.Contains("#")) {
+                return node;
+            }
+
+            string baseIndent = GetIndent(node);
+            string unit = baseIndent.Contains("\t") ? "\t" : "    ";
+
+            int offset = pl.CloseParenToken.Span.End - node.SpanStart;
+            string header = node.ToString();
+            if (offset > 0 && offset <= header.Length) {
+                header = header.Substring(0, offset);
+            }
+            int singleLineWidth = baseIndent.Length + CollapseWhitespace(header).Length + 2; // + " {"
+
+            SyntaxNode result = singleLineWidth <= _maxWidth
+                ? BuildSingleLine(node, pl, body, baseIndent)
+                : BuildHouseStyle(node, pl, body, baseIndent, unit);
+
+            if (result.ToFullString() != node.ToFullString()) {
+                SignaturesReformatted++;
+            }
+
+            return result;
         }
 
-        private SyntaxNode Collapse(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
+        private SyntaxNode BuildHouseStyle(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body, string baseIndent, string unit)
         {
-            BracesCollapsed++;
-            var cp = pl.CloseParenToken;
-            var ob = body.OpenBraceToken;
-            return node.ReplaceTokens(new[] { cp, ob }, (orig, rewritten) => {
-                if (orig == cp) return rewritten.WithTrailingTrivia();
-                if (orig == ob) return rewritten.WithLeadingTrivia();
-                return rewritten;
-            });
+            var eolT = SyntaxFactory.EndOfLine(_eol);
+            var baseWs = SyntaxFactory.Whitespace(baseIndent);
+            var paramWs = SyntaxFactory.Whitespace(baseIndent + unit);
+
+            var ps = pl.Parameters.Select(p => p.WithLeadingTrivia(eolT, paramWs).WithTrailingTrivia());
+            var newPl = pl
+                .WithOpenParenToken(SyntaxFactory.Token(SyntaxKind.OpenParenToken).WithLeadingTrivia(eolT, baseWs).WithTrailingTrivia())
+                .WithParameters(Separate(ps, SyntaxFactory.Token(SyntaxKind.CommaToken)))
+                .WithCloseParenToken(SyntaxFactory.Token(SyntaxKind.CloseParenToken).WithLeadingTrivia(eolT, baseWs).WithTrailingTrivia());
+
+            // Glue ")" to "{" as "){" — unless an initializer (": base(...)") sits between them.
+            SyntaxTriviaList braceLeading = HasInitializer(node)
+                ? body.OpenBraceToken.LeadingTrivia
+                : SyntaxFactory.TriviaList();
+            return Recombine(node, pl, newPl, braceLeading);
         }
 
-        private static bool ShouldCollapse(ParameterListSyntax? pl, BlockSyntax body)
+        private SyntaxNode BuildSingleLine(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body, string baseIndent)
         {
-            if (pl is null) {
-                return false;
-            }
-            // Only when the parameter list is wrapped across multiple lines.
-            if (!pl.ToString().Contains('\n')) {
-                return false;
-            }
-            var cp = pl.CloseParenToken;
-            var ob = body.OpenBraceToken;
-            bool onSeparateLines = cp.TrailingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia))
-                                || ob.LeadingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
-            if (!onSeparateLines) {
-                return false; // already ")" + "{" on the same line
-            }
-            // Never collapse across a comment sitting between ) and {.
-            if (cp.TrailingTrivia.Any(IsComment) || ob.LeadingTrivia.Any(IsComment)) {
-                return false;
-            }
-            return true;
+            var ps = pl.Parameters.Select(p => p.WithLeadingTrivia().WithTrailingTrivia());
+            var comma = SyntaxFactory.Token(SyntaxKind.CommaToken).WithTrailingTrivia(SyntaxFactory.Space);
+            var newPl = pl
+                .WithOpenParenToken(SyntaxFactory.Token(SyntaxKind.OpenParenToken))
+                .WithParameters(Separate(ps, comma))
+                .WithCloseParenToken(SyntaxFactory.Token(SyntaxKind.CloseParenToken));
+
+            // Allman brace on its own line at the member's indent (leave it where it is if an initializer
+            // follows the closing paren).
+            SyntaxTriviaList braceLeading = HasInitializer(node)
+                ? body.OpenBraceToken.LeadingTrivia
+                : SyntaxFactory.TriviaList(SyntaxFactory.EndOfLine(_eol), SyntaxFactory.Whitespace(baseIndent));
+            return Recombine(node, pl, newPl, braceLeading);
         }
 
-        private static bool IsComment(SyntaxTrivia t)
-            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
-            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
+        // Swap in the rebuilt parameter list, clear any trailing trivia on the token just before "(",
+        // and set the body brace's leading trivia.
+        private static SyntaxNode Recombine(SyntaxNode node, ParameterListSyntax oldPl, ParameterListSyntax newPl, SyntaxTriviaList braceLeading)
+        {
+            SyntaxNode n = node.ReplaceNode(oldPl, newPl);
+
+            SyntaxToken openParen = ParamsOf(n)!.OpenParenToken;
+            SyntaxToken prev = openParen.GetPreviousToken();
+            if (!prev.IsKind(SyntaxKind.None)) {
+                n = n.ReplaceToken(prev, prev.WithTrailingTrivia());
+            }
+
+            SyntaxToken brace = BodyOf(n)!.OpenBraceToken;
+            n = n.ReplaceToken(brace, brace.WithLeadingTrivia(braceLeading));
+            return n;
+        }
+
+        private static SeparatedSyntaxList<ParameterSyntax> Separate(IEnumerable<ParameterSyntax> parameters, SyntaxToken comma)
+        {
+            var list = parameters.ToList();
+            var items = new List<SyntaxNodeOrToken>(list.Count * 2);
+            for (int i = 0; i < list.Count; i++) {
+                items.Add(list[i]);
+                if (i < list.Count - 1) {
+                    items.Add(comma);
+                }
+            }
+
+            return SyntaxFactory.SeparatedList<ParameterSyntax>(items);
+        }
+
+        private static bool HasInitializer(SyntaxNode node)
+            => node is ConstructorDeclarationSyntax c && c.Initializer is not null;
+
+        private static ParameterListSyntax? ParamsOf(SyntaxNode node) => node switch {
+            MethodDeclarationSyntax m => m.ParameterList,
+            ConstructorDeclarationSyntax c => c.ParameterList,
+            OperatorDeclarationSyntax o => o.ParameterList,
+            ConversionOperatorDeclarationSyntax v => v.ParameterList,
+            LocalFunctionStatementSyntax l => l.ParameterList,
+            _ => null,
+        };
+
+        private static BlockSyntax? BodyOf(SyntaxNode node) => node switch {
+            MethodDeclarationSyntax m => m.Body,
+            ConstructorDeclarationSyntax c => c.Body,
+            OperatorDeclarationSyntax o => o.Body,
+            ConversionOperatorDeclarationSyntax v => v.Body,
+            LocalFunctionStatementSyntax l => l.Body,
+            _ => null,
+        };
+
+        private static string GetIndent(SyntaxNode node)
+        {
+            SyntaxTriviaList lead = node.GetLeadingTrivia();
+            for (int i = lead.Count - 1; i >= 0; i--) {
+                if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia)) {
+                    return lead[i].ToString();
+                }
+
+                if (lead[i].IsKind(SyntaxKind.EndOfLineTrivia)) {
+                    return string.Empty;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string CollapseWhitespace(string s) => Regex.Replace(s, @"\s+", " ").Trim();
     }
 
     private sealed class Rewriter : CSharpSyntaxRewriter
@@ -199,14 +298,16 @@ public sealed class Reorganizer
         public int TypesReordered { get; private set; }
         public int TypesSkipped { get; private set; }
 
-        public Rewriter(ReorderConfig config)
+        public Rewriter(ReorderConfig config, string eol)
         {
             _comparer = new MemberComparer(config);
             _config = config;
+            _eol = eol;
             _doNotSort = new HashSet<string>(config.DoNotSortKinds, StringComparer.OrdinalIgnoreCase);
         }
 
         private readonly ReorderConfig _config;
+        private readonly string _eol;
         private readonly HashSet<string> _doNotSort;
 
         public override SyntaxNode? VisitClassDeclaration(ClassDeclarationSyntax node)
@@ -228,9 +329,37 @@ public sealed class Reorganizer
                 return type;
             }
 
-            if (_config.SkipTypesWithDirectives && HasMemberLevelDirectives(type)) {
-                TypesSkipped++;
-                return type;
+            if (HasMemberLevelDirectives(type)) {
+                if (OnlyRegionDirectives(type)) {
+                    // A type whose only directives are #region / #endregion: honor RespectRegions.
+                    if (_config.RespectRegions) {
+                        TypesSkipped++;
+                        return type;
+                    }
+                    // else: user opted out of region-respecting — fall through and sort across them.
+                } else if (_config.SkipTypesWithDirectives) {
+                    // #if / #pragma etc. — reordering across these is unsafe; leave the type alone.
+                    TypesSkipped++;
+                    return type;
+                }
+            }
+
+            // MEMBER-LEVEL template markers (e.g. FreeCRM's "// {{ModuleItemStart:X}}" between properties)
+            // pin members. Reorganize with regions tracked so every member stays wrapped by the SAME
+            // region (splitting a region when an outsider lands in the middle of it); malformed markers
+            // fall back to leaving the type byte-for-byte alone. Markers that appear ONLY inside member
+            // bodies (e.g. around statements in a method) are not member-level — those types fall through
+            // to the normal sort below, which moves whole members carrying their in-body markers intact.
+            if (_config.SkipTypesWithModuleMarkers && HasMemberLevelModuleMarkers(type)) {
+                var regionResult = ModuleRegionSorter.TryReorganize(type, _comparer, _config, _eol);
+                if (regionResult is null) {
+                    TypesSkipped++;
+                    return type;
+                }
+                if (!ReferenceEquals(regionResult, type)) {
+                    TypesReordered++;
+                }
+                return regionResult;
             }
 
             // Stable sort: members the rules treat as equal keep their original relative order.
@@ -303,6 +432,85 @@ public sealed class Reorganizer
                     return true;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// True if EVERY member-level directive in the type is a <c>#region</c> or <c>#endregion</c>
+        /// (no <c>#if</c> / <c>#pragma</c> / etc.). Used to decide whether <see cref="ReorderConfig.RespectRegions"/>
+        /// governs the type — regions are safe to honor; conditional-compilation directives are not.
+        /// </summary>
+        private static bool OnlyRegionDirectives(TypeDeclarationSyntax type)
+        {
+            if (!AllDirectivesAreRegions(type.OpenBraceToken.TrailingTrivia)
+                || !AllDirectivesAreRegions(type.CloseBraceToken.LeadingTrivia)) {
+                return false;
+            }
+
+            foreach (var m in type.Members) {
+                if (!AllDirectivesAreRegions(m.GetLeadingTrivia()) || !AllDirectivesAreRegions(m.GetTrailingTrivia())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool AllDirectivesAreRegions(SyntaxTriviaList trivia)
+        {
+            foreach (var t in trivia) {
+                if (t.IsDirective
+                    && !t.IsKind(SyntaxKind.RegionDirectiveTrivia)
+                    && !t.IsKind(SyntaxKind.EndRegionDirectiveTrivia)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// True if there are module/template markers (e.g. FreeCRM's <c>// {{ModuleItemStart:X}}</c>) at
+        /// MEMBER level — between members, or just after the open brace / before the close brace. Markers
+        /// that live only inside a member's body are intentionally NOT counted: the reorganizer moves
+        /// whole members, so those travel along untouched.
+        /// </summary>
+        private bool HasMemberLevelModuleMarkers(TypeDeclarationSyntax type)
+        {
+            if (TriviaHasModuleMarker(type.OpenBraceToken.TrailingTrivia) ||
+                TriviaHasModuleMarker(type.CloseBraceToken.LeadingTrivia)) {
+                return true;
+            }
+
+            foreach (var m in type.Members) {
+                if (TriviaHasModuleMarker(m.GetLeadingTrivia())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TriviaHasModuleMarker(SyntaxTriviaList trivia)
+        {
+            var tokens = _config.ModuleMarkerTokens;
+            if (tokens == null || tokens.Count == 0) {
+                return false;
+            }
+
+            foreach (var t in trivia) {
+                if (!t.IsKind(SyntaxKind.SingleLineCommentTrivia)) {
+                    continue;
+                }
+
+                string text = t.ToString();
+                foreach (var token in tokens) {
+                    if (text.IndexOf(token, System.StringComparison.Ordinal) >= 0) {
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
     }
