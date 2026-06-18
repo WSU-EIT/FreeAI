@@ -70,6 +70,26 @@ internal static class ReorganizerSettings
         Description = "%FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description%",
     };
 
+    [VisualStudioContribution]
+    internal static Setting.Boolean IndentWrappedRazorAttributes { get; } = new(
+        "indentWrappedRazorAttributes",
+        "%FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.DisplayName%",
+        Category,
+        defaultValue: true)
+    {
+        Description = "%FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.Description%",
+    };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean RespectRegions { get; } = new(
+        "respectRegions",
+        "%FreeCodeReorganizer.Settings.RespectRegions.DisplayName%",
+        Category,
+        defaultValue: true)
+    {
+        Description = "%FreeCodeReorganizer.Settings.RespectRegions.Description%",
+    };
+
     /// <summary>
     /// Maps to Core.ReorderConfig.MaxFractionReordered. Exposed as a 0..100 percent (integer) because
     /// the settings UI is friendlier with whole numbers; the command divides by 100.
@@ -84,5 +104,19 @@ internal static class ReorganizerSettings
         Description = "%FreeCodeReorganizer.Settings.MaxPercentReordered.Description%",
         Minimum = 0,
         Maximum = 100,
+    };
+
+    /// <summary>Maps to Core.ReorderConfig.MaxLineWidth — the width at/under which an already-wrapped
+    /// parameter list or Razor start tag is collapsed back onto a single line.</summary>
+    [VisualStudioContribution]
+    internal static Setting.Integer MaxLineWidth { get; } = new(
+        "maxLineWidth",
+        "%FreeCodeReorganizer.Settings.MaxLineWidth.DisplayName%",
+        Category,
+        defaultValue: 120)
+    {
+        Description = "%FreeCodeReorganizer.Settings.MaxLineWidth.Description%",
+        Minimum = 40,
+        Maximum = 400,
     };
 }

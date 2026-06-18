@@ -21,7 +21,10 @@ internal static class ConfigReader
         bool groupByVisibility = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.GroupByVisibility, ct)).ValueOrDefault(false);
         bool staticMembersFirst = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.StaticMembersFirst, ct)).ValueOrDefault(false);
         bool collapseBrace = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.CollapseWrappedParameterBrace, ct)).ValueOrDefault(true);
+        bool razorAttrs = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.IndentWrappedRazorAttributes, ct)).ValueOrDefault(true);
+        bool respectRegions = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.RespectRegions, ct)).ValueOrDefault(true);
         int maxPercent = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.MaxPercentReordered, ct)).ValueOrDefault(35);
+        int maxLineWidth = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.MaxLineWidth, ct)).ValueOrDefault(120);
 
         return new Core.ReorderConfig
         {
@@ -30,7 +33,10 @@ internal static class ConfigReader
             GroupByVisibility = groupByVisibility,
             StaticMembersFirst = staticMembersFirst,
             CollapseWrappedParameterBrace = collapseBrace,
+            IndentWrappedRazorAttributes = razorAttrs,
+            RespectRegions = respectRegions,
             MaxFractionReordered = maxPercent / 100.0,
+            MaxLineWidth = maxLineWidth,
         };
     }
 }

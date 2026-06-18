@@ -19,9 +19,18 @@
   "FreeCodeReorganizer.Settings.StaticMembersFirst.DisplayName": "Static members first",
   "FreeCodeReorganizer.Settings.StaticMembersFirst.Description": "Within a kind group, place static members before instance members. Off by default to match FreeCRM (purely alphabetical).",
 
-  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName": "Collapse wrapped-parameter brace",
-  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description": "When a parameter list is wrapped across multiple lines, glue the closing ) and the body's opening { together as \"){\" on one line — the FreeCRM author's hand style.",
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName": "Format wrapped-parameter signatures",
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description": "When a parameter list is already wrapped across multiple lines, reformat it into the FreeCRM hand style: the name alone on its line, '(' alone, each parameter one level deeper, and the closing ')' glued to the body's '{' as \"){\". If the whole signature would instead fit within Max line width, it collapses back onto a single line. Single-line declarations are never force-wrapped.",
+
+  "FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.DisplayName": "Double-tab wrapped Razor attributes",
+  "FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.Description": "When a Razor/Blazor element's attributes are already wrapped across lines, line up each continuation attribute at the element's indent plus two levels (\"double tab\"), keeping them visually deeper than the child body. Only leading whitespace inside the start tag changes, so rendered output is preserved. Tags that would fit within Max line width collapse onto one line.",
+
+  "FreeCodeReorganizer.Settings.RespectRegions.DisplayName": "Respect #region boundaries",
+  "FreeCodeReorganizer.Settings.RespectRegions.Description": "Leave any type whose only directives are #region / #endregion completely untouched, so regions and the members inside them keep their layout. Turn off to allow members to be reordered across region boundaries (a re-parse safety net still blocks anything that would unbalance the region pairing).",
 
   "FreeCodeReorganizer.Settings.MaxPercentReordered.DisplayName": "Max percent reordered",
-  "FreeCodeReorganizer.Settings.MaxPercentReordered.Description": "If sorting would move more than this percent (0..100) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 100 to always sort."
+  "FreeCodeReorganizer.Settings.MaxPercentReordered.Description": "If sorting would move more than this percent (0..100) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 100 to always sort.",
+
+  "FreeCodeReorganizer.Settings.MaxLineWidth.DisplayName": "Max line width",
+  "FreeCodeReorganizer.Settings.MaxLineWidth.Description": "The line width (characters) at or under which an already-wrapped parameter list or Razor start tag is collapsed back onto a single line instead of being kept multi-line. Wider ones stay wrapped. Never force-wraps a single-line declaration. Default 120."
 }
