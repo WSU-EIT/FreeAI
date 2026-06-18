@@ -46,7 +46,7 @@ internal class ReorganizeRepositoryCommand : Command
             string? path = textView?.Document.Uri?.LocalPath;
             if (path is not null)
             {
-                root = FindRepoRoot(path);
+                root = RepoRoot.Find(path);
             }
         }
 
@@ -70,6 +70,13 @@ internal class ReorganizeRepositoryCommand : Command
 
         Core.ReorderConfig config = await ConfigReader.ReadAsync(this.Extensibility, cancellationToken);
 
+        // Optional: run the .editorconfig cleanup (dotnet format) across the repo first, so the house
+        // style is layered on top of editorconfig formatting.
+        if (config.RunCleanupBeforeReorganize)
+        {
+            await Task.Run(() => Core.CleanupRunner.CleanDirectory(root, config.FullCleanup, config.ExcludeCleanupGlobs), cancellationToken);
+        }
+
         // The reorganize is pure CPU + file I/O — run it off the calling thread.
         Core.BatchReorgResult result = await Task.Run(
             () => Core.BatchReorganizer.RunDirectory(root, config),
@@ -83,35 +90,5 @@ internal class ReorganizeRepositoryCommand : Command
             "\n\nVisual Studio will reload any files that changed.",
             PromptOptions.OK,
             cancellationToken);
-    }
-
-    /// <summary>Walks up from a file to the nearest folder with a .sln (preferred) or a .git folder.</summary>
-    private static string? FindRepoRoot(string startFile)
-    {
-        try
-        {
-            DirectoryInfo? dir = new FileInfo(startFile).Directory;
-            DirectoryInfo? gitFallback = null;
-            while (dir is not null)
-            {
-                if (dir.GetFiles("*.sln").Length > 0)
-                {
-                    return dir.FullName;
-                }
-
-                if (gitFallback is null && Directory.Exists(Path.Combine(dir.FullName, ".git")))
-                {
-                    gitFallback = dir;
-                }
-
-                dir = dir.Parent;
-            }
-
-            return gitFallback?.FullName;
-        }
-        catch
-        {
-            return null;
-        }
     }
 }

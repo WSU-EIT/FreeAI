@@ -11,6 +11,14 @@ public sealed class ReorderConfig
 {
     // ---- Sorting behavior -------------------------------------------------
 
+    /// <summary>
+    /// Master switch for the REORDER half of the engine: when false, members are never moved — only the
+    /// formatting/cleanup half (the "){" house style, double-tab Razor attributes) is applied. The Clean
+    /// Up commands run with this off; per-file "exclude from reorganize" rules turn it off for matched
+    /// files (e.g. EF models whose member order mirrors the database) while still allowing cleanup.
+    /// </summary>
+    public bool ReorderMembers { get; set; } = true;
+
     /// <summary>Sort members alphabetically within each kind group.</summary>
     public bool SortAlphabetically { get; set; } = true;
 
@@ -79,6 +87,23 @@ public sealed class ReorderConfig
     /// declaration to be wrapped — the reorganizer does not force-wrap. Default 120.
     /// </summary>
     public int MaxLineWidth { get; set; } = 120;
+
+    // ---- .editorconfig cleanup (dotnet format) ----------------------------
+
+    /// <summary>
+    /// When true, the Reorganize commands first run the <c>.editorconfig</c> cleanup (see
+    /// <see cref="CleanupRunner"/>) over the same target, then apply the member reorder + house style on
+    /// top. Off by default so reorganizing stays fast and never triggers a build unexpectedly; the
+    /// standalone Clean Up commands run the cleanup regardless of this flag.
+    /// </summary>
+    public bool RunCleanupBeforeReorganize { get; set; } = false;
+
+    /// <summary>
+    /// Selects the cleanup level used by <see cref="CleanupRunner"/>: false = whitespace only (fast,
+    /// no project restore); true = full <c>dotnet format</c> (also usings + code-style + analyzers, needs
+    /// a project/solution and a build). Default false.
+    /// </summary>
+    public bool FullCleanup { get; set; } = false;
 
     // ---- Ordering tables --------------------------------------------------
 
@@ -150,4 +175,24 @@ public sealed class ReorderConfig
         "{{ModuleItemStart",
         "{{ModuleItemEnd"
     ];
+
+    // ---- Per-path exclusions ----------------------------------------------
+
+    /// <summary>
+    /// Path patterns whose members are NEVER reordered (but are still eligible for cleanup/formatting).
+    /// A plain word matches any path containing it (e.g. <c>CRM.EFModels</c> excludes that whole project);
+    /// patterns with <c>*</c> / <c>**</c> / <c>?</c> are globs. See <see cref="PathExclusion"/>.
+    /// </summary>
+    public List<string> ExcludeReorganizeGlobs { get; set; } = [];
+
+    /// <summary>
+    /// Path patterns that the cleanup/formatting half skips entirely — no <c>dotnet format</c> and no
+    /// house-style formatting. Same matching rules as <see cref="ExcludeReorganizeGlobs"/>.
+    /// </summary>
+    public List<string> ExcludeCleanupGlobs { get; set; } = [];
+
+    /// <summary>A shallow copy — used to derive a per-file effective config (toggling the reorder /
+    /// formatting switches) without disturbing the shared base config. The list references are shared;
+    /// callers only flip the boolean switches, never mutate the lists.</summary>
+    public ReorderConfig Clone() => (ReorderConfig)MemberwiseClone();
 }

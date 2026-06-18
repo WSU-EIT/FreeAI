@@ -1,0 +1,64 @@
+name: Build FreeCodeReorganizer VSIX
+
+# MANUAL TRIGGER ONLY.
+# There is intentionally no push / pull_request / schedule trigger — this workflow never runs on its
+# own. Start it from the GitHub UI: Actions -> "Build FreeCodeReorganizer VSIX" -> Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for the VSIX (e.g. 1.5.0). Leave blank to use the csproj <Version>.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  build-vsix:
+    # Windows is required: the extension targets net8.0-windows8.0 and the VisualStudio.Extensibility
+    # build packs the .vsix during 'dotnet build'.
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PROJECT: FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.VS2026/FreeCodeReorganizer.VS2026.csproj
+      OUTDIR: FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.VS2026/bin/Release/net8.0-windows8.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore "$env:PROJECT"
+
+      - name: Build VSIX (Release)
+        env:
+          VSIX_VERSION: ${{ inputs.version }}
+        run: |
+          if ($env:VSIX_VERSION) {
+            Write-Host "Building VSIX version $env:VSIX_VERSION"
+            dotnet build "$env:PROJECT" -c Release --no-restore -p:Version=$env:VSIX_VERSION
+          } else {
+            Write-Host "Building VSIX with the version from the csproj"
+            dotnet build "$env:PROJECT" -c Release --no-restore
+          }
+
+      - name: Verify VSIX produced
+        run: |
+          $vsix = Get-ChildItem "$env:OUTDIR/FreeCodeReorganizer.VS2026.vsix" -ErrorAction Stop
+          Write-Host "Built $($vsix.Name)  ($([math]::Round($vsix.Length / 1MB, 2)) MB)"
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FreeCodeReorganizer-VSIX
+          path: ${{ env.OUTDIR }}/FreeCodeReorganizer.VS2026.vsix
+          if-no-files-found: error
+          retention-days: 90

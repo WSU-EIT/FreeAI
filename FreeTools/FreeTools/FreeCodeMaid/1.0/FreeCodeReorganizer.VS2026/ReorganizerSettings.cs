@@ -119,4 +119,46 @@ internal static class ReorganizerSettings
         Minimum = 40,
         Maximum = 400,
     };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean RunCleanupBeforeReorganize { get; } = new(
+        "runCleanupBeforeReorganize",
+        "%FreeCodeReorganizer.Settings.RunCleanupBeforeReorganize.DisplayName%",
+        Category,
+        defaultValue: false)
+    {
+        Description = "%FreeCodeReorganizer.Settings.RunCleanupBeforeReorganize.Description%",
+    };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean FullCleanup { get; } = new(
+        "fullCleanup",
+        "%FreeCodeReorganizer.Settings.FullCleanup.DisplayName%",
+        Category,
+        defaultValue: false)
+    {
+        Description = "%FreeCodeReorganizer.Settings.FullCleanup.Description%",
+    };
+
+    /// <summary>Semicolon-separated paths/globs whose members are never reordered (still cleaned).</summary>
+    [VisualStudioContribution]
+    internal static Setting.String ExcludeReorganize { get; } = new(
+        "excludeReorganize",
+        "%FreeCodeReorganizer.Settings.ExcludeReorganize.DisplayName%",
+        Category,
+        defaultValue: "")
+    {
+        Description = "%FreeCodeReorganizer.Settings.ExcludeReorganize.Description%",
+    };
+
+    /// <summary>Semicolon-separated paths/globs that the cleanup/formatting half skips entirely.</summary>
+    [VisualStudioContribution]
+    internal static Setting.String ExcludeCleanup { get; } = new(
+        "excludeCleanup",
+        "%FreeCodeReorganizer.Settings.ExcludeCleanup.DisplayName%",
+        Category,
+        defaultValue: "")
+    {
+        Description = "%FreeCodeReorganizer.Settings.ExcludeCleanup.Description%",
+    };
 }

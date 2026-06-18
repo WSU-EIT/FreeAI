@@ -39,7 +39,7 @@ public sealed class BatchReorganizer
             scanned++;
             try
             {
-                if (TryReorganizeFile(file, config))
+                if (TryReorganizeFile(file, EffectiveConfigFor(file, config)))
                 {
                     changedFiles.Add(file);
                 }
@@ -51,6 +51,35 @@ public sealed class BatchReorganizer
         }
 
         return new BatchReorgResult(scanned, changedFiles.Count, failed, changedFiles);
+    }
+
+    /// <summary>
+    /// Derives the per-file config: a file matching "exclude from reorganize" keeps its member order
+    /// (only formatting applies); a file matching "exclude from cleanup" gets no house-style formatting
+    /// (the external dotnet format pass excludes it separately). Files matching neither use the base config.
+    /// </summary>
+    public static ReorderConfig EffectiveConfigFor(string file, ReorderConfig config)
+    {
+        bool reorganizeExcluded = PathExclusion.IsExcluded(file, config.ExcludeReorganizeGlobs);
+        bool cleanupExcluded = PathExclusion.IsExcluded(file, config.ExcludeCleanupGlobs);
+        if (!reorganizeExcluded && !cleanupExcluded)
+        {
+            return config;
+        }
+
+        ReorderConfig eff = config.Clone();
+        if (reorganizeExcluded)
+        {
+            eff.ReorderMembers = false;
+        }
+
+        if (cleanupExcluded)
+        {
+            eff.CollapseWrappedParameterBrace = false;
+            eff.IndentWrappedRazorAttributes = false;
+        }
+
+        return eff;
     }
 
     private static IEnumerable<string> EnumerateSourceFiles(string root)

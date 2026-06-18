@@ -100,6 +100,7 @@ public sealed class RazorReorganizer
     {
         return new ReorderConfig
         {
+            ReorderMembers = config.ReorderMembers,
             SortAlphabetically = config.SortAlphabetically,
             IgnoreLeadingUnderscoreInSort = config.IgnoreLeadingUnderscoreInSort,
             GroupByVisibility = config.GroupByVisibility,

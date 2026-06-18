@@ -2,6 +2,9 @@
 // and the repository command so they always reorganize with identical rules.
 namespace FreeCodeReorganizer.VS2026;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility;
@@ -25,6 +28,10 @@ internal static class ConfigReader
         bool respectRegions = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.RespectRegions, ct)).ValueOrDefault(true);
         int maxPercent = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.MaxPercentReordered, ct)).ValueOrDefault(35);
         int maxLineWidth = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.MaxLineWidth, ct)).ValueOrDefault(120);
+        bool cleanupFirst = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.RunCleanupBeforeReorganize, ct)).ValueOrDefault(false);
+        bool fullCleanup = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.FullCleanup, ct)).ValueOrDefault(false);
+        string excludeReorganize = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.ExcludeReorganize, ct)).ValueOrDefault(string.Empty);
+        string excludeCleanup = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.ExcludeCleanup, ct)).ValueOrDefault(string.Empty);
 
         return new Core.ReorderConfig
         {
@@ -37,6 +44,19 @@ internal static class ConfigReader
             RespectRegions = respectRegions,
             MaxFractionReordered = maxPercent / 100.0,
             MaxLineWidth = maxLineWidth,
+            RunCleanupBeforeReorganize = cleanupFirst,
+            FullCleanup = fullCleanup,
+            ExcludeReorganizeGlobs = Split(excludeReorganize),
+            ExcludeCleanupGlobs = Split(excludeCleanup),
         };
     }
+
+    // Split a semicolon- or newline-separated setting string into a trimmed, non-empty list.
+    private static List<string> Split(string value)
+        => string.IsNullOrWhiteSpace(value)
+            ? new List<string>()
+            : value.Split(new[] { ';', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                   .Select(s => s.Trim())
+                   .Where(s => s.Length > 0)
+                   .ToList();
 }

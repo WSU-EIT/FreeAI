@@ -39,11 +39,12 @@ public sealed class Reorganizer
         var originalRoot = tree.GetRoot();
         bool originalHadErrors = tree.GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error);
 
-        // Pass 1: reorder members.
+        // Pass 1: reorder members — skipped entirely when ReorderMembers is off (cleanup-only / a file
+        // excluded from reorganize), leaving only the formatting pass below.
         var rewriter = new Rewriter(config, eol);
-        var afterReorg = rewriter.Visit(originalRoot);
-        if (afterReorg is null) {
-            return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, "rewrite produced null");
+        SyntaxNode afterReorg = originalRoot;
+        if (config.ReorderMembers) {
+            afterReorg = rewriter.Visit(originalRoot) ?? originalRoot;
         }
 
         // Pass 2: reformat wrapped parameter lists into the author's hand style ("(" alone, params one

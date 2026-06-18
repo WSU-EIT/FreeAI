@@ -69,9 +69,22 @@ internal class ReorganizeDocumentCommand : Command
         }
 
         string text = document.Text.CopyToString();
-        string eol = text.Contains("\r\n") ? "\r\n" : "\n";
 
         Core.ReorderConfig config = await this.BuildConfigAsync(cancellationToken);
+
+        // Per-path exclusions: an "exclude from reorganize" file keeps its member order (e.g. EF models);
+        // an "exclude from cleanup" file gets no house-style formatting.
+        Core.ReorderConfig effective = Core.BatchReorganizer.EffectiveConfigFor(path, config);
+
+        // Optional: run the .editorconfig cleanup (dotnet format, whitespace) first so editorconfig
+        // formatting is applied and the house style is layered on top. The real file is untouched —
+        // DocumentCleanup formats a throwaway sibling copy and returns the cleaned text.
+        if (config.RunCleanupBeforeReorganize && !Core.PathExclusion.IsExcluded(path, config.ExcludeCleanupGlobs))
+        {
+            text = await DocumentCleanup.CleanAsync(text, path, cancellationToken);
+        }
+
+        string eol = text.Contains("\r\n") ? "\r\n" : "\n";
 
         // Razor files: only the @code blocks are reorganized; all markup stays byte-identical.
         string? error;
@@ -79,14 +92,14 @@ internal class ReorganizeDocumentCommand : Command
         string? newText;
         if (isRazor)
         {
-            Core.RazorReorgResult r = Core.RazorReorganizer.Run(text, config, eol);
+            Core.RazorReorgResult r = Core.RazorReorganizer.Run(text, effective, eol);
             error = r.Error;
             changed = r.Changed;
             newText = r.NewText;
         }
         else
         {
-            Core.ReorgResult r = Core.Reorganizer.Run(text, config, eol);
+            Core.ReorgResult r = Core.Reorganizer.Run(text, effective, eol);
             error = r.Error;
             changed = r.Changed;
             newText = r.NewText;
