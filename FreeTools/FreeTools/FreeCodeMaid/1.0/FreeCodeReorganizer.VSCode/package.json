@@ -1,8 +1,8 @@
 {
   "name": "freecodereorganizer",
   "displayName": "FreeCodeReorganizer",
-  "description": "Reorganize C# class members alphabetically and restore the wrapped-parameter ){ brace style — a single file or the whole workspace. Shares the same engine as the Visual Studio extension.",
-  "version": "1.0.0",
+  "description": "Reorganize C#/Razor members into the FreeCRM house style, and run .editorconfig cleanup (dotnet format) — a single file or the whole workspace. Shares the same engine as the Visual Studio extension.",
+  "version": "1.1.0",
   "publisher": "wsu-eit",
   "engines": { "vscode": "^1.75.0" },
   "categories": ["Formatters", "Other"],
@@ -17,7 +17,17 @@
       },
       {
         "command": "freecodereorganizer.reorganizeWorkspace",
-        "title": "Reorganize Workspace (all .cs files)",
+        "title": "Reorganize Workspace (all files)",
+        "category": "FreeCodeReorganizer"
+      },
+      {
+        "command": "freecodereorganizer.cleanupDocument",
+        "title": "Clean Up Document (.editorconfig)",
+        "category": "FreeCodeReorganizer"
+      },
+      {
+        "command": "freecodereorganizer.cleanupWorkspace",
+        "title": "Clean Up Workspace (.editorconfig)",
         "category": "FreeCodeReorganizer"
       }
     ],
@@ -29,23 +39,27 @@
         {
           "submenu": "freecodereorganizer.submenu",
           "group": "1_modification@99",
-          "when": "editorLangId == csharp"
+          "when": "editorLangId == csharp || editorLangId == aspnetcorerazor"
         }
       ],
       "freecodereorganizer.submenu": [
         { "command": "freecodereorganizer.reorganizeDocument", "group": "1_doc@1" },
-        { "command": "freecodereorganizer.reorganizeWorkspace", "group": "2_workspace@1" }
+        { "command": "freecodereorganizer.cleanupDocument", "group": "1_doc@2" },
+        { "command": "freecodereorganizer.reorganizeWorkspace", "group": "2_workspace@1" },
+        { "command": "freecodereorganizer.cleanupWorkspace", "group": "2_workspace@2" }
       ],
       "commandPalette": [
-        { "command": "freecodereorganizer.reorganizeDocument", "when": "editorLangId == csharp" },
-        { "command": "freecodereorganizer.reorganizeWorkspace" }
+        { "command": "freecodereorganizer.reorganizeDocument", "when": "editorLangId == csharp || editorLangId == aspnetcorerazor" },
+        { "command": "freecodereorganizer.cleanupDocument", "when": "editorLangId == csharp || editorLangId == aspnetcorerazor" },
+        { "command": "freecodereorganizer.reorganizeWorkspace" },
+        { "command": "freecodereorganizer.cleanupWorkspace" }
       ]
     },
     "keybindings": [
       {
         "command": "freecodereorganizer.reorganizeDocument",
         "key": "ctrl+k ctrl+r",
-        "when": "editorTextFocus && editorLangId == csharp"
+        "when": "editorTextFocus && (editorLangId == csharp || editorLangId == aspnetcorerazor)"
       }
     ],
     "configuration": {
@@ -69,23 +83,43 @@
         },
         "freecodereorganizer.collapseWrappedParameterBrace": {
           "type": "boolean", "default": true, "order": 5,
-          "description": "When a parameter list is wrapped across multiple lines, glue the closing ) and the body's opening { together as \"){\" on one line — the FreeCRM author's hand style."
+          "description": "Reformat already-wrapped parameter lists into the FreeCRM hand style ('(' on its own line, params one level deeper, ')' glued to the body '{' as \"){\"), collapsing back to one line if it fits within Max line width."
+        },
+        "freecodereorganizer.indentWrappedRazorAttributes": {
+          "type": "boolean", "default": true, "order": 6,
+          "description": "Double-tab already-wrapped Razor/Blazor element attributes (element indent + two levels). Only leading whitespace inside the start tag changes, so rendered output is preserved."
+        },
+        "freecodereorganizer.respectRegions": {
+          "type": "boolean", "default": true, "order": 7,
+          "description": "Leave types whose only directives are #region / #endregion untouched. Turn off to allow reordering across region boundaries."
         },
         "freecodereorganizer.maxPercentReordered": {
-          "type": "number", "default": 35, "minimum": 0, "maximum": 100, "order": 6,
+          "type": "number", "default": 35, "minimum": 0, "maximum": 100, "order": 8,
           "description": "If sorting would move more than this percent of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 100 to always sort."
         },
-        "freecodereorganizer.runFormatFirst": {
-          "type": "boolean", "default": false, "order": 7,
-          "description": "Before reorganizing the active document, run VS Code's Format Document (editorconfig-aware). Requires a C# formatter (C# Dev Kit or OmniSharp)."
+        "freecodereorganizer.maxLineWidth": {
+          "type": "number", "default": 120, "minimum": 40, "maximum": 400, "order": 9,
+          "description": "Width at/under which an already-wrapped parameter list or Razor start tag collapses back onto a single line. Wider ones stay wrapped. Never force-wraps a single line."
         },
-        "freecodereorganizer.runDotnetFormatOnWorkspace": {
-          "type": "boolean", "default": false, "order": 8,
-          "description": "Before reorganizing the whole workspace, run Microsoft's 'dotnet format' (editorconfig cleanup) on each folder. Requires the .NET SDK and a solution/project in the folder."
+        "freecodereorganizer.runCleanupBeforeReorganize": {
+          "type": "boolean", "default": false, "order": 10,
+          "description": "Run the .editorconfig cleanup (dotnet format) before reorganizing, so editorconfig formatting is applied first and the house style is layered on top. Requires the .NET SDK."
+        },
+        "freecodereorganizer.fullCleanup": {
+          "type": "boolean", "default": false, "order": 11,
+          "description": "Use full 'dotnet format' (also removes/sorts usings and applies code-style + analyzer fixes; needs a project/solution and is slower) instead of whitespace-only cleanup."
+        },
+        "freecodereorganizer.excludeReorganize": {
+          "type": "array", "items": { "type": "string" }, "default": [], "order": 12,
+          "description": "Paths/globs whose members are NEVER reordered (e.g. EF models that mirror database column order). They are still eligible for cleanup. A plain word matches any path containing it; use * and ** for globs. Example: CRM.EFModels"
+        },
+        "freecodereorganizer.excludeCleanup": {
+          "type": "array", "items": { "type": "string" }, "default": [], "order": 13,
+          "description": "Paths/globs that dotnet format and the house-style formatting skip entirely. A plain word matches any path containing it; use * and ** for globs."
         },
         "freecodereorganizer.dotnetPath": {
-          "type": "string", "default": "dotnet", "order": 9,
-          "description": "Path to the 'dotnet' executable used to run the reorganize engine. Change only if dotnet is not on your PATH."
+          "type": "string", "default": "dotnet", "order": 14,
+          "description": "Path to the 'dotnet' executable used to run the engine and dotnet format. Change only if dotnet is not on your PATH."
         }
       }
     }

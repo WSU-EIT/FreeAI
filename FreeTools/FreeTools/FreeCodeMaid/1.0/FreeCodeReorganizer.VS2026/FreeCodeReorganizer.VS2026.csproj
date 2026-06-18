@@ -21,7 +21,7 @@
     <RootNamespace>FreeCodeReorganizer.VS2026</RootNamespace>
     <AssemblyName>FreeCodeReorganizer.VS2026</AssemblyName>
     <!-- Bumped per build so each install is unambiguously newer than the last. -->
-    <Version>1.4.0</Version>
+    <Version>1.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
