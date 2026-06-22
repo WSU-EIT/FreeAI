@@ -32,6 +32,7 @@ internal static class ConfigReader
         bool fullCleanup = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.FullCleanup, ct)).ValueOrDefault(false);
         string excludeReorganize = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.ExcludeReorganize, ct)).ValueOrDefault(string.Empty);
         string excludeCleanup = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.ExcludeCleanup, ct)).ValueOrDefault(string.Empty);
+        bool respectGenerated = (await settings.ReadEffectiveValueAsync(ReorganizerSettings.RespectGeneratedCode, ct)).ValueOrDefault(true);
 
         return new Core.ReorderConfig
         {
@@ -46,6 +47,7 @@ internal static class ConfigReader
             MaxLineWidth = maxLineWidth,
             RunCleanupBeforeReorganize = cleanupFirst,
             FullCleanup = fullCleanup,
+            RespectGeneratedCode = respectGenerated,
             ExcludeReorganizeGlobs = Split(excludeReorganize),
             ExcludeCleanupGlobs = Split(excludeCleanup),
         };

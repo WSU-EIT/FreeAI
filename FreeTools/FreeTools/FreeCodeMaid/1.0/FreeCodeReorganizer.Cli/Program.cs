@@ -22,6 +22,7 @@ for (int i = 0; i < args.Length; i++)
         case "--reorganize" when i + 1 < args.Length: doReorganize = ParseBool(args[++i], true); break;
         case "--exclude-reorganize" when i + 1 < args.Length: config.ExcludeReorganizeGlobs.Add(args[++i]); break;
         case "--exclude-cleanup" when i + 1 < args.Length: config.ExcludeCleanupGlobs.Add(args[++i]); break;
+        case "--respect-generated" when i + 1 < args.Length: config.RespectGeneratedCode = ParseBool(args[++i], true); break;
         case "--sort-alphabetically" when i + 1 < args.Length: config.SortAlphabetically = ParseBool(args[++i], true); break;
         case "--ignore-underscore" when i + 1 < args.Length: config.IgnoreLeadingUnderscoreInSort = ParseBool(args[++i], true); break;
         case "--group-by-visibility" when i + 1 < args.Length: config.GroupByVisibility = ParseBool(args[++i], false); break;
@@ -59,6 +60,13 @@ if (file is not null)
 {
     try
     {
+        // Leave .editorconfig-declared generated code completely alone.
+        if (config.RespectGeneratedCode && GeneratedCodeDetector.IsFileGenerated(file))
+        {
+            Console.Out.WriteLine("  (generated code, left alone): " + file);
+            return 0;
+        }
+
         bool cleanupExcluded = PathExclusion.IsExcluded(file, config.ExcludeCleanupGlobs);
         if (doCleanup && !cleanupExcluded)
         {
@@ -135,6 +143,13 @@ using (var reader = new StreamReader(stdin, new UTF8Encoding(false)))
 
 string eol = input.Contains("\r\n") ? "\r\n" : "\n";
 
+// Leave .editorconfig-declared generated code alone (when we know the buffer's logical path).
+if (stdinPath is not null && config.RespectGeneratedCode && GeneratedCodeDetector.IsFileGenerated(stdinPath))
+{
+    WriteStdout(input);
+    return 0;
+}
+
 // Apply per-path exclusions when the caller passed a logical --path for the piped buffer.
 ReorderConfig stdinConfig = stdinPath is not null
     ? BatchReorganizer.EffectiveConfigFor(stdinPath, config)
@@ -161,13 +176,15 @@ if (error is not null)
     return 1;
 }
 
-using (var stdout = Console.OpenStandardOutput())
-{
-    byte[] bytes = new UTF8Encoding(false).GetBytes(output);
-    stdout.Write(bytes, 0, bytes.Length);
-    stdout.Flush();
-}
-
+WriteStdout(output);
 return 0;
 
 static bool ParseBool(string s, bool fallback) => bool.TryParse(s, out bool b) ? b : fallback;
+
+static void WriteStdout(string text)
+{
+    using var stdout = Console.OpenStandardOutput();
+    byte[] bytes = new UTF8Encoding(false).GetBytes(text);
+    stdout.Write(bytes, 0, bytes.Length);
+    stdout.Flush();
+}

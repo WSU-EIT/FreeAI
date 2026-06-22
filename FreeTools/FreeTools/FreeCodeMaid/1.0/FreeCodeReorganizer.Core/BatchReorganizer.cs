@@ -34,11 +34,20 @@ public sealed class BatchReorganizer
         var changedFiles = new List<string>();
         int scanned = 0, failed = 0;
 
+        // Build the generated-code detector once for the whole tree (parses the applicable .editorconfig).
+        GeneratedCodeDetector? generated = config.RespectGeneratedCode ? GeneratedCodeDetector.ForRoot(root) : null;
+
         foreach (string file in EnumerateSourceFiles(root))
         {
             scanned++;
             try
             {
+                // Leave .editorconfig-declared generated code completely alone.
+                if (generated is not null && generated.IsGenerated(file))
+                {
+                    continue;
+                }
+
                 if (TryReorganizeFile(file, EffectiveConfigFor(file, config)))
                 {
                     changedFiles.Add(file);

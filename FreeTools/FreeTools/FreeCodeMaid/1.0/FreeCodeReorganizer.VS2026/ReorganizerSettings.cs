@@ -140,6 +140,16 @@ internal static class ReorganizerSettings
         Description = "%FreeCodeReorganizer.Settings.FullCleanup.Description%",
     };
 
+    [VisualStudioContribution]
+    internal static Setting.Boolean RespectGeneratedCode { get; } = new(
+        "respectGeneratedCode",
+        "%FreeCodeReorganizer.Settings.RespectGeneratedCode.DisplayName%",
+        Category,
+        defaultValue: true)
+    {
+        Description = "%FreeCodeReorganizer.Settings.RespectGeneratedCode.Description%",
+    };
+
     /// <summary>Semicolon-separated paths/globs whose members are never reordered (still cleaned).</summary>
     [VisualStudioContribution]
     internal static Setting.String ExcludeReorganize { get; } = new(

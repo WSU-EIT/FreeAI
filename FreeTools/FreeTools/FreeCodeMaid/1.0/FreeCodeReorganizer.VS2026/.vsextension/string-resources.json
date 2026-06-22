@@ -42,6 +42,9 @@
   "FreeCodeReorganizer.Settings.FullCleanup.DisplayName": "Full cleanup (usings + code style + analyzers)",
   "FreeCodeReorganizer.Settings.FullCleanup.Description": "Use full 'dotnet format' (also removes/sorts usings and applies code-style + analyzer fixes; needs a project/solution and a build, so it is slower) instead of whitespace-only cleanup. The single-document Clean Up is always whitespace; this applies to the repository-wide cleanup.",
 
+  "FreeCodeReorganizer.Settings.RespectGeneratedCode.DisplayName": "Respect .editorconfig generated_code",
+  "FreeCodeReorganizer.Settings.RespectGeneratedCode.Description": "Leave any file your .editorconfig marks with 'generated_code = true' completely alone — no member reorder and no house-style formatting — exactly as dotnet format and the analyzers skip it. On by default; this usually removes the need for an explicit exclude list (e.g. FreeCRM already marks [**/EFModels/**.cs] as generated).",
+
   "FreeCodeReorganizer.Settings.ExcludeReorganize.DisplayName": "Exclude from reorganize (paths)",
   "FreeCodeReorganizer.Settings.ExcludeReorganize.Description": "Semicolon-separated paths/globs whose members are NEVER reordered (e.g. EF models that mirror database column order). These files are still eligible for .editorconfig cleanup. A plain word matches any path containing it; use * and ** for globs. Example: CRM.EFModels;**/Migrations/**",
 
