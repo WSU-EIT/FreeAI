@@ -32,6 +32,7 @@ function buildConfigArgs(cfg) {
         '--respect-regions', String(cfg.get('respectRegions', true)),
         '--max-percent', String(cfg.get('maxPercentReordered', 35)),
         '--max-width', String(cfg.get('maxLineWidth', 120)),
+        '--respect-generated', String(cfg.get('respectGeneratedCode', true)),
     ];
     for (const p of cfg.get('excludeReorganize', [])) { args.push('--exclude-reorganize', String(p)); }
     for (const p of cfg.get('excludeCleanup', [])) { args.push('--exclude-cleanup', String(p)); }

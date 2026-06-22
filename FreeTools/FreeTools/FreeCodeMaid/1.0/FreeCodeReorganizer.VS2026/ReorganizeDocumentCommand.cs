@@ -72,6 +72,13 @@ internal class ReorganizeDocumentCommand : Command
 
         Core.ReorderConfig config = await this.BuildConfigAsync(cancellationToken);
 
+        // Leave .editorconfig-declared generated code completely alone.
+        if (config.RespectGeneratedCode && Core.GeneratedCodeDetector.IsFileGenerated(path))
+        {
+            this.logger.TraceInformation("Reorganize: file marked generated_code in .editorconfig — left alone.");
+            return;
+        }
+
         // Per-path exclusions: an "exclude from reorganize" file keeps its member order (e.g. EF models);
         // an "exclude from cleanup" file gets no house-style formatting.
         Core.ReorderConfig effective = Core.BatchReorganizer.EffectiveConfigFor(path, config);

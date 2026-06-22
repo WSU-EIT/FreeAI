@@ -179,6 +179,15 @@ public sealed class ReorderConfig
     // ---- Per-path exclusions ----------------------------------------------
 
     /// <summary>
+    /// Respect the <c>.editorconfig</c> <c>generated_code = true</c> flag: files a project marks as
+    /// generated (e.g. EF models, scaffolded folders) are left completely alone — no reorder and no
+    /// house-style formatting — exactly as <c>dotnet format</c> and the analyzers already skip them.
+    /// On by default; this usually removes the need for an explicit exclude list. See
+    /// <see cref="GeneratedCodeDetector"/>.
+    /// </summary>
+    public bool RespectGeneratedCode { get; set; } = true;
+
+    /// <summary>
     /// Path patterns whose members are NEVER reordered (but are still eligible for cleanup/formatting).
     /// A plain word matches any path containing it (e.g. <c>CRM.EFModels</c> excludes that whole project);
     /// patterns with <c>*</c> / <c>**</c> / <c>?</c> are globs. See <see cref="PathExclusion"/>.
