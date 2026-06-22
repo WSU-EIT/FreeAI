@@ -58,8 +58,13 @@ public sealed class Reorganizer
         }
 
         var newText = finalRoot.ToFullString();
+
+        // Re-align ModuleItem End markers to their Start (fixes the indentation the whitespace cleanup
+        // pushes onto them). Only touches marker-comment leading whitespace; safe and parse-neutral.
+        newText = ModuleMarkerAligner.Align(newText);
+
         if (string.Equals(newText, sourceText, StringComparison.Ordinal)) {
-            // Nothing actually changed (already in order, braces already collapsed).
+            // Nothing actually changed (already in order, braces already collapsed, markers aligned).
             return new ReorgResult(null, false, 0, rewriter.TypesSkipped, 0, null);
         }
 
@@ -113,12 +118,15 @@ public sealed class Reorganizer
     }
 
     /// <summary>
-    /// Reformats a method/constructor/operator/local-function whose parameter list is ALREADY wrapped
-    /// across multiple lines into the FreeCRM author's hand style — "(" alone on its own line at the
-    /// member's indent, each parameter one level deeper, ")" glued to the body's "{" as "){" — OR, when
-    /// the whole signature would fit on a single line within <see cref="ReorderConfig.MaxLineWidth"/>,
-    /// collapses it back onto one line (normal Allman brace). Single-line declarations are never wrapped.
-    /// Members whose parameter list carries comments or preprocessor directives are left alone.
+    /// Restores the FreeCRM "){" brace on a method/constructor whose parameter list is ALREADY wrapped
+    /// across multiple lines: it glues the closing ")" to the body's "{" as "){" — the one thing
+    /// `dotnet format` / .editorconfig can't express. It deliberately does NOT move "(" onto its own
+    /// line or re-indent the parameters; where "(" goes and how the parameters line up is the cleanup
+    /// formatter's job. The only other thing it does is collapse a wrapped signature back onto a single
+    /// line (normal Allman brace) when the whole thing would fit within
+    /// <see cref="ReorderConfig.MaxLineWidth"/>. Single-line declarations are never wrapped, and a list
+    /// carrying comments/directives — or a signature with an initializer or constraints between ")" and
+    /// "{" — is left alone.
     /// </summary>
     private sealed class WrappedParameterRewriter : CSharpSyntaxRewriter
     {
@@ -164,8 +172,14 @@ public sealed class Reorganizer
                 return node;
             }
 
+            // Only act when the body's "{" is the very next token after ")" — i.e. nothing (a constructor
+            // ": base(...)" initializer, generic "where" constraints, an expression body) sits between
+            // them. Otherwise the "){" glue doesn't apply, so we leave the declaration to the formatter.
+            if (pl.CloseParenToken.GetNextToken() != body.OpenBraceToken) {
+                return node;
+            }
+
             string baseIndent = GetIndent(node);
-            string unit = baseIndent.Contains("\t") ? "\t" : "    ";
 
             int offset = pl.CloseParenToken.Span.End - node.SpanStart;
             string header = node.ToString();
@@ -174,9 +188,12 @@ public sealed class Reorganizer
             }
             int singleLineWidth = baseIndent.Length + CollapseWhitespace(header).Length + 2; // + " {"
 
+            // Wide signatures keep their wrapping exactly as the cleanup left it — we ONLY glue ")" to the
+            // body "{". Short ones collapse back onto one line. We never move "(" to its own line or
+            // re-indent parameters; that placement belongs to dotnet format, not us.
             SyntaxNode result = singleLineWidth <= _maxWidth
                 ? BuildSingleLine(node, pl, body, baseIndent)
-                : BuildHouseStyle(node, pl, body, baseIndent, unit);
+                : BuildBraceGlue(node, pl, body);
 
             if (result.ToFullString() != node.ToFullString()) {
                 SignaturesReformatted++;
@@ -185,24 +202,34 @@ public sealed class Reorganizer
             return result;
         }
 
-        private SyntaxNode BuildHouseStyle(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body, string baseIndent, string unit)
+        // Wide / wrapped signature: keep "(" and the parameter layout exactly as they are (the cleanup
+        // owns that) and ONLY glue the closing ")" to the body "{" as "){".
+        private static SyntaxNode BuildBraceGlue(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
         {
-            var eolT = SyntaxFactory.EndOfLine(_eol);
-            var baseWs = SyntaxFactory.Whitespace(baseIndent);
-            var paramWs = SyntaxFactory.Whitespace(baseIndent + unit);
+            SyntaxToken cp = pl.CloseParenToken;
+            SyntaxToken ob = body.OpenBraceToken;
 
-            var ps = pl.Parameters.Select(p => p.WithLeadingTrivia(eolT, paramWs).WithTrailingTrivia());
-            var newPl = pl
-                .WithOpenParenToken(SyntaxFactory.Token(SyntaxKind.OpenParenToken).WithLeadingTrivia(eolT, baseWs).WithTrailingTrivia())
-                .WithParameters(Separate(ps, SyntaxFactory.Token(SyntaxKind.CommaToken)))
-                .WithCloseParenToken(SyntaxFactory.Token(SyntaxKind.CloseParenToken).WithLeadingTrivia(eolT, baseWs).WithTrailingTrivia());
+            bool onSeparateLines = cp.TrailingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia))
+                                || ob.LeadingTrivia.Any(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
+            if (!onSeparateLines) {
+                return node; // already ")" + "{" on one line
+            }
 
-            // Glue ")" to "{" as "){" — unless an initializer (": base(...)") sits between them.
-            SyntaxTriviaList braceLeading = HasInitializer(node)
-                ? body.OpenBraceToken.LeadingTrivia
-                : SyntaxFactory.TriviaList();
-            return Recombine(node, pl, newPl, braceLeading);
+            if (cp.TrailingTrivia.Any(IsComment) || ob.LeadingTrivia.Any(IsComment)) {
+                return node; // don't glue across a comment between ) and {
+            }
+
+            return node.ReplaceTokens(new[] { cp, ob }, (orig, rewritten) =>
+                orig == cp ? rewritten.WithTrailingTrivia()
+                : orig == ob ? rewritten.WithLeadingTrivia()
+                : rewritten);
         }
+
+        private static bool IsComment(SyntaxTrivia t)
+            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
+            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
 
         private SyntaxNode BuildSingleLine(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body, string baseIndent)
         {
