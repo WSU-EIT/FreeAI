@@ -18,7 +18,7 @@ public class ReorganizerExtension : Extension
         Metadata = new(
             id: "FreeCodeReorganizer.VS2026.b8e4d1c0-5a3f-4e21-9c7b-2d6f8a0e3b14",
             version: this.ExtensionAssemblyVersion,
-            publisherName: "WSU-EIT",
+            publisherName: "Daniel-Pepka",
             displayName: "FreeCodeReorganizer (2026)",
             description: "Reorganizes C# class members alphabetically and restores the wrapped-parameter \"){\" brace style. Native VS 2026 build on VisualStudio.Extensibility."),
     };
