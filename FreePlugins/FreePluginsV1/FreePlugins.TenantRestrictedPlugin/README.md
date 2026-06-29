@@ -77,3 +77,7 @@ This plugin demonstrates how to restrict a plugin to specific tenants:
 ## Source
 
 This plugin is a compiled version of the file-based `Example2.cs` plugin, demonstrating how to convert tenant-restricted plugins to the NuGet-based architecture.
+
+---
+
+## 🧭 Briefing — **How:** a compiled **General** plugin (`TenantSpecificPlugin`) that sets `LimitToTenants` to a specific tenant GUID, so only users in that tenant ever see it. **Tech:** [the TenantRestrictedPlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.TenantRestrictedPlugin). **Why/Different:** demonstrates **per-tenant visibility** — the basis for beta features, licensed/paid plugins, or region-specific functionality in a multi-tenant app. **Diagram:** `load plugins ▶ LimitToTenants set? ▶ show ONLY to listed tenants (empty/null = all tenants)`.

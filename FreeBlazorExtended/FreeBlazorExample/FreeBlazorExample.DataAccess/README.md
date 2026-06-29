@@ -37,6 +37,24 @@ Implements `IDataAccess` for EF Core repositories (Users, Tenants, Departments, 
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The standard server-side data layer for the showcase host: EF Core repositories (users, tenants, files, settings, tags), auth (local/LDAP/Graph), PDF/CSV, JWT, and a background task runner. It's the same FreeCRM data layer the other apps use.
+
+**What tech & where?** [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.DataAccess/DataAccess.cs) · the `EFUserPreferencesStore` here is the reference SQL implementation for the library's Feature 104.
+
+**Why does this exist?** To give the showcase a real, multi-database backend — and, notably, to provide the **SQL persistence** that the library's UserPreferences feature plugs into.
+
+**What does it beat?** It demonstrates the **two-store pattern** for Feature 104: this layer supplies the EF-backed `IUserPreferencesStore` while the library ships the in-memory fallback.
+
+**Terminology:** **Repository** — the methods that read/write one kind of record.
+
+**The hard part, drawn:**
+```
+  Controllers ─▶ IDataAccess ─ EF Core ─▶ SQL Server | MySQL | PostgreSQL | SQLite | InMemory
+        └─ EFUserPreferencesStore ─▶ provides REAL SQL persistence for library Feature 104
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

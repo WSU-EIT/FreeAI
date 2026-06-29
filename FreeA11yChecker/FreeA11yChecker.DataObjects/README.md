@@ -67,6 +67,40 @@ Shared DTO library for FreeA11yChecker. Contains every request/response model, e
 |---|---|
 | `System.Runtime.Caching` | `MemoryCache` backing for `Caching.cs` |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A pure "data shapes" library — every request/response object, enum, and config record shared by both the server and the browser client. No database code, no logic: it's just the *vocabulary* both sides agree on (a `ScanRun`, an `A11yViolation`, a `SignalRUpdate`, a `User`).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Plain C# records/classes (.NET 10) | The shared data shapes | [the DataObjects project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.DataObjects) |
+| Scan-specific DTOs | `ScanRun`, `A11yViolation`, `ScanScreenshot` | [App.DataObjects.Scans](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.DataObjects) |
+| `System.Runtime.Caching` | In-process `MemoryCache` helper | [the DataObjects project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.DataObjects) |
+
+**Why does this exist?**
+When the server and the browser client both compile against the *same* shapes, an API change that breaks the contract fails at **build time**, not in production.
+
+**What does it accomplish that other tools don't?**
+- One shared model used by C# on the server **and** C# in the browser — there are no hand-written TypeScript types to drift out of sync.
+- A standard success/error envelope (`BooleanResponse`) every endpoint returns, so error handling is uniform.
+
+**Terminology & "can I see it?"**
+- **DTO** (Data Transfer Object) — a plain shape with no behavior, just fields.
+- **Contract** — the agreed set of shapes the two halves of the app exchange.
+
+**The hard part, drawn** — one vocabulary, both sides of the wire:
+
+```
+   Server  ─┐                                   ┌─  Browser (WASM client)
+            ├──  DataObjects (shared C#)  ───────┤
+   EF / DB ◀┘   ScanRun · A11yViolation          └─▶  UI binds to the SAME types
+                SignalRUpdate · User · BooleanResponse
+        a breaking change here = a compile error on BOTH sides (not a runtime surprise)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

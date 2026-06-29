@@ -106,6 +106,58 @@ dotnet build FreeManager.slnx
 dotnet run --project FreeManager
 ```
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+FreeManager is two things in one: a running multi-tenant web app (the usual FreeCRM platform), **and a code generator for building more FreeCRM apps.** You describe your data model — entities, properties, relationships — either in a 7-step in-browser **Entity Wizard** or via the **`FreeManager.exe` CLI**, and it emits ready-to-drop C#/Razor source files (`.App.` partial classes) laid out in the exact FreeCRM project structure (Controllers, DataAccess, DataObjects, EFModels, Client pages). You can preview the generated code, save the project, and export it.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| The code generator | Emits the C#/Razor for one entity across all layers | [FreeManager.App.EntityTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/FreeManager.App.EntityTemplates.cs) |
+| 7-step Entity Wizard (UI) | Define the model in the browser | [Pages/FreeManager.App.EntityWizard.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/Pages/FreeManager.App.EntityWizard.razor) |
+| Wizard data model | Entities, properties, relationships | [FreeManager.App.DataObjects.EntityWizard.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.DataObjects/FreeManager.App.DataObjects.EntityWizard.cs) |
+| CLI generator (`new` / `app`) | Same generation from the command line | [CliProjectTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Cli/CliProjectTemplates.cs) |
+| Saved-project storage | Persist/reopen App Builder projects | [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.EFModels/EFModels/EFDataModel.cs) |
+
+**Why does this exist?**
+Every FreeCRM app repeats the same layered boilerplate (DTO + EF entity + data access + controller + Razor page, per feature). FreeManager automates that from a model definition, so a new app or module starts as working, consistent, layered code instead of hand-copied scaffolding.
+
+**What does it accomplish that other tools don't?**
+- **Generates the whole layered stack at once** — DTO, EF model, data access, controller, and UI page — matching FreeCRM conventions exactly, so the output drops in without rework.
+- **Two front-ends, one generator**: an in-browser wizard (with preview, undo/redo, CSV/JSON import) *and* a scriptable CLI for automation/CI.
+- **Progressive app templates** (FreeBase → FreeTracker → FreeAudit) scaffold whole multi-entity apps, not just single files.
+- It's self-hosting: FreeManager can scaffold apps like FreeGLBA (the example in its own docs).
+
+**Terminology & "can I see it?"**
+- **Entity** — one data type/table (e.g. "Asset") with properties.
+- **`.App.` partial class** — a generated file that extends a FreeCRM base class without editing the base.
+- **Scaffold** — generate the starter code for something.
+- **Entity Wizard** — the 7 steps: Project → Entities → Edit → Relationships → Options → Preview → Complete.
+- *See it:* open `/AppBuilder/EntityWizard` in the running app.
+
+**The hard part, drawn** — one model definition fans out into a full layered app:
+
+```
+  you ─▶ define entities / properties / relationships
+          │   (7-step Entity Wizard in the browser  OR  FreeManager.exe new/app on the CLI)
+          ▼
+   EntityWizardState   (the model)
+          │  EntityTemplates.GenerateAllFiles(state)
+          ▼
+  ┌──────────── ONE entity fans out into the full FreeCRM stack ────────────┐
+  │  .App.DataObjects.cs   →  the DTO                                         │
+  │  .App.EFModel.cs       →  the EF Core entity + DbSet                      │
+  │  .App.DataAccess.cs    →  CRUD repository methods                         │
+  │  .App.Controller.cs    →  REST endpoints                                  │
+  │  .App.*.razor          →  the Blazor page (list / edit / dashboard / …)   │
+  └───────────────────────────────┬──────────────────────────────────────────┘
+          │ preview in-browser (Monaco) · save project (FMProject) · export to disk
+          ▼
+   a working, layered FreeCRM module — drops in, ready to build
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

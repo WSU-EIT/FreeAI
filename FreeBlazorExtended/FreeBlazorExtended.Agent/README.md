@@ -63,3 +63,43 @@ The agent will redeem the registration key on first start, persist the long-live
 | `StopAppPool` | `ApplicationPool.Stop()` |
 
 The agent reports each command's result back to the hub via the `ReportCommandResult` SignalR method.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is a **Windows Service** that runs on a server and lets you control that server *remotely* from the FreeBlazorExtended hub. It registers with the hub (redeeming a one-time key for a long-lived token), keeps a SignalR connection open, sends heartbeats (CPU/RAM/disk + an inventory of Windows Services and IIS app pools), and — the key part — **executes commands the hub sends**: start/stop/restart/uninstall a Windows Service, or recycle/start/stop an IIS app pool. It reports each command's result back.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| `System.ServiceProcess.ServiceController` + `sc.exe` | Start/stop/uninstall Windows Services | [the Agent project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended.Agent) |
+| `Microsoft.Web.Administration` | Recycle/start/stop IIS app pools | [the Agent project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended.Agent) |
+| Hub side (the dashboard) | Issues commands, shows telemetry | [AgentMonitoring/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/AgentMonitoring) |
+
+**Why does this exist?**
+So an operator can restart a stuck Windows Service or recycle an IIS app pool **from a web dashboard**, without RDP-ing into the box — an Azure-DevOps-runner-style remote management surface for a fleet of Windows servers.
+
+**What does it accomplish that other tools don't?**
+- **Two-way, not just monitoring**: it *acts* on the host (service/IIS control), reporting each result — most heartbeat agents only report.
+- **DPAPI at-rest token encryption** and one-time registration keys for safe enrollment.
+- **Linux-port-ready**: every Windows-specific call is annotated with `systemd`/`nginx` equivalents for a future port.
+
+**Terminology & "can I see it?"**
+- **IIS app pool** — the worker process group hosting a website; "recycling" it restarts the site cleanly.
+- **DPAPI** — Windows' built-in data-protection API used to encrypt the saved token.
+- **Registration key** — a one-time secret swapped for a long-lived token on first start.
+
+**The hard part, drawn** — a dashboard click restarts a service on a remote box:
+
+```
+  operator clicks "Restart" on the hub dashboard (AgentMonitoring)
+        │ SignalR command: { RestartService, "MyService" }
+        ▼
+  FreeBlazorExtended.Agent (Windows Service on the target host)
+        │ ServiceController.Stop() → Start()   (or IIS ApplicationPool.Recycle())
+        ▼ ReportCommandResult(success/failure) ──▶ back to the hub → dashboard updates
+  (meanwhile: heartbeats every 30s carry CPU/RAM/disk + service & app-pool inventory)
+```

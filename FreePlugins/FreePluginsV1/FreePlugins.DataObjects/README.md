@@ -42,6 +42,25 @@ Shared DTO (Data Transfer Object) class library. Both the server-side `FreePlugi
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A pure "data shapes" library shared by server and browser. Notably, it re-exports the `Plugin`, `PluginPrompt`, and `PluginExecuteResult` types from the runtime so the **client can render and run plugins using the same shapes the server uses**.
+
+**What tech & where?** [DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.DataObjects/DataObjects.cs).
+
+**Why does this exist?** So the plugin UI on the client and the plugin engine on the server agree on exactly what a plugin and its prompts look like.
+
+**What does it beat?** One shared definition for plugin shapes across both tiers — no drift between what the UI renders and what the engine runs.
+
+**Terminology:** **Re-export** — exposing the runtime's `Plugin` types here so the client can use them without referencing the server.
+
+**The hard part, drawn:**
+```
+  Server ─┐                                    ┌─ Browser (plugin UI)
+          ├─ DataObjects (+ re-exported Plugin) ┤  → both use the SAME Plugin/Prompt shapes
+  DB ◀────┘                                     └─▶ render prompts · show results
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

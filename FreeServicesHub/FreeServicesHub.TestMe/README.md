@@ -51,6 +51,38 @@ None (launches other projects as child processes; no compile-time dependency).
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A CLI test harness that validates the **agent and its installer** without needing the hub. It launches the agent (from source or a built exe), watches its console output for "Heartbeat" lines in the expected format, and confirms they appear within a timeout. It can also run the installer headlessly (`build` → `configure` → `remove`) to prove a clean install/uninstall.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Console test harness | Launch agent/installer, assert output | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.TestMe/Program.cs) |
+| Child-process control | Start/watch/kill the agent process | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.TestMe/Program.cs) |
+
+**Why does this exist?**
+To smoke-test the agent quickly — "does it start and emit heartbeats?" and "does the installer install/remove cleanly?" — with no hub, no database, and no dependencies beyond the BCL.
+
+**What does it accomplish that other tools don't?**
+- Tests the agent **as a black box** (watches real stdout), the way it actually runs in production.
+- **No elevation required** for the installer headless test, so it runs in plain CI.
+
+**Terminology & "can I see it?"**
+- **Test harness** — a small program that drives another program and checks its behavior.
+- **Headless** — runs with no prompts/UI, suitable for pipelines.
+
+**The hard part, drawn** — black-box agent check:
+
+```
+  dotnet run -- --test=4 --heartbeats=5
+        │ start the agent (dotnet run or built exe)
+        ▼ watch stdout for ≥5 lines matching the "Heartbeat" format (CPU/RAM/disk + timestamp)
+        ▼ all seen before timeout? ─▶ PASS ; else ─▶ FAIL ─▶ kill the process
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

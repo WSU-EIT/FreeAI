@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="FreeCodeReorganizer.Core/FreeCodeReorganizer.Core.csproj" />
+  <Project Path="FreeCodeReorganizer.Core.Tests/FreeCodeReorganizer.Core.Tests.csproj" />
+  <Project Path="FreeCodeReorganizer/FreeCodeReorganizer.csproj" />
+</Solution>

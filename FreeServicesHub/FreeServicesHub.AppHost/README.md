@@ -52,6 +52,40 @@ This project uses **both** `Sdk="Microsoft.NET.Sdk"` (outer) **and** `<Sdk Name=
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the **.NET Aspire orchestrator** for local development. With one `dotnet run` it starts *both* the hub web server and an agent worker together, wires their ports and environment variables, and makes the agent wait until the hub is ready before connecting — all shown live in the Aspire dashboard.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| .NET Aspire `DistributedApplication` | Declares & runs the hub + agent together | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.AppHost/Program.cs) |
+| `.WaitFor(hub)` dependency | Agent starts only once the hub is up | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.AppHost/Program.cs) |
+
+**Why does this exist?**
+A hub-and-agent system is two processes that must start in the right order with matching URLs/keys. Aspire makes "run the whole thing locally" a single command, with a dashboard showing both processes' logs and health.
+
+**What does it accomplish that other tools don't?**
+- **One-command multi-process dev**: no manually launching the hub, then the agent, then fixing ports.
+- **Ordered startup** via `.WaitFor(hub)` so the agent doesn't fail trying to connect to a hub that isn't listening yet.
+- Runs with `DatabaseType=InMemory` so there's **no database setup** for development.
+
+**Terminology & "can I see it?"**
+- **.NET Aspire** — a framework for wiring up and running multi-service .NET apps locally.
+- **AppHost** — the orchestrator project (not deployed to production).
+
+**The hard part, drawn** — one command boots the whole system in order:
+
+```
+  dotnet run (AppHost)
+        ├─▶ start  hub  (FreeServicesHub)  HTTPS 7271 / HTTP 5111 · DatabaseType=InMemory
+        └─▶ start  agent (FreeServicesHub.Agent)  ──.WaitFor(hub)──▶ given Agent__HubUrl + RegistrationKey
+                        (agent connects only AFTER the hub is accepting connections)
+        ▼  Aspire dashboard shows live logs + health for both processes
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

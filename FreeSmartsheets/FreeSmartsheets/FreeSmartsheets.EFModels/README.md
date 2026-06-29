@@ -55,6 +55,36 @@ None — this project has no local project references.
 | Target Framework | `net10.0` |
 | Output Type | Class Library |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This library *defines the database*: the `EFDataModel` DbContext, one entity class per table (users, groups, tenants, departments, tags, settings, files, email templates, plugin cache, UDF labels), and code-first migrations. One model targets SQL Server, PostgreSQL, SQLite, MySQL, and an in-memory option.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core DbContext | The schema as `DbSet<T>` | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.EFModels/EFModels/EFDataModel.cs) |
+| Fluent API overrides | Column types, indexes | [EFModelOverrides.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.EFModels/EFModelOverrides.cs) |
+
+**Why does this exist?**
+One schema that runs on whatever database is already in place — no per-engine rewrite.
+
+**What does it accomplish that other tools don't?**
+- **Five engines from one model**, with zero-setup InMemory for first runs and tests.
+
+**Terminology & "can I see it?"**
+- **DbContext** — the C# object that represents the database and its tables.
+- **Entity** — a C# class mapped to one table.
+
+**The hard part, drawn** — one model, five databases:
+
+```
+  EFDataModel (DbContext)
+       └ DbSet ▶ User · UserGroup · Tenant · Department · Tag · Setting · FileStorage · EmailTemplate · PluginCache · UDFLabel
+       └ providers ▶ SQL Server · PostgreSQL · SQLite · MySQL · InMemory
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

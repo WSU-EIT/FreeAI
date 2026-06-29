@@ -46,6 +46,39 @@ Navigate to `https://localhost:5001`
 - **SignalR** — real-time notifications
 - **Roslyn** — server-side and client-side dynamic C# plugin compilation
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the solution folder for FreeSmartsheets: the FreeCRM platform (multi-tenant Blazor app — auth, users, tenants, plugins, real-time updates) plus the *intended* Smartsheet workspace-inventory viewer. You set a Smartsheet API key in `appsettings.json` and point it at your account.
+
+> **Honest status:** the Smartsheet inventory flow is *designed* in [Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/Docs/003_architecture.md) but **not yet implemented** — the data layer has no `GetWorkspaces`/Smartsheet-SDK code yet. See the [top-level README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/README.md) briefing for the full picture.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WASM + ASP.NET Core | Platform UI + host | [FreeSmartsheets/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets/Program.cs) |
+| EF Core (5 providers) | Data layer | [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.EFModels/EFModels/EFDataModel.cs) |
+| Smartsheet flow *(planned)* | Inventory design, not yet coded | [Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/Docs/003_architecture.md) |
+
+**Why does this exist?**
+To give an org a single read-only inventory and access map of its Smartsheet account, built on a platform that already handles SSO and multi-tenancy.
+
+**What does it accomplish that other tools don't?**
+- *(Goal)* One cross-account "who-has-access-to-what" view.
+- Honest, inspectable status — the scaffold is real; the Smartsheet calls are pending.
+
+**Terminology & "can I see it?"**
+- **Workspace / sheet** — Smartsheet's data containers. **API key** — read access token. *See:* [Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/Docs/003_architecture.md).
+
+**The hard part, drawn** — platform now, Smartsheet next:
+
+```
+  TODAY:   Browser (Blazor WASM) ─REST─▶ DataController ─▶ IDataAccess ─ EF Core ─▶ 5 DBs
+                                              (auth · multi-tenant · plugins · SignalR)
+  PLANNED: DataAccess.GetWorkspaces() ─▶ SmartsheetClient.ListWorkspaces() ─▶ inventory UI
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

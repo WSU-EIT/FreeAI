@@ -83,3 +83,7 @@ The `IPluginContext` provides:
 - `GetService<T>()` - Get optional services
 - `GetRequiredService<T>()` - Get required services
 - `LogInfo()`, `LogWarning()`, `LogError()` - Logging methods
+
+---
+
+## 🧭 Briefing — **How:** a compiled **BackgroundProcess** plugin (`SampleBackgroundPlugin`, `ICompiledBackgroundProcessPlugin`) whose `ExecuteAsync(context, iteration)` runs on the host's background-processor timer. **Tech:** [the SamplePlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.SamplePlugin). **Why/Different:** the minimal starting template for a *scheduled* compiled plugin — and the README doubles as the step-by-step "create your own compiled plugin" guide (`[Plugin]` attribute + interface + register). **Diagram:** `host background timer ▶ ExecuteAsync(context, iteration) each tick ▶ PluginResult`.

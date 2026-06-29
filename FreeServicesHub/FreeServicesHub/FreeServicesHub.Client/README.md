@@ -88,6 +88,39 @@ The Blazor WebAssembly frontend for FreeServicesHub. Runs entirely in the browse
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser dashboard, in C#/WebAssembly. Its headline screens are the **fleet views**: `/AgentDashboard` (real-time health of every agent), `/AgentDetail/{id}`, `/AgentManagement`, and `/AgentSettings`. It keeps a SignalR connection open so heartbeats update the dashboard live, and uses Highcharts for the CPU/RAM/disk graphs. Around the fleet views are the usual platform admin pages.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| API + SignalR helpers | Calls + live agent updates | [Helpers.App.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.Client/Helpers.App.cs) |
+| Blazor WASM dashboard | The agent screens & charts | [the Client project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.Client) |
+| Highcharts / MudBlazor / Radzen | Live charts & data grids | [the Client project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeServicesHub/FreeServicesHub/FreeServicesHub.Client) |
+
+**Why does this exist?**
+So an operator watches the whole fleet's health on one live screen — and manages agents and API keys — without touching the database or any single machine.
+
+**What does it accomplish that other tools don't?**
+- A **live** `/AgentDashboard`: SignalR pushes each heartbeat as it arrives, so health is current, not last-refresh.
+- Per-agent **drill-down** with charted CPU/RAM/disk trends, plus API-key and agent-settings management in the same UI.
+
+**Terminology & "can I see it?"**
+- **SignalR client** — the browser side of the live connection to the hub.
+- **Highcharts** — the JS charting library used for the telemetry graphs.
+
+**The hard part, drawn** — heartbeats become a live dashboard:
+
+```
+  hub ──SignalR push──▶ FreeServicesHub.Client
+        │ /AgentDashboard updates each agent's tile in real time (Highcharts CPU/RAM/disk)
+        │ /AgentDetail drills into one machine ; /AgentManagement + /Settings/ApiKeys manage them
+        └ Http GET via Helpers.App ─▶ agent list · history · settings
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

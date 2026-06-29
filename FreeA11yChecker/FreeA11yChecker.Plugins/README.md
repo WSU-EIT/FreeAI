@@ -48,6 +48,44 @@ None — this library has no project references.
 | `Microsoft.CodeAnalysis.CSharp` | Roslyn C# compiler |
 | `Basic.Reference.Assemblies.Net100` | .NET 10 BCL reference assemblies for Roslyn compilation |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is a **runtime C# compiler**. At startup it reads `.cs` and `.plugin` files from a `PluginFiles/` folder, compiles them in memory with **Roslyn** using the running app's own assemblies as references, and exposes the resulting types as services — *no rebuild of the app required*. It also compiles arbitrary C# strings on demand (for the in-browser plugin editor) and caches compiled output, AES-256 encrypted, so unchanged plugins don't recompile on the next start.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Roslyn (`Microsoft.CodeAnalysis.CSharp`) | Compile plugin C# at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Plugins/Plugins.cs) |
+| `Basic.Reference.Assemblies.Net100` | .NET 10 reference assemblies for the compile | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Plugins/Plugins.cs) |
+| AES-256 compile cache | Skip recompiling unchanged plugins | [Encryption.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Plugins/Encryption.cs) |
+
+**Why does this exist?**
+So one deployment can be extended per-customer — custom auth, post-scan webhooks, UI widgets — *without forking or redeploying the core app*.
+
+**What does it accomplish that other tools don't?**
+- **Real compilation at runtime**, not just config toggles — plugins are first-class C# with full access to the app's types.
+- `.plugin` text files can reference **external DLLs** via an `.assemblies` sidecar, so plugins can pull in code that isn't in the solution.
+- Compiled assemblies are **cached encrypted** on disk for fast warm starts.
+
+**Terminology & "can I see it?"**
+- **Roslyn** — the official C# compiler, exposed as a library you can call from your own code.
+- **Plugin type** — the category that decides *when* a plugin runs: `Auth`, `BackgroundProcess`, `UserUpdate`, `Example`, or a Blazor component.
+- **Sidecar** — a companion file (`.assemblies`) that lists extra DLLs a plugin needs.
+
+**The hard part, drawn** — source files become live services at startup:
+
+```
+  startup ──▶ Plugins.Load("PluginFiles/")
+                  │ read .cs / .plugin  (+ optional .assemblies sidecar)
+                  ▼  Roslyn compile   (references = the running app's own assemblies)
+        in-memory Assembly ──▶ extract types, sort by PluginType
+                  │                   (Auth · BackgroundProcess · UserUpdate · Example · Blazor)
+                  ▼
+        injected into DataAccess + offered as DI services   ──cache──▶ AES-256 on disk
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

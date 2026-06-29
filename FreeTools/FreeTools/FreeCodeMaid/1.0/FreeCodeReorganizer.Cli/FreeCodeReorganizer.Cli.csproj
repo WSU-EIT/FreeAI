@@ -1,0 +1,27 @@
+<!--
+  FreeCodeReorganizer.Cli: a tiny console wrapper over the shared FreeCodeReorganizer.Core engine.
+  Two modes:
+    * stdin to stdout (default): reorganize a single C# document piped in. Used by the VS Code
+      extension on the active editor buffer.
+    * directory mode (the "dir" flag): reorganize every .cs file under a path in place (repo-wide).
+      Used by the "Reorganize Workspace" command.
+  Config flags map to Core.ReorderConfig. This is the same engine VS and the 0.0 CLI use, so all
+  front-ends produce identical output.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FreeCodeReorganizer.Cli</RootNamespace>
+    <AssemblyName>FreeCodeReorganizer.Cli</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreeCodeReorganizer.Core\FreeCodeReorganizer.Core.csproj" />
+  </ItemGroup>
+
+</Project>

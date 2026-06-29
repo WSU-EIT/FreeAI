@@ -44,6 +44,24 @@ Entity Framework Core class library that owns the database schema, DbContext, an
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Defines the database: the `EFDataModel` DbContext and entities across four engines. Notable for plugins: the **`PluginCache`** table persists compiled plugin code + metadata so the host doesn't recompile unchanged plugins on every restart.
+
+**What tech & where?** [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.EFModels/EFModels/EFDataModel.cs) · `EFModelOverrides.cs`.
+
+**Why does this exist?** One schema (incl. the plugin cache) that runs on whatever database is available.
+
+**What does it beat?** The **`PluginCache` entity** makes plugin loading fast and persistent — compiled code survives restarts.
+
+**Terminology:** **Plugin cache** — the stored, compiled plugin code so it isn't rebuilt each launch.
+
+**The hard part, drawn:**
+```
+  EFDataModel ─DbSet─▶ User · Tenant · Setting · FileStorage · EmailTemplate · PluginCache (compiled plugin code)
+        providers ▶ SQL Server · PostgreSQL · MySQL · SQLite (+ InMemory)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

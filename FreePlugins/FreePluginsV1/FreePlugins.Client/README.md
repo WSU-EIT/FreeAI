@@ -48,6 +48,23 @@ Blazor WebAssembly client application. This project runs entirely in the browser
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The browser UI (Blazor WebAssembly). It hosts all pages and components, calls the server through a typed `DataModel` HTTP client, and renders the plugin management/testing UI — including the prompt inputs a plugin declares.
+
+**What tech & where?** [DataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Client/DataModel.cs) (API client) · [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Client/Program.cs).
+
+**Why does this exist?** A client-rendered UI for browsing, configuring, and running plugins.
+
+**What does it beat?** It renders the **16 prompt types** a plugin can request, so plugin authors get a real input UI for free.
+
+**Terminology:** **Prompt UI** — the inputs the client renders from a plugin's declared prompts.
+
+**The hard part, drawn:**
+```
+  You ─▶ plugin page ─▶ DataModel ─HTTP─▶ server ─▶ run plugin ─▶ result/prompt UI re-renders
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

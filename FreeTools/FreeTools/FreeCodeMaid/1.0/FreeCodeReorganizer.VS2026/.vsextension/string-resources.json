@@ -1,0 +1,53 @@
+{
+  "FreeCodeReorganizer.ReorganizeDocument.DisplayName": "Reorganize Document",
+  "FreeCodeReorganizer.ReorganizeRepository.DisplayName": "Reorganize Repository",
+  "FreeCodeReorganizer.CleanUpDocument.DisplayName": "Clean Up Document (.editorconfig)",
+  "FreeCodeReorganizer.CleanUpRepository.DisplayName": "Clean Up Repository (.editorconfig)",
+  "FreeCodeReorganizer.Menu.DisplayName": "FreeCodeReorganizer",
+  "FreeCodeReorganizer.Menu.Repository.DisplayName": "Repository",
+
+  "FreeCodeReorganizer.Settings.Category.DisplayName": "FreeCodeReorganizer",
+  "FreeCodeReorganizer.Settings.Category.Description": "Member reordering and brace style that mirror the FreeCRM house layout. Standard formatting stays owned by .editorconfig; these settings cover only what it can't express.",
+
+  "FreeCodeReorganizer.Settings.SortAlphabetically.DisplayName": "Sort alphabetically",
+  "FreeCodeReorganizer.Settings.SortAlphabetically.Description": "Sort members alphabetically within each kind group (properties, indexers and methods are interleaved into one alphabetical list).",
+
+  "FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.DisplayName": "Ignore leading underscore in sort",
+  "FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.Description": "When comparing names, ignore a single leading underscore so _connectionString sorts as \"connectionString\".",
+
+  "FreeCodeReorganizer.Settings.GroupByVisibility.DisplayName": "Group by visibility",
+  "FreeCodeReorganizer.Settings.GroupByVisibility.Description": "Group members by accessibility (public first) before sorting alphabetically. Off by default — FreeCRM interleaves public/private in pure alphabetical order.",
+
+  "FreeCodeReorganizer.Settings.StaticMembersFirst.DisplayName": "Static members first",
+  "FreeCodeReorganizer.Settings.StaticMembersFirst.Description": "Within a kind group, place static members before instance members. Off by default to match FreeCRM (purely alphabetical).",
+
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName": "Format wrapped-parameter signatures",
+  "FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description": "When a parameter list is already wrapped across multiple lines, reformat it into the FreeCRM hand style: the name alone on its line, '(' alone, each parameter one level deeper, and the closing ')' glued to the body's '{' as \"){\". If the whole signature would instead fit within Max line width, it collapses back onto a single line. Single-line declarations are never force-wrapped.",
+
+  "FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.DisplayName": "Double-tab wrapped Razor attributes",
+  "FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.Description": "When a Razor/Blazor element's attributes are already wrapped across lines, line up each continuation attribute at the element's indent plus two levels (\"double tab\"), keeping them visually deeper than the child body. Only leading whitespace inside the start tag changes, so rendered output is preserved. Tags that would fit within Max line width collapse onto one line.",
+
+  "FreeCodeReorganizer.Settings.RespectRegions.DisplayName": "Respect #region boundaries",
+  "FreeCodeReorganizer.Settings.RespectRegions.Description": "Leave any type whose only directives are #region / #endregion completely untouched, so regions and the members inside them keep their layout. Turn off to allow members to be reordered across region boundaries (a re-parse safety net still blocks anything that would unbalance the region pairing).",
+
+  "FreeCodeReorganizer.Settings.MaxPercentReordered.DisplayName": "Max percent reordered",
+  "FreeCodeReorganizer.Settings.MaxPercentReordered.Description": "If sorting would move more than this percent (0..100) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 100 to always sort.",
+
+  "FreeCodeReorganizer.Settings.MaxLineWidth.DisplayName": "Max line width",
+  "FreeCodeReorganizer.Settings.MaxLineWidth.Description": "The line width (characters) at or under which an already-wrapped parameter list or Razor start tag is collapsed back onto a single line instead of being kept multi-line. Wider ones stay wrapped. Never force-wraps a single-line declaration. Default 120.",
+
+  "FreeCodeReorganizer.Settings.RunCleanupBeforeReorganize.DisplayName": "Run .editorconfig cleanup before reorganizing",
+  "FreeCodeReorganizer.Settings.RunCleanupBeforeReorganize.Description": "When reorganizing, first run the .editorconfig cleanup (dotnet format) over the same target, then layer the member reorder + house style on top. Off by default so reorganizing stays fast. The standalone Clean Up commands run the cleanup regardless. Requires the .NET SDK.",
+
+  "FreeCodeReorganizer.Settings.FullCleanup.DisplayName": "Full cleanup (usings + code style + analyzers)",
+  "FreeCodeReorganizer.Settings.FullCleanup.Description": "Use full 'dotnet format' (also removes/sorts usings and applies code-style + analyzer fixes; needs a project/solution and a build, so it is slower) instead of whitespace-only cleanup. The single-document Clean Up is always whitespace; this applies to the repository-wide cleanup.",
+
+  "FreeCodeReorganizer.Settings.RespectGeneratedCode.DisplayName": "Respect .editorconfig generated_code",
+  "FreeCodeReorganizer.Settings.RespectGeneratedCode.Description": "Leave any file your .editorconfig marks with 'generated_code = true' completely alone — no member reorder and no house-style formatting — exactly as dotnet format and the analyzers skip it. On by default; this usually removes the need for an explicit exclude list (e.g. FreeCRM already marks [**/EFModels/**.cs] as generated).",
+
+  "FreeCodeReorganizer.Settings.ExcludeReorganize.DisplayName": "Exclude from reorganize (paths)",
+  "FreeCodeReorganizer.Settings.ExcludeReorganize.Description": "Semicolon-separated paths/globs whose members are NEVER reordered (e.g. EF models that mirror database column order). These files are still eligible for .editorconfig cleanup. A plain word matches any path containing it; use * and ** for globs. Example: CRM.EFModels;**/Migrations/**",
+
+  "FreeCodeReorganizer.Settings.ExcludeCleanup.DisplayName": "Exclude from .editorconfig cleanup (paths)",
+  "FreeCodeReorganizer.Settings.ExcludeCleanup.Description": "Semicolon-separated paths/globs that dotnet format should skip entirely (no whitespace or style changes). A plain word matches any path containing it; use * and ** for globs."
+}

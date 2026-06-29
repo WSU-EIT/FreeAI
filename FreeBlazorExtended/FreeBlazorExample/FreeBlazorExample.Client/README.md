@@ -80,6 +80,24 @@ Contains all in-browser UI: standard framework pages (auth, settings, profile), 
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The browser UI for the showcase. Beyond standard framework pages, it hosts the `/showcase/*` section that demonstrates **every** FreeBlazorExtended component and feature — usually as v1/v2/v3 variants — all wrapped in a shared `ShowcaseLayout`. It references the `FreeBlazorExtended` library *by project*, so a change to a component shows up instantly with no NuGet publish.
+
+**What tech & where?** [the showcase pages](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.Client/Pages/Showcase) (e.g. `Feature105_AgentMonitoring.razor`) · references [FreeBlazorExtended](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended).
+
+**Why does this exist?** A live, interactive gallery so you can *try* each component before adopting it.
+
+**What does it beat?** Each component gets **multiple showcase variants** (v1–v3) showing different configurations, and the project-reference means the gallery is always in sync with the library source.
+
+**Terminology:** **Showcase variant** — one `/showcase/<component>/vN` route showing a specific configuration.
+
+**The hard part, drawn:**
+```
+  /showcase/<component>/vN ─▶ demo page (ShowcaseLayout) ─▶ instantiates the live FreeBlazorExtended component
+        project reference (not NuGet) ─▶ library edits appear immediately
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

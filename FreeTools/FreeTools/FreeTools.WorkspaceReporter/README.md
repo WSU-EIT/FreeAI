@@ -196,3 +196,24 @@ Requires BrowserSnapshot v2.1+ for full Screenshot Health functionality. Without
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues).
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Phase 4, the finale. It reads every prior tool's output — the inventory CSV, the route CSV, the HTML responses, and the screenshots + their `metadata.json` — and assembles **one markdown dashboard**: code stats, a Mermaid route map, a "Screenshot Health" section (success rate, blank/failed shots, JS errors), and a clickable screenshot gallery.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceReporter/Program.cs) (`System.Text.Json` to read the metadata).
+
+**Why does this exist?** To turn the pipeline's scattered CSV/PNG/JSON outputs into a single human-readable report you can read in GitHub/Azure DevOps.
+
+**What does it beat?** The **Screenshot Health** section: by reading BrowserSnapshot's per-shot metadata it flags blank captures, HTTP errors, and JavaScript errors with an overall success rate — so a broken page surfaces in the report, not just on disk.
+
+**Terminology:** **Mermaid** — a text-to-diagram syntax GitHub renders; **screenshot health** — the capture-success summary.
+
+**The hard part, drawn:**
+```
+  inventory.csv + pages.csv + *.html + *.png + metadata.json
+        ▼ WorkspaceReporter aggregates
+  {Project}-Report.md: stats · Mermaid route map · Screenshot Health (success% + JS errors) · gallery
+```

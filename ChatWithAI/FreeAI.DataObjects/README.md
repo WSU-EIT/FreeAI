@@ -39,6 +39,38 @@ This is the FreeCRM scaffold DTO layer, renamed to the FreeAI namespace. The sin
 
 Part of the ChatWithAI solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A pure "data shapes" library — every request/response object shared between the WASM browser client and the server. No database code, no logic. The standout is `BlazorDataModelLoader`: the full payload the server sends the browser on boot (current user, tenant, settings). `Caching.cs` wraps an in-process memory cache. App-specific DTOs are still stubs.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Plain C# DTOs (.NET 9) | The shared shapes | [DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.DataObjects/DataObjects.cs) |
+| `System.Runtime.Caching` | In-process object cache | [Caching.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.DataObjects/Caching.cs) |
+
+**Why does this exist?**
+When server and browser compile against the *same* shapes, a contract-breaking change fails at **build time**, not in production.
+
+**What does it accomplish that other tools don't?**
+- One shared model used by C# on the server **and** in the browser — no hand-written TypeScript types to drift.
+- A single boot payload (`BlazorDataModelLoader`) hydrates the whole client in one round-trip.
+
+**Terminology & "can I see it?"**
+- **DTO** — a plain shape with fields and no behavior.
+- **Boot payload** — everything the client needs at startup, sent once.
+
+**The hard part, drawn** — one vocabulary, both sides of the wire:
+
+```
+  Server ─┐                                ┌─ Browser (WASM)
+          ├──  DataObjects (shared C#)  ────┤
+  DB ◀────┘  User · Tenant · Filter         └─▶ UI binds the SAME types
+             BooleanResponse · BlazorDataModelLoader (one-shot boot payload)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

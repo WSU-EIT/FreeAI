@@ -30,6 +30,25 @@ Uses Playwright to drive a headless Chromium browser against the running FreeBla
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A console tool that turns the running showcase site into static visual documentation. It drives a headless Chromium browser (Playwright) to each `/showcase/*` page, takes full-page screenshots, **records animated GIFs** of interactive components (carousel, kanban, timer…), and makes thumbnails — assembling GIF frames and resizing with Magick.NET — into a timestamped output folder.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.ShowcaseTool/Program.cs) (Playwright for capture, Magick.NET for GIF/thumbnail assembly).
+
+**Why does this exist?** To auto-generate the component library's visual catalog (screenshots + GIFs) instead of recording them by hand — so the docs stay current as components change.
+
+**What does it beat?** It captures **animated GIFs of interactive behavior**, not just static screenshots — the only way to show a drag-and-drop board or a countdown in documentation.
+
+**Terminology:** **Headless browser** — a real browser with no visible window, driven by code.
+
+**The hard part, drawn:**
+```
+  ShowcaseTool ─▶ Playwright (headless Chromium) ─▶ visit each /showcase/* page
+        ├─ full-page screenshot
+        └─ record interaction → frames ─▶ Magick.NET assembles GIF + thumbnails ─▶ showcase-<date>/ folder
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

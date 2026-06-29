@@ -42,3 +42,23 @@ The bound value is the base30 string `"image/jsignature;base30,..."`. Persist as
 
 ## Effort to integrate
 **S** — drop the folder in, ensure jSignature is loaded, done.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A signature pad: draw with mouse or finger, and it captures the signature as a compact "base30" text string you can two-way bind with `@bind-Value` (persist the string, re-render later by re-mounting with the same value). Built on the jSignature jQuery plugin.
+
+**What tech & where?** [Signature.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Signature/Signature.razor) · [Signature.razor.js](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Signature/Signature.razor.js) (jSignature interop).
+
+**Why does this exist?** To capture handwritten signatures (consent, sign-off) inline in a Blazor form.
+
+**What does it beat?** It stores a **compact text representation** (base30), not a heavy image blob, and binds like any normal form field. *(Gotcha called out in the README: bundle jSignature locally, not from a CDN, or it races Blazor startup.)*
+
+**Terminology:** **base30** — jSignature's small textual encoding of the drawn strokes.
+
+**The hard part, drawn:**
+```
+  draw (mouse/touch) ─▶ jSignature ─JS interop─▶ base30 string ─▶ @bind-Value (persist as text)
+        re-mount with the same value ─▶ signature reappears
+```

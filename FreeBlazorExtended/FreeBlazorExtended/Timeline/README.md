@@ -74,3 +74,28 @@ This is the "tracking page" / FedEx / UPS layout — read-only status visualizat
 
 ## Effort to integrate
 **S** — single Razor file, no JS, no host-app deps.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A vertical list of status events — the FedEx/UPS "tracking page" layout. Each event has a colored state dot, a connector line to the next, and content (title, timestamp, actor, optional rich detail). Color-coded by state; no horizontal space needed, so it fits mobile and narrow cards.
+
+**What tech & where?** One file — [Timeline.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Timeline/Timeline.razor) (Bootstrap + FontAwesome; no JS).
+
+**Why does this exist?** To show a chronological sequence of events read-only (order history, audit trail, progress).
+
+**What does it beat?** It's the **vertical, mobile-friendly** counterpart to `PipelineTracker` (horizontal) — same state model, different layout — and renders rich HTML detail per event.
+
+**Terminology:** **Connector line** — the vertical line linking one event dot to the next.
+
+**The hard part, drawn:**
+```
+  ● Order Placed     (Completed, green)
+  │
+  ● Preparing        (Completed, green)
+  │
+  ● Out for Delivery (InProgress, blue)  ─ optional DetailHtml rendered here
+  │
+  ○ Delivered        (Pending, gray)      click ─▶ OnEventClick (if wired)
+```

@@ -272,3 +272,23 @@ The tool is designed to be robust:
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Phase 1 (runs in parallel with EndpointMapper). It recursively scans the codebase and, using **Roslyn** to parse the C#/Razor, writes a CSV row per file: size, line/char counts, a semantic **Kind** (RazorPage vs RazorComponent vs CSharpSource vs Config…), declared namespaces and types, `@page` routes, auth requirement, and optional Azure DevOps deep links.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceInventory/Program.cs) (Roslyn `Microsoft.CodeAnalysis.CSharp` + file globbing).
+
+**Why does this exist?** To turn a codebase into structured, spreadsheet-able data — for dashboards, code-review prep, security audits ("which pages are public?"), and tracking growth over time.
+
+**What does it beat?** It doesn't just count lines — it **understands the code** (Roslyn-parsed types/namespaces/routes/auth) and never crashes on a bad file (errors go in a `ReadError` column; >1 MB files are metadata-only).
+
+**Terminology:** **Kind** — the semantic file category; **Roslyn** — the C# parser that extracts types/routes.
+
+**The hard part, drawn:**
+```
+  scan repo ─▶ per file: size/lines ─▶ Roslyn parse ─▶ Kind · Namespaces · Types · Routes · RequiresAuth
+        ─▶ workspace-inventory.csv  (one row per file, robust to parse errors)
+```

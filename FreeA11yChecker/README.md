@@ -175,6 +175,83 @@ All docs live in the `Docs/` folder and are indexed in `Docs/009_project_archite
 
 ---
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+*The questions a decision-maker actually asks, answered in plain terms. Every file link opens the exact source on GitHub.*
+
+**How does this work?**
+FreeA11yChecker opens each page of a website in a real web browser (Microsoft Edge, running invisibly), then turns **four separate accessibility checkers loose on that page at the same time**. It merges their findings into one de-duplicated list, ranks each issue by how many of the four engines agree it's real, and captures a stack of visual evidence — annotated overlays, seven color-blindness simulations, and a "screen-reader view." You drive it two ways: the **web app** (schedule scans, review issues, download PDF reports) or the **command line** (`scan`/`crawl` any URL, no web UI). Results are saved to a database (web) or written to disk (CLI), and stream live into the browser while the scan runs.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Playwright (headless Edge) | Drives the real browser that loads each page | [ScannerEngine.cs#L37-L42](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ScannerEngine.cs#L37-L42) |
+| axe-core (Deque) | Engine 1 of 4 — industry-standard rules | [AxeCoreRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/AxeCoreRunner.cs) |
+| IBM Equal Access | Engine 2 of 4 | [IbmEqualAccessRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/IbmEqualAccessRunner.cs) |
+| HTML CodeSniffer (Squiz) | Engine 3 of 4 | [HtmlCodeSnifferRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/HtmlCodeSnifferRunner.cs) |
+| Custom HtmlChecker | Engine 4 of 4 — regex/structural checks | [HtmlChecker.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/HtmlChecker.cs) |
+| **Consensus scorer** | Merges the 4 engines, normalizes rule IDs, ranks by agreement | [ConsensusScorer.cs#L75](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ConsensusScorer.cs#L75) |
+| Blazor WebAssembly (.NET 10) | The web UI is C# running in the browser | [Client/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Client/Program.cs) |
+| SignalR | Streams live scan progress to the browser | [DataAccess.SignalR.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataAccess.SignalR.cs) |
+| Entity Framework Core (5 DB engines) | Stores sites, runs, violations | [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.EFModels/EFModels/EFDataModel.cs) |
+| QuestPDF | Renders the PDF audit reports | [App.DataAccess.AuditExport.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/FreeA11yChecker.App.DataAccess.AuditExport.cs) |
+| Roslyn | Compiles drop-in C# plugins at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Plugins/Plugins.cs) |
+
+**Why does this exist?**
+WSU must meet legal accessibility deadlines — WCAG 2.1 AA now, WCAG 2.2 AA by **July 1, 2026**, and the ADA Title II rule by 2027. Commercial accessibility scanners are expensive per-seat or per-scan, and you can't see inside them. EIT built this to scan WSU's own sites at scale, on a schedule, with auditable evidence — and released it free so any organization under the same obligations can use it.
+
+**What does it accomplish that other tools don't?**
+- **Four engines, not one.** Most scanners wrap a single engine (usually axe-core). Running four and *scoring by agreement* catches more issues and tells you which findings are most certain.
+- **Visual proof, not just a list.** Overlays, 7 color-vision simulations, screen-reader view, and a full screenshot trail — evidence an auditor (or your boss) can actually look at.
+- **Same engine, web *and* CLI.** The scanner is a pure library used identically by the website and the terminal, so a developer's local check and the scheduled audit produce identical results.
+- **Free and open.** No per-seat licensing; the rules and scoring are fully inspectable.
+
+**Terminology & "can I see it?"**
+- **WCAG 2.1 / 2.2 AA** — the accessibility standard (and conformance level) the law points to.
+- **Engine** — one accessibility checker (axe-core, IBM, HTML CodeSniffer, or our HtmlChecker).
+- **Consensus / confidence** — how many of the four engines flagged the same issue; higher = more certain. Computed in [ConsensusScorer.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ConsensusScorer.cs).
+- **CVD** — Color Vision Deficiency (color-blindness); the scanner renders 7 types via [CvdSimulator.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/CvdSimulator.cs).
+- **Overlay** — a screenshot with the problems drawn directly onto the page.
+- *See it:* full architecture write-ups and ASCII maps are in [Docs/](./Docs); per-run screenshot evidence lives under `Docs/showcase/runs/latest/`.
+
+**The hard part, drawn** — how one page becomes a ranked, evidence-backed report:
+
+```
+ ┌─────────────┐  "scan this site"     ┌────────────────────────────────────────────────┐
+ │ YOU          │ ──────────────────▶ │ Web app (schedule/queue)  OR  CLI (scan / crawl) │
+ │ or schedule  │                      └──────────────────────┬─────────────────────────┘
+ └──────▲──────┘                                               │ ScannerEngine.ScanAll / ScanPage
+        │                                                       ▼
+        │                                  ┌──────────────────────────────────────────────┐
+        │                                  │ Playwright launches headless Edge, logs in if  │
+        │                                  │ needed, loads & waits for the page to settle   │
+        │                                  └──────────────────────┬───────────────────────┘
+        │                                                          │ one page's live DOM
+        │              ╔═══════════════════════ THE HARD PART ═════╪═══════════════════════╗
+        │              ║         run 4 independent engines on the SAME page                ║
+        │              ║  ┌────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────────┐     ║
+        │              ║  │axe-core│  │IBM Equal │  │HTML CodeSniff│  │ HtmlChecker  │     ║
+        │              ║  └───┬────┘  └────┬─────┘  └──────┬───────┘  └──────┬───────┘     ║
+        │              ║      └────────────┴── each speaks its OWN ──────────┘             ║
+        │              ║                  rule IDs & severities                            ║
+        │              ║                          │ ConsensusScorer.Merge()                ║
+        │              ║                          ▼                                        ║
+        │              ║   normalize every tool's rule ID → one canonical ID, group        ║
+        │              ║   duplicates, score = (#tools that AGREE) ÷ (#tools that COULD    ║
+        │              ║   check it), then rank by confidence, then by severity            ║
+        │              ╚══════════════════════════╪══════════════════════════════════════╝
+        │                                          ▼
+        │                     ┌──────────────────────────────────────────────┐
+        │                     │ capture evidence: overlays, 7 CVD sims,        │
+        │                     │ screen-reader view, screenshots, PDF + markdown│
+        │                     └──────────────────────┬───────────────────────┘
+        │  live progress (SignalR) + stored results  │ saved to EF Core DB (web) / disk (CLI)
+        └────────────────────────────────────────────┘
+```
+
+---
+
 ## About WSU-EIT
 
 FreeA11yChecker is developed and maintained by
