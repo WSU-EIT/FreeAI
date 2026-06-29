@@ -54,6 +54,25 @@ dotnet ef database update --project FreeExamples.EFModels
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Defines the database: the `EFDataModel` DbContext and entity classes, targeting five providers (SQL Server, SQLite, MySQL, PostgreSQL, InMemory). It deliberately ships **no pre-built migrations** — the sibling `DatabaseMigration` tool generates them fresh on demand.
+
+**What tech & where?** [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.EFModels/EFModels/EFDataModel.cs).
+
+**Why does this exist?** One schema that runs on whatever database is available, with migrations generated on demand rather than committed (so they always match the current model).
+
+**What does it beat?** **Five engines from one model**, and **fresh-migration generation** (via the DatabaseMigration tool) instead of stale committed migration files.
+
+**Terminology:** **DbContext** — the C# object representing the database; **migration** — the generated script that builds the tables.
+
+**The hard part, drawn:**
+```
+  EFDataModel ─DbSet─▶ User · Tenant · Department · Setting · FileStorage · PluginCache · Tag · UDFLabel
+        providers ▶ SQL Server · SQLite · MySQL · PostgreSQL · InMemory
+        no shipped migrations ─▶ DatabaseMigration tool generates them fresh
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

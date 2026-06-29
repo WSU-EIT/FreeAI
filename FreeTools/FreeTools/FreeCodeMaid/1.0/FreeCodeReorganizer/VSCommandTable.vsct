@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ============================================================================
+  FreeCodeReorganizer command table
+  ============================================================================
+
+  Defines ONE command, "Reorganize Document", and:
+    * places it on the built-in Edit menu (IDM_VS_MENU_EDIT) and the
+      code-window right-click context menu (IDM_VS_CTXT_CODEWIN);
+    * gives it the default chord keybinding  Ctrl+K, Ctrl+R.
+
+  The compiled output (Menus.ctmenu, see <VSCTCompile> in the .csproj) is
+  surfaced by [ProvideMenuResource("Menus.ctmenu", 1)] on the package class.
+
+  The C# side reaches these IDs through the toolkit-generated PackageIds /
+  PackageGuids constants:
+      [Command(PackageIds.ReorganizeDocument)]
+  PackageIds.<name> is generated from each <IDSymbol name="..."> below, and
+  PackageGuids.<name> from each <GuidSymbol>. Keep the symbol NAMES stable.
+
+  VERIFY IN VS: the GUID wiring (package guid must equal the [Guid] on the
+  package class; command-set guid must equal the [Command] guid the toolkit
+  uses) is the most error-prone part and could not be compiled here.
+-->
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Standard VS command IDs (IDM_VS_MENU_EDIT, IDM_VS_CTXT_CODEWIN, ...). -->
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+
+  <!-- ===================================================================
+       Commands: the package owns one group and one button.
+       =================================================================== -->
+  <Commands package="guidFreeCodeReorganizerPackage">
+
+    <!-- A group is the "container between two separators" that holds buttons.
+         We create one group and place a copy of it on each host menu. -->
+    <Groups>
+      <!-- Group hosted on the Edit menu. -->
+      <Group guid="guidFreeCodeReorganizerCmdSet" id="EditMenuGroup" priority="0x0700">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT" />
+      </Group>
+
+      <!-- Group hosted on the code editor's right-click context menu. -->
+      <Group guid="guidFreeCodeReorganizerCmdSet" id="CodeWinContextGroup" priority="0x0700">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+      </Group>
+    </Groups>
+
+    <!-- The actual command (button). It appears in BOTH groups via the
+         <CommandPlacements> section below; here we define it once and parent
+         it to the Edit-menu group. -->
+    <Buttons>
+      <Button guid="guidFreeCodeReorganizerCmdSet" id="ReorganizeDocument" priority="0x0100" type="Button">
+        <Parent guid="guidFreeCodeReorganizerCmdSet" id="EditMenuGroup" />
+        <!-- No custom icon: keep the scaffold dependency-free. Add an <Icon>
+             + <Bitmaps> entry later if you want a glyph. -->
+        <Strings>
+          <ButtonText>Reorganize Document</ButtonText>
+          <!-- Shown in Tools > Customize > Keyboard as the command name. -->
+          <CommandName>FreeCodeReorganizer.ReorganizeDocument</CommandName>
+        </Strings>
+      </Button>
+    </Buttons>
+
+  </Commands>
+
+  <!-- ===================================================================
+       Extra placements: put the SAME command into the context-menu group
+       too (a command may live in several groups).
+       =================================================================== -->
+  <CommandPlacements>
+    <CommandPlacement guid="guidFreeCodeReorganizerCmdSet" id="ReorganizeDocument" priority="0x0100">
+      <Parent guid="guidFreeCodeReorganizerCmdSet" id="CodeWinContextGroup" />
+    </CommandPlacement>
+  </CommandPlacements>
+
+  <!-- ===================================================================
+       Default keybinding:  Ctrl+K, Ctrl+R  (a two-key chord).
+       editor="guidVSStd97" => global/text-editor scope, same as CodeMaid.
+       mod1/mod2 = Control for both strokes; key1=K, key2=R.
+       VERIFY IN VS: Ctrl+K, Ctrl+R is unused by default in C# editors, but
+       confirm it isn't claimed by another installed extension.
+       =================================================================== -->
+  <KeyBindings>
+    <KeyBinding guid="guidFreeCodeReorganizerCmdSet" id="ReorganizeDocument"
+                editor="guidVSStd97"
+                key1="K" mod1="Control"
+                key2="R" mod2="Control" />
+  </KeyBindings>
+
+  <!-- ===================================================================
+       Symbols: map friendly names to GUID/ID values.
+       The package guid here MUST match the [Guid(...)] on
+       FreeCodeReorganizerPackage. The command-set guid is what the toolkit's
+       [Command] attribute uses to resolve PackageIds.ReorganizeDocument.
+       =================================================================== -->
+  <Symbols>
+    <!-- Package guid (matches [Guid] on the AsyncPackage). -->
+    <GuidSymbol name="guidFreeCodeReorganizerPackage" value="{fe5de5f2-7387-490d-ada3-531012c2c4db}" />
+
+    <!-- Command set: groups, buttons and the keybinding all live under this. -->
+    <GuidSymbol name="guidFreeCodeReorganizerCmdSet" value="{7b867334-96be-4435-beb6-75c6b8ce660e}">
+      <!-- Groups (containers). -->
+      <IDSymbol name="EditMenuGroup" value="0x1020" />
+      <IDSymbol name="CodeWinContextGroup" value="0x1021" />
+      <!-- The command itself. PackageIds.ReorganizeDocument is generated
+           from this name -> used by [Command(PackageIds.ReorganizeDocument)]. -->
+      <IDSymbol name="ReorganizeDocument" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>

@@ -54,6 +54,57 @@ ChatWithAI/
 - SQL Server, MySQL, PostgreSQL, or SQLite (or use the in-memory provider for development)
 - For `FreeAI.LocalTests`: an Azure OpenAI resource with a chat completions deployment; store secrets via `dotnet user-secrets set "AzureOpenAi:ApiKey" "<key>"`
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+ChatWithAI is two things bolted together: (1) the **FreeCRM platform scaffold** — a ready-made multi-tenant web app (login, users, tenants, files, plugins, real-time updates) renamed into the `FreeAI` namespace — and (2) **`FreeAI.LocalTests`**, the only piece with real AI logic: a *token-budgeted* chat round-trip against Azure OpenAI. "Token-budgeted" means it counts how many **tokens** (the chunks an AI model bills and thinks in) your conversation will cost *before* sending, and reserves room for the reply so the request never overflows the model's context window. The six scaffold projects' app-specific hooks are present but empty — so this solution is a *starting point*: a production-grade platform plus a proven, safe AI call, ready to be joined together.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Azure OpenAI REST API (raw `HttpClient`) | The actual chat call | [DataAccess.ChatWithAi.cs#L110-L123](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.LocalTests/DataAccess.ChatWithAi.cs#L110-L123) |
+| SharpToken (GPT tokenizer) | Count tokens *before* sending | [DataAccess.ChatWithAi.cs#L77-L90](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.LocalTests/DataAccess.ChatWithAi.cs#L77-L90) |
+| Token budgeting | Reserve reply room; never exceed context | [DataAccess.ChatWithAi.cs#L56-L64](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.LocalTests/DataAccess.ChatWithAi.cs#L56-L64) |
+| Blazor United (Server + WASM) | The platform UI/host | [FreeAI/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI/Program.cs) |
+| Roslyn plugin runtime | Compile drop-in C# at runtime | [FreeAI.Plugins/Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Plugins/Plugins.cs) |
+| EF Core (5 providers) | Data layer | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.EFModels/EFModels/EFDataModel.cs) |
+
+**Why does this exist?**
+To pair WSU's reusable app platform with a *minimal, correct* example of talking to Azure OpenAI safely — so a team can start from a working multi-tenant app **and** a token-safe AI call, instead of wiring both from scratch.
+
+**What does it accomplish that other tools don't?**
+- **Token budgeting up front.** Most quick-start samples just POST the messages and hope. This counts tokens with the model's own tokenizer family and guarantees prompt + reply fit the window, with a fallback if the reply cap is set too high.
+- **Raw REST, no SDK lock-in.** It calls the Azure OpenAI endpoint directly with `HttpClient`, so you can see (and change) exactly what's sent.
+- **A real platform underneath.** The AI demo sits on a full multi-tenant scaffold (auth, plugins, 5 databases), not a toy.
+
+**Terminology & "can I see it?"**
+- **Token** — the unit an LLM reads and bills in (roughly ¾ of a word).
+- **Context window** — the most tokens a model can consider at once (`MaxContextTokens`, default 128,000).
+- **Tokenizer / BPE** — the algorithm (SharpToken's `o200k_base`) that splits text into tokens so they can be counted.
+- **Deployment** — your named instance of a model inside Azure OpenAI.
+- *See it:* the entire chat logic is one readable file — [DataAccess.ChatWithAi.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.LocalTests/DataAccess.ChatWithAi.cs).
+
+**The hard part, drawn** — making a conversation fit the model's window before sending:
+
+```
+  you ─▶ Program.cs loads settings (endpoint/key/deployment + token budget) from user secrets
+              │
+              ▼  build conversation:  [system] [user] [assistant] [user]
+  ┌──────────────────── THE HARD PART: fit the context window ─────────────────────┐
+  │ SharpToken counts the tokens of every message  (+6 overhead per message)        │
+  │ promptBudget = MaxContextTokens − ReplyMaxTokens                                │
+  │ guardrail: if ReplyMaxTokens ≥ MaxContextTokens → ReplyMaxTokens = context ÷ 4   │
+  └───────────────────────────────────┬────────────────────────────────────────────┘
+              │ now the prompt is guaranteed to leave room for the reply
+              ▼
+   POST /openai/deployments/{deployment}/chat/completions?api-version=…
+         header: api-key    body: { messages, temperature, max_tokens = ReplyMaxTokens }
+              │
+              ▼   Azure OpenAI
+         JSON reply ──▶ pretty-printed to the console
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

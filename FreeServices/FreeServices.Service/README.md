@@ -230,3 +230,37 @@ The Installer and TestMe projects don't care about the service's internal logic.
 ## License
 
 [MIT License](../LICENSE) — Washington State University, Enrollment Information Technology.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This is the background service itself — a .NET Generic Host `BackgroundService`. The entire host setup is ~28 lines: it detects the OS and registers the matching "lifetime" (`AddWindowsService` on Windows, `AddSystemd` on Linux, default for macOS/launchd). Crucially, your work loop (`ExecuteAsync`) is **identical in every mode** — the lifetime wrappers only change how the process reports its status to the OS, not how it runs. The bundled `SystemMonitorService` collects CPU/memory/disk/OS each interval and writes to console + a log file.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Platform-detection host | Pick the right service lifetime | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Service/Program.cs) |
+| The `BackgroundService` loop | Collect + report metrics | [SystemMonitorService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Service/SystemMonitorService.cs) |
+
+**Why does this exist?** As a **reference implementation** of cross-platform .NET service hosting — replace `SystemMonitorService` with your own logic and keep the platform-detection host as-is.
+
+**What does it accomplish that other tools don't?**
+- **Zero code change between console / Windows Service / systemd / launchd** — the same binary, four ways to run.
+- **Best-effort metric collection** — if a metric can't be read on a given OS, it falls back instead of crashing (per-OS collection: PowerShell/`Win32_*` on Windows, `/proc` on Linux, `sysctl`/`top` on macOS).
+
+**Terminology & "can I see it?"**
+- **Lifetime** — the adapter that tells the OS service manager "I'm running / stopping."
+- **`sd_notify(READY=1)`** — how a systemd `Type=notify` service signals it's up.
+
+**The hard part, drawn** — one loop, four hosting modes:
+
+```
+  Host.CreateApplicationBuilder
+        ├─ Windows? ─▶ AddWindowsService()   (SCM: SERVICE_RUNNING / STOP)
+        ├─ Linux?   ─▶ AddSystemd()          (sd_notify READY=1 + watchdog)
+        └─ macOS?   ─▶ ConsoleLifetime       (launchd KeepAlive)
+        ▼ AddHostedService<SystemMonitorService>()
+   ExecuteAsync loop (IDENTICAL everywhere): collect snapshot → format → console + log → wait interval
+```

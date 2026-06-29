@@ -75,3 +75,23 @@ Shows one slide at a time with a fixed-height focus image, an optional caption o
 
 ## Effort to integrate
 **M** — one Razor file, one `@using`, no DI, no JS, no migrations.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A one-slide-at-a-time image carousel with optional filmstrip, prev/next arrows, dot indicators, and timer-driven auto-play that pauses on hover. Entirely C# — no JavaScript.
+
+**What tech & where?** One file — [Carousel.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Carousel/Carousel.razor) (uses a `System.Timers.Timer` for auto-advance; Bootstrap 5 + FontAwesome for chrome).
+
+**Why does this exist?** For hero/product-slider UX where one image needs the spotlight — distinct from `ImageGallery`, which is a grid + lightbox.
+
+**What does it beat?** No-JS auto-play with **proper timer disposal** (a `_disposed` guard stops mid-tick callbacks), and a clean `@ref` API (`Next()`/`Prev()`/`GoTo()`/`StartAutoPlay()`). *(Honest: no swipe/touch gestures, no fade transition.)*
+
+**Terminology:** **Filmstrip** — the row of mini-thumbnails under the focus image for jumping slides.
+
+**The hard part, drawn:**
+```
+  timer tick (every AutoPlayInterval) ─▶ advance slide ─▶ wrap last→first if Loop ─▶ OnSlideChanged(index)
+        hover? ─▶ pause     Loop=false & at end? ─▶ stop auto-play
+```

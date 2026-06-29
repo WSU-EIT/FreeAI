@@ -32,6 +32,39 @@ Class library — Roslyn-based dynamic plugin runtime.
 
 Part of the ChatWithAI solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A **runtime C# compiler**. At startup it loads `.cs` and `.plugin` source files from a folder, compiles each in-process with Roslyn, calls each plugin's `Properties()` to read its metadata (id, name, type, prompts, tenant limits), and keeps the results in memory. `ExecuteDynamicCSharpCode<T>` compiles and runs any C# snippet on demand. Plugins marked `ContainsSensitiveData = true` get their source AES-encrypted before it's sent to the browser.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Roslyn (`Microsoft.CodeAnalysis.CSharp`) | Compile plugin C# at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Plugins/Plugins.cs) |
+| `Basic.Reference.Assemblies.Net90` | .NET 9 reference assemblies for the compile | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Plugins/Plugins.cs) |
+| AES encryption | Protect sensitive plugin code in transit | [Encryption.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Plugins/Encryption.cs) |
+
+**Why does this exist?**
+So one deployment can be extended per-customer — custom logic, prompts, UI — without forking or redeploying the core app.
+
+**What does it accomplish that other tools don't?**
+- **Real compilation at runtime**, not config toggles — plugins are first-class C#.
+- A **prompt model** (`PluginPrompt`/`PluginPromptOption`) so a plugin can collect user input before it runs.
+- **Per-tenant** restrictions and AES protection for sensitive plugin source.
+
+**Terminology & "can I see it?"**
+- **Roslyn** — the official C# compiler exposed as a callable library.
+- **Plugin prompt** — a UI input a plugin declares and the host renders before execution.
+
+**The hard part, drawn** — source files become live, prompt-driven plugins:
+
+```
+  startup ─▶ Plugins.Load(folder) ─▶ Roslyn compile each .cs/.plugin ─▶ Properties() metadata
+        ContainsSensitiveData? ─yes─▶ AES-encrypt code before sending to the browser
+        run time ─▶ collect PluginPrompt inputs ─▶ ExecuteDynamicCSharpCode<T>() ─▶ result
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

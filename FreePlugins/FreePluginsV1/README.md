@@ -59,6 +59,45 @@ app.LoadCompiledPlugins();
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This solution shows **two ways to write a plugin for the same host**: (1) **file-based** — drop a `.cs`/`.plugin` file into the `Plugins/` folder; Roslyn compiles it at startup; it implements a `Properties()` method describing itself. (2) **compiled** — a real NuGet package that implements interfaces from `FreePlugins.Abstractions`, carries a `[Plugin]` attribute, and is registered in `Program.cs`. An integration bridge makes both kinds appear *identical* to the host. There are four plugin types — `General`, `Auth`, `BackgroundProcess`, `UserUpdate`.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Plugin contracts (the SDK) | Interfaces + metadata for compiled plugins | [FreePlugins.Abstractions/IPluginInterfaces.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions/IPluginInterfaces.cs) |
+| Roslyn file-plugin runtime | Compile `.cs`/`.plugin` files at startup | [FreePlugins.Plugins/Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Plugins/Plugins.cs) |
+| The integration bridge | Make compiled plugins join the file pipeline | [FreePlugins.Abstractions.Integration/](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.Abstractions.Integration) |
+| The web host | Loads both, runs them | [FreePlugins/](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins) |
+
+**Why does this exist?** Two authoring models serve two needs: **file-drop** plugins are fast for ad-hoc/per-deployment tweaks; **compiled NuGet** plugins are versioned, testable, and distributable. This shows how to support both at once.
+
+**What does it accomplish that other tools don't?**
+- **Two plugin systems side-by-side**, unified by a bridge so the host doesn't care which kind a plugin is.
+- A rich, declarative **prompt system** — 16 input types (text, date, file, multiselect…) a plugin can request before it runs.
+- Compiled plugins reference **only the SDK** (`FreePlugins.Abstractions`), not the host — so anyone can publish one.
+
+**Terminology & "can I see it?"**
+- **File-based plugin** — a source file compiled at startup by Roslyn.
+- **Compiled plugin** — a pre-built NuGet package implementing the SDK interfaces.
+- **`[Plugin]` attribute** — declares a compiled plugin's metadata.
+- **Prompt** — an input the plugin asks the user for before executing.
+
+**The hard part, drawn** — two authoring paths, one unified pipeline:
+
+```
+  AUTHOR a plugin two ways:
+    A) drop Foo.cs in Plugins/  ──Roslyn compiles at startup──┐
+    B) NuGet pkg : implements FreePlugins.Abstractions ───────┤
+                   + [Plugin] attribute + AddPlugin<>()        │
+                                                               ▼
+                              Abstractions.Integration bridge (one registry)
+                                                               ▼
+                    HOST sees ALL plugins identically ─▶ run General/Auth/BackgroundProcess/UserUpdate
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

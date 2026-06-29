@@ -38,6 +38,23 @@ Blazor Server interactive application generated from the ASP.NET Core Blazor Web
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A stock Blazor Server app from the .NET template, with full ASP.NET Core Identity (register/login/2FA/passkeys). It exists only as a **throwaway test target** for the workspace's analysis tools.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/BlazorApp1/Program.cs) · [Data/ApplicationDbContext.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/BlazorApp1/Data/ApplicationDbContext.cs).
+
+**Why does this exist?** To give the plugin/analysis tooling a real, login-protected app to run against without depending on an external site.
+
+**What does it beat?** It's a **controlled fixture** — a typical Identity app with known routes and protected pages — not a product.
+
+**Terminology:** **Test target / fixture** — an app that exists to be analyzed, not shipped.
+
+**The hard part, drawn:**
+```
+  BlazorApp1 (stock Blazor Server + Identity) ──used as a target by──▶ the workspace's analysis tools
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

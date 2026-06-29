@@ -76,3 +76,7 @@ The login button can be customized via properties:
 ## Source
 
 This plugin is a compiled version of the file-based `LoginWithPrompts.cs` plugin, demonstrating how to convert auth plugins to the NuGet-based architecture.
+
+---
+
+## 🧭 Briefing — **How:** a compiled **Auth** plugin (`ICompiledAuthPlugin`) with a custom login button, Username/Password prompts, and `LoginAsync`/`LogoutAsync`; restricted to specific tenants via `LimitToTenants`. **Tech:** [the AuthExamplePlugin project](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1/FreePlugins.AuthExamplePlugin) (`CustomAuthPlugin`). **Why/Different:** shows how to replace the app's login with your own credential check as a *distributable package* — the host's `CustomAuthenticationHandler` delegates to it. **Diagram:** `click login ▶ Username/Password prompts ▶ LoginAsync validates ▶ PluginResult (user, or errors)`.

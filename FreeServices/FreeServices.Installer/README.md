@@ -700,6 +700,40 @@ For deeper customization:
 
 ---
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A console tool that performs the *entire* service lifecycle — build/publish, install, start, stop, status, remove — on any OS, through **two equal interfaces**: an interactive numbered menu *and* CLI flags. Both call one `RunAction()` dispatcher with the same config object, so menu option `2` and `dotnet run -- deploy` run identical code. It auto-detects the OS and routes each operation to `sc.exe` (Windows), `systemctl` (Linux), or `launchctl` (macOS), filling in platform-aware defaults (runtime, paths) and configuring crash recovery.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| `RunAction()` dispatcher | The one code path both interfaces use | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Installer/Program.cs) |
+| Platform-aware config | Per-OS runtime, paths, service settings | [InstallerConfig.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServices/FreeServices.Installer/InstallerConfig.cs) |
+
+**Why does this exist?** So installing/managing a service is one scriptable, cross-platform command instead of remembering `sc.exe`/`systemctl`/`launchctl` flags by hand — and so a pipeline can do exactly what a developer does locally.
+
+**What does it accomplish that other tools don't?**
+- **Menu ≡ CLI**: neither is "primary"; both produce identical output, so local exploration and headless automation never diverge.
+- **One tool, three OS service managers**, auto-detected, with crash-recovery setup and a service-account/API-key manager.
+- **Config overridable** by CLI args or env vars using the same dotted keys as `appsettings.json` (e.g. `--Service:Name=… --Publish:Runtime=linux-arm64`).
+
+**Terminology & "can I see it?"**
+- **Dispatcher** — the single method that maps an action name to the right operation.
+- **Self-contained publish** — bundles the .NET runtime so the target box needs nothing pre-installed.
+
+**The hard part, drawn** — two front-ends, one engine, three platforms:
+
+```
+  CLI args ─────┐
+  appsettings ──┼─▶ ConfigurationBuilder ─▶ InstallerConfig ─▶ RunAction(action, config)
+  menu choice ──┘ (menu "2" ≡ `deploy`)                              │
+                                              ┌────────────┬─────────┴─────────┐
+                                              ▼            ▼                   ▼
+                                          Windows        Linux               macOS
+                                          sc.exe         systemctl           launchctl
+```
+
 ## License
 
 [MIT License](../LICENSE) — Washington State University, Enrollment Information Technology.

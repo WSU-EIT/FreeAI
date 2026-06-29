@@ -104,3 +104,23 @@ Components/Pages/Settings.razor,/Settings,true,CRM
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Phase 1 of the pipeline. It scans `.razor` files for `@page` directives (and `[Authorize]` attributes) and writes a `pages.csv` listing every route and whether it needs login — the route list the rest of the pipeline tests and screenshots.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.EndpointMapper/Program.cs) (plain .NET file scan; no external deps).
+
+**Why does this exist?** The downstream tools (Poker, BrowserSnapshot) need to know what pages exist — this discovers them automatically from source.
+
+**What does it beat?** It derives the route list **from the actual `.razor` source**, not a hand-kept list, so it never drifts. *(Honest scope: Blazor `@page` routes only — not API/minimal-API routes; use Swagger for those.)*
+
+**Terminology:** **`@page` directive** — the line in a `.razor` file that declares its URL.
+
+**The hard part, drawn:**
+```
+  scan **/*.razor ─▶ find @page + [Authorize] ─▶ pages.csv (FilePath, Route, RequiresAuth, Project)
+        └─▶ feeds EndpointPoker + BrowserSnapshot
+```

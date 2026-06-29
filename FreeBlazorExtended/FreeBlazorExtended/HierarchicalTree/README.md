@@ -44,3 +44,24 @@ The interactive demo lives at `/showcase/feature107-hierarchical-tree` in the Fr
 
 ## Effort to integrate
 **S** — two C# files, two Razor components, one DI line, no external services.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A tree of nodes (each knows its parent + sort order) with **safe move/reorder**: it can list descendants, find a node's root-to-node path, reorder siblings, and move a node — refusing any move that would create a cycle (you can't drop a folder inside itself). Two Razor components render it recursively.
+
+**What tech & where?** [TreeService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/HierarchicalTree/TreeService.cs) (move/reorder + cycle detection) · [Components/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeBlazorExtended/FreeBlazorExtended/HierarchicalTree/Components) (recursive renderers).
+
+**Why does this exist?** For any "things that contain things" UI — category trees, org charts, folders — without re-inventing the fiddly move-validation logic.
+
+**What does it beat?** The **cycle/self-move detection** (`IsDescendant`) is the part everyone gets wrong; it's built in. *(Honest: in-memory; move is click-to-target, no drag polyfill yet.)*
+
+**Terminology:** **Adjacency list** — storing each node's parent (vs. nested objects), which makes moves cheap. **Cycle** — an illegal move that would make a node its own ancestor.
+
+**The hard part, drawn:**
+```
+  MoveTreeNode(node → newParent)
+        │ IsDescendant(newParent, node)? ─yes─▶ REJECT (would create a cycle)
+        ▼ no ─▶ reparent · renumber SortOrder ─▶ tree re-renders
+```

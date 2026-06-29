@@ -70,6 +70,48 @@ Server-side data access layer for FreeA11yChecker. Implements `IDataAccess` as a
 | `Brad.Wickett_Sql2LINQ` | Dynamic LINQ query helpers |
 | `CsvHelper` | CSV export |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This is the server-side "everything that touches the database" layer — one big `IDataAccess` class split across many files. It saves scan runs, pages, violations, and screenshots; runs all user/tenant/auth logic; generates the PDF audit report (QuestPDF); talks to Active Directory/LDAP and Microsoft Graph; and encrypts sensitive settings with AES-256. Every query is scoped to a tenant so organizations can't see each other's data.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| EF Core scan persistence | Save/query runs, pages, violations | [App.DataAccess.Scans.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/FreeA11yChecker.App.DataAccess.Scans.cs) |
+| QuestPDF audit report | WCAG pass/fail PDF + CSV export | [App.DataAccess.AuditExport.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/FreeA11yChecker.App.DataAccess.AuditExport.cs) |
+| JWT auth | Login + signed tokens | [DataAccess.Authenticate.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataAccess.Authenticate.cs) · [DataAccess.JWT.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataAccess.JWT.cs) |
+| AES-256 field encryption | Protect sensitive settings at rest | [DataAccess.Encryption.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataAccess.Encryption.cs) |
+| LDAP / Active Directory + MS Graph | Enterprise directory login & profiles | [DataAccess.ActiveDirectory.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataAccess.ActiveDirectory.cs) · [GraphAPI.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/GraphAPI.cs) |
+| Per-provider migrations | One code path, 5 databases | [DataMigrations.SQLServer.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.DataAccess/DataMigrations.SQLServer.cs) |
+
+**Why does this exist?**
+Keeping all data access, business logic, and integrations in one server-only layer means the UI and the shared DTOs stay thin and database-agnostic. Swap the database engine or the auth provider here and nothing else in the app has to change.
+
+**What does it accomplish that other tools don't?**
+- One code path supports **five** database engines (SQL Server, PostgreSQL, MySQL, SQLite, InMemory).
+- **Field-level AES-256 encryption** of sensitive settings, not just transport encryption.
+- The audit report isn't a dump — it's *generated* from stored scan data into a WCAG criterion pass/fail matrix.
+
+**Terminology & "can I see it?"**
+- **DTO** — a plain data shape passed between layers (no logic).
+- **Tenant isolation** — every query carries a `TenantId` so each organization sees only its own data.
+- **Migration** — the script that creates/updates database tables for a given engine.
+
+**The hard part, drawn** — one interface, many engines and integrations:
+
+```
+   Server API / background service
+          │  IDataAccess.SaveScanRun · SaveViolations · GenerateAuditReport · GetUser ...
+          ▼
+   DataAccess.*  (one partial class, many files)
+          ├─ EF Core ───▶  SQL Server | PostgreSQL | MySQL | SQLite | InMemory
+          ├─ QuestPDF ──▶  PDF / CSV audit report  (WCAG pass-fail matrix)
+          ├─ AES-256 ───▶  encrypted settings at rest
+          └─ Graph/LDAP ▶  directory users & groups
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

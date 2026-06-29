@@ -54,6 +54,25 @@ Override or add language tags in the `AppLanguage` dictionary for localization.
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The standard server-side data layer: EF Core queries for all entities, auth (local/LDAP/Graph), file storage, PDF (QuestPDF), plugin execution, and a background-task hook (`ProcessBackgroundTasksApp`). App-specific methods go in `DataAccess.App.cs`.
+
+**What tech & where?** [DataAccess.App.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.DataAccess/DataAccess.App.cs) (the customization hook) + the [DataAccess project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.DataAccess).
+
+**Why does this exist?** To keep all data access and integrations server-side so the UI and DTOs stay thin and database-agnostic.
+
+**What does it beat?** One layer across five DB engines, with enterprise auth (LDAP/Graph) and a clear `.App.` extension point for app-specific logic.
+
+**Terminology:** **`.App.` hook** — the partial-class method where custom code is added without touching framework files.
+
+**The hard part, drawn:**
+```
+  Controllers ─▶ IDataAccess (DataAccess.*) ─ EF Core ─▶ SQL Server | SQLite | MySQL | PostgreSQL | InMemory
+        ├─ auth (local/LDAP/Graph) · QuestPDF · plugin execution
+        └─ DataAccess.App.cs ─▶ app-specific methods + ProcessBackgroundTasksApp hook
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

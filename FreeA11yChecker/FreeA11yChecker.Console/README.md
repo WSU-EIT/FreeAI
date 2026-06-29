@@ -50,6 +50,43 @@ Standalone CLI for FreeA11yChecker. Thin wrapper around `FreeA11yChecker.Scanner
 | `Microsoft.Extensions.Configuration.CommandLine` | CLI arg overrides |
 | `Microsoft.Extensions.Configuration.UserSecrets` | Shared user secrets |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A thin command-line wrapper around the Scanner library. You type `scan`, `crawl`, `analyze-source`, `handoff`, or `report` (or nothing, for an interactive menu); it parses the arguments, loads config (sharing the *same* user secrets as the web app), calls `ScannerEngine`, and tees all output to a timestamped log for evidence. `crawl` follows same-site links it discovers as it goes; `analyze-source` checks `.razor`/`.html` source files for issues *before* you even deploy.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| FreeA11yChecker.Scanner | All scanning/overlay/report logic | [ScannerEngine.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/FreeA11yChecker.Scanner/ScannerEngine.cs) |
+| .NET config + user secrets | Args, `appsettings.json`, shared secrets | [the Console project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.Console) |
+| Static source analysis | Find a11y issues in `.razor`/`.html` pre-deploy | [Console project › SourceAnalysis](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.Console) |
+
+**Why does this exist?**
+So a developer or a CI pipeline can scan any URL with zero web UI — using the exact same engine and the same stored credentials as the website.
+
+**What does it accomplish that other tools don't?**
+- **Same engine as the web app** — local check and scheduled audit can't disagree.
+- **Static source analysis** — catches missing alt text / labels in source before anything ships.
+- An **AI "handoff" document** — a markdown fix-list ready to hand to a developer or an AI agent.
+
+**Terminology & "can I see it?"**
+- **Tee** — write console output to a file *and* the screen at once (for an evidence log).
+- **Crawl vs scan** — `scan` hits a fixed page list; `crawl` discovers same-site links and follows them.
+- **User secrets** — credentials stored outside the repo, shared with the web host by ID.
+
+**The hard part, drawn** — one command, full evidence trail:
+
+```
+  you ▶ dotnet run -- scan --url …
+          │ parse args + load config (shared user secrets)
+          ▼
+     RunAction ──▶ ScannerEngine.ScanAll ──▶ (Playwright + the 4 engines)
+          │                                     │ one PageScanResult per page
+          └── tee everything ──▶ _logs/scan.log ◀┘  (+ screenshots / JSON / markdown to disk)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

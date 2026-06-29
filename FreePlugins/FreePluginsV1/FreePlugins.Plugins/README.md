@@ -43,6 +43,36 @@ A plugin file may have a matching `.assemblies` file listing extra assemblies to
 | Nullable | enabled |
 | Implicit usings | enabled |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The Roslyn engine behind **file-based** plugins. `Plugins.Load(folder)` finds `.cs`/`.plugin` files, compiles each into an in-memory assembly, reads its `Properties()` metadata, and returns `Plugin` objects (encrypting the source of any marked `ContainsSensitiveData`). `ExecuteDynamicCSharpCode<T>` compiles a code string against the .NET reference assemblies (plus any `.assemblies` extras) and invokes the named method by reflection, awaiting async results.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Roslyn (`Microsoft.CodeAnalysis.CSharp`) | Compile plugin source at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Plugins/Plugins.cs) |
+| `Basic.Reference.Assemblies.Net100` | .NET 10 reference assemblies for the compile | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreePlugins/FreePluginsV1/FreePlugins.Plugins/Plugins.cs) |
+
+**Why does this exist?** So a plugin can be just a *source file* you drop in — no build step, no package — and it runs at startup.
+
+**What does it accomplish that other tools don't?**
+- **Compile-and-reflect at runtime** with external-DLL support via `.assemblies` sidecars (a path *or* a `typeof(...).Assembly.Location` expression that's itself compiled to resolve the path).
+- **AES-encrypted plugin cache** for sensitive source.
+
+**Terminology & "can I see it?"**
+- **`Properties()`** — the method a file plugin implements to describe itself.
+- **Sidecar** — a `.assemblies` file naming extra DLLs the plugin needs.
+
+**The hard part, drawn** — a source file becomes running code:
+
+```
+  Plugins.Load("Plugins/") ─▶ find .cs/.plugin (+ .assemblies)
+        ▼ Roslyn CSharpCompilation → in-memory assembly
+        ▼ call Properties() for metadata → Plugin object (AES-encrypt source if sensitive)
+  ExecuteDynamicCSharpCode<T>() ─▶ reflection-invoke the method (await if async) ─▶ result
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

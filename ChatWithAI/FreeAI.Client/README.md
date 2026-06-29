@@ -59,6 +59,37 @@ All routes are available with and without a `/{TenantCode}` prefix.
 
 Part of the ChatWithAI solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The whole admin/user interface as C# compiled to **WebAssembly** and run in the browser: login, profile, password management, and settings administration for tenants, users, groups, departments, files, languages, and custom fields. It's the FreeCRM scaffold UI renamed to `FreeAI`; the home page's `LoadData()` is an empty stub for future app content.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WebAssembly (.NET 9) | C# UI running client-side | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Client/Program.cs) |
+| API client + helpers | Every server call lives here | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Client/Helpers.cs) |
+| MudBlazor / Radzen / BlazorMonaco | UI components + in-browser code editor | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/FreeAI.Client/Program.cs) |
+
+**Why does this exist?**
+A complete multi-tenant admin UI you get *for free*, client-rendered so it ships as static files (cheap to host, scales trivially) and only calls the server for data.
+
+**What does it accomplish that other tools don't?**
+- Every route works **with or without** a `/{TenantCode}` prefix — one UI cleanly serves many tenants.
+- A built-in **plugin testing page** and an in-browser **Monaco** (VS Code) editor.
+
+**Terminology & "can I see it?"**
+- **WebAssembly (WASM)** — lets compiled C# run at near-native speed in the browser.
+- **Tenant prefix** — the `/{TenantCode}` URL segment that scopes the UI to one organization.
+
+**The hard part, drawn** — a click becomes a tenant-scoped server call:
+
+```
+  You ─click─▶ *.razor page ─▶ Helpers.cs ─HTTP─▶ server API ─▶ DB
+                   └──── routes resolve with OR without /{TenantCode} prefix ────┘
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

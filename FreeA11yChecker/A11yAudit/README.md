@@ -62,6 +62,43 @@ None — the orchestrator invokes `FreeA11yChecker.Console` as a child process.
 |---|---|
 | `Microsoft.Extensions.Configuration.UserSecrets` | User secrets support |
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A one-click orchestrator. It finds every `appsettings.*.json` in its folder (each file = one scan target), starts each local app with `dotnet run` (or just pings external sites), runs the Console scanner against it, copies the evidence into a per-target folder, and shuts the app down cleanly. The committed results become a living accessibility evidence trail in git.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Process orchestration | Start/health-check/kill each target app | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/A11yAudit/Program.cs) |
+| FreeA11yChecker.Console (child process) | The actual scanning | [the Console project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeA11yChecker/FreeA11yChecker.Console) |
+| Config-file target discovery | One `appsettings.*.json` per target | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeA11yChecker/A11yAudit/Program.cs) |
+
+**Why does this exist?**
+To turn "audit all of our apps" into a single command whose output is version-controlled proof over time — rather than a manual, one-app-at-a-time chore.
+
+**What does it accomplish that other tools don't?**
+- **Discovers** its own targets from config files — add a new app by dropping in one JSON file.
+- Manages **real server processes** safely: starts them, waits for health, and kills the *entire* child process tree on Windows when done.
+- Treats **git history as the audit log** — every run is a reviewable diff.
+
+**Terminology & "can I see it?"**
+- **Orchestrator** — code that coordinates other programs rather than doing the work itself.
+- **Kill-tree** — terminating a process *and* every process it spawned (so no orphaned servers linger).
+- **External target** — a site that's already live; the tool only pings it, never launches it.
+
+**The hard part, drawn** — many apps, one evidence trail:
+
+```
+  A11yAudit ──▶ find appsettings.*.json   (one per target)
+       for each target:
+          start local app (or ping external) ──▶ wait until healthy
+              ──▶ run FreeA11yChecker.Console ──▶ copy evidence to runs/{target}/
+              ──▶ kill the server's whole process tree
+       all results committed to git  =  an accessibility evidence trail over time
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

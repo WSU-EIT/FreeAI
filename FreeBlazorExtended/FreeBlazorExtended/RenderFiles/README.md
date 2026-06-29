@@ -66,3 +66,23 @@ The `FileItem` type lives in `FreeBlazorExtended/SelectFile/FileItem.cs` (namesp
 
 ## Effort to integrate
 **S** — single `.razor` plus a shared POCO from the SelectFile feature.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A tile grid for showing attached files — each tile is a thumbnail (inline base64, remote URL, or a FontAwesome icon for non-images), filename, and a size tooltip. Wire `OnClick` to make tiles clickable; wire `OnDelete` to show a delete control (optionally guarded by a confirmation dialog).
+
+**What tech & where?** [RenderFiles.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/RenderFiles/RenderFiles.razor) (the `FileItem` type is shared from [SelectFile/FileItem.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/SelectFile/FileItem.cs)).
+
+**Why does this exist?** To display a set of attachments consistently (with optional delete) on any page.
+
+**What does it beat?** It's been **decoupled from the host app** — the original pulled image URLs from host state; this one reads everything from the `FileItem` and takes labels as strings, so it drops into any project.
+
+**Terminology:** **`FileItem`** — the shared file shape (also used by `SelectFile`); add both `@using`s.
+
+**The hard part, drawn:**
+```
+  Files (List<FileItem>) ─▶ tile grid (thumb · name · size)
+        OnClick wired? ─▶ clickable     OnDelete wired? ─▶ delete control (+ optional confirm dialog)
+```

@@ -129,6 +129,25 @@ catch (FreeExamplesException ex) {
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The published `FreeExamples.Client` NuGet package — a typed HTTP client for the FreeExamples API-key-protected endpoints. Set an endpoint + API key, then call `PingAsync`/`PostDataAsync`. It handles the Bearer header, retry with backoff, DI registration, and typed exceptions. (Same pattern as `FreeGLBA.Client`.)
+
+**What tech & where?** [FreeExamplesClient.cs / the project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeExamples/FreeExamples.NuGetClient) (`Microsoft.Extensions.Http` + SourceLink).
+
+**Why does this exist?** So a consumer of the FreeExamples API doesn't hand-roll HTTP, auth, and retries — and as a **reference for the API-key-client pattern** other apps reuse.
+
+**What does it beat?** Typed exceptions (`FreeExamplesAuthenticationException` on 401), a fire-and-forget `TryPostDataAsync` that never throws, and DI via `AddFreeExamplesClient` — production-grade, not a snippet.
+
+**Terminology:** **API key** — the secret a caller presents; **SourceLink** — lets you step into package source while debugging.
+
+**The hard part, drawn:**
+```
+  your app ─▶ FreeExamplesClient.PostDataAsync(req)  (Bearer {api-key})
+        transient failure ─▶ retry (backoff, default 3×)
+        401 ─▶ FreeExamplesAuthenticationException   ·   success ─▶ typed response
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -117,3 +117,40 @@ If you are hosting on IIS and want to ensure that the background service is alwa
 set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
 for the application settings to true. The Preload Enabled flag is only available
 if you have installed the Application Initialization feature for IIS.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+This folder is the **base FreeCRM platform** that the FreeServicesHub web app is built on — a ready-made multi-tenant Blazor WebAssembly CRM you can fork and trim. Two console tools customize it: **"Rename FreeCRM.exe"** renames every project/namespace and regenerates GUIDs, and **"Remove Modules from FreeCRM.exe"** strips optional modules (Appointments, Invoices, Payments, Tags, …) you don't need. On top of that sit the runtime plugin system and a background service for periodic work.
+
+**What technology does it use — and where exactly?**
+*(This is the shared scaffold; FreeServicesHub's own server is in [`FreeServicesHub/`](https://github.com/WSU-EIT/FreeAI/tree/main/FreeServicesHub/FreeServicesHub/FreeServicesHub).)*
+
+| Technology | What it's for | Where |
+|---|---|---|
+| FreeCRM scaffold (Blazor WASM, .NET 10) | The base multi-tenant app | this solution folder |
+| Rename / Remove-Modules tools | Fork the scaffold into a new app | `"Rename FreeCRM.exe"` · `"Remove Modules from FreeCRM.exe"` |
+| Roslyn plugins + background service | Runtime extensibility + periodic tasks | `PluginFiles/` · `DataAccess.App.cs › ProcessBackgroundTasksApp` |
+
+**Why does this exist?**
+So new WSU apps (FreeServicesHub among them) don't start from a blank project — they start from a working, multi-tenant, plugin-capable CRM and remove what they don't need.
+
+**What does it accomplish that other tools don't?**
+- **Fork-by-tool, not by hand**: renaming and module-removal are automated and GUID-safe.
+- **Keep only what you use**: strip optional modules down to the minimum for your app.
+- **Background work two ways**: a `ProcessBackgroundTasksApp` hook *or* a `BackgroundProcess` plugin, with a load-balancing filter for multi-instance hosting.
+
+**Terminology & "can I see it?"**
+- **Scaffold** — a ready-made starting codebase you customize.
+- **Module** — an optional feature area (Invoices, Payments, …) that can be removed.
+
+**The hard part, drawn** — turning the scaffold into your app:
+
+```
+  FreeCRM scaffold ─▶ "Rename FreeCRM.exe MyApp"  (rename projects/namespaces, new GUIDs)
+                   ─▶ "Remove Modules… keep:Tags" (strip unused modules)
+                   ─▶ add Roslyn plugins + ProcessBackgroundTasksApp work
+                   ─▶ your app (e.g. the FreeServicesHub hub)
+```

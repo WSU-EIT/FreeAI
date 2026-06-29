@@ -214,6 +214,39 @@ Your configured version is ≤ what's already on NuGet.org. Use option **V** to 
 ### "Package not found"
 Run option **3** (Pack) before option **4** (Push) to create the .nupkg file.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A small command-line tool that builds, packs, and publishes the `FreeGLBA.Client` NuGet package safely. It starts in **dry-run mode** (shows what *would* happen, writes nothing), checks your version against what's already on NuGet.org and **blocks** if yours isn't newer, and can unlist old versions keeping N per Major.Minor group. Flip to live mode only when ready.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| The publish tool | Menu + clean/build/pack/push pipeline | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.NugetClientPublisher/Program.cs) |
+| .NET user secrets | Keep the NuGet API key out of the repo | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.NugetClientPublisher/Program.cs) |
+
+**Why does this exist?**
+Publishing a package by hand is easy to get wrong — wrong version, leaked key, accidental overwrite. This makes the release repeatable and hard to mess up, and it scripts cleanly into CI (`dotnet run -- --version 1.0.5`).
+
+**What does it accomplish that other tools don't?**
+- **Dry-run by default** — you can't accidentally push.
+- **Version-guard**: refuses to publish a version ≤ what's live, and suggests the next patch.
+- **Old-version trimming** with a keep-N policy (unlist, never delete).
+
+**Terminology & "can I see it?"**
+- **SemVer** — `MAJOR.MINOR.PATCH` versioning (breaking / features / fixes).
+- **Unlist** — hide a version from search without deleting it (existing apps can still restore it).
+
+**The hard part, drawn** — the guarded release pipeline:
+
+```
+  you ─▶ (dry-run ON) ─▶ Clean → Build → Pack
+            │ version > latest on NuGet.org?  ─no─▶ BLOCK (suggest next patch)
+            │ yes                                  
+            ▼ toggle LIVE ─▶ Push to NuGet.org ─▶ (optional) Trim/unlist old versions
+```
+
 ## 📜 License
 
 Part of the FreeGLBA project. See the main repository for license information.

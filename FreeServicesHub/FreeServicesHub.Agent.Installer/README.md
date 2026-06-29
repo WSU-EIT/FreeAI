@@ -51,6 +51,39 @@ The `--NonInteractive` flag (auto-set in CLI mode) suppresses all `Console.ReadL
 
 Part of the **FreeServicesHub** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A Windows-only tool that turns the agent into an installed Windows Service. It can `build` the agent (`dotnet publish`, single-file self-contained `win-x64`), `configure`/`install` it (copy files, `sc.exe create`, write the registration key), `start`/`stop`/`status` it, and `remove`/`destroy` it. It runs as an interactive menu *or* fully non-interactive for CI/CD (every config value overridable with `--Key:Property=value`).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Installer CLI / menu | Build / install / manage the service | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.Agent.Installer/Program.cs) |
+| `sc.exe` (Windows SCM) | Create/start/stop/delete the service | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeServicesHub/FreeServicesHub.Agent.Installer/Program.cs) |
+
+**Why does this exist?**
+Deploying a Windows Service by hand (publish, copy, `sc create`, set the key, start) is fiddly and easy to get wrong. This makes it one command — and the same command works in an Azure Pipeline.
+
+**What does it accomplish that other tools don't?**
+- **One tool for the whole lifecycle**: build → install → start → status → remove, interactive or scripted.
+- **CI-ready** — `--NonInteractive` suppresses all prompts so pipelines never hang.
+
+**Terminology & "can I see it?"**
+- **`sc.exe`** — the built-in Windows command to manage services.
+- **Self-contained single-file** — the published agent bundles the .NET runtime, so the target box needs nothing pre-installed.
+
+**The hard part, drawn** — agent project to running service:
+
+```
+  build ──▶ dotnet publish (win-x64, single-file, self-contained)
+  install ─▶ copy to C:\FreeServicesHubAgent  ·  sc.exe create  ·  write registration key
+  start ───▶ sc.exe start ─▶ agent registers with the hub & begins heartbeating
+  status ──▶ sc.exe query + tail agent.log      remove ─▶ sc.exe stop/delete + clean up
+        (every step also runnable head-less from CI via --NonInteractive)
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -59,3 +59,22 @@ To handle clicks yourself (e.g. route to a detail page) and skip the lightbox:
 
 ## Effort to integrate
 **S** — single self-contained `.razor` file, no JS, no DI.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A responsive thumbnail grid; clicking a thumbnail opens a full-screen dark lightbox with prev/next arrows, an "N of M" counter, and a thumbnail strip. Esc closes, arrow keys navigate — all without any JavaScript.
+
+**What tech & where?** One file — [ImageGallery.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/ImageGallery/ImageGallery.razor) (Bootstrap 5 grid + FontAwesome icons).
+
+**Why does this exist?** A photo grid with a lightbox, without taking a dependency on a JS lightbox library.
+
+**What does it beat?** Keyboard navigation is handled with Blazor's `@onkeydown` (**no JS**), and you can set `EnableLightbox="false"` + `OnImageClick` to route to your own detail page instead. *(Honest: no pinch-zoom, no next-image preloading.)*
+
+**Terminology:** **Lightbox** — the full-screen overlay that shows one image at a time.
+
+**The hard part, drawn:**
+```
+  thumbnail grid ─▶ click ─▶ lightbox overlay (full size) ─▶ ←/→ navigate · Esc close · backdrop dismiss
+```

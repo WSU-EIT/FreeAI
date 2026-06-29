@@ -40,6 +40,25 @@ Owns the database schema. `EFDataModel` is the `DbContext`; entity classes map t
 
 Part of the **FreeBlazorExtended** solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Defines the showcase database: the `EFDataModel` DbContext and entities across four engines (+ InMemory). Notably, it **references the `FreeBlazorExtended` library** to reuse the `UserPreferences` POCO — so the table and the library's Feature 104 service share one definition.
+
+**What tech & where?** [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.EFModels/EFModels/EFDataModel.cs).
+
+**Why does this exist?** One schema for the showcase that runs on whatever database is available.
+
+**What does it beat?** It **shares the `UserPreferences` type with the library** instead of duplicating it — the EF table and the service POCO can't fall out of sync.
+
+**Terminology:** **DbContext** — the C# object representing the database and its tables.
+
+**The hard part, drawn:**
+```
+  EFDataModel ─DbSet─▶ User · Tenant · Department · Setting · FileStorage · PluginCache · UserPreferences*
+        *UserPreferences POCO is shared FROM the FreeBlazorExtended library (no duplication)
+        providers ▶ SQL Server · SQLite · MySQL · PostgreSQL · InMemory
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -10,3 +10,13 @@ Some changes were made to the included nuget packages to support using the
 newer Assembly Microsoft.CodeAnalysis.Razor.Compiler nuget package used
 by TryMudBlazor instead of the older Microsoft.AspNetCore.Razor.Language package
 used by SpawnDev.BlazorJS.CodeRunner to convert the Blazor code file into C# code.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**In one line:** this folder lets the browser compile and render Blazor *plugin* components at runtime — it turns `.razor` markup into C#, then into a live assembly, entirely inside WebAssembly (no server, no rebuild).
+
+**Why it exists:** so plugin UI can be authored and previewed in the browser without a deploy cycle.
+
+**See the full briefing** (how it fits the app, exact files, and the compile diagram) in the parent [FreeSmartsheets.Client README](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Client/README.md). The compiler entry point is [CompilationService.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/FreeSmartsheets.Client/DynamicBlazorSupport/CompilationService.cs).

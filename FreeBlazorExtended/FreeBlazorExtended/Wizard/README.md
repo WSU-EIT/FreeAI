@@ -52,3 +52,25 @@ Building blocks for multi-step wizards. Compose them yourself — there is no `<
 
 ## Effort to integrate
 **S** — pure Razor, no JS, no external deps beyond Bootstrap + FontAwesome.
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** Three composable wizard *pieces*, not a black-box wizard: `WizardStepper` (numbered step circles with a per-step value preview), `WizardStepHeader` (a card header with Start Over / Back / Next / Finish buttons), and `WizardSummary` (a badge list of choices made so far). You hold the step state and snap the pieces together.
+
+**What tech & where?** [WizardStepper.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Wizard/WizardStepper.razor) · [WizardStepHeader.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Wizard/WizardStepHeader.razor) · [WizardSummary.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeBlazorExtended/FreeBlazorExtended/Wizard/WizardSummary.razor).
+
+**Why does this exist?** For multi-step flows (setup, checkout, onboarding) where you want the standard wizard chrome but full control over the step logic.
+
+**What does it beat?** It's **primitives, not an orchestrator** — you keep control of step order and validation (no fighting a rigid wizard component), while getting consistent, accessible visuals for free.
+
+**Terminology:** **Stepper** — the numbered progress circles; **orchestrator** — the (deliberately absent) component that would own step state.
+
+**The hard part, drawn:**
+```
+  you own:  int _step + step list
+        WizardStepper(steps, _step) ─▶ ①──②──③ progress (click a done step to go back)
+        WizardStepHeader ─▶ Back/Next/Finish buttons drive _step
+        WizardSummary ─▶ badges of prior choices      (you wire the body of each step)
+```

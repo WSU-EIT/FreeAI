@@ -55,6 +55,24 @@ Based on `FreeGLBA.TestClientWithNugetPackage` — same test suite structure.
 
 Part of the FreeTools solution.
 
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A console harness that runs a suite of calls against the FreeExamples server using the `FreeExamples.Client` NuGet client — verifying that a valid API key works, an invalid one fails cleanly (typed exceptions), and the fire-and-forget overload never throws.
+
+**What tech & where?** [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.TestClient/Program.cs) (consumes the NuGet client; config via user secrets).
+
+**Why does this exist?** To confirm the client library and the server's API-key middleware actually work end-to-end before relying on them.
+
+**What does it beat?** It exercises the **auth + error + retry** paths against a real server — the integration proof for the API-key pattern. (Mirrors `FreeGLBA.TestClientWithNugetPackage`.)
+
+**Terminology:** **Harness** — a small program that drives another and checks results.
+
+**The hard part, drawn:**
+```
+  TestClient ─▶ FreeExamples.Client ─Bearer key─▶ server API-key middleware
+        valid key ─▶ success   ·   invalid ─▶ typed exception   ·   TryPost… ─▶ never throws
+```
+
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).

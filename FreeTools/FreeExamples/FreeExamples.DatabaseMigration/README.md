@@ -257,3 +257,35 @@ runs/data/latest/target/Users.csv
 ---
 
 *Part of the FreeExamples suite — see the main project for more examples.*
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** A console tool that copies data from one SQL Server database to another with the **same schema** — fast (`SqlBulkCopy`), in foreign-key-dependency order (phases A→B→C), and **safely** (it starts in dry-run mode, can profile/verify, and skips rows that already exist). A generic table copier handles *any* table with no per-entity code; it can also create the target DB fresh from the EF models.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| `SqlBulkCopy` + phased copier | High-speed, FK-ordered data copy | [Program.cs › MigrateTable()](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.DatabaseMigration/Program.cs) |
+| EF schema management | Create the target DB from EF models | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeExamples/FreeExamples.DatabaseMigration/Program.cs) |
+
+**Why does this exist?** Copying a production database to a test/dev one (or standing up a fresh target) is a common, error-prone chore. This makes it repeatable, scriptable (CI-friendly `--AutoRun`), and safe-by-default.
+
+**What does it accomplish that other tools don't?**
+- **Dry-run by default** + integrity checks (CSV + SHA-256 compare) so you can't accidentally clobber data.
+- A **generic copier** (no entity-specific code) with `TRANSFORM HOOK` comments for cross-schema or int→GUID migrations.
+- Can **generate fresh EF migrations and create the target DB** when it doesn't exist yet.
+
+**Terminology & "can I see it?"**
+- **Phase** — a group of tables copied together in FK order (parents before children).
+- **Identity insert** — preserving primary-key values during a bulk copy.
+
+**The hard part, drawn** — safe, ordered, high-speed copy:
+
+```
+  source DB ─▶ Phase A (Tenants, Settings) ─▶ Phase B (Users, Departments) ─▶ Phase C (Orders, …)
+        each table: load target PKs into a HashSet → skip dupes → SqlBulkCopy (5k/batch, IDENTITY_INSERT)
+        dry-run by default ·  integrity: CSV + SHA-256 compare ·  createdb: fresh EF migration → apply
+```

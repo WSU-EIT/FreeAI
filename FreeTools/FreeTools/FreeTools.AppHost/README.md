@@ -226,3 +226,36 @@ Tools with no dependencies run in parallel by default. Use `WaitFor()` to enforc
 **FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** The **.NET Aspire orchestrator** that runs the whole pipeline with one `dotnet run`. It starts the target web app, runs the two static-analysis tools in parallel, then the HTTP/screenshot/report tools in sequence, passing each tool its inputs via environment variables, and collects everything to `Docs/runs/{Project}/{Branch}/latest/`. Ordering is declared with Aspire `WaitFor()` dependencies.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| .NET Aspire `DistributedApplication` | Declare + run the pipeline | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AppHost/Program.cs) |
+| `WaitFor()` ordering | Run phases in the right order | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AppHost/Program.cs) |
+
+**Why does this exist?** A multi-tool pipeline needs the app running first, the right order, and shared output paths. Aspire makes that one command with a live dashboard.
+
+**What does it accomplish that other tools don't?**
+- **Parallel where possible, ordered where required** — static analysis runs concurrently; HTTP/screenshot/report run in sequence.
+- **One switch to retarget** (`--target YourProject`) the whole pipeline at a different app.
+
+**Terminology & "can I see it?"**
+- **Orchestrator** — code that starts and sequences other processes.
+- **`WaitFor()`** — "don't start this tool until that one (or the web app) is ready."
+
+**The hard part, drawn** — one command, ordered multi-process run:
+
+```
+  dotnet run (AppHost)
+        ├─▶ start target web app (https://localhost:7271)
+        ├─▶ EndpointMapper ∥ WorkspaceInventory      (parallel — no deps)
+        ├─▶ EndpointPoker  .WaitFor(webApp, mapper)   ─▶ BrowserSnapshot .WaitFor(poker)
+        └─▶ WorkspaceReporter .WaitFor(all) ─▶ Docs/runs/{Project}/{Branch}/latest/
+```

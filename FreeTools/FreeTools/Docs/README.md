@@ -198,3 +198,23 @@ Docs/runs/**/*.html
 We build internal tools and automation to support enrollment management processes across WSU.
 
 📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?** This is both the **documentation set** for FreeTools (overview, style guide, security notes, the Core API reference) **and the output sink** for the pipeline: every run writes its report, CSVs, and screenshots under `runs/{Project}/{Branch}/latest/`.
+
+**What tech & where?** [the Docs project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/Docs) (markdown + the generated `runs/` tree).
+
+**Why does this exist?** So the human docs and the machine-generated reports live in one place, organized by project and git branch — so you can diff a report against a prior run.
+
+**What does it beat?** It versions **generated analysis output alongside the docs**, per branch, so a report is a reviewable artifact in source control (with `.gitignore` recipes to keep or drop the heavy screenshots).
+
+**Terminology:** **`latest/`** — the most recent run's output; older runs are kept only if you ask (`--keep-backups`).
+
+**The hard part, drawn:**
+```
+  Docs/ ├─ 000_overview · 001_style · 002_security · 003_shared_code  (human docs)
+        └─ runs/{Project}/{Branch}/latest/  ← {Project}-Report.md · pages.csv · inventory.csv · snapshots/
+```
