@@ -34,14 +34,16 @@ FreeTools is a comprehensive CLI toolset for analyzing, testing, and documenting
 git clone https://github.com/WSU-EIT/FreeTools
 cd FreeTools/FreeTools
 
-# 2. Run against the included sample project (BlazorApp1)
+# 2. Run against the included sample project (FreeExamples)
 dotnet run --project FreeTools.AppHost
 
 # 3. Run against YOUR project
 dotnet run --project FreeTools.AppHost -- --target YourProjectName
 ```
 
-> **Note:** `BlazorApp1` is a sample Blazor project included for demonstration. Replace it with your own project by updating the `--target` parameter.
+> **Note:** `FreeExamples` is the sample Blazor project included for demonstration. Point the pipeline
+> at your own project with `--target`. Be aware that `AppHost/Program.cs` also hardcodes a list of
+> FreeExamples-specific routes (`extraPages`) which is sent to the crawlers regardless of target.
 
 ---
 
@@ -64,8 +66,8 @@ dotnet run --project FreeTools.AppHost -- --target YourProjectName
 
 ```
 FreeTools/                          # Repository root
-├── BlazorApp1/                     # 📌 SAMPLE PROJECT (replace with yours)
-│   └── ...                         # Standard Blazor project
+├── FreeExamples/                   # 📌 SAMPLE TARGET PROJECT (replace with yours)
+│   └── ...                         # FreeCRM-based Blazor app
 │
 └── FreeTools/                      # Tools suite
     ├── FreeTools.Core/             # Shared utilities library
@@ -140,7 +142,7 @@ The AppHost orchestrates tools in dependency order:
 dotnet run --project FreeTools.AppHost -- [options]
 
 Options:
-  --target <name>       Target project folder name (default: BlazorApp1)
+  --target <name>       Target project folder name (default: FreeExamples)
   --keep-backups <n>    Number of timestamped backups to keep (default: 0)
   --skip-cleanup        Skip cleanup of old run folders
 ```

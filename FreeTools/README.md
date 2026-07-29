@@ -1,327 +1,155 @@
-﻿# FreeTools Solution
+# FreeTools
 
-A .NET 10 solution containing a suite of CLI analysis tools, a FreeCRM-based example application, and reference implementations that demonstrate how to extend the FreeCRM framework.
+A .NET 10 workspace containing a suite of CLI analysis tools, a Roslyn code-reorganiser, and a
+FreeCRM-based example application used as the tools' working target.
 
-Developed by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
-
----
-
-## Solution Overview
-
-```
-FreeTools.sln
-│
-├── FreeTools/                           # CLI analysis & testing tool suite
-├── FreeExamples/                        # Active FreeCRM-based application + docs
-└── ReferenceProjects/                   # Read-only FreeCRM framework implementations
-    ├── FreeCRM-main/                    #   The original FreeCRM framework (upstream)
-    ├── FreeCRM-FreeExamples_base/       #   Clean FreeCRM renamed to FreeExamples namespace
-    ├── FreeCICD-main/                   #   CI/CD pipeline dashboard (extends FreeCRM)
-    └── FreeGLBA-main/                   #   GLBA compliance tracking (extends FreeCRM)
-```
+Developed by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)**
+at **Washington State University**.
 
 ---
 
-## FreeTools Suite
-
-A collection of .NET CLI tools for analyzing, testing, and documenting web applications. All tools target .NET 10.
-
-### Pipeline Tools (orchestrated by AppHost)
-
-| Tool | Purpose |
-|------|---------|
-| **[FreeTools.AppHost](FreeTools/FreeTools.AppHost/)** | .NET Aspire orchestrator — runs the full analysis pipeline against a target web app |
-| **[FreeTools.Core](FreeTools/FreeTools.Core/)** | Shared library — CLI arg parsing, thread-safe console output, route parsing, path utilities |
-| **[FreeTools.EndpointMapper](FreeTools/FreeTools.EndpointMapper/)** | Scans Blazor `.razor` files for `@page` directives and `[Authorize]` attributes → `pages.csv` |
-| **[FreeTools.EndpointPoker](FreeTools/FreeTools.EndpointPoker/)** | HTTP GET against every discovered route, saves HTML responses for regression testing |
-| **[FreeTools.BrowserSnapshot](FreeTools/FreeTools.BrowserSnapshot/)** | Playwright-powered full-page screenshots with SPA-aware timing, auto-retry, and metadata |
-| **[FreeTools.WorkspaceInventory](FreeTools/FreeTools.WorkspaceInventory/)** | Roslyn-powered codebase scan → CSV with file metrics, types, namespaces, routes, and auth info |
-| **[FreeTools.WorkspaceReporter](FreeTools/FreeTools.WorkspaceReporter/)** | Aggregates all tool outputs into a markdown dashboard with screenshot gallery and health metrics |
-| **[FreeTools.AccessibilityScanner](FreeTools/FreeTools.AccessibilityScanner/)** | Multi-site accessibility audit using Playwright + optional WAVE API for WCAG analysis |
-
-### Standalone Tools
-
-| Tool | Purpose |
-|------|---------|
-| **[FreeTools.ForkCRM](FreeTools/FreeTools.ForkCRM/)** | Clone FreeCRM from GitHub, remove optional modules, rename the project — outputs a ready-to-build project |
-
-### Output
-
-| Project | Purpose |
-|---------|---------|
-| **[FreeTools.Docs](FreeTools/Docs/)** | Content project holding generated pipeline outputs under `runs/{Project}/{Branch}/latest/` |
-
-### Pipeline Architecture (v2.1)
+## What is here
 
 ```
-Phase 0: Start target web app (BlazorApp1 or --target YourProject)
-    │
-    ▼
-Phase 1: Static Analysis (parallel)
-    ├─► EndpointMapper ──────► pages.csv
-    └─► WorkspaceInventory ──► workspace-inventory.csv
-    │
-    ▼
-Phase 2: EndpointPoker ──────► snapshots/*.html
-    │
-    ▼
-Phase 3: BrowserSnapshot ───► snapshots/*.png + metadata.json
-    │
-    ▼
-Phase 4: WorkspaceReporter ──► {Project}-Report.md
+FreeTools/
+├── FreeTools/          # The tool suite — analysis pipeline, FreeCodeMaid, standalone utilities
+├── FreeExamples/       # FreeCRM-based Blazor app; the pipeline's default target
+└── Docs/               # Workspace-level documentation
 ```
 
-### Quick Start
+| Folder | Contents |
+|--------|----------|
+| **[FreeTools/](FreeTools/)** | The tools themselves. Start there — it has the pipeline diagram, the environment-variable reference, and per-tool notes. |
+| **[FreeExamples/](FreeExamples/)** | A working FreeCRM application (~65k LOC). Serves as the default `--target` for the pipeline and as a reference for the FreeCRM extension pattern. |
+| **[Docs/](Docs/)** | Overview, features, architecture, and the GuidesV2 library. |
+
+### GuidesV2
+
+[`FreeTools/Docs/GuidesV2/`](FreeTools/Docs/GuidesV2/) is a separate ~1.6 MB library of 71 long-form
+guides covering FreeCRM development practice — architecture, data-stack anatomy, style references for
+C#/Razor/CSS/JS/SQL, and a set of collaboration and planning workflows. It also retains the meeting
+and briefing transcripts that produced it (the `000x_` series).
+
+Those guides document *FreeCRM development*, not the FreeTools CLIs. They are reference material and
+are maintained independently of this README.
+
+---
+
+## Quick start
 
 ```bash
-# Run the full pipeline
+# Run the analysis pipeline against FreeExamples
 cd FreeTools/FreeTools.AppHost
 dotnet run
 
-# Run against a specific project
-dotnet run -- --target YourProjectName
-
-# View results
-ls FreeTools/Docs/runs/BlazorApp1/main/latest/
+# Results
+ls FreeTools/Docs/runs/FreeExamples/main/latest/
 ```
+
+See **[FreeTools/README.md](FreeTools/README.md)** for the full pipeline description, per-tool usage,
+configuration, and known rough edges.
 
 ---
 
-## FreeExamples
+## Solution files
 
-The active development project — a FreeCRM-based Blazor application used as the working example for this solution.
+There are two, and only one of them works:
 
-| Project | Purpose |
-|---------|---------|
-| **FreeExamples** | ASP.NET Core server — hosts Blazor WebAssembly, REST API, SignalR hub, authentication |
-| **FreeExamples.Client** | Blazor WebAssembly UI — pages, components, state management (`BlazorDataModel`), helpers |
-| **FreeExamples.DataAccess** | Business logic & data layer — EF Core operations, Graph API, encryption, JWT, migrations |
-| **FreeExamples.DataObjects** | DTOs, view models, configuration helpers, caching, API endpoint constants |
-| **FreeExamples.EFModels** | Entity Framework Core models — User, Department, Tag, Setting, FileStorage, etc. |
-| **FreeExamples.Plugins** | Plugin system — runtime-loadable extensions with encryption support |
-| **FreeExamples Docs** | Documentation project — guides, patterns, style, architecture docs |
+| Solution | Status |
+|----------|--------|
+| `FreeTools/FreeTools.slnx` | **Working.** All 11 project references resolve. This is the one to open. |
+| `FreeTools.slnx` (this folder) | **Broken.** 29 of its 51 project references point into a `ReferenceProjects/` directory that does not exist in this repository. It will not load cleanly. |
 
----
+The root solution was written when this workspace also vendored read-only copies of FreeCRM,
+FreeCICD, and FreeGLBA under `ReferenceProjects/`. Those copies are gone; the solution file was never
+updated. FreeGLBA now lives at [`../FreeGLBA`](../FreeGLBA) in this repository.
 
-## Reference Projects
-
-Read-only reference implementations showing how the FreeCRM framework is extended for different purposes. Each was created using the **ForkCRM** tool (clone → remove modules → rename).
-
-### FreeCRM-main (The Original Framework)
-
-The upstream FreeCRM framework. All other projects are derived from this. Contains the base architecture: multi-tenant Blazor WebAssembly app with partial-class extension points.
-
-| Project | Purpose |
-|---------|---------|
-| CRM | ASP.NET Core server with `Program.App.cs` extension hooks |
-| CRM.Client | Blazor WebAssembly UI with `DataModel.App.cs`, `Helpers.App.cs` |
-| CRM.DataAccess | Data layer with `DataAccess.App.cs` extension point |
-| CRM.DataObjects | DTOs with `DataObjects.App.cs`, `ConfigurationHelper.App.cs` |
-| CRM.EFModels | Entity Framework models |
-| CRM.Plugins | Plugin system |
-
-### FreeCRM-FreeExamples_base (Clean Renamed Copy)
-
-A clean copy of FreeCRM renamed to the `FreeExamples` namespace using the Rename tool. This serves as the baseline — you can diff it against `FreeExamples/` to see exactly what customizations have been made.
-
-### FreeCICD-main (CI/CD Pipeline Dashboard)
-
-A FreeCRM extension for monitoring Azure DevOps CI/CD pipelines in real-time. Demonstrates the full extension pattern with custom pages, API endpoints, SignalR-powered live updates, and background services.
-
-| Project | Purpose |
-|---------|---------|
-| FreeCICD | Server — adds `FreeCICD.App.Program.cs`, `FreeCICD.App.API.cs`, `FreeCICD.App.Config.cs`, `FreeCICD.App.PipelineMonitorService.cs` |
-| FreeCICD.Client | Blazor UI — pipeline dashboard, wizard, import UI, SignalR connection viewer |
-| FreeCICD.DataAccess | Azure DevOps API integration — pipelines, Git files, resources, import/validation |
-| FreeCICD.DataObjects | CI/CD-specific DTOs and settings |
-| FreeCICD.EFModels | Entity Framework models |
-| FreeCICD.Plugins | Plugin system |
-
-### FreeGLBA-main (GLBA Compliance Tracking)
-
-A FreeCRM extension for tracking access to protected financial information under GLBA regulations. Demonstrates the extension pattern plus external API with API key authentication and a published NuGet client library.
-
-| Project | Purpose |
-|---------|---------|
-| FreeGLBA | Server — adds GLBA API controller, API key middleware, request logging |
-| FreeGLBA.Client | Blazor UI — compliance dashboard, access events, data subjects, source systems, reports |
-| FreeGLBA.DataAccess | GLBA-specific data operations, external API processing, API key validation |
-| FreeGLBA.DataObjects | GLBA DTOs, external API models, endpoint constants |
-| FreeGLBA.EFModels | EF models — AccessEvent, SourceSystem, DataSubject, ComplianceReport, ApiRequestLog |
-| FreeGLBA.Plugins | Plugin system |
-| FreeGLBA.NugetClient | Published NuGet client library (`FreeGLBA.Client` on nuget.org) for external integrations |
-| FreeGLBA.NugetClientPublisher | CLI tool for building, packing, and publishing the NuGet package |
-| FreeGLBA.TestClient | Test client using project reference (for development/debugging) |
-| FreeGLBA.TestClientWithNugetPackage | Test client using published NuGet package (validates consumer experience) |
+Additionally, `FreeCodeMaid/1.0` has its own solution
+(`FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.slnx`) which itself omits two of its five buildable
+projects — see [FreeCodeMaid's README](FreeTools/FreeCodeMaid/1.0/README.md).
 
 ---
 
-## FreeCRM Extension Pattern
+## The FreeCRM extension pattern
 
-The core philosophy: **never modify base framework files**. All customizations go through a layered extension system:
+Both FreeExamples and FreeGLBA are built on FreeCRM, which uses a layered extension system so the
+base framework can be upgraded without re-diffing every file.
 
-### How It Works
-
-1. **Framework files** (`Program.cs`, `DataController.cs`, etc.) — shipped by FreeCRM, never modified directly
-2. **`.App.` hook files** (`Program.App.cs`, `DataController.App.cs`, etc.) — shipped with empty methods that are called at specific lifecycle points
-3. **`{ProjectName}.App.{Feature}` files** — your custom code, called from the hook files with single-line additions
-
-### Example: Adding Custom Configuration
+1. **Framework files** (`Program.cs`, `DataController.cs`, …) — shipped by FreeCRM, never modified.
+2. **`.App.` hook files** (`Program.App.cs`, `DataAccess.App.cs`, …) — shipped with empty methods
+   called at defined lifecycle points. You add a single line here.
+3. **`{ProjectName}.App.{Feature}` files** — your code, called from the hooks.
 
 ```
-Program.cs                          ← Framework file (never touch)
-    └── calls Program.App.cs        ← Hook file (add one line)
-            └── calls FreeCICD.App.Program.cs   ← Your code
+Program.cs                              ← framework, never touched
+    └── Program.App.cs                  ← hook file, one line added
+            └── FreeCICD.App.Program.cs ← your code
 ```
 
-In `Program.App.cs` (the hook file):
-```csharp
-public static ConfigurationHelperLoader ConfigurationHelpersLoadApp(
-    ConfigurationHelperLoader loader, WebApplicationBuilder builder)
-{
-    var output = loader;
-    output = MyConfigurationHelpersLoadApp(output, builder);  // ← single line added
-    return output;
-}
-```
+When FreeCRM updates: copy the framework files over wholesale, diff only the handful of `.App.` hook
+files, and leave your `{ProjectName}.App.*` files completely alone.
 
-In `FreeCICD.App.Program.cs` (your custom file):
-```csharp
-public static ConfigurationHelperLoader MyConfigurationHelpersLoadApp(
-    ConfigurationHelperLoader loader, WebApplicationBuilder builder)
-{
-    output.PAT = builder.Configuration.GetValue<string>("App:AzurePAT");
-    output.OrgName = builder.Configuration.GetValue<string>("App:AzureOrgName");
-    // ...
-    return output;
-}
-```
+### Hook points
 
-### Why This Pattern?
-
-When the FreeCRM framework updates:
-1. Copy over the updated framework files (they're untouched)
-2. Diff only the few `.App.` hook files where you added single-line calls
-3. Your `{ProjectName}.App.{Feature}` files are completely untouched
-
-This makes framework upgrades clean — no need to diff every file in the project.
-
-### Key Hook Points
-
-| Hook File | Methods |
-|-----------|---------|
-| `Program.App.cs` | `AppModifyBuilderStart()`, `AppModifyBuilderEnd()`, `AppModifyStart()`, `AppModifyEnd()`, `ConfigurationHelpersLoadApp()` |
-| `DataController.App.cs` | App-specific API endpoints (partial class extension) |
-| `DataAccess.App.cs` | App-specific data operations (partial class extension) |
-| `DataObjects.App.cs` | App-specific DTOs and models |
-| `DataModel.App.cs` | App-specific client-side state |
-| `Helpers.App.cs` | App-specific client-side helpers |
+| Hook file | Provides |
+|-----------|----------|
+| `Program.App.cs` | `AppModifyBuilderStart/End()`, `AppModifyStart/End()`, `ConfigurationHelpersLoadApp()` |
+| `DataController.App.cs` | App-specific API endpoints |
+| `DataAccess.App.cs` | App-specific data operations |
+| `DataObjects.App.cs` | App-specific DTOs |
+| `DataModel.App.cs` | App-specific client state |
+| `Helpers.App.cs` | App-specific client helpers |
 | `ConfigurationHelper.App.cs` | App-specific configuration properties |
 
-### Naming Convention for Custom Files
+### Naming
 
-| Pattern | Example | Description |
-|---------|---------|-------------|
-| `{ProjectName}.App.{Feature}.cs` | `FreeCICD.App.API.cs` | Server-side extension |
-| `{ProjectName}.App.{Feature}.razor` | `FreeCICD.App.UI.Wizard.razor` | UI component extension |
-| `{Feature}.App.{SubFeature}.razor` | `About.App.razor` | Simple hook component |
+| Pattern | Example |
+|---------|---------|
+| `{ProjectName}.App.{Feature}.cs` | `FreeCICD.App.API.cs` |
+| `{ProjectName}.App.{Feature}.razor` | `FreeCICD.App.UI.Wizard.razor` |
+| `{Feature}.App.{SubFeature}.razor` | `About.App.razor` |
 
----
-
-## Running Individual Tools
-
-```bash
-# Full pipeline via Aspire
-cd FreeTools/FreeTools.AppHost
-dotnet run
-
-# EndpointMapper
-cd FreeTools/FreeTools.EndpointMapper
-dotnet run -- <rootToScan> <csvOutputPath> [--clean]
-
-# EndpointPoker
-cd FreeTools/FreeTools.EndpointPoker
-dotnet run -- <baseUrl> <csvPath> <outputDir> [maxThreads]
-
-# BrowserSnapshot
-cd FreeTools/FreeTools.BrowserSnapshot
-dotnet run -- <baseUrl> <csvPath> <outputDir> [maxThreads]
-
-# WorkspaceInventory
-cd FreeTools/FreeTools.WorkspaceInventory
-dotnet run -- <rootDir> <csvOutputPath> [--noCounts]
-
-# WorkspaceReporter
-cd FreeTools/FreeTools.WorkspaceReporter
-dotnet run -- <repoRoot> <outputPath>
-
-# ForkCRM
-cd FreeTools/FreeTools.ForkCRM
-dotnet run -- --name MyProject --modules all --output "C:\repos\MyProject"
-
-# AccessibilityScanner
-cd FreeTools/FreeTools.AccessibilityScanner
-dotnet run   # configure sites in appsettings.json
-```
+`FreeTools.AppExtractor` exists to pull exactly this `.App.*` layer out of a fork.
 
 ---
 
-## Build
+## Plain-English briefing
 
-```bash
-dotnet build FreeTools.slnx
-```
+**What is it?** A set of command-line tools that automatically analyse and document a Blazor web
+application. One command starts the app and then: discovers every page route, inventories the entire
+codebase with Roslyn, sends an HTTP request to each route, screenshots each page with a real browser,
+runs a four-engine accessibility audit, and assembles the results into a markdown report filed by git
+branch.
+
+**Why does it exist?** So documentation is *generated* rather than hand-maintained. Route lists, code
+metrics, screenshots, and accessibility findings all rot the moment someone writes them down by hand;
+producing them on demand keeps them true.
+
+**What is genuinely distinctive?**
+
+- The whole pipeline runs from one command, rather than as five disconnected tools.
+- Screenshotting is SPA-aware — it waits for Blazor to render, where most tools capture a blank
+  loading shell. It also does two passes, anonymous and authenticated, so login-gated pages are covered.
+- The accessibility scanner merges four independent engines (axe-core, HTML_CodeSniffer, IBM ACE, and
+  in-house rules) and de-duplicates their findings against a curated WCAG mapping.
+
+**What it is not.** "FreeTools" is a folder name applied to three separate things. The analysis
+pipeline is coherent and works. FreeCodeMaid is a distinct and higher-quality product that happens to
+live in the same directory. ForkCRM and AppExtractor are one-off utilities that do not use the shared
+core they sit next to. Sizing an investment in "FreeTools" means deciding which of the three you mean.
+
+**Where to look first:** [FreeTools/README.md](FreeTools/README.md), then a generated report under
+`FreeTools/Docs/runs/{Project}/{Branch}/latest/`.
 
 ---
 
-## 📬 About
+## About
 
-**FreeTools** is developed and maintained by **[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at **Washington State University**.
+Developed and maintained by
+**[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/meet-our-staff/)** at
+**Washington State University**.
 
 We build internal tools and automation to support enrollment management processes across WSU.
 
-📧 Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue on [GitHub](https://github.com/WSU-EIT/FreeTools/issues)
-
----
-
-## 🧭 Plain-English Briefing — The Boss Questions
-
-**How does this work?** FreeTools is a suite of CLI tools that **automatically analyze and document a Blazor web app**. An Aspire orchestrator (`AppHost`) starts the target app and runs a pipeline: discover every route (EndpointMapper), inventory the whole codebase with Roslyn (WorkspaceInventory), HTTP-test each route (EndpointPoker), screenshot each page with Playwright (BrowserSnapshot), and assemble a markdown report (WorkspaceReporter). Standalone tools round it out: ForkCRM (clone + rename FreeCRM), AppExtractor (extract your customization layer), and AccessibilityScanner.
-
-**What technology does it use — and where exactly?**
-
-| Technology | What it's for | Exact location |
-|---|---|---|
-| .NET Aspire orchestrator | Runs the whole pipeline in order | [FreeTools.AppHost/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.AppHost/Program.cs) |
-| Route discovery (`@page` scan) | List every Blazor route → `pages.csv` | [FreeTools.EndpointMapper/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.EndpointMapper/Program.cs) |
-| Roslyn codebase inventory | File metrics, types, routes → CSV | [FreeTools.WorkspaceInventory/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceInventory/Program.cs) |
-| Playwright screenshots | A picture of every page | [FreeTools.BrowserSnapshot/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.BrowserSnapshot/Program.cs) |
-| Report assembly | One markdown dashboard | [FreeTools.WorkspaceReporter/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeTools/FreeTools/FreeTools.WorkspaceReporter/Program.cs) |
-
-**Why does this exist?** To keep **living, accurate documentation** of a Blazor app — its routes, code metrics, screenshots, and health — generated automatically and versioned per git branch, instead of hand-maintained docs that rot.
-
-**What does it accomplish that other tools don't?**
-- A **whole pipeline in one command** (static analysis + HTTP + screenshots + report), not separate disconnected tools.
-- **SPA-aware** screenshotting that waits for Blazor to actually render (most screenshot tools capture a blank loading shell).
-- Built around the **FreeCRM extension pattern** (`.App.` hook files) so the framework can be upgraded without re-diffing every file.
-
-**Terminology & "can I see it?"**
-- **Pipeline** — the ordered set of analysis steps.
-- **Route** — a page URL (`@page`) in the app.
-- **Aspire** — .NET's multi-process orchestration framework.
-- *See it:* a generated report lands at `Docs/runs/{Project}/{Branch}/latest/{Project}-Report.md`.
-
-**The hard part, drawn** — one command turns a running app into a full report:
-
-```
-  AppHost (Aspire) ─▶ Phase 0: start the target web app
-        ▼ Phase 1 (parallel):  EndpointMapper → pages.csv   ·   WorkspaceInventory → inventory.csv
-        ▼ Phase 2:  EndpointPoker → snapshots/*.html         (HTTP GET each route)
-        ▼ Phase 3:  BrowserSnapshot → snapshots/*.png + metadata.json   (Playwright, SPA-aware)
-        ▼ Phase 4:  WorkspaceReporter → {Project}-Report.md  (metrics + route map + screenshot health)
-        ▼ all written to Docs/runs/{Project}/{Branch}/latest/
-```
-
----
-
-*Note: the section above is the boss-questions briefing; the detailed solution overview and the FreeCRM extension pattern are documented in full earlier in this README.*
+Questions or feedback? Visit our [team page](https://em.wsu.edu/eit/meet-our-staff/) or open an issue
+on [GitHub](https://github.com/WSU-EIT/FreeTools/issues).

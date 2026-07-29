@@ -23,7 +23,7 @@ This project serves as the central business logic layer, providing:
 | `JWTHelpers` | 1.0.1 | JWT token handling |
 | `Microsoft.Graph` | 5.98.0 | Microsoft 365 integration |
 | `Novell.Directory.Ldap.NETStandard` | 4.0.0 | LDAP/Active Directory |
-| `QuestPDF` | 2025.12.0 | PDF report generation |
+| `QuestPDF` | 2025.12.0 | Referenced and licensed for future PDF reports; not yet used |
 
 ### Project References
 - **FreeGLBA.DataObjects** - DTOs and configuration
@@ -109,6 +109,37 @@ public async Task<GlbaEventResponse> ProcessGlbaEventAsync(
 }
 ```
 
+> **De-duplication is not race-safe.** The check is a `SELECT` (`AnyAsync`) followed by an `INSERT`,
+> and there is no unique constraint on `(SourceSystemId, SourceEventId)`. Two concurrent retries of
+> the same event — exactly what `GlbaClient`'s retry logic can produce — may both pass the check and
+> both insert. Adding a unique index would close the race and remove the table scan.
+
+### Bulk Access Event Insert
+
+`SaveAccessEventsAsync` writes many events in a single round trip. It is the internal, user-authenticated
+counterpart to the external `ProcessGlbaBatchAsync`, and is substantially faster:
+
+| | `ProcessGlbaBatchAsync` (external) | `SaveAccessEventsAsync` (internal) |
+|---|---|---|
+| Auth | API key (source system) | User session |
+| De-duplication | Yes, per event via `SourceEventId` | No — assumes caller-generated events |
+| DB writes | Loops single inserts; 2–3 `SaveChanges` **per event** | One `AddRange`, then two `SaveChanges` total |
+| Subject statistics | One update per subject per event | Tallied in memory, applied in a single pass |
+| Limit | 1,000 per request | 1,000 per request |
+
+```csharp
+var result = await da.SaveAccessEventsAsync(events);
+// result.Saved             — events written
+// result.SubjectsAffected  — distinct data subjects created or updated
+// result.Success / .Message
+```
+
+Because subject hits are tallied before being applied, a subject touched twelve times in one batch has
+its `TotalAccessCount` incremented by twelve in a single update rather than by one, twelve times.
+
+Use `ProcessGlbaBatchAsync` when ingesting from an external system that needs de-duplication; use
+`SaveAccessEventsAsync` for seeding, demo data, and internal high-volume inserts.
+
 ### API Key Management
 
 Secure API key handling for external source systems:
@@ -154,16 +185,18 @@ await dataAccess.RunMigrationsAsync();
 // - DataMigrations.SQLite.cs
 ```
 
-### PDF Report Generation
+### PDF Report Generation — not implemented
 
-Using QuestPDF for compliance reports:
+QuestPDF is referenced and its Community licence is registered in
+[`Program.cs`](../FreeGLBA/Program.cs), but **no compliance report is generated anywhere in the
+codebase**. There is no `GenerateComplianceReport` method.
 
-```csharp
-public byte[] GenerateComplianceReport(
-    DateTime startDate, 
-    DateTime endDate, 
-    Guid? sourceSystemId = null)
-```
+What exists today is CRUD over report *metadata*: `GetComplianceReportsAsync`,
+`SaveComplianceReportAsync`, and `DeleteComplianceReportAsync` read and write `ComplianceReports` rows.
+The entity carries `ReportData` and `FileUrl` columns, but nothing populates them.
+
+Producing actual PDF/CSV output is an open roadmap item — see
+[`Docs/002_roadmap.md`](../Docs/002_roadmap.md).
 
 ### Microsoft Graph Integration
 
@@ -184,11 +217,17 @@ The `IDataAccess` interface defines all available operations:
 ```csharp
 public interface IDataAccess
 {
-    // GLBA Operations
+    // GLBA Operations (external API, API-key authenticated)
     Task<GlbaEventResponse> ProcessGlbaEventAsync(GlbaEventRequest request, Guid sourceSystemId);
     Task<GlbaBatchResponse> ProcessGlbaBatchAsync(List<GlbaEventRequest> events, Guid sourceSystemId);
     Task<GlbaStats> GetGlbaStatsAsync();
     Task<List<AccessEvent>> GetRecentAccessEventsAsync(int limit);
+
+    // Access Event CRUD (internal API, user authenticated)
+    Task<AccessEventFilterResult> GetAccessEventsAsync(AccessEventFilter filter);
+    Task<AccessEvent?> SaveAccessEventAsync(AccessEvent dto);
+    Task<AccessEventBulkResult> SaveAccessEventsAsync(List<AccessEvent> items);
+    Task<bool> DeleteAccessEventAsync(Guid id);
     
     // Source System Operations
     Task<List<SourceSystem>> GetSourceSystemsAsync();
@@ -264,7 +303,7 @@ public class DashboardService
 ## 🧭 Plain-English Briefing — The Boss Questions
 
 **How does this work?**
-The server-side business-logic layer. Beyond the usual FreeCRM responsibilities (EF Core over 4 databases, auth, JWT, Graph/AD, encryption, PDF), it owns the **GLBA event processing**: `ProcessGlbaEventAsync` validates an incoming event, rejects duplicates (matching `SourceEventId`), writes the `AccessEvent`, and bumps the source system's statistics. It also manages **API keys** for source systems (validate / generate / rotate) and generates compliance reports with QuestPDF.
+The server-side business-logic layer. Beyond the usual FreeCRM responsibilities (EF Core over 4 databases, auth, JWT, Graph/AD, encryption, PDF), it owns the **GLBA event processing**: `ProcessGlbaEventAsync` validates an incoming event, rejects duplicates (matching `SourceEventId`), writes the `AccessEvent`, and bumps the source system's statistics. It also manages **API keys** for source systems (validate / generate / rotate) and provides bulk event insert (`SaveAccessEventsAsync`) for seeding and high-volume internal writes. Compliance-report *generation* is not implemented yet — the reports feature stores metadata only.
 
 **What technology does it use — and where exactly?**
 
@@ -273,7 +312,7 @@ The server-side business-logic layer. Beyond the usual FreeCRM responsibilities 
 | GLBA event processing | Validate · dedupe · store · update stats | [FreeGLBA.App.DataAccess.ExternalApi.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/FreeGLBA.App.DataAccess.ExternalApi.cs) |
 | API-key management | Validate / generate / rotate source keys | [FreeGLBA.App.DataAccess.ApiKey.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/FreeGLBA.App.DataAccess.ApiKey.cs) |
 | EF Core + migrations | All DB I/O across 4 engines | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/DataAccess.cs) |
-| QuestPDF | Compliance report PDFs | [DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA.DataAccess/DataAccess.cs) |
+| QuestPDF | Reserved for compliance report PDFs (licence registered, not yet used) | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeGLBA/FreeGLBA/Program.cs) |
 
 **Why does this exist?**
 To keep the compliance logic — *what counts as a valid event, how duplicates are rejected, how reports are built* — in one server-only layer, so the API controllers and the client stay thin.

@@ -123,15 +123,20 @@ The `{Project}-Report.md` includes:
 
 ## Sample Projects
 
-The repository includes `BlazorApp1` as a sample target project. This is a standard Blazor Web App with ASP.NET Core Identity, demonstrating:
+The workspace includes `FreeExamples` as the default target — a FreeCRM-based Blazor application
+(~65k LOC) that exercises the interesting cases:
 
-- Multiple route depths (`/`, `/Account/Login`, `/Account/Manage/Email`)
+- Multiple route depths (`/`, `/Settings`, `/Settings/EditUser/{userid}`)
 - Protected pages (`[Authorize]` attribute)
-- Parameterized routes (`/Account/Manage/RenamePasskey/{Id}`)
+- Parameterized and tenant-scoped routes (`/{TenantCode}/Settings/EditTag/{id}`)
+- Pages that only render after authentication, which is why BrowserSnapshot runs two passes
 
 **To analyze your own project:**
 1. Place it as a sibling folder to `FreeTools/`
 2. Run with `--target YourProjectName`
+
+> `--target` changes which project AppHost launches, but `AppHost/Program.cs` still appends a
+> hardcoded list of FreeExamples routes to the crawl set. Trim `extraPages` when retargeting.
 
 ---
 

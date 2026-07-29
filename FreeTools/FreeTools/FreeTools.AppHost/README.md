@@ -11,7 +11,7 @@
 **FreeTools.AppHost** is an Aspire orchestrator that:
 
 1. **Starts** the target web application (FreeExamples by default)
-2. **Runs** the tools pipeline in sequence
+2. **Runs** the analysis tools, in parallel where their inputs allow
 3. **Collects** all outputs to `Docs/runs/{Project}/{Branch}/latest/`
 4. **Manages** backup retention (optional)
 
@@ -21,34 +21,40 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FreeTools Pipeline v2.2                             │
+│                          FreeTools Pipeline                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  Phase 0: Start Web App                                                     │
 │  ┌─────────────────────┐                                                    │
-│  │  Target Web App     │ ◄─── FreeExamples or your project                   │
-│  │  (https://7271)     │                                                    │
+│  │  Target Web App     │ ◄─── FreeExamples or your project                  │
+│  │  (https://7271)     │      fixed, unproxied ports 7271 / 5111            │
 │  └─────────────────────┘                                                    │
 │           │                                                                 │
 │           ▼                                                                 │
-│  Phase 1: Static Analysis (Parallel)                                        │
+│  Phase 1: Static Analysis (parallel — neither waits on the other)           │
 │  ├─► EndpointMapper ────────────────────────► pages.csv                     │
 │  └─► WorkspaceInventory ────────────────────► workspace-inventory.csv       │
 │           │                                                                 │
+│           │  all three below WaitFor(webApp) + WaitForCompletion(mapper)    │
 │           ▼                                                                 │
-│  Phase 2: EndpointPoker ────────────────────► snapshots/*.html              │
+│  Phase 2: Crawlers (parallel — they do NOT wait on each other)              │
+│  ├─► EndpointPoker ─────────────────────────► snapshots/*.html              │
+│  ├─► BrowserSnapshot ───────────────────────► snapshots/*.png               │
+│  │                                            snapshots/*/metadata.json     │
+│  └─► AccessibilityScanner ──────────────────► a11y/                         │
 │           │                                                                 │
+│           │  WaitForCompletion of all five above                            │
 │           ▼                                                                 │
-│  Phase 3: BrowserSnapshot (v3.0) ───────────► snapshots/*.png               │
-│           │                                   snapshots/*/metadata.json     │
-│           ▼                                                                 │
-│  Phase 4: WorkspaceReporter (v2.0) ─────────► {Project}-Report.md           │
-│           │                                   (with Screenshot Health)      │
-│           ▼                                                                 │
+│  Phase 3: WorkspaceReporter ────────────────► {Project}-Report.md           │
+│                                               (with Screenshot Health)      │
+│                                                                             │
 │  Outputs: Docs/runs/{Project}/{Branch}/latest/                              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+Only two barriers exist: everything in Phase 2 waits for EndpointMapper to finish (it needs
+`pages.csv`), and the reporter waits for all five tools. Within a phase, tools run concurrently.
 
 ---
 
@@ -63,7 +69,7 @@ dotnet run
 
 This will:
 1. Start FreeExamples on https://localhost:7271 (fixed port)
-2. Run all tools in sequence
+2. Run all tools, parallelised where their inputs allow
 3. Write outputs to `Docs/runs/FreeExamples/main/latest/`
 
 ### Run Against Your Project
@@ -231,7 +237,7 @@ Tools with no dependencies run in parallel by default. Use `WaitFor()` to enforc
 
 ## 🧭 Plain-English Briefing — The Boss Questions
 
-**How does this work?** The **.NET Aspire orchestrator** that runs the whole pipeline with one `dotnet run`. It starts the target web app, runs the two static-analysis tools in parallel, then the HTTP/screenshot/report tools in sequence, passing each tool its inputs via environment variables, and collects everything to `Docs/runs/{Project}/{Branch}/latest/`. Ordering is declared with Aspire `WaitFor()` dependencies.
+**How does this work?** The **.NET Aspire orchestrator** that runs the whole pipeline with one `dotnet run`. It starts the target web app, runs the two static-analysis tools in parallel, then runs the three crawlers (HTTP, screenshots, accessibility) concurrently once route discovery has finished, and finally builds the report once everything else has completed. Each tool receives its inputs as environment variables, and all output is collected to `Docs/runs/{Project}/{Branch}/latest/`. Ordering is declared with Aspire `WaitFor()` / `WaitForCompletion()` dependencies.
 
 **What technology does it use — and where exactly?**
 
@@ -243,7 +249,7 @@ Tools with no dependencies run in parallel by default. Use `WaitFor()` to enforc
 **Why does this exist?** A multi-tool pipeline needs the app running first, the right order, and shared output paths. Aspire makes that one command with a live dashboard.
 
 **What does it accomplish that other tools don't?**
-- **Parallel where possible, ordered where required** — static analysis runs concurrently; HTTP/screenshot/report run in sequence.
+- **Parallel where possible, ordered where required** — only two real barriers: route discovery must finish before the crawlers start, and every tool must finish before the report is built.
 - **One switch to retarget** (`--target YourProject`) the whole pipeline at a different app.
 
 **Terminology & "can I see it?"**
@@ -255,7 +261,9 @@ Tools with no dependencies run in parallel by default. Use `WaitFor()` to enforc
 ```
   dotnet run (AppHost)
         ├─▶ start target web app (https://localhost:7271)
-        ├─▶ EndpointMapper ∥ WorkspaceInventory      (parallel — no deps)
-        ├─▶ EndpointPoker  .WaitFor(webApp, mapper)   ─▶ BrowserSnapshot .WaitFor(poker)
-        └─▶ WorkspaceReporter .WaitFor(all) ─▶ Docs/runs/{Project}/{Branch}/latest/
+        ├─▶ EndpointMapper ∥ WorkspaceInventory                 (parallel — no deps)
+        ├─▶ EndpointPoker ∥ BrowserSnapshot ∥ AccessibilityScanner
+        │        each: .WaitFor(webApp).WaitForCompletion(endpointMapper)
+        └─▶ WorkspaceReporter .WaitForCompletion(all five)
+                 └─▶ Docs/runs/{Project}/{Branch}/latest/
 ```

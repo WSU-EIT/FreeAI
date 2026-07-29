@@ -7,10 +7,10 @@ Developed by **Enrollment Information Technology** at **Washington State Univers
 ## Purpose
 
 This project provides the interactive web UI for FreeGLBA:
-- **Dashboard** - Real-time access event monitoring
+- **Dashboard** - Access event statistics, recent activity, and top accessors
 - **Source Systems** - Manage external systems and API keys
-- **Access Events** - Browse, search, and filter access logs
-- **Reports** - Generate compliance reports
+- **Access Events** - Browse, search, and filter access logs; create events and generate test data
+- **Reports** - Track compliance report metadata (generation not implemented yet)
 - **Settings** - Configure application settings
 - **User Management** - Manage users and permissions
 
@@ -20,7 +20,7 @@ This project provides the interactive web UI for FreeGLBA:
 - **MudBlazor** - Material Design component library
 - **Blazor.Bootstrap** - Bootstrap components
 - **Radzen.Blazor** - Additional UI components
-- **SignalR** - Real-time updates
+- **SignalR** - Real-time updates (framework entities only; no GLBA publisher yet)
 
 ## Dependencies
 
@@ -74,28 +74,33 @@ FreeGLBA.Client/
 ## Key Features
 
 ### Dashboard
-- Real-time event counter
-- Recent events feed (SignalR updates)
-- Statistics by category and access type
-- Source system health indicators
+- Event counts for today / this week / this month
+- Recent events feed
+- Top accessors and source-system status
+- Loads on navigation; **no live SignalR push for GLBA events yet** (see note below)
 
 ### Source System Management
 - Register new source systems
-- Generate and rotate API keys
+- Generate and rotate API keys (plaintext key shown once, stored hashed)
 - View event counts and last activity
 - Enable/disable systems
+- **Generate Test Data** button fills the form with a plausible sample system
 
 ### Access Event Browser
-- Advanced filtering (date, user, subject, type)
-- Full-text search
-- Export to CSV
-- Drill-down to event details
+- Advanced filtering (date, user, subject, type, department)
+- Search across user and subject fields
+- Drill-down to event details, including expanding bulk-event subject lists
+- **New Access Event** opens the full editor, which has its own **Generate Test Data**
+  dropdown (single new/existing subject, or bulk across 2–10 subjects)
+- **Generate Test Events** creates randomized events in bulk — choose a count (10–500),
+  a time window (today / 7 / 30 / 90 days), the size of the data-subject pool, and whether
+  to include multi-subject bulk exports. Events are posted in chunks of 100 to
+  `api/Data/SaveAccessEvents`.
 
 ### Compliance Reports
-- Date range selection
-- Filter by source system
-- PDF export
-- Scheduled report generation
+- CRUD over report metadata (type, period, generated-by, totals)
+- **No report generation yet** — no PDF or CSV output, and nothing populates `ReportData`
+  or `FileUrl`. Date-range and source filters, export, and scheduling are roadmap items.
 
 ## Configuration
 
@@ -149,17 +154,26 @@ var events = await Http.GetFromJsonAsync<List<AccessEvent>>(
     Endpoints.FreeGLBA.GetAccessEvents);
 ```
 
-## Real-Time Updates
+## Real-Time Updates — framework only
 
-SignalR connection for live dashboard updates:
+The FreeCRM SignalR pipeline is present and connected. `MainLayout.razor` opens a `HubConnection`
+to `/freeglbaHub` and dispatches `SignalRUpdate` messages, and pages subscribe through
+`Model.OnSignalRUpdate`. That machinery drives live updates for **framework** entities — users,
+departments, tags, files, settings.
+
+**No GLBA entity publishes to it.** There is no `SignalRUpdateType` for access events, and neither
+`ProcessGlbaEventAsync` nor `SaveAccessEventAsync` sends an update. `Helpers.App.cs`
+(`ProcessSignalRUpdateApp`) is an empty stub reserved for exactly this. The GLBA dashboard therefore
+fetches on navigation and does not refresh on its own.
+
+Wiring it up would mean adding a GLBA update type, publishing from the event-processing path, and
+handling it in `ProcessSignalRUpdateApp` — the hook is already there and empty:
 
 ```csharp
-@inject HubConnection HubConnection
-
-protected override async Task OnInitializedAsync()
+// FreeGLBA.Client/Helpers.App.cs
+public static async Task ProcessSignalRUpdateApp(DataObjects.SignalRUpdate update)
 {
-    HubConnection.On<AccessEvent>("NewEvent", OnNewEvent);
-    await HubConnection.StartAsync();
+    // Process any SignalR updates specific to your app here.
 }
 ```
 

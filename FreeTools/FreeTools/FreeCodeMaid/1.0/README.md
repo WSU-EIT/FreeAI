@@ -157,44 +157,73 @@ Two things make a command-line build work (both already wired into the `.csproj`
 Open a `.cs` file → `Ctrl+K, Ctrl+R` (or *Edit → Reorganize Document*, or right-click → Reorganize).
 Configure under *Tools → Options → FreeCodeReorganizer*.
 
-### One thing to verify on first run (Roslyn versioning)
-The Core engine bundles `Microsoft.CodeAnalysis.CSharp` 4.12, and an **in-process** extension shares the
-process with Visual Studio's *own* Roslyn. The build packs cleanly; the open question is *runtime*
-assembly-load. If there's a conflict when the command first runs, align Core's Roslyn version with the
-one your VS ships, or move the engine out-of-process. Confirm on first launch.
+### Roslyn versioning — resolved by going out-of-process
+The Core engine bundles `Microsoft.CodeAnalysis.CSharp` 4.12. An **in-process** VSIX shares the process
+with Visual Studio's *own* Roslyn, which risks an assembly-load conflict at runtime.
+
+`FreeCodeReorganizer.VS2026` resolves this by using the new out-of-process extensibility model
+(`Microsoft.VisualStudio.Extensibility.Sdk`), so the bundled Roslyn cannot collide with the IDE's. The
+classic in-process VSIX (`FreeCodeReorganizer/`) still carries the original risk.
 
 ---
 
-## Project layout (what's here now)
-Open **`FreeCodeReorganizer.slnx`** in Visual Studio to load the whole suite:
-- `FreeCodeReorganizer.Core/` — the engine (netstandard2.0). **Builds.**
-- `FreeCodeReorganizer.Core.Tests/` — xUnit tests for the engine. **7/7 pass** (`dotnet test`, no VS needed).
-- `FreeCodeReorganizer/` — the VS extension (VSIX). **Builds to a `.vsix`** (CLI via VS's MSBuild, or F5 in VS).
+## Project layout
+
+Six projects sit in this folder. **Only three are in `FreeCodeReorganizer.slnx`** — the rest must be
+built by project path.
+
+| Project | Target | In solution | Notes |
+|---|---|:---:|---|
+| `FreeCodeReorganizer.Core/` | netstandard2.0 | ✅ | The engine. 11 source files, ~1,500 LOC. |
+| `FreeCodeReorganizer.Core.Tests/` | net10.0 | ✅ | xUnit. **7 facts, all passing** (`dotnet test`, no VS needed). |
+| `FreeCodeReorganizer/` | net48 | ✅ | Classic in-process VSIX. Builds to a `.vsix`. |
+| `FreeCodeReorganizer.VS2026/` | net8.0-windows | ❌ | **v1.8.0 — the newest and most active front-end.** Out-of-process model, native Unified Settings. |
+| `FreeCodeReorganizer.Cli/` | net8.0 | ❌ | stdin→stdout, `--file`, `--dir`. 167 LOC. |
+| `FreeCodeReorganizer.VSCode/` | plain JS | ❌ | VS Code extension; shells out to the CLI. No `.csproj`, no npm dependencies. |
+
+### Test coverage — what is and isn't covered
+
+The 7 facts pin the core contract of `Reorganizer.Run`: alphabetical member sort, idempotence on
+already-ordered input, fields never reordered, the 35% "hand-ordered" bail-out, both brace-collapse
+behaviours, and `#region` skipping.
+
+Not covered: `RazorReorganizer` (327 LOC, and the riskiest code here since it edits markup),
+`BatchReorganizer`, `CleanupRunner`, `GeneratedCodeDetector`, `PathExclusion`, `ModuleRegionSorter`,
+`ModuleMarkerAligner`, and the failure paths of both safety nets. Treat the suite as a meaningful
+smoke test of one class, not as a safety net for the whole engine.
 
 ## Roadmap
 - [x] Core engine extracted (`FreeCodeReorganizer.Core`, builds) + **7 unit tests pass**
 - [x] VSIX front-end scaffolded (`FreeCodeReorganizer`)
 - [x] **First build green: produces an installable `FreeCodeReorganizer.vsix` from the command line**
       (VS 2026's Framework MSBuild) — manifest + `.pkgdef` verified; targets VS 2022 + 2026
-- [ ] First *runtime* launch: confirm the toolkit API calls + resolve any Roslyn-version conflict
+- [x] Roslyn-version conflict addressed — `FreeCodeReorganizer.VS2026` runs out-of-process
+- [x] CLI front-end (`FreeCodeReorganizer.Cli`)
+- [x] VS Code front-end (`FreeCodeReorganizer.VSCode`), driving the CLI
+- [ ] Add `.Cli`, `.VS2026` to `FreeCodeReorganizer.slnx`
+- [ ] Tests for `RazorReorganizer` and the safety-net failure paths
 - [ ] Icon + Marketplace/internal-feed publish (and a real Marketplace `Publisher` id)
 - [ ] (optional) format-on-save / reorganize-on-save toggle
 
-> **Scope:** this is a **Visual Studio–only** tool (pure C# VSIX). A VS Code front-end would be a separate
-> TypeScript project requiring Node — explicitly out of scope.
+> **Scope.** The engine is editor-agnostic; front-ends exist for Visual Studio (two generations),
+> the command line, and VS Code. Earlier revisions of this README described VS Code as out of scope —
+> that is no longer true.
 
 ---
 
 ## 🧭 Plain-English Briefing — The Boss Questions
 
-**How does this work?** This is the **1.0 line**: the same member-reorganizer logic, but repackaged as an installable **Visual Studio extension** (a `.vsix`, "install it like CodeMaid") over a shared Roslyn engine, `FreeCodeReorganizer.Core`. One engine, two front-ends (the frozen 0.0 console tool + this VS extension). The division of labor: `.editorconfig` owns normal formatting; this tool layers *only* member reordering and the `){` brace it can't express.
+**How does this work?** This is the **1.0 line**: one shared Roslyn engine (`FreeCodeReorganizer.Core`) with four front-ends over it — two Visual Studio extensions, a command-line tool, and a VS Code extension. The division of labour: `.editorconfig` owns normal formatting; this tool layers *only* member reordering and the `){` brace convention that `.editorconfig` cannot express.
 
 **What technology does it use — and where exactly?**
 
 | Technology | What it's for | Exact location |
 |---|---|---|
-| Roslyn engine (netstandard2.0) | The reorganize logic, shared | [FreeCodeReorganizer.Core/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.Core) |
-| Visual Studio VSIX (VSSDK) | "Install like CodeMaid" front-end | [FreeCodeReorganizer/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer) |
+| Roslyn engine (netstandard2.0) | The reorganize logic, shared by every front-end | [FreeCodeReorganizer.Core/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.Core) |
+| VS extensibility SDK (out-of-process) | Current VS front-end, v1.8.0 | [FreeCodeReorganizer.VS2026/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.VS2026) |
+| Classic VSIX (VSSDK, net48) | Original in-process front-end | [FreeCodeReorganizer/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer) |
+| .NET CLI + JS | Command line, and the VS Code extension that drives it | [FreeCodeReorganizer.Cli/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.Cli) · [.VSCode/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.VSCode) |
+| xUnit | 7 engine tests, CI-runnable | [FreeCodeReorganizer.Core.Tests/](https://github.com/WSU-EIT/FreeAI/tree/main/FreeTools/FreeTools/FreeCodeMaid/1.0/FreeCodeReorganizer.Core.Tests) |
 
 **Why does this exist?** CodeMaid (the well-known extension) is unmaintained and **can't be tailored to FreeCRM's exact conventions** — so this is a *fresh* tool (carefully **not** reusing CodeMaid's name or code) that owns its engine and matches the house style 1:1.
 
