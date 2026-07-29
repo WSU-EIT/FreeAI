@@ -8,8 +8,8 @@
 
 <li class="git-tree-item list-unstyled mb-0">
     <div class="d-flex align-items-center gap-1 git-tree-row px-2 py-1 rounded @(IsSelected ? "git-tree-selected" : "")"
-         style="cursor: pointer; user-select: none;"
-         @onclick="HandleClickAsync">
+            style="cursor: pointer; user-select: none;"
+            @onclick="HandleClickAsync">
 
         @* Indent placeholder for files; expand arrow for directories *@
         @if (Node.Type == GitNodeType.Directory)
@@ -64,10 +64,7 @@
                           .OrderBy(c => c.Type != GitNodeType.Directory)
                           .ThenBy(c => c.Name))
             {
-                <GitTreeNodeItem Node="child"
-                                 SelectedPath="SelectedPath"
-                                 OnExpand="OnExpand"
-                                 OnSelect="OnSelect" />
+                <GitTreeNodeItem Node="child" SelectedPath="SelectedPath" OnExpand="OnExpand" OnSelect="OnSelect" />
             }
         </ul>
     }
@@ -82,10 +79,9 @@
 </li>
 
 @code {
+    private bool IsSelected =>
+        Node.Type != GitNodeType.Directory && Node.Path == SelectedPath;
     [Parameter, EditorRequired] public GitTreeNode Node { get; set; } = null!;
-
-    /// <summary>Path of the currently selected file — used to apply the highlight style.</summary>
-    [Parameter] public string? SelectedPath { get; set; }
 
     /// <summary>Raised when the user clicks a directory node to expand or collapse it.</summary>
     [Parameter] public EventCallback<GitTreeNode> OnExpand { get; set; }
@@ -93,13 +89,8 @@
     /// <summary>Raised when the user clicks a file (or symlink) node to view it.</summary>
     [Parameter] public EventCallback<GitTreeNode> OnSelect { get; set; }
 
-    private bool IsSelected =>
-        Node.Type != GitNodeType.Directory && Node.Path == SelectedPath;
-
-    private Task HandleClickAsync() =>
-        Node.Type == GitNodeType.Directory
-            ? OnExpand.InvokeAsync(Node)
-            : OnSelect.InvokeAsync(Node);
+    /// <summary>Path of the currently selected file — used to apply the highlight style.</summary>
+    [Parameter] public string? SelectedPath { get; set; }
 
     private static string FormatSize(long bytes) => bytes switch
     {
@@ -107,4 +98,9 @@
         < 1024 * 1024    => $"{bytes / 1024.0:0.0} KB",
         _                => $"{bytes / (1024.0 * 1024.0):0.00} MB"
     };
+
+    private Task HandleClickAsync() =>
+        Node.Type == GitNodeType.Directory
+            ? OnExpand.InvokeAsync(Node)
+            : OnSelect.InvokeAsync(Node);
 }

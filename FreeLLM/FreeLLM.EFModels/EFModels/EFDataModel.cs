@@ -15,32 +15,13 @@ public partial class EFDataModel : DbContext
     {
     }
 
-
-    public virtual DbSet<Department> Departments { get; set; }
-
     public virtual DbSet<DepartmentGroup> DepartmentGroups { get; set; }
 
 
+    public virtual DbSet<Department> Departments { get; set; }
+
+
     public virtual DbSet<FileStorage> FileStorages { get; set; }
-
-
-
-
-    public virtual DbSet<PluginCache> PluginCaches { get; set; }
-
-
-    public virtual DbSet<Setting> Settings { get; set; }
-
-
-    public virtual DbSet<Tenant> Tenants { get; set; }
-
-    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<UserGroup> UserGroups { get; set; }
-
-    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
 
     // The OnConfiguring override is only commented out and used to build the migration scripts.
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -229,4 +210,23 @@ public partial class EFDataModel : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+
+
+
+    public virtual DbSet<PluginCache> PluginCaches { get; set; }
+
+
+    public virtual DbSet<Setting> Settings { get; set; }
+
+
+    public virtual DbSet<Tenant> Tenants { get; set; }
+
+    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
+
+    public virtual DbSet<UserGroup> UserGroups { get; set; }
+
+    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
 }

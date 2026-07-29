@@ -25,8 +25,7 @@ public partial class DataAccess
         List<string>? additionalAssemblies, 
         string Namespace, 
         string Classname, 
-        string invokerFunction)
-    {
+        string invokerFunction){
         T? output = default(T);
 
         try {

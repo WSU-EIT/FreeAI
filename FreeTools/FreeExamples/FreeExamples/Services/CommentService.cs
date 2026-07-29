@@ -11,6 +11,18 @@ public class CommentService
     private readonly ConcurrentDictionary<Guid, DataObjects.SampleComment> _comments = new();
 
     /// <summary>
+    /// Delete a comment (soft delete).
+    /// </summary>
+    public bool DeleteComment(Guid commentId)
+    {
+        if (_comments.TryGetValue(commentId, out var comment)) {
+            comment.Deleted = true;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Get comments for a specific SampleItem, ordered by Created ascending (chat style).
     /// </summary>
     public List<DataObjects.SampleComment> GetComments(Guid sampleItemId)
@@ -35,17 +47,5 @@ public class CommentService
 
         _comments[comment.CommentId] = comment;
         return comment;
-    }
-
-    /// <summary>
-    /// Delete a comment (soft delete).
-    /// </summary>
-    public bool DeleteComment(Guid commentId)
-    {
-        if (_comments.TryGetValue(commentId, out var comment)) {
-            comment.Deleted = true;
-            return true;
-        }
-        return false;
     }
 }

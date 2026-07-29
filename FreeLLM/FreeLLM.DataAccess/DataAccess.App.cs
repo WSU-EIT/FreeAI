@@ -123,6 +123,20 @@ public partial class DataAccess
     }
 
     /// <summary>
+    /// This method is called to add any app-specific deleted records to the output.
+    /// </summary>
+    private async Task<DataObjects.DeletedRecords> GetDeletedRecordsApp(Guid TenantId, DataObjects.DeletedRecords deletedRecords)
+    {
+        await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
+
+        var output = deletedRecords;
+
+        // Do any lookups for your app-specific deleted records here and add them to the output.
+
+        return output;
+    }
+
+    /// <summary>
     /// This method is called to add any app-specific filter columns to the filter output.
     /// </summary>
     /// <param name="Type">The filter type (eg: Users, Invoices, etc.)</param>
@@ -137,20 +151,6 @@ public partial class DataAccess
         // if (Type.ToLower() == "users" && Position.ToLower() == "username") {
         //     output.Add(new DataObjects.FilterColumn { Name = "MyColumn", Type = "string", Title = "My Column", Placeholder = "My Column", Width = 150 });
         // }
-        return output;
-    }
-
-    /// <summary>
-    /// This method is called to add any app-specific deleted records to the output.
-    /// </summary>
-    private async Task<DataObjects.DeletedRecords> GetDeletedRecordsApp(Guid TenantId, DataObjects.DeletedRecords deletedRecords)
-    {
-        await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
-
-        var output = deletedRecords;
-
-        // Do any lookups for your app-specific deleted records here and add them to the output.
-
         return output;
     }
 

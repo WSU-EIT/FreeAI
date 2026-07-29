@@ -21,16 +21,16 @@
                             int flatIndex = _flatList.IndexOf(shot);
                             <div class="col">
                                 <div class="card h-100 screenshot-thumb" role="button" tabindex="0"
-                                     @onclick="@(() => OpenLightbox(flatIndex))"
-                                     @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") OpenLightbox(flatIndex); })">
+                                        @onclick="@(() => OpenLightbox(flatIndex))"
+                                        @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") OpenLightbox(flatIndex); })">
                                     @if (_brokenImages.Contains(flatIndex)) {
                                         <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 100px;">
                                             <small class="text-muted">Not available</small>
                                         </div>
                                     } else {
                                         <img src="@GetImageUrl(shot)" alt="@shot.Label"
-                                             class="card-img-top" loading="lazy"
-                                             @onerror="@(() => { _brokenImages.Add(flatIndex); StateHasChanged(); })" />
+                                                class="card-img-top" loading="lazy"
+                                                @onerror="@(() => { _brokenImages.Add(flatIndex); StateHasChanged(); })" />
                                     }
                                     <div class="card-body p-1">
                                         <small class="text-muted text-truncate d-block" title="@shot.Label">@shot.Label</small>
@@ -114,8 +114,7 @@
     }
 
     private static Dictionary<string, List<DataObjects.ScanScreenshot>> GroupByCategory(
-        List<DataObjects.ScanScreenshot> shots)
-    {
+        List<DataObjects.ScanScreenshot> shots){
         // Keep insertion order via Dictionary (.NET preserves insertion order in practice).
         var result = new Dictionary<string, List<DataObjects.ScanScreenshot>>();
         string[] categoryOrder = new[] {

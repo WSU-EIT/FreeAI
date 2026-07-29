@@ -144,6 +144,107 @@
 
     protected MainLayout_App AppLayout = new MainLayout_App();
 
+    protected bool BypassMaintenanceMode {
+        get {
+            if (Model.User.AppAdmin) {
+                return true;
+            } else if (Model.View == "login" && !String.IsNullOrWhiteSpace(Model.TenantCodeFromUrl) && Model.TenantCodeFromUrl.ToLower() == "admin") {
+                // Allow logging in to the Admin tenant
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    protected bool IncludeCustomCss {
+        get {
+            if (Model.Tenant.TenantSettings.Theme == "custom") {
+                return true;
+            } else if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFontCssImport)) {
+                return true;
+            } else if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFont)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    protected string IncludeCustomCssFont {
+        get {
+            string output = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFont)) {
+                output = "html, body {" + Environment.NewLine +
+                    "  font-family: " + Model.Tenant.TenantSettings.ThemeFont + ";" + Environment.NewLine +
+                    "}";
+            }
+
+            return output;
+        }
+    }
+
+    public bool IsSignalRConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    protected string PageAreaClass {
+        get {
+            if (Model.AppSettings.MaintenanceMode && !BypassMaintenanceMode) {
+                return "maintenance-mode";
+            }
+
+            return String.Empty;
+        }
+    }
+
+    protected async Task CheckForUpdates() {
+        if (versionInfoLoaded) {
+            bool reload = false;
+            bool wasOnline = Model.AppOnline;
+
+            var info = await Helpers.GetOrPost<DataObjects.VersionInfo>("api/Data/GetVersionInfo");
+
+            if (info != null) {
+                if (!String.IsNullOrWhiteSpace(info.Version)) {
+                    Model.AppOnline = true;
+                }
+
+                if (versionInfo.Released != info.Released || versionInfo.RunningSince != info.RunningSince || versionInfo.Version != info.Version) {
+                    reload = true;
+                }
+
+                if (reload) {
+                    var uri = Helpers.ToAbsoluteUri(Helpers.Uri);
+                    string redirect = uri.ToString();
+
+                    if (!String.IsNullOrWhiteSpace(redirect)) {
+                        if (redirect.ToLower().Contains("serverupdated")) {
+                            // Already in the process of redirecting
+                        } else {
+                            Helpers.NavigateTo("ServerUpdated?Redirect=" + Helpers.UrlEncode(redirect));
+                        }
+                    } else {
+                        Helpers.NavigateToRoot();
+                    }
+                }
+            } else {
+                // Server is offline
+                Model.AppOnline = false;
+                await Helpers.HideMenus();
+                StateHasChanged();
+            }
+
+            if (wasOnline != Model.AppOnline) {
+                if (Model.AppOnline) {
+                    updateTimer?.Change(0, 10000);
+                } else {
+                    updateTimer?.Change(0, 2000);
+                }
+            }
+        }
+    }
+
     public void Dispose() {
         dotNetHelper?.Dispose();
 
@@ -153,53 +254,67 @@
         NavManager.LocationChanged -= LocationChanged;
     }
 
-    protected override async Task OnInitializedAsync() {
-        if (!Model.Subscribers_OnChange.Contains("MainLayout")) {
-            Model.Subscribers_OnChange.Add("MainLayout");
-            Model.OnChange += StateHasChanged;
+    public async ValueTask DisposeAsync() {
+        if (hubConnection is not null) {
+            await hubConnection.DisposeAsync();
         }
+    }
 
-        NavManager.LocationChanged += LocationChanged;
-
-        if (!Helpers.Initialized) {
-            Helpers.Init(jsRuntime, Model, Http, LocalStorage, DialogService, TooltipService, NavManager);
-
-            List<string>? globallyDisabledModules = await Helpers.GetOrPost<List<string>>("api/Data/GetGloballyDisabledModules");
-            Model.GloballyDisabledModules = globallyDisabledModules;
-
-            List<string>? globallyEnabledModules = await Helpers.GetOrPost<List<string>>("api/Data/GetGloballyEnabledModules");
-            Model.GloballyEnabledModules = globallyEnabledModules;
+    [JSInvokable]
+    public void DotNetHelperHandler(params string[] arguments) {
+        if (arguments != null) {
+            Model.DotNetHelperHandler(arguments.ToList());
         }
+    }
 
-        if (String.IsNullOrWhiteSpace(Model.Fingerprint)) {
-            await Helpers.GetFingerprint();
-        }
+    void LocationChanged(object? sender, LocationChangedEventArgs e) {
+        // Remove any messages
+        Model.Messages = new List<Message>();
+        Model.NavigationId = String.Empty;
+        Model.ViewIsEditPage = false;
 
-        if (!Model.LoggedIn && StartupValidated) {
-            await ValidateLogin();
-        }
+        bool reloadDeleteCounts = Model.User.Admin && Model.Tenant.TenantSettings.DeletePreference == DataObjects.DeletePreference.MarkAsDeleted;
 
-        timer = new System.Threading.Timer(async (object? stateInfo) => {
-            await ThemeWatcher();
-            MessageWatcher();
-            await SavePendingUserPreferences();
-
-            // If we have a logged in user or any loaded plugins, and we are going to make
-            // sure that all plugins are pre-compiled, then do so here.
-            if (Model.PrecompileBlazorPlugins && !_precompiledBlazorPlugins && (Model.LoggedIn || Model.Plugins.Any())) {
-                _precompiledBlazorPlugins = true;
-
-                var plugins = Model.Plugins
-                    .Where(x => x.Type.ToLower() == "blazor")
-                    .ToList();
-
-                // Blazor plugin pre-compilation disabled (DynamicBlazorSupport removed)
+        base.InvokeAsync(async () => {
+            await Helpers.HideMenus();
+            if (reloadDeleteCounts) {
+                await Helpers.GetDeletedRecordCount();
             }
-        }, new System.Threading.AutoResetEvent(false), 0, 500);
+        });
+    }
 
-        updateTimer = new System.Threading.Timer(async (object? stateInfo) => {
-            await CheckForUpdates();
-        }, new System.Threading.AutoResetEvent(false), 0, 10000);
+    protected void MessageWatcher() {
+        if (Model.Messages.Any()) {
+            int maxMessages = Model.Tenant.TenantSettings.MaxToastMessages;
+            int totalPersistentMessages = 0;
+
+            List<string> remove = new List<string>();
+
+            // Iterate over all messages.
+            // If any messages are auto-hide then hide them after 5 seconds.
+            // Otherwise, after the 5 seconds show the time the message has been displayed.
+            DateTime now = DateTime.UtcNow;
+            foreach (var message in Model.Messages.OrderByDescending(x => x.Shown)) {
+                var secondsAgo = (now - message.Shown).TotalSeconds;
+
+                if (secondsAgo >= 5) {
+                    if (message.AutoHide) {
+                        remove.Add(message.Id);
+                    } else {
+                        message.TimeLabel = Helpers.SecondsToTimePassed(secondsAgo);
+                    }
+                }
+
+                if (maxMessages > 0 && !message.AutoHide) {
+                    totalPersistentMessages++;
+                    if (totalPersistentMessages > maxMessages) {
+                        remove.Add(message.Id);
+                    }
+                }
+            }
+
+            Model.Messages = Model.Messages.Where(x => !remove.Contains(x.Id)).ToList();
+        }
     }
 
     protected async override Task OnAfterRenderAsync(bool firstRender) {
@@ -265,168 +380,53 @@
         }
     }
 
-    [JSInvokable]
-    public void DotNetHelperHandler(params string[] arguments) {
-        if (arguments != null) {
-            Model.DotNetHelperHandler(arguments.ToList());
+    protected override async Task OnInitializedAsync() {
+        if (!Model.Subscribers_OnChange.Contains("MainLayout")) {
+            Model.Subscribers_OnChange.Add("MainLayout");
+            Model.OnChange += StateHasChanged;
         }
-    }
 
-    protected bool BypassMaintenanceMode {
-        get {
-            if (Model.User.AppAdmin) {
-                return true;
-            } else if (Model.View == "login" && !String.IsNullOrWhiteSpace(Model.TenantCodeFromUrl) && Model.TenantCodeFromUrl.ToLower() == "admin") {
-                // Allow logging in to the Admin tenant
-                return true;
-            }
+        NavManager.LocationChanged += LocationChanged;
 
-            return false;
+        if (!Helpers.Initialized) {
+            Helpers.Init(jsRuntime, Model, Http, LocalStorage, DialogService, TooltipService, NavManager);
+
+            List<string>? globallyDisabledModules = await Helpers.GetOrPost<List<string>>("api/Data/GetGloballyDisabledModules");
+            Model.GloballyDisabledModules = globallyDisabledModules;
+
+            List<string>? globallyEnabledModules = await Helpers.GetOrPost<List<string>>("api/Data/GetGloballyEnabledModules");
+            Model.GloballyEnabledModules = globallyEnabledModules;
         }
-    }
 
-    protected async Task CheckForUpdates() {
-        if (versionInfoLoaded) {
-            bool reload = false;
-            bool wasOnline = Model.AppOnline;
-
-            var info = await Helpers.GetOrPost<DataObjects.VersionInfo>("api/Data/GetVersionInfo");
-
-            if (info != null) {
-                if (!String.IsNullOrWhiteSpace(info.Version)) {
-                    Model.AppOnline = true;
-                }
-
-                if (versionInfo.Released != info.Released || versionInfo.RunningSince != info.RunningSince || versionInfo.Version != info.Version) {
-                    reload = true;
-                }
-
-                if (reload) {
-                    var uri = Helpers.ToAbsoluteUri(Helpers.Uri);
-                    string redirect = uri.ToString();
-
-                    if (!String.IsNullOrWhiteSpace(redirect)) {
-                        if (redirect.ToLower().Contains("serverupdated")) {
-                            // Already in the process of redirecting
-                        } else {
-                            Helpers.NavigateTo("ServerUpdated?Redirect=" + Helpers.UrlEncode(redirect));
-                        }
-                    } else {
-                        Helpers.NavigateToRoot();
-                    }
-                }
-            } else {
-                // Server is offline
-                Model.AppOnline = false;
-                await Helpers.HideMenus();
-                StateHasChanged();
-            }
-
-            if (wasOnline != Model.AppOnline) {
-                if (Model.AppOnline) {
-                    updateTimer?.Change(0, 10000);
-                } else {
-                    updateTimer?.Change(0, 2000);
-                }
-            }
+        if (String.IsNullOrWhiteSpace(Model.Fingerprint)) {
+            await Helpers.GetFingerprint();
         }
-    }
 
-    public async ValueTask DisposeAsync() {
-        if (hubConnection is not null) {
-            await hubConnection.DisposeAsync();
+        if (!Model.LoggedIn && StartupValidated) {
+            await ValidateLogin();
         }
-    }
 
-    protected bool IncludeCustomCss {
-        get {
-            if (Model.Tenant.TenantSettings.Theme == "custom") {
-                return true;
-            } else if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFontCssImport)) {
-                return true;
-            } else if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFont)) {
-                return true;
+        timer = new System.Threading.Timer(async (object? stateInfo) => {
+            await ThemeWatcher();
+            MessageWatcher();
+            await SavePendingUserPreferences();
+
+            // If we have a logged in user or any loaded plugins, and we are going to make
+            // sure that all plugins are pre-compiled, then do so here.
+            if (Model.PrecompileBlazorPlugins && !_precompiledBlazorPlugins && (Model.LoggedIn || Model.Plugins.Any())) {
+                _precompiledBlazorPlugins = true;
+
+                var plugins = Model.Plugins
+                    .Where(x => x.Type.ToLower() == "blazor")
+                    .ToList();
+
+                // Blazor plugin pre-compilation disabled (DynamicBlazorSupport removed)
             }
+        }, new System.Threading.AutoResetEvent(false), 0, 500);
 
-            return false;
-        }
-    }
-
-    protected string IncludeCustomCssFont {
-        get {
-            string output = String.Empty;
-
-            if (!String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.ThemeFont)) {
-                output = "html, body {" + Environment.NewLine +
-                    "  font-family: " + Model.Tenant.TenantSettings.ThemeFont + ";" + Environment.NewLine +
-                    "}";
-            }
-
-            return output;
-        }
-    }
-
-    public bool IsSignalRConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
-
-    void LocationChanged(object? sender, LocationChangedEventArgs e) {
-        // Remove any messages
-        Model.Messages = new List<Message>();
-        Model.NavigationId = String.Empty;
-        Model.ViewIsEditPage = false;
-
-        bool reloadDeleteCounts = Model.User.Admin && Model.Tenant.TenantSettings.DeletePreference == DataObjects.DeletePreference.MarkAsDeleted;
-
-        base.InvokeAsync(async () => {
-            await Helpers.HideMenus();
-            if (reloadDeleteCounts) {
-                await Helpers.GetDeletedRecordCount();
-            }
-        });
-    }
-
-    protected void MessageWatcher() {
-        if (Model.Messages.Any()) {
-            int maxMessages = Model.Tenant.TenantSettings.MaxToastMessages;
-            int totalPersistentMessages = 0;
-
-            List<string> remove = new List<string>();
-
-            // Iterate over all messages.
-            // If any messages are auto-hide then hide them after 5 seconds.
-            // Otherwise, after the 5 seconds show the time the message has been displayed.
-            DateTime now = DateTime.UtcNow;
-            foreach (var message in Model.Messages.OrderByDescending(x => x.Shown)) {
-                var secondsAgo = (now - message.Shown).TotalSeconds;
-
-                if (secondsAgo >= 5) {
-                    if (message.AutoHide) {
-                        remove.Add(message.Id);
-                    } else {
-                        message.TimeLabel = Helpers.SecondsToTimePassed(secondsAgo);
-                    }
-                }
-
-                if (maxMessages > 0 && !message.AutoHide) {
-                    totalPersistentMessages++;
-                    if (totalPersistentMessages > maxMessages) {
-                        remove.Add(message.Id);
-                    }
-                }
-            }
-
-            Model.Messages = Model.Messages.Where(x => !remove.Contains(x.Id)).ToList();
-        }
-    }
-
-    protected string PageAreaClass {
-        get {
-            if (Model.AppSettings.MaintenanceMode && !BypassMaintenanceMode) {
-                return "maintenance-mode";
-            }
-
-            return String.Empty;
-        }
+        updateTimer = new System.Threading.Timer(async (object? stateInfo) => {
+            await CheckForUpdates();
+        }, new System.Threading.AutoResetEvent(false), 0, 10000);
     }
 
     protected async Task ProcessSignalRUpdate(DataObjects.SignalRUpdate update) {

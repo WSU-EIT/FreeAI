@@ -37,7 +37,7 @@
         <div class="col-auto">
             <label class="form-label small mb-1">URL Pattern (optional)</label>
             <input type="text" class="form-control form-control-sm" placeholder="*em.wsu.edu/* (blank = all)"
-                   @bind="_urlPattern" aria-label="URL pattern" />
+                    @bind="_urlPattern" aria-label="URL pattern" />
         </div>
         <div class="col-auto">
             <label class="form-label small mb-1">Severity</label>
@@ -140,17 +140,17 @@
 
     public class RuleGroup
     {
-        public string Key { get; set; } = "";
-        public string RuleId { get; set; } = "";
-        public string Tool { get; set; } = "";
-        public string Severity { get; set; } = "";
-        public string? WcagCriteria { get; set; }
         public string? HelpUrl { get; set; }
-        public string SampleMessage { get; set; } = "";
-        public int TotalCount { get; set; }
-        public int PageCount { get; set; }
-        public int SiteCount { get; set; }
         public int Impact { get; set; }
+        public string Key { get; set; } = "";
+        public int PageCount { get; set; }
+        public string RuleId { get; set; } = "";
+        public string SampleMessage { get; set; } = "";
+        public string Severity { get; set; } = "";
+        public int SiteCount { get; set; }
+        public string Tool { get; set; } = "";
+        public int TotalCount { get; set; }
+        public string? WcagCriteria { get; set; }
     }
 
     public void Dispose() { Model.OnChange -= OnDataModelUpdated; }

@@ -28,6 +28,16 @@ public sealed class GitRepoController : ControllerBase
         _store = store;
     }
 
+    private static IGitRepoAdapter BuildAdapter(GitPlatform platform) => platform switch
+    {
+        GitPlatform.GitHub or GitPlatform.GitHubEnterprise => new GitHubAdapter(_http),
+        GitPlatform.GitLab    => new GitLabAdapter(_http),
+        GitPlatform.Bitbucket => new BitbucketAdapter(_http),
+        GitPlatform.Gitea     => new GiteaAdapter(_http),
+        GitPlatform.AzureDevOps => new AzureDevOpsAdapter(_http),
+        _ => throw new InvalidOperationException($"No adapter for platform '{platform}'.")
+    };
+
     // -------------------------------------------------------------------------
     // POST /api/Showcase/GitRepo/connect
     // Body: { "repoUrl": "...", "token": "...", "username": "...", "platformOverride": "..." }
@@ -120,6 +130,19 @@ public sealed class GitRepoController : ControllerBase
     }
 
     // -------------------------------------------------------------------------
+    // DELETE /api/Showcase/GitRepo/disconnect
+    // -------------------------------------------------------------------------
+    [HttpDelete("disconnect")]
+    public IActionResult Disconnect()
+    {
+        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
+        _store.Remove(key);
+        Response.Cookies.Delete(ExternalApiSessionStore.CookieName,
+            new CookieOptions { Path = "/api/Showcase" });
+        return Ok(new { disconnected = true });
+    }
+
+    // -------------------------------------------------------------------------
     // GET /api/Showcase/GitRepo/branches
     // -------------------------------------------------------------------------
     [HttpGet("branches")]
@@ -132,32 +155,6 @@ public sealed class GitRepoController : ControllerBase
         {
             var branches = await adapter!.GetBranchesAsync(ctx, HttpContext.RequestAborted);
             return Ok(branches.Select(b => new { b.Name, b.CommitSha, b.IsDefault }));
-        }
-        catch (GitRepoException ex) { return StatusCode(MapErrorCode(ex.ErrorCode), new { error = ex.Message }); }
-        catch (Exception ex) { return StatusCode(502, new { error = ex.Message }); }
-    }
-
-    // -------------------------------------------------------------------------
-    // GET /api/Showcase/GitRepo/tree?path=&branch=
-    // -------------------------------------------------------------------------
-    [HttpGet("tree")]
-    public async Task<IActionResult> GetTree([FromQuery] string path = "", [FromQuery] string branch = "")
-    {
-        var (ctx, adapter) = GetSessionContext();
-        if (ctx is null) return Unauthorized(new { error = "No active Git session. Connect first." });
-
-        try
-        {
-            var nodes = await adapter!.GetTreeAsync(ctx, path, branch, HttpContext.RequestAborted);
-            return Ok(nodes.Select(n => new
-            {
-                n.Name,
-                n.Path,
-                type        = n.Type.ToString(),
-                n.Sha,
-                n.Size,
-                n.DownloadUrl
-            }));
         }
         catch (GitRepoException ex) { return StatusCode(MapErrorCode(ex.ErrorCode), new { error = ex.Message }); }
         catch (Exception ex) { return StatusCode(502, new { error = ex.Message }); }
@@ -193,19 +190,6 @@ public sealed class GitRepoController : ControllerBase
     }
 
     // -------------------------------------------------------------------------
-    // DELETE /api/Showcase/GitRepo/disconnect
-    // -------------------------------------------------------------------------
-    [HttpDelete("disconnect")]
-    public IActionResult Disconnect()
-    {
-        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
-        _store.Remove(key);
-        Response.Cookies.Delete(ExternalApiSessionStore.CookieName,
-            new CookieOptions { Path = "/api/Showcase" });
-        return Ok(new { disconnected = true });
-    }
-
-    // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
 
@@ -231,15 +215,31 @@ public sealed class GitRepoController : ControllerBase
         return (ctx, BuildAdapter(platform));
     }
 
-    private static IGitRepoAdapter BuildAdapter(GitPlatform platform) => platform switch
+    // -------------------------------------------------------------------------
+    // GET /api/Showcase/GitRepo/tree?path=&branch=
+    // -------------------------------------------------------------------------
+    [HttpGet("tree")]
+    public async Task<IActionResult> GetTree([FromQuery] string path = "", [FromQuery] string branch = "")
     {
-        GitPlatform.GitHub or GitPlatform.GitHubEnterprise => new GitHubAdapter(_http),
-        GitPlatform.GitLab    => new GitLabAdapter(_http),
-        GitPlatform.Bitbucket => new BitbucketAdapter(_http),
-        GitPlatform.Gitea     => new GiteaAdapter(_http),
-        GitPlatform.AzureDevOps => new AzureDevOpsAdapter(_http),
-        _ => throw new InvalidOperationException($"No adapter for platform '{platform}'.")
-    };
+        var (ctx, adapter) = GetSessionContext();
+        if (ctx is null) return Unauthorized(new { error = "No active Git session. Connect first." });
+
+        try
+        {
+            var nodes = await adapter!.GetTreeAsync(ctx, path, branch, HttpContext.RequestAborted);
+            return Ok(nodes.Select(n => new
+            {
+                n.Name,
+                n.Path,
+                type        = n.Type.ToString(),
+                n.Sha,
+                n.Size,
+                n.DownloadUrl
+            }));
+        }
+        catch (GitRepoException ex) { return StatusCode(MapErrorCode(ex.ErrorCode), new { error = ex.Message }); }
+        catch (Exception ex) { return StatusCode(502, new { error = ex.Message }); }
+    }
 
     private static int MapErrorCode(GitErrorCode code) => code switch
     {

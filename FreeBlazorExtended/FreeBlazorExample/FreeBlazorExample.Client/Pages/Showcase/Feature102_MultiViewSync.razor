@@ -11,14 +11,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A SignalR-backed session model where one master client controls shared state and any number of slave clients mirror it in real time, each with its own read/write permission profile."
-        WhatEli5="Think of a TV remote and the TV — one device is in control, and whatever it does instantly appears on every screen in the room, all without anyone pressing refresh."
-        Who=@(new[]{ "Presenters who run guided walkthroughs on a projector while controlling from a tablet", "Kiosk operators pushing content to displays", "Developers building shared-screen collaboration flows (e.g., co-browsing support tools)" })
-        WhenUse=@(new[]{ "Live presentations where a handheld device drives a wall screen", "Multi-screen kiosks where a back-office admin pushes content to public displays", "Step-by-step guided workflows where a rep controls what a customer sees" })
-        WhenNot=@(new[]{ "Persistent multi-user collaboration that needs conflict resolution — use a proper CRDT or OT approach", "Simple data sync that just needs a database poll — SignalR overhead isn't worth it" })
-        Why="The gap between 'I control from my phone' and 'it shows on the big screen' used to require native apps or complex WebSocket wiring. This collapses that into a reusable session abstraction."
-        TechNotes=@(new[]{ "RealtimeSyncService manages named sessions; each session has one master connection ID and N slave IDs", "SignalR hub group per session — master calls hub method, hub broadcasts to group", "Slave views receive a strongly-typed SyncPayload and re-render; they never call hub methods unless granted write permission", "Session state is in-memory only — no DB persistence; sessions vanish on server restart", "Controller page uses @implements IAsyncDisposable to clean up the hub connection" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI + SignalR hub", ["Persisted"] = "No — in-memory session only", ["Real-time"] = "SignalR (push)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+            WhatTechnical="A SignalR-backed session model where one master client controls shared state and any number of slave clients mirror it in real time, each with its own read/write permission profile."
+            WhatEli5="Think of a TV remote and the TV — one device is in control, and whatever it does instantly appears on every screen in the room, all without anyone pressing refresh."
+            Who=@(new[]{ "Presenters who run guided walkthroughs on a projector while controlling from a tablet", "Kiosk operators pushing content to displays", "Developers building shared-screen collaboration flows (e.g., co-browsing support tools)" })
+            WhenUse=@(new[]{ "Live presentations where a handheld device drives a wall screen", "Multi-screen kiosks where a back-office admin pushes content to public displays", "Step-by-step guided workflows where a rep controls what a customer sees" })
+            WhenNot=@(new[]{ "Persistent multi-user collaboration that needs conflict resolution — use a proper CRDT or OT approach", "Simple data sync that just needs a database poll — SignalR overhead isn't worth it" })
+            Why="The gap between 'I control from my phone' and 'it shows on the big screen' used to require native apps or complex WebSocket wiring. This collapses that into a reusable session abstraction."
+            TechNotes=@(new[]{ "RealtimeSyncService manages named sessions; each session has one master connection ID and N slave IDs", "SignalR hub group per session — master calls hub method, hub broadcasts to group", "Slave views receive a strongly-typed SyncPayload and re-render; they never call hub methods unless granted write permission", "Session state is in-memory only — no DB persistence; sessions vanish on server restart", "Controller page uses @implements IAsyncDisposable to clean up the hub connection" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI + SignalR hub", ["Persisted"] = "No — in-memory session only", ["Real-time"] = "SignalR (push)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
 
     <div class="row mt-4">
         <div class="col-md-12">
@@ -300,14 +300,24 @@
     private string _newItemPayload = string.Empty;
     private int _activeViewers = 0;
 
-    protected override async Task OnInitializedAsync()
+    private async Task AddItem()
     {
-        await LoadSessions();
+        if (_selectedSession == null || string.IsNullOrWhiteSpace(_newItemPayload))
+            return;
+
+        _selectedSession = await SyncService.AddSessionItem(_selectedSession.SessionId, _newItemType, _newItemPayload);
+        _newItemPayload = string.Empty;
+        _newItemType = "text";
     }
 
-    private async Task LoadSessions()
+    private void ClearSelection()
     {
-        _sessions = await SyncService.GetPresentationSessions(_tenantId);
+        _selectedSession = null;
+    }
+
+    private void CopyToClipboard()
+    {
+        // In a real app, would use JS interop to copy
     }
 
     private async Task CreateSession()
@@ -320,21 +330,27 @@
         _newSessionName = string.Empty;
     }
 
-    private void SelectSession(PresentationSession session)
+    private string GetControllerUrl()
     {
-        _selectedSession = session;
-        _activeViewers = Random.Shared.Next(1, 10); // Simulated
+        return $"/presentation/controller/{_selectedSession?.SessionId}";
     }
 
-    private void ViewAsController(PresentationSession session)
+    private async Task LoadSessions()
     {
-        SelectSession(session);
-        // In a real app, would navigate to /presentation/controller/{sessionId}
+        _sessions = await SyncService.GetPresentationSessions(_tenantId);
     }
 
-    private void ClearSelection()
+    protected override async Task OnInitializedAsync()
     {
-        _selectedSession = null;
+        await LoadSessions();
+    }
+
+    private async Task RemoveItem(SessionItem item)
+    {
+        if (_selectedSession == null)
+            return;
+
+        _selectedSession = await SyncService.RemoveSessionItem(_selectedSession.SessionId, item.ItemId);
     }
 
     private async Task SaveSession()
@@ -345,14 +361,10 @@
         }
     }
 
-    private async Task AddItem()
+    private void SelectSession(PresentationSession session)
     {
-        if (_selectedSession == null || string.IsNullOrWhiteSpace(_newItemPayload))
-            return;
-
-        _selectedSession = await SyncService.AddSessionItem(_selectedSession.SessionId, _newItemType, _newItemPayload);
-        _newItemPayload = string.Empty;
-        _newItemType = "text";
+        _selectedSession = session;
+        _activeViewers = Random.Shared.Next(1, 10); // Simulated
     }
 
     private async Task SetActiveItem(SessionItem item)
@@ -364,21 +376,9 @@
         _selectedSession.ActiveItemId = item.ItemId;
     }
 
-    private async Task RemoveItem(SessionItem item)
+    private void ViewAsController(PresentationSession session)
     {
-        if (_selectedSession == null)
-            return;
-
-        _selectedSession = await SyncService.RemoveSessionItem(_selectedSession.SessionId, item.ItemId);
-    }
-
-    private string GetControllerUrl()
-    {
-        return $"/presentation/controller/{_selectedSession?.SessionId}";
-    }
-
-    private void CopyToClipboard()
-    {
-        // In a real app, would use JS interop to copy
+        SelectSession(session);
+        // In a real app, would navigate to /presentation/controller/{sessionId}
     }
 }

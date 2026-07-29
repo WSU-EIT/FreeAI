@@ -39,19 +39,19 @@
                     <div class="mb-2">
                         <label class="form-label small fw-semibold">Rule ID <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-sm" @bind="_editing.RuleId"
-                               placeholder="e.g. aria-allowed-attr" />
+                                placeholder="e.g. aria-allowed-attr" />
                         <div class="form-text small">The exact RuleId (or CanonicalRuleId) reported by the scanner.</div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label small fw-semibold">CSS selector pattern</label>
                         <input type="text" class="form-control form-control-sm" @bind="_editing.SelectorPattern"
-                               placeholder="e.g. #wsu-navigation-vertical (blank = match any selector)" />
+                                placeholder="e.g. #wsu-navigation-vertical (blank = match any selector)" />
                         <div class="form-text small">Use <code>*</code> as a wildcard. Leave blank to match every occurrence of the rule.</div>
                     </div>
                     <div class="mb-2">
                         <label class="form-label small fw-semibold">Reason <span class="text-danger">*</span></label>
                         <textarea class="form-control form-control-sm" rows="2" @bind="_editing.Reason"
-                                  placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
+                                placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
                     </div>
                     <div class="mb-2">
                         <label class="form-label small fw-semibold">Scope</label>

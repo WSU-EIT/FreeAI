@@ -95,8 +95,8 @@
                             <label class="form-check-label small" for="allowEdit">Allow Editing</label>
                         </div>
                         <InfoTip Title="Edit/View Toggle"
-                                 Description="In Credentials, the AllowEdit switch controls whether form fields are editable or read-only. This prevents accidental edits. The user must explicitly enable editing. All form-control elements get the 'disabled' attribute when AllowEdit is false."
-                                 Code="@_codeEditToggle" />
+                                Description="In Credentials, the AllowEdit switch controls whether form fields are editable or read-only. This prevents accidental edits. The user must explicitly enable editing. All form-control elements get the 'disabled' attribute when AllowEdit is false."
+                                Code="@_codeEditToggle" />
                     </div>
 
                     @if (!string.IsNullOrWhiteSpace(_validationError)) {
@@ -188,8 +188,8 @@
                                 </ul>
                             </div>
                             <InfoTip Title="Split-Button Save"
-                                     Description="The split-button dropdown is used in Helpdesk for 'Save / Save Without Notification'. The left button does the primary save. The right arrow opens a dropdown with alternate save actions. This is dropdown-toggle-split with btn-group."
-                                     Code="@_codeSplitButton" />
+                                    Description="The split-button dropdown is used in Helpdesk for 'Save / Save Without Notification'. The left button does the primary save. The right arrow opens a dropdown with alternate save actions. This is dropdown-toggle-split with btn-group."
+                                    Code="@_codeSplitButton" />
                         </div>
                     </div>
                 } else {
@@ -242,14 +242,14 @@
     private string GetTypeBadge(string type) => type switch { "Database" => "bg-primary", "API" => "bg-success", "Service" => "bg-warning text-dark", "File" => "bg-info", _ => "bg-secondary" };
 
     private class CredentialItem {
-        public string Name { get; set; } = "";
-        public string Type { get; set; } = "";
         public string Category { get; set; } = "";
-        public string Owner { get; set; } = "";
         public string ConnectionString { get; set; } = "";
-        public string Username { get; set; } = "";
-        public string Password { get; set; } = "";
-        public string Notes { get; set; } = "";
         public bool Deleted { get; set; } = false;
+        public string Name { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public string Owner { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string Username { get; set; } = "";
     }
 }

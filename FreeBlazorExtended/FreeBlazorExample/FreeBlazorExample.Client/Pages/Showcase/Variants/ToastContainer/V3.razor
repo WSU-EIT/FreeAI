@@ -57,6 +57,14 @@
     private string? _criticalId;
     private bool _hasCritical => !string.IsNullOrEmpty(_criticalId);
 
+    private void AcknowledgeError()
+    {
+        if (!string.IsNullOrEmpty(_criticalId)) {
+            Notifications.Remove(_criticalId);
+            _criticalId = null;
+        }
+    }
+
     private void FireBatch()
     {
         Notifications.ShowSuccess("Orders 1001-1003 imported (3 records).", "Import OK", 6000);
@@ -75,13 +83,5 @@
         );
         // track so we can dismiss manually
         _criticalId = Notifications.GetAll().LastOrDefault()?.Id;
-    }
-
-    private void AcknowledgeError()
-    {
-        if (!string.IsNullOrEmpty(_criticalId)) {
-            Notifications.Remove(_criticalId);
-            _criticalId = null;
-        }
     }
 }

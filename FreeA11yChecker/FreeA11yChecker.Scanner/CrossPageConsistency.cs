@@ -19,10 +19,10 @@ public static class CrossPageConsistency
 
     public class ConsistencyFinding
     {
-        public string CheckType { get; set; } = string.Empty;
-        public string Severity { get; set; } = string.Empty;
-        public string Message { get; set; } = string.Empty;
         public List<string> AffectedPages { get; set; } = new();
+        public string CheckType { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Severity { get; set; } = string.Empty;
     }
 
     /// <summary>

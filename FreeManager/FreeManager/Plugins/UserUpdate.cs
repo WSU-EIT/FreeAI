@@ -19,8 +19,7 @@ public class UserUpdate : IPluginUserUpdate
         DataAccess da,
         Plugins.Plugin plugin,
         DataObjects.User? updateUser
-    )
-    {
+    ){
         await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
 
         // For testing this plugin is just going to convert the user's email between uppercase and lowercase.

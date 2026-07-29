@@ -163,94 +163,6 @@
     protected string _pageName = "appbuilder";
     protected List<DataObjects.FMProjectInfo> _projects = new();
 
-    public void Dispose()
-    {
-        Model.OnChange -= OnDataModelUpdated;
-    }
-
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (Model.Loaded && Model.LoggedIn) {
-            if (!_loadedData) {
-                _loadedData = true;
-                await LoadData();
-            }
-        }
-    }
-
-    protected void OnDataModelUpdated()
-    {
-        if (Model.View == _pageName) {
-            StateHasChanged();
-        }
-    }
-
-    protected async Task LoadData()
-    {
-        try {
-            _projects = await Http.GetFromJsonAsync<List<DataObjects.FMProjectInfo>>(
-                DataObjects.Endpoints.FreeManager.GetProjects) ?? new();
-        } catch (Exception ex) {
-            await Helpers.ConsoleLog($"Error loading projects: {ex.Message}");
-            _projects = new();
-        }
-
-        _loading = false;
-        StateHasChanged();
-    }
-
-    private string GetStatusBadgeClass(string status) => status switch
-    {
-        "Active" => "bg-success",
-        "Draft" => "bg-secondary",
-        "Archived" => "bg-warning text-dark",
-        _ => "bg-secondary"
-    };
-
-    protected void StartEntityWizard()
-    {
-        NavigationManager.NavigateTo(Helpers.BuildUrl("AppBuilder/EntityWizard"));
-    }
-
-    protected void ShowNewProjectDialog()
-    {
-        Helpers.NavigateTo("AppBuilder/New");
-    }
-
-    protected void EditWithWizard(DataObjects.FMProjectInfo project)
-    {
-        NavigationManager.NavigateTo(Helpers.BuildUrl($"AppBuilder/EntityWizard?projectId={project.Id}"));
-    }
-
-    protected async Task DownloadProject(DataObjects.FMProjectInfo project)
-    {
-        Model.ClearMessages();
-        Model.AddMessage("Preparing download...", MessageType.Info);
-
-        try {
-            var response = await Helpers.GetOrPost<DataObjects.FMProjectZipResponse>(
-                $"{DataObjects.Endpoints.FreeManager.DownloadProjectZip}?projectId={project.Id}", null);
-
-            Model.ClearMessages();
-
-            if (response != null && response.Success && !string.IsNullOrEmpty(response.Base64Content)) {
-                var bytes = Convert.FromBase64String(response.Base64Content);
-                await Helpers.DownloadFileToBrowser(response.FileName, bytes);
-                Model.AddMessage($"Downloaded {response.FileCount} files", MessageType.Success);
-            } else {
-                Model.ErrorMessage(response?.ErrorMessage ?? "Failed to download project");
-            }
-        } catch (Exception ex) {
-            await Helpers.ConsoleLog($"Error downloading project: {ex.Message}");
-            Model.ErrorMessage("Failed to download project");
-        }
-    }
-
     protected async Task DeleteProject(DataObjects.FMProjectInfo project)
     {
         Model.ClearMessages();
@@ -277,5 +189,93 @@
             await Helpers.ConsoleLog($"Error deleting project: {ex.Message}");
             Model.UnknownError();
         }
+    }
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected async Task DownloadProject(DataObjects.FMProjectInfo project)
+    {
+        Model.ClearMessages();
+        Model.AddMessage("Preparing download...", MessageType.Info);
+
+        try {
+            var response = await Helpers.GetOrPost<DataObjects.FMProjectZipResponse>(
+                $"{DataObjects.Endpoints.FreeManager.DownloadProjectZip}?projectId={project.Id}", null);
+
+            Model.ClearMessages();
+
+            if (response != null && response.Success && !string.IsNullOrEmpty(response.Base64Content)) {
+                var bytes = Convert.FromBase64String(response.Base64Content);
+                await Helpers.DownloadFileToBrowser(response.FileName, bytes);
+                Model.AddMessage($"Downloaded {response.FileCount} files", MessageType.Success);
+            } else {
+                Model.ErrorMessage(response?.ErrorMessage ?? "Failed to download project");
+            }
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error downloading project: {ex.Message}");
+            Model.ErrorMessage("Failed to download project");
+        }
+    }
+
+    protected void EditWithWizard(DataObjects.FMProjectInfo project)
+    {
+        NavigationManager.NavigateTo(Helpers.BuildUrl($"AppBuilder/EntityWizard?projectId={project.Id}"));
+    }
+
+    private string GetStatusBadgeClass(string status) => status switch
+    {
+        "Active" => "bg-success",
+        "Draft" => "bg-secondary",
+        "Archived" => "bg-warning text-dark",
+        _ => "bg-secondary"
+    };
+
+    protected async Task LoadData()
+    {
+        try {
+            _projects = await Http.GetFromJsonAsync<List<DataObjects.FMProjectInfo>>(
+                DataObjects.Endpoints.FreeManager.GetProjects) ?? new();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog($"Error loading projects: {ex.Message}");
+            _projects = new();
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    protected void ShowNewProjectDialog()
+    {
+        Helpers.NavigateTo("AppBuilder/New");
+    }
+
+    protected void StartEntityWizard()
+    {
+        NavigationManager.NavigateTo(Helpers.BuildUrl("AppBuilder/EntityWizard"));
     }
 }

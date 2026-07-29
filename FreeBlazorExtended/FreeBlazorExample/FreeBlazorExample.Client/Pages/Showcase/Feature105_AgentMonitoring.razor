@@ -35,14 +35,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A distributed monitoring system where a lightweight .NET Worker Service runs on each Windows host, phones home via SignalR with CPU/memory/disk telemetry, and exposes the host's Windows Services and IIS application pools for remote start/stop/restart/uninstall commands."
-        WhatEli5="A tiny watchdog program runs quietly on each server and sends its health stats to a central dashboard — and you can click a button in the dashboard to restart a crashed service without touching the server directly."
-        Who=@(new[]{ "IT operations teams monitoring a fleet of application servers", "System administrators who currently RDP into each server individually to check service health", "DevOps engineers who want a lightweight self-hosted alternative to full APM suites for Windows service oversight" })
-        WhenUse=@(new[]{ "Monitoring Windows Services and IIS pools across multiple hosts from one screen", "Alerting when CPU/disk crosses a threshold", "Remotely restarting a crashed service without opening RDP" })
-        WhenNot=@(new[]{ "Linux hosts — agent uses Windows-only PerformanceCounter and ServiceController APIs (systemd port is on the roadmap)", "Full APM/observability — use OpenTelemetry + Grafana for distributed tracing and log aggregation" })
-        Why="Checking each server via RDP is slow, error-prone, and doesn't scale past a handful of machines. This provides a centralised command-and-control surface without deploying a commercial monitoring product."
-        TechNotes=@(new[]{ "Agent = .NET 10 Worker Service; registered as a Windows Service via UseWindowsService()", "Telemetry collected via System.Diagnostics.PerformanceCounter (CPU) and DriveInfo/GC (disk/memory)", "Agent connects to the hub as a SignalR client on startup; reconnects with exponential back-off on disconnect", "Hub routes commands back to the correct agent by ConnectionId; results stream back as SignalR events", "Showcase runs an in-memory simulation — no real Windows host required to explore the UI", "Linux research targets: systemd (services), nginx (IIS equivalent), Caddy/Traefik (reverse proxy)" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Agent + Hub + UI", ["Persisted"] = "Metrics: in-memory ring buffer; registrations: SQL", ["Real-time"] = "SignalR (bidirectional)", ["Auth required"] = "Yes", ["OS support"] = "Windows only (Linux: roadmap)" }) />
+            WhatTechnical="A distributed monitoring system where a lightweight .NET Worker Service runs on each Windows host, phones home via SignalR with CPU/memory/disk telemetry, and exposes the host's Windows Services and IIS application pools for remote start/stop/restart/uninstall commands."
+            WhatEli5="A tiny watchdog program runs quietly on each server and sends its health stats to a central dashboard — and you can click a button in the dashboard to restart a crashed service without touching the server directly."
+            Who=@(new[]{ "IT operations teams monitoring a fleet of application servers", "System administrators who currently RDP into each server individually to check service health", "DevOps engineers who want a lightweight self-hosted alternative to full APM suites for Windows service oversight" })
+            WhenUse=@(new[]{ "Monitoring Windows Services and IIS pools across multiple hosts from one screen", "Alerting when CPU/disk crosses a threshold", "Remotely restarting a crashed service without opening RDP" })
+            WhenNot=@(new[]{ "Linux hosts — agent uses Windows-only PerformanceCounter and ServiceController APIs (systemd port is on the roadmap)", "Full APM/observability — use OpenTelemetry + Grafana for distributed tracing and log aggregation" })
+            Why="Checking each server via RDP is slow, error-prone, and doesn't scale past a handful of machines. This provides a centralised command-and-control surface without deploying a commercial monitoring product."
+            TechNotes=@(new[]{ "Agent = .NET 10 Worker Service; registered as a Windows Service via UseWindowsService()", "Telemetry collected via System.Diagnostics.PerformanceCounter (CPU) and DriveInfo/GC (disk/memory)", "Agent connects to the hub as a SignalR client on startup; reconnects with exponential back-off on disconnect", "Hub routes commands back to the correct agent by ConnectionId; results stream back as SignalR events", "Showcase runs an in-memory simulation — no real Windows host required to explore the UI", "Linux research targets: systemd (services), nginx (IIS equivalent), Caddy/Traefik (reverse proxy)" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Agent + Hub + UI", ["Persisted"] = "Metrics: in-memory ring buffer; registrations: SQL", ["Real-time"] = "SignalR (bidirectional)", ["Auth required"] = "Yes", ["OS support"] = "Windows only (Linux: roadmap)" }) />
 
 
     @*  ===================================================================
@@ -585,176 +585,10 @@
     protected string _toastMessage = string.Empty;
     protected string _toastClass = "success";
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-    }
-
-    protected async Task LoadData()
-    {
-        _agents = await MonitoringService.GetManagedAgents(_tenantId);
-        _summary = await MonitoringService.GetDashboardSummary(_tenantId);
-        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
-
-        if (_selectedAgentId == Guid.Empty && _agents.Count > 0) {
-            _selectedAgentId = _agents.First().AgentId;
-            await OnAgentSelected();
-        } else if (_selectedAgentId != Guid.Empty) {
-            await OnAgentSelected();
-        }
-    }
-
-    protected void SetTab(string tab)
-    {
-        _tab = tab;
-    }
-
-    protected async Task OnAgentSelected()
-    {
-        if (_selectedAgentId == Guid.Empty) {
-            _services = new List<AgentMonitoring.AgentService>();
-            _appPools = new List<AgentMonitoring.AgentIisAppPool>();
-            _iisSites = new List<AgentMonitoring.AgentIisSite>();
-            _commands = new List<AgentMonitoring.AgentCommand>();
-            return;
-        }
-
-        _services = await MonitoringService.GetAgentServices(_selectedAgentId);
-        _appPools = await MonitoringService.GetAgentAppPools(_selectedAgentId);
-        _iisSites = await MonitoringService.GetAgentIisSites(_selectedAgentId);
-        _commands = await MonitoringService.GetCommands(_selectedAgentId);
-    }
-
-    protected void OpenAgent(Guid AgentId)
-    {
-        _selectedAgentId = AgentId;
-        _tab = "services";
-        InvokeAsync(OnAgentSelected);
-    }
-
-    // -------------------------------------------------------------------------
-    // Service actions
-    // -------------------------------------------------------------------------
-    protected async Task OnStartService(string ServiceName)
-    {
-        var cmd = await MonitoringService.StartService(_selectedAgentId, ServiceName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    protected async Task OnStopService(string ServiceName)
-    {
-        var cmd = await MonitoringService.StopService(_selectedAgentId, ServiceName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    protected async Task OnRestartService(string ServiceName)
-    {
-        var cmd = await MonitoringService.RestartService(_selectedAgentId, ServiceName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    protected async Task OnUninstallService(string ServiceName)
-    {
-        var cmd = await MonitoringService.UninstallService(_selectedAgentId, ServiceName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    // -------------------------------------------------------------------------
-    // App pool actions
-    // -------------------------------------------------------------------------
-    protected async Task OnStartAppPool(string PoolName)
-    {
-        var cmd = await MonitoringService.StartAppPool(_selectedAgentId, PoolName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    protected async Task OnStopAppPool(string PoolName)
-    {
-        var cmd = await MonitoringService.StopAppPool(_selectedAgentId, PoolName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    protected async Task OnRecycleAppPool(string PoolName)
-    {
-        var cmd = await MonitoringService.RecycleAppPool(_selectedAgentId, PoolName);
-        ShowCommandResult(cmd);
-        await OnAgentSelected();
-    }
-
-    // -------------------------------------------------------------------------
-    // Registration keys
-    // -------------------------------------------------------------------------
-    protected async Task OnGenerateKey()
-    {
-        if (string.IsNullOrWhiteSpace(_newKeyDescription)) {
-            _toastMessage = "Description is required.";
-            _toastClass = "danger";
-            return;
-        }
-
-        var key = await MonitoringService.GenerateRegistrationKey(_tenantId, _newKeyDescription, _newKeyHours);
-        _newKeyDescription = string.Empty;
-        _toastMessage = "Registration key generated: " + key.Key;
-        _toastClass = "success";
-
-        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
-    }
-
-    protected async Task OnRevokeKey(Guid RegistrationKeyId)
-    {
-        var resp = await MonitoringService.RevokeRegistrationKey(RegistrationKeyId);
-        if (resp.Result) {
-            _toastMessage = "Registration key revoked.";
-            _toastClass = "warning";
-        } else {
-            _toastMessage = string.Join(" ", resp.Messages);
-            _toastClass = "danger";
-        }
-
-        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
-    }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-    protected void ShowCommandResult(AgentMonitoring.AgentCommand cmd)
-    {
-        _toastMessage = cmd.CommandType + " " + cmd.TargetName + ": " + (string.IsNullOrEmpty(cmd.ResponseMessage) ? cmd.Status : cmd.ResponseMessage);
-        _toastClass = cmd.ActionResponse.Result ? "success" : "danger";
-    }
-
     protected string AgentName(Guid AgentId)
     {
         var a = _agents.FirstOrDefault(x => x.AgentId == AgentId);
         return a?.Name ?? AgentId.ToString();
-    }
-
-    protected string StatusColor(string status)
-    {
-        return status switch {
-            AgentMonitoring.AgentStatuses.Online => "success",
-            AgentMonitoring.AgentStatuses.Warning => "warning",
-            AgentMonitoring.AgentStatuses.Error => "danger",
-            AgentMonitoring.AgentStatuses.Offline => "secondary",
-            AgentMonitoring.AgentStatuses.Stale => "info",
-            _ => "secondary",
-        };
-    }
-
-    protected string ServiceStateColor(string state)
-    {
-        return state switch {
-            "Running" => "success",
-            "Stopped" => "secondary",
-            "StartPending" or "StopPending" => "warning",
-            _ => "secondary",
-        };
     }
 
     protected string AppPoolStateColor(string state)
@@ -778,17 +612,6 @@
         };
     }
 
-    protected string FormatUptime(TimeSpan uptime)
-    {
-        if (uptime.TotalDays >= 1) {
-            return uptime.Days + "d " + uptime.Hours + "h";
-        }
-        if (uptime.TotalHours >= 1) {
-            return uptime.Hours + "h " + uptime.Minutes + "m";
-        }
-        return uptime.Minutes + "m";
-    }
-
     protected string FormatRelative(DateTime utc)
     {
         TimeSpan delta = DateTime.UtcNow - utc;
@@ -802,5 +625,182 @@
             return ((int)delta.TotalHours) + "h ago";
         }
         return ((int)delta.TotalDays) + "d ago";
+    }
+
+    protected string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1) {
+            return uptime.Days + "d " + uptime.Hours + "h";
+        }
+        if (uptime.TotalHours >= 1) {
+            return uptime.Hours + "h " + uptime.Minutes + "m";
+        }
+        return uptime.Minutes + "m";
+    }
+
+    protected async Task LoadData()
+    {
+        _agents = await MonitoringService.GetManagedAgents(_tenantId);
+        _summary = await MonitoringService.GetDashboardSummary(_tenantId);
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+
+        if (_selectedAgentId == Guid.Empty && _agents.Count > 0) {
+            _selectedAgentId = _agents.First().AgentId;
+            await OnAgentSelected();
+        } else if (_selectedAgentId != Guid.Empty) {
+            await OnAgentSelected();
+        }
+    }
+
+    protected async Task OnAgentSelected()
+    {
+        if (_selectedAgentId == Guid.Empty) {
+            _services = new List<AgentMonitoring.AgentService>();
+            _appPools = new List<AgentMonitoring.AgentIisAppPool>();
+            _iisSites = new List<AgentMonitoring.AgentIisSite>();
+            _commands = new List<AgentMonitoring.AgentCommand>();
+            return;
+        }
+
+        _services = await MonitoringService.GetAgentServices(_selectedAgentId);
+        _appPools = await MonitoringService.GetAgentAppPools(_selectedAgentId);
+        _iisSites = await MonitoringService.GetAgentIisSites(_selectedAgentId);
+        _commands = await MonitoringService.GetCommands(_selectedAgentId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Registration keys
+    // -------------------------------------------------------------------------
+    protected async Task OnGenerateKey()
+    {
+        if (string.IsNullOrWhiteSpace(_newKeyDescription)) {
+            _toastMessage = "Description is required.";
+            _toastClass = "danger";
+            return;
+        }
+
+        var key = await MonitoringService.GenerateRegistrationKey(_tenantId, _newKeyDescription, _newKeyHours);
+        _newKeyDescription = string.Empty;
+        _toastMessage = "Registration key generated: " + key.Key;
+        _toastClass = "success";
+
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    protected async Task OnRecycleAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.RecycleAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnRestartService(string ServiceName)
+    {
+        var cmd = await MonitoringService.RestartService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnRevokeKey(Guid RegistrationKeyId)
+    {
+        var resp = await MonitoringService.RevokeRegistrationKey(RegistrationKeyId);
+        if (resp.Result) {
+            _toastMessage = "Registration key revoked.";
+            _toastClass = "warning";
+        } else {
+            _toastMessage = string.Join(" ", resp.Messages);
+            _toastClass = "danger";
+        }
+
+        _registrationKeys = await MonitoringService.GetRegistrationKeys(_tenantId);
+    }
+
+    // -------------------------------------------------------------------------
+    // App pool actions
+    // -------------------------------------------------------------------------
+    protected async Task OnStartAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.StartAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    // -------------------------------------------------------------------------
+    // Service actions
+    // -------------------------------------------------------------------------
+    protected async Task OnStartService(string ServiceName)
+    {
+        var cmd = await MonitoringService.StartService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnStopAppPool(string PoolName)
+    {
+        var cmd = await MonitoringService.StopAppPool(_selectedAgentId, PoolName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnStopService(string ServiceName)
+    {
+        var cmd = await MonitoringService.StopService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected async Task OnUninstallService(string ServiceName)
+    {
+        var cmd = await MonitoringService.UninstallService(_selectedAgentId, ServiceName);
+        ShowCommandResult(cmd);
+        await OnAgentSelected();
+    }
+
+    protected void OpenAgent(Guid AgentId)
+    {
+        _selectedAgentId = AgentId;
+        _tab = "services";
+        InvokeAsync(OnAgentSelected);
+    }
+
+    protected string ServiceStateColor(string state)
+    {
+        return state switch {
+            "Running" => "success",
+            "Stopped" => "secondary",
+            "StartPending" or "StopPending" => "warning",
+            _ => "secondary",
+        };
+    }
+
+    protected void SetTab(string tab)
+    {
+        _tab = tab;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+    protected void ShowCommandResult(AgentMonitoring.AgentCommand cmd)
+    {
+        _toastMessage = cmd.CommandType + " " + cmd.TargetName + ": " + (string.IsNullOrEmpty(cmd.ResponseMessage) ? cmd.Status : cmd.ResponseMessage);
+        _toastClass = cmd.ActionResponse.Result ? "success" : "danger";
+    }
+
+    protected string StatusColor(string status)
+    {
+        return status switch {
+            AgentMonitoring.AgentStatuses.Online => "success",
+            AgentMonitoring.AgentStatuses.Warning => "warning",
+            AgentMonitoring.AgentStatuses.Error => "danger",
+            AgentMonitoring.AgentStatuses.Offline => "secondary",
+            AgentMonitoring.AgentStatuses.Stale => "info",
+            _ => "secondary",
+        };
     }
 }

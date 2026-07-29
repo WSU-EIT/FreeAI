@@ -88,19 +88,19 @@
 
     public class TreeNode
     {
-        public string Label { get; set; } = "";
-        public string FullPath { get; set; } = "";
         public Dictionary<string, TreeNode> Children { get; set; } = new();
-        public List<DataObjects.CrossSiteViolation> Leaves { get; set; } = new();
-        public int TotalViolations { get; set; }
         public int CriticalCount { get; set; }
-        public int SeriousCount { get; set; }
-        public int ModerateCount { get; set; }
-        public int MinorCount { get; set; }
+        public string FullPath { get; set; } = "";
         public bool IsPage { get; set; }
-        public string? PageUrl { get; set; }
+        public string Label { get; set; } = "";
+        public List<DataObjects.CrossSiteViolation> Leaves { get; set; } = new();
+        public int MinorCount { get; set; }
+        public int ModerateCount { get; set; }
         public Guid? PageScanResultId { get; set; }
+        public string? PageUrl { get; set; }
+        public int SeriousCount { get; set; }
         public string? SiteName { get; set; }
+        public int TotalViolations { get; set; }
     }
 
     public void Dispose() { Model.OnChange -= OnDataModelUpdated; }

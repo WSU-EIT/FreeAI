@@ -11,14 +11,13 @@ namespace FreeGLBA;
 /// <summary>API Key authentication interface extensions.</summary>
 public partial interface IDataAccess
 {
-    /// <summary>Validates an API key and returns the associated source system.</summary>
-    Task<DataObjects.SourceSystem?> ValidateApiKeyAsync(string apiKey);
-
     /// <summary>Generates a new API key for a source system.</summary>
     Task<string> GenerateApiKeyAsync(Guid sourcesystemId);
 
     /// <summary>Gets all source systems for the dashboard.</summary>
     Task<List<DataObjects.SourceSystem>> GetSourceSystemsAsync();
+    /// <summary>Validates an API key and returns the associated source system.</summary>
+    Task<DataObjects.SourceSystem?> ValidateApiKeyAsync(string apiKey);
 }
 
 public partial class DataAccess

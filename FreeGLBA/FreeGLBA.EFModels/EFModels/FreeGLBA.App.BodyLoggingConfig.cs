@@ -16,8 +16,10 @@ public partial class BodyLoggingConfigItem
     [Key]
     public Guid BodyLoggingConfigId { get; set; }
     
-    // Which source system
-    public Guid SourceSystemId { get; set; }
+    public DateTime? DisabledAt { get; set; }  // Null until disabled
+    
+    // When
+    public DateTime EnabledAt { get; set; }
     
     // Who enabled it
     public Guid EnabledByUserId { get; set; }
@@ -25,12 +27,7 @@ public partial class BodyLoggingConfigItem
     [MaxLength(200)]
     public string EnabledByUserName { get; set; } = string.Empty;
     
-    // When
-    public DateTime EnabledAt { get; set; }
-    
     public DateTime ExpiresAt { get; set; }
-    
-    public DateTime? DisabledAt { get; set; }  // Null until disabled
     
     // Status
     public bool IsActive { get; set; }
@@ -38,4 +35,7 @@ public partial class BodyLoggingConfigItem
     // Why
     [MaxLength(500)]
     public string Reason { get; set; } = string.Empty;
+    
+    // Which source system
+    public Guid SourceSystemId { get; set; }
 }

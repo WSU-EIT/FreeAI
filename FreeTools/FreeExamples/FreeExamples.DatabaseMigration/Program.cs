@@ -1514,9 +1514,10 @@ public class Program
 // ═══════════════════════════════════════════════════════════════════════════════
 public class MigrationConfig
 {
-    // Connection strings
-    public string SourceDb { get; set; } = "";
-    public string TargetDb { get; set; } = "";
+    public bool AutoConfirm { get; set; } = false;
+
+    // CLI automation
+    public string AutoRun { get; set; } = "";
 
     // Bulk insert tuning
     public int BulkBatchSize { get; set; } = 5000;
@@ -1525,9 +1526,9 @@ public class MigrationConfig
     // Startup behavior
     public bool DryRunOnStart { get; set; } = true;
 
-    // CLI automation
-    public string AutoRun { get; set; } = "";
-    public bool AutoConfirm { get; set; } = false;
+    // EF Models project path (relative to solution root)
+    // Used by the EF Schema Management commands to locate the EFModels .csproj
+    public string EfModelsProject { get; set; } = "";
 
     // Phase definitions (table names in FK dependency order)
     // NOTE: Defaults are empty — values come from appsettings.json.
@@ -1536,11 +1537,10 @@ public class MigrationConfig
     public string[] PhaseB { get; set; } = [];
     public string[] PhaseC { get; set; } = [];
 
-    // EF Models project path (relative to solution root)
-    // Used by the EF Schema Management commands to locate the EFModels .csproj
-    public string EfModelsProject { get; set; } = "";
-
     // Solution root directory (absolute path)
     // Auto-detected if empty — walks up from the running binary to find the .sln file
     public string SolutionRoot { get; set; } = "";
+    // Connection strings
+    public string SourceDb { get; set; } = "";
+    public string TargetDb { get; set; } = "";
 }

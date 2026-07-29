@@ -6,21 +6,20 @@ namespace FreeExamples.Server.Controllers;
 
 public partial class DataController
 {
-    [HttpGet]
-    [AllowAnonymous]
-    [Route("~/api/Data/GetBlazorCachedPluginBinary/{Hash}")]
-    public async Task<ActionResult<byte[]>> GetBlazorCachedPluginBinary(string Hash)
-    {
-        var output = await da.GetBlazorCachedPluginBinary(Hash);
-        return Ok(output);
-    }
-
     [HttpPost]
     [Authorize]
     [Route("~/api/Data/ExecutePlugin")]
     public ActionResult<PluginExecuteRequest> ExecutePlugin(PluginExecuteRequest request)
     {
         var output = da.ExecutePlugin(request, CurrentUser);
+        return Ok(output);
+    }
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("~/api/Data/GetBlazorCachedPluginBinary/{Hash}")]
+    public async Task<ActionResult<byte[]>> GetBlazorCachedPluginBinary(string Hash)
+    {
+        var output = await da.GetBlazorCachedPluginBinary(Hash);
         return Ok(output);
     }
 

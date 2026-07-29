@@ -20,15 +20,11 @@
         </AboutSection>
 
         <div class="d-flex flex-wrap gap-1 mb-3">
-            <InfoTip Title="Drag-and-Drop Status Board"
-                     Description="@_descDragBoard"
-                     Code="@_codeDragBoard" />
-            <InfoTip Title="Drop Target Highlighting"
-                     Description="@_descDropHighlight"
-                     Code="@_codeDropHighlight" />
+            <InfoTip Title="Drag-and-Drop Status Board" Description="@_descDragBoard" Code="@_codeDragBoard" />
+            <InfoTip Title="Drop Target Highlighting" Description="@_descDropHighlight" Code="@_codeDropHighlight" />
             <InfoTip Title="Urgency Color-Coded Cards"
-                     Description="GetUrgencyColor() returns a hex color based on urgency level (Emergency=#dc3545, High=#fd7e14, Normal=#0d6efd, Low=#6c757d). The color is used for the left border (border-left:3px solid) and the urgency badge background. Inline styles handle the dynamic color."
-                     Code="@_codeUrgencyColor" />
+                    Description="GetUrgencyColor() returns a hex color based on urgency level (Emergency=#dc3545, High=#fd7e14, Normal=#0d6efd, Low=#6c757d). The color is used for the left border (border-left:3px solid) and the urgency badge background. Inline styles handle the dynamic color."
+                    Code="@_codeUrgencyColor" />
         </div>
 
         <div class="d-flex gap-2 overflow-auto pb-3">
@@ -37,15 +33,15 @@
                 var isTarget = _dragOverCol == status;
                 <div class="flex-shrink-0" style="width:240px;">
                     <div class="card border-0 shadow-sm @(isTarget ? "border-primary border-2" : "")"
-                         @ondragover="() => _dragOverCol = status" @ondragover:preventDefault="true"
-                         @ondrop="() => HandleDrop(status)" @ondragleave="() => _dragOverCol = null">
+                            @ondragover="() => _dragOverCol = status" @ondragover:preventDefault="true"
+                            @ondrop="() => HandleDrop(status)" @ondragleave="() => _dragOverCol = null">
                         <div class="card-header bg-dark text-white py-1 d-flex justify-content-between small">
                             <span>@status</span><span class="badge bg-white text-dark rounded-pill">@colItems.Count</span>
                         </div>
                         <div class="card-body p-1" style="min-height:200px; max-height:500px; overflow-y:auto;">
                             @foreach (var w in colItems) {
                                 <div class="card mb-1 border-0 shadow-sm" draggable="true" @ondragstart="() => _dragging = w" @ondragend="() => _dragging = null"
-                                     style="cursor:grab; border-left:3px solid @GetUrgencyColor(w.Urgency) !important;">
+                                        style="cursor:grab; border-left:3px solid @GetUrgencyColor(w.Urgency) !important;">
                                     <div class="card-body p-2 small">
                                         <div class="fw-semibold" style="font-size:0.75rem;">@w.Title</div>
                                         <div class="text-muted" style="font-size:0.65rem;"><i class="fa-solid fa-building me-1"></i>@w.Building @w.Floor-@w.RoomNumber</div>

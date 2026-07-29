@@ -32,9 +32,9 @@
             <div class="col">
                 <div class="card border-0 shadow-sm h-100" role="button" @onclick="@(() => HandleThumbnailClick(idx))">
                     <img src="@(item.ThumbnailUrl ?? item.Url)"
-                         alt="@(item.Alt ?? item.Caption ?? "")"
-                         class="card-img-top"
-                         style="height:180px; object-fit:cover;" />
+                            alt="@(item.Alt ?? item.Caption ?? "")"
+                            class="card-img-top"
+                            style="height:180px; object-fit:cover;" />
                     @if (!string.IsNullOrWhiteSpace(item.Caption) || !string.IsNullOrWhiteSpace(item.Category)) {
                         <div class="card-body py-2">
                             @if (!string.IsNullOrWhiteSpace(item.Caption)) {
@@ -54,11 +54,11 @@
         var current = Images[_lightboxIndex];
 
         <div class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column"
-             style="z-index:2055; background:rgba(0,0,0,0.92);"
-             @onclick="CloseLightbox"
-             @onkeydown="HandleLightboxKeydown"
-             tabindex="0"
-             @ref="_overlayRef">
+                style="z-index:2055; background:rgba(0,0,0,0.92);"
+                @onclick="CloseLightbox"
+                @onkeydown="HandleLightboxKeydown"
+                tabindex="0"
+                @ref="_overlayRef">
 
             @* Top bar *@
             <div class="d-flex justify-content-between align-items-center p-3" @onclick:stopPropagation>
@@ -89,9 +89,9 @@
                 }
 
                 <img src="@current.Url"
-                     alt="@(current.Alt ?? current.Caption ?? "")"
-                     class="rounded shadow-lg"
-                     style="max-width:90vw; max-height:80vh; object-fit:contain;" />
+                        alt="@(current.Alt ?? current.Caption ?? "")"
+                        class="rounded shadow-lg"
+                        style="max-width:90vw; max-height:80vh; object-fit:contain;" />
 
                 @if (Images.Count > 1) {
                     <button class="btn btn-outline-light btn-lg position-absolute end-0 me-3"
@@ -109,10 +109,10 @@
                         int thumbIdx = i;
                         var thumb = Images[i];
                         <img src="@(thumb.ThumbnailUrl ?? thumb.Url)"
-                             alt="@(thumb.Alt ?? "")"
-                             class="rounded @(thumbIdx == _lightboxIndex ? "border border-2 border-white" : "opacity-50")"
-                             style="width:48px; height:48px; min-width:48px; object-fit:cover; cursor:pointer;"
-                             @onclick="@(() => _lightboxIndex = thumbIdx)" @onclick:stopPropagation />
+                                alt="@(thumb.Alt ?? "")"
+                                class="rounded @(thumbIdx == _lightboxIndex ? "border border-2 border-white" : "opacity-50")"
+                                style="width:48px; height:48px; min-width:48px; object-fit:cover; cursor:pointer;"
+                                @onclick="@(() => _lightboxIndex = thumbIdx)" @onclick:stopPropagation />
                     }
                 </div>
             }
@@ -213,17 +213,17 @@
     /// <summary>Describes a single image displayed in the gallery grid and lightbox.</summary>
     public class GalleryImage
     {
-        /// <summary>Unique identifier. Used for keying; can be a filename or database id.</summary>
-        public string Id { get; set; } = "";
-        /// <summary>Full-size image URL used in the lightbox. <b>Required.</b></summary>
-        public string Url { get; set; } = "";
-        /// <summary>Thumbnail URL shown in the grid. Falls back to <see cref="Url"/> when omitted.</summary>
-        public string? ThumbnailUrl { get; set; }
         /// <summary>Alt text for screen readers. Defaults to the empty string when omitted.</summary>
         public string? Alt { get; set; }
         /// <summary>Caption displayed beneath the image inside the lightbox overlay.</summary>
         public string? Caption { get; set; }
         /// <summary>Category label; reserved for future group/filter support.</summary>
         public string? Category { get; set; }
+        /// <summary>Unique identifier. Used for keying; can be a filename or database id.</summary>
+        public string Id { get; set; } = "";
+        /// <summary>Thumbnail URL shown in the grid. Falls back to <see cref="Url"/> when omitted.</summary>
+        public string? ThumbnailUrl { get; set; }
+        /// <summary>Full-size image URL used in the lightbox. <b>Required.</b></summary>
+        public string Url { get; set; } = "";
     }
 }

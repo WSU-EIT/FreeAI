@@ -21,23 +21,45 @@ internal static class ReorganizerSettings
     };
 
     [VisualStudioContribution]
-    internal static Setting.Boolean SortAlphabetically { get; } = new(
-        "sortAlphabetically",
-        "%FreeCodeReorganizer.Settings.SortAlphabetically.DisplayName%",
+    internal static Setting.Boolean CollapseWrappedParameterBrace { get; } = new(
+        "collapseWrappedParameterBrace",
+        "%FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName%",
         Category,
         defaultValue: true)
     {
-        Description = "%FreeCodeReorganizer.Settings.SortAlphabetically.Description%",
+        Description = "%FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description%",
+    };
+
+    /// <summary>Semicolon-separated paths/globs that the cleanup/formatting half skips entirely.</summary>
+    [VisualStudioContribution]
+    internal static Setting.String ExcludeCleanup { get; } = new(
+        "excludeCleanup",
+        "%FreeCodeReorganizer.Settings.ExcludeCleanup.DisplayName%",
+        Category,
+        defaultValue: "")
+    {
+        Description = "%FreeCodeReorganizer.Settings.ExcludeCleanup.Description%",
+    };
+
+    /// <summary>Semicolon-separated paths/globs whose members are never reordered (still cleaned).</summary>
+    [VisualStudioContribution]
+    internal static Setting.String ExcludeReorganize { get; } = new(
+        "excludeReorganize",
+        "%FreeCodeReorganizer.Settings.ExcludeReorganize.DisplayName%",
+        Category,
+        defaultValue: "")
+    {
+        Description = "%FreeCodeReorganizer.Settings.ExcludeReorganize.Description%",
     };
 
     [VisualStudioContribution]
-    internal static Setting.Boolean IgnoreLeadingUnderscoreInSort { get; } = new(
-        "ignoreLeadingUnderscoreInSort",
-        "%FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.DisplayName%",
+    internal static Setting.Boolean FullCleanup { get; } = new(
+        "fullCleanup",
+        "%FreeCodeReorganizer.Settings.FullCleanup.DisplayName%",
         Category,
-        defaultValue: true)
+        defaultValue: false)
     {
-        Description = "%FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.Description%",
+        Description = "%FreeCodeReorganizer.Settings.FullCleanup.Description%",
     };
 
     [VisualStudioContribution]
@@ -51,23 +73,13 @@ internal static class ReorganizerSettings
     };
 
     [VisualStudioContribution]
-    internal static Setting.Boolean StaticMembersFirst { get; } = new(
-        "staticMembersFirst",
-        "%FreeCodeReorganizer.Settings.StaticMembersFirst.DisplayName%",
-        Category,
-        defaultValue: false)
-    {
-        Description = "%FreeCodeReorganizer.Settings.StaticMembersFirst.Description%",
-    };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean CollapseWrappedParameterBrace { get; } = new(
-        "collapseWrappedParameterBrace",
-        "%FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.DisplayName%",
+    internal static Setting.Boolean IgnoreLeadingUnderscoreInSort { get; } = new(
+        "ignoreLeadingUnderscoreInSort",
+        "%FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.DisplayName%",
         Category,
         defaultValue: true)
     {
-        Description = "%FreeCodeReorganizer.Settings.CollapseWrappedParameterBrace.Description%",
+        Description = "%FreeCodeReorganizer.Settings.IgnoreLeadingUnderscoreInSort.Description%",
     };
 
     [VisualStudioContribution]
@@ -80,14 +92,18 @@ internal static class ReorganizerSettings
         Description = "%FreeCodeReorganizer.Settings.IndentWrappedRazorAttributes.Description%",
     };
 
+    /// <summary>Maps to Core.ReorderConfig.MaxLineWidth — the width at/under which an already-wrapped
+    /// parameter list or Razor start tag is collapsed back onto a single line.</summary>
     [VisualStudioContribution]
-    internal static Setting.Boolean RespectRegions { get; } = new(
-        "respectRegions",
-        "%FreeCodeReorganizer.Settings.RespectRegions.DisplayName%",
+    internal static Setting.Integer MaxLineWidth { get; } = new(
+        "maxLineWidth",
+        "%FreeCodeReorganizer.Settings.MaxLineWidth.DisplayName%",
         Category,
-        defaultValue: true)
+        defaultValue: 120)
     {
-        Description = "%FreeCodeReorganizer.Settings.RespectRegions.Description%",
+        Description = "%FreeCodeReorganizer.Settings.MaxLineWidth.Description%",
+        Minimum = 40,
+        Maximum = 400,
     };
 
     /// <summary>
@@ -106,18 +122,24 @@ internal static class ReorganizerSettings
         Maximum = 100,
     };
 
-    /// <summary>Maps to Core.ReorderConfig.MaxLineWidth — the width at/under which an already-wrapped
-    /// parameter list or Razor start tag is collapsed back onto a single line.</summary>
     [VisualStudioContribution]
-    internal static Setting.Integer MaxLineWidth { get; } = new(
-        "maxLineWidth",
-        "%FreeCodeReorganizer.Settings.MaxLineWidth.DisplayName%",
+    internal static Setting.Boolean RespectGeneratedCode { get; } = new(
+        "respectGeneratedCode",
+        "%FreeCodeReorganizer.Settings.RespectGeneratedCode.DisplayName%",
         Category,
-        defaultValue: 120)
+        defaultValue: true)
     {
-        Description = "%FreeCodeReorganizer.Settings.MaxLineWidth.Description%",
-        Minimum = 40,
-        Maximum = 400,
+        Description = "%FreeCodeReorganizer.Settings.RespectGeneratedCode.Description%",
+    };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean RespectRegions { get; } = new(
+        "respectRegions",
+        "%FreeCodeReorganizer.Settings.RespectRegions.DisplayName%",
+        Category,
+        defaultValue: true)
+    {
+        Description = "%FreeCodeReorganizer.Settings.RespectRegions.Description%",
     };
 
     [VisualStudioContribution]
@@ -131,44 +153,22 @@ internal static class ReorganizerSettings
     };
 
     [VisualStudioContribution]
-    internal static Setting.Boolean FullCleanup { get; } = new(
-        "fullCleanup",
-        "%FreeCodeReorganizer.Settings.FullCleanup.DisplayName%",
-        Category,
-        defaultValue: false)
-    {
-        Description = "%FreeCodeReorganizer.Settings.FullCleanup.Description%",
-    };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean RespectGeneratedCode { get; } = new(
-        "respectGeneratedCode",
-        "%FreeCodeReorganizer.Settings.RespectGeneratedCode.DisplayName%",
+    internal static Setting.Boolean SortAlphabetically { get; } = new(
+        "sortAlphabetically",
+        "%FreeCodeReorganizer.Settings.SortAlphabetically.DisplayName%",
         Category,
         defaultValue: true)
     {
-        Description = "%FreeCodeReorganizer.Settings.RespectGeneratedCode.Description%",
+        Description = "%FreeCodeReorganizer.Settings.SortAlphabetically.Description%",
     };
 
-    /// <summary>Semicolon-separated paths/globs whose members are never reordered (still cleaned).</summary>
     [VisualStudioContribution]
-    internal static Setting.String ExcludeReorganize { get; } = new(
-        "excludeReorganize",
-        "%FreeCodeReorganizer.Settings.ExcludeReorganize.DisplayName%",
+    internal static Setting.Boolean StaticMembersFirst { get; } = new(
+        "staticMembersFirst",
+        "%FreeCodeReorganizer.Settings.StaticMembersFirst.DisplayName%",
         Category,
-        defaultValue: "")
+        defaultValue: false)
     {
-        Description = "%FreeCodeReorganizer.Settings.ExcludeReorganize.Description%",
-    };
-
-    /// <summary>Semicolon-separated paths/globs that the cleanup/formatting half skips entirely.</summary>
-    [VisualStudioContribution]
-    internal static Setting.String ExcludeCleanup { get; } = new(
-        "excludeCleanup",
-        "%FreeCodeReorganizer.Settings.ExcludeCleanup.DisplayName%",
-        Category,
-        defaultValue: "")
-    {
-        Description = "%FreeCodeReorganizer.Settings.ExcludeCleanup.Description%",
+        Description = "%FreeCodeReorganizer.Settings.StaticMembersFirst.Description%",
     };
 }

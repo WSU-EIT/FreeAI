@@ -29,13 +29,12 @@
 </div>
 
 @code {
-    [Parameter] public string Title { get; set; } = "About This Page";
-    [Parameter] public string Subtitle { get; set; } = "";
+    private bool _expanded;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string IconClass { get; set; } = "fa-solid fa-circle-info";
     [Parameter] public bool StartExpanded { get; set; } = false;
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    private bool _expanded;
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public string Title { get; set; } = "About This Page";
 
     protected override void OnInitialized()
     {

@@ -2,13 +2,71 @@ namespace FreeServicesHub;
 
 public partial interface IDataAccess
 {
-    Task<DataObjects.BooleanResponse> SaveHeartbeat(DataObjects.AgentHeartbeat Heartbeat);
     Task<List<DataObjects.AgentHeartbeat>> GetHeartbeats(Guid AgentId, int Hours = 24);
     Task<DataObjects.BooleanResponse> PruneHeartbeats(int RetentionHours);
+    Task<DataObjects.BooleanResponse> SaveHeartbeat(DataObjects.AgentHeartbeat Heartbeat);
 }
 
 public partial class DataAccess
 {
+    public async Task<List<DataObjects.AgentHeartbeat>> GetHeartbeats(Guid AgentId, int Hours = 24)
+    {
+        List<DataObjects.AgentHeartbeat> output = new();
+
+        DateTime cutoff = DateTime.UtcNow.AddHours(-Hours);
+
+        List<EFModels.EFModels.AgentHeartbeat> recs = await data.AgentHeartbeats
+            .Where(x => x.AgentId == AgentId && x.Timestamp >= cutoff)
+            .OrderByDescending(x => x.Timestamp)
+            .ToListAsync();
+
+        if (recs.Any()) {
+            // Load agent name for display
+            EFModels.EFModels.Agent? agent = await data.Agents.FirstOrDefaultAsync(x => x.AgentId == AgentId);
+
+            foreach (EFModels.EFModels.AgentHeartbeat rec in recs) {
+                output.Add(new DataObjects.AgentHeartbeat {
+                    HeartbeatId = rec.HeartbeatId,
+                    AgentId = rec.AgentId,
+                    Timestamp = rec.Timestamp,
+                    CpuPercent = rec.CpuPercent,
+                    MemoryPercent = rec.MemoryPercent,
+                    MemoryUsedGB = rec.MemoryUsedGB,
+                    MemoryTotalGB = rec.MemoryTotalGB,
+                    DiskMetricsJson = rec.DiskMetricsJson ?? string.Empty,
+                    CustomDataJson = rec.CustomDataJson ?? string.Empty,
+                    AgentName = agent?.Name ?? string.Empty,
+                });
+            }
+        }
+
+        return output;
+    }
+
+    public async Task<DataObjects.BooleanResponse> PruneHeartbeats(int RetentionHours)
+    {
+        DataObjects.BooleanResponse output = new();
+
+        try {
+            DateTime cutoff = DateTime.UtcNow.AddHours(-RetentionHours);
+
+            List<EFModels.EFModels.AgentHeartbeat> oldRecords = await data.AgentHeartbeats
+                .Where(x => x.Timestamp < cutoff)
+                .ToListAsync();
+
+            if (oldRecords.Any()) {
+                data.AgentHeartbeats.RemoveRange(oldRecords);
+                await data.SaveChangesAsync();
+            }
+
+            output.Result = true;
+        } catch (Exception ex) {
+            output.Messages.Add("Error Pruning Heartbeats");
+            output.Messages.AddRange(RecurseException(ex));
+        }
+
+        return output;
+    }
     public async Task<DataObjects.BooleanResponse> SaveHeartbeat(DataObjects.AgentHeartbeat Heartbeat)
     {
         DataObjects.BooleanResponse output = new();
@@ -75,65 +133,6 @@ public partial class DataAccess
             output.Result = true;
         } catch (Exception ex) {
             output.Messages.Add("Error Saving Heartbeat");
-            output.Messages.AddRange(RecurseException(ex));
-        }
-
-        return output;
-    }
-
-    public async Task<List<DataObjects.AgentHeartbeat>> GetHeartbeats(Guid AgentId, int Hours = 24)
-    {
-        List<DataObjects.AgentHeartbeat> output = new();
-
-        DateTime cutoff = DateTime.UtcNow.AddHours(-Hours);
-
-        List<EFModels.EFModels.AgentHeartbeat> recs = await data.AgentHeartbeats
-            .Where(x => x.AgentId == AgentId && x.Timestamp >= cutoff)
-            .OrderByDescending(x => x.Timestamp)
-            .ToListAsync();
-
-        if (recs.Any()) {
-            // Load agent name for display
-            EFModels.EFModels.Agent? agent = await data.Agents.FirstOrDefaultAsync(x => x.AgentId == AgentId);
-
-            foreach (EFModels.EFModels.AgentHeartbeat rec in recs) {
-                output.Add(new DataObjects.AgentHeartbeat {
-                    HeartbeatId = rec.HeartbeatId,
-                    AgentId = rec.AgentId,
-                    Timestamp = rec.Timestamp,
-                    CpuPercent = rec.CpuPercent,
-                    MemoryPercent = rec.MemoryPercent,
-                    MemoryUsedGB = rec.MemoryUsedGB,
-                    MemoryTotalGB = rec.MemoryTotalGB,
-                    DiskMetricsJson = rec.DiskMetricsJson ?? string.Empty,
-                    CustomDataJson = rec.CustomDataJson ?? string.Empty,
-                    AgentName = agent?.Name ?? string.Empty,
-                });
-            }
-        }
-
-        return output;
-    }
-
-    public async Task<DataObjects.BooleanResponse> PruneHeartbeats(int RetentionHours)
-    {
-        DataObjects.BooleanResponse output = new();
-
-        try {
-            DateTime cutoff = DateTime.UtcNow.AddHours(-RetentionHours);
-
-            List<EFModels.EFModels.AgentHeartbeat> oldRecords = await data.AgentHeartbeats
-                .Where(x => x.Timestamp < cutoff)
-                .ToListAsync();
-
-            if (oldRecords.Any()) {
-                data.AgentHeartbeats.RemoveRange(oldRecords);
-                await data.SaveChangesAsync();
-            }
-
-            output.Result = true;
-        } catch (Exception ex) {
-            output.Messages.Add("Error Pruning Heartbeats");
             output.Messages.AddRange(RecurseException(ex));
         }
 

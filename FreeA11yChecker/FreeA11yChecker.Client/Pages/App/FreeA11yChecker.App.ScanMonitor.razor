@@ -46,7 +46,7 @@
         <div class="row g-2 mb-3">
             <div class="col-md-4">
                 <input type="text" class="form-control form-control-sm" placeholder="Search by site name..."
-                       aria-label="Search scans" @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
+                        aria-label="Search scans" @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
             </div>
             <div class="col-md-3">
                 <select class="form-select form-select-sm" @bind="_statusFilter" @bind:after="ApplyFilters" aria-label="Filter by status">
@@ -95,7 +95,7 @@
                                     int pct = progress.TotalPages > 0 ? (int)(progress.CurrentPage * 100.0 / progress.TotalPages) : 0;
                                 }
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                                     style="width: @(pct)%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                        style="width: @(pct)%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <div class="d-flex flex-wrap gap-2 small mb-2">
                                 @if (progress.TotalViolations > 0) {

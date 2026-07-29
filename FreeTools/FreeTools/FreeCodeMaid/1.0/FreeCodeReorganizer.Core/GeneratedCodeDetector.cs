@@ -20,6 +20,30 @@ public sealed class GeneratedCodeDetector
 
     private GeneratedCodeDetector(AnalyzerConfigSet? set) => _set = set;
 
+    // Walk up from a directory collecting each .editorconfig, stopping after one that declares root = true.
+    private static void CollectAncestors(string startDir, List<AnalyzerConfig> configs, HashSet<string> seen)
+    {
+        DirectoryInfo? dir = new DirectoryInfo(startDir);
+        while (dir is not null)
+        {
+            string cfg = Path.Combine(dir.FullName, ".editorconfig");
+            if (File.Exists(cfg))
+            {
+                AnalyzerConfig? parsed = TryParseConfig(cfg, seen, out bool isRoot);
+                if (parsed is not null)
+                {
+                    configs.Add(parsed);
+                    if (isRoot)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            dir = dir.Parent;
+        }
+    }
+
     /// <summary>Builds a detector for a directory tree (collects the applicable .editorconfig files once).</summary>
     public static GeneratedCodeDetector ForRoot(string rootDir)
     {
@@ -96,51 +120,6 @@ public sealed class GeneratedCodeDetector
         }
     }
 
-    // Walk up from a directory collecting each .editorconfig, stopping after one that declares root = true.
-    private static void CollectAncestors(string startDir, List<AnalyzerConfig> configs, HashSet<string> seen)
-    {
-        DirectoryInfo? dir = new DirectoryInfo(startDir);
-        while (dir is not null)
-        {
-            string cfg = Path.Combine(dir.FullName, ".editorconfig");
-            if (File.Exists(cfg))
-            {
-                AnalyzerConfig? parsed = TryParseConfig(cfg, seen, out bool isRoot);
-                if (parsed is not null)
-                {
-                    configs.Add(parsed);
-                    if (isRoot)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            dir = dir.Parent;
-        }
-    }
-
-    private static AnalyzerConfig? TryParseConfig(string configPath, HashSet<string> seen, out bool isRoot)
-    {
-        isRoot = false;
-        string full = Path.GetFullPath(configPath);
-        if (!seen.Add(full))
-        {
-            return null;
-        }
-
-        try
-        {
-            string text = File.ReadAllText(full);
-            isRoot = IsRootConfig(text);
-            return AnalyzerConfig.Parse(SourceText.From(text), full);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
     // True if the preamble (before the first [section]) contains `root = true`.
     private static bool IsRootConfig(string text)
     {
@@ -167,5 +146,26 @@ public sealed class GeneratedCodeDetector
         }
 
         return false;
+    }
+
+    private static AnalyzerConfig? TryParseConfig(string configPath, HashSet<string> seen, out bool isRoot)
+    {
+        isRoot = false;
+        string full = Path.GetFullPath(configPath);
+        if (!seen.Add(full))
+        {
+            return null;
+        }
+
+        try
+        {
+            string text = File.ReadAllText(full);
+            isRoot = IsRootConfig(text);
+            return AnalyzerConfig.Parse(SourceText.From(text), full);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

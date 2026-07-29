@@ -6,28 +6,28 @@ public partial class DataObjects
 
     public class WorkOrder : IJsonEntity
     {
-        public Guid RecordId { get; set; }
-        public Guid TenantId { get; set; }
-        public static string EntityType => "WorkOrder";
-        public static int CurrentSchemaVersion => 1;
-
-        public string Title { get; set; } = "";
-        public string Description { get; set; } = "";
-        public string Building { get; set; } = "";
-        public string Floor { get; set; } = "";
-        public string RoomNumber { get; set; } = "";
-        public WorkOrderCategory Category { get; set; }
-        public WorkOrderUrgency Urgency { get; set; }
-        public WorkOrderStatus Status { get; set; }
-        public string? AssignedTo { get; set; }
+        public decimal? ActualHours { get; set; }
         public string? AssignedTeam { get; set; }
+        public string? AssignedTo { get; set; }
+        public string Building { get; set; } = "";
+        public WorkOrderCategory Category { get; set; }
+        public DateTime? CompletedDate { get; set; }
+        public string? CompletionNotes { get; set; }
+        public static int CurrentSchemaVersion => 1;
+        public string Description { get; set; } = "";
+        public static string EntityType => "WorkOrder";
+        public decimal? EstimatedHours { get; set; }
+        public string Floor { get; set; } = "";
+        public Guid RecordId { get; set; }
         public string RequestedBy { get; set; } = "";
         public string RequestedByEmail { get; set; } = "";
         public DateTime RequestedDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public string? CompletionNotes { get; set; }
-        public decimal? EstimatedHours { get; set; }
-        public decimal? ActualHours { get; set; }
+        public string RoomNumber { get; set; } = "";
+        public WorkOrderStatus Status { get; set; }
+        public Guid TenantId { get; set; }
+
+        public string Title { get; set; } = "";
+        public WorkOrderUrgency Urgency { get; set; }
     }
 
     public enum WorkOrderCategory { Plumbing, Electrical, HVAC, Custodial, Grounds, Locksmith, Other }
@@ -36,9 +36,9 @@ public partial class DataObjects
 
     public class FilterWorkOrders : FilterJsonRecords<WorkOrder>
     {
-        public string? Status { get; set; }
-        public string? Urgency { get; set; }
         public string? Building { get; set; }
         public string? Category { get; set; }
+        public string? Status { get; set; }
+        public string? Urgency { get; set; }
     }
 }

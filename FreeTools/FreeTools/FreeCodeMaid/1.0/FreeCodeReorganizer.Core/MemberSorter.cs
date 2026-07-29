@@ -13,6 +13,11 @@ namespace FreeCodeReorganizer.Core;
 /// </summary>
 public static class MemberClassifier
 {
+    private static string FirstVariable(VariableDeclarationSyntax decl)
+        => decl.Variables.Count > 0 ? decl.Variables[0].Identifier.Text : "";
+
+    public static bool IsStatic(MemberDeclarationSyntax m)
+        => m.Modifiers.Any(t => t.IsKind(SyntaxKind.StaticKeyword));
     public static string KindOf(MemberDeclarationSyntax m) => m switch {
         FieldDeclarationSyntax f when f.Modifiers.Any(t => t.IsKind(SyntaxKind.ConstKeyword)) => "Const",
         FieldDeclarationSyntax => "Field",
@@ -48,9 +53,6 @@ public static class MemberClassifier
         _ => ""
     };
 
-    public static bool IsStatic(MemberDeclarationSyntax m)
-        => m.Modifiers.Any(t => t.IsKind(SyntaxKind.StaticKeyword));
-
     public static string Visibility(MemberDeclarationSyntax m)
     {
         var mods = m.Modifiers;
@@ -66,9 +68,6 @@ public static class MemberClassifier
         if (prot) return "protected";
         return "private"; // explicit private or the default for a type member
     }
-
-    private static string FirstVariable(VariableDeclarationSyntax decl)
-        => decl.Variables.Count > 0 ? decl.Variables[0].Identifier.Text : "";
 }
 
 /// <summary>
@@ -123,6 +122,8 @@ public sealed class MemberComparer : IComparer<MemberDeclarationSyntax>
         return 0; // interchangeable -> stable sort keeps original order
     }
 
+    private int KindRank(string kind) => _kindRank.TryGetValue(kind, out var r) ? r : int.MaxValue;
+
     private static Dictionary<string, int> Rank(List<string> list)
     {
         // Each entry may list several kinds separated by commas; all kinds in one entry share the
@@ -138,11 +139,6 @@ public sealed class MemberComparer : IComparer<MemberDeclarationSyntax>
         return d;
     }
 
-    private int KindRank(string kind) => _kindRank.TryGetValue(kind, out var r) ? r : int.MaxValue;
-
-    private int VisRank(MemberDeclarationSyntax m)
-        => _visRank.TryGetValue(MemberClassifier.Visibility(m), out var r) ? r : int.MaxValue;
-
     private string SortName(MemberDeclarationSyntax m)
     {
         var n = MemberClassifier.NameOf(m);
@@ -151,4 +147,7 @@ public sealed class MemberComparer : IComparer<MemberDeclarationSyntax>
         }
         return n;
     }
+
+    private int VisRank(MemberDeclarationSyntax m)
+        => _visRank.TryGetValue(MemberClassifier.Visibility(m), out var r) ? r : int.MaxValue;
 }

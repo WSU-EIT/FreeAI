@@ -16,13 +16,13 @@
     </div>
 
     <Carousel @ref="_carouselRef"
-              Slides="_slides"
-              ShowArrows="false"
-              ShowDots="false"
-              ShowFilmstrip="true"
-              AutoPlay="false"
-              Loop="true"
-              OnSlideChanged="HandleSlideChanged" />
+            Slides="_slides"
+            ShowArrows="false"
+            ShowDots="false"
+            ShowFilmstrip="true"
+            AutoPlay="false"
+            Loop="true"
+            OnSlideChanged="HandleSlideChanged" />
 
     <p class="mt-3 mb-0"><strong>Active:</strong> @(_activeIndex + 1) - @_slides[_activeIndex].Title</p>
 </div>
@@ -38,16 +38,16 @@
 
     private FreeBlazorExtended.Carousel.Carousel? _carouselRef;
     private int _activeIndex;
-
-    private void PrevSlide() => _carouselRef?.Prev();
-    private void NextSlide() => _carouselRef?.Next();
     private void GoToSlide(int index) => _carouselRef?.GoTo(index);
-    private void StartAutoplay() => _carouselRef?.StartAutoPlay();
-    private void StopAutoplay() => _carouselRef?.StopAutoPlay();
 
     private Task HandleSlideChanged(int index)
     {
         _activeIndex = index;
         return Task.CompletedTask;
     }
+    private void NextSlide() => _carouselRef?.Next();
+
+    private void PrevSlide() => _carouselRef?.Prev();
+    private void StartAutoplay() => _carouselRef?.StartAutoPlay();
+    private void StopAutoplay() => _carouselRef?.StopAutoPlay();
 }

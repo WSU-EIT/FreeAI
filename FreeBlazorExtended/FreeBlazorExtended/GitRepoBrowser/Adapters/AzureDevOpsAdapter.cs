@@ -19,9 +19,52 @@ public sealed class AzureDevOpsAdapter : IGitRepoAdapter
 {
     private readonly HttpClient _http;
 
-    public GitPlatform Platform => GitPlatform.AzureDevOps;
-
     public AzureDevOpsAdapter(HttpClient http) => _http = http;
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Builds the per-repo API base from the context.
+    /// Azure DevOps URL format: https://dev.azure.com/{org}/{project}/_git/{repo}
+    /// API base:                https://dev.azure.com/{org}/{project}/_apis/git/repositories/{repo}
+    /// </summary>
+    private static string BuildRepoBase(GitRepoContext ctx)
+    {
+        // ctx.Owner holds org, ctx.Repo holds repo; project may be encoded in the URL path.
+        // GitPlatformDetector sets BaseApiUrl to "https://dev.azure.com".
+        // We expect the RepoUrl to be https://dev.azure.com/{org}/{project}/_git/{repo}.
+        // Parse org, project, repo from the URL segments.
+        if (Uri.TryCreate(ctx.RepoUrl, UriKind.Absolute, out var uri))
+        {
+            var segs = uri.AbsolutePath.Trim('/').Split('/');
+            // Expected: segs[0]=org, segs[1]=project, segs[2]="_git", segs[3]=repo
+            if (segs.Length >= 4 && segs[2].Equals("_git", StringComparison.OrdinalIgnoreCase))
+            {
+                var org     = segs[0];
+                var project = segs[1];
+                var repo    = segs[3];
+                return $"https://dev.azure.com/{org}/{project}/_apis/git/repositories/{repo}";
+            }
+        }
+        // Fallback using Owner/Repo from context (org/repo, no project)
+        return $"https://dev.azure.com/{ctx.Owner}/{ctx.Repo}/_apis/git/repositories/{ctx.Repo}";
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
+    {
+        if (resp.IsSuccessStatusCode) return;
+
+        var code = resp.StatusCode == System.Net.HttpStatusCode.Unauthorized
+            ? GitErrorCode.Unauthorized
+            : resp.StatusCode == System.Net.HttpStatusCode.NotFound
+                ? GitErrorCode.NotFound
+                : GitErrorCode.NetworkError;
+
+        var body = await resp.Content.ReadAsStringAsync(ct);
+        throw new GitRepoException(code, $"{platform} API error {(int)resp.StatusCode}: {body[..Math.Min(body.Length, 300)]}");
+    }
 
     // -------------------------------------------------------------------------
     // IGitRepoAdapter implementation
@@ -66,9 +109,55 @@ public sealed class AzureDevOpsAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<List<GitTreeNode>> GetTreeAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
+    public async Task<GitFileContent> GetFileContentAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
+        // GET .../items?path=/{path}&versionDescriptor.version={branch}&$format=octetStream&api-version=7.1
+        var safePath = $"/{path.TrimStart('/')}";
+        var url = $"{BuildRepoBase(ctx)}/items" +
+                  $"?path={Uri.EscapeDataString(safePath)}" +
+                  $"&versionDescriptor.version={Uri.EscapeDataString(branch)}" +
+                  $"&versionDescriptor.versionType=branch" +
+                  $"&$format=octetStream" +
+                  $"&api-version=7.1";
+
+        using var resp = await SendAsync(ctx, url, ct);
+        await EnsureSuccessAsync(resp, "Azure DevOps", ct);
+
+        var bytes = await resp.Content.ReadAsByteArrayAsync(ct);
+
+        // Guard oversized files
+        if (bytes.Length > 512 * 1024)
+            throw new GitRepoException(GitErrorCode.FileTooLarge,
+                $"File '{path}' ({bytes.Length / 1024} KB) exceeds the 512 KB display limit.");
+
+        bool isBinary = IsBinary(bytes);
+        string? rawText = isBinary ? null : Encoding.UTF8.GetString(bytes);
+        var mimeHint = GetMimeHint(path);
+
+        return new GitFileContent(path, rawText, isBinary, bytes.Length, mimeHint);
+    }
+
+    private static string? GetMimeHint(string path)
     {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".cs" or ".razor" or ".csx" => "text/csharp",
+            ".js" or ".ts" or ".jsx" or ".tsx" => "text/javascript",
+            ".json" => "application/json",
+            ".xml" or ".csproj" or ".props" or ".targets" => "text/xml",
+            ".md" or ".markdown" => "text/markdown",
+            ".html" or ".htm" => "text/html",
+            ".css" or ".scss" or ".less" => "text/css",
+            ".py" => "text/python",
+            ".sh" or ".bash" => "text/shell",
+            ".yml" or ".yaml" => "text/yaml",
+            _ => "text/plain"
+        };
+    }
+
+    public async Task<List<GitTreeNode>> GetTreeAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
         // GET .../items?scopePath=/{path}&recursionLevel=oneLevel&versionDescriptor.version={branch}&api-version=7.1
         var scopePath = string.IsNullOrEmpty(path?.Trim('/')) ? "/" : $"/{path.Trim('/')}";
         var url = $"{BuildRepoBase(ctx)}/items" +
@@ -114,65 +203,15 @@ public sealed class AzureDevOpsAdapter : IGitRepoAdapter
             .ToList();
     }
 
-    public async Task<GitFileContent> GetFileContentAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
+    private static bool IsBinary(byte[] bytes)
     {
-        // GET .../items?path=/{path}&versionDescriptor.version={branch}&$format=octetStream&api-version=7.1
-        var safePath = $"/{path.TrimStart('/')}";
-        var url = $"{BuildRepoBase(ctx)}/items" +
-                  $"?path={Uri.EscapeDataString(safePath)}" +
-                  $"&versionDescriptor.version={Uri.EscapeDataString(branch)}" +
-                  $"&versionDescriptor.versionType=branch" +
-                  $"&$format=octetStream" +
-                  $"&api-version=7.1";
-
-        using var resp = await SendAsync(ctx, url, ct);
-        await EnsureSuccessAsync(resp, "Azure DevOps", ct);
-
-        var bytes = await resp.Content.ReadAsByteArrayAsync(ct);
-
-        // Guard oversized files
-        if (bytes.Length > 512 * 1024)
-            throw new GitRepoException(GitErrorCode.FileTooLarge,
-                $"File '{path}' ({bytes.Length / 1024} KB) exceeds the 512 KB display limit.");
-
-        bool isBinary = IsBinary(bytes);
-        string? rawText = isBinary ? null : Encoding.UTF8.GetString(bytes);
-        var mimeHint = GetMimeHint(path);
-
-        return new GitFileContent(path, rawText, isBinary, bytes.Length, mimeHint);
+        var scanLen = Math.Min(bytes.Length, 8192);
+        for (var i = 0; i < scanLen; i++)
+            if (bytes[i] == 0) return true;
+        return false;
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// Builds the per-repo API base from the context.
-    /// Azure DevOps URL format: https://dev.azure.com/{org}/{project}/_git/{repo}
-    /// API base:                https://dev.azure.com/{org}/{project}/_apis/git/repositories/{repo}
-    /// </summary>
-    private static string BuildRepoBase(GitRepoContext ctx)
-    {
-        // ctx.Owner holds org, ctx.Repo holds repo; project may be encoded in the URL path.
-        // GitPlatformDetector sets BaseApiUrl to "https://dev.azure.com".
-        // We expect the RepoUrl to be https://dev.azure.com/{org}/{project}/_git/{repo}.
-        // Parse org, project, repo from the URL segments.
-        if (Uri.TryCreate(ctx.RepoUrl, UriKind.Absolute, out var uri))
-        {
-            var segs = uri.AbsolutePath.Trim('/').Split('/');
-            // Expected: segs[0]=org, segs[1]=project, segs[2]="_git", segs[3]=repo
-            if (segs.Length >= 4 && segs[2].Equals("_git", StringComparison.OrdinalIgnoreCase))
-            {
-                var org     = segs[0];
-                var project = segs[1];
-                var repo    = segs[3];
-                return $"https://dev.azure.com/{org}/{project}/_apis/git/repositories/{repo}";
-            }
-        }
-        // Fallback using Owner/Repo from context (org/repo, no project)
-        return $"https://dev.azure.com/{ctx.Owner}/{ctx.Repo}/_apis/git/repositories/{ctx.Repo}";
-    }
+    public GitPlatform Platform => GitPlatform.AzureDevOps;
 
     private async Task<HttpResponseMessage> SendAsync(GitRepoContext ctx, string url, CancellationToken ct)
     {
@@ -187,46 +226,5 @@ public sealed class AzureDevOpsAdapter : IGitRepoAdapter
         }
 
         return await _http.SendAsync(req, ct);
-    }
-
-    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
-    {
-        if (resp.IsSuccessStatusCode) return;
-
-        var code = resp.StatusCode == System.Net.HttpStatusCode.Unauthorized
-            ? GitErrorCode.Unauthorized
-            : resp.StatusCode == System.Net.HttpStatusCode.NotFound
-                ? GitErrorCode.NotFound
-                : GitErrorCode.NetworkError;
-
-        var body = await resp.Content.ReadAsStringAsync(ct);
-        throw new GitRepoException(code, $"{platform} API error {(int)resp.StatusCode}: {body[..Math.Min(body.Length, 300)]}");
-    }
-
-    private static bool IsBinary(byte[] bytes)
-    {
-        var scanLen = Math.Min(bytes.Length, 8192);
-        for (var i = 0; i < scanLen; i++)
-            if (bytes[i] == 0) return true;
-        return false;
-    }
-
-    private static string? GetMimeHint(string path)
-    {
-        var ext = Path.GetExtension(path).ToLowerInvariant();
-        return ext switch
-        {
-            ".cs" or ".razor" or ".csx" => "text/csharp",
-            ".js" or ".ts" or ".jsx" or ".tsx" => "text/javascript",
-            ".json" => "application/json",
-            ".xml" or ".csproj" or ".props" or ".targets" => "text/xml",
-            ".md" or ".markdown" => "text/markdown",
-            ".html" or ".htm" => "text/html",
-            ".css" or ".scss" or ".less" => "text/css",
-            ".py" => "text/python",
-            ".sh" or ".bash" => "text/shell",
-            ".yml" or ".yaml" => "text/yaml",
-            _ => "text/plain"
-        };
     }
 }

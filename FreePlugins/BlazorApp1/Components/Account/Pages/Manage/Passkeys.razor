@@ -65,30 +65,17 @@ else
     private ApplicationUser? user;
     private IList<UserPasskeyInfo>? currentPasskeys;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
     [SupplyParameterFromForm]
     private string? Action { get; set; }
 
     [SupplyParameterFromForm]
     private string? CredentialId { get; set; }
 
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
     [SupplyParameterFromForm(FormName = "add-passkey")]
     private PasskeyInputModel Input { get; set; } = default!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Input ??= new();
-
-        user = await UserManager.GetUserAsync(HttpContext.User);
-        if (user is null)
-        {
-            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
-            return;
-        }
-        currentPasskeys = await UserManager.GetPasskeysAsync(user);
-    }
 
     private async Task AddPasskey()
     {
@@ -135,22 +122,6 @@ else
         RedirectManager.RedirectTo($"Account/Manage/RenamePasskey/{credentialIdBase64Url}");
     }
 
-    private async Task UpdatePasskey()
-    {
-        switch (Action)
-        {
-            case "rename":
-                RedirectManager.RedirectTo($"Account/Manage/RenamePasskey/{CredentialId}");
-                break;
-            case "delete":
-                await DeletePasskey();
-                break;
-            default:
-                RedirectManager.RedirectToCurrentPageWithStatus($"Error: Unknown action '{Action}'.", HttpContext);
-                break;
-        }
-    }
-
     private async Task DeletePasskey()
     {
         if (user is null)
@@ -178,5 +149,34 @@ else
         }
 
         RedirectManager.RedirectToCurrentPageWithStatus("Passkey deleted successfully.", HttpContext);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+
+        user = await UserManager.GetUserAsync(HttpContext.User);
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+        currentPasskeys = await UserManager.GetPasskeysAsync(user);
+    }
+
+    private async Task UpdatePasskey()
+    {
+        switch (Action)
+        {
+            case "rename":
+                RedirectManager.RedirectTo($"Account/Manage/RenamePasskey/{CredentialId}");
+                break;
+            case "delete":
+                await DeletePasskey();
+                break;
+            default:
+                RedirectManager.RedirectToCurrentPageWithStatus($"Error: Unknown action '{Action}'.", HttpContext);
+                break;
+        }
     }
 }

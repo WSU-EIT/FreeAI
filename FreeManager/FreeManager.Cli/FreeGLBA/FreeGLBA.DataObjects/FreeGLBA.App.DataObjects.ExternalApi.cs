@@ -11,54 +11,54 @@ public partial class DataObjects
     /// <summary>Incoming event from external source system.</summary>
     public class GlbaEventRequest
     {
-        public string? SourceEventId { get; set; }
         public DateTime AccessedAt { get; set; }
-        public string UserId { get; set; } = string.Empty;
-        public string? UserName { get; set; }
-        public string? UserEmail { get; set; }
-        public string? UserDepartment { get; set; }
+        public string AccessType { get; set; } = string.Empty;
+        public string? AdditionalData { get; set; }
+        public string? DataCategory { get; set; }
+        public string? IpAddress { get; set; }
+        public string? Purpose { get; set; }
+        public string? SourceEventId { get; set; }
         public string SubjectId { get; set; } = string.Empty;
         public string? SubjectType { get; set; }
-        public string? DataCategory { get; set; }
-        public string AccessType { get; set; } = string.Empty;
-        public string? Purpose { get; set; }
-        public string? IpAddress { get; set; }
-        public string? AdditionalData { get; set; }
+        public string? UserDepartment { get; set; }
+        public string? UserEmail { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string? UserName { get; set; }
     }
 
     /// <summary>Response after processing an event.</summary>
     public class GlbaEventResponse
     {
         public Guid? EventId { get; set; }
+        public string? Message { get; set; }
         public DateTime ReceivedAt { get; set; } = DateTime.UtcNow;
         public string Status { get; set; } = string.Empty; // accepted, duplicate, error
-        public string? Message { get; set; }
     }
 
     /// <summary>Response after processing a batch of events.</summary>
     public class GlbaBatchResponse
     {
         public int Accepted { get; set; }
-        public int Rejected { get; set; }
         public int Duplicate { get; set; }
         public List<GlbaBatchError> Errors { get; set; } = new();
+        public int Rejected { get; set; }
     }
 
     /// <summary>Error detail for a single event in a batch.</summary>
     public class GlbaBatchError
     {
-        public int Index { get; set; }
         public string Error { get; set; } = string.Empty;
+        public int Index { get; set; }
     }
 
     /// <summary>Dashboard statistics.</summary>
     public class GlbaStats
     {
-        public long Today { get; set; }
-        public long ThisWeek { get; set; }
-        public long ThisMonth { get; set; }
-        public Dictionary<string, long> ByCategory { get; set; } = new();
         public Dictionary<string, long> ByAccessType { get; set; } = new();
+        public Dictionary<string, long> ByCategory { get; set; } = new();
+        public long ThisMonth { get; set; }
+        public long ThisWeek { get; set; }
+        public long Today { get; set; }
     }
 }
 

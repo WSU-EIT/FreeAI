@@ -24,44 +24,6 @@ public sealed class BatchReorganizer
     private static readonly string[] SkipSegments =
         ["\\bin\\", "\\obj\\", "\\.git\\", "\\.vs\\", "\\node_modules\\"];
 
-    public static BatchReorgResult RunDirectory(string root, ReorderConfig config)
-    {
-        if (!Directory.Exists(root))
-        {
-            throw new DirectoryNotFoundException(root);
-        }
-
-        var changedFiles = new List<string>();
-        int scanned = 0, failed = 0;
-
-        // Build the generated-code detector once for the whole tree (parses the applicable .editorconfig).
-        GeneratedCodeDetector? generated = config.RespectGeneratedCode ? GeneratedCodeDetector.ForRoot(root) : null;
-
-        foreach (string file in EnumerateSourceFiles(root))
-        {
-            scanned++;
-            try
-            {
-                // Leave .editorconfig-declared generated code completely alone.
-                if (generated is not null && generated.IsGenerated(file))
-                {
-                    continue;
-                }
-
-                if (TryReorganizeFile(file, EffectiveConfigFor(file, config)))
-                {
-                    changedFiles.Add(file);
-                }
-            }
-            catch
-            {
-                failed++;
-            }
-        }
-
-        return new BatchReorgResult(scanned, changedFiles.Count, failed, changedFiles);
-    }
-
     /// <summary>
     /// Derives the per-file config: a file matching "exclude from reorganize" keeps its member order
     /// (only formatting applies); a file matching "exclude from cleanup" gets no house-style formatting
@@ -133,6 +95,51 @@ public sealed class BatchReorganizer
         }
     }
 
+    public static BatchReorgResult RunDirectory(string root, ReorderConfig config)
+    {
+        if (!Directory.Exists(root))
+        {
+            throw new DirectoryNotFoundException(root);
+        }
+
+        var changedFiles = new List<string>();
+        int scanned = 0, failed = 0;
+
+        // Build the generated-code detector once for the whole tree (parses the applicable .editorconfig).
+        GeneratedCodeDetector? generated = config.RespectGeneratedCode ? GeneratedCodeDetector.ForRoot(root) : null;
+
+        foreach (string file in EnumerateSourceFiles(root))
+        {
+            scanned++;
+            try
+            {
+                // Leave .editorconfig-declared generated code completely alone.
+                if (generated is not null && generated.IsGenerated(file))
+                {
+                    continue;
+                }
+
+                if (TryReorganizeFile(file, EffectiveConfigFor(file, config)))
+                {
+                    changedFiles.Add(file);
+                }
+            }
+            catch
+            {
+                failed++;
+            }
+        }
+
+        return new BatchReorgResult(scanned, changedFiles.Count, failed, changedFiles);
+    }
+
+    private static byte[] Slice(byte[] source, int start)
+    {
+        var dst = new byte[source.Length - start];
+        Array.Copy(source, start, dst, 0, dst.Length);
+        return dst;
+    }
+
     /// <summary>Reorganizes one file in place; returns true if it changed.</summary>
     public static bool TryReorganizeFile(string file, ReorderConfig config)
     {
@@ -163,12 +170,5 @@ public sealed class BatchReorganizer
 
         File.WriteAllText(file, newText, new UTF8Encoding(encoderShouldEmitUTF8Identifier: hadBom));
         return true;
-    }
-
-    private static byte[] Slice(byte[] source, int start)
-    {
-        var dst = new byte[source.Length - start];
-        Array.Copy(source, start, dst, 0, dst.Length);
-        return dst;
     }
 }

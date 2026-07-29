@@ -79,8 +79,8 @@
             <span class="text-muted small ms-auto">
                 @_filteredItems.Count items
                 <InfoTip Title="Kanban Board"
-                         Description="Each column represents a status. Drag a card from one column to another to change its status. The card count and total amount update in each column header. Changes save to the server immediately and broadcast via SignalR to other browser tabs."
-                         Code="@_codeBoard" />
+                        Description="Each column represents a status. Drag a card from one column to another to change its status. The card count and total amount update in each column header. Changes save to the server immediately and broadcast via SignalR to other browser tabs."
+                        Code="@_codeBoard" />
             </span>
         </div>
 
@@ -91,10 +91,10 @@
                 var isDropTarget = _dragOverColumn == column.Status;
 
                 <div class="kanban-column @(isDropTarget ? "kanban-column-drop-target" : "")"
-                     @ondragover="@(() => HandleDragOver(column.Status))"
-                     @ondragover:preventDefault="true"
-                     @ondrop="@(() => HandleDrop(column.Status))"
-                     @ondragleave="HandleDragLeave">
+                        @ondragover="@(() => HandleDragOver(column.Status))"
+                        @ondragover:preventDefault="true"
+                        @ondrop="@(() => HandleDrop(column.Status))"
+                        @ondragleave="HandleDragLeave">
 
                     @* Column Header *@
                     <div class="kanban-column-header @column.HeaderClass">
@@ -124,10 +124,10 @@
                                 var si = slotIdx;
                                 var isSlotActive = _activeDropSlot?.Column == column.Status && _activeDropSlot?.Index == si;
                                 <div class="kanban-drop-slot @(isSlotActive ? "kanban-drop-slot-active" : "")"
-                                     @ondragover="@(() => HandleSlotDragOver(column.Status, si))"
-                                     @ondragover:preventDefault="true"
-                                     @ondrop="@(() => HandleSlotDrop(column.Status, si))"
-                                     @ondragleave="HandleSlotDragLeave"></div>
+                                        @ondragover="@(() => HandleSlotDragOver(column.Status, si))"
+                                        @ondragover:preventDefault="true"
+                                        @ondrop="@(() => HandleSlotDrop(column.Status, si))"
+                                        @ondragleave="HandleSlotDragLeave"></div>
                             }
                             @foreach (var item in GetOrderedItems(column.Status, colItems)) {
                                 slotIdx++;
@@ -138,10 +138,10 @@
                                 var canMoveRight = colIdx < _columns.Count - 1;
 
                                 <div class="kanban-card @(isDragging ? "kanban-card-dragging" : "") @(isExpanded ? "kanban-card-expanded" : "") @(_recentlyMovedIds.Contains(item.SampleItemId) ? "kanban-card-just-moved" : "")"
-                                     draggable="@(isExpanded ? "false" : "true")"
-                                     @ondragstart="@(() => HandleDragStart(item))"
-                                     @ondragend="HandleDragEnd"
-                                     @onclick="@(() => ToggleCardExpand(item.SampleItemId))">
+                                        draggable="@(isExpanded ? "false" : "true")"
+                                        @ondragstart="@(() => HandleDragStart(item))"
+                                        @ondragend="HandleDragEnd"
+                                        @onclick="@(() => ToggleCardExpand(item.SampleItemId))">
 
                                     @* Card Header — Name + Priority *@
                                     <div class="d-flex justify-content-between align-items-start mb-1">
@@ -233,7 +233,7 @@
                                             @* Action Buttons *@
                                             <div class="d-flex gap-1">
                                                 <a class="btn btn-sm btn-outline-primary flex-fill"
-                                                   href="@Helpers.BuildUrl($"Examples/EditSampleItem/{item.SampleItemId}")">
+                                                        href="@Helpers.BuildUrl($"Examples/EditSampleItem/{item.SampleItemId}")">
                                                     <i class="fa-solid fa-pen me-1"></i> Edit
                                                 </a>
                                                 <button class="btn btn-sm btn-outline-danger flex-fill"
@@ -252,10 +252,10 @@
                                     var si = slotIdx;
                                     var isSlotActive = _activeDropSlot?.Column == column.Status && _activeDropSlot?.Index == si;
                                     <div class="kanban-drop-slot @(isSlotActive ? "kanban-drop-slot-active" : "")"
-                                         @ondragover="@(() => HandleSlotDragOver(column.Status, si))"
-                                         @ondragover:preventDefault="true"
-                                         @ondrop="@(() => HandleSlotDrop(column.Status, si))"
-                                         @ondragleave="HandleSlotDragLeave"></div>
+                                            @ondragover="@(() => HandleSlotDragOver(column.Status, si))"
+                                            @ondragover:preventDefault="true"
+                                            @ondrop="@(() => HandleSlotDrop(column.Status, si))"
+                                            @ondragleave="HandleSlotDragLeave"></div>
                                 }
                             }
                         }
@@ -267,20 +267,20 @@
         @* ── InfoTips Row ── *@
         <div class="d-flex flex-wrap gap-1 mt-3">
             <InfoTip Title="Drag and Drop"
-                     Description="HTML5 drag-and-drop uses three events: ondragstart fires when you pick up a card (stores the item ID), ondragover fires continuously while dragging over a valid target (we call preventDefault to allow dropping), and ondrop fires when you release the card (updates the status and saves)."
-                     Code="@_codeDragDrop" />
+                    Description="HTML5 drag-and-drop uses three events: ondragstart fires when you pick up a card (stores the item ID), ondragover fires continuously while dragging over a valid target (we call preventDefault to allow dropping), and ondrop fires when you release the card (updates the status and saves)."
+                    Code="@_codeDragDrop" />
             <InfoTip Title="Drop Zone Highlight"
-                     Description="When you drag a card over a column, it gets a highlighted border and background. This is done by tracking which column the cursor is over in a _dragOverColumn variable. The ondragleave event clears it when you leave. CSS transitions make the highlight animate smoothly."
-                     Code="@_codeDropZone" />
+                    Description="When you drag a card over a column, it gets a highlighted border and background. This is done by tracking which column the cursor is over in a _dragOverColumn variable. The ondragleave event clears it when you leave. CSS transitions make the highlight animate smoothly."
+                    Code="@_codeDropZone" />
             <InfoTip Title="Card Sorting"
-                     Description="Cards within each column are sorted by Priority (highest first) then Name (A-Z). When you drop a card into a new column, it automatically slots into the right position. Click a card to expand it and see move buttons, status dropdown, edit link, and delete."
-                     Code="@_codeCardSort" />
+                    Description="Cards within each column are sorted by Priority (highest first) then Name (A-Z). When you drop a card into a new column, it automatically slots into the right position. Click a card to expand it and see move buttons, status dropdown, edit link, and delete."
+                    Code="@_codeCardSort" />
             <InfoTip Title="Optimistic Update"
-                     Description="When you drop a card, the UI updates immediately (optimistic) before the server responds. If the save fails, the card snaps back to its original column and you see an error message. This makes the interface feel instant even on slow connections."
-                     Code="@_codeOptimistic" />
+                    Description="When you drop a card, the UI updates immediately (optimistic) before the server responds. If the save fails, the card snaps back to its original column and you see an error message. This makes the interface feel instant even on slow connections."
+                    Code="@_codeOptimistic" />
             <InfoTip Title="Move Animation"
-                     Description="When a card is dropped into a new column, it briefly flashes with a blue highlight (kanban-card-just-moved class) to draw your eye to where it landed. The highlight fades after 2 seconds. This uses the same pattern as the SignalR row highlight on the SignalR Demo page."
-                     Code="@_codeMoveAnim" />
+                    Description="When a card is dropped into a new column, it briefly flashes with a blue highlight (kanban-card-just-moved class) to draw your eye to where it landed. The highlight fades after 2 seconds. This uses the same pattern as the SignalR row highlight on the SignalR Demo page."
+                    Code="@_codeMoveAnim" />
         </div>
 
         @* ── Move History ── *@
@@ -291,8 +291,8 @@
                         <span class="small fw-semibold">
                             <i class="fa-solid fa-clock-rotate-left me-1"></i> Recent Moves
                             <InfoTip Title="Move History"
-                                     Description="Every drag-and-drop action is logged here with the item name, old status, new status, and timestamp. In a real application, this audit trail would be saved to the database. It helps teams see who moved what and when."
-                                     Code="@_codeMoveHistory" />
+                                    Description="Every drag-and-drop action is logged here with the item name, old status, new status, and timestamp. In a real application, this audit trail would be saved to the database. It helps teams see who moved what and when."
+                                    Code="@_codeMoveHistory" />
                         </span>
                         <button class="btn btn-sm btn-outline-secondary" @onclick="() => _moveHistory.Clear()">
                             <i class="fa-solid fa-trash-can me-1"></i> Clear
@@ -825,9 +825,9 @@
 
     private class MoveEntry
     {
-        public DateTime Time { get; set; }
-        public string ItemName { get; set; } = "";
         public DataObjects.SampleItemStatus FromStatus { get; set; }
+        public string ItemName { get; set; } = "";
+        public DateTime Time { get; set; }
         public DataObjects.SampleItemStatus ToStatus { get; set; }
     }
 }

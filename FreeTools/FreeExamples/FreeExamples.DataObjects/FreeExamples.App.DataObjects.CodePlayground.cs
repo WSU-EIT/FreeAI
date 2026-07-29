@@ -8,11 +8,11 @@ public partial class DataObjects
     /// </summary>
     public class CodeSnippet
     {
-        public Guid SnippetId { get; set; }
-        public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string Language { get; set; } = "plaintext";
         public DateTime LastSaved { get; set; }
+        public Guid SnippetId { get; set; }
+        public string Title { get; set; } = "";
     }
 
     /// <summary>
@@ -21,8 +21,8 @@ public partial class DataObjects
     /// </summary>
     public class CodePlaygroundRequest
     {
-        public string Endpoint { get; set; } = "";
         public string Body { get; set; } = "";
+        public string Endpoint { get; set; } = "";
     }
 
     /// <summary>
@@ -30,9 +30,9 @@ public partial class DataObjects
     /// </summary>
     public class CodePlaygroundResponse
     {
-        public bool Success { get; set; }
-        public int StatusCode { get; set; }
-        public string ResponseBody { get; set; } = "";
         public long DurationMs { get; set; }
+        public string ResponseBody { get; set; } = "";
+        public int StatusCode { get; set; }
+        public bool Success { get; set; }
     }
 }

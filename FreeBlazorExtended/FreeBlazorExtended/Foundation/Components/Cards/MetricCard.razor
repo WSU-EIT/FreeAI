@@ -18,10 +18,10 @@
 
     Example:
         <MetricCard Title="Active Users"
-                    Value="@userCount"
-                    TrendPercent="12.4m"
-                    Footer="vs last month"
-                    ValueFormat="N0" />
+                Value="@userCount"
+                TrendPercent="12.4m"
+                Footer="vs last month"
+                ValueFormat="N0" />
 *@
 @namespace FreeBlazorExtended.Components
 
@@ -133,24 +133,23 @@
     protected string _trendClass = "";
 
     /// <summary>
-    /// The metric label rendered above the value.
-    /// <para><b>Required.</b> The card is hidden when this is empty or whitespace.</para>
+    /// Explanatory text rendered below the value in a muted footer style
+    /// (e.g. <c>"vs. previous month"</c>, <c>"updated 2 min ago"</c>).
+    /// Optional — omit for a compact card.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
-
-    /// <summary>
-    /// The primary value displayed in large type. Accepts any numeric type or a
-    /// pre-formatted string. When numeric, apply <see cref="ValueFormat"/> to control
-    /// the rendered representation.
-    /// <para><b>Required</b> for the card to display meaningful data.</para>
-    /// </summary>
-    [Parameter] public object Value { get; set; }
+    [Parameter] public string Footer { get; set; } = "";
 
     /// <summary>
     /// Small label placed to the right of <see cref="Title"/> (e.g. <c>"YTD"</c>,
     /// <c>"Last 30 days"</c>). Optional — omit to leave the header clean.
     /// </summary>
     [Parameter] public string SupplementalText { get; set; } = "";
+
+    /// <summary>
+    /// The metric label rendered above the value.
+    /// <para><b>Required.</b> The card is hidden when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
 
     /// <summary>
     /// Trend percentage shown as an arrow indicator next to the value.
@@ -161,11 +160,12 @@
     [Parameter] public decimal? TrendPercent { get; set; }
 
     /// <summary>
-    /// Explanatory text rendered below the value in a muted footer style
-    /// (e.g. <c>"vs. previous month"</c>, <c>"updated 2 min ago"</c>).
-    /// Optional — omit for a compact card.
+    /// The primary value displayed in large type. Accepts any numeric type or a
+    /// pre-formatted string. When numeric, apply <see cref="ValueFormat"/> to control
+    /// the rendered representation.
+    /// <para><b>Required</b> for the card to display meaningful data.</para>
     /// </summary>
-    [Parameter] public string Footer { get; set; } = "";
+    [Parameter] public object Value { get; set; }
 
     /// <summary>
     /// Standard .NET numeric format string applied when <see cref="Value"/> is a
@@ -175,6 +175,20 @@
     /// Optional — defaults to zero-decimal integer formatting.
     /// </summary>
     [Parameter] public string ValueFormat { get; set; } = "";
+
+    protected string FormatValue(object value, string format)
+    {
+        if (value == null) return "";
+
+        return value switch
+        {
+            decimal d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
+            double d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
+            int i => String.IsNullOrWhiteSpace(format) ? i.ToString() : i.ToString(format),
+            long l => String.IsNullOrWhiteSpace(format) ? l.ToString() : l.ToString(format),
+            _ => value.ToString() ?? ""
+        };
+    }
 
     protected override void OnInitialized()
     {
@@ -201,19 +215,5 @@
             _trendPercent = TrendPercent.Value;
             _trendClass = _trendPercent > 0 ? "positive" : (_trendPercent < 0 ? "negative" : "neutral");
         }
-    }
-
-    protected string FormatValue(object value, string format)
-    {
-        if (value == null) return "";
-
-        return value switch
-        {
-            decimal d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
-            double d => String.IsNullOrWhiteSpace(format) ? d.ToString("F0") : d.ToString(format),
-            int i => String.IsNullOrWhiteSpace(format) ? i.ToString() : i.ToString(format),
-            long l => String.IsNullOrWhiteSpace(format) ? l.ToString() : l.ToString(format),
-            _ => value.ToString() ?? ""
-        };
     }
 }

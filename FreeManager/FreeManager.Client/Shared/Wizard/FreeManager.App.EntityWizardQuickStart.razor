@@ -381,15 +381,15 @@
     /// </summary>
     public class QuickStartPattern
     {
-        public string Id { get; set; } = "";
-        public string Name { get; set; } = "";
+        public string ButtonClass { get; set; } = "btn-outline-primary";
         public string Description { get; set; } = "";
+        public List<DataObjects.EntityDefinition> Entities { get; set; } = new();
+        public int EntityCount { get; set; }
         public string Icon { get; set; } = "fa-cube";
         public string IconColorClass { get; set; } = "text-primary";
-        public string ButtonClass { get; set; } = "btn-outline-primary";
-        public int EntityCount { get; set; }
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
         public int RelationshipCount { get; set; }
-        public List<DataObjects.EntityDefinition> Entities { get; set; } = new();
         public List<DataObjects.RelationshipDefinition> Relationships { get; set; } = new();
     }
 }

@@ -44,12 +44,12 @@
             @foreach (var root in _roots)
             {
                 <TreeNodeComponent Node="root"
-                                   AllNodes="_nodes"
-                                   SelectedNode="SelectedNode"
-                                   OnNodeSelected="SelectNode"
-                                   OnAddChild="AddChildNodeToNode"
-                                   OnDelete="DeleteNode"
-                                   TreeService="TreeService" />
+                        AllNodes="_nodes"
+                        SelectedNode="SelectedNode"
+                        OnNodeSelected="SelectNode"
+                        OnAddChild="AddChildNodeToNode"
+                        OnDelete="DeleteNode"
+                        TreeService="TreeService" />
             }
         </div>
     }
@@ -134,36 +134,10 @@
     private Guid _tenantId = Guid.NewGuid(); // In real app, from auth context
 
     [Parameter]
-    public TreeNode? SelectedNode { get; set; }
-
-    [Parameter]
     public EventCallback<TreeNode> OnNodeSelected { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadNodesAsync();
-    }
-
-    private async Task LoadNodesAsync()
-    {
-        _nodes = await TreeService.GetTreeNodes(_tenantId);
-        _roots = await TreeService.GetRootNodes(_tenantId);
-    }
-
-    private void SelectNode(TreeNode node)
-    {
-        SelectedNode = node;
-        OnNodeSelected.InvokeAsync(node);
-    }
-
-    private void AddRootNode()
-    {
-        _editingNode = new TreeNode
-        {
-            TenantId = _tenantId,
-            TreeNodeId = Guid.Empty
-        };
-    }
+    [Parameter]
+    public TreeNode? SelectedNode { get; set; }
 
     private void AddChildNode()
     {
@@ -179,6 +153,34 @@
             ParentNodeId = parent.TreeNodeId,
             TreeNodeId = Guid.Empty
         };
+    }
+
+    private void AddRootNode()
+    {
+        _editingNode = new TreeNode
+        {
+            TenantId = _tenantId,
+            TreeNodeId = Guid.Empty
+        };
+    }
+
+    private void CloseNodeEditor()
+    {
+        _editingNode = null;
+    }
+
+    private async Task DeleteNode(TreeNode node)
+    {
+        await TreeService.DeleteTreeNode(node.TreeNodeId);
+        if (SelectedNode?.TreeNodeId == node.TreeNodeId)
+            SelectedNode = null;
+        await LoadNodesAsync();
+    }
+
+    private void DeleteSelectedNode()
+    {
+        if (SelectedNode == null) return;
+        DeleteNode(SelectedNode);
     }
 
     private void EditSelectedNode()
@@ -199,6 +201,17 @@
         };
     }
 
+    private async Task LoadNodesAsync()
+    {
+        _nodes = await TreeService.GetTreeNodes(_tenantId);
+        _roots = await TreeService.GetRootNodes(_tenantId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNodesAsync();
+    }
+
     private async Task SaveEditingNode()
     {
         if (_editingNode == null || string.IsNullOrWhiteSpace(_editingNode.Name))
@@ -209,22 +222,9 @@
         await LoadNodesAsync();
     }
 
-    private void CloseNodeEditor()
+    private void SelectNode(TreeNode node)
     {
-        _editingNode = null;
-    }
-
-    private void DeleteSelectedNode()
-    {
-        if (SelectedNode == null) return;
-        DeleteNode(SelectedNode);
-    }
-
-    private async Task DeleteNode(TreeNode node)
-    {
-        await TreeService.DeleteTreeNode(node.TreeNodeId);
-        if (SelectedNode?.TreeNodeId == node.TreeNodeId)
-            SelectedNode = null;
-        await LoadNodesAsync();
+        SelectedNode = node;
+        OnNodeSelected.InvokeAsync(node);
     }
 }

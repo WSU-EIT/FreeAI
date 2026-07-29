@@ -145,23 +145,48 @@
 </style>
 
 @code {
+    private string _activeTab = "entity";
+    private bool _showCopied = false;
     [Parameter] public string EntityName { get; set; } = "";
+    [Parameter] public List<DataObjects.EnumDefinition> Enums { get; set; } = new();
     [Parameter] public string PluralName { get; set; } = "";
     [Parameter] public string PrimaryKeyName { get; set; } = "";
     [Parameter] public string PrimaryKeyType { get; set; } = "Guid";
     [Parameter] public List<DataObjects.PropertyDefinition> Properties { get; set; } = new();
-    [Parameter] public List<DataObjects.EnumDefinition> Enums { get; set; } = new();
 
-    private string _activeTab = "entity";
-    private bool _showCopied = false;
+    private async Task CopyToClipboard() {
+        // Note: Clipboard API requires HTTPS or localhost
+        try {
+            var code = GetPreviewCode();
+            // This would need JS interop to actually copy
+            _showCopied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            _showCopied = false;
+            StateHasChanged();
+        } catch {
+            // Ignore clipboard errors
+        }
+    }
 
-    private string GetPreviewCode() {
-        return _activeTab switch {
-            "entity" => GenerateEntityPreview(),
-            "dto" => GenerateDtoPreview(),
-            "filter" => GenerateFilterPreview(),
-            _ => ""
-        };
+    private string GenerateDtoPreview() {
+        if (string.IsNullOrWhiteSpace(EntityName)) {
+            return "// Define entity name to see preview";
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        sb.AppendLine($"public class {EntityName}DTO");
+        sb.AppendLine("{");
+        sb.AppendLine($"    public {PrimaryKeyType} {PrimaryKeyName} {{ get; set; }}");
+
+        foreach (var prop in Properties.Where(p => !p.IsPrimaryKey && !p.IsSystemField).OrderBy(p => p.SortOrder)) {
+            var type = GetCSharpType(prop);
+            sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }}");
+        }
+
+        sb.AppendLine("}");
+        return sb.ToString();
     }
 
     private string GenerateEntityPreview() {
@@ -210,26 +235,6 @@
             } else {
                 sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }}");
             }
-        }
-
-        sb.AppendLine("}");
-        return sb.ToString();
-    }
-
-    private string GenerateDtoPreview() {
-        if (string.IsNullOrWhiteSpace(EntityName)) {
-            return "// Define entity name to see preview";
-        }
-
-        var sb = new System.Text.StringBuilder();
-
-        sb.AppendLine($"public class {EntityName}DTO");
-        sb.AppendLine("{");
-        sb.AppendLine($"    public {PrimaryKeyType} {PrimaryKeyName} {{ get; set; }}");
-
-        foreach (var prop in Properties.Where(p => !p.IsPrimaryKey && !p.IsSystemField).OrderBy(p => p.SortOrder)) {
-            var type = GetCSharpType(prop);
-            sb.AppendLine($"    public {type} {prop.Name} {{ get; set; }}");
         }
 
         sb.AppendLine("}");
@@ -303,18 +308,12 @@
         };
     }
 
-    private async Task CopyToClipboard() {
-        // Note: Clipboard API requires HTTPS or localhost
-        try {
-            var code = GetPreviewCode();
-            // This would need JS interop to actually copy
-            _showCopied = true;
-            StateHasChanged();
-            await Task.Delay(2000);
-            _showCopied = false;
-            StateHasChanged();
-        } catch {
-            // Ignore clipboard errors
-        }
+    private string GetPreviewCode() {
+        return _activeTab switch {
+            "entity" => GenerateEntityPreview(),
+            "dto" => GenerateDtoPreview(),
+            "filter" => GenerateFilterPreview(),
+            _ => ""
+        };
     }
 }

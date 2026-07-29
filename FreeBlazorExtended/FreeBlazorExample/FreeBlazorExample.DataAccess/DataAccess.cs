@@ -37,8 +37,7 @@ public partial class DataAccess: IDisposable, IDataAccess
         IServiceProvider? serviceProvider = null,
         string CookiePrefix = "",
         bool UseBackgroundService = false
-    )
-    {
+    ){
         _cookiePrefix = CookiePrefix;
         _connectionString = ConnectionString;
         _databaseType = DatabaseType;

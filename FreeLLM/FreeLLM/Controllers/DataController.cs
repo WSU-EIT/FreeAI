@@ -30,8 +30,7 @@ public partial class DataController : ControllerBase
         IHubContext<freellmHub> hubContext, 
         IConfigurationHelper configHelper,
         IMemoryCache memoryCache,
-        Plugins.IPlugins diPlugins)
-    {
+        Plugins.IPlugins diPlugins){
         da = daInjection;
         authenticationProviders = auth;
         configurationHelper = configHelper;

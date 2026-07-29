@@ -17,9 +17,7 @@
         <ValidationMessage Message="@_emailError" />
 
     Example (block-style, grouped):
-        <ValidationMessage Message="Password must be at least 12 characters."
-                           Type="warning"
-                           Block="true" />
+        <ValidationMessage Message="Password must be at least 12 characters." Type="warning" Block="true" />
 *@
 @namespace FreeBlazorExtended.Components
 
@@ -109,6 +107,13 @@
     protected string _iconClass = "";
 
     /// <summary>
+    /// When <c>true</c>, wraps the message in a padded, bordered box suitable for
+    /// prominent group-level validation feedback. When <c>false</c> (default), the
+    /// message renders as a plain inline line directly beneath the field.
+    /// </summary>
+    [Parameter] public bool Block { get; set; } = false;
+
+    /// <summary>
     /// The validation text rendered next to an icon.
     /// <para><b>Required.</b> The component renders nothing when this is empty or whitespace —
     /// bind directly to a nullable error field.</para>
@@ -126,13 +131,6 @@
     /// </list>
     /// </summary>
     [Parameter] public string Type { get; set; } = "error";
-
-    /// <summary>
-    /// When <c>true</c>, wraps the message in a padded, bordered box suitable for
-    /// prominent group-level validation feedback. When <c>false</c> (default), the
-    /// message renders as a plain inline line directly beneath the field.
-    /// </summary>
-    [Parameter] public bool Block { get; set; } = false;
 
     protected override void OnInitialized()
     {

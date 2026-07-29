@@ -9,11 +9,10 @@
 }
 
 @code {
-    [Parameter] public string? TenantCode { get; set; }
-    [Parameter] public Guid ProjectId { get; set; }
-
     protected bool _loadedData = false;
     protected string _pageName = "appbuilder-edit";
+    [Parameter] public Guid ProjectId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose()
     {

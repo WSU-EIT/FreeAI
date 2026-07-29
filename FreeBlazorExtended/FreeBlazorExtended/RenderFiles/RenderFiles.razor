@@ -25,21 +25,19 @@
             var clickable = OnClick.HasDelegate;
 
             <div class="render-files-item position-relative @(clickable ? "render-files-clickable" : "")"
-                 title="@title"
-                 style="width: 9rem;">
+                    title="@title"
+                    style="width: 9rem;">
 
                 @if (OnDelete.HasDelegate) {
                     <div class="render-files-delete position-absolute top-0 end-0 m-1" style="z-index: 2;">
                         @if (UseDeleteConfirmation) {
                             <DeleteConfirmation OnConfirmed="@(() => HandleDelete(captured))"
-                                                CancelText="@CancelText"
-                                                DeleteText="@DeleteText"
-                                                ConfirmDeleteText="@ConfirmDeleteText"
-                                                ButtonSize="xs" />
+                                    CancelText="@CancelText"
+                                    DeleteText="@DeleteText"
+                                    ConfirmDeleteText="@ConfirmDeleteText"
+                                    ButtonSize="xs" />
                         } else {
-                            <button type="button"
-                                    class="btn btn-xs btn-danger"
-                                    @onclick="() => HandleDelete(captured)">
+                            <button type="button" class="btn btn-xs btn-danger" @onclick="() => HandleDelete(captured)">
                                 <i class="fa-solid fa-trash me-1" aria-hidden="true"></i>
                                 @DeleteText
                             </button>
@@ -48,14 +46,14 @@
                 }
 
                 <div class="render-files-body text-center @(clickable ? "pointer" : "")"
-                     style="@(clickable ? "cursor: pointer;" : "")"
-                     @onclick="() => HandleClick(captured)">
+                        style="@(clickable ? "cursor: pointer;" : "")"
+                        @onclick="() => HandleClick(captured)">
                     <div class="render-files-thumbnail d-flex align-items-center justify-content-center"
-                         style="height: 5rem;">
+                            style="height: 5rem;">
                         @if (isImage && !string.IsNullOrEmpty(imgSrc)) {
                             <img src="@imgSrc"
-                                 alt="@file.FileName"
-                                 style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                    alt="@file.FileName"
+                                    style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                         } else {
                             <i class="@icon fa-2x text-secondary" aria-hidden="true"></i>
                         }

@@ -8,8 +8,8 @@
     <div class="type-picker-grid">
         @foreach (var typeInfo in DataObjects.PropertyTypes.All) {
             <div class="type-tile @(SelectedType == typeInfo.Type ? "selected" : "") @typeInfo.TileColorClass"
-                 @onclick="() => SelectType(typeInfo.Type)"
-                 title="@typeInfo.DisplayName">
+                    @onclick="() => SelectType(typeInfo.Type)"
+                    title="@typeInfo.DisplayName">
                 <div class="type-tile-icon">
                     @if (typeInfo.TileLabel.Length <= 3) {
                         <span class="type-tile-label">@typeInfo.TileLabel</span>
@@ -110,14 +110,13 @@
 </style>
 
 @code {
+    [Parameter] public EventCallback<string> OnTypeSelected { get; set; }
     [Parameter] public string SelectedType { get; set; } = "string";
     [Parameter] public EventCallback<string> SelectedTypeChanged { get; set; }
-    [Parameter] public EventCallback<string> OnTypeSelected { get; set; }
 
-    private async Task SelectType(string type) {
-        SelectedType = type;
-        await SelectedTypeChanged.InvokeAsync(type);
-        await OnTypeSelected.InvokeAsync(type);
+    private string GetSelectedDisplayName() {
+        var typeInfo = DataObjects.PropertyTypes.Get(SelectedType);
+        return typeInfo?.DisplayName ?? SelectedType;
     }
 
     private string GetShortName(string type) {
@@ -135,8 +134,9 @@
         };
     }
 
-    private string GetSelectedDisplayName() {
-        var typeInfo = DataObjects.PropertyTypes.Get(SelectedType);
-        return typeInfo?.DisplayName ?? SelectedType;
+    private async Task SelectType(string type) {
+        SelectedType = type;
+        await SelectedTypeChanged.InvokeAsync(type);
+        await OnTypeSelected.InvokeAsync(type);
     }
 }

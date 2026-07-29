@@ -315,8 +315,7 @@ internal class Program
     }
 
     private static async Task<(bool Success, string Output)> RunCommandAsync(
-        string command, string arguments, string workingDirectory, bool hideOutput = true)
-    {
+        string command, string arguments, string workingDirectory, bool hideOutput = true){
         try {
             var psi = new ProcessStartInfo {
                 FileName = command,
@@ -383,12 +382,12 @@ internal class Program
 public class NuGetConfig
 {
     public string ApiKey { get; set; } = "";
-    public string Source { get; set; } = "https://api.nuget.org/v3/index.json";
-    public string PackageId { get; set; } = "FreeExamples.Client";
-    public string Version { get; set; } = "1.0.0";
-    public string SolutionRoot { get; set; } = "";
-    public string ProjectPath { get; set; } = "FreeExamples.NuGetClient\\FreeExamples.NuGetClient.csproj";
     public string Configuration { get; set; } = "Release";
-    public bool SkipDuplicate { get; set; } = true;
     public bool IncludeSymbols { get; set; } = true;
+    public string PackageId { get; set; } = "FreeExamples.Client";
+    public string ProjectPath { get; set; } = "FreeExamples.NuGetClient\\FreeExamples.NuGetClient.csproj";
+    public bool SkipDuplicate { get; set; } = true;
+    public string SolutionRoot { get; set; } = "";
+    public string Source { get; set; } = "https://api.nuget.org/v3/index.json";
+    public string Version { get; set; } = "1.0.0";
 }

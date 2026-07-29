@@ -74,32 +74,105 @@ public static class AuthHandler
     }
 
     // ================================================================
-    // Auth Screenshot Capture (for compliance evidence)
+    // Generic Authentication
     // ================================================================
 
     /// <summary>
-    /// Result of an auth attempt that also captured login-flow screenshots.
-    /// Screenshots are provided as raw JPEG bytes plus a suggested filename,
-    /// so the caller can add them to a PageScanResult.Screenshots list.
-    /// The three screenshots prove the "locked out anonymous / unlocked authenticated"
-    /// pair that every AA compliance report needs.
+    /// Authenticates against a generic login form using a cascade of common selectors.
+    /// Tries 15 username selectors, 6 password selectors, and 5 submit selectors in
+    /// priority order. The first matching visible selector wins.
     /// </summary>
-    public class AuthScreenshotResult
+    public static async Task<bool> AuthenticateGeneric(IPage Page, CredentialConfig Credentials)
     {
-        /// <summary>True if authentication verified successfully.</summary>
-        public bool Succeeded { get; set; }
+        try {
+            // Navigate to login URL or fall back to current page.
+            string loginUrl = !String.IsNullOrWhiteSpace(Credentials.LoginUrl)
+                ? Credentials.LoginUrl : GetBaseFromPage(Page).TrimEnd('/') + "/Login";
 
-        /// <summary>Login form as it loaded, before any credentials were filled.</summary>
-        public byte[]? AnonymousFormBytes { get; set; }
+            await Page.GotoAsync(loginUrl, new PageGotoOptions {
+                WaitUntil = WaitUntilState.NetworkIdle,
+                Timeout = 30000,
+            });
 
-        /// <summary>Login form after username + password filled, before submit.</summary>
-        public byte[]? CredentialsEnteredBytes { get; set; }
+            // Wait for the login form to render.
+            await Page.WaitForTimeoutAsync(2000);
 
-        /// <summary>Landed page after successful submit — or the error state if auth failed.</summary>
-        public byte[]? PostAuthBytes { get; set; }
+            // Username selectors in priority order — 15 common patterns.
+            string[] usernameSelectors = new string[] {
+                "#login-email",
+                "#Input_Email",
+                "input[name='username']",
+                "input[name='Username']",
+                "input[name='Email']",
+                "input[name='email']",
+                "input[name='Input.Email']",
+                "input[type='email']",
+                "input[autocomplete='username']",
+                "input[autocomplete='email']",
+                "input[placeholder*='email' i]",
+                "input[placeholder*='user' i]",
+                "input[name='login']",
+                "input[name='user']",
+                "input[id*='user' i]",
+            };
 
-        /// <summary>True if PostAuthBytes depicts a failure (so callers can rename it).</summary>
-        public bool PostAuthIsFailure { get; set; }
+            // Find and fill username.
+            if (!String.IsNullOrWhiteSpace(Credentials.UsernameSelector)) {
+                await Page.Locator(Credentials.UsernameSelector).First.FillAsync(Credentials.Username);
+            } else {
+                bool filled = await FillFirstMatch(Page, usernameSelectors, Credentials.Username);
+                if (!filled) {
+                    return false;
+                }
+            }
+
+            // Password selectors in priority order — 6 common patterns.
+            string[] passwordSelectors = new string[] {
+                "input[type='password']",
+                "#login-password",
+                "input[name='password']",
+                "input[name='Password']",
+                "input[name='Input.Password']",
+                "input[autocomplete='current-password']",
+            };
+
+            // Find and fill password.
+            if (!String.IsNullOrWhiteSpace(Credentials.PasswordSelector)) {
+                await Page.Locator(Credentials.PasswordSelector).First.FillAsync(Credentials.Password);
+            } else {
+                bool filled = await FillFirstMatch(Page, passwordSelectors, Credentials.Password);
+                if (!filled) {
+                    return false;
+                }
+            }
+
+            // Submit selectors in priority order — 5 common patterns.
+            string[] submitSelectors = new string[] {
+                "button[type='submit']",
+                "input[type='submit']",
+                "button:has-text('Log in')",
+                "button:has-text('Login')",
+                "button:has-text('Sign in')",
+            };
+
+            // Find and click submit.
+            if (!String.IsNullOrWhiteSpace(Credentials.SubmitSelector)) {
+                await Page.Locator(Credentials.SubmitSelector).First.ClickAsync();
+            } else {
+                await ClickFirstMatch(Page, submitSelectors);
+            }
+
+            // Wait for navigation after login.
+            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions {
+                Timeout = 15000,
+            });
+
+            // Verify authentication succeeded.
+            bool verified = await VerifyAuthenticated(Page);
+            return verified;
+        } catch (Exception) {
+            return false;
+        }
     }
 
     /// <summary>
@@ -109,8 +182,7 @@ public static class AuthHandler
     /// arrays for each screenshot; an empty slot (null) means capture failed silently.
     /// </summary>
     public static async Task<AuthScreenshotResult> AuthenticateWithScreenshots(
-        IPage Page, CredentialConfig Credentials, Action<string>? OnStep = null)
-    {
+        IPage Page, CredentialConfig Credentials, Action<string>? OnStep = null){
         AuthScreenshotResult output = new AuthScreenshotResult();
 
         try {
@@ -385,24 +457,6 @@ public static class AuthHandler
     }
 
     /// <summary>
-    /// Best-effort screenshot — returns null on failure instead of throwing so the
-    /// auth flow continues even if one capture misses.
-    /// </summary>
-    private static async Task<byte[]?> SafeScreenshotAsync(IPage Page)
-    {
-        try {
-            return await Page.ScreenshotAsync(new PageScreenshotOptions {
-                FullPage = false,
-                Timeout = 10000,
-                Type = ScreenshotType.Jpeg,
-                Quality = 90,
-            });
-        } catch {
-            return null;
-        }
-    }
-
-    /// <summary>
     /// Builds the login URL from credentials, reusing the same rules as the two
     /// existing authenticate methods (tenant URL pattern, explicit LoginUrl,
     /// or default /Login path on the current origin).
@@ -422,6 +476,52 @@ public static class AuthHandler
             return root + "/" + Credentials.TenantCode + "/Login";
         }
         return root + "/Login";
+    }
+
+    /// <summary>
+    /// Tries each selector in order, clicks the first one that is visible on the page.
+    /// Returns true if a button was found and clicked, false if no match was found.
+    /// </summary>
+    private static async Task<bool> ClickFirstMatch(IPage Page, string[] Selectors)
+    {
+        foreach (string selector in Selectors) {
+            try {
+                ILocator locator = Page.Locator(selector).First;
+                int count = await locator.CountAsync();
+                if (count > 0 && await locator.IsVisibleAsync()) {
+                    await locator.ClickAsync();
+                    return true;
+                }
+            } catch {
+                // Selector not found or not interactable — try next.
+            }
+        }
+        return false;
+    }
+
+    private static string[] DefaultPasswordSelectors()
+    {
+        // 7-selector cascade — verbatim from FreeTools.BrowserSnapshot.
+        return new string[] {
+            "input[id='login-password']",                    // FreeA11yChecker/FreeExamples local login
+            "input[name='password']",
+            "input[name='Password']",
+            "input[name='Input.Password']",                  // Blazor Identity (name attribute)
+            "input[id='password']",
+            "input[id='Password']",
+            "input[id='Input.Password']",                    // Blazor Identity (id with dot)
+            "input[type='password']",
+            "input[autocomplete='current-password']",
+        };
+    }
+
+    private static string[] DefaultSubmitSelectors()
+    {
+        return new string[] {
+            "button[type='submit']", "input[type='submit']",
+            "button:has-text('Log in')", "button:has-text('Login')",
+            "button:has-text('Sign in')",
+        };
     }
 
     private static string[] DefaultUsernameSelectors(string AuthType)
@@ -457,130 +557,55 @@ public static class AuthHandler
         };
     }
 
-    private static string[] DefaultPasswordSelectors()
+    /// <summary>
+    /// Tries each selector in order, fills the first one that is visible on the page.
+    /// Returns true if a field was found and filled, false if no match was found.
+    /// </summary>
+    private static async Task<bool> FillFirstMatch(IPage Page, string[] Selectors, string Value)
     {
-        // 7-selector cascade — verbatim from FreeTools.BrowserSnapshot.
-        return new string[] {
-            "input[id='login-password']",                    // FreeA11yChecker/FreeExamples local login
-            "input[name='password']",
-            "input[name='Password']",
-            "input[name='Input.Password']",                  // Blazor Identity (name attribute)
-            "input[id='password']",
-            "input[id='Password']",
-            "input[id='Input.Password']",                    // Blazor Identity (id with dot)
-            "input[type='password']",
-            "input[autocomplete='current-password']",
-        };
+        foreach (string selector in Selectors) {
+            try {
+                ILocator locator = Page.Locator(selector).First;
+                int count = await locator.CountAsync();
+                if (count > 0 && await locator.IsVisibleAsync()) {
+                    await locator.FillAsync(Value);
+                    return true;
+                }
+            } catch {
+                // Selector not found or not interactable — try next.
+            }
+        }
+        return false;
     }
-
-    private static string[] DefaultSubmitSelectors()
-    {
-        return new string[] {
-            "button[type='submit']", "input[type='submit']",
-            "button:has-text('Log in')", "button:has-text('Login')",
-            "button:has-text('Sign in')",
-        };
-    }
-
-    // ================================================================
-    // Generic Authentication
-    // ================================================================
 
     /// <summary>
-    /// Authenticates against a generic login form using a cascade of common selectors.
-    /// Tries 15 username selectors, 6 password selectors, and 5 submit selectors in
-    /// priority order. The first matching visible selector wins.
+    /// Extracts the base URL (scheme + host) from the current page URL.
     /// </summary>
-    public static async Task<bool> AuthenticateGeneric(IPage Page, CredentialConfig Credentials)
+    private static string GetBaseFromPage(IPage Page)
     {
         try {
-            // Navigate to login URL or fall back to current page.
-            string loginUrl = !String.IsNullOrWhiteSpace(Credentials.LoginUrl)
-                ? Credentials.LoginUrl : GetBaseFromPage(Page).TrimEnd('/') + "/Login";
+            Uri uri = new Uri(Page.Url);
+            return uri.GetLeftPart(UriPartial.Authority);
+        } catch {
+            return Page.Url;
+        }
+    }
 
-            await Page.GotoAsync(loginUrl, new PageGotoOptions {
-                WaitUntil = WaitUntilState.NetworkIdle,
-                Timeout = 30000,
+    /// <summary>
+    /// Best-effort screenshot — returns null on failure instead of throwing so the
+    /// auth flow continues even if one capture misses.
+    /// </summary>
+    private static async Task<byte[]?> SafeScreenshotAsync(IPage Page)
+    {
+        try {
+            return await Page.ScreenshotAsync(new PageScreenshotOptions {
+                FullPage = false,
+                Timeout = 10000,
+                Type = ScreenshotType.Jpeg,
+                Quality = 90,
             });
-
-            // Wait for the login form to render.
-            await Page.WaitForTimeoutAsync(2000);
-
-            // Username selectors in priority order — 15 common patterns.
-            string[] usernameSelectors = new string[] {
-                "#login-email",
-                "#Input_Email",
-                "input[name='username']",
-                "input[name='Username']",
-                "input[name='Email']",
-                "input[name='email']",
-                "input[name='Input.Email']",
-                "input[type='email']",
-                "input[autocomplete='username']",
-                "input[autocomplete='email']",
-                "input[placeholder*='email' i]",
-                "input[placeholder*='user' i]",
-                "input[name='login']",
-                "input[name='user']",
-                "input[id*='user' i]",
-            };
-
-            // Find and fill username.
-            if (!String.IsNullOrWhiteSpace(Credentials.UsernameSelector)) {
-                await Page.Locator(Credentials.UsernameSelector).First.FillAsync(Credentials.Username);
-            } else {
-                bool filled = await FillFirstMatch(Page, usernameSelectors, Credentials.Username);
-                if (!filled) {
-                    return false;
-                }
-            }
-
-            // Password selectors in priority order — 6 common patterns.
-            string[] passwordSelectors = new string[] {
-                "input[type='password']",
-                "#login-password",
-                "input[name='password']",
-                "input[name='Password']",
-                "input[name='Input.Password']",
-                "input[autocomplete='current-password']",
-            };
-
-            // Find and fill password.
-            if (!String.IsNullOrWhiteSpace(Credentials.PasswordSelector)) {
-                await Page.Locator(Credentials.PasswordSelector).First.FillAsync(Credentials.Password);
-            } else {
-                bool filled = await FillFirstMatch(Page, passwordSelectors, Credentials.Password);
-                if (!filled) {
-                    return false;
-                }
-            }
-
-            // Submit selectors in priority order — 5 common patterns.
-            string[] submitSelectors = new string[] {
-                "button[type='submit']",
-                "input[type='submit']",
-                "button:has-text('Log in')",
-                "button:has-text('Login')",
-                "button:has-text('Sign in')",
-            };
-
-            // Find and click submit.
-            if (!String.IsNullOrWhiteSpace(Credentials.SubmitSelector)) {
-                await Page.Locator(Credentials.SubmitSelector).First.ClickAsync();
-            } else {
-                await ClickFirstMatch(Page, submitSelectors);
-            }
-
-            // Wait for navigation after login.
-            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions {
-                Timeout = 15000,
-            });
-
-            // Verify authentication succeeded.
-            bool verified = await VerifyAuthenticated(Page);
-            return verified;
-        } catch (Exception) {
-            return false;
+        } catch {
+            return null;
         }
     }
 
@@ -596,8 +621,7 @@ public static class AuthHandler
     /// </summary>
     private static async Task<bool> TryFillWithFallback(
         IPage Page, string? configuredSelector, string value,
-        string[] cascadeSelectors, string fieldKind, Action<string>? OnStep)
-    {
+        string[] cascadeSelectors, string fieldKind, Action<string>? OnStep){
         // 1. Try the configured selector with editability re-check.
         if (!String.IsNullOrWhiteSpace(configuredSelector)) {
             try {
@@ -643,48 +667,6 @@ public static class AuthHandler
     }
 
     /// <summary>
-    /// Tries each selector in order, fills the first one that is visible on the page.
-    /// Returns true if a field was found and filled, false if no match was found.
-    /// </summary>
-    private static async Task<bool> FillFirstMatch(IPage Page, string[] Selectors, string Value)
-    {
-        foreach (string selector in Selectors) {
-            try {
-                ILocator locator = Page.Locator(selector).First;
-                int count = await locator.CountAsync();
-                if (count > 0 && await locator.IsVisibleAsync()) {
-                    await locator.FillAsync(Value);
-                    return true;
-                }
-            } catch {
-                // Selector not found or not interactable — try next.
-            }
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Tries each selector in order, clicks the first one that is visible on the page.
-    /// Returns true if a button was found and clicked, false if no match was found.
-    /// </summary>
-    private static async Task<bool> ClickFirstMatch(IPage Page, string[] Selectors)
-    {
-        foreach (string selector in Selectors) {
-            try {
-                ILocator locator = Page.Locator(selector).First;
-                int count = await locator.CountAsync();
-                if (count > 0 && await locator.IsVisibleAsync()) {
-                    await locator.ClickAsync();
-                    return true;
-                }
-            } catch {
-                // Selector not found or not interactable — try next.
-            }
-        }
-        return false;
-    }
-
-    /// <summary>
     /// Verifies authentication succeeded by checking the current URL.
     /// If the page redirected back to a login page, auth failed.
     /// </summary>
@@ -724,16 +706,31 @@ public static class AuthHandler
         }
     }
 
+    // ================================================================
+    // Auth Screenshot Capture (for compliance evidence)
+    // ================================================================
+
     /// <summary>
-    /// Extracts the base URL (scheme + host) from the current page URL.
+    /// Result of an auth attempt that also captured login-flow screenshots.
+    /// Screenshots are provided as raw JPEG bytes plus a suggested filename,
+    /// so the caller can add them to a PageScanResult.Screenshots list.
+    /// The three screenshots prove the "locked out anonymous / unlocked authenticated"
+    /// pair that every AA compliance report needs.
     /// </summary>
-    private static string GetBaseFromPage(IPage Page)
+    public class AuthScreenshotResult
     {
-        try {
-            Uri uri = new Uri(Page.Url);
-            return uri.GetLeftPart(UriPartial.Authority);
-        } catch {
-            return Page.Url;
-        }
+        /// <summary>Login form as it loaded, before any credentials were filled.</summary>
+        public byte[]? AnonymousFormBytes { get; set; }
+
+        /// <summary>Login form after username + password filled, before submit.</summary>
+        public byte[]? CredentialsEnteredBytes { get; set; }
+
+        /// <summary>Landed page after successful submit — or the error state if auth failed.</summary>
+        public byte[]? PostAuthBytes { get; set; }
+
+        /// <summary>True if PostAuthBytes depicts a failure (so callers can rename it).</summary>
+        public bool PostAuthIsFailure { get; set; }
+        /// <summary>True if authentication verified successfully.</summary>
+        public bool Succeeded { get; set; }
     }
 }

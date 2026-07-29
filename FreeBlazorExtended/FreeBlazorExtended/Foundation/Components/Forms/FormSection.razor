@@ -145,16 +145,35 @@
     protected string _sectionClass = "";
 
     /// <summary>
-    /// Heading rendered as a <c>&lt;legend&gt;</c> element above the fields.
-    /// Optional — omit for an anonymous grouping section with no visual label.
+    /// The form fields, inputs, and controls rendered inside the section content area.
+    /// Laid out according to <see cref="Layout"/>.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Reduces padding for use inside modals, drawers, or panels where vertical space is
+    /// constrained. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Compact { get; set; } = false;
 
     /// <summary>
     /// One-sentence guidance line rendered below the title in a muted font.
     /// Optional — use to clarify what information the user should enter in this section.
     /// </summary>
     [Parameter] public string Description { get; set; } = "";
+
+    /// <summary>
+    /// Optional render fragment displayed in the section footer, separated by a top border.
+    /// Use for section-level action buttons, "Save this section" links, or helper text.
+    /// </summary>
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Applies a primary-colour border and light background tint to visually emphasise
+    /// this section over its siblings (e.g. a required or critical field group).
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Highlighted { get; set; } = false;
 
     /// <summary>
     /// Controls how child fields are arranged inside the section content area.
@@ -175,29 +194,10 @@
     [Parameter] public bool NoBorder { get; set; } = false;
 
     /// <summary>
-    /// Reduces padding for use inside modals, drawers, or panels where vertical space is
-    /// constrained. Default: <c>false</c>.
+    /// Heading rendered as a <c>&lt;legend&gt;</c> element above the fields.
+    /// Optional — omit for an anonymous grouping section with no visual label.
     /// </summary>
-    [Parameter] public bool Compact { get; set; } = false;
-
-    /// <summary>
-    /// Applies a primary-colour border and light background tint to visually emphasise
-    /// this section over its siblings (e.g. a required or critical field group).
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool Highlighted { get; set; } = false;
-
-    /// <summary>
-    /// The form fields, inputs, and controls rendered inside the section content area.
-    /// Laid out according to <see cref="Layout"/>.
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// Optional render fragment displayed in the section footer, separated by a top border.
-    /// Use for section-level action buttons, "Save this section" links, or helper text.
-    /// </summary>
-    [Parameter] public RenderFragment? FooterContent { get; set; }
+    [Parameter] public string Title { get; set; } = "";
 
     protected override void OnInitialized()
     {

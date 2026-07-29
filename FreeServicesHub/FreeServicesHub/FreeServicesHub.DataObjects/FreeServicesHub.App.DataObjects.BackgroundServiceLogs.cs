@@ -9,9 +9,9 @@ public partial class DataObjects
     public class BackgroundServiceLogEntry
     {
         public Guid LogId { get; set; }
-        public string ServiceName { get; set; } = string.Empty;
         public string LogLevel { get; set; } = string.Empty; // Information, Warning, Error, etc.
         public string Message { get; set; } = string.Empty;
+        public string ServiceName { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
     }
 
@@ -20,9 +20,9 @@ public partial class DataObjects
     /// </summary>
     public class BackgroundServiceInfo
     {
-        public string ServiceName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string Status { get; set; } = "Running"; // Running, Stopped, Error
         public DateTime? LastActivity { get; set; }
+        public string ServiceName { get; set; } = string.Empty;
+        public string Status { get; set; } = "Running"; // Running, Stopped, Error
     }
 }

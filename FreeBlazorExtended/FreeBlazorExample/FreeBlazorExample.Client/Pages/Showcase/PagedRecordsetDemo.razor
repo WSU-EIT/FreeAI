@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A generic paginated table component that accepts a List&lt;T&gt; data source plus column definitions and handles client-side sorting, page navigation, and row-level action callbacks — with optional server-side paging via an async fetch delegate."
-        WhatEli5="A data table that only shows one page of results at a time and lets you click column headers to sort — so even a list of 50 000 records feels fast and manageable."
-        Who=@(new[]{ "Developers building any admin list view (users, records, reports)", "Anyone replacing a raw HTML table that loads all rows upfront and makes the page slow", "Pages that need sortable columns without writing sort logic for each one" })
-        WhenUse=@(new[]{ "Any list of records that could grow beyond ~20 rows", "Admin tables where sortable columns and row actions are needed", "Reports where the user filters down to a subset and pages through results" })
-        WhenNot=@(new[]{ "Small static tables (≤10 rows) — the pagination chrome adds visual noise without benefit", "Read-only display tables where interaction is not needed — a plain <table> is lighter" })
-        Why="Every list page ends up needing the same pagination logic, sort indicators, and page-size selector. Building it once in a component eliminates that repetition and ensures consistent UX across the app."
-        TechNotes=@(new[]{ "Column definitions passed as ColumnDefinition list — specifies header, field accessor, sort key, and optional cell formatter", "Client-side paging: all data loaded once, component slices the page window", "Server-side paging: provide an async FetchData(PageNumber, PageSize, SortColumn, SortDir) delegate; component calls it on navigation", "CheckboxColumn=true adds a selection column; selected items exposed via SelectedItems parameter", "ExtraRowData: optional RenderFragment<T> shown in an expanded row below the main row" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A generic paginated table component that accepts a List&lt;T&gt; data source plus column definitions and handles client-side sorting, page navigation, and row-level action callbacks — with optional server-side paging via an async fetch delegate."
+            WhatEli5="A data table that only shows one page of results at a time and lets you click column headers to sort — so even a list of 50 000 records feels fast and manageable."
+            Who=@(new[]{ "Developers building any admin list view (users, records, reports)", "Anyone replacing a raw HTML table that loads all rows upfront and makes the page slow", "Pages that need sortable columns without writing sort logic for each one" })
+            WhenUse=@(new[]{ "Any list of records that could grow beyond ~20 rows", "Admin tables where sortable columns and row actions are needed", "Reports where the user filters down to a subset and pages through results" })
+            WhenNot=@(new[]{ "Small static tables (≤10 rows) — the pagination chrome adds visual noise without benefit", "Read-only display tables where interaction is not needed — a plain <table> is lighter" })
+            Why="Every list page ends up needing the same pagination logic, sort indicators, and page-size selector. Building it once in a component eliminates that repetition and ensures consistent UX across the app."
+            TechNotes=@(new[]{ "Column definitions passed as ColumnDefinition list — specifies header, field accessor, sort key, and optional cell formatter", "Client-side paging: all data loaded once, component slices the page window", "Server-side paging: provide an async FetchData(PageNumber, PageSize, SortColumn, SortDir) delegate; component calls it on navigation", "CheckboxColumn=true adds a selection column; selected items exposed via SelectedItems parameter", "ExtraRowData: optional RenderFragment<T> shown in an expanded row below the main row" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-12">
@@ -31,7 +31,7 @@
                         <div class="input-group">
                             <label for="productSearchInput" class="visually-hidden">Search products</label>
                             <input id="productSearchInput" type="text" class="form-control" placeholder="Search products..."
-                                @bind="@_searchTerm" @bind:after="OnSearchChange" />
+                                    @bind="@_searchTerm" @bind:after="OnSearchChange" />
                             <button class="btn btn-outline-secondary" type="button" aria-label="Search">
                                 <i class="fas fa-search" aria-hidden="true"></i>
                             </button>
@@ -118,7 +118,7 @@
                             <div class="col-md-6">
                                 <label for="userSearchInput" class="form-label">Search by name</label>
                                 <input id="userSearchInput" type="text" class="form-control" placeholder="Search by name..."
-                                    @bind="@_userSearch" @bind:after="OnUserSearchChange" aria-label="Search users by name" />
+                                        @bind="@_userSearch" @bind:after="OnUserSearchChange" aria-label="Search users by name" />
                             </div>
                             <div class="col-md-6">
                                 <label for="roleFilterSelect" class="form-label">Filter by role</label>
@@ -305,12 +305,30 @@
     protected string _userSearch = "";
     protected string _roleFilter = "";
 
-    protected override void OnInitialized()
+    protected string GetRoleBadgeClass(string role)
     {
-        InitializeProducts();
-        InitializeUsers();
-        UpdateProductsDisplay();
-        UpdateUsersDisplay();
+        return role switch {
+            "Admin" => "bg-danger text-white",
+            "Manager" => "bg-warning text-dark",
+            "User" => "bg-primary text-white",
+            _ => "bg-secondary text-white"
+        };
+    }
+
+    protected void GoToPage(int pageNum)
+    {
+        if (pageNum >= 1 && pageNum <= _totalPages) {
+            _currentPage = pageNum;
+            UpdateProductsDisplay();
+        }
+    }
+
+    protected void GoToUserPage(int pageNum)
+    {
+        if (pageNum >= 1 && pageNum <= _userTotalPages) {
+            _userPage = pageNum;
+            UpdateUsersDisplay();
+        }
     }
 
     protected void InitializeProducts()
@@ -345,10 +363,30 @@
         };
     }
 
+    protected override void OnInitialized()
+    {
+        InitializeProducts();
+        InitializeUsers();
+        UpdateProductsDisplay();
+        UpdateUsersDisplay();
+    }
+
+    protected void OnRoleFilterChange()
+    {
+        _userPage = 1;
+        UpdateUsersDisplay();
+    }
+
     protected void OnSearchChange()
     {
         _currentPage = 1;
         UpdateProductsDisplay();
+    }
+
+    protected void OnUserSearchChange()
+    {
+        _userPage = 1;
+        UpdateUsersDisplay();
     }
 
     protected void SortBy(string field)
@@ -361,14 +399,6 @@
         }
         _currentPage = 1;
         UpdateProductsDisplay();
-    }
-
-    protected void GoToPage(int pageNum)
-    {
-        if (pageNum >= 1 && pageNum <= _totalPages) {
-            _currentPage = pageNum;
-            UpdateProductsDisplay();
-        }
     }
 
     protected void UpdateProductsDisplay()
@@ -396,26 +426,6 @@
             .ToList();
     }
 
-    protected void OnUserSearchChange()
-    {
-        _userPage = 1;
-        UpdateUsersDisplay();
-    }
-
-    protected void OnRoleFilterChange()
-    {
-        _userPage = 1;
-        UpdateUsersDisplay();
-    }
-
-    protected void GoToUserPage(int pageNum)
-    {
-        if (pageNum >= 1 && pageNum <= _userTotalPages) {
-            _userPage = pageNum;
-            UpdateUsersDisplay();
-        }
-    }
-
     protected void UpdateUsersDisplay()
     {
         _filteredUsers = _allUsers
@@ -434,28 +444,18 @@
             .ToList();
     }
 
-    protected string GetRoleBadgeClass(string role)
-    {
-        return role switch {
-            "Admin" => "bg-danger text-white",
-            "Manager" => "bg-warning text-dark",
-            "User" => "bg-primary text-white",
-            _ => "bg-secondary text-white"
-        };
-    }
-
     protected class ProductModel
     {
-        public string Name { get; set; } = "";
         public string Category { get; set; } = "";
+        public string Name { get; set; } = "";
         public decimal Price { get; set; }
         public int Stock { get; set; }
     }
 
     protected class UserModel
     {
-        public string Name { get; set; } = "";
         public string Email { get; set; } = "";
+        public string Name { get; set; } = "";
         public string Role { get; set; } = "";
     }
 }

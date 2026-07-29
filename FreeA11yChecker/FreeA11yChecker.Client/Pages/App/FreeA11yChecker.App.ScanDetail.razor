@@ -155,7 +155,7 @@
                 </div>
                 <div class="col-auto">
                     <input type="text" class="form-control form-control-sm" placeholder="Search URL or title..." aria-label="Search pages"
-                           @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
+                            @bind="_searchText" @bind:event="oninput" @bind:after="ApplyFilters" />
                 </div>
                 <div class="col-auto ms-auto">
                     <button class="btn btn-sm btn-outline-secondary me-1" @onclick="ExpandAllPages" title="Expand all page rows">
@@ -195,7 +195,7 @@
                                 : Helpers.BuildUrl("Pages/" + pr.PageScanResultId);
                             bool isExpanded = _expandedPageIds.Contains(pr.PageScanResultId);
                             <tr @key="pr.PageScanResultId" class="cursor-pointer @(isExpanded ? "table-active" : "") scan-table-row"
-                                @onclick="() => TogglePageExpand(pr)">
+                                    @onclick="() => TogglePageExpand(pr)">
                                 <td><i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right") text-muted" style="font-size:0.7rem;"></i></td>
                                 <td>
                                     <strong>@(String.IsNullOrWhiteSpace(pr.PageTitle) ? pr.Url : pr.PageTitle)</strong>

@@ -78,10 +78,10 @@
                 @if (_selectedFileIndex >= 0 && _selectedFileIndex < GeneratedFiles.Count) {
                     var selectedFile = GeneratedFiles[_selectedFileIndex];
                     <FreeManager_App_EntityWizardCodeEditor File="@selectedFile"
-                                                 FileChanged="OnFileChanged"
-                                                 OnRegenerate="@(() => RegenerateFile(_selectedFileIndex))"
-                                                 ReadOnly="@ReadOnlyMode"
-                                                 Height="450px" />
+                            FileChanged="OnFileChanged"
+                            OnRegenerate="@(() => RegenerateFile(_selectedFileIndex))"
+                            ReadOnly="@ReadOnlyMode"
+                            Height="450px" />
                 }
             </div>
         }
@@ -156,16 +156,37 @@ dotnet ef database update</code></pre>
 </div>
 
 @code {
-    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
+    private int _selectedFileIndex = 0;
     [Parameter] public List<DataObjects.GeneratedFileInfo> GeneratedFiles { get; set; } = new();
     [Parameter] public EventCallback<List<DataObjects.GeneratedFileInfo>> GeneratedFilesChanged { get; set; }
     [Parameter] public EventCallback<int> OnRegenerateFile { get; set; }
     [Parameter] public bool ReadOnlyMode { get; set; } = false;
+    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
 
-    private int _selectedFileIndex = 0;
+    private string GetFileIcon(string fileType) => fileType switch {
+        "EFModel" => "fa-database",
+        "DataObjects" => "fa-code",
+        "DataAccess" => "fa-cogs",
+        "Controller" => "fa-server",
+        "RazorPage" => "fa-file-code",
+        "RazorComponent" => "fa-puzzle-piece",
+        _ => "fa-file"
+    };
 
-    private void SelectFile(int index) {
-        _selectedFileIndex = index;
+    private string GetFileIconColor(string fileType) => fileType switch {
+        "EFModel" => "text-warning",
+        "DataObjects" => "text-info",
+        "DataAccess" => "text-success",
+        "Controller" => "text-primary",
+        "RazorPage" or "RazorComponent" => "text-danger",
+        _ => "text-secondary"
+    };
+
+    private string GetShortFileName(string fileName) {
+        // Get just the file name without extension for tab display
+        var name = System.IO.Path.GetFileNameWithoutExtension(fileName);
+        // Truncate if too long
+        return name.Length > 20 ? name.Substring(0, 17) + "..." : name;
     }
 
     private async Task OnFileChanged(DataObjects.GeneratedFileInfo file) {
@@ -189,29 +210,7 @@ dotnet ef database update</code></pre>
         await GeneratedFilesChanged.InvokeAsync(GeneratedFiles);
     }
 
-    private string GetShortFileName(string fileName) {
-        // Get just the file name without extension for tab display
-        var name = System.IO.Path.GetFileNameWithoutExtension(fileName);
-        // Truncate if too long
-        return name.Length > 20 ? name.Substring(0, 17) + "..." : name;
+    private void SelectFile(int index) {
+        _selectedFileIndex = index;
     }
-
-    private string GetFileIcon(string fileType) => fileType switch {
-        "EFModel" => "fa-database",
-        "DataObjects" => "fa-code",
-        "DataAccess" => "fa-cogs",
-        "Controller" => "fa-server",
-        "RazorPage" => "fa-file-code",
-        "RazorComponent" => "fa-puzzle-piece",
-        _ => "fa-file"
-    };
-
-    private string GetFileIconColor(string fileType) => fileType switch {
-        "EFModel" => "text-warning",
-        "DataObjects" => "text-info",
-        "DataAccess" => "text-success",
-        "Controller" => "text-primary",
-        "RazorPage" or "RazorComponent" => "text-danger",
-        _ => "text-secondary"
-    };
 }

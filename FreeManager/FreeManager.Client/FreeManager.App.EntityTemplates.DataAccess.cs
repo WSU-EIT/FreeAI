@@ -12,36 +12,6 @@ namespace FreeManager;
 public static partial class EntityTemplates
 {
     // ============================================================
-    // MULTI-ENTITY DATAACCESS TEMPLATE
-    // ============================================================
-
-    private static string GenerateDataAccessMulti(
-        List<DataObjects.EntityDefinition> entities,
-        List<DataObjects.RelationshipDefinition> relationships,
-        DataObjects.EntityWizardOptions options,
-        string projectName)
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine("using Microsoft.EntityFrameworkCore;");
-        sb.AppendLine();
-        sb.AppendLine($"namespace {projectName};");
-        sb.AppendLine();
-        sb.AppendLine($"// ============================================================================");
-        sb.AppendLine($"// {projectName.ToUpper()} PROJECT DATA ACCESS");
-        sb.AppendLine($"// ============================================================================");
-        sb.AppendLine();
-
-        foreach (var entity in entities)
-        {
-            sb.AppendLine(GenerateDataAccess(entity, relationships, entities, options, projectName));
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
-    }
-
-    // ============================================================
     // SINGLE-ENTITY DATAACCESS TEMPLATE (Relationship-Aware)
     // ============================================================
 
@@ -50,8 +20,7 @@ public static partial class EntityTemplates
         List<DataObjects.RelationshipDefinition> relationships,
         List<DataObjects.EntityDefinition> allEntities,
         DataObjects.EntityWizardOptions options,
-        string projectName)
-    {
+        string projectName){
         var sb = new StringBuilder();
         var pkProp = entity.Properties.FirstOrDefault(p => p.IsPrimaryKey);
         var pkName = pkProp?.Name ?? $"{entity.Name}Id";
@@ -319,6 +288,34 @@ public static partial class EntityTemplates
     {
         return GenerateDataAccess(entity, new List<DataObjects.RelationshipDefinition>(), new List<DataObjects.EntityDefinition>(), options, projectName);
     }
+    // ============================================================
+    // MULTI-ENTITY DATAACCESS TEMPLATE
+    // ============================================================
+
+    private static string GenerateDataAccessMulti(
+        List<DataObjects.EntityDefinition> entities,
+        List<DataObjects.RelationshipDefinition> relationships,
+        DataObjects.EntityWizardOptions options,
+        string projectName){
+        var sb = new StringBuilder();
+
+        sb.AppendLine("using Microsoft.EntityFrameworkCore;");
+        sb.AppendLine();
+        sb.AppendLine($"namespace {projectName};");
+        sb.AppendLine();
+        sb.AppendLine($"// ============================================================================");
+        sb.AppendLine($"// {projectName.ToUpper()} PROJECT DATA ACCESS");
+        sb.AppendLine($"// ============================================================================");
+        sb.AppendLine();
+
+        foreach (var entity in entities)
+        {
+            sb.AppendLine(GenerateDataAccess(entity, relationships, entities, options, projectName));
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
 
     // ============================================================
     // IDATAACCESS INTERFACE PARTIAL GENERATION
@@ -330,8 +327,7 @@ public static partial class EntityTemplates
     private static string GenerateIDataAccessPartial(
         List<DataObjects.EntityDefinition> entities,
         DataObjects.EntityWizardOptions options,
-        string projectName)
-    {
+        string projectName){
         var sb = new StringBuilder();
 
         sb.AppendLine($"namespace {projectName};");

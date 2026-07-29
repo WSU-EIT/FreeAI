@@ -19,7 +19,7 @@
             @* Left rail — dot + connector *@
             <div class="d-flex flex-column align-items-center me-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center @stateClass"
-                     style="width:24px; height:24px; font-size:0.6rem; flex-shrink:0;">
+                        style="width:24px; height:24px; font-size:0.6rem; flex-shrink:0;">
                     <i class="@iconCss"></i>
                 </div>
                 @if (!isLast && ShowConnectorLine) {
@@ -31,8 +31,8 @@
 
             @* Right side — content *@
             <div class="flex-grow-1 pb-1 @(clickable ? "cursor-pointer" : "")"
-                 role="@(clickable ? "button" : null)"
-                 @onclick="@(() => HandleClick(evt))">
+                    role="@(clickable ? "button" : null)"
+                    @onclick="@(() => HandleClick(evt))">
                 <div class="small fw-semibold @textClass @(evt.State == TimelineEventState.Skipped ? "text-decoration-line-through" : "")">
                     @evt.Title
                 </div>
@@ -61,30 +61,36 @@
 </div>
 
 @code {
+    /// <summary>Optional extra CSS class on the outer wrapper.</summary>
+    [Parameter] public string Class { get; set; } = "";
     /// <summary>The list of events to display, top-to-bottom.</summary>
     [Parameter] public List<TimelineEvent> Events { get; set; } = new();
-
-    /// <summary>Show the timestamp under each event title.</summary>
-    [Parameter] public bool ShowTimestamps { get; set; } = true;
-
-    /// <summary>Show the vertical connector line between event dots.</summary>
-    [Parameter] public bool ShowConnectorLine { get; set; } = true;
-
-    /// <summary>DateTime format string for timestamps.</summary>
-    [Parameter] public string TimestampFormat { get; set; } = "MMM d, h:mm tt";
 
     /// <summary>Fired when the user clicks an event row. If not wired, rows are not clickable.</summary>
     [Parameter] public EventCallback<TimelineEvent> OnEventClick { get; set; }
 
-    /// <summary>Optional extra CSS class on the outer wrapper.</summary>
-    [Parameter] public string Class { get; set; } = "";
+    /// <summary>Show the vertical connector line between event dots.</summary>
+    [Parameter] public bool ShowConnectorLine { get; set; } = true;
 
-    private async Task HandleClick(TimelineEvent evt)
-    {
-        if (OnEventClick.HasDelegate) {
-            await OnEventClick.InvokeAsync(evt);
-        }
-    }
+    /// <summary>Show the timestamp under each event title.</summary>
+    [Parameter] public bool ShowTimestamps { get; set; } = true;
+
+    /// <summary>DateTime format string for timestamps.</summary>
+    [Parameter] public string TimestampFormat { get; set; } = "MMM d, h:mm tt";
+
+    private static string DefaultIcon(TimelineEventState state) => state switch {
+        TimelineEventState.Completed => "fa-solid fa-check",
+        TimelineEventState.Error => "fa-solid fa-times",
+        TimelineEventState.InProgress => "fa-solid fa-circle fa-xs",
+        TimelineEventState.Skipped => "fa-solid fa-minus",
+        _ => "fa-solid fa-circle fa-xs text-muted",
+    };
+
+    private static string GetConnectorClass(TimelineEventState state) => state switch {
+        TimelineEventState.Completed => "bg-success",
+        TimelineEventState.Error => "bg-danger",
+        _ => "bg-secondary bg-opacity-25",
+    };
 
     private static string GetStateClass(TimelineEventState state) => state switch {
         TimelineEventState.Completed => "bg-success text-white",
@@ -102,34 +108,27 @@
         _ => "text-muted",
     };
 
-    private static string GetConnectorClass(TimelineEventState state) => state switch {
-        TimelineEventState.Completed => "bg-success",
-        TimelineEventState.Error => "bg-danger",
-        _ => "bg-secondary bg-opacity-25",
-    };
-
-    private static string DefaultIcon(TimelineEventState state) => state switch {
-        TimelineEventState.Completed => "fa-solid fa-check",
-        TimelineEventState.Error => "fa-solid fa-times",
-        TimelineEventState.InProgress => "fa-solid fa-circle fa-xs",
-        TimelineEventState.Skipped => "fa-solid fa-minus",
-        _ => "fa-solid fa-circle fa-xs text-muted",
-    };
+    private async Task HandleClick(TimelineEvent evt)
+    {
+        if (OnEventClick.HasDelegate) {
+            await OnEventClick.InvokeAsync(evt);
+        }
+    }
 
     /// <summary>A single event in the timeline.</summary>
     public class TimelineEvent
     {
-        public string Id { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string? Description { get; set; }
-        public DateTime Timestamp { get; set; }
-        public TimelineEventState State { get; set; } = TimelineEventState.Completed;
-        /// <summary>Optional FontAwesome class. If not set, a sensible default per state is used.</summary>
-        public string? Icon { get; set; }
         /// <summary>Who/what triggered the event (e.g. "System", a user name).</summary>
         public string? Actor { get; set; }
+        public string? Description { get; set; }
         /// <summary>Optional richer detail block, rendered as MarkupString.</summary>
         public string? DetailHtml { get; set; }
+        /// <summary>Optional FontAwesome class. If not set, a sensible default per state is used.</summary>
+        public string? Icon { get; set; }
+        public string Id { get; set; } = "";
+        public TimelineEventState State { get; set; } = TimelineEventState.Completed;
+        public DateTime Timestamp { get; set; }
+        public string Title { get; set; } = "";
     }
 
     /// <summary>State of a timeline event — drives color, icon, and styling.</summary>

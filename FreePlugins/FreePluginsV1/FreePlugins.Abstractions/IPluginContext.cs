@@ -7,14 +7,10 @@
 public interface IPluginContext
 {
     /// <summary>
-    /// Gets the plugin metadata.
+    /// Gets a required service of the specified type.
     /// </summary>
-    PluginMetadata Plugin { get; }
-
-    /// <summary>
-    /// Gets the service provider for resolving dependencies.
-    /// </summary>
-    IServiceProvider Services { get; }
+    /// <exception cref="InvalidOperationException">Thrown when the service is not registered.</exception>
+    T GetRequiredService<T>() where T : class;
 
     /// <summary>
     /// Gets a service of the specified type.
@@ -22,10 +18,11 @@ public interface IPluginContext
     T? GetService<T>() where T : class;
 
     /// <summary>
-    /// Gets a required service of the specified type.
+    /// Log an error message.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when the service is not registered.</exception>
-    T GetRequiredService<T>() where T : class;
+    /// <param name="message">The message to log.</param>
+    /// <param name="exception">Optional exception details.</param>
+    void LogError(string message, Exception? exception = null);
 
     /// <summary>
     /// Log an informational message.
@@ -38,13 +35,15 @@ public interface IPluginContext
     /// </summary>
     /// <param name="message">The message to log.</param>
     void LogWarning(string message);
+    /// <summary>
+    /// Gets the plugin metadata.
+    /// </summary>
+    PluginMetadata Plugin { get; }
 
     /// <summary>
-    /// Log an error message.
+    /// Gets the service provider for resolving dependencies.
     /// </summary>
-    /// <param name="message">The message to log.</param>
-    /// <param name="exception">Optional exception details.</param>
-    void LogError(string message, Exception? exception = null);
+    IServiceProvider Services { get; }
 }
 
 /// <summary>
@@ -53,19 +52,18 @@ public interface IPluginContext
 public interface IPluginAuthContext : IPluginContext
 {
     /// <summary>
-    /// The URL of the request.
+    /// The HTTP context for the request.
     /// </summary>
-    string Url { get; }
+    object HttpContext { get; }
 
     /// <summary>
     /// The tenant ID for the request.
     /// </summary>
     Guid TenantId { get; }
-
     /// <summary>
-    /// The HTTP context for the request.
+    /// The URL of the request.
     /// </summary>
-    object HttpContext { get; }
+    string Url { get; }
 }
 
 /// <summary>

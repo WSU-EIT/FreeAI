@@ -10,43 +10,6 @@ namespace FreeExamples.Server.Controllers;
 public partial class DataController
 {
     /// <summary>
-    /// GetMany: POST null/empty list → all items, or list of IDs → matching items.
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/GetSampleItems")]
-    public ActionResult<List<DataObjects.SampleItem>> GetSampleItems(List<Guid>? ids)
-    {
-        return Ok(da.GetSampleItems(ids));
-    }
-
-    /// <summary>
-    /// SaveMany: POST a list of items. If SampleItemId exists → update, otherwise → insert.
-    /// Caller may provide their own ID or leave it empty for auto-generation.
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/SaveSampleItems")]
-    public async Task<ActionResult<List<DataObjects.SampleItem>>> SaveSampleItems(List<DataObjects.SampleItem> items)
-    {
-        var saved = da.SaveSampleItems(items, CurrentUser);
-
-        // Broadcast each saved item via SignalR so other clients update in real time.
-        foreach (var item in saved) {
-            await da.SignalRUpdate(new DataObjects.SignalRUpdate {
-                TenantId = CurrentUser.TenantId,
-                ItemId = item.SampleItemId,
-                UserId = CurrentUser.UserId,
-                UpdateType = DataObjects.SignalRUpdateType.SampleItemSaved,
-                Message = "saved",
-                Object = item,
-            });
-        }
-
-        return Ok(saved);
-    }
-
-    /// <summary>
     /// DeleteMany: POST a list of IDs to delete. Empty/null → error.
     /// To delete all: GetSampleItems([]) first, then pass IDs.
     /// </summary>
@@ -74,26 +37,14 @@ public partial class DataController
     }
 
     /// <summary>
-    /// Dashboard aggregate data — status counts, category breakdowns, timeline.
-    /// Shared across dashboard, charts, and reporting demo pages.
+    /// Server-side CSV export for download demo.
     /// </summary>
     [HttpGet]
     [Authorize]
-    [Route("~/api/Data/GetSampleDashboard")]
-    public ActionResult<DataObjects.SampleDashboard> GetSampleDashboard()
+    [Route("~/api/Data/GenerateSampleCsvExport")]
+    public ActionResult<DataObjects.SampleFileResponse> GenerateSampleCsvExport()
     {
-        return Ok(da.GetSampleDashboard());
-    }
-
-    /// <summary>
-    /// Filtered, sorted, paginated list of sample items.
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/GetSampleItemsFiltered")]
-    public ActionResult<DataObjects.FilterSampleItems> GetSampleItemsFiltered(DataObjects.FilterSampleItems filter)
-    {
-        return Ok(da.GetSampleItemsFiltered(filter));
+        return Ok(da.GenerateSampleCsvExport());
     }
 
     /// <summary>
@@ -108,14 +59,15 @@ public partial class DataController
     }
 
     /// <summary>
-    /// Server-side CSV export for download demo.
+    /// Dashboard aggregate data — status counts, category breakdowns, timeline.
+    /// Shared across dashboard, charts, and reporting demo pages.
     /// </summary>
     [HttpGet]
     [Authorize]
-    [Route("~/api/Data/GenerateSampleCsvExport")]
-    public ActionResult<DataObjects.SampleFileResponse> GenerateSampleCsvExport()
+    [Route("~/api/Data/GetSampleDashboard")]
+    public ActionResult<DataObjects.SampleDashboard> GetSampleDashboard()
     {
-        return Ok(da.GenerateSampleCsvExport());
+        return Ok(da.GetSampleDashboard());
     }
 
     /// <summary>
@@ -127,5 +79,52 @@ public partial class DataController
     public ActionResult<DataObjects.SampleGraphData> GetSampleGraphData()
     {
         return Ok(da.GetSampleGraphData());
+    }
+    /// <summary>
+    /// GetMany: POST null/empty list → all items, or list of IDs → matching items.
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/GetSampleItems")]
+    public ActionResult<List<DataObjects.SampleItem>> GetSampleItems(List<Guid>? ids)
+    {
+        return Ok(da.GetSampleItems(ids));
+    }
+
+    /// <summary>
+    /// Filtered, sorted, paginated list of sample items.
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/GetSampleItemsFiltered")]
+    public ActionResult<DataObjects.FilterSampleItems> GetSampleItemsFiltered(DataObjects.FilterSampleItems filter)
+    {
+        return Ok(da.GetSampleItemsFiltered(filter));
+    }
+
+    /// <summary>
+    /// SaveMany: POST a list of items. If SampleItemId exists → update, otherwise → insert.
+    /// Caller may provide their own ID or leave it empty for auto-generation.
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/SaveSampleItems")]
+    public async Task<ActionResult<List<DataObjects.SampleItem>>> SaveSampleItems(List<DataObjects.SampleItem> items)
+    {
+        var saved = da.SaveSampleItems(items, CurrentUser);
+
+        // Broadcast each saved item via SignalR so other clients update in real time.
+        foreach (var item in saved) {
+            await da.SignalRUpdate(new DataObjects.SignalRUpdate {
+                TenantId = CurrentUser.TenantId,
+                ItemId = item.SampleItemId,
+                UserId = CurrentUser.UserId,
+                UpdateType = DataObjects.SignalRUpdateType.SampleItemSaved,
+                Message = "saved",
+                Object = item,
+            });
+        }
+
+        return Ok(saved);
     }
 }

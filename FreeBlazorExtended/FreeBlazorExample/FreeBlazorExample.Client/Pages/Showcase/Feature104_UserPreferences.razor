@@ -11,14 +11,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A server-persisted, per-user key-value settings store covering theme, UI density, zoom, language, panel widths, and arbitrary per-entity JSON blobs."
-        WhatEli5="Each user gets their own saved settings that follow them to every device and browser session — like a preferences file that lives on the server, not the browser."
-        Who=@(new[]{ "End users — adjusting their personal theme, zoom, and layout", "Developers — storing per-entity expansion state or sort preferences without a database schema change" })
-        WhenUse=@(new[]{ "Any preference that should survive browser-cache clears", "Per-entity UI state (expanded/collapsed, sort column, column visibility)", "Multi-device users who expect consistent settings everywhere" })
-        WhenNot=@(new[]{ "App-wide config that applies to all users (use tenant settings instead)", "Temporary UI state that resets on navigation (use component-local state)" })
-        Why="Browser localStorage is wiped on cache clears and doesn't roam across devices. Storing prefs server-side means a user's dark-mode setting on their phone matches their laptop automatically."
-        TechNotes=@(new[]{ "UserPreferences table: one row per user, JSON blob column holds the full preferences object", "UserPreferencesService (scoped) — Get, Save, Reset, GetForEntity, SaveForEntity", "Loaded at login and cached in BlazorDataModel; auto-saved via 500 ms debounce in MainLayout.razor", "Entity prefs: dictionary keyed by entity GUID — each entry is an arbitrary JSON string", "Cross-tab sync via SignalR: saving in one tab broadcasts to other open tabs for the same user" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time sync"] = "SignalR (cross-tab)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+            WhatTechnical="A server-persisted, per-user key-value settings store covering theme, UI density, zoom, language, panel widths, and arbitrary per-entity JSON blobs."
+            WhatEli5="Each user gets their own saved settings that follow them to every device and browser session — like a preferences file that lives on the server, not the browser."
+            Who=@(new[]{ "End users — adjusting their personal theme, zoom, and layout", "Developers — storing per-entity expansion state or sort preferences without a database schema change" })
+            WhenUse=@(new[]{ "Any preference that should survive browser-cache clears", "Per-entity UI state (expanded/collapsed, sort column, column visibility)", "Multi-device users who expect consistent settings everywhere" })
+            WhenNot=@(new[]{ "App-wide config that applies to all users (use tenant settings instead)", "Temporary UI state that resets on navigation (use component-local state)" })
+            Why="Browser localStorage is wiped on cache clears and doesn't roam across devices. Storing prefs server-side means a user's dark-mode setting on their phone matches their laptop automatically."
+            TechNotes=@(new[]{ "UserPreferences table: one row per user, JSON blob column holds the full preferences object", "UserPreferencesService (scoped) — Get, Save, Reset, GetForEntity, SaveForEntity", "Loaded at login and cached in BlazorDataModel; auto-saved via 500 ms debounce in MainLayout.razor", "Entity prefs: dictionary keyed by entity GUID — each entry is an arbitrary JSON string", "Cross-tab sync via SignalR: saving in one tab broadcasts to other open tabs for the same user" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time sync"] = "SignalR (cross-tab)", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
 
     <div class="row mt-4">
         <div class="col-lg-4">
@@ -212,6 +212,22 @@
     private Dictionary<string, string> _entityPrefs = new();
     private DateTime? _lastSaved;
 
+    private async Task AddEntityPreference()
+    {
+        var key = $"entity:{Guid.NewGuid()}";
+        var value = new { expanded = true, sortBy = "name" };
+        await PreferencesService.SetPerEntityPreference(_tenantId, _userId, key, value);
+
+        _entityPrefs[key] = System.Text.Json.JsonSerializer.Serialize(value);
+    }
+
+    private async Task AddRecentItem()
+    {
+        var itemId = $"Item-{DateTime.Now.Ticks}";
+        await PreferencesService.AddRecentItem(_tenantId, _userId, itemId);
+        _recentItems = await PreferencesService.GetRecentItems(_tenantId, _userId);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _preferences = await PreferencesService.GetUserPreferences(_tenantId, _userId);
@@ -229,10 +245,13 @@
         catch { }
     }
 
-    private async Task SavePreferences()
+    private async Task RemoveEntityPref(string key)
     {
-        await PreferencesService.SaveUserPreferences(_preferences);
-        _lastSaved = DateTime.Now;
+        _entityPrefs.Remove(key);
+        var perEntity = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(_preferences.PerEntityJson) ?? new();
+        perEntity.Remove(key);
+        _preferences.PerEntityJson = System.Text.Json.JsonSerializer.Serialize(perEntity);
+        await SavePreferences();
     }
 
     private async Task ResetToDefaults()
@@ -242,28 +261,9 @@
         _lastSaved = DateTime.Now;
     }
 
-    private async Task AddRecentItem()
+    private async Task SavePreferences()
     {
-        var itemId = $"Item-{DateTime.Now.Ticks}";
-        await PreferencesService.AddRecentItem(_tenantId, _userId, itemId);
-        _recentItems = await PreferencesService.GetRecentItems(_tenantId, _userId);
-    }
-
-    private async Task AddEntityPreference()
-    {
-        var key = $"entity:{Guid.NewGuid()}";
-        var value = new { expanded = true, sortBy = "name" };
-        await PreferencesService.SetPerEntityPreference(_tenantId, _userId, key, value);
-
-        _entityPrefs[key] = System.Text.Json.JsonSerializer.Serialize(value);
-    }
-
-    private async Task RemoveEntityPref(string key)
-    {
-        _entityPrefs.Remove(key);
-        var perEntity = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, System.Text.Json.JsonElement>>(_preferences.PerEntityJson) ?? new();
-        perEntity.Remove(key);
-        _preferences.PerEntityJson = System.Text.Json.JsonSerializer.Serialize(perEntity);
-        await SavePreferences();
+        await PreferencesService.SaveUserPreferences(_preferences);
+        _lastSaved = DateTime.Now;
     }
 }

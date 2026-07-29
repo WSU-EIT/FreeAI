@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Auto-Refresh Polling"
-                     Description="A timer periodically refreshes data from the server (e.g., every 30 seconds). The interval is configurable. A 'Last refreshed: X seconds ago' indicator shows data freshness. This is the dashboard auto-refresh pattern."
-                     Code="@_codeAutoRefresh" />
+                    Description="A timer periodically refreshes data from the server (e.g., every 30 seconds). The interval is configurable. A 'Last refreshed: X seconds ago' indicator shows data freshness. This is the dashboard auto-refresh pattern."
+                    Code="@_codeAutoRefresh" />
             <InfoTip Title="Refresh Interval Selector"
-                     Description="A dropdown lets users choose the refresh interval (5s, 15s, 30s, 60s, Off). Changing the interval resets the timer. 'Off' stops auto-refresh entirely. This gives users control over update frequency vs performance."
-                     Code="@_codeIntervalSelector" />
+                    Description="A dropdown lets users choose the refresh interval (5s, 15s, 30s, 60s, Off). Changing the interval resets the timer. 'Off' stops auto-refresh entirely. This gives users control over update frequency vs performance."
+                    Code="@_codeIntervalSelector" />
             <InfoTip Title="Loading Spinner During Refresh"
-                     Description="While data is refreshing, a small spinner (spinner-border spinner-border-sm) appears next to the last-refreshed text. This indicates background activity without blocking the UI. The data table stays visible and interactive during refresh."
-                     Code="@_codeRefreshSpinner" />
+                    Description="While data is refreshing, a small spinner (spinner-border spinner-border-sm) appears next to the last-refreshed text. This indicates background activity without blocking the UI. The data table stays visible and interactive during refresh."
+                    Code="@_codeRefreshSpinner" />
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="small text-muted">Last refresh: <strong>@_lastRefresh?.ToString("h:mm:ss tt")</strong> · Refresh #@_refreshCount</div>

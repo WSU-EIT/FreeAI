@@ -4,6 +4,16 @@ namespace FreeExamples.Client;
 
 public static partial class Helpers
 {
+    private static DataObjects.MenuItem MakeSubItem(string title, string pageName, string route, string? icon = null)
+    {
+        return new DataObjects.MenuItem {
+            Title = title,
+            Icon = icon ?? "",
+            PageNames = new List<string> { pageName },
+            url = Helpers.BuildUrl(route),
+            AppAdminOnly = false,
+        };
+    }
     public static List<DataObjects.MenuItem> MyMenuItemsApp {
         get {
             var output = new List<DataObjects.MenuItem>();
@@ -214,17 +224,6 @@ public static partial class Helpers
 
             return output;
         }
-    }
-
-    private static DataObjects.MenuItem MakeSubItem(string title, string pageName, string route, string? icon = null)
-    {
-        return new DataObjects.MenuItem {
-            Title = title,
-            Icon = icon ?? "",
-            PageNames = new List<string> { pageName },
-            url = Helpers.BuildUrl(route),
-            AppAdminOnly = false,
-        };
     }
 
 }

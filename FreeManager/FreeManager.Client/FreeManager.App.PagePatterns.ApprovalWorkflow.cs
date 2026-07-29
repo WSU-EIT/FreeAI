@@ -21,8 +21,7 @@ public static partial class PagePatterns
     /// </summary>
     public static List<(string FileName, string FileType, string Content)> GetApprovalWorkflowFiles(
         string projectName,
-        DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.EntityDefinition? entity = null){
         List<(string, string, string)> files = new();
         string name = entity?.Name ?? projectName;
 
@@ -34,6 +33,216 @@ public static partial class PagePatterns
 
         return files;
     }
+
+    // ============================================================
+    // ApprovalActions.App.razor - Approve/Reject/Request Changes buttons
+    // ============================================================
+    private static string GetApprovalWorkflow_ApprovalActions(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - ApprovalActions.App.razor *@
+@* Approval Workflow Pattern - Action buttons with role-based visibility *@
+
+<div class=""approval-actions"">
+    <p class=""text-muted mb-3"">
+        <i class=""fa-solid fa-info-circle me-1""></i>
+        You are the designated approver for this step. Please review and take action.
+    </p>
+
+    <!-- Comment Field -->
+    <div class=""mb-3"">
+        <label class=""form-label"">Comment <span class=""text-muted"">(optional for approval, required for rejection)</span></label>
+        <textarea class=""form-control"" rows=""3""
+                  placeholder=""Add your comments here...""
+                  @bind=""_comment""></textarea>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class=""d-grid gap-2"">
+        <button class=""btn btn-success btn-lg"" @onclick=""Approve"" disabled=""@_processing"">
+            @if (_processing && _currentAction == ""approve"")
+            {{
+                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
+            }}
+            else
+            {{
+                <i class=""fa-solid fa-check-circle me-2""></i>
+            }}
+            Approve
+        </button>
+
+        <button class=""btn btn-warning"" @onclick=""RequestChanges"" disabled=""@_processing"">
+            @if (_processing && _currentAction == ""changes"")
+            {{
+                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
+            }}
+            else
+            {{
+                <i class=""fa-solid fa-edit me-2""></i>
+            }}
+            Request Changes
+        </button>
+
+        <button class=""btn btn-danger"" @onclick=""Reject"" disabled=""@_processing"">
+            @if (_processing && _currentAction == ""reject"")
+            {{
+                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
+            }}
+            else
+            {{
+                <i class=""fa-solid fa-times-circle me-2""></i>
+            }}
+            Reject
+        </button>
+    </div>
+
+    <!-- Delegation Option -->
+    <hr class=""my-3"" />
+    <div class=""text-center"">
+        <button class=""btn btn-link btn-sm text-muted"" @onclick=""ToggleDelegation"">
+            <i class=""fa-solid fa-user-tag me-1""></i>Delegate to someone else
+        </button>
+    </div>
+
+    @if (_showDelegation)
+    {{
+        <div class=""mt-3 p-3 bg-light rounded"">
+            <label class=""form-label"">Select delegate</label>
+            <select class=""form-select mb-2"" @bind=""_delegateTo"">
+                <option value="""">Choose a person...</option>
+                @foreach (var user in _availableDelegates)
+                {{
+                    <option value=""@user.Id"">@user.Name - @user.Role</option>
+                }}
+            </select>
+            <button class=""btn btn-outline-primary btn-sm"" @onclick=""Delegate"" disabled=""@(string.IsNullOrEmpty(_delegateTo))"">
+                <i class=""fa-solid fa-share me-1""></i>Delegate Approval
+            </button>
+        </div>
+    }}
+
+    <!-- Validation Message -->
+    @if (!string.IsNullOrEmpty(_validationMessage))
+    {{
+        <div class=""alert alert-warning mt-3 mb-0"">
+            <i class=""fa-solid fa-exclamation-triangle me-1""></i>@_validationMessage
+        </div>
+    }}
+</div>
+
+@code {{
+    [Parameter] public ApprovalItem Item {{ get; set; }} = new();
+    [Parameter] public EventCallback<ApprovalActionRequest> OnApprove {{ get; set; }}
+    [Parameter] public EventCallback<ApprovalActionRequest> OnReject {{ get; set; }}
+    [Parameter] public EventCallback<ApprovalActionRequest> OnRequestChanges {{ get; set; }}
+
+    private string _comment = string.Empty;
+    private bool _processing = false;
+    private string _currentAction = string.Empty;
+    private string _validationMessage = string.Empty;
+    private bool _showDelegation = false;
+    private string _delegateTo = string.Empty;
+    private List<DelegateUser> _availableDelegates = new()
+    {{
+        new() {{ Id = ""1"", Name = ""John Manager"", Role = ""Department Head"" }},
+        new() {{ Id = ""2"", Name = ""Jane Director"", Role = ""Finance Director"" }},
+        new() {{ Id = ""3"", Name = ""Bob Supervisor"", Role = ""Team Lead"" }}
+    }};
+
+    private async Task Approve()
+    {{
+        _validationMessage = string.Empty;
+        _processing = true;
+        _currentAction = ""approve"";
+        StateHasChanged();
+
+        var request = new ApprovalActionRequest
+        {{
+            ApprovalId = Item.Id,
+            Comment = _comment
+        }};
+
+        await OnApprove.InvokeAsync(request);
+        _processing = false;
+        _comment = string.Empty;
+    }}
+
+    private async Task Reject()
+    {{
+        if (string.IsNullOrWhiteSpace(_comment))
+        {{
+            _validationMessage = ""Please provide a reason for rejection."";
+            return;
+        }}
+
+        _validationMessage = string.Empty;
+        _processing = true;
+        _currentAction = ""reject"";
+        StateHasChanged();
+
+        var request = new ApprovalActionRequest
+        {{
+            ApprovalId = Item.Id,
+            Comment = _comment
+        }};
+
+        await OnReject.InvokeAsync(request);
+        _processing = false;
+        _comment = string.Empty;
+    }}
+
+    private async Task RequestChanges()
+    {{
+        if (string.IsNullOrWhiteSpace(_comment))
+        {{
+            _validationMessage = ""Please specify what changes are needed."";
+            return;
+        }}
+
+        _validationMessage = string.Empty;
+        _processing = true;
+        _currentAction = ""changes"";
+        StateHasChanged();
+
+        var request = new ApprovalActionRequest
+        {{
+            ApprovalId = Item.Id,
+            Comment = _comment
+        }};
+
+        await OnRequestChanges.InvokeAsync(request);
+        _processing = false;
+        _comment = string.Empty;
+    }}
+
+    private void ToggleDelegation()
+    {{
+        _showDelegation = !_showDelegation;
+    }}
+
+    private async Task Delegate()
+    {{
+        // Delegation logic would go here
+        _showDelegation = false;
+        _delegateTo = string.Empty;
+    }}
+
+    public class ApprovalItem
+    {{
+        public Guid Id {{ get; set; }}
+    }}
+
+    public class ApprovalActionRequest
+    {{
+        public Guid ApprovalId {{ get; set; }}
+        public string Comment {{ get; set; }} = string.Empty;
+    }}
+
+    public class DelegateUser
+    {{
+        public string Id {{ get; set; }} = string.Empty;
+        public string Name {{ get; set; }} = string.Empty;
+        public string Role {{ get; set; }} = string.Empty;
+    }}
+}}
+";
 
     // ============================================================
     // ApprovalDetail.App.razor - Main detail view with workflow info
@@ -371,123 +580,6 @@ public static partial class PagePatterns
 ";
 
     // ============================================================
-    // WorkflowProgress.App.razor - Visual workflow step indicator
-    // ============================================================
-    private static string GetApprovalWorkflow_WorkflowProgress(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - WorkflowProgress.App.razor *@
-@* Approval Workflow Pattern - Visual step indicator *@
-
-<div class=""workflow-progress"">
-    <div class=""d-flex justify-content-between position-relative"">
-        <!-- Progress Line -->
-        <div class=""workflow-line"" style=""position: absolute; top: 20px; left: 40px; right: 40px; height: 3px; background: #e9ecef; z-index: 0;"">
-            <div class=""workflow-line-progress"" style=""height: 100%; background: #0d6efd; width: @(GetProgressPercentage())%;""></div>
-        </div>
-
-        @foreach (var step in Steps)
-        {{
-            <div class=""workflow-step text-center position-relative"" style=""z-index: 1; flex: 1;"">
-                <div class=""workflow-step-icon mx-auto mb-2 rounded-circle d-flex align-items-center justify-content-center @GetStepClass(step)""
-                     style=""width: 40px; height: 40px; border: 3px solid;"">
-                    @if (step.Status == ""Completed"")
-                    {{
-                        <i class=""fa-solid fa-check""></i>
-                    }}
-                    else if (step.Status == ""Rejected"")
-                    {{
-                        <i class=""fa-solid fa-times""></i>
-                    }}
-                    else if (step.StepNumber == CurrentStep)
-                    {{
-                        <i class=""fa-solid fa-hourglass-half""></i>
-                    }}
-                    else
-                    {{
-                        <span>@step.StepNumber</span>
-                    }}
-                </div>
-                <div class=""workflow-step-label"">
-                    <div class=""fw-semibold small"">@step.Name</div>
-                    <div class=""text-muted small"">@step.Approver</div>
-                    @if (step.CompletedAt.HasValue)
-                    {{
-                        <div class=""text-success small"">
-                            <i class=""fa-solid fa-check me-1""></i>@step.CompletedAt?.ToString(""MMM dd"")
-                        </div>
-                    }}
-                    else if (step.StepNumber == CurrentStep)
-                    {{
-                        <div class=""text-primary small"">
-                            <i class=""fa-solid fa-arrow-right me-1""></i>Awaiting
-                        </div>
-                    }}
-                </div>
-            </div>
-        }}
-    </div>
-</div>
-
-<style>
-    .workflow-step-icon {{
-        transition: all 0.3s ease;
-    }}
-    .workflow-step-icon.step-completed {{
-        background-color: #198754;
-        border-color: #198754 !important;
-        color: white;
-    }}
-    .workflow-step-icon.step-current {{
-        background-color: #0d6efd;
-        border-color: #0d6efd !important;
-        color: white;
-        animation: pulse 2s infinite;
-    }}
-    .workflow-step-icon.step-rejected {{
-        background-color: #dc3545;
-        border-color: #dc3545 !important;
-        color: white;
-    }}
-    .workflow-step-icon.step-pending {{
-        background-color: white;
-        border-color: #dee2e6 !important;
-        color: #6c757d;
-    }}
-    @@keyframes pulse {{
-        0%, 100% {{ box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }}
-        50% {{ box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }}
-    }}
-</style>
-
-@code {{
-    [Parameter] public List<WorkflowStep> Steps {{ get; set; }} = new();
-    [Parameter] public int CurrentStep {{ get; set; }}
-
-    private string GetStepClass(WorkflowStep step)
-    {{
-        if (step.Status == ""Completed"") return ""step-completed"";
-        if (step.Status == ""Rejected"") return ""step-rejected"";
-        if (step.StepNumber == CurrentStep) return ""step-current"";
-        return ""step-pending"";
-    }}
-
-    private int GetProgressPercentage()
-    {{
-        if (Steps.Count == 0) return 0;
-        var completedSteps = Steps.Count(s => s.Status == ""Completed"");
-        return (int)((double)completedSteps / Steps.Count * 100);
-    }}
-
-    public class WorkflowStep
-    {{
-        public int StepNumber {{ get; set; }}
-        public string Name {{ get; set; }} = string.Empty;
-        public string Approver {{ get; set; }} = string.Empty;
-        public string Status {{ get; set; }} = ""Pending"";
-        public DateTime? CompletedAt {{ get; set; }}
-    }}
-}}
-";
-
-    // ============================================================
     // ApprovalHistory.App.razor - Timeline of approval actions
     // ============================================================
     private static string GetApprovalWorkflow_ApprovalHistory(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - ApprovalHistory.App.razor *@
@@ -620,216 +712,6 @@ else
         public string User {{ get; set; }} = string.Empty;
         public string Comment {{ get; set; }} = string.Empty;
         public string StepName {{ get; set; }} = string.Empty;
-    }}
-}}
-";
-
-    // ============================================================
-    // ApprovalActions.App.razor - Approve/Reject/Request Changes buttons
-    // ============================================================
-    private static string GetApprovalWorkflow_ApprovalActions(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - ApprovalActions.App.razor *@
-@* Approval Workflow Pattern - Action buttons with role-based visibility *@
-
-<div class=""approval-actions"">
-    <p class=""text-muted mb-3"">
-        <i class=""fa-solid fa-info-circle me-1""></i>
-        You are the designated approver for this step. Please review and take action.
-    </p>
-
-    <!-- Comment Field -->
-    <div class=""mb-3"">
-        <label class=""form-label"">Comment <span class=""text-muted"">(optional for approval, required for rejection)</span></label>
-        <textarea class=""form-control"" rows=""3""
-                  placeholder=""Add your comments here...""
-                  @bind=""_comment""></textarea>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class=""d-grid gap-2"">
-        <button class=""btn btn-success btn-lg"" @onclick=""Approve"" disabled=""@_processing"">
-            @if (_processing && _currentAction == ""approve"")
-            {{
-                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
-            }}
-            else
-            {{
-                <i class=""fa-solid fa-check-circle me-2""></i>
-            }}
-            Approve
-        </button>
-
-        <button class=""btn btn-warning"" @onclick=""RequestChanges"" disabled=""@_processing"">
-            @if (_processing && _currentAction == ""changes"")
-            {{
-                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
-            }}
-            else
-            {{
-                <i class=""fa-solid fa-edit me-2""></i>
-            }}
-            Request Changes
-        </button>
-
-        <button class=""btn btn-danger"" @onclick=""Reject"" disabled=""@_processing"">
-            @if (_processing && _currentAction == ""reject"")
-            {{
-                <i class=""fa-solid fa-spinner fa-spin me-2""></i>
-            }}
-            else
-            {{
-                <i class=""fa-solid fa-times-circle me-2""></i>
-            }}
-            Reject
-        </button>
-    </div>
-
-    <!-- Delegation Option -->
-    <hr class=""my-3"" />
-    <div class=""text-center"">
-        <button class=""btn btn-link btn-sm text-muted"" @onclick=""ToggleDelegation"">
-            <i class=""fa-solid fa-user-tag me-1""></i>Delegate to someone else
-        </button>
-    </div>
-
-    @if (_showDelegation)
-    {{
-        <div class=""mt-3 p-3 bg-light rounded"">
-            <label class=""form-label"">Select delegate</label>
-            <select class=""form-select mb-2"" @bind=""_delegateTo"">
-                <option value="""">Choose a person...</option>
-                @foreach (var user in _availableDelegates)
-                {{
-                    <option value=""@user.Id"">@user.Name - @user.Role</option>
-                }}
-            </select>
-            <button class=""btn btn-outline-primary btn-sm"" @onclick=""Delegate"" disabled=""@(string.IsNullOrEmpty(_delegateTo))"">
-                <i class=""fa-solid fa-share me-1""></i>Delegate Approval
-            </button>
-        </div>
-    }}
-
-    <!-- Validation Message -->
-    @if (!string.IsNullOrEmpty(_validationMessage))
-    {{
-        <div class=""alert alert-warning mt-3 mb-0"">
-            <i class=""fa-solid fa-exclamation-triangle me-1""></i>@_validationMessage
-        </div>
-    }}
-</div>
-
-@code {{
-    [Parameter] public ApprovalItem Item {{ get; set; }} = new();
-    [Parameter] public EventCallback<ApprovalActionRequest> OnApprove {{ get; set; }}
-    [Parameter] public EventCallback<ApprovalActionRequest> OnReject {{ get; set; }}
-    [Parameter] public EventCallback<ApprovalActionRequest> OnRequestChanges {{ get; set; }}
-
-    private string _comment = string.Empty;
-    private bool _processing = false;
-    private string _currentAction = string.Empty;
-    private string _validationMessage = string.Empty;
-    private bool _showDelegation = false;
-    private string _delegateTo = string.Empty;
-    private List<DelegateUser> _availableDelegates = new()
-    {{
-        new() {{ Id = ""1"", Name = ""John Manager"", Role = ""Department Head"" }},
-        new() {{ Id = ""2"", Name = ""Jane Director"", Role = ""Finance Director"" }},
-        new() {{ Id = ""3"", Name = ""Bob Supervisor"", Role = ""Team Lead"" }}
-    }};
-
-    private async Task Approve()
-    {{
-        _validationMessage = string.Empty;
-        _processing = true;
-        _currentAction = ""approve"";
-        StateHasChanged();
-
-        var request = new ApprovalActionRequest
-        {{
-            ApprovalId = Item.Id,
-            Comment = _comment
-        }};
-
-        await OnApprove.InvokeAsync(request);
-        _processing = false;
-        _comment = string.Empty;
-    }}
-
-    private async Task Reject()
-    {{
-        if (string.IsNullOrWhiteSpace(_comment))
-        {{
-            _validationMessage = ""Please provide a reason for rejection."";
-            return;
-        }}
-
-        _validationMessage = string.Empty;
-        _processing = true;
-        _currentAction = ""reject"";
-        StateHasChanged();
-
-        var request = new ApprovalActionRequest
-        {{
-            ApprovalId = Item.Id,
-            Comment = _comment
-        }};
-
-        await OnReject.InvokeAsync(request);
-        _processing = false;
-        _comment = string.Empty;
-    }}
-
-    private async Task RequestChanges()
-    {{
-        if (string.IsNullOrWhiteSpace(_comment))
-        {{
-            _validationMessage = ""Please specify what changes are needed."";
-            return;
-        }}
-
-        _validationMessage = string.Empty;
-        _processing = true;
-        _currentAction = ""changes"";
-        StateHasChanged();
-
-        var request = new ApprovalActionRequest
-        {{
-            ApprovalId = Item.Id,
-            Comment = _comment
-        }};
-
-        await OnRequestChanges.InvokeAsync(request);
-        _processing = false;
-        _comment = string.Empty;
-    }}
-
-    private void ToggleDelegation()
-    {{
-        _showDelegation = !_showDelegation;
-    }}
-
-    private async Task Delegate()
-    {{
-        // Delegation logic would go here
-        _showDelegation = false;
-        _delegateTo = string.Empty;
-    }}
-
-    public class ApprovalItem
-    {{
-        public Guid Id {{ get; set; }}
-    }}
-
-    public class ApprovalActionRequest
-    {{
-        public Guid ApprovalId {{ get; set; }}
-        public string Comment {{ get; set; }} = string.Empty;
-    }}
-
-    public class DelegateUser
-    {{
-        public string Id {{ get; set; }} = string.Empty;
-        public string Name {{ get; set; }} = string.Empty;
-        public string Role {{ get; set; }} = string.Empty;
     }}
 }}
 ";
@@ -1190,6 +1072,123 @@ else
         public int CurrentStep {{ get; set; }}
         public int TotalSteps {{ get; set; }}
         public bool RequiresMyAction {{ get; set; }}
+    }}
+}}
+";
+
+    // ============================================================
+    // WorkflowProgress.App.razor - Visual workflow step indicator
+    // ============================================================
+    private static string GetApprovalWorkflow_WorkflowProgress(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - WorkflowProgress.App.razor *@
+@* Approval Workflow Pattern - Visual step indicator *@
+
+<div class=""workflow-progress"">
+    <div class=""d-flex justify-content-between position-relative"">
+        <!-- Progress Line -->
+        <div class=""workflow-line"" style=""position: absolute; top: 20px; left: 40px; right: 40px; height: 3px; background: #e9ecef; z-index: 0;"">
+            <div class=""workflow-line-progress"" style=""height: 100%; background: #0d6efd; width: @(GetProgressPercentage())%;""></div>
+        </div>
+
+        @foreach (var step in Steps)
+        {{
+            <div class=""workflow-step text-center position-relative"" style=""z-index: 1; flex: 1;"">
+                <div class=""workflow-step-icon mx-auto mb-2 rounded-circle d-flex align-items-center justify-content-center @GetStepClass(step)""
+                     style=""width: 40px; height: 40px; border: 3px solid;"">
+                    @if (step.Status == ""Completed"")
+                    {{
+                        <i class=""fa-solid fa-check""></i>
+                    }}
+                    else if (step.Status == ""Rejected"")
+                    {{
+                        <i class=""fa-solid fa-times""></i>
+                    }}
+                    else if (step.StepNumber == CurrentStep)
+                    {{
+                        <i class=""fa-solid fa-hourglass-half""></i>
+                    }}
+                    else
+                    {{
+                        <span>@step.StepNumber</span>
+                    }}
+                </div>
+                <div class=""workflow-step-label"">
+                    <div class=""fw-semibold small"">@step.Name</div>
+                    <div class=""text-muted small"">@step.Approver</div>
+                    @if (step.CompletedAt.HasValue)
+                    {{
+                        <div class=""text-success small"">
+                            <i class=""fa-solid fa-check me-1""></i>@step.CompletedAt?.ToString(""MMM dd"")
+                        </div>
+                    }}
+                    else if (step.StepNumber == CurrentStep)
+                    {{
+                        <div class=""text-primary small"">
+                            <i class=""fa-solid fa-arrow-right me-1""></i>Awaiting
+                        </div>
+                    }}
+                </div>
+            </div>
+        }}
+    </div>
+</div>
+
+<style>
+    .workflow-step-icon {{
+        transition: all 0.3s ease;
+    }}
+    .workflow-step-icon.step-completed {{
+        background-color: #198754;
+        border-color: #198754 !important;
+        color: white;
+    }}
+    .workflow-step-icon.step-current {{
+        background-color: #0d6efd;
+        border-color: #0d6efd !important;
+        color: white;
+        animation: pulse 2s infinite;
+    }}
+    .workflow-step-icon.step-rejected {{
+        background-color: #dc3545;
+        border-color: #dc3545 !important;
+        color: white;
+    }}
+    .workflow-step-icon.step-pending {{
+        background-color: white;
+        border-color: #dee2e6 !important;
+        color: #6c757d;
+    }}
+    @@keyframes pulse {{
+        0%, 100% {{ box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }}
+        50% {{ box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }}
+    }}
+</style>
+
+@code {{
+    [Parameter] public List<WorkflowStep> Steps {{ get; set; }} = new();
+    [Parameter] public int CurrentStep {{ get; set; }}
+
+    private string GetStepClass(WorkflowStep step)
+    {{
+        if (step.Status == ""Completed"") return ""step-completed"";
+        if (step.Status == ""Rejected"") return ""step-rejected"";
+        if (step.StepNumber == CurrentStep) return ""step-current"";
+        return ""step-pending"";
+    }}
+
+    private int GetProgressPercentage()
+    {{
+        if (Steps.Count == 0) return 0;
+        var completedSteps = Steps.Count(s => s.Status == ""Completed"");
+        return (int)((double)completedSteps / Steps.Count * 100);
+    }}
+
+    public class WorkflowStep
+    {{
+        public int StepNumber {{ get; set; }}
+        public string Name {{ get; set; }} = string.Empty;
+        public string Approver {{ get; set; }} = string.Empty;
+        public string Status {{ get; set; }} = ""Pending"";
+        public DateTime? CompletedAt {{ get; set; }}
     }}
 }}
 ";

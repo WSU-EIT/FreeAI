@@ -9,11 +9,11 @@ namespace FreeGLBA;
 /// <summary>Glba External API interface extensions.</summary>
 public partial interface IDataAccess
 {
-    /// <summary>Process a single event from external source.</summary>
-    Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(DataObjects.GlbaEventRequest request, Guid sourceSystemId);
+    /// <summary>Get access events for a specific subject by external ID.</summary>
+    Task<List<DataObjects.AccessEvent>> GetAccessEventsBySubjectAsync(string subjectId, int limit = 100);
 
-    /// <summary>Process a batch of events from external source.</summary>
-    Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId);
+    /// <summary>Get accessor (user) statistics with filtering and pagination.</summary>
+    Task<DataObjects.AccessorFilterResult> GetAccessorsAsync(DataObjects.AccessorFilter filter);
 
     /// <summary>Get dashboard statistics.</summary>
     Task<DataObjects.GlbaStats> GetGlbaStatsAsync();
@@ -21,14 +21,13 @@ public partial interface IDataAccess
     /// <summary>Get recent events for dashboard feed.</summary>
     Task<List<DataObjects.AccessEvent>> GetRecentAccessEventsAsync(int limit = 50);
 
-    /// <summary>Get access events for a specific subject by external ID.</summary>
-    Task<List<DataObjects.AccessEvent>> GetAccessEventsBySubjectAsync(string subjectId, int limit = 100);
-
-    /// <summary>Get accessor (user) statistics with filtering and pagination.</summary>
-    Task<DataObjects.AccessorFilterResult> GetAccessorsAsync(DataObjects.AccessorFilter filter);
-
     /// <summary>Get top accessors for dashboard display.</summary>
     Task<List<DataObjects.AccessorSummary>> GetTopAccessorsAsync(int limit = 10);
+
+    /// <summary>Process a batch of events from external source.</summary>
+    Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId);
+    /// <summary>Process a single event from external source.</summary>
+    Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(DataObjects.GlbaEventRequest request, Guid sourceSystemId);
 }
 
 public partial class DataAccess
@@ -37,8 +36,7 @@ public partial class DataAccess
 
     /// <summary>Process a single event from external source.</summary>
     public async Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(
-        DataObjects.GlbaEventRequest request, Guid sourceSystemId)
-    {
+        DataObjects.GlbaEventRequest request, Guid sourceSystemId){
         var response = new DataObjects.GlbaEventResponse
         {
             ReceivedAt = DateTime.UtcNow
@@ -155,8 +153,7 @@ public partial class DataAccess
 
     /// <summary>Process a batch of events from external source.</summary>
     public async Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(
-        List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId)
-    {
+        List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId){
         var response = new DataObjects.GlbaBatchResponse();
 
         for (int i = 0; i < requests.Count; i++)

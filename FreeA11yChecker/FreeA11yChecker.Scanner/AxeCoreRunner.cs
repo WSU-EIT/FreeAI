@@ -34,14 +34,123 @@ public static class AxeCoreRunner
     }
 
     /// <summary>
-    /// Result container for axe-core analysis including violations, pass/incomplete/inapplicable counts.
+    /// Extracts color contrast ratio data from axe-core node.any[].data.
     /// </summary>
-    public class AxeResult
+    private static void ExtractContrastData(JsonElement node, A11yIssue issue)
     {
-        public List<A11yIssue> Issues { get; set; } = new();
-        public int PassCount { get; set; }
-        public int IncompleteCount { get; set; }
-        public int InapplicableCount { get; set; }
+        try {
+            if (!node.TryGetProperty("any", out JsonElement anyEl)) return;
+            foreach (JsonElement check in anyEl.EnumerateArray()) {
+                if (!check.TryGetProperty("data", out JsonElement data)) continue;
+                if (data.ValueKind != JsonValueKind.Object) continue;
+
+                if (data.TryGetProperty("fgColor", out JsonElement fg))
+                    issue.ContrastForeground = fg.GetString();
+                if (data.TryGetProperty("bgColor", out JsonElement bg))
+                    issue.ContrastBackground = bg.GetString();
+                if (data.TryGetProperty("contrastRatio", out JsonElement cr) && cr.ValueKind == JsonValueKind.Number)
+                    issue.ContrastRatio = cr.GetDouble();
+                if (data.TryGetProperty("expectedContrastRatio", out JsonElement ecr)) {
+                    // Can be string like "4.5:1" or a number.
+                    if (ecr.ValueKind == JsonValueKind.Number)
+                        issue.ContrastExpected = ecr.GetDouble();
+                    else if (ecr.ValueKind == JsonValueKind.String) {
+                        string ecrStr = ecr.GetString() ?? "";
+                        if (ecrStr.Contains(':')) ecrStr = ecrStr.Split(':')[0];
+                        if (double.TryParse(ecrStr, System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out double ecrVal))
+                            issue.ContrastExpected = ecrVal;
+                    }
+                }
+                if (data.TryGetProperty("fontSize", out JsonElement fs))
+                    issue.ContrastFontSize = fs.ToString();
+                if (data.TryGetProperty("fontWeight", out JsonElement fw))
+                    issue.ContrastFontWeight = fw.ToString();
+                break; // Only need the first check with data.
+            }
+        } catch {
+            // Best-effort contrast data extraction.
+        }
+    }
+
+    /// <summary>
+    /// Draws colored outlines on violating elements with severity-based colors
+    /// and a summary banner at the top of the page.
+    /// </summary>
+    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
+    {
+        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
+            v.Selector,
+            v.Severity,
+            v.RuleId,
+            v.Message,
+        }));
+
+        await page.EvaluateAsync(@"(data) => {
+            const violations = JSON.parse(data);
+            const colorMap = {
+                critical: '#d32f2f',
+                serious:  '#e65100',
+                moderate: '#f9a825',
+                minor:    '#1565c0'
+            };
+
+            // Draw outlines on violating elements.
+            violations.forEach(v => {
+                if (!v.Selector) return;
+                try {
+                    const el = document.querySelector(v.Selector);
+                    if (el) {
+                        const color = colorMap[v.Severity] || '#f9a825';
+                        el.style.outline = '3px solid ' + color;
+                        el.style.outlineOffset = '2px';
+                        el.setAttribute('data-a11y-overlay', 'axe');
+                    }
+                } catch(e) { /* selector may be invalid */ }
+            });
+
+            // Summary banner.
+            const banner = document.createElement('div');
+            banner.id = 'a11y-axe-overlay-banner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
+                'background:#1a1a2e;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
+                'display:flex;gap:16px;align-items:center;';
+
+            const counts = { critical: 0, serious: 0, moderate: 0, minor: 0 };
+            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
+
+            banner.innerHTML = '<strong>axe-core</strong> ' +
+                Object.entries(counts).filter(([,c]) => c > 0)
+                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
+                    .join(' | ');
+
+            document.body.prepend(banner);
+        }", violationsJson);
+    }
+
+    /// <summary>
+    /// Removes the axe overlay outlines and summary banner from the page.
+    /// </summary>
+    public static async Task RemoveOverlay(IPage page)
+    {
+        await page.EvaluateAsync(@"() => {
+            document.querySelectorAll('[data-a11y-overlay=""axe""]').forEach(el => {
+                el.style.outline = '';
+                el.style.outlineOffset = '';
+                el.removeAttribute('data-a11y-overlay');
+            });
+            const banner = document.getElementById('a11y-axe-overlay-banner');
+            if (banner) banner.remove();
+        }");
+    }
+
+    /// <summary>
+    /// Legacy wrapper — calls RunFull and returns just the issues list.
+    /// </summary>
+    public static async Task<List<A11yIssue>> Run(IPage page, string cacheDir)
+    {
+        var result = await RunFull(page, cacheDir);
+        return result.Issues;
     }
 
     /// <summary>
@@ -152,122 +261,13 @@ public static class AxeCoreRunner
     }
 
     /// <summary>
-    /// Extracts color contrast ratio data from axe-core node.any[].data.
+    /// Result container for axe-core analysis including violations, pass/incomplete/inapplicable counts.
     /// </summary>
-    private static void ExtractContrastData(JsonElement node, A11yIssue issue)
+    public class AxeResult
     {
-        try {
-            if (!node.TryGetProperty("any", out JsonElement anyEl)) return;
-            foreach (JsonElement check in anyEl.EnumerateArray()) {
-                if (!check.TryGetProperty("data", out JsonElement data)) continue;
-                if (data.ValueKind != JsonValueKind.Object) continue;
-
-                if (data.TryGetProperty("fgColor", out JsonElement fg))
-                    issue.ContrastForeground = fg.GetString();
-                if (data.TryGetProperty("bgColor", out JsonElement bg))
-                    issue.ContrastBackground = bg.GetString();
-                if (data.TryGetProperty("contrastRatio", out JsonElement cr) && cr.ValueKind == JsonValueKind.Number)
-                    issue.ContrastRatio = cr.GetDouble();
-                if (data.TryGetProperty("expectedContrastRatio", out JsonElement ecr)) {
-                    // Can be string like "4.5:1" or a number.
-                    if (ecr.ValueKind == JsonValueKind.Number)
-                        issue.ContrastExpected = ecr.GetDouble();
-                    else if (ecr.ValueKind == JsonValueKind.String) {
-                        string ecrStr = ecr.GetString() ?? "";
-                        if (ecrStr.Contains(':')) ecrStr = ecrStr.Split(':')[0];
-                        if (double.TryParse(ecrStr, System.Globalization.NumberStyles.Float,
-                            System.Globalization.CultureInfo.InvariantCulture, out double ecrVal))
-                            issue.ContrastExpected = ecrVal;
-                    }
-                }
-                if (data.TryGetProperty("fontSize", out JsonElement fs))
-                    issue.ContrastFontSize = fs.ToString();
-                if (data.TryGetProperty("fontWeight", out JsonElement fw))
-                    issue.ContrastFontWeight = fw.ToString();
-                break; // Only need the first check with data.
-            }
-        } catch {
-            // Best-effort contrast data extraction.
-        }
-    }
-
-    /// <summary>
-    /// Legacy wrapper — calls RunFull and returns just the issues list.
-    /// </summary>
-    public static async Task<List<A11yIssue>> Run(IPage page, string cacheDir)
-    {
-        var result = await RunFull(page, cacheDir);
-        return result.Issues;
-    }
-
-    /// <summary>
-    /// Draws colored outlines on violating elements with severity-based colors
-    /// and a summary banner at the top of the page.
-    /// </summary>
-    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
-    {
-        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
-            v.Selector,
-            v.Severity,
-            v.RuleId,
-            v.Message,
-        }));
-
-        await page.EvaluateAsync(@"(data) => {
-            const violations = JSON.parse(data);
-            const colorMap = {
-                critical: '#d32f2f',
-                serious:  '#e65100',
-                moderate: '#f9a825',
-                minor:    '#1565c0'
-            };
-
-            // Draw outlines on violating elements.
-            violations.forEach(v => {
-                if (!v.Selector) return;
-                try {
-                    const el = document.querySelector(v.Selector);
-                    if (el) {
-                        const color = colorMap[v.Severity] || '#f9a825';
-                        el.style.outline = '3px solid ' + color;
-                        el.style.outlineOffset = '2px';
-                        el.setAttribute('data-a11y-overlay', 'axe');
-                    }
-                } catch(e) { /* selector may be invalid */ }
-            });
-
-            // Summary banner.
-            const banner = document.createElement('div');
-            banner.id = 'a11y-axe-overlay-banner';
-            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
-                'background:#1a1a2e;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
-                'display:flex;gap:16px;align-items:center;';
-
-            const counts = { critical: 0, serious: 0, moderate: 0, minor: 0 };
-            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
-
-            banner.innerHTML = '<strong>axe-core</strong> ' +
-                Object.entries(counts).filter(([,c]) => c > 0)
-                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
-                    .join(' | ');
-
-            document.body.prepend(banner);
-        }", violationsJson);
-    }
-
-    /// <summary>
-    /// Removes the axe overlay outlines and summary banner from the page.
-    /// </summary>
-    public static async Task RemoveOverlay(IPage page)
-    {
-        await page.EvaluateAsync(@"() => {
-            document.querySelectorAll('[data-a11y-overlay=""axe""]').forEach(el => {
-                el.style.outline = '';
-                el.style.outlineOffset = '';
-                el.removeAttribute('data-a11y-overlay');
-            });
-            const banner = document.getElementById('a11y-axe-overlay-banner');
-            if (banner) banner.remove();
-        }");
+        public int InapplicableCount { get; set; }
+        public int IncompleteCount { get; set; }
+        public List<A11yIssue> Issues { get; set; } = new();
+        public int PassCount { get; set; }
     }
 }

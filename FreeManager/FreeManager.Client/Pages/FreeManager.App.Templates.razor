@@ -22,8 +22,8 @@
             @* FreeBase *@
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 template-card @(_selectedTemplate == "freebase" ? "border-primary selected" : "")"
-                     @onclick="@(() => SelectTemplate("freebase"))"
-                     @ondblclick="@(() => UseTemplate("freebase"))">
+                        @onclick="@(() => SelectTemplate("freebase"))"
+                        @ondblclick="@(() => UseTemplate("freebase"))">
                     <div class="card-body text-center p-4">
                         <div class="template-icon mb-3">
                             <i class="fa-solid fa-box fa-3x text-primary"></i>
@@ -58,8 +58,8 @@
             @* FreeTracker *@
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 template-card @(_selectedTemplate == "freetracker" ? "border-primary selected" : "")"
-                     @onclick="@(() => SelectTemplate("freetracker"))"
-                     @ondblclick="@(() => UseTemplate("freetracker"))">
+                        @onclick="@(() => SelectTemplate("freetracker"))"
+                        @ondblclick="@(() => UseTemplate("freetracker"))">
                     <div class="card-body text-center p-4">
                         <div class="template-icon mb-3">
                             <i class="fa-solid fa-clipboard-list fa-3x text-warning"></i>
@@ -98,8 +98,8 @@
             @* FreeAudit *@
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 template-card @(_selectedTemplate == "freeaudit" ? "border-primary selected" : "")"
-                     @onclick="@(() => SelectTemplate("freeaudit"))"
-                     @ondblclick="@(() => UseTemplate("freeaudit"))">
+                        @onclick="@(() => SelectTemplate("freeaudit"))"
+                        @ondblclick="@(() => UseTemplate("freeaudit"))">
                     <div class="card-body text-center p-4">
                         <div class="template-icon mb-3">
                             <i class="fa-solid fa-shield-halved fa-3x text-danger"></i>
@@ -212,20 +212,12 @@
         Model.OnChange -= StateHasChanged;
     }
 
-    protected override void OnInitialized() {
-        Model.View = _pageName;
-        Model.OnChange += StateHasChanged;
-    }
-
-    private void SelectTemplate(string template) {
-        _selectedTemplate = template;
-        StateHasChanged();
-    }
-
-    private void UseTemplate(string template) {
-        // Navigate to setup page with selected template
-        NavigationManager.NavigateTo(Helpers.BuildUrl($"Templates/Setup?template={template}"));
-    }
+    private string GetTemplateDescription(string template) => template switch {
+        "freebase" => "Simple collection with items and categories. Perfect for catalogs, inventories, and contact lists.",
+        "freetracker" => "Track assignments, checkouts, and status workflows. Great for helpdesk, equipment loans, and task management.",
+        "freeaudit" => "Full compliance tracking with external API, event logging, and reports. Built for GLBA and audit trails.",
+        _ => ""
+    };
 
     private string GetTemplateIcon(string template) => template switch {
         "freebase" => "fa-box",
@@ -241,10 +233,18 @@
         _ => "Template"
     };
 
-    private string GetTemplateDescription(string template) => template switch {
-        "freebase" => "Simple collection with items and categories. Perfect for catalogs, inventories, and contact lists.",
-        "freetracker" => "Track assignments, checkouts, and status workflows. Great for helpdesk, equipment loans, and task management.",
-        "freeaudit" => "Full compliance tracking with external API, event logging, and reports. Built for GLBA and audit trails.",
-        _ => ""
-    };
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+    }
+
+    private void SelectTemplate(string template) {
+        _selectedTemplate = template;
+        StateHasChanged();
+    }
+
+    private void UseTemplate(string template) {
+        // Navigate to setup page with selected template
+        NavigationManager.NavigateTo(Helpers.BuildUrl($"Templates/Setup?template={template}"));
+    }
 }

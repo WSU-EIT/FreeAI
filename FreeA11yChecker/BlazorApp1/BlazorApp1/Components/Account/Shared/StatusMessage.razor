@@ -9,13 +9,13 @@
 @code {
     private string? messageFromCookie;
 
-    [Parameter]
-    public string? Message { get; set; }
+    private string? DisplayMessage => Message ?? messageFromCookie;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private string? DisplayMessage => Message ?? messageFromCookie;
+    [Parameter]
+    public string? Message { get; set; }
 
     protected override void OnInitialized()
     {

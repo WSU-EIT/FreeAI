@@ -401,8 +401,7 @@ static void WritePageArtifactsToDisk(string outputDir, string host, PageScanResu
 
 void WriteCrawlSummary(string outputDir, string host, string baseUrl,
     List<(string Path, int Violations, int Critical, int Serious)> stats,
-    HashSet<string> visited, int maxDepth, TimeSpan duration, bool authenticated)
-{
+    HashSet<string> visited, int maxDepth, TimeSpan duration, bool authenticated){
     try {
         string siteDir = Path.Combine(Path.GetFullPath(outputDir), host);
         Directory.CreateDirectory(siteDir);
@@ -450,8 +449,7 @@ void WriteCrawlSummary(string outputDir, string host, string baseUrl,
 /// </summary>
 static void WriteCrawlSummaryHtml(string siteDir, string host, string baseUrl,
     List<(string Path, int Violations, int Critical, int Serious)> stats,
-    HashSet<string> visited, int maxDepth, TimeSpan duration, bool authenticated)
-{
+    HashSet<string> visited, int maxDepth, TimeSpan duration, bool authenticated){
     int totalViolations = stats.Sum(x => x.Violations);
     int totalCritical = stats.Sum(x => x.Critical);
     int totalSerious = stats.Sum(x => x.Serious);

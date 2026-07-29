@@ -20,8 +20,7 @@ public class DevRegistrationKeySeeder : IHostedService
     public DevRegistrationKeySeeder(
         IServiceProvider serviceProvider,
         IHostEnvironment environment,
-        ILogger<DevRegistrationKeySeeder> logger)
-    {
+        ILogger<DevRegistrationKeySeeder> logger){
         _serviceProvider = serviceProvider;
         _environment = environment;
         _logger = logger;

@@ -20,17 +20,17 @@
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
+    protected async Task ButtonClicked()
+    {
+        await Helpers.ModalMessage("You clicked the button. The current value for this data is '" + Value + "'", "Button Clicked");
+    }
+
     public void Dispose() { }
 
     protected override void OnInitialized() {
         if (OnInitializedCallback.HasDelegate) {
             OnInitializedCallback.InvokeAsync(PluginName);
         }
-    }
-
-    protected async Task ButtonClicked()
-    {
-        await Helpers.ModalMessage("You clicked the button. The current value for this data is '" + Value + "'", "Button Clicked");
     }
 
     protected void ValueUpdated() {

@@ -144,18 +144,6 @@ public partial class NotificationService
 /// </summary>
 public class NotificationMessage
 {
-    /// <summary>Unique identifier assigned by the service. Use this when calling <see cref="NotificationService.Remove"/>.</summary>
-    public string Id { get; set; } = "";
-
-    /// <summary>Short header displayed above the body text. May be empty.</summary>
-    public string Title { get; set; } = "";
-
-    /// <summary>The main body text of the notification.</summary>
-    public string Message { get; set; } = "";
-
-    /// <summary>Controls the visual theme (icon, colour) of the rendered notification.</summary>
-    public NotificationType Type { get; set; } = NotificationType.Info;
-
     /// <summary>UTC timestamp when the notification was enqueued. Useful for ordering or time-since display.</summary>
     public DateTime CreatedAt { get; set; }
 
@@ -164,6 +152,17 @@ public class NotificationMessage
     /// until <see cref="NotificationService.Remove"/> is called explicitly.
     /// </summary>
     public int DurationMs { get; set; } = 5000;
+    /// <summary>Unique identifier assigned by the service. Use this when calling <see cref="NotificationService.Remove"/>.</summary>
+    public string Id { get; set; } = "";
+
+    /// <summary>The main body text of the notification.</summary>
+    public string Message { get; set; } = "";
+
+    /// <summary>Short header displayed above the body text. May be empty.</summary>
+    public string Title { get; set; } = "";
+
+    /// <summary>Controls the visual theme (icon, colour) of the rendered notification.</summary>
+    public NotificationType Type { get; set; } = NotificationType.Info;
 }
 
 /// <summary>Visual and semantic classification for a <see cref="NotificationMessage"/>.</summary>

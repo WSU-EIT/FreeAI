@@ -71,7 +71,7 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                             <input type="text" class="form-control" placeholder="Search by name, email..."
-                                   @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
+                                    @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -119,12 +119,12 @@
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-1">Min Events</label>
                                 <input type="number" class="form-control form-control-sm" placeholder="Min events" 
-                                       @bind="_filter.MinEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                        @bind="_filter.MinEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-1">Max Events</label>
                                 <input type="number" class="form-control form-control-sm" placeholder="Max events" 
-                                       @bind="_filter.MaxEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                        @bind="_filter.MaxEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small text-muted mb-1">Activity After</label>

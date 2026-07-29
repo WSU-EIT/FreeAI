@@ -53,8 +53,8 @@
         <div class="mb-3">
             <label for="lang-select">Language
                 <InfoTip Title="Language Selector"
-                         Description="This dropdown changes the programming language the editor understands. When you switch from HTML to C#, the editor re-colors the text using C# syntax rules — keywords like class turn blue, strings turn red, comments turn green. The language is passed to Monaco as a parameter."
-                         Code="@_codeLangSelect" />
+                        Description="This dropdown changes the programming language the editor understands. When you switch from HTML to C#, the editor re-colors the text using C# syntax rules — keywords like class turn blue, strings turn red, comments turn green. The language is passed to Monaco as a parameter."
+                        Code="@_codeLangSelect" />
             </label>
             <select id="lang-select" class="form-select" style="max-width:200px;" @bind="_language" @bind:after="OnLanguageChanged">
                 <option value="@MonacoEditor.MonacoLanguage.html">HTML</option>
@@ -72,26 +72,23 @@
                 <i class="fa fa-plus me-1" aria-hidden="true"></i> Insert Snippet at Cursor
             </button>
             <InfoTip Title="Insert at Cursor"
-                     Description="This button inserts pre-written code at wherever your cursor is positioned in the editor. It demonstrates that C# can programmatically control the editor's content and cursor position via JavaScript interop — C# tells JavaScript to insert this text at the cursor."
-                     Code="@_codeInsert" />
+                    Description="This button inserts pre-written code at wherever your cursor is positioned in the editor. It demonstrates that C# can programmatically control the editor's content and cursor position via JavaScript interop — C# tells JavaScript to insert this text at the cursor."
+                    Code="@_codeInsert" />
         </div>
 
         @* Editor *@
         <InfoTip Title="Monaco Editor Component"
-                 Description="This is the Monaco code editor — the same engine that powers VS Code — running in a web page. It is a Blazor component that wraps a JavaScript library. The bind-Value attribute creates two-way binding: changes you type are sent to C#, and changes from C# update the editor."
-                 Code="@_codeMonaco" />
+                Description="This is the Monaco code editor — the same engine that powers VS Code — running in a web page. It is a Blazor component that wraps a JavaScript library. The bind-Value attribute creates two-way binding: changes you type are sent to C#, and changes from C# update the editor."
+                Code="@_codeMonaco" />
         <div role="region" aria-label="Code editor">
-        <MonacoEditor @ref="_editor"
-            Language="@_language"
-            @bind-Value="_code"
-            MinHeight="400px" />
+        <MonacoEditor @ref="_editor" Language="@_language" @bind-Value="_code" MinHeight="400px" />
         </div>
 
         <div class="mt-3">
             <h6>Current Value (live binding)
                 <InfoTip Title="Live Binding Display"
-                         Description="This pre block shows the exact same text that is in the editor above — in real time. As you type, Blazor's two-way binding updates the _code variable, and this block re-renders. This proves the binding works and demonstrates how to display raw content from a component."
-                         Code="@_codeBinding" />
+                        Description="This pre block shows the exact same text that is in the editor above — in real time. As you type, Blazor's two-way binding updates the _code variable, and this block re-renders. This proves the binding works and demonstrates how to display raw content from a component."
+                        Code="@_codeBinding" />
             </h6>
             <pre class="border rounded p-2 bg-light" style="max-height:200px; overflow:auto;" aria-label="Current editor value" aria-live="polite">@_code</pre>
         </div>

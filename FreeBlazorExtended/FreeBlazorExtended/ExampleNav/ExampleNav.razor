@@ -63,20 +63,19 @@
 }
 
 @code {
-    /// <summary>Full ordered list of pages to navigate among. Prev/Next are derived from this list's order.</summary>
-    [Parameter] public List<NavPage> Pages { get; set; } = new();
-
     /// <summary>The current page's route. Matched (case-insensitive) against <see cref="NavPage.Route"/>.</summary>
     [Parameter] public string CurrentRoute { get; set; } = "";
 
-    /// <summary>URL for the Home / "All" link and the first two breadcrumb segments. Defaults to "/".</summary>
-    [Parameter] public string? HomeUrl { get; set; }
+    /// <summary>FontAwesome icon class used for the Home breadcrumb and the "All" button.</summary>
+    [Parameter] public string HomeIcon { get; set; } = "fa-solid fa-table-cells";
 
     /// <summary>Label shown on the Home breadcrumb and the "All" button title.</summary>
     [Parameter] public string HomeLabel { get; set; } = "Dashboard";
 
-    /// <summary>FontAwesome icon class used for the Home breadcrumb and the "All" button.</summary>
-    [Parameter] public string HomeIcon { get; set; } = "fa-solid fa-table-cells";
+    /// <summary>URL for the Home / "All" link and the first two breadcrumb segments. Defaults to "/".</summary>
+    [Parameter] public string? HomeUrl { get; set; }
+    /// <summary>Full ordered list of pages to navigate among. Prev/Next are derived from this list's order.</summary>
+    [Parameter] public List<NavPage> Pages { get; set; } = new();
 
     /// <summary>Render the breadcrumb on the left side. Default true.</summary>
     [Parameter] public bool ShowBreadcrumbs { get; set; } = true;
@@ -130,16 +129,16 @@
         /// <summary>Optional route for the category breadcrumb segment.</summary>
         public string? CategoryRoute { get; set; }
 
+        /// <summary>Optional href for the parent breadcrumb segment.</summary>
+        public string? ParentRoute { get; set; }
+
+        /// <summary>Optional parent page title shown as an extra breadcrumb segment.</summary>
+        public string? ParentTitle { get; set; }
+
         /// <summary>The href used for Prev/Next links, and the value matched against <c>CurrentRoute</c>.</summary>
         public string Route { get; set; } = "";
 
         /// <summary>Display title shown in the breadcrumb and on Prev/Next button tooltips.</summary>
         public string Title { get; set; } = "";
-
-        /// <summary>Optional parent page title shown as an extra breadcrumb segment.</summary>
-        public string? ParentTitle { get; set; }
-
-        /// <summary>Optional href for the parent breadcrumb segment.</summary>
-        public string? ParentRoute { get; set; }
     }
 }

@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Progress Bar for Completion"
-                     Description="A progress bar shows how many required documents have been uploaded vs total. The width is calculated as (uploaded / total * 100)%. The bar turns green (bg-success) when all are uploaded. This is the onboarding/admissions completion pattern."
-                     Code="@_codeProgress" />
+                    Description="A progress bar shows how many required documents have been uploaded vs total. The width is calculated as (uploaded / total * 100)%. The bar turns green (bg-success) when all are uploaded. This is the onboarding/admissions completion pattern."
+                    Code="@_codeProgress" />
             <InfoTip Title="Required Document Slots"
-                     Description="Each document type has its own card with an upload button. The card shows the document name, requirements, and upload status. A green check replaces the upload button when complete. This ensures every required document is collected."
-                     Code="@_codeDocSlots" />
+                    Description="Each document type has its own card with an upload button. The card shows the document name, requirements, and upload status. A green check replaces the upload button when complete. This ensures every required document is collected."
+                    Code="@_codeDocSlots" />
             <InfoTip Title="Submit Gate Pattern"
-                     Description="The Submit button is disabled until all required documents are uploaded. The disabled attribute binds to a check: _documents.All(d => d.Uploaded). This prevents incomplete submissions. A progress summary above gives context on what's missing."
-                     Code="@_codeSubmitGate" />
+                    Description="The Submit button is disabled until all required documents are uploaded. The disabled attribute binds to a check: _documents.All(d => d.Uploaded). This prevents incomplete submissions. A progress summary above gives context on what's missing."
+                    Code="@_codeSubmitGate" />
         </div>
 
         @* Progress *@
@@ -122,12 +122,12 @@
     }
 
     private class RequiredDoc {
-        public string Title { get; set; }
+        public RequiredDoc(string title, string desc, bool required) { Title = title; Description = desc; Required = required; }
         public string Description { get; set; }
-        public bool Required { get; set; }
-        public bool Uploaded { get; set; }
         public string FileName { get; set; } = "";
         public string FileSize { get; set; } = "";
-        public RequiredDoc(string title, string desc, bool required) { Title = title; Description = desc; Required = required; }
+        public bool Required { get; set; }
+        public string Title { get; set; }
+        public bool Uploaded { get; set; }
     }
 }

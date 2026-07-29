@@ -12,13 +12,13 @@ namespace FreeServices.Installer;
 /// </summary>
 public sealed class InstallerConfig
 {
-    public ServiceSettings Service { get; set; } = new();
+    public LaunchdSettings Launchd { get; set; } = new();
     public PublishSettings Publish { get; set; } = new();
     public RecoverySettings Recovery { get; set; } = new();
     public SecuritySettings Security { get; set; } = new();
+    public ServiceSettings Service { get; set; } = new();
     public ServiceAccountSettings ServiceAccount { get; set; } = new();
     public SystemdSettings Systemd { get; set; } = new();
-    public LaunchdSettings Launchd { get; set; } = new();
     public TargetSettings Target { get; set; } = new();
 }
 
@@ -27,16 +27,18 @@ public sealed class InstallerConfig
 /// </summary>
 public sealed class ServiceSettings
 {
-    public string Name { get; set; } = "FreeServicesMonitor";
-    public string DisplayName { get; set; } = "FreeServices System Monitor";
     public string Description { get; set; } = "Periodically collects and logs system information.";
+    public string DisplayName { get; set; } = "FreeServices System Monitor";
     public string ExePath { get; set; } = GetDefaultExePath();
 
-    /// <summary>
-    /// The directory where the service binaries are installed and run from.
-    /// This is separate from the publish output — files are copied here during configure.
-    /// </summary>
-    public string InstallPath { get; set; } = GetDefaultInstallPath();
+    private static string GetDefaultExePath()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return @"C:\FreeServices\FreeServices.Service.exe";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            return "/usr/local/bin/FreeServices.Service";
+        return "/opt/freeservices/FreeServices.Service";
+    }
 
     private static string GetDefaultInstallPath()
     {
@@ -47,14 +49,12 @@ public sealed class ServiceSettings
         return "/opt/freeservices";
     }
 
-    private static string GetDefaultExePath()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return @"C:\FreeServices\FreeServices.Service.exe";
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            return "/usr/local/bin/FreeServices.Service";
-        return "/opt/freeservices/FreeServices.Service";
-    }
+    /// <summary>
+    /// The directory where the service binaries are installed and run from.
+    /// This is separate from the publish output — files are copied here during configure.
+    /// </summary>
+    public string InstallPath { get; set; } = GetDefaultInstallPath();
+    public string Name { get; set; } = "FreeServicesMonitor";
 }
 
 /// <summary>
@@ -62,18 +62,6 @@ public sealed class ServiceSettings
 /// </summary>
 public sealed class PublishSettings
 {
-    public string ProjectPath { get; set; } = "../FreeServices.Service";
-
-    /// <summary>
-    /// The directory where dotnet publish outputs files.
-    /// Defaults to a "publish/{runtime}" folder relative to the installer directory.
-    /// This is a staging area — files are later copied to Service.InstallPath during configure.
-    /// </summary>
-    public string OutputPath { get; set; } = "";
-    public string Runtime { get; set; } = GetDefaultRuntime();
-    public bool SelfContained { get; set; } = true;
-    public bool SingleFile { get; set; } = true;
-
     private static string GetDefaultRuntime()
     {
         var arch = RuntimeInformation.OSArchitecture switch
@@ -88,6 +76,17 @@ public sealed class PublishSettings
             return $"osx-{arch}";
         return $"linux-{arch}";
     }
+
+    /// <summary>
+    /// The directory where dotnet publish outputs files.
+    /// Defaults to a "publish/{runtime}" folder relative to the installer directory.
+    /// This is a staging area — files are later copied to Service.InstallPath during configure.
+    /// </summary>
+    public string OutputPath { get; set; } = "";
+    public string ProjectPath { get; set; } = "../FreeServices.Service";
+    public string Runtime { get; set; } = GetDefaultRuntime();
+    public bool SelfContained { get; set; } = true;
+    public bool SingleFile { get; set; } = true;
 }
 
 /// <summary>
@@ -95,8 +94,8 @@ public sealed class PublishSettings
 /// </summary>
 public sealed class RecoverySettings
 {
-    public int RestartDelayMs { get; set; } = 5000;
     public int ResetPeriodSeconds { get; set; } = 86400;
+    public int RestartDelayMs { get; set; } = 5000;
 }
 
 /// <summary>
@@ -114,14 +113,14 @@ public sealed class SystemdSettings
 /// </summary>
 public sealed class LaunchdSettings
 {
+    public string ErrorLogPath { get; set; } = "/tmp/freeservices.error.log";
+
+    public string Label { get; set; } = "com.wsu.eit.freeservices";
+    public string LogPath { get; set; } = "/tmp/freeservices.log";
     /// <summary>
     /// Whether to install as a system daemon (/Library/LaunchDaemons) or user agent (~/Library/LaunchAgents).
     /// </summary>
     public bool SystemWide { get; set; } = false;
-
-    public string Label { get; set; } = "com.wsu.eit.freeservices";
-    public string LogPath { get; set; } = "/tmp/freeservices.log";
-    public string ErrorLogPath { get; set; } = "/tmp/freeservices.error.log";
 }
 
 /// <summary>
@@ -139,8 +138,8 @@ public sealed class SecuritySettings
 /// </summary>
 public sealed class ServiceAccountSettings
 {
-    public string Username { get; set; } = "";
     public string Password { get; set; } = "";
+    public string Username { get; set; } = "";
 }
 
 /// <summary>
@@ -150,21 +149,20 @@ public sealed class ServiceAccountSettings
 /// </summary>
 public sealed class TargetSettings
 {
-    /// <summary>Target username for account-create, account-delete, grant, revoke.</summary>
-    public string Username { get; set; } = "";
-
-    /// <summary>Permission key for grant/revoke: svc, docker, install, stats, apps, all.</summary>
-    public string Permission { get; set; } = "";
-
-    /// <summary>Service name for svc-start, svc-stop.</summary>
-    public string ServiceName { get; set; } = "";
-
-    /// <summary>Search term for svc-search.</summary>
-    public string Search { get; set; } = "";
+    /// <summary>Skip confirmation prompts (for CI/CD).</summary>
+    public bool Confirm { get; set; } = false;
 
     /// <summary>Container name or ID for docker-start, docker-stop.</summary>
     public string ContainerName { get; set; } = "";
 
-    /// <summary>Skip confirmation prompts (for CI/CD).</summary>
-    public bool Confirm { get; set; } = false;
+    /// <summary>Permission key for grant/revoke: svc, docker, install, stats, apps, all.</summary>
+    public string Permission { get; set; } = "";
+
+    /// <summary>Search term for svc-search.</summary>
+    public string Search { get; set; } = "";
+
+    /// <summary>Service name for svc-start, svc-stop.</summary>
+    public string ServiceName { get; set; } = "";
+    /// <summary>Target username for account-create, account-delete, grant, revoke.</summary>
+    public string Username { get; set; } = "";
 }

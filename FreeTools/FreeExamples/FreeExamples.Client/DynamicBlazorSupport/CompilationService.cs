@@ -309,8 +309,7 @@ namespace Try.Core
 
         private async Task<IReadOnlyList<CompileToCSharpResult>> CompileToCSharpAsync(
             ICollection<CodeFile> codeFiles,
-            Func<string, Task>? updateStatusFunc)
-        {
+            Func<string, Task>? updateStatusFunc){
             // The first phase won't include any metadata references for component discovery. This mirrors what the build does.
             var projectEngine = this.CreateRazorProjectEngine(Array.Empty<MetadataReference>());
 

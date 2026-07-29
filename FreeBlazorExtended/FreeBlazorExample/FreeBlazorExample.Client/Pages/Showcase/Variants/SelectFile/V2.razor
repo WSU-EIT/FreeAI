@@ -14,15 +14,15 @@
 
     @if (_pickerVisible) {
         <SelectFile Files="CurrentFiles"
-                    OnFileSelected="HandleSelected"
-                    ShowCancelButton="true"
-                    CancelButtonText="Close picker"
-                    OnCancel="HandleCancel"
-                    ShowRefreshButton="true"
-                    RefreshButtonText="Reload"
-                    OnRefresh="HandleRefresh"
-                    Loading="@_loading"
-                    EmptyText="No files match - try refreshing." />
+                OnFileSelected="HandleSelected"
+                ShowCancelButton="true"
+                CancelButtonText="Close picker"
+                OnCancel="HandleCancel"
+                ShowRefreshButton="true"
+                RefreshButtonText="Reload"
+                OnRefresh="HandleRefresh"
+                Loading="@_loading"
+                EmptyText="No files match - try refreshing." />
     } else {
         <div class="alert alert-secondary" role="status">Picker closed.</div>
     }
@@ -39,10 +39,16 @@
 
     private List<FileItem> CurrentFiles => _forceEmpty ? new List<FileItem>() : _files;
 
-    private Task HandleSelected(FileItem file)
+    private static List<FileItem> BuildFiles()
     {
-        _selectedFileName = file.FileName;
-        return Task.CompletedTask;
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "gallery.png", Extension = ".png", Bytes = 1100, RemoteImageUrl = "https://picsum.photos/seed/sfv21/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "sunset.jpg", Extension = ".jpg", Bytes = 610000, RemoteImageUrl = "https://picsum.photos/seed/sfv22/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "icon.svg", Extension = ".svg", Bytes = 320, Value = InlineSvgBytes() },
+            new() { FileId = Guid.NewGuid(), FileName = "notes.pdf", Extension = ".pdf", Bytes = 1789000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "contract.docx", Extension = ".docx", Bytes = 93400, ThumbnailIcon = "fa-solid fa-file-word" },
+        };
     }
 
     private Task HandleCancel()
@@ -59,25 +65,19 @@
         _loading = false;
     }
 
-    private void ReopenPicker()
+    private Task HandleSelected(FileItem file)
     {
-        _pickerVisible = true;
-    }
-
-    private static List<FileItem> BuildFiles()
-    {
-        return new List<FileItem>
-        {
-            new() { FileId = Guid.NewGuid(), FileName = "gallery.png", Extension = ".png", Bytes = 1100, RemoteImageUrl = "https://picsum.photos/seed/sfv21/300/200" },
-            new() { FileId = Guid.NewGuid(), FileName = "sunset.jpg", Extension = ".jpg", Bytes = 610000, RemoteImageUrl = "https://picsum.photos/seed/sfv22/300/200" },
-            new() { FileId = Guid.NewGuid(), FileName = "icon.svg", Extension = ".svg", Bytes = 320, Value = InlineSvgBytes() },
-            new() { FileId = Guid.NewGuid(), FileName = "notes.pdf", Extension = ".pdf", Bytes = 1789000, ThumbnailIcon = "fa-solid fa-file-pdf" },
-            new() { FileId = Guid.NewGuid(), FileName = "contract.docx", Extension = ".docx", Bytes = 93400, ThumbnailIcon = "fa-solid fa-file-word" },
-        };
+        _selectedFileName = file.FileName;
+        return Task.CompletedTask;
     }
 
     private static byte[] InlineSvgBytes()
     {
         return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#0d6efd'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+
+    private void ReopenPicker()
+    {
+        _pickerVisible = true;
     }
 }

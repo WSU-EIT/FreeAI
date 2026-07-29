@@ -22,59 +22,41 @@ public class ApiRequestLoggingAttribute : ActionFilterAttribute
     private const string StopwatchKey = "ApiLogging_Stopwatch";
     private const string RequestDataKey = "ApiLogging_RequestData";
 
-    public override void OnActionExecuting(ActionExecutingContext context)
+    private static string CaptureHeaders(
+        Microsoft.AspNetCore.Http.IHeaderDictionary headers,
+        List<string> sensitiveHeaders){
+        var filteredHeaders = new Dictionary<string, string>();
+
+        foreach (var header in headers)
+        {
+            var headerName = header.Key;
+            var headerValue = header.Value.ToString();
+
+            // Check if sensitive (case-insensitive)
+            var isSensitive = sensitiveHeaders
+                .Any(s => s.Equals(headerName, StringComparison.OrdinalIgnoreCase));
+
+            filteredHeaders[headerName] = isSensitive
+                ? "[REDACTED]"
+                : TruncateString(headerValue, 500);
+        }
+
+        return JsonSerializer.Serialize(filteredHeaders);
+    }
+
+    private static string GetClientIpAddress(Microsoft.AspNetCore.Http.HttpContext context)
     {
-        // Check for skip attribute
-        var skipAttribute = context.ActionDescriptor.EndpointMetadata
-            .OfType<SkipApiLoggingAttribute>()
-            .FirstOrDefault();
-        
-        if (skipAttribute != null)
+        // Check for forwarded IP first (behind proxy/load balancer)
+        var forwardedFor = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwardedFor))
         {
-            base.OnActionExecuting(context);
-            return;
+            // Take the first IP if there are multiple
+            var firstIp = forwardedFor.Split(',')[0].Trim();
+            return TruncateString(firstIp, 50);
         }
 
-        // Start stopwatch
-        var stopwatch = Stopwatch.StartNew();
-        context.HttpContext.Items[StopwatchKey] = stopwatch;
-
-        // Get options from DI
-        var options = context.HttpContext.RequestServices
-            .GetService<IOptions<DataObjects.ApiLoggingOptions>>()?.Value
-            ?? new DataObjects.ApiLoggingOptions();
-
-        // Capture request data
-        var requestData = new RequestCaptureData
-        {
-            RequestedAt = DateTime.UtcNow,
-            HttpMethod = context.HttpContext.Request.Method,
-            RequestPath = context.HttpContext.Request.Path.ToString(),
-            QueryString = context.HttpContext.Request.QueryString.ToString(),
-            IpAddress = GetClientIpAddress(context.HttpContext),
-            UserAgent = context.HttpContext.Request.Headers.UserAgent.ToString(),
-            ForwardedFor = context.HttpContext.Request.Headers["X-Forwarded-For"].ToString(),
-            RequestHeaders = CaptureHeaders(context.HttpContext.Request.Headers, options.SensitiveHeaders),
-        };
-
-        // Get source system from middleware if available
-        if (context.HttpContext.Items["SourceSystem"] is DataObjects.SourceSystem source)
-        {
-            requestData.SourceSystemId = source.SourceSystemId;
-            requestData.SourceSystemName = source.DisplayName;
-            requestData.AuthType = "ApiKey";
-        }
-        else if (context.HttpContext.User?.Identity?.IsAuthenticated == true)
-        {
-            requestData.UserId = context.HttpContext.User.FindFirst("sub")?.Value ?? string.Empty;
-            requestData.UserName = context.HttpContext.User.Identity?.Name ?? string.Empty;
-            requestData.AuthType = "JWT";
-        }
-
-        // Store for OnActionExecuted
-        context.HttpContext.Items[RequestDataKey] = requestData;
-
-        base.OnActionExecuting(context);
+        // Fall back to direct connection IP
+        return TruncateString(context.Connection.RemoteIpAddress?.ToString() ?? string.Empty, 50);
     }
 
     public override void OnActionExecuted(ActionExecutedContext context)
@@ -132,6 +114,61 @@ public class ApiRequestLoggingAttribute : ActionFilterAttribute
         base.OnActionExecuted(context);
     }
 
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        // Check for skip attribute
+        var skipAttribute = context.ActionDescriptor.EndpointMetadata
+            .OfType<SkipApiLoggingAttribute>()
+            .FirstOrDefault();
+        
+        if (skipAttribute != null)
+        {
+            base.OnActionExecuting(context);
+            return;
+        }
+
+        // Start stopwatch
+        var stopwatch = Stopwatch.StartNew();
+        context.HttpContext.Items[StopwatchKey] = stopwatch;
+
+        // Get options from DI
+        var options = context.HttpContext.RequestServices
+            .GetService<IOptions<DataObjects.ApiLoggingOptions>>()?.Value
+            ?? new DataObjects.ApiLoggingOptions();
+
+        // Capture request data
+        var requestData = new RequestCaptureData
+        {
+            RequestedAt = DateTime.UtcNow,
+            HttpMethod = context.HttpContext.Request.Method,
+            RequestPath = context.HttpContext.Request.Path.ToString(),
+            QueryString = context.HttpContext.Request.QueryString.ToString(),
+            IpAddress = GetClientIpAddress(context.HttpContext),
+            UserAgent = context.HttpContext.Request.Headers.UserAgent.ToString(),
+            ForwardedFor = context.HttpContext.Request.Headers["X-Forwarded-For"].ToString(),
+            RequestHeaders = CaptureHeaders(context.HttpContext.Request.Headers, options.SensitiveHeaders),
+        };
+
+        // Get source system from middleware if available
+        if (context.HttpContext.Items["SourceSystem"] is DataObjects.SourceSystem source)
+        {
+            requestData.SourceSystemId = source.SourceSystemId;
+            requestData.SourceSystemName = source.DisplayName;
+            requestData.AuthType = "ApiKey";
+        }
+        else if (context.HttpContext.User?.Identity?.IsAuthenticated == true)
+        {
+            requestData.UserId = context.HttpContext.User.FindFirst("sub")?.Value ?? string.Empty;
+            requestData.UserName = context.HttpContext.User.Identity?.Name ?? string.Empty;
+            requestData.AuthType = "JWT";
+        }
+
+        // Store for OnActionExecuted
+        context.HttpContext.Items[RequestDataKey] = requestData;
+
+        base.OnActionExecuting(context);
+    }
+
     private static async Task SaveLogAsync(IServiceProvider serviceProvider, EFModels.EFModels.ApiRequestLogItem log)
     {
         try
@@ -147,44 +184,6 @@ public class ApiRequestLoggingAttribute : ActionFilterAttribute
         }
     }
 
-    private static string GetClientIpAddress(Microsoft.AspNetCore.Http.HttpContext context)
-    {
-        // Check for forwarded IP first (behind proxy/load balancer)
-        var forwardedFor = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(forwardedFor))
-        {
-            // Take the first IP if there are multiple
-            var firstIp = forwardedFor.Split(',')[0].Trim();
-            return TruncateString(firstIp, 50);
-        }
-
-        // Fall back to direct connection IP
-        return TruncateString(context.Connection.RemoteIpAddress?.ToString() ?? string.Empty, 50);
-    }
-
-    private static string CaptureHeaders(
-        Microsoft.AspNetCore.Http.IHeaderDictionary headers,
-        List<string> sensitiveHeaders)
-    {
-        var filteredHeaders = new Dictionary<string, string>();
-
-        foreach (var header in headers)
-        {
-            var headerName = header.Key;
-            var headerValue = header.Value.ToString();
-
-            // Check if sensitive (case-insensitive)
-            var isSensitive = sensitiveHeaders
-                .Any(s => s.Equals(headerName, StringComparison.OrdinalIgnoreCase));
-
-            filteredHeaders[headerName] = isSensitive
-                ? "[REDACTED]"
-                : TruncateString(headerValue, 500);
-        }
-
-        return JsonSerializer.Serialize(filteredHeaders);
-    }
-
     private static string TruncateString(string value, int maxLength)
     {
         if (string.IsNullOrEmpty(value)) return string.Empty;
@@ -196,18 +195,18 @@ public class ApiRequestLoggingAttribute : ActionFilterAttribute
     /// </summary>
     private class RequestCaptureData
     {
-        public DateTime RequestedAt { get; set; }
-        public string HttpMethod { get; set; } = string.Empty;
-        public string RequestPath { get; set; } = string.Empty;
-        public string QueryString { get; set; } = string.Empty;
-        public string IpAddress { get; set; } = string.Empty;
-        public string UserAgent { get; set; } = string.Empty;
+        public string AuthType { get; set; } = string.Empty;
         public string ForwardedFor { get; set; } = string.Empty;
+        public string HttpMethod { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = string.Empty;
+        public string QueryString { get; set; } = string.Empty;
+        public DateTime RequestedAt { get; set; }
         public string RequestHeaders { get; set; } = string.Empty;
+        public string RequestPath { get; set; } = string.Empty;
         public Guid SourceSystemId { get; set; }
         public string SourceSystemName { get; set; } = string.Empty;
+        public string UserAgent { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
-        public string AuthType { get; set; } = string.Empty;
     }
 }

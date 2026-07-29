@@ -31,6 +31,42 @@ public readonly record struct TypeReorder(string TypeName, IReadOnlyList<string>
 /// </summary>
 public sealed class Reorganizer
 {
+    // Order-independent signature so reordering doesn't flag a difference, but a dropped or
+    // duplicated member does.
+    private static List<string> CollectSignatures(SyntaxNode root)
+    {
+        var list = new List<string>();
+        foreach (var m in root.DescendantNodes().OfType<MemberDeclarationSyntax>())
+        {
+            var sig = MemberClassifier.KindOf(m) + "|" + MemberClassifier.NameOf(m);
+            if (m is BaseMethodDeclarationSyntax bm)
+            {
+                sig += "|(" + string.Join(",", bm.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?")) + ")";
+            }
+            list.Add(sig);
+        }
+        return list;
+    }
+
+    private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
+    {
+        var a = CollectSignatures(oldRoot);
+        var b = CollectSignatures(newRoot);
+        if (a.Count != b.Count)
+        {
+            return false;
+        }
+        a.Sort(StringComparer.Ordinal);
+        b.Sort(StringComparer.Ordinal);
+        for (int i = 0; i < a.Count; i++)
+        {
+            if (!string.Equals(a[i], b[i], StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     public static ReorgResult Run(string sourceText, ReorderConfig config, string eol)
     {
         SyntaxTree tree;
@@ -96,43 +132,6 @@ public sealed class Reorganizer
             rewriter.Reorders, braceRewriter.BraceMethods);
     }
 
-    private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
-    {
-        var a = CollectSignatures(oldRoot);
-        var b = CollectSignatures(newRoot);
-        if (a.Count != b.Count)
-        {
-            return false;
-        }
-        a.Sort(StringComparer.Ordinal);
-        b.Sort(StringComparer.Ordinal);
-        for (int i = 0; i < a.Count; i++)
-        {
-            if (!string.Equals(a[i], b[i], StringComparison.Ordinal))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Order-independent signature so reordering doesn't flag a difference, but a dropped or
-    // duplicated member does.
-    private static List<string> CollectSignatures(SyntaxNode root)
-    {
-        var list = new List<string>();
-        foreach (var m in root.DescendantNodes().OfType<MemberDeclarationSyntax>())
-        {
-            var sig = MemberClassifier.KindOf(m) + "|" + MemberClassifier.NameOf(m);
-            if (m is BaseMethodDeclarationSyntax bm)
-            {
-                sig += "|(" + string.Join(",", bm.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?")) + ")";
-            }
-            list.Add(sig);
-        }
-        return list;
-    }
-
     /// <summary>
     /// When a method/constructor/operator/local-function parameter list is wrapped across multiple
     /// lines, glue the closing ")" and the body's opening "{" together as "){" on one line — the
@@ -144,40 +143,10 @@ public sealed class Reorganizer
     {
         private readonly List<string> _braceMethods = new();
 
-        public int BracesCollapsed { get; private set; }
-
         /// <summary>The method/ctor/local-function names whose wrapped braces were collapsed.</summary>
         public IReadOnlyList<string> BraceMethods => _braceMethods;
 
-        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            var v = (MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
-
-        public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-        {
-            var v = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
-
-        public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
-        {
-            var v = (OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
-
-        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
-        {
-            var v = (ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
-
-        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
-        {
-            var v = (LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!;
-            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
-        }
+        public int BracesCollapsed { get; private set; }
 
         private SyntaxNode Collapse(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
         {
@@ -192,6 +161,12 @@ public sealed class Reorganizer
                 return rewritten;
             });
         }
+
+        private static bool IsComment(SyntaxTrivia t)
+            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
+            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
 
         private static string LabelFor(SyntaxNode node) => node switch
         {
@@ -227,11 +202,35 @@ public sealed class Reorganizer
             return true;
         }
 
-        private static bool IsComment(SyntaxTrivia t)
-            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
-            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
+        public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            var v = (ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+        {
+            var v = (ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+        {
+            var v = (LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            var v = (MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
+
+        public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+        {
+            var v = (OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!;
+            return v.Body is not null && ShouldCollapse(v.ParameterList, v.Body) ? Collapse(v, v.ParameterList, v.Body) : v;
+        }
     }
 
     private sealed class Rewriter : CSharpSyntaxRewriter

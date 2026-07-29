@@ -15,39 +15,12 @@ public partial class EFDataModel : DbContext
     {
     }
 
-    public virtual DbSet<Department> Departments { get; set; }
-
     public virtual DbSet<DepartmentGroup> DepartmentGroups { get; set; }
 
-    public virtual DbSet<PluginCache> PluginCaches { get; set; }
-
-    public virtual DbSet<Setting> Settings { get; set; }
+    public virtual DbSet<Department> Departments { get; set; }
 
     // Files module removed - FileStorage DbSet kept as stub so legacy code compiles.
     public virtual DbSet<FileStorage> FileStorages { get; set; }
-
-    // {{ModuleItemStart:Tags}}
-    public virtual DbSet<Tag> Tags { get; set; }
-
-    public virtual DbSet<TagItem> TagItems { get; set; }
-    // {{ModuleItemEnd:Tags}}
-
-    public virtual DbSet<Tenant> Tenants { get; set; }
-
-    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<UserGroup> UserGroups { get; set; }
-
-    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
-
-    // FreeBlazorExtended Feature 104 — UserPreferences
-    // The POCO lives in FreeBlazorExtended/UserPreferences/UserPreferences.cs
-    // (so the showcase library has zero EF dependency). Persistence is wired
-    // here on the server only; the WASM client falls back to the in-memory
-    // store registered in FreeBlazorExtended.UserPreferences.UserPreferencesService.
-    public virtual DbSet<global::FreeBlazorExtended.UserPreferences.UserPreferences> UserPreferences { get; set; } = null!;
 
     // The OnConfiguring override is only commented out and used to build the migration scripts.
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -249,4 +222,31 @@ public partial class EFDataModel : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public virtual DbSet<PluginCache> PluginCaches { get; set; }
+
+    public virtual DbSet<Setting> Settings { get; set; }
+    // {{ModuleItemStart:Tags}}
+
+    public virtual DbSet<TagItem> TagItems { get; set; }
+
+    public virtual DbSet<Tag> Tags { get; set; }
+    // {{ModuleItemEnd:Tags}}
+
+    public virtual DbSet<Tenant> Tenants { get; set; }
+
+    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
+
+    public virtual DbSet<UserGroup> UserGroups { get; set; }
+
+    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
+
+    // FreeBlazorExtended Feature 104 — UserPreferences
+    // The POCO lives in FreeBlazorExtended/UserPreferences/UserPreferences.cs
+    // (so the showcase library has zero EF dependency). Persistence is wired
+    // here on the server only; the WASM client falls back to the in-memory
+    // store registered in FreeBlazorExtended.UserPreferences.UserPreferencesService.
+    public virtual DbSet<global::FreeBlazorExtended.UserPreferences.UserPreferences> UserPreferences { get; set; } = null!;
+
+    public virtual DbSet<User> Users { get; set; }
 }

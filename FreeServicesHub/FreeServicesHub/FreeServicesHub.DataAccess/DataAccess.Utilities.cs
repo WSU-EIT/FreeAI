@@ -66,8 +66,8 @@ public partial interface IDataAccess
     public bool HashPasswordValidate(string? password, string? hashedPassword);
     string HtmlToPlainText(string html);
     int IntValue(int? value);
-    double NowFromUnixEpoch();
     List<string> MessageToListOfString(string message);
+    double NowFromUnixEpoch();
     string QueryStringValue(string valueName);
     List<string> RecurseException(Exception ex, bool ShowExceptionType = true);
     string RecurseExceptionAsString(Exception ex, bool ShowExceptionType = true);
@@ -78,9 +78,9 @@ public partial interface IDataAccess
     string Request(string parameter);
     double RunningSince { get; }
     DataObjects.BooleanResponse SendEmail(DataObjects.EmailMessage message, DataObjects.MailServerConfig? config = null);
+    string SerializeObject(object? Object);
     string Serialize_ObjectToXml(object o, bool OmitXmlDeclaration = true);
     T? Serialize_XmlToObject<T>(string? xml);
-    string SerializeObject(object? Object);
     void SetAuthenticationProviders(DataObjects.AuthenticationProviders? authenticationProviders);
     void SetHttpContext(Microsoft.AspNetCore.Http.HttpContext? context);
     void SetHttpRequest(Microsoft.AspNetCore.Http.HttpRequest? request);
@@ -286,21 +286,8 @@ public partial class DataAccess
         return output;
     }
 
-    public IConfigurationHelper? ConfigurationHelper {
-        get {
-            IConfigurationHelper? output = null;
-
-            if (_serviceProvider != null) {
-                output = _serviceProvider.GetRequiredService<IConfigurationHelper>();
-            }
-
-            return output;
-        }
-    }
-
     private List<string> ConcatenateErrorMessages(DataObjects.User ReportedBy,
-        DataObjects.User AffectedUser, List<DataObjects.User> AdditionalAffectedUsers)
-    {
+        DataObjects.User AffectedUser, List<DataObjects.User> AdditionalAffectedUsers){
         List<string> output = new List<string>();
         if (!ReportedBy.ActionResponse.Result) {
             if (ReportedBy.ActionResponse.Messages != null && ReportedBy.ActionResponse.Messages.Count() > 0) {
@@ -330,6 +317,18 @@ public partial class DataAccess
             }
         }
         return output;
+    }
+
+    public IConfigurationHelper? ConfigurationHelper {
+        get {
+            IConfigurationHelper? output = null;
+
+            if (_serviceProvider != null) {
+                output = _serviceProvider.GetRequiredService<IConfigurationHelper>();
+            }
+
+            return output;
+        }
     }
 
     public string ConnectionString(bool full = false)
@@ -1411,6 +1410,11 @@ public partial class DataAccess
         return output;
     }
 
+    public List<string> MessageToListOfString(string message)
+    {
+        return new List<string> { message };
+    }
+
     public double NowFromUnixEpoch()
     {
         return (double)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -1440,11 +1444,6 @@ public partial class DataAccess
         }
 
         return output;
-    }
-
-    public List<string> MessageToListOfString(string message)
-    {
-        return new List<string> { message };
     }
 
     private string ObjectToCSV(object[] o)
@@ -1906,6 +1905,17 @@ public partial class DataAccess
         return output;
     }
 
+    public string SerializeObject(object? Object)
+    {
+        string output = String.Empty;
+
+        if (Object != null) {
+            output += System.Text.Json.JsonSerializer.Serialize(Object);
+        }
+
+        return output;
+    }
+
     public string Serialize_ObjectToXml(object o, bool OmitXmlDeclaration = true)
     {
         XmlSerializer serializer = new XmlSerializer(o.GetType());
@@ -1941,17 +1951,6 @@ public partial class DataAccess
                     }
                 }
             }
-        }
-
-        return output;
-    }
-
-    public string SerializeObject(object? Object)
-    {
-        string output = String.Empty;
-
-        if (Object != null) {
-            output += System.Text.Json.JsonSerializer.Serialize(Object);
         }
 
         return output;

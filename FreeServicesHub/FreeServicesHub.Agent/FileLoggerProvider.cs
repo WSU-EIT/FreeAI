@@ -30,6 +30,24 @@ internal sealed class FileLoggerProvider : ILoggerProvider
         return _loggers.GetOrAdd(categoryName, name => new FileLogger(name, this));
     }
 
+    public void Dispose() { }
+
+    private void RollIfNeeded()
+    {
+        try
+        {
+            if (!File.Exists(_logPath)) return;
+            var info = new FileInfo(_logPath);
+            if (info.Length < MaxFileSizeBytes) return;
+
+            var rolled = _logPath + ".1";
+            if (File.Exists(rolled))
+                File.Delete(rolled);
+            File.Move(_logPath, rolled);
+        }
+        catch { /* best effort */ }
+    }
+
     internal void WriteEntry(string category, LogLevel level, string message)
     {
         lock (_writeLock)
@@ -54,24 +72,6 @@ internal sealed class FileLoggerProvider : ILoggerProvider
             catch { /* best effort -- don't crash the service over a log write */ }
         }
     }
-
-    private void RollIfNeeded()
-    {
-        try
-        {
-            if (!File.Exists(_logPath)) return;
-            var info = new FileInfo(_logPath);
-            if (info.Length < MaxFileSizeBytes) return;
-
-            var rolled = _logPath + ".1";
-            if (File.Exists(rolled))
-                File.Delete(rolled);
-            File.Move(_logPath, rolled);
-        }
-        catch { /* best effort */ }
-    }
-
-    public void Dispose() { }
 }
 
 /// <summary>

@@ -20,9 +20,9 @@
 
     Example:
         <PageContainer Title="Invoices"
-                       Subtitle="Manage your billing documents"
-                       HeaderBehavior="sticky"
-                       ConstrainWidth="true">
+                Subtitle="Manage your billing documents"
+                HeaderBehavior="sticky"
+                ConstrainWidth="true">
             <MainContent>
                 <InvoiceTable />
             </MainContent>
@@ -187,26 +187,6 @@
     protected string _footerClass = "";
 
     /// <summary>
-    /// Page title rendered as an <c>&lt;h1&gt;</c> inside the default header block.
-    /// Ignored when <see cref="HeaderContent"/> is provided.
-    /// Optional — omit to hide the built-in title bar entirely.
-    /// </summary>
-    [Parameter] public string Title { get; set; } = "";
-
-    /// <summary>
-    /// Muted subtitle rendered below <see cref="Title"/> in the default header block.
-    /// Optional — use for section context (e.g. <c>"Manage your billing documents"</c>).
-    /// </summary>
-    [Parameter] public string Subtitle { get; set; } = "";
-
-    /// <summary>
-    /// Controls whether the header sticks to the top of the viewport on scroll.
-    /// Accepted values: <c>"default"</c> (scrolls with content), <c>"sticky"</c> (stays at top).
-    /// Default: <c>"default"</c>.
-    /// </summary>
-    [Parameter] public string HeaderBehavior { get; set; } = "default";
-
-    /// <summary>
     /// When <c>true</c>, adds 2 rem padding around the entire container.
     /// Use when the host layout does not supply its own page padding. Default: <c>false</c>.
     /// </summary>
@@ -220,10 +200,17 @@
     [Parameter] public bool ConstrainWidth { get; set; } = false;
 
     /// <summary>
-    /// When <c>true</c>, the footer sticks to the bottom of the viewport.
-    /// Useful for persistent action bars (Save / Cancel). Default: <c>false</c>.
+    /// Footer render fragment. Omit to hide the footer bar entirely.
+    /// Pair with <see cref="StickyFooter"/> for a persistent action bar.
     /// </summary>
-    [Parameter] public bool StickyFooter { get; set; } = false;
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Controls whether the header sticks to the top of the viewport on scroll.
+    /// Accepted values: <c>"default"</c> (scrolls with content), <c>"sticky"</c> (stays at top).
+    /// Default: <c>"default"</c>.
+    /// </summary>
+    [Parameter] public string HeaderBehavior { get; set; } = "default";
 
     /// <summary>
     /// Fully custom header render fragment. When provided, replaces the built-in
@@ -239,10 +226,23 @@
     [Parameter] public RenderFragment? MainContent { get; set; }
 
     /// <summary>
-    /// Footer render fragment. Omit to hide the footer bar entirely.
-    /// Pair with <see cref="StickyFooter"/> for a persistent action bar.
+    /// When <c>true</c>, the footer sticks to the bottom of the viewport.
+    /// Useful for persistent action bars (Save / Cancel). Default: <c>false</c>.
     /// </summary>
-    [Parameter] public RenderFragment? FooterContent { get; set; }
+    [Parameter] public bool StickyFooter { get; set; } = false;
+
+    /// <summary>
+    /// Muted subtitle rendered below <see cref="Title"/> in the default header block.
+    /// Optional — use for section context (e.g. <c>"Manage your billing documents"</c>).
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// Page title rendered as an <c>&lt;h1&gt;</c> inside the default header block.
+    /// Ignored when <see cref="HeaderContent"/> is provided.
+    /// Optional — omit to hide the built-in title bar entirely.
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
 
     protected override void OnInitialized()
     {

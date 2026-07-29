@@ -21,8 +21,8 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Status Columns"
-                     Description="Each TicketStatus value becomes a column. Cards show ticket number, title, type icon, priority badge, and assignee."
-                     Code="@_codeBoard" />
+                    Description="Each TicketStatus value becomes a column. Cards show ticket number, title, type icon, priority badge, and assignee."
+                    Code="@_codeBoard" />
         </div>
 
         @* Project filter *@
@@ -41,8 +41,8 @@
                 var isDropTarget = _dragOverCol == status;
                 <div class="flex-shrink-0" style="width:220px;">
                     <div class="card border-0 shadow-sm @(isDropTarget ? "border-primary border-2" : "")"
-                         @ondragover="() => _dragOverCol = status" @ondragover:preventDefault="true"
-                         @ondrop="() => HandleDrop(status)" @ondragleave="() => _dragOverCol = null">
+                            @ondragover="() => _dragOverCol = status" @ondragover:preventDefault="true"
+                            @ondrop="() => HandleDrop(status)" @ondragleave="() => _dragOverCol = null">
                         <div class="card-header bg-dark text-white py-1 d-flex justify-content-between small">
                             <span>@status</span>
                             <span class="badge bg-white text-dark rounded-pill">@colTickets.Count</span>
@@ -50,8 +50,8 @@
                         <div class="card-body p-1" style="min-height:200px; max-height:500px; overflow-y:auto;">
                             @foreach (var t in colTickets) {
                                 <div class="card mb-1 border-0 shadow-sm" draggable="true"
-                                     @ondragstart="() => _dragging = t" @ondragend="() => _dragging = null"
-                                     style="cursor:grab;">
+                                        @ondragstart="() => _dragging = t" @ondragend="() => _dragging = null"
+                                        style="cursor:grab;">
                                     <div class="card-body p-2 small">
                                         <div class="d-flex justify-content-between mb-1">
                                             <code style="font-size:0.65rem;">@t.TicketNumber</code>

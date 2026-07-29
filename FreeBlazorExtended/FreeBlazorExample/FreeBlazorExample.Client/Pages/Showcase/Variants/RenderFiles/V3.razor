@@ -7,11 +7,11 @@
     <p class="small text-muted">Legend: inline SVG, remote PNG, remote JPG, PDF, Word, Excel, ZIP, and generic fallback.</p>
 
     <RenderFiles Files="_files"
-                 OnClick="OpenFile"
-                 OnDelete="DeleteFile"
-                 UseDeleteConfirmation="false"
-                 DeleteText="Delete"
-                 EmptyText="No files." />
+            OnClick="OpenFile"
+            OnDelete="DeleteFile"
+            UseDeleteConfirmation="false"
+            DeleteText="Delete"
+            EmptyText="No files." />
 
     <p class="text-muted mt-3 mb-2">Last opened: @_lastOpened</p>
     <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetFiles">Reset</button>
@@ -20,24 +20,6 @@
 @code {
     private List<FileItem> _files = BuildFiles();
     private string _lastOpened = "(none)";
-
-    private Task OpenFile(FileItem file)
-    {
-        _lastOpened = file.FileName;
-        return Task.CompletedTask;
-    }
-
-    private Task DeleteFile(FileItem file)
-    {
-        _files = _files.Where(item => item.FileId != file.FileId).ToList();
-        return Task.CompletedTask;
-    }
-
-    private void ResetFiles()
-    {
-        _files = BuildFiles();
-        _lastOpened = "(none)";
-    }
 
     private static List<FileItem> BuildFiles()
     {
@@ -54,8 +36,26 @@
         };
     }
 
+    private Task DeleteFile(FileItem file)
+    {
+        _files = _files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
     private static byte[] InlineSvgBytes()
     {
         return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#dc3545'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+
+    private Task OpenFile(FileItem file)
+    {
+        _lastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private void ResetFiles()
+    {
+        _files = BuildFiles();
+        _lastOpened = "(none)";
     }
 }

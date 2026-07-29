@@ -17,16 +17,6 @@
 @code {
     private int _current = 2;
 
-    private List<WizardStepper.WizardStepInfo> BuildSteps()
-    {
-        return new List<WizardStepper.WizardStepInfo>
-        {
-            new() { Name = "Choose Plan", SelectedValue = "Pro" },
-            new() { Name = "Pick Region", SelectedValue = "US-East" },
-            new() { Name = "Notifications", SelectedValue = "On" },
-        };
-    }
-
     private List<WizardSummary.SelectionItem> BuildSelections()
     {
         return new List<WizardSummary.SelectionItem>
@@ -34,6 +24,16 @@
             new() { Label = "Plan", Value = "Pro" },
             new() { Label = "Region", Value = "US-East" },
             new() { Label = "Email Notifications", Value = "On" },
+        };
+    }
+
+    private List<WizardStepper.WizardStepInfo> BuildSteps()
+    {
+        return new List<WizardStepper.WizardStepInfo>
+        {
+            new() { Name = "Choose Plan", SelectedValue = "Pro" },
+            new() { Name = "Pick Region", SelectedValue = "US-East" },
+            new() { Name = "Notifications", SelectedValue = "On" },
         };
     }
 

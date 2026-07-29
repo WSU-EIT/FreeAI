@@ -30,8 +30,8 @@
 
 <div class="timer-component @Class" role="region" aria-label="Countdown timer">
     <div class="timer-display mb-2"
-         style="font-size:3em; font-family:monospace; text-align:center;"
-         aria-live="polite" aria-atomic="true" role="timer">
+            style="font-size:3em; font-family:monospace; text-align:center;"
+            aria-live="polite" aria-atomic="true" role="timer">
         @_remaining.ToString(DisplayFormat)
     </div>
 
@@ -43,11 +43,11 @@
             + (pct <= 10 ? " bg-danger" : "")
             + (_running ? " progress-bar-animated progress-bar-striped" : "");
         <div class="progress mb-2" style="height:24px;"
-             role="progressbar"
-             aria-valuenow="@((int)_remaining.TotalSeconds)"
-             aria-valuemin="0"
-             aria-valuemax="@((int)Duration.TotalSeconds)"
-             aria-label="Countdown progress">
+                role="progressbar"
+                aria-valuenow="@((int)_remaining.TotalSeconds)"
+                aria-valuemin="0"
+                aria-valuemax="@((int)Duration.TotalSeconds)"
+                aria-label="Countdown progress">
             <div class="@barClass" style="width:@(pct.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%">
                 @_remaining.ToString(DisplayFormat)
             </div>
@@ -61,13 +61,10 @@
                     disabled="@(_running || _remaining <= TimeSpan.Zero)">
                 <i class="fa-solid fa-play me-1"></i>Start
             </button>
-            <button type="button" class="btn btn-sm btn-warning"
-                    @onclick="Pause"
-                    disabled="@(!_running)">
+            <button type="button" class="btn btn-sm btn-warning" @onclick="Pause" disabled="@(!_running)">
                 <i class="fa-solid fa-pause me-1"></i>Pause
             </button>
-            <button type="button" class="btn btn-sm btn-secondary"
-                    @onclick="Reset">
+            <button type="button" class="btn btn-sm btn-secondary" @onclick="Reset">
                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
             </button>
         </div>

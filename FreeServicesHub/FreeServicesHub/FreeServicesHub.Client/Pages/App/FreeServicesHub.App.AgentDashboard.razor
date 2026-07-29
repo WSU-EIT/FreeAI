@@ -100,8 +100,7 @@
                         "Completed" => "success", "Failed" => "danger", _ => "secondary"
                     };
                     <div class="col-4 col-md-2">
-                        <div class="card text-center border-@color" role="region"
-                             aria-label="@kvp.Value @kvp.Key jobs">
+                        <div class="card text-center border-@color" role="region" aria-label="@kvp.Value @kvp.Key jobs">
                             <div class="card-body py-2">
                                 <h4 class="text-@color mb-0">@kvp.Value</h4>
                                 <small class="text-muted">@kvp.Key</small>
@@ -155,8 +154,8 @@
                 <div>
                     <label for="agentDashFilter" class="form-label small fw-bold mb-1">Search agents</label>
                     <input type="search" id="agentDashFilter" class="form-control form-control-sm"
-                           placeholder="Filter by name, host, OS…"
-                           @bind="_agentFilter" @bind:event="oninput" style="min-width:200px;" />
+                            placeholder="Filter by name, host, OS…"
+                            @bind="_agentFilter" @bind:event="oninput" style="min-width:200px;" />
                 </div>
                 <div>
                     <label for="agentDashStatusFilter" class="form-label small fw-bold mb-1">Status</label>
@@ -195,11 +194,11 @@
                         }
                         <div class="col">
                             <div class="card @cardClass h-100 cursor-pointer"
-                                 tabindex="0"
-                                 role="link"
-                                 aria-label="View details for agent @agent.Name, status @agent.Status"
-                                 @onclick="@(() => ViewAgent(agent.AgentId))"
-                                 @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ViewAgent(agent.AgentId); })">
+                                    tabindex="0"
+                                    role="link"
+                                    aria-label="View details for agent @agent.Name, status @agent.Status"
+                                    @onclick="@(() => ViewAgent(agent.AgentId))"
+                                    @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ViewAgent(agent.AgentId); })">
                                 <div class="card-body p-3">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h6 class="card-title mb-0 text-truncate" title="@agent.Name">@agent.Name</h6>
@@ -217,10 +216,10 @@
                                                 <span>@hb.CpuPercent.ToString("F1")%</span>
                                             </div>
                                             <div class="progress metric-bar" role="progressbar"
-                                                 aria-label="CPU usage" aria-valuenow="@((int)hb.CpuPercent)"
-                                                 aria-valuemin="0" aria-valuemax="100">
+                                                    aria-label="CPU usage" aria-valuenow="@((int)hb.CpuPercent)"
+                                                    aria-valuemin="0" aria-valuemax="100">
                                                 <div class="progress-bar @GetMetricClass(hb.CpuPercent, 70, 90)"
-                                                     style="width: @hb.CpuPercent.ToString("F0")%"></div>
+                                                        style="width: @hb.CpuPercent.ToString("F0")%"></div>
                                             </div>
                                         </div>
                                         <div class="mb-1">
@@ -229,10 +228,10 @@
                                                 <span>@hb.MemoryPercent.ToString("F1")%</span>
                                             </div>
                                             <div class="progress metric-bar" role="progressbar"
-                                                 aria-label="Memory usage" aria-valuenow="@((int)hb.MemoryPercent)"
-                                                 aria-valuemin="0" aria-valuemax="100">
+                                                    aria-label="Memory usage" aria-valuenow="@((int)hb.MemoryPercent)"
+                                                    aria-valuemin="0" aria-valuemax="100">
                                                 <div class="progress-bar @GetMetricClass(hb.MemoryPercent, 75, 90)"
-                                                     style="width: @hb.MemoryPercent.ToString("F0")%"></div>
+                                                        style="width: @hb.MemoryPercent.ToString("F0")%"></div>
                                             </div>
                                         </div>
                                         @if (_diskMetrics.ContainsKey(agent.AgentId)) {
@@ -243,10 +242,10 @@
                                                         <span>@disk.Percent.ToString("F1")%</span>
                                                     </div>
                                                     <div class="progress metric-bar" role="progressbar"
-                                                         aria-label="Disk @disk.Drive usage" aria-valuenow="@((int)disk.Percent)"
-                                                         aria-valuemin="0" aria-valuemax="100">
+                                                            aria-label="Disk @disk.Drive usage" aria-valuenow="@((int)disk.Percent)"
+                                                            aria-valuemin="0" aria-valuemax="100">
                                                         <div class="progress-bar @GetMetricClass(disk.Percent, 80, 95)"
-                                                             style="width: @disk.Percent.ToString("F0")%"></div>
+                                                                style="width: @disk.Percent.ToString("F0")%"></div>
                                                     </div>
                                                 </div>
                                             }
@@ -319,10 +318,10 @@
 
     protected class ActivityEntry
     {
-        public DateTime Timestamp { get; set; }
         public string AgentName { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
     }
 
     // ── Computed Properties ──

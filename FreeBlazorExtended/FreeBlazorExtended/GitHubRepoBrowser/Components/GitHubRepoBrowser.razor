@@ -18,34 +18,28 @@
             <div class="row g-2 align-items-end">
                 <div class="col-sm-6 col-md-3">
                     <label class="form-label small mb-1">Owner</label>
-                    <input class="form-control form-control-sm"
-                           @bind="_state.Owner"
-                           placeholder="e.g. microsoft" />
+                    <input class="form-control form-control-sm" @bind="_state.Owner" placeholder="e.g. microsoft" />
                 </div>
                 <div class="col-sm-6 col-md-3">
                     <label class="form-label small mb-1">Repository</label>
-                    <input class="form-control form-control-sm"
-                           @bind="_state.Repo"
-                           placeholder="e.g. blazor" />
+                    <input class="form-control form-control-sm" @bind="_state.Repo" placeholder="e.g. blazor" />
                 </div>
                 <div class="col-sm-6 col-md-3">
                     <label class="form-label small mb-1">Branch <span class="text-muted">(optional)</span></label>
                     <input class="form-control form-control-sm"
-                           @bind="_state.Branch"
-                           placeholder="leave empty for default" />
+                            @bind="_state.Branch"
+                            placeholder="leave empty for default" />
                 </div>
                 <div class="col-sm-6 col-md-3">
                     <label class="form-label small mb-1">PAT <span class="text-muted">(optional)</span></label>
                     <input type="password"
-                           class="form-control form-control-sm"
-                           @bind="_state.Pat"
-                           placeholder="GitHub Personal Access Token"
-                           autocomplete="new-password" />
+                            class="form-control form-control-sm"
+                            @bind="_state.Pat"
+                            placeholder="GitHub Personal Access Token"
+                            autocomplete="new-password" />
                 </div>
                 <div class="col-12 mt-1">
-                    <button class="btn btn-primary btn-sm"
-                            @onclick="BrowseAsync"
-                            disabled="@_state.IsLoadingTree">
+                    <button class="btn btn-primary btn-sm" @onclick="BrowseAsync" disabled="@_state.IsLoadingTree">
                         @if (_state.IsLoadingTree)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
@@ -94,9 +88,9 @@
     @* Repo header + branch selector *@
     <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
         <a href="https://github.com/@_state.Owner/@_state.Repo"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="fw-bold text-decoration-none">
+                target="_blank"
+                rel="noopener noreferrer"
+                class="fw-bold text-decoration-none">
             @_state.CurrentRepo.FullName
         </a>
         @if (!string.IsNullOrEmpty(_state.CurrentRepo.Language))
@@ -157,8 +151,7 @@
                         var isExpanded = _state.ExpandedPaths.TryGetValue(treeItem.Path, out var exp) && exp;
                         var isSelected = _state.SelectedItem?.Path == treeItem.Path;
 
-                        <li @key="@treeItem.Path"
-                            style="padding-left: @(depth * 14 + 4)px;">
+                        <li @key="@treeItem.Path" style="padding-left: @(depth * 14 + 4)px;">
                             @if (isDir)
                             {
                                 <button class="btn btn-link btn-sm p-0 px-1 text-start text-decoration-none text-body d-flex align-items-center w-100 gap-1"
@@ -212,16 +205,16 @@
                         @if (_state.LoadedFile?.HtmlUrl != null)
                         {
                             <a href="@_state.LoadedFile.HtmlUrl"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="btn btn-outline-secondary btn-sm py-0">View on GitHub</a>
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-outline-secondary btn-sm py-0">View on GitHub</a>
                         }
                         @if (_state.LoadedFile?.DownloadUrl != null)
                         {
                             <a href="@_state.LoadedFile.DownloadUrl"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="btn btn-outline-secondary btn-sm py-0">Raw</a>
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-outline-secondary btn-sm py-0">Raw</a>
                         }
                     </div>
                 </div>
@@ -236,9 +229,9 @@
                             @if (_state.LoadedFile?.DownloadUrl != null)
                             {
                                 <a href="@_state.LoadedFile.DownloadUrl"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="ms-1">Download raw file</a>
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ms-1">Download raw file</a>
                             }
                         </div>
                     </div>
@@ -259,9 +252,9 @@
                             @if (_state.LoadedFile?.DownloadUrl != null)
                             {
                                 <a href="@_state.LoadedFile.DownloadUrl"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="ms-1">Download</a>
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ms-1">Download</a>
                             }
                         </div>
                     </div>
@@ -269,7 +262,7 @@
                 else if (_state.DecodedContent != null)
                 {
                     <pre class="border-0 rounded-0 p-3 mb-0 @GitHubRepoService.GetLanguageClass(_state.SelectedItem.Path)"
-                         style="max-height: 60vh; overflow: auto; font-size: 0.78rem; white-space: pre; word-break: normal;">@_state.DecodedContent</pre>
+                            style="max-height: 60vh; overflow: auto; font-size: 0.78rem; white-space: pre; word-break: normal;">@_state.DecodedContent</pre>
                 }
                 else if (_state.LoadedFile != null && _state.LoadedFile.Content == null)
                 {
@@ -505,8 +498,7 @@
     private void AddVisibleChildren(
         Dictionary<string, List<GitHubTreeItem>> byParent,
         string parentPath,
-        List<GitHubTreeItem> result)
-    {
+        List<GitHubTreeItem> result){
         if (!byParent.TryGetValue(parentPath, out var children)) return;
         foreach (var child in children)
         {

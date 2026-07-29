@@ -18,33 +18,33 @@ public class RegistrationTests : IClassFixture<HubFixture>
     }
 
     [Fact]
-    public async Task RegisterAgent_WithValidKey_ReturnsTokenAndAgentId()
+    public async Task RegisterAgent_KeyCannotBeReused()
     {
+        // First registration should succeed
         var request = new
         {
             RegistrationKey = HubFixture.TestRegistrationKey,
-            Hostname = "TEST-PC",
-            OperatingSystem = "Windows 10 Enterprise",
+            Hostname = "REUSE-TEST-PC",
+            OperatingSystem = "Windows",
             Architecture = "X64",
             AgentVersion = "1.0.0",
             DotNetVersion = "10.0.0",
         };
 
-        var response = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
-        response.EnsureSuccessStatusCode();
+        var response1 = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
+        response1.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+        // Second registration with same key should fail (key is burned)
+        var response2 = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
+        response2.EnsureSuccessStatusCode();
 
-        // Verify response contains ApiClientToken
-        Assert.True(result.TryGetProperty("apiClientToken", out var tokenElement),
-            "Response should contain 'apiClientToken'");
-        Assert.False(string.IsNullOrEmpty(tokenElement.GetString()),
-            "ApiClientToken should not be empty");
-
-        // Verify response contains AgentId
-        Assert.True(result.TryGetProperty("agentId", out var agentIdElement),
-            "Response should contain 'agentId'");
-        Assert.NotEqual(Guid.Empty, agentIdElement.GetGuid());
+        var result2 = await response2.Content.ReadFromJsonAsync<JsonElement>();
+        if (result2.TryGetProperty("apiClientToken", out var tokenElement))
+        {
+            var token = tokenElement.GetString();
+            Assert.True(string.IsNullOrEmpty(token),
+                "Reused registration key should not produce a token");
+        }
     }
 
     [Fact]
@@ -75,32 +75,32 @@ public class RegistrationTests : IClassFixture<HubFixture>
     }
 
     [Fact]
-    public async Task RegisterAgent_KeyCannotBeReused()
+    public async Task RegisterAgent_WithValidKey_ReturnsTokenAndAgentId()
     {
-        // First registration should succeed
         var request = new
         {
             RegistrationKey = HubFixture.TestRegistrationKey,
-            Hostname = "REUSE-TEST-PC",
-            OperatingSystem = "Windows",
+            Hostname = "TEST-PC",
+            OperatingSystem = "Windows 10 Enterprise",
             Architecture = "X64",
             AgentVersion = "1.0.0",
             DotNetVersion = "10.0.0",
         };
 
-        var response1 = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
-        response1.EnsureSuccessStatusCode();
+        var response = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
+        response.EnsureSuccessStatusCode();
 
-        // Second registration with same key should fail (key is burned)
-        var response2 = await _fixture.Client.PostAsJsonAsync("/api/Data/RegisterAgent", request);
-        response2.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-        var result2 = await response2.Content.ReadFromJsonAsync<JsonElement>();
-        if (result2.TryGetProperty("apiClientToken", out var tokenElement))
-        {
-            var token = tokenElement.GetString();
-            Assert.True(string.IsNullOrEmpty(token),
-                "Reused registration key should not produce a token");
-        }
+        // Verify response contains ApiClientToken
+        Assert.True(result.TryGetProperty("apiClientToken", out var tokenElement),
+            "Response should contain 'apiClientToken'");
+        Assert.False(string.IsNullOrEmpty(tokenElement.GetString()),
+            "ApiClientToken should not be empty");
+
+        // Verify response contains AgentId
+        Assert.True(result.TryGetProperty("agentId", out var agentIdElement),
+            "Response should contain 'agentId'");
+        Assert.NotEqual(Guid.Empty, agentIdElement.GetGuid());
     }
 }

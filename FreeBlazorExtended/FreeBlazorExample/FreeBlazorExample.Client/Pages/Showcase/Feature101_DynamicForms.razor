@@ -12,14 +12,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A runtime form renderer that reads a JSON schema definition and produces a fully interactive HTML form — fields, validation rules, and submission handling — without any compiled Razor code."
-        WhatEli5="You describe what a form should look like in JSON (a text file), and the app draws the actual form for you. Change the JSON, the form changes — no deploy needed."
-        Who=@(new[]{ "Product owners who need to iterate on surveys or data-entry screens without a developer", "Developers building platforms where customers define their own intake forms", "Admins creating configuration wizards that vary by workflow or customer type" })
-        WhenUse=@(new[]{ "Forms that differ per customer, tenant, or workflow", "Any scenario where new form fields are added at runtime by non-developers", "Multi-step wizards or surveys that need versioning and submission history" })
-        WhenNot=@(new[]{ "Simple, static forms that never change — hard-coded Razor is simpler", "Forms requiring complex cross-field business logic better expressed in C#" })
-        Why="Every time a form changes, a developer writes Razor, tests, and deploys. Schema-driven rendering breaks that cycle — a product owner edits JSON and the change is live immediately."
-        TechNotes=@(new[]{ "FormSchema stored as a JSON column in the FormDefinition table via EF Core", "FormService: GetForms, GetForm, SaveForm, DeleteForm, GetSubmissions, SaveSubmission", "Renderer traverses schema node tree recursively — supports text, textarea, select, multi-select, radio, checkbox, date, number", "Validation rules (required, min/max length, regex) are encoded in the schema and re-evaluated client-side", "Submissions stored as JSON blobs keyed by FormDefinitionId + UserId + timestamp" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — schema + submissions in SQL", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+            WhatTechnical="A runtime form renderer that reads a JSON schema definition and produces a fully interactive HTML form — fields, validation rules, and submission handling — without any compiled Razor code."
+            WhatEli5="You describe what a form should look like in JSON (a text file), and the app draws the actual form for you. Change the JSON, the form changes — no deploy needed."
+            Who=@(new[]{ "Product owners who need to iterate on surveys or data-entry screens without a developer", "Developers building platforms where customers define their own intake forms", "Admins creating configuration wizards that vary by workflow or customer type" })
+            WhenUse=@(new[]{ "Forms that differ per customer, tenant, or workflow", "Any scenario where new form fields are added at runtime by non-developers", "Multi-step wizards or surveys that need versioning and submission history" })
+            WhenNot=@(new[]{ "Simple, static forms that never change — hard-coded Razor is simpler", "Forms requiring complex cross-field business logic better expressed in C#" })
+            Why="Every time a form changes, a developer writes Razor, tests, and deploys. Schema-driven rendering breaks that cycle — a product owner edits JSON and the change is live immediately."
+            TechNotes=@(new[]{ "FormSchema stored as a JSON column in the FormDefinition table via EF Core", "FormService: GetForms, GetForm, SaveForm, DeleteForm, GetSubmissions, SaveSubmission", "Renderer traverses schema node tree recursively — supports text, textarea, select, multi-select, radio, checkbox, date, number", "Validation rules (required, min/max length, regex) are encoded in the schema and re-evaluated client-side", "Submissions stored as JSON blobs keyed by FormDefinitionId + UserId + timestamp" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — schema + submissions in SQL", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
 
     <div class="row mt-4">
         <div class="col-lg-6">
@@ -181,44 +181,6 @@
     private FormSubmission? _selectedSubmission;
     private string _mode = "builder";
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadForms();
-    }
-
-    private async Task LoadForms()
-    {
-        _forms = await FormService.GetFormDefinitions(_tenantId);
-    }
-
-    private void SetMode(string mode)
-    {
-        _mode = mode;
-        _previewForm = null;
-        _submissionsForm = null;
-    }
-
-    private void EditForm(FormDefinition form)
-    {
-        _previewForm = null;
-        _submissionsForm = null;
-        _mode = "builder";
-    }
-
-    private void PreviewForm(FormDefinition form)
-    {
-        _previewForm = form;
-        _submissionsForm = null;
-    }
-
-    private async Task ViewSubmissions(FormDefinition form)
-    {
-        _submissionsForm = form;
-        _previewForm = null;
-        _selectedSubmission = null;
-        _submissions = await FormService.GetFormSubmissions(form.FormDefinitionId, _tenantId);
-    }
-
     private void ClearSubmissionsView()
     {
         _submissionsForm = null;
@@ -226,9 +188,11 @@
         _selectedSubmission = null;
     }
 
-    private void ViewSubmissionDetail(FormSubmission submission)
+    private void EditForm(FormDefinition form)
     {
-        _selectedSubmission = submission;
+        _previewForm = null;
+        _submissionsForm = null;
+        _mode = "builder";
     }
 
     private async Task HandleFormSaved(FormDefinition form)
@@ -259,6 +223,11 @@
             _previewForm = null;
             await LoadForms();
         }
+    }
+
+    private async Task LoadForms()
+    {
+        _forms = await FormService.GetFormDefinitions(_tenantId);
     }
 
     private async Task LoadSampleForms()
@@ -321,5 +290,36 @@
         await FormService.SaveFormDefinition(jobApplication);
 
         await LoadForms();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadForms();
+    }
+
+    private void PreviewForm(FormDefinition form)
+    {
+        _previewForm = form;
+        _submissionsForm = null;
+    }
+
+    private void SetMode(string mode)
+    {
+        _mode = mode;
+        _previewForm = null;
+        _submissionsForm = null;
+    }
+
+    private void ViewSubmissionDetail(FormSubmission submission)
+    {
+        _selectedSubmission = submission;
+    }
+
+    private async Task ViewSubmissions(FormDefinition form)
+    {
+        _submissionsForm = form;
+        _previewForm = null;
+        _selectedSubmission = null;
+        _submissions = await FormService.GetFormSubmissions(form.FormDefinitionId, _tenantId);
     }
 }

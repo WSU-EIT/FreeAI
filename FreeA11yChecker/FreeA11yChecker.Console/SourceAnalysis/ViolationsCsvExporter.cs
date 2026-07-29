@@ -105,6 +105,22 @@ public static class ViolationsCsvExporter
         return rows.Count;
     }
 
+    private static string FormatRow(string[] fields)
+    {
+        var sb = new StringBuilder();
+        for (var i = 0; i < fields.Length; i++)
+        {
+            if (i > 0)
+            {
+                sb.Append(',');
+            }
+
+            sb.Append(QuoteField(fields[i] ?? string.Empty));
+        }
+
+        return sb.ToString();
+    }
+
     private static string GetStringProp(JsonElement obj, params string[] names)
     {
         foreach (var name in names)
@@ -139,22 +155,6 @@ public static class ViolationsCsvExporter
             JsonValueKind.Undefined => string.Empty,
             _ => el.ToString(),
         };
-    }
-
-    private static string FormatRow(string[] fields)
-    {
-        var sb = new StringBuilder();
-        for (var i = 0; i < fields.Length; i++)
-        {
-            if (i > 0)
-            {
-                sb.Append(',');
-            }
-
-            sb.Append(QuoteField(fields[i] ?? string.Empty));
-        }
-
-        return sb.ToString();
     }
 
     private static string QuoteField(string value)

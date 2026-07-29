@@ -6,11 +6,6 @@
 public class PluginMetadata
 {
     /// <summary>
-    /// The unique Guid Id for this plugin.
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
     /// The name of the Author of this plugin.
     /// </summary>
     public string Author { get; set; } = String.Empty;
@@ -21,6 +16,11 @@ public class PluginMetadata
     public string ClassName { get; set; } = String.Empty;
 
     /// <summary>
+    /// The assembly-qualified type name for compiled plugins.
+    /// </summary>
+    public string? CompiledTypeName { get; set; }
+
+    /// <summary>
     /// Flag that indicates if this plugin contains sensitive data.
     /// </summary>
     public bool ContainsSensitiveData { get; set; }
@@ -29,6 +29,25 @@ public class PluginMetadata
     /// A description of this plugin.
     /// </summary>
     public string Description { get; set; } = String.Empty;
+
+    /// <summary>
+    /// Whether this plugin is enabled.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+    /// <summary>
+    /// The unique Guid Id for this plugin.
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// The main invoker function for this plugin (defaults to "Execute").
+    /// </summary>
+    public string Invoker { get; set; } = "Execute";
+
+    /// <summary>
+    /// Indicates this is a compiled plugin (from NuGet) vs a file-based plugin.
+    /// </summary>
+    public bool IsCompiled { get; set; }
 
     /// <summary>
     /// An option to limit this plugin to specific tenants.
@@ -45,11 +64,6 @@ public class PluginMetadata
     /// The namespace in which the plugin resides.
     /// </summary>
     public string Namespace { get; set; } = String.Empty;
-
-    /// <summary>
-    /// The main invoker function for this plugin (defaults to "Execute").
-    /// </summary>
-    public string Invoker { get; set; } = "Execute";
 
     /// <summary>
     /// An optional collection of Prompts that can be used to collect data for this plugin.
@@ -75,21 +89,6 @@ public class PluginMetadata
     /// The version of the plugin.
     /// </summary>
     public string Version { get; set; } = String.Empty;
-
-    /// <summary>
-    /// Whether this plugin is enabled.
-    /// </summary>
-    public bool Enabled { get; set; } = true;
-
-    /// <summary>
-    /// Indicates this is a compiled plugin (from NuGet) vs a file-based plugin.
-    /// </summary>
-    public bool IsCompiled { get; set; }
-
-    /// <summary>
-    /// The assembly-qualified type name for compiled plugins.
-    /// </summary>
-    public string? CompiledTypeName { get; set; }
 }
 
 /// <summary>

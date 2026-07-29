@@ -15,39 +15,6 @@ namespace FreeCodeReorganizer.Core;
 /// </summary>
 public static class PathExclusion
 {
-    public static bool IsExcluded(string path, IReadOnlyList<string>? patterns)
-    {
-        if (patterns is null || patterns.Count == 0 || string.IsNullOrEmpty(path))
-        {
-            return false;
-        }
-
-        string norm = path.Replace('/', '\\');
-        foreach (string raw in patterns)
-        {
-            string pattern = raw?.Trim() ?? string.Empty;
-            if (pattern.Length == 0)
-            {
-                continue;
-            }
-
-            if (pattern.IndexOf('*') < 0 && pattern.IndexOf('?') < 0)
-            {
-                // Plain text: substring match (slashes normalized).
-                if (norm.IndexOf(pattern.Replace('/', '\\'), StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    return true;
-                }
-            }
-            else if (GlobToRegex(pattern).IsMatch(norm))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private static Regex GlobToRegex(string glob)
     {
         var sb = new StringBuilder();
@@ -84,5 +51,37 @@ public static class PathExclusion
 
         sb.Append(".*");
         return new Regex("^" + sb + "$", RegexOptions.IgnoreCase);
+    }
+    public static bool IsExcluded(string path, IReadOnlyList<string>? patterns)
+    {
+        if (patterns is null || patterns.Count == 0 || string.IsNullOrEmpty(path))
+        {
+            return false;
+        }
+
+        string norm = path.Replace('/', '\\');
+        foreach (string raw in patterns)
+        {
+            string pattern = raw?.Trim() ?? string.Empty;
+            if (pattern.Length == 0)
+            {
+                continue;
+            }
+
+            if (pattern.IndexOf('*') < 0 && pattern.IndexOf('?') < 0)
+            {
+                // Plain text: substring match (slashes normalized).
+                if (norm.IndexOf(pattern.Replace('/', '\\'), StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
+            else if (GlobToRegex(pattern).IsMatch(norm))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

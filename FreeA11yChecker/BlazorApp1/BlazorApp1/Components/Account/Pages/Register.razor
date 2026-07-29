@@ -60,10 +60,32 @@
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = default!;
 
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<ApplicationUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
+        }
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
 
     protected override void OnInitialized()
     {
@@ -109,30 +131,12 @@
         }
     }
 
-    private ApplicationUser CreateUser()
-    {
-        try
-        {
-            return Activator.CreateInstance<ApplicationUser>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
-        }
-    }
-
-    private IUserEmailStore<ApplicationUser> GetEmailStore()
-    {
-        if (!UserManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-        }
-        return (IUserEmailStore<ApplicationUser>)UserStore;
-    }
-
     private sealed class InputModel
     {
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -143,10 +147,5 @@
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = "";
-
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; } = "";
     }
 }

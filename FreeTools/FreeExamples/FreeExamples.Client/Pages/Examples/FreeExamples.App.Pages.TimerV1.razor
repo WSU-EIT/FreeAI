@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Circular Timer Display"
-                     Description="The timer uses a rounded-circle border to create a clock-like display. display-3 shows the time large. The border color changes: border-primary during focus, border-success during break. This visual state change is instant feedback."
-                     Code="@_codeCircularTimer" />
+                    Description="The timer uses a rounded-circle border to create a clock-like display. display-3 shows the time large. The border color changes: border-primary during focus, border-success during break. This visual state change is instant feedback."
+                    Code="@_codeCircularTimer" />
             <InfoTip Title="System.Timers.Timer in Blazor"
-                     Description="The timer uses System.Timers.Timer with 1000ms interval. The Elapsed event calls InvokeAsync + StateHasChanged to safely update the UI from a background thread. The timer is disposed in IDisposable.Dispose() to prevent memory leaks."
-                     Code="@_codeTimerSetup" />
+                    Description="The timer uses System.Timers.Timer with 1000ms interval. The Elapsed event calls InvokeAsync + StateHasChanged to safely update the UI from a background thread. The timer is disposed in IDisposable.Dispose() to prevent memory leaks."
+                    Code="@_codeTimerSetup" />
             <InfoTip Title="Session State Machine"
-                     Description="The Pomodoro cycles between Focus (25 min) and Break (5 min). When the timer hits 0:00, it increments the session counter and switches state. The _isBreak flag controls which mode is active. This state-machine pattern is common in workflow UIs."
-                     Code="@_codeStateMachine" />
+                    Description="The Pomodoro cycles between Focus (25 min) and Break (5 min). When the timer hits 0:00, it increments the session counter and switches state. The _isBreak flag controls which mode is active. This state-machine pattern is common in workflow UIs."
+                    Code="@_codeStateMachine" />
         </div>
         <div class="text-center py-4">
             <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-3 @(_isBreak ? "border-success" : "border-primary")" style="width:200px;height:200px;">

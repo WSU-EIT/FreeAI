@@ -10,9 +10,9 @@ public class PluginPromptBuilder
     private PluginPromptBuilder() { }
 
     /// <summary>
-    /// Creates a new prompt builder.
+    /// Builds the prompt.
     /// </summary>
-    public static PluginPromptBuilder Create(string name) => new PluginPromptBuilder().WithName(name);
+    public PluginPrompt Build() => _prompt;
 
     /// <summary>
     /// Creates a button prompt.
@@ -44,6 +44,11 @@ public class PluginPromptBuilder
         => Create(name).OfType(PluginPromptType.CheckboxList).WithDescription(description);
 
     /// <summary>
+    /// Creates a new prompt builder.
+    /// </summary>
+    public static PluginPromptBuilder Create(string name) => new PluginPromptBuilder().WithName(name);
+
+    /// <summary>
     /// Creates a date prompt.
     /// </summary>
     public static PluginPromptBuilder Date(string name, string description = "")
@@ -68,6 +73,15 @@ public class PluginPromptBuilder
         => Create(name).OfType(PluginPromptType.Files).WithDescription(description);
 
     /// <summary>
+    /// Marks the prompt as initially hidden.
+    /// </summary>
+    public PluginPromptBuilder Hidden(bool hidden = true)
+    {
+        _prompt.Hidden = hidden;
+        return this;
+    }
+
+    /// <summary>
     /// Creates an HTML display prompt.
     /// </summary>
     public static PluginPromptBuilder Html(string name, string htmlContent)
@@ -86,6 +100,15 @@ public class PluginPromptBuilder
         => Create(name).OfType(PluginPromptType.Number).WithDescription(description);
 
     /// <summary>
+    /// Sets the prompt type.
+    /// </summary>
+    public PluginPromptBuilder OfType(PluginPromptType type)
+    {
+        _prompt.PromptType = type;
+        return this;
+    }
+
+    /// <summary>
     /// Creates a password prompt.
     /// </summary>
     public static PluginPromptBuilder Password(string name, string description = "")
@@ -96,6 +119,15 @@ public class PluginPromptBuilder
     /// </summary>
     public static PluginPromptBuilder Radio(string name, string description = "")
         => Create(name).OfType(PluginPromptType.Radio).WithDescription(description);
+
+    /// <summary>
+    /// Marks the prompt as required.
+    /// </summary>
+    public PluginPromptBuilder Required(bool required = true)
+    {
+        _prompt.Required = required;
+        return this;
+    }
 
     /// <summary>
     /// Creates a select dropdown prompt.
@@ -121,41 +153,12 @@ public class PluginPromptBuilder
     public static PluginPromptBuilder Time(string name, string description = "")
         => Create(name).OfType(PluginPromptType.Time).WithDescription(description);
 
-    // Fluent configuration methods
-
     /// <summary>
-    /// Sets the prompt name.
+    /// Sets the CSS class for the element.
     /// </summary>
-    public PluginPromptBuilder WithName(string name)
+    public PluginPromptBuilder WithClass(string elementClass)
     {
-        _prompt.Name = name;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the prompt type.
-    /// </summary>
-    public PluginPromptBuilder OfType(PluginPromptType type)
-    {
-        _prompt.PromptType = type;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the prompt description.
-    /// </summary>
-    public PluginPromptBuilder WithDescription(string description)
-    {
-        _prompt.Description = description;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the prompt label (alias for WithDescription).
-    /// </summary>
-    public PluginPromptBuilder WithPrompt(string prompt)
-    {
-        _prompt.Prompt = prompt;
+        _prompt.ElementClass = elementClass;
         return this;
     }
 
@@ -169,38 +172,11 @@ public class PluginPromptBuilder
     }
 
     /// <summary>
-    /// Marks the prompt as required.
+    /// Sets the prompt description.
     /// </summary>
-    public PluginPromptBuilder Required(bool required = true)
+    public PluginPromptBuilder WithDescription(string description)
     {
-        _prompt.Required = required;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the sort order.
-    /// </summary>
-    public PluginPromptBuilder WithSortOrder(int sortOrder)
-    {
-        _prompt.SortOrder = sortOrder;
-        return this;
-    }
-
-    /// <summary>
-    /// Marks the prompt as initially hidden.
-    /// </summary>
-    public PluginPromptBuilder Hidden(bool hidden = true)
-    {
-        _prompt.Hidden = hidden;
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the CSS class for the element.
-    /// </summary>
-    public PluginPromptBuilder WithClass(string elementClass)
-    {
-        _prompt.ElementClass = elementClass;
+        _prompt.Description = description;
         return this;
     }
 
@@ -210,6 +186,17 @@ public class PluginPromptBuilder
     public PluginPromptBuilder WithFunction(string function)
     {
         _prompt.Function = function;
+        return this;
+    }
+
+    // Fluent configuration methods
+
+    /// <summary>
+    /// Sets the prompt name.
+    /// </summary>
+    public PluginPromptBuilder WithName(string name)
+    {
+        _prompt.Name = name;
         return this;
     }
 
@@ -241,9 +228,22 @@ public class PluginPromptBuilder
     }
 
     /// <summary>
-    /// Builds the prompt.
+    /// Sets the prompt label (alias for WithDescription).
     /// </summary>
-    public PluginPrompt Build() => _prompt;
+    public PluginPromptBuilder WithPrompt(string prompt)
+    {
+        _prompt.Prompt = prompt;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the sort order.
+    /// </summary>
+    public PluginPromptBuilder WithSortOrder(int sortOrder)
+    {
+        _prompt.SortOrder = sortOrder;
+        return this;
+    }
 
     /// <summary>
     /// Implicit conversion to PluginPrompt.

@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Upload-Preview-Import Workflow"
-                     Description="The three-stage workflow: 1) Upload file (drag-drop zone), 2) Preview data in a table with validation warnings, 3) Confirm import. Each stage is gated on the previous. This is the Salesforce import wizard and Azure DevOps bulk update pattern."
-                     Code="@_codeWorkflow" />
+                    Description="The three-stage workflow: 1) Upload file (drag-drop zone), 2) Preview data in a table with validation warnings, 3) Confirm import. Each stage is gated on the previous. This is the Salesforce import wizard and Azure DevOps bulk update pattern."
+                    Code="@_codeWorkflow" />
             <InfoTip Title="CSV Preview Table"
-                     Description="After upload, the data is shown in a table-bordered table-sm preview. Rows with validation errors get table-warning highlighting. An alert shows the total rows and error count. Users can fix issues before committing the import."
-                     Code="@_codePreviewTable" />
+                    Description="After upload, the data is shown in a table-bordered table-sm preview. Rows with validation errors get table-warning highlighting. An alert shows the total rows and error count. Users can fix issues before committing the import."
+                    Code="@_codePreviewTable" />
             <InfoTip Title="Import Progress Bar"
-                     Description="During import, a progress-bar-striped progress-bar-animated shows progress. The percentage updates as rows are processed. On completion, an alert-success confirms the count. This feedback pattern prevents users from thinking the app is frozen."
-                     Code="@_codeImportProgress" />
+                    Description="During import, a progress-bar-striped progress-bar-animated shows progress. The percentage updates as rows are processed. On completion, an alert-success confirms the count. This feedback pattern prevents users from thinking the app is frozen."
+                    Code="@_codeImportProgress" />
         </div>
 
         @if (!_fileUploaded) {

@@ -135,11 +135,11 @@
     protected string _sizeClass = "";
 
     /// <summary>
-    /// Diameter of the spinner ring.
-    /// Accepted values: <c>"sm"</c> (20 px), <c>"md"</c> (40 px, default), <c>"lg"</c> (60 px).
-    /// Use <c>"sm"</c> inside buttons or inline text; use <c>"lg"</c> for full-panel placeholders.
+    /// When <c>true</c>, suppresses the default 200 px minimum height so the spinner
+    /// sits inline with surrounding content (e.g., next to a label or inside a button).
+    /// Default: <c>false</c>.
     /// </summary>
-    [Parameter] public string Size { get; set; } = "md";
+    [Parameter] public bool Inline { get; set; } = false;
 
     /// <summary>
     /// Explanatory text displayed below the spinner ring.
@@ -156,11 +156,11 @@
     [Parameter] public bool ShowOverlay { get; set; } = false;
 
     /// <summary>
-    /// When <c>true</c>, suppresses the default 200 px minimum height so the spinner
-    /// sits inline with surrounding content (e.g., next to a label or inside a button).
-    /// Default: <c>false</c>.
+    /// Diameter of the spinner ring.
+    /// Accepted values: <c>"sm"</c> (20 px), <c>"md"</c> (40 px, default), <c>"lg"</c> (60 px).
+    /// Use <c>"sm"</c> inside buttons or inline text; use <c>"lg"</c> for full-panel placeholders.
     /// </summary>
-    [Parameter] public bool Inline { get; set; } = false;
+    [Parameter] public string Size { get; set; } = "md";
 
     protected override void OnInitialized()
     {

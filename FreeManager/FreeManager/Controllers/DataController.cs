@@ -26,8 +26,7 @@ public partial class DataController : ControllerBase
         ICustomAuthentication auth,
         IHubContext<freemanagerHub, IsrHub> hubContext,
         IConfigurationHelper configHelper,
-        Plugins.IPlugins diPlugins)
-    {
+        Plugins.IPlugins diPlugins){
         da = daInjection;
         authenticationProviders = auth;
         configurationHelper = configHelper;

@@ -15,6 +15,30 @@ public class GlbaEventResponse
     public Guid? EventId { get; set; }
 
     /// <summary>
+    /// Returns true if this was a bulk access event (multiple subjects).
+    /// </summary>
+    [JsonIgnore]
+    public bool IsBulkAccess => SubjectCount > 1;
+
+    /// <summary>
+    /// Returns true if the event was a duplicate of an existing event.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsDuplicate => Status == "duplicate";
+
+    /// <summary>
+    /// Returns true if the event was accepted successfully.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsSuccess => Status == "accepted";
+
+    /// <summary>
+    /// Additional message providing details about the status.
+    /// </summary>
+    [JsonPropertyName("message")]
+    public string? Message { get; set; }
+
+    /// <summary>
     /// The timestamp when the event was received by the server.
     /// </summary>
     [JsonPropertyName("receivedAt")]
@@ -28,35 +52,11 @@ public class GlbaEventResponse
     public string Status { get; set; } = string.Empty;
 
     /// <summary>
-    /// Additional message providing details about the status.
-    /// </summary>
-    [JsonPropertyName("message")]
-    public string? Message { get; set; }
-
-    /// <summary>
     /// Number of data subjects affected by this event.
     /// For single-subject access this is 1, for bulk exports this is the count of SubjectIds.
     /// </summary>
     [JsonPropertyName("subjectCount")]
     public int SubjectCount { get; set; } = 1;
-
-    /// <summary>
-    /// Returns true if the event was accepted successfully.
-    /// </summary>
-    [JsonIgnore]
-    public bool IsSuccess => Status == "accepted";
-
-    /// <summary>
-    /// Returns true if the event was a duplicate of an existing event.
-    /// </summary>
-    [JsonIgnore]
-    public bool IsDuplicate => Status == "duplicate";
-
-    /// <summary>
-    /// Returns true if this was a bulk access event (multiple subjects).
-    /// </summary>
-    [JsonIgnore]
-    public bool IsBulkAccess => SubjectCount > 1;
 }
 
 /// <summary>
@@ -69,12 +69,6 @@ public class GlbaBatchResponse
     /// </summary>
     [JsonPropertyName("accepted")]
     public int Accepted { get; set; }
-
-    /// <summary>
-    /// The number of events that were rejected due to errors.
-    /// </summary>
-    [JsonPropertyName("rejected")]
-    public int Rejected { get; set; }
 
     /// <summary>
     /// The number of events that were duplicates.
@@ -95,6 +89,12 @@ public class GlbaBatchResponse
     public bool IsSuccess => Rejected == 0 && Errors.Count == 0;
 
     /// <summary>
+    /// The number of events that were rejected due to errors.
+    /// </summary>
+    [JsonPropertyName("rejected")]
+    public int Rejected { get; set; }
+
+    /// <summary>
     /// The total number of events processed.
     /// </summary>
     [JsonIgnore]
@@ -107,14 +107,13 @@ public class GlbaBatchResponse
 public class GlbaBatchError
 {
     /// <summary>
-    /// The zero-based index of the event in the batch that caused the error.
-    /// </summary>
-    [JsonPropertyName("index")]
-    public int Index { get; set; }
-
-    /// <summary>
     /// The error message describing what went wrong.
     /// </summary>
     [JsonPropertyName("error")]
     public string Error { get; set; } = string.Empty;
+    /// <summary>
+    /// The zero-based index of the event in the batch that caused the error.
+    /// </summary>
+    [JsonPropertyName("index")]
+    public int Index { get; set; }
 }

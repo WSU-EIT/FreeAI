@@ -60,10 +60,10 @@ namespace FreeAI.LocalTests
             await DataAccess.ChatWithAi("Hello, AI!", settings);
         }
 
-        private static int ParseInt(string? value, int fallback)
-            => int.TryParse(value, out var n) ? n : fallback;
-
         private static double ParseDouble(string? value, double fallback)
             => double.TryParse(value, out var x) ? x : fallback;
+
+        private static int ParseInt(string? value, int fallback)
+            => int.TryParse(value, out var n) ? n : fallback;
     }
 }

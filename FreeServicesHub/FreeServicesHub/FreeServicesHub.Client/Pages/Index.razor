@@ -26,12 +26,11 @@
 }
 
 @code {
-    [Parameter] public string? TenantCode { get; set; }
-
     protected bool _loadedData = false;
     protected string _pageName = "home";
 
     protected Index_App AppModule = new Index_App();
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose()
     {

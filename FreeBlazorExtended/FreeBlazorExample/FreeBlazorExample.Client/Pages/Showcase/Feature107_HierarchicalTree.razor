@@ -12,14 +12,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A recursive Razor component that renders an arbitrarily deep tree of nodes with expand/collapse, multi-select, drag-to-reparent, and a cycle-prevention guard that walks the ancestor chain before accepting any drop."
-        WhatEli5="An org chart or folder tree that you can drag around — and it's smart enough to stop you from accidentally making someone their own boss (which would create an infinite loop)."
-        Who=@(new[]{ "Admins building category or menu hierarchies", "Developers modelling org charts, folder structures, or multi-level config trees", "UX designers prototyping any parent-child relationship that users need to reorganise" })
-        WhenUse=@(new[]{ "Org charts, department hierarchies, folder trees", "Navigation menu builders where items can have sub-items", "Any data model with a self-referencing ParentId foreign key that users need to edit" })
-        WhenNot=@(new[]{ "Flat lists or two-level parent/child where a simple <select> is enough", "Very large trees (10 000+ nodes) — virtual rendering would be needed for performance" })
-        Why="Recursive rendering and drag-and-drop reparenting are easy to get wrong — especially cycle detection, which most hand-rolled tree UIs skip entirely. This packages the correct algorithm once so it doesn't need reinventing per project."
-        TechNotes=@(new[]{ "Component calls itself recursively via <HierarchicalTree Nodes='node.Children' />", "Cycle prevention: on drop, walk from the drag target upward through ParentId; if the dragged node appears, reject", "TreeService: GetTree, GetNode, SaveNode, DeleteNode, MoveNode(nodeId, newParentId)", "Node payload: arbitrary JSON string stored alongside the typed fields — survives unknown future fields", "Visualization modes: indented list, connector lines, compact badges — switched via a Mode parameter" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI component (service optional)", ["Persisted"] = "Via calling service — not self-contained", ["Real-time"] = "No", ["Auth required"] = "Optional", ["Max tested depth"] = "~20 levels" }) />
+            WhatTechnical="A recursive Razor component that renders an arbitrarily deep tree of nodes with expand/collapse, multi-select, drag-to-reparent, and a cycle-prevention guard that walks the ancestor chain before accepting any drop."
+            WhatEli5="An org chart or folder tree that you can drag around — and it's smart enough to stop you from accidentally making someone their own boss (which would create an infinite loop)."
+            Who=@(new[]{ "Admins building category or menu hierarchies", "Developers modelling org charts, folder structures, or multi-level config trees", "UX designers prototyping any parent-child relationship that users need to reorganise" })
+            WhenUse=@(new[]{ "Org charts, department hierarchies, folder trees", "Navigation menu builders where items can have sub-items", "Any data model with a self-referencing ParentId foreign key that users need to edit" })
+            WhenNot=@(new[]{ "Flat lists or two-level parent/child where a simple <select> is enough", "Very large trees (10 000+ nodes) — virtual rendering would be needed for performance" })
+            Why="Recursive rendering and drag-and-drop reparenting are easy to get wrong — especially cycle detection, which most hand-rolled tree UIs skip entirely. This packages the correct algorithm once so it doesn't need reinventing per project."
+            TechNotes=@(new[]{ "Component calls itself recursively via <HierarchicalTree Nodes='node.Children' />", "Cycle prevention: on drop, walk from the drag target upward through ParentId; if the dragged node appears, reject", "TreeService: GetTree, GetNode, SaveNode, DeleteNode, MoveNode(nodeId, newParentId)", "Node payload: arbitrary JSON string stored alongside the typed fields — survives unknown future fields", "Visualization modes: indented list, connector lines, compact badges — switched via a Mode parameter" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI component (service optional)", ["Persisted"] = "Via calling service — not self-contained", ["Real-time"] = "No", ["Auth required"] = "Optional", ["Max tested depth"] = "~20 levels" }) />
 
     <div class="row mt-4">
         <div class="col-lg-7">
@@ -187,6 +187,24 @@
     private List<string> _nodePath = new();
     private string? _exportedJson;
 
+    private void ClearTree()
+    {
+        TreeService.ClearAllNodes();
+        _selectedNode = null;
+        _nodePath.Clear();
+        StateHasChanged();
+    }
+
+    private async Task ExportTreeData()
+    {
+        var allNodes = await TreeService.GetTreeNodes(Guid.NewGuid()); // This gets empty since we clear between tests
+        // For demo, just show the structure
+        _exportedJson = System.Text.Json.JsonSerializer.Serialize(
+            new { message = "Tree data would be exported here as JSON", nodeCount = "N/A" },
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
+        );
+    }
+
     private async Task HandleNodeSelected(TreeNode node)
     {
         _selectedNode = node;
@@ -237,23 +255,5 @@
         }
 
         StateHasChanged();
-    }
-
-    private void ClearTree()
-    {
-        TreeService.ClearAllNodes();
-        _selectedNode = null;
-        _nodePath.Clear();
-        StateHasChanged();
-    }
-
-    private async Task ExportTreeData()
-    {
-        var allNodes = await TreeService.GetTreeNodes(Guid.NewGuid()); // This gets empty since we clear between tests
-        // For demo, just show the structure
-        _exportedJson = System.Text.Json.JsonSerializer.Serialize(
-            new { message = "Tree data would be exported here as JSON", nodeCount = "N/A" },
-            new System.Text.Json.JsonSerializerOptions { WriteIndented = true }
-        );
     }
 }

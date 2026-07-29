@@ -21,14 +21,14 @@
 @code {
     [Parameter] public List<SelectionItem> Selections { get; set; } = new();
 
-    public class SelectionItem {
-        public string Label { get; set; } = "";
-        public string Value { get; set; } = "";
-    }
-
     private string TruncateText(string text, int maxLength) {
         if (string.IsNullOrEmpty(text)) return "";
         if (text.Length <= maxLength) return text;
         return text[..(maxLength - 3)] + "...";
+    }
+
+    public class SelectionItem {
+        public string Label { get; set; } = "";
+        public string Value { get; set; } = "";
     }
 }

@@ -6,77 +6,49 @@ namespace FreeManager.Client;
 /// </summary>
 public static class FMFileTemplates
 {
-    public static string GetDefaultContent(string fileType, string fileName, string projectName)
+    private static string GetControllerTemplate(string projectName, string projectNameUpper)
     {
-        string projectNameUpper = projectName.ToUpper();
+        return $@"using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-        return fileType switch {
-            "DataObjects" => GetDataObjectsTemplate(projectName, projectNameUpper),
-            "DataAccess" => GetDataAccessTemplate(projectName, projectNameUpper),
-            "Controller" => GetControllerTemplate(projectName, projectNameUpper),
-            "RazorComponent" => GetRazorComponentTemplate(projectName, fileName),
-            "EFModel" => GetEFModelTemplate(projectName, projectNameUpper),
-            "GlobalSettings" => GetGlobalSettingsTemplate(projectName, projectNameUpper),
-            "Stylesheet" => $"/* {fileName} - {projectName} Styles */\n\n/* Add your custom styles here */\n",
-            _ => $"// {fileName}\n// {projectName} Project\n\n"
-        };
-    }
+namespace FreeManager.Server.Controllers;
 
-    private static string GetDataObjectsTemplate(string projectName, string projectNameUpper)
-    {
-        return $@"namespace FreeManager;
-
-#region {projectName} Custom DataObjects
+#region {projectName} API Endpoints
 // ============================================================================
 // {projectNameUpper} PROJECT EXTENSION
-// Add your custom DTOs here. These extend the base FreeCRM DataObjects.
+// Add your API endpoints here. All endpoints should use [Authorize].
 // ============================================================================
 
-public partial class DataObjects
+public partial class DataController
 {{
-    // --------------------------------------------------------
-    // EXAMPLE: Create a new DTO
-    // --------------------------------------------------------
-
     /// <summary>
-    /// Example entity for your custom data.
+    /// Get all items for the current tenant.
     /// </summary>
-    public class {projectName}Item
+    [HttpGet]
+    [Authorize]
+    [Route(""~/api/Data/{projectName}_GetItems"")]
+    public async Task<ActionResult<List<DataObjects.{projectName}Item>>> {projectName}_GetItems()
     {{
-        public Guid Id {{ get; set; }} = Guid.NewGuid();
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
-        public DateTime CreatedAt {{ get; set; }} = DateTime.UtcNow;
-        public bool IsActive {{ get; set; }} = true;
+        return await da.{projectName}_GetItems(CurrentUser);
     }}
 
     /// <summary>
-    /// Request to create a new item.
+    /// Create a new item.
     /// </summary>
-    public class {projectName}CreateRequest
+    [HttpPost]
+    [Authorize]
+    [Route(""~/api/Data/{projectName}_CreateItem"")]
+    public async Task<ActionResult<DataObjects.{projectName}ItemResponse>> {projectName}_CreateItem(
+        [FromBody] DataObjects.{projectName}CreateRequest request)
     {{
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
+        return await da.{projectName}_CreateItem(request, CurrentUser);
     }}
 
-    /// <summary>
-    /// Response with item details.
-    /// </summary>
-    public class {projectName}ItemResponse
-    {{
-        public Guid Id {{ get; set; }}
-        public string Name {{ get; set; }} = string.Empty;
-        public DateTime CreatedAt {{ get; set; }}
-    }}
-
-    // --------------------------------------------------------
-    // TIP: Extend existing FreeCRM types like this:
-    // --------------------------------------------------------
-
-    // public partial class User
-    // {{
-    //     public string? CustomField {{ get; set; }}
-    // }}
+    // TIP: HTTP Methods
+    // [HttpGet]    - Read operations
+    // [HttpPost]   - Create operations
+    // [HttpPut]    - Update operations
+    // [HttpDelete] - Delete operations
 }}
 
 #endregion
@@ -152,135 +124,80 @@ public partial class DataAccess
 ";
     }
 
-    private static string GetControllerTemplate(string projectName, string projectNameUpper)
+    private static string GetDataObjectsTemplate(string projectName, string projectNameUpper)
     {
-        return $@"using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+        return $@"namespace FreeManager;
 
-namespace FreeManager.Server.Controllers;
-
-#region {projectName} API Endpoints
+#region {projectName} Custom DataObjects
 // ============================================================================
 // {projectNameUpper} PROJECT EXTENSION
-// Add your API endpoints here. All endpoints should use [Authorize].
+// Add your custom DTOs here. These extend the base FreeCRM DataObjects.
 // ============================================================================
 
-public partial class DataController
+public partial class DataObjects
 {{
+    // --------------------------------------------------------
+    // EXAMPLE: Create a new DTO
+    // --------------------------------------------------------
+
     /// <summary>
-    /// Get all items for the current tenant.
+    /// Example entity for your custom data.
     /// </summary>
-    [HttpGet]
-    [Authorize]
-    [Route(""~/api/Data/{projectName}_GetItems"")]
-    public async Task<ActionResult<List<DataObjects.{projectName}Item>>> {projectName}_GetItems()
+    public class {projectName}Item
     {{
-        return await da.{projectName}_GetItems(CurrentUser);
+        public Guid Id {{ get; set; }} = Guid.NewGuid();
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
+        public DateTime CreatedAt {{ get; set; }} = DateTime.UtcNow;
+        public bool IsActive {{ get; set; }} = true;
     }}
 
     /// <summary>
-    /// Create a new item.
+    /// Request to create a new item.
     /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route(""~/api/Data/{projectName}_CreateItem"")]
-    public async Task<ActionResult<DataObjects.{projectName}ItemResponse>> {projectName}_CreateItem(
-        [FromBody] DataObjects.{projectName}CreateRequest request)
+    public class {projectName}CreateRequest
     {{
-        return await da.{projectName}_CreateItem(request, CurrentUser);
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
     }}
 
-    // TIP: HTTP Methods
-    // [HttpGet]    - Read operations
-    // [HttpPost]   - Create operations
-    // [HttpPut]    - Update operations
-    // [HttpDelete] - Delete operations
+    /// <summary>
+    /// Response with item details.
+    /// </summary>
+    public class {projectName}ItemResponse
+    {{
+        public Guid Id {{ get; set; }}
+        public string Name {{ get; set; }} = string.Empty;
+        public DateTime CreatedAt {{ get; set; }}
+    }}
+
+    // --------------------------------------------------------
+    // TIP: Extend existing FreeCRM types like this:
+    // --------------------------------------------------------
+
+    // public partial class User
+    // {{
+    //     public string? CustomField {{ get; set; }}
+    // }}
 }}
 
 #endregion
 ";
     }
-
-    private static string GetRazorComponentTemplate(string projectName, string fileName)
+    public static string GetDefaultContent(string fileType, string fileName, string projectName)
     {
-        return $@"@implements IDisposable
-@inject BlazorDataModel Model
-@inject HttpClient Http
+        string projectNameUpper = projectName.ToUpper();
 
-@* ============================================================================
-   {fileName}
-   {projectName} Custom Component
-   ============================================================================ *@
-
-@if (Model.Loaded && Model.LoggedIn) {{
-    <div class=""container-fluid"">
-        <h1 class=""page-title"">
-            <i class=""fa-solid fa-cube me-2""></i>
-            {projectName} Component
-        </h1>
-
-        @if (_loading) {{
-            <LoadingMessage />
-        }} else {{
-            <div class=""card"">
-                <div class=""card-body"">
-                    <p>Items loaded: @_items.Count</p>
-
-                    @foreach (var item in _items) {{
-                        <div class=""mb-2"">
-                            <strong>@item.Name</strong>
-                        </div>
-                    }}
-
-                    @if (_items.Count == 0) {{
-                        <p class=""text-muted"">No items yet.</p>
-                    }}
-                </div>
-            </div>
-        }}
-    </div>
-}}
-
-@code {{
-    private bool _loading = true;
-    private bool _loadedData = false;
-    private List<DataObjects.{projectName}Item> _items = new();
-
-    public void Dispose()
-    {{
-        Model.OnChange -= StateHasChanged;
-    }}
-
-    protected override void OnInitialized()
-    {{
-        Model.OnChange += StateHasChanged;
-    }}
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {{
-        if (Model.Loaded && Model.LoggedIn && !_loadedData) {{
-            _loadedData = true;
-            await LoadData();
-        }}
-    }}
-
-    private async Task LoadData()
-    {{
-        try {{
-            // TODO: Call your API endpoint
-            // _items = await Http.GetFromJsonAsync<List<DataObjects.{projectName}Item>>(
-            //     ""api/Data/{projectName}_GetItems"") ?? new();
-
-            _items = new(); // Placeholder
-        }} catch (Exception ex) {{
-            await Helpers.ConsoleLog($""Error: {{ex.Message}}"");
-        }}
-
-        _loading = false;
-        StateHasChanged();
-    }}
-}}
-";
+        return fileType switch {
+            "DataObjects" => GetDataObjectsTemplate(projectName, projectNameUpper),
+            "DataAccess" => GetDataAccessTemplate(projectName, projectNameUpper),
+            "Controller" => GetControllerTemplate(projectName, projectNameUpper),
+            "RazorComponent" => GetRazorComponentTemplate(projectName, fileName),
+            "EFModel" => GetEFModelTemplate(projectName, projectNameUpper),
+            "GlobalSettings" => GetGlobalSettingsTemplate(projectName, projectNameUpper),
+            "Stylesheet" => $"/* {fileName} - {projectName} Styles */\n\n/* Add your custom styles here */\n",
+            _ => $"// {fileName}\n// {projectName} Project\n\n"
+        };
     }
 
     private static string GetEFModelTemplate(string projectName, string projectNameUpper)
@@ -388,6 +305,88 @@ public static partial class GlobalSettings
 }}
 
 #endregion
+";
+    }
+
+    private static string GetRazorComponentTemplate(string projectName, string fileName)
+    {
+        return $@"@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@* ============================================================================
+   {fileName}
+   {projectName} Custom Component
+   ============================================================================ *@
+
+@if (Model.Loaded && Model.LoggedIn) {{
+    <div class=""container-fluid"">
+        <h1 class=""page-title"">
+            <i class=""fa-solid fa-cube me-2""></i>
+            {projectName} Component
+        </h1>
+
+        @if (_loading) {{
+            <LoadingMessage />
+        }} else {{
+            <div class=""card"">
+                <div class=""card-body"">
+                    <p>Items loaded: @_items.Count</p>
+
+                    @foreach (var item in _items) {{
+                        <div class=""mb-2"">
+                            <strong>@item.Name</strong>
+                        </div>
+                    }}
+
+                    @if (_items.Count == 0) {{
+                        <p class=""text-muted"">No items yet.</p>
+                    }}
+                </div>
+            </div>
+        }}
+    </div>
+}}
+
+@code {{
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private List<DataObjects.{projectName}Item> _items = new();
+
+    public void Dispose()
+    {{
+        Model.OnChange -= StateHasChanged;
+    }}
+
+    protected override void OnInitialized()
+    {{
+        Model.OnChange += StateHasChanged;
+    }}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {{
+        if (Model.Loaded && Model.LoggedIn && !_loadedData) {{
+            _loadedData = true;
+            await LoadData();
+        }}
+    }}
+
+    private async Task LoadData()
+    {{
+        try {{
+            // TODO: Call your API endpoint
+            // _items = await Http.GetFromJsonAsync<List<DataObjects.{projectName}Item>>(
+            //     ""api/Data/{projectName}_GetItems"") ?? new();
+
+            _items = new(); // Placeholder
+        }} catch (Exception ex) {{
+            await Helpers.ConsoleLog($""Error: {{ex.Message}}"");
+        }}
+
+        _loading = false;
+        StateHasChanged();
+    }}
+}}
 ";
     }
 }

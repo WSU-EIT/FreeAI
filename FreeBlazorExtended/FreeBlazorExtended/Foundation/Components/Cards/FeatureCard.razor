@@ -16,10 +16,10 @@
 
     Example:
         <FeatureCard Title="AI Assistant"
-                     Description="Ask questions in plain language and get instant answers."
-                     IconClass="fas fa-robot"
-                     Features="@(new() { "Streaming responses", "Citation links", "Code blocks" })"
-                     Highlighted="true">
+                Description="Ask questions in plain language and get instant answers."
+                IconClass="fas fa-robot"
+                Features="@(new() { "Streaming responses", "Citation links", "Code blocks" })"
+                Highlighted="true">
             <a href="/ai" class="btn btn-primary btn-sm">Try it</a>
         </FeatureCard>
 *@
@@ -145,10 +145,10 @@
     protected string _cardClass = "";
 
     /// <summary>
-    /// The feature name displayed as the card heading.
-    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for call-to-action buttons, links, or any supplemental UI.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// One or two sentences that explain what this feature does and why it matters.
@@ -156,13 +156,6 @@
     /// Optional — omit for a compact title-only card.
     /// </summary>
     [Parameter] public string Description { get; set; } = "";
-
-    /// <summary>
-    /// FontAwesome icon class rendered in the decorative icon box to the left of the content.
-    /// Example: <c>"fas fa-robot"</c>, <c>"fa-solid fa-chart-line"</c>.
-    /// Optional — omit to hide the icon box entirely.
-    /// </summary>
-    [Parameter] public string IconClass { get; set; } = "";
 
     /// <summary>
     /// Bullet-point list of sub-capabilities or highlights rendered as an unordered list
@@ -179,10 +172,17 @@
     [Parameter] public bool Highlighted { get; set; } = false;
 
     /// <summary>
-    /// Optional render fragment displayed in the card footer, separated by a top border.
-    /// Use for call-to-action buttons, links, or any supplemental UI.
+    /// FontAwesome icon class rendered in the decorative icon box to the left of the content.
+    /// Example: <c>"fas fa-robot"</c>, <c>"fa-solid fa-chart-line"</c>.
+    /// Optional — omit to hide the icon box entirely.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string IconClass { get; set; } = "";
+
+    /// <summary>
+    /// The feature name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
 
     protected override void OnInitialized()
     {

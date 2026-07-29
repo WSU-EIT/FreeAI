@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A bound List&lt;string&gt; editor that renders the current items with per-item edit and delete buttons, an add-new text input at the bottom, and optional drag-to-reorder — all backed by a two-way Value/ValueChanged binding."
-        WhatEli5="A simple component that lets users manage a list of text entries — add new ones, edit or delete existing ones, and drag to reorder — without writing any list-management code yourself."
-        Who=@(new[]{ "Form builders adding open-ended list fields (required skills, allowed domains, tags)", "Config screens where an admin maintains a list of values (email allowlists, keywords, menu items)", "Developers who would otherwise write add/remove/edit list logic inline on every page it's needed" })
-        WhenUse=@(new[]{ "Any form field that holds a variable-length list of strings", "Settings screens for maintaining lists of values (IP allowlists, email recipients, categories)", "Content editors where items need to be reordered" })
-        WhenNot=@(new[]{ "Selecting from a fixed option set — use MultiSelect", "Structured list items with multiple fields (not just a string) — build a dedicated list component" })
-        Why="Every project eventually needs a 'manage a list of strings' UI. Building add/edit/delete/reorder from scratch each time is boilerplate. This packages the pattern once with consistent keyboard and accessibility behaviour."
-        TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged; internal copy is maintained, parent notified on every mutation", "AllowEdit=false hides the per-item edit button; AllowDelete=false hides delete; AllowSort=false hides drag handles", "MaxItems caps the list length; the add input is disabled once the cap is reached", "MinLength/MaxLength enforce per-item string validation before the item is committed to the list", "FocusFirst() and FocusLast() public methods allow programmatic focus from the parent page" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A bound List&lt;string&gt; editor that renders the current items with per-item edit and delete buttons, an add-new text input at the bottom, and optional drag-to-reorder — all backed by a two-way Value/ValueChanged binding."
+            WhatEli5="A simple component that lets users manage a list of text entries — add new ones, edit or delete existing ones, and drag to reorder — without writing any list-management code yourself."
+            Who=@(new[]{ "Form builders adding open-ended list fields (required skills, allowed domains, tags)", "Config screens where an admin maintains a list of values (email allowlists, keywords, menu items)", "Developers who would otherwise write add/remove/edit list logic inline on every page it's needed" })
+            WhenUse=@(new[]{ "Any form field that holds a variable-length list of strings", "Settings screens for maintaining lists of values (IP allowlists, email recipients, categories)", "Content editors where items need to be reordered" })
+            WhenNot=@(new[]{ "Selecting from a fixed option set — use MultiSelect", "Structured list items with multiple fields (not just a string) — build a dedicated list component" })
+            Why="Every project eventually needs a 'manage a list of strings' UI. Building add/edit/delete/reorder from scratch each time is boilerplate. This packages the pattern once with consistent keyboard and accessibility behaviour."
+            TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged; internal copy is maintained, parent notified on every mutation", "AllowEdit=false hides the per-item edit button; AllowDelete=false hides delete; AllowSort=false hides drag handles", "MaxItems caps the list length; the add input is disabled once the cap is reached", "MinLength/MaxLength enforce per-item string validation before the item is committed to the list", "FocusFirst() and FocusLast() public methods allow programmatic focus from the parent page" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">

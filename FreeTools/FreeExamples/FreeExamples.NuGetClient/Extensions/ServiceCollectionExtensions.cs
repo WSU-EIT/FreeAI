@@ -23,8 +23,7 @@ public static class ServiceCollectionExtensions
     /// </example>
     public static IServiceCollection AddFreeExamplesClient(
         this IServiceCollection services,
-        Action<FreeExamplesClientOptions> configure)
-    {
+        Action<FreeExamplesClientOptions> configure){
         services.Configure(configure);
 
         services.AddHttpClient<IFreeExamplesClient, FreeExamplesClient>((sp, client) =>
@@ -54,8 +53,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFreeExamplesClient(
         this IServiceCollection services,
         string endpoint,
-        string apiKey)
-    {
+        string apiKey){
         return services.AddFreeExamplesClient(options =>
         {
             options.Endpoint = endpoint;

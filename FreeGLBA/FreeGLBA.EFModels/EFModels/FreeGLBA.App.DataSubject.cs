@@ -15,12 +15,12 @@ public partial class DataSubjectItem
     [MaxLength(200)]
     public string ExternalId { get; set; } = string.Empty;
 
-    [MaxLength(50)]
-    public string SubjectType { get; set; } = string.Empty;
-
     public DateTime FirstAccessedAt { get; set; }
 
     public DateTime LastAccessedAt { get; set; }
+
+    [MaxLength(50)]
+    public string SubjectType { get; set; } = string.Empty;
 
     public long TotalAccessCount { get; set; } = 0;
 

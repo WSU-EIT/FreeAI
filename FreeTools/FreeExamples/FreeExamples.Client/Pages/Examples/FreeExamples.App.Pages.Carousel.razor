@@ -64,8 +64,8 @@
             </select>
             <span class="badge bg-secondary rounded-pill">@(_currentIndex + 1) / @_galleryItems.Count</span>
             <InfoTip Title="Auto-Play Slideshow"
-                     Description="A System.Timers.Timer fires at the selected interval, advancing to the next image automatically. Clicking Pause stops the timer. This is the same timer pattern from the Timer Demo page, applied to a slideshow instead of a countdown."
-                     Code="@_codeAutoPlay" />
+                    Description="A System.Timers.Timer fires at the selected interval, advancing to the next image automatically. Clicking Pause stops the timer. This is the same timer pattern from the Timer Demo page, applied to a slideshow instead of a countdown."
+                    Code="@_codeAutoPlay" />
         </div>
 
         @* ── Main Image + Details ── *@
@@ -74,7 +74,7 @@
             <div class="col-md-8 mb-3">
                 <div class="card shadow-sm border-0 position-relative">
                     <div class="d-flex align-items-center justify-content-center text-white rounded-top"
-                         style="height:400px; background:@_galleryItems[_currentIndex].Color; transition: background 0.5s;">
+                            style="height:400px; background:@_galleryItems[_currentIndex].Color; transition: background 0.5s;">
                         <div class="text-center">
                             <i class="@_galleryItems[_currentIndex].Icon fa-5x opacity-75 mb-3"></i>
                             <div class="h4 mb-0">@_galleryItems[_currentIndex].Title</div>
@@ -140,8 +140,8 @@
                     int idx = i;
                     var thumb = _galleryItems[i];
                     <div class="rounded d-flex align-items-center justify-content-center text-white flex-shrink-0 @(idx == _currentIndex ? "border border-3 border-primary shadow" : "opacity-50")"
-                         style="width:80px; height:60px; cursor:pointer; background:@thumb.Color; transition: opacity 0.3s;"
-                         @onclick="@(() => GoToImage(idx))" title="@thumb.Title">
+                            style="width:80px; height:60px; cursor:pointer; background:@thumb.Color; transition: opacity 0.3s;"
+                            @onclick="@(() => GoToImage(idx))" title="@thumb.Title">
                         <i class="@thumb.Icon"></i>
                     </div>
                 }
@@ -150,11 +150,11 @@
 
         <div class="d-flex flex-wrap gap-1">
             <InfoTip Title="Single Focus Layout"
-                     Description="The Image Gallery shows a grid of thumbnails and opens a lightbox overlay. This carousel shows one large image at a time with details beside it. The filmstrip below lets you jump to any image. Same data, different emphasis — browse vs. examine."
-                     Code="@_codeLayout" />
+                    Description="The Image Gallery shows a grid of thumbnails and opens a lightbox overlay. This carousel shows one large image at a time with details beside it. The filmstrip below lets you jump to any image. Same data, different emphasis — browse vs. examine."
+                    Code="@_codeLayout" />
             <InfoTip Title="Filmstrip Navigation"
-                     Description="The filmstrip is a horizontal flex container with overflow-auto. Each thumbnail is flex-shrink-0 with a fixed width. The current image gets a blue border and full opacity; others are dimmed with opacity-50. Clicking any thumbnail updates _currentIndex."
-                     Code="@_codeFilmstrip" />
+                    Description="The filmstrip is a horizontal flex container with overflow-auto. Each thumbnail is flex-shrink-0 with a fixed width. The current image gets a blue border and full opacity; others are dimmed with opacity-50. Clicking any thumbnail updates _currentIndex."
+                    Code="@_codeFilmstrip" />
         </div>
     }
 }

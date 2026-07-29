@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Computed Summary Properties"
-                     Description="VelocityAvg, VelocityBest, VelocityWorst are computed properties (not fields). They recalculate from _velocityData on every render. This avoids stale state — the stat cards are always in sync with the data. A clean pattern for derived display values."
-                     Code="@_codeComputedStats" />
+                    Description="VelocityAvg, VelocityBest, VelocityWorst are computed properties (not fields). They recalculate from _velocityData on every render. This avoids stale state — the stat cards are always in sync with the data. A clean pattern for derived display values."
+                    Code="@_codeComputedStats" />
             <InfoTip Title="CSS Grouped Bar Chart"
-                     Description="Each sprint gets two side-by-side divs: committed (bg-primary bg-opacity-25) and delivered (bg-success). Heights are calculated as a ratio of VelocityMaxBar. Values are printed above each bar. A legend row sits below. Zero JS, zero chart libraries."
-                     Code="@_codeGroupedBars" />
+                    Description="Each sprint gets two side-by-side divs: committed (bg-primary bg-opacity-25) and delivered (bg-success). Heights are calculated as a ratio of VelocityMaxBar. Values are printed above each bar. A legend row sits below. Zero JS, zero chart libraries."
+                    Code="@_codeGroupedBars" />
             <InfoTip Title="Inline Progress Completion %"
-                     Description="Each sprint row shows a mini progress bar with conditional coloring: ≥ 80% = green, ≥ 50% = yellow, below = red. The percentage text sits below the bar. Bootstrap progress + ternary class expression is all it takes."
-                     Code="@_codeProgressBar" />
+                    Description="Each sprint row shows a mini progress bar with conditional coloring: ≥ 80% = green, ≥ 50% = yellow, below = red. The percentage text sits below the bar. Bootstrap progress + ternary class expression is all it takes."
+                    Code="@_codeProgressBar" />
         </div>
 
         @* Summary stats *@

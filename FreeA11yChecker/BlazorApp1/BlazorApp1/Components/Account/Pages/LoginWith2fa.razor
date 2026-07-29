@@ -52,10 +52,10 @@
     private InputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    private bool RememberMe { get; set; }
 
     [SupplyParameterFromQuery]
-    private bool RememberMe { get; set; }
+    private string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,13 +91,12 @@
 
     private sealed class InputModel
     {
+        [Display(Name = "Remember this machine")]
+        public bool RememberMachine { get; set; }
         [Required]
         [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Text)]
         [Display(Name = "Authenticator code")]
         public string? TwoFactorCode { get; set; }
-
-        [Display(Name = "Remember this machine")]
-        public bool RememberMachine { get; set; }
     }
 }

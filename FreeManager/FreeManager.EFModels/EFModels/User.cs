@@ -5,35 +5,46 @@ namespace FreeManager.EFModels.EFModels;
 
 public partial class User
 {
-    public Guid UserId { get; set; }
+    public DateTime Added { get; set; }
 
-    public Guid TenantId { get; set; }
+    public string? AddedBy { get; set; }
 
-    public string? FirstName { get; set; }
+    public bool Admin { get; set; }
 
-    public string? LastName { get; set; }
+    public bool Deleted { get; set; }
 
-    public string Email { get; set; } = null!;
+    public DateTime? DeletedAt { get; set; }
 
-    public string? Phone { get; set; }
 
-    public string Username { get; set; } = null!;
-
-    public string? EmployeeId { get; set; }
+    public virtual Department? Department { get; set; }
 
     public Guid? DepartmentId { get; set; }
 
-    public string? Title { get; set; }
+    public string Email { get; set; } = null!;
 
-    public string? Location { get; set; }
+    public string? EmployeeId { get; set; }
 
     public bool Enabled { get; set; }
+
+    public int? FailedLoginAttempts { get; set; }
+
+    public virtual ICollection<FileStorage> FileStorages { get; set; } = new List<FileStorage>();
+
+    public string? FirstName { get; set; }
+
+    public DateTime? LastLockoutDate { get; set; }
 
     public DateTime? LastLogin { get; set; }
 
     public string? LastLoginSource { get; set; }
 
-    public bool Admin { get; set; }
+    public DateTime LastModified { get; set; }
+
+    public string? LastModifiedBy { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string? Location { get; set; }
 
 
     public bool ManageFiles { get; set; }
@@ -41,13 +52,21 @@ public partial class User
 
     public string? Password { get; set; }
 
+    public string? Phone { get; set; }
+
+    public string? Preferences { get; set; }
+
     public bool PreventPasswordChange { get; set; }
 
-    public int? FailedLoginAttempts { get; set; }
-
-    public DateTime? LastLockoutDate { get; set; }
-
     public string? Source { get; set; }
+
+
+
+    public virtual Tenant Tenant { get; set; } = null!;
+
+    public Guid TenantId { get; set; }
+
+    public string? Title { get; set; }
 
     public string? UDF01 { get; set; }
 
@@ -68,29 +87,9 @@ public partial class User
     public string? UDF09 { get; set; }
 
     public string? UDF10 { get; set; }
-
-    public DateTime Added { get; set; }
-
-    public string? AddedBy { get; set; }
-
-    public DateTime LastModified { get; set; }
-
-    public string? LastModifiedBy { get; set; }
-
-    public bool Deleted { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public string? Preferences { get; set; }
-
-
-    public virtual Department? Department { get; set; }
-
-    public virtual ICollection<FileStorage> FileStorages { get; set; } = new List<FileStorage>();
-
-
-
-    public virtual Tenant Tenant { get; set; } = null!;
+    public Guid UserId { get; set; }
 
     public virtual ICollection<UserInGroup> UserInGroups { get; set; } = new List<UserInGroup>();
+
+    public string Username { get; set; } = null!;
 }

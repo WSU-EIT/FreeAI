@@ -19,18 +19,25 @@ public class PluginContext : IPluginContext
         _logger = logger;
     }
 
-    public PluginMetadata Plugin => _plugin;
-
-    public IServiceProvider Services => _services;
+    public T GetRequiredService<T>() where T : class
+    {
+        return _services.GetRequiredService<T>();
+    }
 
     public T? GetService<T>() where T : class
     {
         return _services.GetService<T>();
     }
 
-    public T GetRequiredService<T>() where T : class
+    public void LogError(string message, Exception? exception = null)
     {
-        return _services.GetRequiredService<T>();
+        if (exception != null) {
+            _logger?.LogError(exception, "[{PluginName}] {Message}", _plugin.Name, message);
+            Console.WriteLine($"[{_plugin.Name}] ERROR: {message} - {exception.Message}");
+        } else {
+            _logger?.LogError("[{PluginName}] {Message}", _plugin.Name, message);
+            Console.WriteLine($"[{_plugin.Name}] ERROR: {message}");
+        }
     }
 
     public void LogInfo(string message)
@@ -45,16 +52,9 @@ public class PluginContext : IPluginContext
         Console.WriteLine($"[{_plugin.Name}] WARN: {message}");
     }
 
-    public void LogError(string message, Exception? exception = null)
-    {
-        if (exception != null) {
-            _logger?.LogError(exception, "[{PluginName}] {Message}", _plugin.Name, message);
-            Console.WriteLine($"[{_plugin.Name}] ERROR: {message} - {exception.Message}");
-        } else {
-            _logger?.LogError("[{PluginName}] {Message}", _plugin.Name, message);
-            Console.WriteLine($"[{_plugin.Name}] ERROR: {message}");
-        }
-    }
+    public PluginMetadata Plugin => _plugin;
+
+    public IServiceProvider Services => _services;
 }
 
 /// <summary>
@@ -79,10 +79,10 @@ public class PluginAuthContext : PluginContext, IPluginAuthContext
         _tenantId = tenantId;
         _httpContext = httpContext;
     }
+    public object HttpContext => _httpContext;
+    public Guid TenantId => _tenantId;
 
     public string Url => _url;
-    public Guid TenantId => _tenantId;
-    public object HttpContext => _httpContext;
 }
 
 /// <summary>

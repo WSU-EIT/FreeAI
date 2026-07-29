@@ -74,15 +74,14 @@
 }
 
 @code {
+    protected void CloseMessage(string messageId) {
+        Model.Messages = Model.Messages.Where(x => x.Id != messageId).ToList();
+    }
     public void Dispose() {
         Model.OnChange -= StateHasChanged;
     }
 
     protected override void OnInitialized() {
         Model.OnChange += StateHasChanged;
-    }
-
-    protected void CloseMessage(string messageId) {
-        Model.Messages = Model.Messages.Where(x => x.Id != messageId).ToList();
     }
 }

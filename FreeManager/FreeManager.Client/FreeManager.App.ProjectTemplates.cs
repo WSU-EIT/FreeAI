@@ -20,6 +20,51 @@ namespace FreeManager.Client;
 public static partial class ProjectTemplates
 {
     /// <summary>
+    /// Gets the files to create for a given template.
+    /// Routes to appropriate template generator in partial files.
+    /// </summary>
+    public static List<(string FileName, string FileType, string Content)> GetTemplateFiles(
+        DataObjects.FMProjectTemplate template,
+        string projectName){
+        List<(string, string, string)> files = new();
+
+        switch (template)
+        {
+            case DataObjects.FMProjectTemplate.Empty:
+                // No files
+                break;
+
+            case DataObjects.FMProjectTemplate.Skeleton:
+                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetSkeletonDataObjects(projectName)));
+                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetSkeletonDataAccess(projectName)));
+                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetSkeletonController(projectName)));
+                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetSkeletonGlobalSettings(projectName)));
+                break;
+
+            case DataObjects.FMProjectTemplate.Starter:
+                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetStarterDataObjects(projectName)));
+                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetStarterDataAccess(projectName)));
+                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetStarterController(projectName)));
+                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetStarterGlobalSettings(projectName)));
+                files.Add(($"{projectName}.App.{projectName}.razor", "RazorComponent", GetStarterComponent(projectName)));
+                files.Add(($"{projectName}.App.{projectName}Page.razor", "RazorPage", GetStarterPage(projectName)));
+                break;
+
+            case DataObjects.FMProjectTemplate.FullCrud:
+                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetFullCrudDataObjects(projectName)));
+                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetFullCrudDataAccess(projectName)));
+                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetFullCrudController(projectName)));
+                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetStarterGlobalSettings(projectName)));
+                files.Add(($"{projectName}.App.{projectName}.razor", "RazorComponent", GetStarterComponent(projectName)));
+                files.Add(($"{projectName}.App.{projectName}Page.razor", "RazorPage", GetStarterPage(projectName)));
+                files.Add(($"{projectName}Item.cs", "EFModel", GetFullCrudEntity(projectName)));
+                files.Add(($"EFDataModel.App.{projectName}.cs", "EFDataModel", GetFullCrudDbContext(projectName)));
+                break;
+        }
+
+        return files;
+    }
+    /// <summary>
     /// Gets information about all available templates.
     /// </summary>
     public static List<DataObjects.FMProjectTemplateInfo> GetTemplates()
@@ -84,53 +129,6 @@ public static partial class ProjectTemplates
                 IsRecommended = false
             }
         };
-    }
-
-    /// <summary>
-    /// Gets the files to create for a given template.
-    /// Routes to appropriate template generator in partial files.
-    /// </summary>
-    public static List<(string FileName, string FileType, string Content)> GetTemplateFiles(
-        DataObjects.FMProjectTemplate template,
-        string projectName)
-    {
-        List<(string, string, string)> files = new();
-
-        switch (template)
-        {
-            case DataObjects.FMProjectTemplate.Empty:
-                // No files
-                break;
-
-            case DataObjects.FMProjectTemplate.Skeleton:
-                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetSkeletonDataObjects(projectName)));
-                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetSkeletonDataAccess(projectName)));
-                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetSkeletonController(projectName)));
-                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetSkeletonGlobalSettings(projectName)));
-                break;
-
-            case DataObjects.FMProjectTemplate.Starter:
-                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetStarterDataObjects(projectName)));
-                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetStarterDataAccess(projectName)));
-                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetStarterController(projectName)));
-                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetStarterGlobalSettings(projectName)));
-                files.Add(($"{projectName}.App.{projectName}.razor", "RazorComponent", GetStarterComponent(projectName)));
-                files.Add(($"{projectName}.App.{projectName}Page.razor", "RazorPage", GetStarterPage(projectName)));
-                break;
-
-            case DataObjects.FMProjectTemplate.FullCrud:
-                files.Add(($"DataObjects.App.{projectName}.cs", "DataObjects", GetFullCrudDataObjects(projectName)));
-                files.Add(($"DataAccess.App.{projectName}.cs", "DataAccess", GetFullCrudDataAccess(projectName)));
-                files.Add(($"DataController.App.{projectName}.cs", "Controller", GetFullCrudController(projectName)));
-                files.Add(($"GlobalSettings.App.{projectName}.cs", "GlobalSettings", GetStarterGlobalSettings(projectName)));
-                files.Add(($"{projectName}.App.{projectName}.razor", "RazorComponent", GetStarterComponent(projectName)));
-                files.Add(($"{projectName}.App.{projectName}Page.razor", "RazorPage", GetStarterPage(projectName)));
-                files.Add(($"{projectName}Item.cs", "EFModel", GetFullCrudEntity(projectName)));
-                files.Add(($"EFDataModel.App.{projectName}.cs", "EFDataModel", GetFullCrudDbContext(projectName)));
-                break;
-        }
-
-        return files;
     }
 }
 

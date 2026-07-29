@@ -25,35 +25,28 @@ public static class CvdSimulator
     };
 
     /// <summary>
-    /// Returns all supported CVD simulation type names.
+    /// Captures a screenshot with forced-colors: active emulated via CDP.
+    /// Returns in-memory byte[].
     /// </summary>
-    public static string[] GetAllTypes() =>
-        ["protanopia", "deuteranopia", "tritanopia", "achromatopsia", "protanomaly", "deuteranomaly", "tritanomaly"];
-
-    /// <summary>
-    /// Emulate a CVD type via CDP, inject a label banner, take a full-page screenshot, then reset.
-    /// Returns in-memory byte[] instead of writing to disk.
-    /// </summary>
-    public static async Task<byte[]?> SimulateAndScreenshotBytes(IPage page, string type)
+    public static async Task<byte[]?> CaptureForcedColorsScreenshot(IPage page)
     {
-        if (!CvdTypes.TryGetValue(type, out var cvd))
-            throw new ArgumentException($"Unknown CVD type: {type}. Valid types: {string.Join(", ", GetAllTypes())}");
-
         try
         {
             var cdpSession = await page.Context.NewCDPSessionAsync(page);
-            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
-                new Dictionary<string, object> { ["type"] = cvd.CdpType });
+            await cdpSession.SendAsync("Emulation.setEmulatedMedia",
+                new Dictionary<string, object> {
+                    ["features"] = new[] { new Dictionary<string, string> { ["name"] = "forced-colors", ["value"] = "active" } }
+                });
 
-            await InjectBanner(page, cvd.Label);
+            await InjectBanner(page, "Forced Colors (High Contrast)");
 
-            byte[] data = await page.ScreenshotAsync(new PageScreenshotOptions
-            {
-                FullPage = true,
-            });
+            byte[] data = await page.ScreenshotAsync(new PageScreenshotOptions { FullPage = true });
 
-            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
-                new Dictionary<string, object> { ["type"] = "none" });
+            // Reset.
+            await cdpSession.SendAsync("Emulation.setEmulatedMedia",
+                new Dictionary<string, object> {
+                    ["features"] = new[] { new Dictionary<string, string> { ["name"] = "forced-colors", ["value"] = "" } }
+                });
 
             return data;
         }
@@ -104,74 +97,10 @@ public static class CvdSimulator
     }
 
     /// <summary>
-    /// Captures a screenshot with forced-colors: active emulated via CDP.
-    /// Returns in-memory byte[].
+    /// Returns all supported CVD simulation type names.
     /// </summary>
-    public static async Task<byte[]?> CaptureForcedColorsScreenshot(IPage page)
-    {
-        try
-        {
-            var cdpSession = await page.Context.NewCDPSessionAsync(page);
-            await cdpSession.SendAsync("Emulation.setEmulatedMedia",
-                new Dictionary<string, object> {
-                    ["features"] = new[] { new Dictionary<string, string> { ["name"] = "forced-colors", ["value"] = "active" } }
-                });
-
-            await InjectBanner(page, "Forced Colors (High Contrast)");
-
-            byte[] data = await page.ScreenshotAsync(new PageScreenshotOptions { FullPage = true });
-
-            // Reset.
-            await cdpSession.SendAsync("Emulation.setEmulatedMedia",
-                new Dictionary<string, object> {
-                    ["features"] = new[] { new Dictionary<string, string> { ["name"] = "forced-colors", ["value"] = "" } }
-                });
-
-            return data;
-        }
-        catch
-        {
-            return null;
-        }
-        finally
-        {
-            await RemoveBanner(page);
-        }
-    }
-
-    /// <summary>
-    /// Emulate a CVD type via CDP, inject a label banner, take a full-page screenshot, then reset.
-    /// </summary>
-    public static async Task SimulateAndScreenshot(IPage page, string type, string outputPath)
-    {
-        if (!CvdTypes.TryGetValue(type, out var cvd))
-            throw new ArgumentException($"Unknown CVD type: {type}. Valid types: {string.Join(", ", GetAllTypes())}");
-
-        try
-        {
-            // Use CDP to emulate vision deficiency at the rendering level.
-            var cdpSession = await page.Context.NewCDPSessionAsync(page);
-            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
-                new Dictionary<string, object> { ["type"] = cvd.CdpType });
-
-            // Add a label banner so the screenshot is clearly identified.
-            await InjectBanner(page, cvd.Label);
-
-            await page.ScreenshotAsync(new PageScreenshotOptions
-            {
-                Path = outputPath,
-                FullPage = true,
-            });
-
-            // Reset vision deficiency emulation.
-            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
-                new Dictionary<string, object> { ["type"] = "none" });
-        }
-        finally
-        {
-            await RemoveBanner(page);
-        }
-    }
+    public static string[] GetAllTypes() =>
+        ["protanopia", "deuteranopia", "tritanopia", "achromatopsia", "protanomaly", "deuteranomaly", "tritanomaly"];
 
     private static async Task InjectBanner(IPage page, string label)
     {
@@ -209,5 +138,76 @@ public static class CvdSimulator
                 document.body.style.marginTop = '';
             }
         ");
+    }
+
+    /// <summary>
+    /// Emulate a CVD type via CDP, inject a label banner, take a full-page screenshot, then reset.
+    /// </summary>
+    public static async Task SimulateAndScreenshot(IPage page, string type, string outputPath)
+    {
+        if (!CvdTypes.TryGetValue(type, out var cvd))
+            throw new ArgumentException($"Unknown CVD type: {type}. Valid types: {string.Join(", ", GetAllTypes())}");
+
+        try
+        {
+            // Use CDP to emulate vision deficiency at the rendering level.
+            var cdpSession = await page.Context.NewCDPSessionAsync(page);
+            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
+                new Dictionary<string, object> { ["type"] = cvd.CdpType });
+
+            // Add a label banner so the screenshot is clearly identified.
+            await InjectBanner(page, cvd.Label);
+
+            await page.ScreenshotAsync(new PageScreenshotOptions
+            {
+                Path = outputPath,
+                FullPage = true,
+            });
+
+            // Reset vision deficiency emulation.
+            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
+                new Dictionary<string, object> { ["type"] = "none" });
+        }
+        finally
+        {
+            await RemoveBanner(page);
+        }
+    }
+
+    /// <summary>
+    /// Emulate a CVD type via CDP, inject a label banner, take a full-page screenshot, then reset.
+    /// Returns in-memory byte[] instead of writing to disk.
+    /// </summary>
+    public static async Task<byte[]?> SimulateAndScreenshotBytes(IPage page, string type)
+    {
+        if (!CvdTypes.TryGetValue(type, out var cvd))
+            throw new ArgumentException($"Unknown CVD type: {type}. Valid types: {string.Join(", ", GetAllTypes())}");
+
+        try
+        {
+            var cdpSession = await page.Context.NewCDPSessionAsync(page);
+            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
+                new Dictionary<string, object> { ["type"] = cvd.CdpType });
+
+            await InjectBanner(page, cvd.Label);
+
+            byte[] data = await page.ScreenshotAsync(new PageScreenshotOptions
+            {
+                FullPage = true,
+            });
+
+            await cdpSession.SendAsync("Emulation.setEmulatedVisionDeficiency",
+                new Dictionary<string, object> { ["type"] = "none" });
+
+            return data;
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            await RemoveBanner(page);
+        }
     }
 }

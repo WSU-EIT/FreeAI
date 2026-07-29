@@ -26,13 +26,24 @@
     protected bool _loading = true;
     protected string _pageName = "home";
 
+    protected string LogoUrl {
+        get {
+            if (Model.Tenant.TenantSettings.Logo.HasValue && Model.Tenant.TenantSettings.Logo != Guid.Empty) {
+                return Model.ApplicationUrl + "File/View/" + ((Guid)Model.Tenant.TenantSettings.Logo).ToString();
+            } else {
+                return String.Empty;
+            }
+        }
+    }
+
     public void Dispose() { 
         Model.OnChange -= OnDataModelUpdated;
     }
 
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
+    protected async Task LoadData() {
+        // Load any app-specific data here.
+        _loading = false;
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -51,19 +62,8 @@
         }
     }
 
-    protected async Task LoadData() {
-        // Load any app-specific data here.
-        _loading = false;
-        StateHasChanged();
-    }
-
-    protected string LogoUrl {
-        get {
-            if (Model.Tenant.TenantSettings.Logo.HasValue && Model.Tenant.TenantSettings.Logo != Guid.Empty) {
-                return Model.ApplicationUrl + "File/View/" + ((Guid)Model.Tenant.TenantSettings.Logo).ToString();
-            } else {
-                return String.Empty;
-            }
-        }
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
     }
 }

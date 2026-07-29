@@ -5,22 +5,23 @@ public partial class BlazorDataModel
     private List<DataObjects.Agent> _AgentStatuses = new List<DataObjects.Agent>();
     private List<string> _MyValues = new List<string>();
 
-    private bool HaveDeletedRecordsApp {
+    private List<DataObjects.HubJob> _ActiveJobs = new List<DataObjects.HubJob>();
+
+    /// <summary>
+    /// Active jobs for the dashboard. Updated by SignalR and manual load.
+    /// </summary>
+    public List<DataObjects.HubJob> ActiveJobs {
         get {
-            bool output = false;
-
-            // Check your app-specific deleted records here.
-            //if (DeletedRecordCounts.MyValue > 0 ) {
-            //    output = true;
-            //}
-
-            return output;
+            return _ActiveJobs;
         }
-    }
 
-    public bool MyCustomDataModelMethod()
-    {
-        return true;
+        set {
+            if (!ObjectsAreEqual(_ActiveJobs, value)) {
+                _ActiveJobs = value;
+                _ModelUpdated = DateTime.UtcNow;
+                NotifyDataChanged();
+            }
+        }
     }
 
     /// <summary>
@@ -40,23 +41,22 @@ public partial class BlazorDataModel
         }
     }
 
-    private List<DataObjects.HubJob> _ActiveJobs = new List<DataObjects.HubJob>();
-
-    /// <summary>
-    /// Active jobs for the dashboard. Updated by SignalR and manual load.
-    /// </summary>
-    public List<DataObjects.HubJob> ActiveJobs {
+    private bool HaveDeletedRecordsApp {
         get {
-            return _ActiveJobs;
-        }
+            bool output = false;
 
-        set {
-            if (!ObjectsAreEqual(_ActiveJobs, value)) {
-                _ActiveJobs = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
+            // Check your app-specific deleted records here.
+            //if (DeletedRecordCounts.MyValue > 0 ) {
+            //    output = true;
+            //}
+
+            return output;
         }
+    }
+
+    public bool MyCustomDataModelMethod()
+    {
+        return true;
     }
 
     /// <summary>

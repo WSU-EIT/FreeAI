@@ -20,13 +20,13 @@
             <label class="visually-hidden" for="grb-url-input">Repository URL</label>
             <div class="input-group">
                 <input id="grb-url-input"
-                       type="url"
-                       class="form-control"
-                       placeholder="https://github.com/owner/repo"
-                       @bind="_repoUrlInput"
-                       @bind:event="oninput"
-                       disabled="@_isLoading"
-                       aria-label="Repository URL" />
+                        type="url"
+                        class="form-control"
+                        placeholder="https://github.com/owner/repo"
+                        @bind="_repoUrlInput"
+                        @bind:event="oninput"
+                        disabled="@_isLoading"
+                        aria-label="Repository URL" />
 
                 <label class="visually-hidden" for="grb-platform-select">Platform override</label>
                 <select id="grb-platform-select"
@@ -48,8 +48,7 @@
                         disabled="@(_isLoading || string.IsNullOrWhiteSpace(_repoUrlInput))">
                     @if (_isLoading)
                     {
-                        <span class="spinner-border spinner-border-sm me-1"
-                              role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                     }
                     Connect
                 </button>
@@ -76,20 +75,20 @@
                         <div class="col-md-4">
                             <label class="form-label small mb-1" for="grb-username">Username <span class="text-muted">(optional)</span></label>
                             <input id="grb-username"
-                                   type="text"
-                                   class="form-control form-control-sm"
-                                   placeholder="username"
-                                   @bind="_usernameInput"
-                                   autocomplete="username" />
+                                    type="text"
+                                    class="form-control form-control-sm"
+                                    placeholder="username"
+                                    @bind="_usernameInput"
+                                    autocomplete="username" />
                         </div>
                         <div class="col-md-8">
                             <label class="form-label small mb-1" for="grb-token">Personal Access Token / Password</label>
                             <input id="grb-token"
-                                   type="password"
-                                   class="form-control form-control-sm"
-                                   placeholder="ghp_… or app password"
-                                   @bind="_passwordInput"
-                                   autocomplete="current-password" />
+                                    type="password"
+                                    class="form-control form-control-sm"
+                                    placeholder="ghp_… or app password"
+                                    @bind="_passwordInput"
+                                    autocomplete="current-password" />
                         </div>
                     </div>
                     <div class="form-text text-muted mt-1">
@@ -170,7 +169,7 @@
             @* Left column: file tree *@
             <div class="col-4 border-end d-flex flex-column" style="min-width: 0;">
                 <div class="px-2 py-1 bg-light border-bottom small fw-semibold text-muted text-truncate"
-                     title="@_connectedRepo">
+                        title="@_connectedRepo">
                     / @(string.IsNullOrEmpty(_selectedBranch) ? "" : _selectedBranch)
                 </div>
                 <div class="overflow-auto flex-grow-1" style="max-height: 560px;">
@@ -180,9 +179,9 @@
                                       .ThenBy(n => n.Name))
                         {
                             <GitTreeNodeItem Node="node"
-                                             SelectedPath="_selectedFile?.Path"
-                                             OnExpand="ExpandNodeAsync"
-                                             OnSelect="SelectFileAsync" />
+                                    SelectedPath="_selectedFile?.Path"
+                                    OnExpand="ExpandNodeAsync"
+                                    OnSelect="SelectFileAsync" />
                         }
                     </ul>
                 </div>
@@ -225,7 +224,7 @@
                     {
                         <div class="overflow-auto flex-grow-1" style="max-height: 520px;">
                             <pre class="m-0 p-3 git-file-content"
-                                 style="font-size: 0.8rem; tab-size: 4; white-space: pre; word-break: normal;">@_fileContent.RawText</pre>
+                                    style="font-size: 0.8rem; tab-size: 4; white-space: pre; word-break: normal;">@_fileContent.RawText</pre>
                         </div>
                     }
                 }

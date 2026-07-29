@@ -28,9 +28,9 @@
 
     Example:
         <BulkActions @ref="_bulkActions"
-                     SelectedCount="@_selectedIds.Count"
-                     ShowToolbar="@(_selectedIds.Count > 0)"
-                     OnClearSelection="ClearSelection" />
+                SelectedCount="@_selectedIds.Count"
+                ShowToolbar="@(_selectedIds.Count > 0)"
+                OnClearSelection="ClearSelection" />
 *@
 @namespace FreeBlazorExtended.Components
 
@@ -39,8 +39,8 @@
         <div class="bulk-actions-info">
             <span class="badge bg-info text-dark">@SelectedCount selected</span>
             <button type="button" class="btn btn-sm btn-outline-secondary ms-2"
-                @onclick="ClearSelection"
-                aria-label="Clear selection">
+                    @onclick="ClearSelection"
+                    aria-label="Clear selection">
                 Clear
             </button>
         </div>
@@ -48,10 +48,10 @@
         <div class="bulk-actions-buttons" role="group">
             @foreach (var action in _actions) {
                 <button type="button"
-                    class="@action.ButtonClass"
-                    @onclick="@(() => ExecuteAction(action))"
-                    disabled="@(!_canExecuteActions)"
-                    aria-label="@action.Label">
+                        class="@action.ButtonClass"
+                        @onclick="@(() => ExecuteAction(action))"
+                        disabled="@(!_canExecuteActions)"
+                        aria-label="@action.Label">
                     @if (!String.IsNullOrWhiteSpace(action.Icon)) {
                         <i class="@action.Icon me-2" aria-hidden="true"></i>
                     }
@@ -123,12 +123,12 @@
 
 @code {
     public class BulkAction {
-        public string Label { get; set; } = "";
-        public string Icon { get; set; } = "";
         public string ButtonClass { get; set; } = "btn btn-sm btn-primary";
-        public bool RequireConfirmation { get; set; } = false;
         public string ConfirmationMessage { get; set; } = "Are you sure?";
+        public string Icon { get; set; } = "";
+        public string Label { get; set; } = "";
         public Func<Task>? OnExecute { get; set; }
+        public bool RequireConfirmation { get; set; } = false;
     }
 
     private List<BulkAction> _actions = new();

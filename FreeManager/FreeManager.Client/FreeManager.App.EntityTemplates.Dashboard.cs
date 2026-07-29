@@ -11,6 +11,33 @@ namespace FreeManager;
 
 public static partial class EntityTemplates
 {
+    private static string FormatColumnHeader(string column)
+    {
+        // Convert camelCase/PascalCase to Title Case with spaces
+        var result = new StringBuilder();
+        foreach (var c in column)
+        {
+            if (char.IsUpper(c) && result.Length > 0)
+                result.Append(' ');
+            result.Append(c);
+        }
+        return result.ToString();
+    }
+
+    // ============================================================
+    // HELPER METHODS
+    // ============================================================
+
+    private static string FormatPeriodLabel(string period) => period switch
+    {
+        "Today" => "Today",
+        "ThisWeek" => "This Week",
+        "ThisMonth" => "This Month",
+        "Yesterday" => "Yesterday",
+        "LastWeek" => "Last Week",
+        "LastMonth" => "Last Month",
+        _ => period
+    };
     // ============================================================
     // DASHBOARD PAGE GENERATION
     // ============================================================
@@ -23,8 +50,7 @@ public static partial class EntityTemplates
         DataObjects.DashboardConfig config,
         DataObjects.ExternalApiConfig? apiConfig,
         List<DataObjects.EntityDefinition> entities,
-        string projectName)
-    {
+        string projectName){
         var sb = new StringBuilder();
         var pageName = config.PageName.ToLower();
         var controllerName = apiConfig?.ControllerName ?? "Dashboard";
@@ -298,34 +324,6 @@ public static partial class EntityTemplates
         sb.AppendLine($"}}");
 
         return sb.ToString();
-    }
-
-    // ============================================================
-    // HELPER METHODS
-    // ============================================================
-
-    private static string FormatPeriodLabel(string period) => period switch
-    {
-        "Today" => "Today",
-        "ThisWeek" => "This Week",
-        "ThisMonth" => "This Month",
-        "Yesterday" => "Yesterday",
-        "LastWeek" => "Last Week",
-        "LastMonth" => "Last Month",
-        _ => period
-    };
-
-    private static string FormatColumnHeader(string column)
-    {
-        // Convert camelCase/PascalCase to Title Case with spaces
-        var result = new StringBuilder();
-        foreach (var c in column)
-        {
-            if (char.IsUpper(c) && result.Length > 0)
-                result.Append(' ');
-            result.Append(c);
-        }
-        return result.ToString();
     }
 
     private static string GetColumnFormat(string column)

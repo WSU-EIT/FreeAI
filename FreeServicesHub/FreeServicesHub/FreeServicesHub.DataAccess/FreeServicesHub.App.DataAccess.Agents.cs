@@ -2,13 +2,74 @@ namespace FreeServicesHub;
 
 public partial interface IDataAccess
 {
+    Task<DataObjects.BooleanResponse> DeleteAgents(List<Guid>? Ids, DataObjects.User? CurrentUser = null);
     Task<List<DataObjects.Agent>> GetAgents(List<Guid>? Ids, Guid TenantId, DataObjects.User? CurrentUser = null);
     Task<List<DataObjects.Agent>> SaveAgents(List<DataObjects.Agent> Items, DataObjects.User? CurrentUser = null);
-    Task<DataObjects.BooleanResponse> DeleteAgents(List<Guid>? Ids, DataObjects.User? CurrentUser = null);
 }
 
 public partial class DataAccess
 {
+    public async Task<DataObjects.BooleanResponse> DeleteAgents(List<Guid>? Ids, DataObjects.User? CurrentUser = null)
+    {
+        DataObjects.BooleanResponse output = new();
+
+        if (Ids == null || !Ids.Any()) {
+            output.Messages.Add("No Agent Ids provided for deletion.");
+            return output;
+        }
+
+        DateTime now = DateTime.UtcNow;
+
+        try {
+            List<EFModels.EFModels.Agent> recs = await data.Agents.Where(x => Ids.Contains(x.AgentId)).ToListAsync();
+
+            if (!recs.Any()) {
+                output.Messages.Add("No matching Agent records found.");
+                return output;
+            }
+
+            foreach (EFModels.EFModels.Agent rec in recs) {
+                rec.Deleted = true;
+                rec.DeletedAt = now;
+                rec.LastModified = now;
+
+                if (CurrentUser != null) {
+                    rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
+                }
+            }
+
+            // Cascade soft-delete: mark any jobs assigned to these agents as Cancelled
+            var agentIds = recs.Select(r => r.AgentId).ToList();
+            var orphanedJobs = await data.HubJobs
+                .Where(j => j.AgentId.HasValue && agentIds.Contains(j.AgentId.Value) && !j.Deleted
+                    && j.Status != "Completed" && j.Status != "Failed" && j.Status != "Cancelled")
+                .ToListAsync();
+            foreach (var job in orphanedJobs) {
+                job.Status = "Cancelled";
+                job.ErrorMessage = "Agent deleted";
+                job.CompletedAt = now;
+                job.LastModified = now;
+            }
+
+            await data.SaveChangesAsync();
+            output.Result = true;
+
+            foreach (EFModels.EFModels.Agent rec in recs) {
+                await SignalRUpdate(new DataObjects.SignalRUpdate {
+                    TenantId = rec.TenantId,
+                    ItemId = rec.AgentId,
+                    UpdateType = DataObjects.SignalRUpdateType.AgentStatusChanged,
+                    Message = "Deleted",
+                    UserId = CurrentUserId(CurrentUser),
+                });
+            }
+        } catch (Exception ex) {
+            output.Messages.Add("Error Deleting Agents");
+            output.Messages.AddRange(RecurseException(ex));
+        }
+
+        return output;
+    }
     public async Task<List<DataObjects.Agent>> GetAgents(List<Guid>? Ids, Guid TenantId, DataObjects.User? CurrentUser = null)
     {
         List<DataObjects.Agent> output = new();
@@ -53,18 +114,6 @@ public partial class DataAccess
                     DeletedAt = rec.DeletedAt,
                 });
             }
-        }
-
-        return output;
-    }
-
-    public async Task<List<DataObjects.Agent>> SaveAgents(List<DataObjects.Agent> Items, DataObjects.User? CurrentUser = null)
-    {
-        List<DataObjects.Agent> output = new();
-
-        foreach (DataObjects.Agent item in Items) {
-            DataObjects.Agent saved = await SaveAgent(item, CurrentUser);
-            output.Add(saved);
         }
 
         return output;
@@ -155,63 +204,13 @@ public partial class DataAccess
         return output;
     }
 
-    public async Task<DataObjects.BooleanResponse> DeleteAgents(List<Guid>? Ids, DataObjects.User? CurrentUser = null)
+    public async Task<List<DataObjects.Agent>> SaveAgents(List<DataObjects.Agent> Items, DataObjects.User? CurrentUser = null)
     {
-        DataObjects.BooleanResponse output = new();
+        List<DataObjects.Agent> output = new();
 
-        if (Ids == null || !Ids.Any()) {
-            output.Messages.Add("No Agent Ids provided for deletion.");
-            return output;
-        }
-
-        DateTime now = DateTime.UtcNow;
-
-        try {
-            List<EFModels.EFModels.Agent> recs = await data.Agents.Where(x => Ids.Contains(x.AgentId)).ToListAsync();
-
-            if (!recs.Any()) {
-                output.Messages.Add("No matching Agent records found.");
-                return output;
-            }
-
-            foreach (EFModels.EFModels.Agent rec in recs) {
-                rec.Deleted = true;
-                rec.DeletedAt = now;
-                rec.LastModified = now;
-
-                if (CurrentUser != null) {
-                    rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
-                }
-            }
-
-            // Cascade soft-delete: mark any jobs assigned to these agents as Cancelled
-            var agentIds = recs.Select(r => r.AgentId).ToList();
-            var orphanedJobs = await data.HubJobs
-                .Where(j => j.AgentId.HasValue && agentIds.Contains(j.AgentId.Value) && !j.Deleted
-                    && j.Status != "Completed" && j.Status != "Failed" && j.Status != "Cancelled")
-                .ToListAsync();
-            foreach (var job in orphanedJobs) {
-                job.Status = "Cancelled";
-                job.ErrorMessage = "Agent deleted";
-                job.CompletedAt = now;
-                job.LastModified = now;
-            }
-
-            await data.SaveChangesAsync();
-            output.Result = true;
-
-            foreach (EFModels.EFModels.Agent rec in recs) {
-                await SignalRUpdate(new DataObjects.SignalRUpdate {
-                    TenantId = rec.TenantId,
-                    ItemId = rec.AgentId,
-                    UpdateType = DataObjects.SignalRUpdateType.AgentStatusChanged,
-                    Message = "Deleted",
-                    UserId = CurrentUserId(CurrentUser),
-                });
-            }
-        } catch (Exception ex) {
-            output.Messages.Add("Error Deleting Agents");
-            output.Messages.AddRange(RecurseException(ex));
+        foreach (DataObjects.Agent item in Items) {
+            DataObjects.Agent saved = await SaveAgent(item, CurrentUser);
+            output.Add(saved);
         }
 
         return output;

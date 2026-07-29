@@ -106,10 +106,6 @@ public partial class DataObjects
     /// </summary>
     public class GalleryTemplate
     {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
         public GalleryTemplateCategory Category { get; set; }
         public string CategoryDisplay => Category switch {
             GalleryTemplateCategory.Entity => "Entity Template",
@@ -119,26 +115,30 @@ public partial class DataObjects
             _ => "Template"
         };
 
-        /// <summary>What this template generates</summary>
-        public List<string> Outputs { get; set; } = new();
+        /// <summary>Complexity: Low, Medium, High</summary>
+        public string Complexity { get; set; } = "Medium";
+        public string Description { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>Required inputs</summary>
         public List<GalleryTemplateInput> Inputs { get; set; } = new();
 
-        /// <summary>When to use this template</summary>
-        public string UseCase { get; set; } = string.Empty;
-
-        /// <summary>Complexity: Low, Medium, High</summary>
-        public string Complexity { get; set; } = "Medium";
-
         /// <summary>Is this template implemented?</summary>
         public bool IsImplemented { get; set; } = true;
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>What this template generates</summary>
+        public List<string> Outputs { get; set; } = new();
 
         /// <summary>Preview code snippet</summary>
         public string PreviewCode { get; set; } = string.Empty;
 
         /// <summary>Preview language</summary>
         public string PreviewLanguage { get; set; } = "csharp";
+
+        /// <summary>When to use this template</summary>
+        public string UseCase { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -146,11 +146,11 @@ public partial class DataObjects
     /// </summary>
     public class GalleryTemplateInput
     {
+        public string Description { get; set; } = string.Empty;
+        public string? Example { get; set; }
+        public bool IsRequired { get; set; } = true;
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = "string";
-        public string Description { get; set; } = string.Empty;
-        public bool IsRequired { get; set; } = true;
-        public string? Example { get; set; }
     }
 
     /// <summary>
@@ -161,14 +161,6 @@ public partial class DataObjects
         /// <summary>All available templates.</summary>
         public static List<GalleryTemplate> All => GetAllTemplates();
 
-        /// <summary>Get templates by category.</summary>
-        public static List<GalleryTemplate> GetByCategory(GalleryTemplateCategory category)
-            => All.Where(t => t.Category == category).ToList();
-
-        /// <summary>Get a specific template by ID.</summary>
-        public static GalleryTemplate? GetById(string id)
-            => All.FirstOrDefault(t => t.Id == id);
-
         private static List<GalleryTemplate> GetAllTemplates()
         {
             var templates = new List<GalleryTemplate>();
@@ -177,6 +169,14 @@ public partial class DataObjects
             templates.AddRange(GetPropertySnippetTemplates());
             return templates;
         }
+
+        /// <summary>Get templates by category.</summary>
+        public static List<GalleryTemplate> GetByCategory(GalleryTemplateCategory category)
+            => All.Where(t => t.Category == category).ToList();
+
+        /// <summary>Get a specific template by ID.</summary>
+        public static GalleryTemplate? GetById(string id)
+            => All.FirstOrDefault(t => t.Id == id);
 
         private static List<GalleryTemplate> GetEntityTemplates()
         {

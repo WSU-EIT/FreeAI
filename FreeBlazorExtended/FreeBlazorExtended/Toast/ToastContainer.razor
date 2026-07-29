@@ -25,9 +25,9 @@
 <div class="toast-container position-fixed @_positionClass p-3" style="z-index: 1090;" aria-live="polite" aria-atomic="false">
     @foreach (var toast in _toasts) {
         <div class="toast show @_animationClass" role="@(toast.Type == NotificationType.Error ? "alert" : "status")"
-             aria-live="@(toast.Type == NotificationType.Error ? "assertive" : "polite")"
-             aria-atomic="true"
-             data-toast-id="@toast.Id">
+                aria-live="@(toast.Type == NotificationType.Error ? "assertive" : "polite")"
+                aria-atomic="true"
+                data-toast-id="@toast.Id">
             <div class="toast-header @GetHeaderClass(toast.Type)">
                 <i class="@GetIconClass(toast.Type) me-2" aria-hidden="true"></i>
                 <strong class="me-auto">@(string.IsNullOrWhiteSpace(toast.Title) ? GetDefaultTitle(toast.Type) : toast.Title)</strong>
@@ -74,36 +74,14 @@
 </style>
 
 @code {
+    private List<NotificationMessage> _toasts = new();
+    private string _animationClass => "toast-fade-in";
     /// <summary>
     /// Screen corner where toasts stack. Uses the <see cref="ToastPosition"/> enum.
     /// Default: <see cref="ToastPosition.BottomEnd"/> (bottom-right).
     /// Common choices: <c>TopEnd</c> (top-right), <c>BottomCenter</c> (centred bottom).
     /// </summary>
     [Parameter] public ToastPosition Position { get; set; } = ToastPosition.BottomEnd;
-
-    /// <summary>
-    /// When <c>true</c> (default), renders an × close button on every toast so the user
-    /// can dismiss it before it auto-expires. Set to <c>false</c> for info-only toasts
-    /// that should not be manually dismissible.
-    /// </summary>
-    [Parameter] public bool ShowDismissButton { get; set; } = true;
-
-    /// <summary>
-    /// When <c>true</c>, displays an <c>HH:mm:ss</c> timestamp in the toast header.
-    /// Useful in high-frequency notification scenarios so the user can tell when each
-    /// event occurred. Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool ShowTimestamp { get; set; } = false;
-
-    /// <summary>
-    /// When <c>true</c> (default), renders a thin draining progress bar at the bottom
-    /// of each auto-dismiss toast to give the user a visual cue of remaining time.
-    /// Only visible on toasts where <c>DurationMs &gt; 0</c>.
-    /// </summary>
-    [Parameter] public bool ShowProgressBar { get; set; } = true;
-
-    private List<NotificationMessage> _toasts = new();
-    private string _animationClass => "toast-fade-in";
 
     private string _positionClass => Position switch {
         ToastPosition.TopStart    => "top-0 start-0",
@@ -116,12 +94,58 @@
         _                         => "bottom-0 end-0",  // BottomEnd default
     };
 
-    protected override void OnInitialized()
+    /// <summary>
+    /// When <c>true</c> (default), renders an × close button on every toast so the user
+    /// can dismiss it before it auto-expires. Set to <c>false</c> for info-only toasts
+    /// that should not be manually dismissible.
+    /// </summary>
+    [Parameter] public bool ShowDismissButton { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c> (default), renders a thin draining progress bar at the bottom
+    /// of each auto-dismiss toast to give the user a visual cue of remaining time.
+    /// Only visible on toasts where <c>DurationMs &gt; 0</c>.
+    /// </summary>
+    [Parameter] public bool ShowProgressBar { get; set; } = true;
+
+    /// <summary>
+    /// When <c>true</c>, displays an <c>HH:mm:ss</c> timestamp in the toast header.
+    /// Useful in high-frequency notification scenarios so the user can tell when each
+    /// event occurred. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ShowTimestamp { get; set; } = false;
+
+    public void Dispose()
     {
-        _toasts = Notifications.GetAll();
-        Notifications.OnNotificationAdded   += HandleAdded;
-        Notifications.OnNotificationRemoved += HandleRemoved;
+        Notifications.OnNotificationAdded   -= HandleAdded;
+        Notifications.OnNotificationRemoved -= HandleRemoved;
     }
+
+    private static string GetBtnCloseClass(NotificationType type) => type switch {
+        NotificationType.Warning => "",         // dark close button on yellow
+        _                        => "btn-close-white",
+    };
+
+    private static string GetDefaultTitle(NotificationType type) => type switch {
+        NotificationType.Success => "Success",
+        NotificationType.Error   => "Error",
+        NotificationType.Warning => "Warning",
+        _                        => "Info",
+    };
+
+    private static string GetHeaderClass(NotificationType type) => type switch {
+        NotificationType.Success => "text-bg-success",
+        NotificationType.Error   => "text-bg-danger",
+        NotificationType.Warning => "text-bg-warning",
+        _                        => "text-bg-primary",
+    };
+
+    private static string GetIconClass(NotificationType type) => type switch {
+        NotificationType.Success => "fas fa-check-circle",
+        NotificationType.Error   => "fas fa-exclamation-circle",
+        NotificationType.Warning => "fas fa-triangle-exclamation",
+        _                        => "fas fa-circle-info",
+    };
 
     private void HandleAdded(NotificationMessage msg)
     {
@@ -135,35 +159,10 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private static string GetHeaderClass(NotificationType type) => type switch {
-        NotificationType.Success => "text-bg-success",
-        NotificationType.Error   => "text-bg-danger",
-        NotificationType.Warning => "text-bg-warning",
-        _                        => "text-bg-primary",
-    };
-
-    private static string GetBtnCloseClass(NotificationType type) => type switch {
-        NotificationType.Warning => "",         // dark close button on yellow
-        _                        => "btn-close-white",
-    };
-
-    private static string GetIconClass(NotificationType type) => type switch {
-        NotificationType.Success => "fas fa-check-circle",
-        NotificationType.Error   => "fas fa-exclamation-circle",
-        NotificationType.Warning => "fas fa-triangle-exclamation",
-        _                        => "fas fa-circle-info",
-    };
-
-    private static string GetDefaultTitle(NotificationType type) => type switch {
-        NotificationType.Success => "Success",
-        NotificationType.Error   => "Error",
-        NotificationType.Warning => "Warning",
-        _                        => "Info",
-    };
-
-    public void Dispose()
+    protected override void OnInitialized()
     {
-        Notifications.OnNotificationAdded   -= HandleAdded;
-        Notifications.OnNotificationRemoved -= HandleRemoved;
+        _toasts = Notifications.GetAll();
+        Notifications.OnNotificationAdded   += HandleAdded;
+        Notifications.OnNotificationRemoved += HandleRemoved;
     }
 }

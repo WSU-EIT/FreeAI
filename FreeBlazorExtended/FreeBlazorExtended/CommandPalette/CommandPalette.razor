@@ -16,9 +16,7 @@
         4. Add a @ref binding if you need to open/close programmatically.
 
     Minimal example:
-        <CommandPalette @ref="_palette"
-                        Commands="_commands"
-                        OnCommandInvoked="ExecuteCommand" />
+        <CommandPalette @ref="_palette" Commands="_commands" OnCommandInvoked="ExecuteCommand" />
 
         <button @onclick="_palette!.Open">Open palette</button>
 *@
@@ -27,12 +25,12 @@
 
 @if (_open) {
     <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center"
-         style="z-index:1055; background:rgba(0,0,0,0.5); padding-top:10vh;"
-         @onclick="Close">
+            style="z-index:1055; background:rgba(0,0,0,0.5); padding-top:10vh;"
+            @onclick="Close">
 
         <div class="bg-white rounded-3 shadow-lg d-flex flex-column"
-             style="width:min(600px, 90vw); max-height:70vh;"
-             @onclick:stopPropagation>
+                style="width:min(600px, 90vw); max-height:70vh;"
+                @onclick:stopPropagation>
 
             @* Search Input *@
             <div class="p-3 border-bottom">
@@ -41,13 +39,13 @@
                         <i class="fa-solid fa-magnifying-glass text-muted"></i>
                     </span>
                     <input type="text" class="form-control form-control-lg border-start-0"
-                           placeholder="@PlaceholderText"
-                           @bind="_searchTerm"
-                           @bind:event="oninput"
-                           @bind:after="OnSearchInput"
-                           @onkeydown="HandleKeydown"
-                           @ref="_searchInput"
-                           autofocus />
+                            placeholder="@PlaceholderText"
+                            @bind="_searchTerm"
+                            @bind:event="oninput"
+                            @bind:after="OnSearchInput"
+                            @onkeydown="HandleKeydown"
+                            @ref="_searchInput"
+                            autofocus />
                 </div>
             </div>
 
@@ -65,7 +63,7 @@
                         @foreach (var item in group) {
                             int idx = globalIdx++;
                             <div class="px-3 py-2 d-flex align-items-center border-bottom @(idx == _highlightIndex ? "bg-primary bg-opacity-10" : "")"
-                                 role="button" @onclick="@(() => Select(item))">
+                                    role="button" @onclick="@(() => Select(item))">
                                 <i class="@(string.IsNullOrWhiteSpace(item.Icon) ? "fa-solid fa-terminal" : item.Icon) text-muted me-2"></i>
                                 <div class="flex-grow-1">
                                     <span class="small fw-semibold">@((MarkupString)HighlightMatch(item.Label, _searchTerm))</span>
@@ -86,7 +84,7 @@
                     @foreach (var item in _history) {
                         int idx = hIdx++;
                         <div class="px-3 py-2 d-flex align-items-center border-bottom @(idx == _highlightIndex ? "bg-primary bg-opacity-10" : "")"
-                             role="button" @onclick="@(() => Select(item))">
+                                role="button" @onclick="@(() => Select(item))">
                             <i class="@(string.IsNullOrWhiteSpace(item.Icon) ? "fa-solid fa-clock-rotate-left" : item.Icon) text-muted me-2"></i>
                             <div class="flex-grow-1">
                                 <span class="small fw-semibold">@item.Label</span>
@@ -298,6 +296,20 @@
     public class CommandItem
     {
         /// <summary>
+        /// Group name shown as a section header above matching commands.
+        /// Commands without a category fall under <c>"Other"</c>.
+        /// </summary>
+        public string? Category { get; set; }
+
+        /// <summary>Optional secondary line of text beneath the label to clarify the command's effect.</summary>
+        public string? Description { get; set; }
+
+        /// <summary>
+        /// Font Awesome CSS class for the icon rendered to the left of the label.
+        /// Example: <c>"fa-solid fa-gear"</c>. Defaults to <c>fa-solid fa-terminal</c> when omitted.
+        /// </summary>
+        public string? Icon { get; set; }
+        /// <summary>
         /// Stable unique identifier. Used for history deduplication and equality checks.
         /// Optional, but strongly recommended when the same label may appear in multiple categories.
         /// </summary>
@@ -305,20 +317,5 @@
 
         /// <summary>Human-readable command name displayed in bold in the result list. <b>Required.</b></summary>
         public string Label { get; set; } = "";
-
-        /// <summary>
-        /// Group name shown as a section header above matching commands.
-        /// Commands without a category fall under <c>"Other"</c>.
-        /// </summary>
-        public string? Category { get; set; }
-
-        /// <summary>
-        /// Font Awesome CSS class for the icon rendered to the left of the label.
-        /// Example: <c>"fa-solid fa-gear"</c>. Defaults to <c>fa-solid fa-terminal</c> when omitted.
-        /// </summary>
-        public string? Icon { get; set; }
-
-        /// <summary>Optional secondary line of text beneath the label to clarify the command's effect.</summary>
-        public string? Description { get; set; }
     }
 }

@@ -9,15 +9,9 @@
     {
         public string Code { get; set; }
 
-        public DiagnosticSeverity Severity { get; set; }
-
         public string Description { get; set; }
 
-        public int? Line { get; set; }
-
         public string File { get; set; }
-
-        public CompilationDiagnosticKind Kind { get; set; }
 
         internal static CompilationDiagnostic FromCSharpDiagnostic(Diagnostic diagnostic)
         {
@@ -70,5 +64,11 @@
                 // Line = diagnostic.Span.LineIndex, // TODO: Find a way to calculate this
             };
         }
+
+        public CompilationDiagnosticKind Kind { get; set; }
+
+        public int? Line { get; set; }
+
+        public DiagnosticSeverity Severity { get; set; }
     }
 }

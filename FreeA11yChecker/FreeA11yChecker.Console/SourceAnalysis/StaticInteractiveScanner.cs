@@ -16,41 +16,8 @@ public static partial class StaticInteractiveScanner
         ".vs"
     };
 
-    [GeneratedRegex(@"<(?:div|span)\b[^>]*\s@onclick\s*=", RegexOptions.IgnoreCase)]
-    private static partial Regex ClickOnNonInteractiveRegex();
-
-    [GeneratedRegex(@"<a\b[^>]*\shref\s*=\s*""\s*(?:javascript:\s*void\s*\(\s*0\s*\)\s*|#)\s""", RegexOptions.IgnoreCase)]
-    private static partial Regex DummyHrefRegex();
-
-    [GeneratedRegex(@"<a\b[^>]*\starget\s*=\s*""_blank""[^>]*>", RegexOptions.IgnoreCase)]
-    private static partial Regex TargetBlankAnchorRegex();
-
-    [GeneratedRegex(@"\brel\s*=\s*""[^""]*\bnoopener\b[^""]*""", RegexOptions.IgnoreCase)]
-    private static partial Regex RelNoopenerRegex();
-
-    [GeneratedRegex(@"\baria-label\s*=\s*""[^""]*""", RegexOptions.IgnoreCase)]
-    private static partial Regex AriaLabelRegex();
-
-    [GeneratedRegex(@"\b(?:new\s+window|new\s+tab|opens\s+in)\b", RegexOptions.IgnoreCase)]
-    private static partial Regex NewWindowTextRegex();
-
-    [GeneratedRegex(@"<input\b[^>]*\stype\s*=\s*""image""[^>]*>", RegexOptions.IgnoreCase)]
-    private static partial Regex InputImageRegex();
-
     [GeneratedRegex(@"\balt\s*=\s*""", RegexOptions.IgnoreCase)]
     private static partial Regex AltAttributeRegex();
-
-    [GeneratedRegex(@"<[a-zA-Z][^>]*\stabindex\s*=\s*""\s*-1\s*""[^>]*>", RegexOptions.IgnoreCase)]
-    private static partial Regex TabIndexNegativeRegex();
-
-    [GeneratedRegex(@"<[a-zA-Z][^>]*\stabindex\s*=\s*""\s*(\d+)\s*""[^>]*>", RegexOptions.IgnoreCase)]
-    private static partial Regex TabIndexPositiveRegex();
-
-    [GeneratedRegex(@"<button\b[^>]*\stype\s*=\s*""button""[^>]*\s@onclick\s*=[^>]*>(.*?)</button>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private static partial Regex ButtonWithOnClickRegex();
-
-    [GeneratedRegex(@"\s+(?:href|onclick|role|tabindex|disabled|hidden|aria-hidden)\s*=", RegexOptions.IgnoreCase)]
-    private static partial Regex InteractiveAttrRegex();
 
     public static List<(string File, int Line, string Severity, string Issue, string Snippet)> Analyze(string sourceRoot)
     {
@@ -199,6 +166,18 @@ public static partial class StaticInteractiveScanner
         return results;
     }
 
+    [GeneratedRegex(@"\baria-label\s*=\s*""[^""]*""", RegexOptions.IgnoreCase)]
+    private static partial Regex AriaLabelRegex();
+
+    [GeneratedRegex(@"<button\b[^>]*\stype\s*=\s*""button""[^>]*\s@onclick\s*=[^>]*>(.*?)</button>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private static partial Regex ButtonWithOnClickRegex();
+
+    [GeneratedRegex(@"<(?:div|span)\b[^>]*\s@onclick\s*=", RegexOptions.IgnoreCase)]
+    private static partial Regex ClickOnNonInteractiveRegex();
+
+    [GeneratedRegex(@"<a\b[^>]*\shref\s*=\s*""\s*(?:javascript:\s*void\s*\(\s*0\s*\)\s*|#)\s""", RegexOptions.IgnoreCase)]
+    private static partial Regex DummyHrefRegex();
+
     private static IEnumerable<string> EnumerateFiles(string root)
     {
         var stack = new Stack<string>();
@@ -250,6 +229,27 @@ public static partial class StaticInteractiveScanner
             }
         }
     }
+
+    [GeneratedRegex(@"<input\b[^>]*\stype\s*=\s*""image""[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex InputImageRegex();
+
+    [GeneratedRegex(@"\s+(?:href|onclick|role|tabindex|disabled|hidden|aria-hidden)\s*=", RegexOptions.IgnoreCase)]
+    private static partial Regex InteractiveAttrRegex();
+
+    [GeneratedRegex(@"\b(?:new\s+window|new\s+tab|opens\s+in)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex NewWindowTextRegex();
+
+    [GeneratedRegex(@"\brel\s*=\s*""[^""]*\bnoopener\b[^""]*""", RegexOptions.IgnoreCase)]
+    private static partial Regex RelNoopenerRegex();
+
+    [GeneratedRegex(@"<[a-zA-Z][^>]*\stabindex\s*=\s*""\s*-1\s*""[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex TabIndexNegativeRegex();
+
+    [GeneratedRegex(@"<[a-zA-Z][^>]*\stabindex\s*=\s*""\s*(\d+)\s*""[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex TabIndexPositiveRegex();
+
+    [GeneratedRegex(@"<a\b[^>]*\starget\s*=\s*""_blank""[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex TargetBlankAnchorRegex();
 
     private static string Truncate(string value, int maxLength)
     {

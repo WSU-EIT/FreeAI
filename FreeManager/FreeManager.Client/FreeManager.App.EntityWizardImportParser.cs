@@ -10,6 +10,91 @@ namespace FreeManager;
 /// </summary>
 public static class EntityWizardImportParser
 {
+    // ============================================================
+    // HELPER METHODS
+    // ============================================================
+
+    private static bool IsNavigationProperty(string typeStr)
+    {
+        return typeStr.StartsWith("ICollection") ||
+               typeStr.StartsWith("IEnumerable") ||
+               typeStr.StartsWith("List<") ||
+               typeStr.StartsWith("HashSet<") ||
+               typeStr.Contains("virtual");
+    }
+
+    private static bool IsSystemFieldName(string propName)
+    {
+        var systemNames = new[] {
+            "CreatedAt", "UpdatedAt", "DeletedAt", "Deleted",
+            "CreatedBy", "UpdatedBy", "LastModifiedBy",
+            "TenantId", "RowVersion"
+        };
+        return systemNames.Contains(propName);
+    }
+
+    private static string JsonTypeToCSharp(string jsonType)
+    {
+        return jsonType.ToLower() switch
+        {
+            "string" => "string",
+            "number" => "decimal",
+            "integer" => "int",
+            "boolean" => "bool",
+            "array" => "string", // Simplified
+            "object" => "string", // Simplified
+            _ => "string"
+        };
+    }
+
+    private static string NormalizeCSharpType(string typeStr)
+    {
+        typeStr = typeStr.Trim().TrimEnd('?');
+
+        return typeStr switch
+        {
+            "String" => "string",
+            "Int32" => "int",
+            "Int64" => "long",
+            "Boolean" => "bool",
+            "Decimal" => "decimal",
+            "Double" => "decimal",
+            "Single" => "decimal",
+            "float" => "decimal",
+            "double" => "decimal",
+            _ => typeStr
+        };
+    }
+
+    private static void ParseAttributes(string attributes, DataObjects.PropertyDefinition prop)
+    {
+        // [Required]
+        if (attributes.Contains("Required"))
+        {
+            prop.IsRequired = true;
+            prop.IsNullable = false;
+        }
+
+        // [MaxLength(100)] or [StringLength(100)]
+        var maxLengthMatch = Regex.Match(attributes, @"(?:MaxLength|StringLength)\s*\(\s*(\d+)\s*\)");
+        if (maxLengthMatch.Success && int.TryParse(maxLengthMatch.Groups[1].Value, out int maxLen))
+        {
+            prop.MaxLength = maxLen;
+        }
+
+        // [Key]
+        if (attributes.Contains("Key"))
+        {
+            prop.IsPrimaryKey = true;
+        }
+
+        // [Column("column_name")]
+        var columnMatch = Regex.Match(attributes, @"Column\s*\(\s*""([^""]+)""\s*\)");
+        if (columnMatch.Success)
+        {
+            prop.Description = $"Column: {columnMatch.Groups[1].Value}";
+        }
+    }
     /// <summary>
     /// Parse a C# class definition into an EntityDefinition.
     /// </summary>
@@ -237,92 +322,6 @@ public static class EntityWizardImportParser
             result.Message = $"JSON parse error: {ex.Message}";
             return result;
         }
-    }
-
-    // ============================================================
-    // HELPER METHODS
-    // ============================================================
-
-    private static bool IsNavigationProperty(string typeStr)
-    {
-        return typeStr.StartsWith("ICollection") ||
-               typeStr.StartsWith("IEnumerable") ||
-               typeStr.StartsWith("List<") ||
-               typeStr.StartsWith("HashSet<") ||
-               typeStr.Contains("virtual");
-    }
-
-    private static string NormalizeCSharpType(string typeStr)
-    {
-        typeStr = typeStr.Trim().TrimEnd('?');
-
-        return typeStr switch
-        {
-            "String" => "string",
-            "Int32" => "int",
-            "Int64" => "long",
-            "Boolean" => "bool",
-            "Decimal" => "decimal",
-            "Double" => "decimal",
-            "Single" => "decimal",
-            "float" => "decimal",
-            "double" => "decimal",
-            _ => typeStr
-        };
-    }
-
-    private static void ParseAttributes(string attributes, DataObjects.PropertyDefinition prop)
-    {
-        // [Required]
-        if (attributes.Contains("Required"))
-        {
-            prop.IsRequired = true;
-            prop.IsNullable = false;
-        }
-
-        // [MaxLength(100)] or [StringLength(100)]
-        var maxLengthMatch = Regex.Match(attributes, @"(?:MaxLength|StringLength)\s*\(\s*(\d+)\s*\)");
-        if (maxLengthMatch.Success && int.TryParse(maxLengthMatch.Groups[1].Value, out int maxLen))
-        {
-            prop.MaxLength = maxLen;
-        }
-
-        // [Key]
-        if (attributes.Contains("Key"))
-        {
-            prop.IsPrimaryKey = true;
-        }
-
-        // [Column("column_name")]
-        var columnMatch = Regex.Match(attributes, @"Column\s*\(\s*""([^""]+)""\s*\)");
-        if (columnMatch.Success)
-        {
-            prop.Description = $"Column: {columnMatch.Groups[1].Value}";
-        }
-    }
-
-    private static bool IsSystemFieldName(string propName)
-    {
-        var systemNames = new[] {
-            "CreatedAt", "UpdatedAt", "DeletedAt", "Deleted",
-            "CreatedBy", "UpdatedBy", "LastModifiedBy",
-            "TenantId", "RowVersion"
-        };
-        return systemNames.Contains(propName);
-    }
-
-    private static string JsonTypeToCSharp(string jsonType)
-    {
-        return jsonType.ToLower() switch
-        {
-            "string" => "string",
-            "number" => "decimal",
-            "integer" => "int",
-            "boolean" => "bool",
-            "array" => "string", // Simplified
-            "object" => "string", // Simplified
-            _ => "string"
-        };
     }
 
     private static string ToPascalCase(string input)

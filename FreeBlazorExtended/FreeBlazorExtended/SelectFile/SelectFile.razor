@@ -68,11 +68,11 @@
                             title="@title"
                             @onclick="() => HandleFileSelected(captured)">
                         <div class="select-file-thumbnail d-flex align-items-center justify-content-center"
-                             style="height: 5rem;">
+                                style="height: 5rem;">
                             @if (isImage && !string.IsNullOrEmpty(imgSrc)) {
                                 <img src="@imgSrc"
-                                     alt="@file.FileName"
-                                     style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                        alt="@file.FileName"
+                                        style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                             } else {
                                 <i class="@icon fa-2x text-secondary" aria-hidden="true"></i>
                             }
@@ -88,6 +88,16 @@
 }
 
 @code {
+    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".gif", ".jpg", ".jpeg", ".png", ".svg"
+    };
+
+    /// <summary>Text for the Cancel button (default <c>"Cancel"</c>).</summary>
+    [Parameter] public string CancelButtonText { get; set; } = "Cancel";
+
+    /// <summary>Message shown when <see cref="Files"/> is empty.</summary>
+    [Parameter] public string EmptyText { get; set; } = "No files available.";
     /// <summary>
     /// The files to display as clickable tiles.
     /// <para><b>Required.</b> The caller is responsible for loading and refreshing this collection.
@@ -95,53 +105,29 @@
     /// </summary>
     [Parameter] public List<FileItem> Files { get; set; } = new();
 
+    /// <summary>When true, renders a spinner instead of the tile grid.</summary>
+    [Parameter] public bool Loading { get; set; } = false;
+
+    /// <summary>Fires when the user clicks the Cancel button.</summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
     /// <summary>
     /// Fires when the user clicks a file tile. The selected <see cref="FileItem"/> is passed as the event argument.
     /// <para><b>Required</b> if you want any action to occur on selection.</para>
     /// </summary>
     [Parameter] public EventCallback<FileItem> OnFileSelected { get; set; }
 
-    /// <summary>Show a Cancel button above the tile grid. Default <c>false</c>.</summary>
-    [Parameter] public bool ShowCancelButton { get; set; } = false;
-
-    /// <summary>Text for the Cancel button (default <c>"Cancel"</c>).</summary>
-    [Parameter] public string CancelButtonText { get; set; } = "Cancel";
-
-    /// <summary>Fires when the user clicks the Cancel button.</summary>
-    [Parameter] public EventCallback OnCancel { get; set; }
-
-    /// <summary>Show a Refresh button at the top of the picker.</summary>
-    [Parameter] public bool ShowRefreshButton { get; set; } = false;
+    /// <summary>Fires when the user clicks the Refresh button.</summary>
+    [Parameter] public EventCallback OnRefresh { get; set; }
 
     /// <summary>Text for the Refresh button (default <c>"Refresh"</c>).</summary>
     [Parameter] public string RefreshButtonText { get; set; } = "Refresh";
 
-    /// <summary>Fires when the user clicks the Refresh button.</summary>
-    [Parameter] public EventCallback OnRefresh { get; set; }
+    /// <summary>Show a Cancel button above the tile grid. Default <c>false</c>.</summary>
+    [Parameter] public bool ShowCancelButton { get; set; } = false;
 
-    /// <summary>When true, renders a spinner instead of the tile grid.</summary>
-    [Parameter] public bool Loading { get; set; } = false;
-
-    /// <summary>Message shown when <see cref="Files"/> is empty.</summary>
-    [Parameter] public string EmptyText { get; set; } = "No files available.";
-
-    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ".gif", ".jpg", ".jpeg", ".png", ".svg"
-    };
-
-    private static bool IsImageExtension(string? extension)
-        => !string.IsNullOrWhiteSpace(extension) && _imageExtensions.Contains(extension);
-
-    private static string? ResolveImageSrc(FileItem file)
-    {
-        if (file.Value is { Length: > 0 }) {
-            var ext = (file.Extension ?? "").Replace(".", "").ToLowerInvariant();
-            if (string.IsNullOrEmpty(ext)) ext = "png";
-            return $"data:image/{ext};base64,{Convert.ToBase64String(file.Value)}";
-        }
-        return file.RemoteImageUrl;
-    }
+    /// <summary>Show a Refresh button at the top of the picker.</summary>
+    [Parameter] public bool ShowRefreshButton { get; set; } = false;
 
     private static string BytesToFriendlyLabel(long bytes)
     {
@@ -154,17 +140,17 @@
         return $"{gb:0.#} GB";
     }
 
-    private async Task HandleFileSelected(FileItem file)
-    {
-        if (OnFileSelected.HasDelegate) {
-            await OnFileSelected.InvokeAsync(file);
-        }
-    }
-
     private async Task HandleCancel()
     {
         if (OnCancel.HasDelegate) {
             await OnCancel.InvokeAsync();
+        }
+    }
+
+    private async Task HandleFileSelected(FileItem file)
+    {
+        if (OnFileSelected.HasDelegate) {
+            await OnFileSelected.InvokeAsync(file);
         }
     }
 
@@ -173,5 +159,18 @@
         if (OnRefresh.HasDelegate) {
             await OnRefresh.InvokeAsync();
         }
+    }
+
+    private static bool IsImageExtension(string? extension)
+        => !string.IsNullOrWhiteSpace(extension) && _imageExtensions.Contains(extension);
+
+    private static string? ResolveImageSrc(FileItem file)
+    {
+        if (file.Value is { Length: > 0 }) {
+            var ext = (file.Extension ?? "").Replace(".", "").ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)) ext = "png";
+            return $"data:image/{ext};base64,{Convert.ToBase64String(file.Value)}";
+        }
+        return file.RemoteImageUrl;
     }
 }

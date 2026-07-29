@@ -28,39 +28,6 @@ public sealed class SmartsheetService(HttpClient httpClient)
     }
 
     /// <summary>
-    /// Returns all sheets visible to the token owner.
-    /// Uses includeAll=true which bypasses paging for reasonable account sizes.
-    /// </summary>
-    public async Task<List<SmartsheetSheet>> ListAllSheetsAsync(
-        string apiToken,
-        CancellationToken ct = default)
-    {
-        using var req = BuildRequest(HttpMethod.Get, "sheets?includeAll=true", apiToken);
-        using var response = await _http.SendAsync(req, ct);
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<SmartsheetApiResponse<SmartsheetSheet>>(cancellationToken: ct);
-        return result?.Data ?? [];
-    }
-
-    /// <summary>
-    /// Gets a single page of sheet rows plus columns and sheet metadata.
-    /// </summary>
-    public async Task<SmartsheetSheet> GetSheetAsync(
-        string apiToken,
-        long sheetId,
-        int pageSize = 500,
-        int page = 1,
-        CancellationToken ct = default)
-    {
-        var url = $"sheets/{sheetId}?pageSize={pageSize}&page={page}";
-        using var req = BuildRequest(HttpMethod.Get, url, apiToken);
-        using var response = await _http.SendAsync(req, ct);
-        response.EnsureSuccessStatusCode();
-        var sheet = await response.Content.ReadFromJsonAsync<SmartsheetSheet>(cancellationToken: ct);
-        return sheet ?? throw new InvalidOperationException("Empty response from Smartsheet API.");
-    }
-
-    /// <summary>
     /// Fetches all row pages (500 rows each) and merges them into one sheet object.
     /// Calls progress.Report(pageNumber) after each page so the UI can update.
     /// </summary>
@@ -68,8 +35,7 @@ public sealed class SmartsheetService(HttpClient httpClient)
         string apiToken,
         long sheetId,
         IProgress<int>? progress = null,
-        CancellationToken ct = default)
-    {
+        CancellationToken ct = default){
         // Page 1 — also carries columns, sheet metadata, and total pages
         var firstPage = await GetSheetAsync(apiToken, sheetId, pageSize: 500, page: 1, ct);
         progress?.Report(1);
@@ -90,5 +56,35 @@ public sealed class SmartsheetService(HttpClient httpClient)
 
         firstPage.Rows = allRows;
         return firstPage;
+    }
+
+    /// <summary>
+    /// Gets a single page of sheet rows plus columns and sheet metadata.
+    /// </summary>
+    public async Task<SmartsheetSheet> GetSheetAsync(
+        string apiToken,
+        long sheetId,
+        int pageSize = 500,
+        int page = 1,
+        CancellationToken ct = default){
+        var url = $"sheets/{sheetId}?pageSize={pageSize}&page={page}";
+        using var req = BuildRequest(HttpMethod.Get, url, apiToken);
+        using var response = await _http.SendAsync(req, ct);
+        response.EnsureSuccessStatusCode();
+        var sheet = await response.Content.ReadFromJsonAsync<SmartsheetSheet>(cancellationToken: ct);
+        return sheet ?? throw new InvalidOperationException("Empty response from Smartsheet API.");
+    }
+
+    /// <summary>
+    /// Returns all sheets visible to the token owner.
+    /// Uses includeAll=true which bypasses paging for reasonable account sizes.
+    /// </summary>
+    public async Task<List<SmartsheetSheet>> ListAllSheetsAsync(string apiToken, CancellationToken ct = default)
+    {
+        using var req = BuildRequest(HttpMethod.Get, "sheets?includeAll=true", apiToken);
+        using var response = await _http.SendAsync(req, ct);
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<SmartsheetApiResponse<SmartsheetSheet>>(cancellationToken: ct);
+        return result?.Data ?? [];
     }
 }

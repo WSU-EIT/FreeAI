@@ -7,23 +7,21 @@ namespace FreeA11yChecker.Server.Controllers;
 
 public partial class DataController
 {
-    // ── Sites ──────────────────────────────────────────────────────
-
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetSites")]
-    public async Task<ActionResult<List<DataObjects.Site>>> GetSites(List<Guid> Ids)
+    [Route("~/api/Data/DeleteSiteCredentials")]
+    public async Task<ActionResult<DataObjects.BooleanResponse>> DeleteSiteCredentials(List<Guid> Ids)
     {
-        List<DataObjects.Site> output = await da.GetSites(Ids, TenantId, CurrentUser);
+        DataObjects.BooleanResponse output = await da.DeleteSiteCredentials(Ids, CurrentUser);
         return Ok(output);
     }
 
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveSites")]
-    public async Task<ActionResult<List<DataObjects.Site>>> SaveSites(List<DataObjects.Site> Items)
+    [Route("~/api/Data/DeleteSitePages")]
+    public async Task<ActionResult<DataObjects.BooleanResponse>> DeleteSitePages(List<Guid> Ids)
     {
-        List<DataObjects.Site> output = await da.SaveSites(Items, CurrentUser);
+        DataObjects.BooleanResponse output = await da.DeleteSitePages(Ids, CurrentUser);
         return Ok(output);
     }
 
@@ -36,32 +34,12 @@ public partial class DataController
         return Ok(output);
     }
 
-    // ── Site Pages ─────────────────────────────────────────────────
-
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetSitePages")]
-    public async Task<ActionResult<List<DataObjects.SitePage>>> GetSitePages(DataObjects.SiteChildFilter filter)
+    [Route("~/api/Data/DeleteViolationSuppression")]
+    public async Task<ActionResult<bool>> DeleteViolationSuppression([FromBody] Guid ViolationSuppressionId)
     {
-        List<DataObjects.SitePage> output = await da.GetSitePages(filter.Ids, filter.SiteId);
-        return Ok(output);
-    }
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveSitePages")]
-    public async Task<ActionResult<List<DataObjects.SitePage>>> SaveSitePages(List<DataObjects.SitePage> Items)
-    {
-        List<DataObjects.SitePage> output = await da.SaveSitePages(Items, CurrentUser);
-        return Ok(output);
-    }
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/DeleteSitePages")]
-    public async Task<ActionResult<DataObjects.BooleanResponse>> DeleteSitePages(List<Guid> Ids)
-    {
-        DataObjects.BooleanResponse output = await da.DeleteSitePages(Ids, CurrentUser);
+        bool output = await da.DeleteViolationSuppression(ViolationSuppressionId, TenantId);
         return Ok(output);
     }
 
@@ -157,60 +135,58 @@ public partial class DataController
         return Ok(output);
     }
 
-    private class DiscoverLinkInfo
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("href")]
-        public string Href { get; set; } = string.Empty;
-        [System.Text.Json.Serialization.JsonPropertyName("text")]
-        public string Text { get; set; } = string.Empty;
-    }
-
-    // ── Site Credentials ───────────────────────────────────────────
+    // ── All Sites Scan History (Trends) ────────────────────────────
 
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetSiteCredentials")]
-    public async Task<ActionResult<List<DataObjects.SiteCredential>>> GetSiteCredentials(DataObjects.SiteChildFilter filter)
+    [Route("~/api/Data/GetAllSiteScanHistory")]
+    public async Task<ActionResult<Dictionary<Guid, List<DataObjects.ScanRun>>>> GetAllSiteScanHistory(DataObjects.AllSiteScanHistoryFilter filter)
     {
-        List<DataObjects.SiteCredential> output = await da.GetSiteCredentials(filter.Ids, filter.SiteId);
+        Dictionary<Guid, List<DataObjects.ScanRun>> output = await da.GetAllSiteScanHistory(TenantId, filter.CountPerSite);
         return Ok(output);
     }
 
+    // ── Certificate ────────────────────────────────────────────────
+
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveSiteCredentials")]
-    public async Task<ActionResult<List<DataObjects.SiteCredential>>> SaveSiteCredentials(List<DataObjects.SiteCredential> Items)
+    [Route("~/api/Data/GetCertificate")]
+    public async Task<ActionResult<DataObjects.ScanCertificate?>> GetCertificate([FromBody] Guid PageScanResultId)
     {
-        List<DataObjects.SiteCredential> output = await da.SaveSiteCredentials(Items, CurrentUser);
+        DataObjects.ScanCertificate? output = await da.GetCertificate(PageScanResultId);
         return Ok(output);
     }
 
+    // ── Cross-Site Violations (compliance triage across sites) ─────
+
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/DeleteSiteCredentials")]
-    public async Task<ActionResult<DataObjects.BooleanResponse>> DeleteSiteCredentials(List<Guid> Ids)
+    [Route("~/api/Data/GetCrossSiteViolations")]
+    public async Task<ActionResult<List<DataObjects.CrossSiteViolation>>> GetCrossSiteViolations(DataObjects.CrossSiteViolationFilter filter)
     {
-        DataObjects.BooleanResponse output = await da.DeleteSiteCredentials(Ids, CurrentUser);
+        List<DataObjects.CrossSiteViolation> output = await da.GetCrossSiteViolations(TenantId, filter);
         return Ok(output);
     }
 
-    // ── Scan Runs ──────────────────────────────────────────────────
+    // ── Images ─────────────────────────────────────────────────────
 
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetScanRuns")]
-    public async Task<ActionResult<List<DataObjects.ScanRun>>> GetScanRuns(DataObjects.ScanRunFilter filter)
+    [Route("~/api/Data/GetImages")]
+    public async Task<ActionResult<List<DataObjects.ScanImage>>> GetImages([FromBody] Guid PageScanResultId)
     {
-        List<DataObjects.ScanRun> output = await da.GetScanRuns(filter.Ids, filter.SiteId, TenantId);
+        List<DataObjects.ScanImage> output = await da.GetImages(PageScanResultId);
         return Ok(output);
     }
 
+    // ── Manual Checks ──────────────────────────────────────────────
+
     [HttpPost]
     [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveScanRun")]
-    public async Task<ActionResult<DataObjects.ScanRun>> SaveScanRun(DataObjects.ScanRun Item)
+    [Route("~/api/Data/GetManualChecks")]
+    public async Task<ActionResult<List<DataObjects.ManualCheckResult>>> GetManualChecks(DataObjects.SiteChildFilter filter)
     {
-        DataObjects.ScanRun output = await da.SaveScanRun(Item, CurrentUser);
+        List<DataObjects.ManualCheckResult> output = await da.GetManualChecks(filter.Ids, filter.SiteId);
         return Ok(output);
     }
 
@@ -225,6 +201,28 @@ public partial class DataController
         return Ok(output);
     }
 
+    // ── Ranked Rules ───────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetRankedRules")]
+    public async Task<ActionResult<List<DataObjects.ScanRankedRule>>> GetRankedRules([FromBody] Guid PageScanResultId)
+    {
+        List<DataObjects.ScanRankedRule> output = await da.GetRankedRules(PageScanResultId);
+        return Ok(output);
+    }
+
+    // ── Scan Runs ──────────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetScanRuns")]
+    public async Task<ActionResult<List<DataObjects.ScanRun>>> GetScanRuns(DataObjects.ScanRunFilter filter)
+    {
+        List<DataObjects.ScanRun> output = await da.GetScanRuns(filter.Ids, filter.SiteId, TenantId);
+        return Ok(output);
+    }
+
     // ── Screenshots ────────────────────────────────────────────────
 
     [HttpPost]
@@ -236,25 +234,135 @@ public partial class DataController
         return Ok(output);
     }
 
-    [HttpGet]
-    [AllowAnonymous]
-    [Route("~/api/Data/ScanScreenshotFile/{PageScanResultId}/{FileName}")]
-    public async Task<IActionResult> ScanScreenshotFile(Guid PageScanResultId, string FileName)
-    {
-        DataObjects.ScanScreenshot? screenshot = await da.GetScreenshotByFileName(PageScanResultId, FileName);
-        if (screenshot == null) { return NotFound(); }
-        Response.Headers.CacheControl = "public, max-age=86400";
-        string contentType = screenshot.ContentType ?? "application/octet-stream";
+    // ── Site Credentials ───────────────────────────────────────────
 
-        // Disk-first: bytes live on disk now; DB Data is only a legacy fallback.
-        if (!string.IsNullOrEmpty(screenshot.Path) && System.IO.File.Exists(screenshot.Path)) {
-            byte[] bytes = await System.IO.File.ReadAllBytesAsync(screenshot.Path);
-            return File(bytes, contentType, FileName);
-        }
-        if (screenshot.Data != null && screenshot.Data.Length > 0) {
-            return File(screenshot.Data, contentType, FileName);
-        }
-        return NotFound();
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetSiteCredentials")]
+    public async Task<ActionResult<List<DataObjects.SiteCredential>>> GetSiteCredentials(DataObjects.SiteChildFilter filter)
+    {
+        List<DataObjects.SiteCredential> output = await da.GetSiteCredentials(filter.Ids, filter.SiteId);
+        return Ok(output);
+    }
+
+    // ── Site Pages ─────────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetSitePages")]
+    public async Task<ActionResult<List<DataObjects.SitePage>>> GetSitePages(DataObjects.SiteChildFilter filter)
+    {
+        List<DataObjects.SitePage> output = await da.GetSitePages(filter.Ids, filter.SiteId);
+        return Ok(output);
+    }
+    // ── Sites ──────────────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetSites")]
+    public async Task<ActionResult<List<DataObjects.Site>>> GetSites(List<Guid> Ids)
+    {
+        List<DataObjects.Site> output = await da.GetSites(Ids, TenantId, CurrentUser);
+        return Ok(output);
+    }
+
+    // ── Scan History ───────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetSiteScanHistory")]
+    public async Task<ActionResult<List<DataObjects.ScanRun>>> GetSiteScanHistory(DataObjects.ScanHistoryFilter filter)
+    {
+        List<DataObjects.ScanRun> output = await da.GetSiteScanHistory(filter.SiteId, filter.Count);
+        return Ok(output);
+    }
+
+    // ── Violations ─────────────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetViolations")]
+    public async Task<ActionResult<List<DataObjects.A11yViolation>>> GetViolations(DataObjects.ViolationFilter filter)
+    {
+        List<DataObjects.A11yViolation> output = await da.GetViolations(filter.Ids, filter.PageScanResultId);
+        return Ok(output);
+    }
+
+    // ── Violations by Rule ─────────────────────────────────────────
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetViolationsByRule")]
+    public async Task<ActionResult<List<DataObjects.A11yViolation>>> GetViolationsByRule(DataObjects.ViolationsByRuleFilter filter)
+    {
+        List<DataObjects.A11yViolation> output = await da.GetViolationsByRule(filter.ScanRunId, filter.CanonicalRuleId);
+        return Ok(output);
+    }
+
+    // ── Violation Suppressions (downgrade specific rules to warning) ─
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/GetViolationSuppressions")]
+    public async Task<ActionResult<List<DataObjects.ViolationSuppression>>> GetViolationSuppressions()
+    {
+        List<DataObjects.ViolationSuppression> output = await da.GetViolationSuppressions(TenantId);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveManualChecks")]
+    public async Task<ActionResult<List<DataObjects.ManualCheckResult>>> SaveManualChecks(List<DataObjects.ManualCheckResult> Items)
+    {
+        List<DataObjects.ManualCheckResult> output = await da.SaveManualChecks(Items, CurrentUser);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveScanRun")]
+    public async Task<ActionResult<DataObjects.ScanRun>> SaveScanRun(DataObjects.ScanRun Item)
+    {
+        DataObjects.ScanRun output = await da.SaveScanRun(Item, CurrentUser);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveSiteCredentials")]
+    public async Task<ActionResult<List<DataObjects.SiteCredential>>> SaveSiteCredentials(List<DataObjects.SiteCredential> Items)
+    {
+        List<DataObjects.SiteCredential> output = await da.SaveSiteCredentials(Items, CurrentUser);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveSitePages")]
+    public async Task<ActionResult<List<DataObjects.SitePage>>> SaveSitePages(List<DataObjects.SitePage> Items)
+    {
+        List<DataObjects.SitePage> output = await da.SaveSitePages(Items, CurrentUser);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveSites")]
+    public async Task<ActionResult<List<DataObjects.Site>>> SaveSites(List<DataObjects.Site> Items)
+    {
+        List<DataObjects.Site> output = await da.SaveSites(Items, CurrentUser);
+        return Ok(output);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = Policies.Admin)]
+    [Route("~/api/Data/SaveViolationSuppression")]
+    public async Task<ActionResult<DataObjects.ViolationSuppression>> SaveViolationSuppression(DataObjects.ViolationSuppression Item)
+    {
+        Item.TenantId = TenantId; // Always scope to current tenant.
+        DataObjects.ViolationSuppression output = await da.SaveViolationSuppression(Item, CurrentUser);
+        return Ok(output);
     }
 
     [HttpGet]
@@ -276,79 +384,25 @@ public partial class DataController
         return NotFound();
     }
 
-    // ── Images ─────────────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetImages")]
-    public async Task<ActionResult<List<DataObjects.ScanImage>>> GetImages([FromBody] Guid PageScanResultId)
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("~/api/Data/ScanScreenshotFile/{PageScanResultId}/{FileName}")]
+    public async Task<IActionResult> ScanScreenshotFile(Guid PageScanResultId, string FileName)
     {
-        List<DataObjects.ScanImage> output = await da.GetImages(PageScanResultId);
-        return Ok(output);
-    }
+        DataObjects.ScanScreenshot? screenshot = await da.GetScreenshotByFileName(PageScanResultId, FileName);
+        if (screenshot == null) { return NotFound(); }
+        Response.Headers.CacheControl = "public, max-age=86400";
+        string contentType = screenshot.ContentType ?? "application/octet-stream";
 
-    // ── Certificate ────────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetCertificate")]
-    public async Task<ActionResult<DataObjects.ScanCertificate?>> GetCertificate([FromBody] Guid PageScanResultId)
-    {
-        DataObjects.ScanCertificate? output = await da.GetCertificate(PageScanResultId);
-        return Ok(output);
-    }
-
-    // ── Ranked Rules ───────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetRankedRules")]
-    public async Task<ActionResult<List<DataObjects.ScanRankedRule>>> GetRankedRules([FromBody] Guid PageScanResultId)
-    {
-        List<DataObjects.ScanRankedRule> output = await da.GetRankedRules(PageScanResultId);
-        return Ok(output);
-    }
-
-    // ── Violations ─────────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetViolations")]
-    public async Task<ActionResult<List<DataObjects.A11yViolation>>> GetViolations(DataObjects.ViolationFilter filter)
-    {
-        List<DataObjects.A11yViolation> output = await da.GetViolations(filter.Ids, filter.PageScanResultId);
-        return Ok(output);
-    }
-
-    // ── Scan History ───────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetSiteScanHistory")]
-    public async Task<ActionResult<List<DataObjects.ScanRun>>> GetSiteScanHistory(DataObjects.ScanHistoryFilter filter)
-    {
-        List<DataObjects.ScanRun> output = await da.GetSiteScanHistory(filter.SiteId, filter.Count);
-        return Ok(output);
-    }
-
-    // ── Manual Checks ──────────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetManualChecks")]
-    public async Task<ActionResult<List<DataObjects.ManualCheckResult>>> GetManualChecks(DataObjects.SiteChildFilter filter)
-    {
-        List<DataObjects.ManualCheckResult> output = await da.GetManualChecks(filter.Ids, filter.SiteId);
-        return Ok(output);
-    }
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveManualChecks")]
-    public async Task<ActionResult<List<DataObjects.ManualCheckResult>>> SaveManualChecks(List<DataObjects.ManualCheckResult> Items)
-    {
-        List<DataObjects.ManualCheckResult> output = await da.SaveManualChecks(Items, CurrentUser);
-        return Ok(output);
+        // Disk-first: bytes live on disk now; DB Data is only a legacy fallback.
+        if (!string.IsNullOrEmpty(screenshot.Path) && System.IO.File.Exists(screenshot.Path)) {
+            byte[] bytes = await System.IO.File.ReadAllBytesAsync(screenshot.Path);
+            return File(bytes, contentType, FileName);
+        }
+        if (screenshot.Data != null && screenshot.Data.Length > 0) {
+            return File(screenshot.Data, contentType, FileName);
+        }
+        return NotFound();
     }
 
     // ── Trigger Scan ───────────────────────────────────────────────
@@ -427,66 +481,11 @@ public partial class DataController
         return Ok(output);
     }
 
-    // ── Violations by Rule ─────────────────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetViolationsByRule")]
-    public async Task<ActionResult<List<DataObjects.A11yViolation>>> GetViolationsByRule(DataObjects.ViolationsByRuleFilter filter)
+    private class DiscoverLinkInfo
     {
-        List<DataObjects.A11yViolation> output = await da.GetViolationsByRule(filter.ScanRunId, filter.CanonicalRuleId);
-        return Ok(output);
-    }
-
-    // ── Cross-Site Violations (compliance triage across sites) ─────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetCrossSiteViolations")]
-    public async Task<ActionResult<List<DataObjects.CrossSiteViolation>>> GetCrossSiteViolations(DataObjects.CrossSiteViolationFilter filter)
-    {
-        List<DataObjects.CrossSiteViolation> output = await da.GetCrossSiteViolations(TenantId, filter);
-        return Ok(output);
-    }
-
-    // ── Violation Suppressions (downgrade specific rules to warning) ─
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetViolationSuppressions")]
-    public async Task<ActionResult<List<DataObjects.ViolationSuppression>>> GetViolationSuppressions()
-    {
-        List<DataObjects.ViolationSuppression> output = await da.GetViolationSuppressions(TenantId);
-        return Ok(output);
-    }
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/SaveViolationSuppression")]
-    public async Task<ActionResult<DataObjects.ViolationSuppression>> SaveViolationSuppression(DataObjects.ViolationSuppression Item)
-    {
-        Item.TenantId = TenantId; // Always scope to current tenant.
-        DataObjects.ViolationSuppression output = await da.SaveViolationSuppression(Item, CurrentUser);
-        return Ok(output);
-    }
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/DeleteViolationSuppression")]
-    public async Task<ActionResult<bool>> DeleteViolationSuppression([FromBody] Guid ViolationSuppressionId)
-    {
-        bool output = await da.DeleteViolationSuppression(ViolationSuppressionId, TenantId);
-        return Ok(output);
-    }
-
-    // ── All Sites Scan History (Trends) ────────────────────────────
-
-    [HttpPost]
-    [Authorize(Policy = Policies.Admin)]
-    [Route("~/api/Data/GetAllSiteScanHistory")]
-    public async Task<ActionResult<Dictionary<Guid, List<DataObjects.ScanRun>>>> GetAllSiteScanHistory(DataObjects.AllSiteScanHistoryFilter filter)
-    {
-        Dictionary<Guid, List<DataObjects.ScanRun>> output = await da.GetAllSiteScanHistory(TenantId, filter.CountPerSite);
-        return Ok(output);
+        [System.Text.Json.Serialization.JsonPropertyName("href")]
+        public string Href { get; set; } = string.Empty;
+        [System.Text.Json.Serialization.JsonPropertyName("text")]
+        public string Text { get; set; } = string.Empty;
     }
 }

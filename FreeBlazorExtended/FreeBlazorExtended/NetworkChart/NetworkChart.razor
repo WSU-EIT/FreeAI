@@ -246,20 +246,20 @@
     /// <summary>A single vertex in the network graph, mapped directly to vis.js node options.</summary>
     public class NetworkNode
     {
+        /// <summary>Background or border colour as a CSS colour string. Default <c>"#fff"</c>.</summary>
+        public string color { get; set; } = "#fff";
+        /// <summary>Optional label-font overrides (colour, background, alignment).</summary>
+        public NetworkNodeFont? font { get; set; }
+        /// <summary>Font Awesome icon definition used when <c>shape == "icon"</c>.</summary>
+        public NetworkNodeIcon icon { get; set; } = new NetworkNodeIcon();
         /// <summary>Unique node identifier. Must match edge <c>from</c>/<c>to</c> values. <b>Required.</b></summary>
         public string id { get; set; } = "";
         /// <summary>Text label rendered beneath or beside the node shape. <b>Required.</b></summary>
         public string label { get; set; } = "";
-        /// <summary>HTML tooltip shown on hover (may contain basic HTML tags).</summary>
-        public string title { get; set; } = "";
         /// <summary>vis.js shape type. Default <c>"icon"</c> (Font Awesome glyph). Other values: <c>"dot"</c>, <c>"box"</c>, <c>"ellipse"</c>.</summary>
         public string shape { get; set; } = "icon";
-        /// <summary>Background or border colour as a CSS colour string. Default <c>"#fff"</c>.</summary>
-        public string color { get; set; } = "#fff";
-        /// <summary>Font Awesome icon definition used when <c>shape == "icon"</c>.</summary>
-        public NetworkNodeIcon icon { get; set; } = new NetworkNodeIcon();
-        /// <summary>Optional label-font overrides (colour, background, alignment).</summary>
-        public NetworkNodeFont? font { get; set; }
+        /// <summary>HTML tooltip shown on hover (may contain basic HTML tags).</summary>
+        public string title { get; set; } = "";
     }
 
     /// <summary>Font options applied to a node or edge label in the vis.js canvas.</summary>
@@ -276,14 +276,14 @@
     /// <summary>Font Awesome icon specification applied to a node when its shape is <c>"icon"</c>.</summary>
     public class NetworkNodeIcon
     {
-        /// <summary>Font family name as registered with vis.js. Default <c>"Font Awesome 6 Free"</c>.</summary>
-        public string face { get; set; } = "Font Awesome 6 Free";
         /// <summary>Unicode code point of the glyph (without the <c>\u</c> prefix). Example: <c>"f059"</c> (ⓘ).</summary>
         public string code { get; set; } = "f059";
-        /// <summary>Glyph size in pixels. Default <c>50</c>.</summary>
-        public int size { get; set; } = 50;
         /// <summary>CSS colour of the icon glyph.</summary>
         public string? color { get; set; }
+        /// <summary>Font family name as registered with vis.js. Default <c>"Font Awesome 6 Free"</c>.</summary>
+        public string face { get; set; } = "Font Awesome 6 Free";
+        /// <summary>Glyph size in pixels. Default <c>50</c>.</summary>
+        public int size { get; set; } = 50;
         /// <summary>Font weight. Use <c>"900"</c> for solid icons, <c>"400"</c> for regular.</summary>
         public string weight { get; set; } = "900";
     }
@@ -291,23 +291,23 @@
     /// <summary>A directed or undirected edge connecting two <see cref="NetworkNode"/> vertices.</summary>
     public class NetworkRelationship
     {
-        /// <summary>Unique edge identifier. <b>Required</b> for reliable selection callbacks.</summary>
-        public string id { get; set; } = "";
-        /// <summary>Source node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
-        public string from { get; set; } = "";
-        /// <summary>Target node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
-        public string to { get; set; } = "";
-        /// <summary>Label rendered along the centre of the edge.</summary>
-        public string label { get; set; } = "";
-        /// <summary>HTML tooltip shown when the user hovers over the edge.</summary>
-        public string title { get; set; } = "";
-        /// <summary>Edge colour as a CSS colour string (or a vis.js colour object serialised to JSON).</summary>
-        public string? color { get; set; }
         /// <summary>Arrow end-point(s): <c>"to"</c> (default), <c>"from"</c>, <c>"to;from"</c>, or <c>""</c> for none.</summary>
         public string arrows { get; set; } = "to";
+        /// <summary>Edge colour as a CSS colour string (or a vis.js colour object serialised to JSON).</summary>
+        public string? color { get; set; }
         /// <summary>When <c>true</c>, renders the edge as a dashed line to indicate an indirect or optional relationship.</summary>
         public bool dashes { get; set; }
         /// <summary>Optional font overrides for the edge label.</summary>
         public NetworkNodeFont? font { get; set; }
+        /// <summary>Source node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
+        public string from { get; set; } = "";
+        /// <summary>Unique edge identifier. <b>Required</b> for reliable selection callbacks.</summary>
+        public string id { get; set; } = "";
+        /// <summary>Label rendered along the centre of the edge.</summary>
+        public string label { get; set; } = "";
+        /// <summary>HTML tooltip shown when the user hovers over the edge.</summary>
+        public string title { get; set; } = "";
+        /// <summary>Target node id. Must match a <see cref="NetworkNode.id"/>. <b>Required.</b></summary>
+        public string to { get; set; } = "";
     }
 }

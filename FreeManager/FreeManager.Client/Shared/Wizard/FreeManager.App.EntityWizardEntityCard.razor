@@ -4,8 +4,8 @@
     <div class="card-header d-flex justify-content-between align-items-center py-2">
         <div class="form-check mb-0">
             <input type="checkbox" class="form-check-input"
-                   checked="@IsSelected"
-                   @onchange="@((e) => OnSelect.InvokeAsync((bool)(e.Value ?? false)))" />
+                    checked="@IsSelected"
+                    @onchange="@((e) => OnSelect.InvokeAsync((bool)(e.Value ?? false)))" />
         </div>
         <span class="badge @GetStatusBadgeClass(Entity.Status)">@Entity.Status</span>
     </div>
@@ -111,17 +111,10 @@
 @code {
     [Parameter] public DataObjects.EntityListItem Entity { get; set; } = new();
     [Parameter] public bool IsSelected { get; set; }
-    [Parameter] public EventCallback<bool> OnSelect { get; set; }
-    [Parameter] public EventCallback OnEdit { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
     [Parameter] public EventCallback OnRegenerate { get; set; }
-
-    private string GetStatusBadgeClass(string status) => status switch {
-        "Active" => "bg-success",
-        "Draft" => "bg-warning text-dark",
-        "Archived" => "bg-secondary",
-        _ => "bg-secondary"
-    };
+    [Parameter] public EventCallback<bool> OnSelect { get; set; }
 
     private string GetRelativeTime(DateTime timestamp) {
         var diff = DateTime.UtcNow - timestamp;
@@ -132,4 +125,11 @@
         if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
         return timestamp.ToString("MMM d");
     }
+
+    private string GetStatusBadgeClass(string status) => status switch {
+        "Active" => "bg-success",
+        "Draft" => "bg-warning text-dark",
+        "Archived" => "bg-secondary",
+        _ => "bg-secondary"
+    };
 }

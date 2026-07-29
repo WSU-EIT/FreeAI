@@ -128,6 +128,9 @@ public static class QuickFixHints
         ["target-size"] = "Interactive targets should be at least 24x24 CSS pixels (WCAG 2.2 AA)."
     };
 
+    /// <summary>Gets the number of rule hints currently registered.</summary>
+    public static int Count => Hints.Count;
+
     /// <summary>
     /// Returns a one-sentence actionable remediation hint for the given rule id,
     /// or <c>null</c> when the rule id isn't recognized. Matching is case-insensitive.
@@ -143,7 +146,4 @@ public static class QuickFixHints
 
         return Hints.TryGetValue(ruleId.Trim(), out var hint) ? hint : null;
     }
-
-    /// <summary>Gets the number of rule hints currently registered.</summary>
-    public static int Count => Hints.Count;
 }

@@ -65,12 +65,11 @@
 </div>
 
 @code {
-    [Parameter] public DataObjects.ComplianceReport Item { get; set; } = new();
-    [Parameter] public EventCallback<DataObjects.ComplianceReport> OnSave { get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
-
     private bool IsNew => Item.ComplianceReportId == default;
+    [Parameter] public DataObjects.ComplianceReport Item { get; set; } = new();
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<DataObjects.ComplianceReport> OnSave { get; set; }
+    private async Task Cancel() => await OnCancel.InvokeAsync();
 
     private async Task Save() => await OnSave.InvokeAsync(Item);
-    private async Task Cancel() => await OnCancel.InvokeAsync();
 }

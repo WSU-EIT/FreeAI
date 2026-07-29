@@ -10,16 +10,15 @@ namespace FreeManager.EFModels.EFModels;
 [Table("FMAppFileVersions")]
 public class FMAppFileVersion
 {
-    [Key]
-    public Guid FMAppFileVersionId { get; set; } = Guid.NewGuid();
-
-    [Required]
-    public Guid FMAppFileId { get; set; }
+    // Navigation properties
+    [ForeignKey("FMAppFileId")]
+    public virtual FMAppFile? AppFile { get; set; }
 
     /// <summary>
-    /// Version number for this file (1, 2, 3, etc.)
+    /// Optional commit message describing the change.
     /// </summary>
-    public int Version { get; set; }
+    [MaxLength(500)]
+    public string Comment { get; set; } = string.Empty;
 
     /// <summary>
     /// The actual file content (C# code, Razor markup, CSS, etc.)
@@ -36,13 +35,13 @@ public class FMAppFileVersion
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public Guid? CreatedBy { get; set; }
 
-    /// <summary>
-    /// Optional commit message describing the change.
-    /// </summary>
-    [MaxLength(500)]
-    public string Comment { get; set; } = string.Empty;
+    [Required]
+    public Guid FMAppFileId { get; set; }
+    [Key]
+    public Guid FMAppFileVersionId { get; set; } = Guid.NewGuid();
 
-    // Navigation properties
-    [ForeignKey("FMAppFileId")]
-    public virtual FMAppFile? AppFile { get; set; }
+    /// <summary>
+    /// Version number for this file (1, 2, 3, etc.)
+    /// </summary>
+    public int Version { get; set; }
 }

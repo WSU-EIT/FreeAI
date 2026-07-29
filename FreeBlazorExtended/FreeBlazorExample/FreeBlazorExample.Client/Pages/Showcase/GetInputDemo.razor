@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A single Blazor component that renders any of 9 input types — text, textarea, select, multi-select, radio, checkbox, password, email, number — based on the InputType parameter, with a uniform Value/OnChange binding contract."
-        WhatEli5="One component that can be any kind of input box — text field, dropdown, checkboxes, password, number — just by changing one parameter. No need to remember different markup for each type."
-        Who=@(new[]{ "Developers building inline edit UX or quick-input dialogs where the field type varies", "Form generators that need to map a field type enum to a rendered input without a giant switch statement", "Any page that needs a consistent label + input + validation layout regardless of input type" })
-        WhenUse=@(new[]{ "Inline edit controls where the type is determined at runtime", "Modal dialogs asking for a single value (GetInput in a dialog pattern)", "Dynamic form sections where field types come from configuration" })
-        WhenNot=@(new[]{ "Full structured forms with many fields — use individual form controls for readability", "The FeatureDynamicForms builder, which already uses this internally" })
-        Why="Switching input types across a form requires memorising different HTML elements and Blazor binding patterns. This unifies them under one component so adding a new field type is a one-parameter change."
-        TechNotes=@(new[]{ "InputType enum: Text, Textarea, Select, MultiSelect, Radio, Checkbox, Password, Email, Number", "Options parameter (List<string>) used by Select, MultiSelect, Radio, Checkbox — ignored by scalar types", "Value is always string; multi-value types serialize to comma-separated strings", "Rows parameter only applied when InputType=Textarea", "Required parameter adds the native HTML required attribute and a visual RequiredIndicator marker" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A single Blazor component that renders any of 9 input types — text, textarea, select, multi-select, radio, checkbox, password, email, number — based on the InputType parameter, with a uniform Value/OnChange binding contract."
+            WhatEli5="One component that can be any kind of input box — text field, dropdown, checkboxes, password, number — just by changing one parameter. No need to remember different markup for each type."
+            Who=@(new[]{ "Developers building inline edit UX or quick-input dialogs where the field type varies", "Form generators that need to map a field type enum to a rendered input without a giant switch statement", "Any page that needs a consistent label + input + validation layout regardless of input type" })
+            WhenUse=@(new[]{ "Inline edit controls where the type is determined at runtime", "Modal dialogs asking for a single value (GetInput in a dialog pattern)", "Dynamic form sections where field types come from configuration" })
+            WhenNot=@(new[]{ "Full structured forms with many fields — use individual form controls for readability", "The FeatureDynamicForms builder, which already uses this internally" })
+            Why="Switching input types across a form requires memorising different HTML elements and Blazor binding patterns. This unifies them under one component so adding a new field type is a one-parameter change."
+            TechNotes=@(new[]{ "InputType enum: Text, Textarea, Select, MultiSelect, Radio, Checkbox, Password, Email, Number", "Options parameter (List<string>) used by Select, MultiSelect, Radio, Checkbox — ignored by scalar types", "Value is always string; multi-value types serialize to comma-separated strings", "Rows parameter only applied when InputType=Textarea", "Required parameter adds the native HTML required attribute and a visual RequiredIndicator marker" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -27,7 +27,7 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Standard text input field.</p>
                     <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="Enter your name..."
-                        Instructions="Full Name" OnInputAccepted="@((Action<string>)(val => { _textInput = val; StateHasChanged(); }))" />
+                            Instructions="Full Name" OnInputAccepted="@((Action<string>)(val => { _textInput = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_textInput)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>You entered:</strong> @_textInput
@@ -45,8 +45,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Multi-line text input for longer content.</p>
                     <GetInput UserInputType="GetInput.InputType.Textarea" PlaceholderText="Enter your message..."
-                        Instructions="Message" MultiselectRows="4"
-                        OnInputAccepted="@((Action<string>)(val => { _textareaInput = val; StateHasChanged(); }))" />
+                            Instructions="Message" MultiselectRows="4"
+                            OnInputAccepted="@((Action<string>)(val => { _textareaInput = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_textareaInput)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Message length:</strong> @_textareaInput.Length characters
@@ -66,8 +66,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Single select dropdown with predefined options.</p>
                     <GetInput UserInputType="GetInput.InputType.Select" Instructions="Choose an option"
-                        UserInputOptions="@_optionsDict"
-                        OnInputAccepted="@((Action<string>)(val => { _selectedOption = val; StateHasChanged(); }))" />
+                            UserInputOptions="@_optionsDict"
+                            OnInputAccepted="@((Action<string>)(val => { _selectedOption = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_selectedOption)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_selectedOption
@@ -85,8 +85,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Select multiple options at once.</p>
                     <GetInput UserInputType="GetInput.InputType.Multiselect" Instructions="Choose items"
-                        UserInputOptions="@_optionsDict" MultiselectRows="4"
-                        OnInputAccepted="@((Action<List<string>>)(vals => { _multiSelectValue = string.Join(", ", vals); StateHasChanged(); }))" />
+                            UserInputOptions="@_optionsDict" MultiselectRows="4"
+                            OnInputAccepted="@((Action<List<string>>)(vals => { _multiSelectValue = string.Join(", ", vals); StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_multiSelectValue)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected items:</strong> @_multiSelectValue
@@ -106,8 +106,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Single choice from multiple radio options.</p>
                     <GetInput UserInputType="GetInput.InputType.Radio" Instructions="Select one"
-                        UserInputOptions="@_radioOptionsDict"
-                        OnInputAccepted="@((Action<string>)(val => { _radioValue = val; StateHasChanged(); }))" />
+                            UserInputOptions="@_radioOptionsDict"
+                            OnInputAccepted="@((Action<string>)(val => { _radioValue = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_radioValue)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_radioValue
@@ -125,8 +125,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Multiple checkbox selections.</p>
                     <GetInput UserInputType="GetInput.InputType.Checkbox" Instructions="Select items"
-                        UserInputOptions="@_checkboxOptionsDict"
-                        OnInputAccepted="@((Action<List<string>>)(vals => { _checkboxValue = string.Join(", ", vals); StateHasChanged(); }))" />
+                            UserInputOptions="@_checkboxOptionsDict"
+                            OnInputAccepted="@((Action<List<string>>)(vals => { _checkboxValue = string.Join(", ", vals); StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_checkboxValue)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_checkboxValue
@@ -146,8 +146,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Email field with browser validation.</p>
                     <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="user@example.com"
-                        Instructions="Email Address"
-                        OnInputAccepted="@((Action<string>)(val => { _emailInput = val; StateHasChanged(); }))" />
+                            Instructions="Email Address"
+                            OnInputAccepted="@((Action<string>)(val => { _emailInput = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_emailInput)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Email:</strong> @_emailInput
@@ -165,8 +165,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Numeric input field.</p>
                     <GetInput UserInputType="GetInput.InputType.Text" PlaceholderText="0"
-                        Instructions="Enter a number"
-                        OnInputAccepted="@((Action<string>)(val => { _numberInput = val; StateHasChanged(); }))" />
+                            Instructions="Enter a number"
+                            OnInputAccepted="@((Action<string>)(val => { _numberInput = val; StateHasChanged(); }))" />
                     @if (!string.IsNullOrEmpty(_numberInput)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Number:</strong> @_numberInput

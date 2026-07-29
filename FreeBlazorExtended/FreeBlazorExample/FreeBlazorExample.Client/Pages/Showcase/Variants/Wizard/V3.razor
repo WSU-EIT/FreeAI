@@ -14,24 +14,24 @@
     } else {
         <div class="card shadow-sm">
             <WizardStepHeader StepNumber="@(_step + 1)"
-                              Title="@CurrentTitle()"
-                              ShowStartOver="true"
-                              ShowBack="@(_step > 0)"
-                              ShowNext="@(_step < 2)"
-                              ShowFinish="@(_step == 2)"
-                              NextDisabled="@(!IsCurrentStepValid())"
-                              ShowSpinner="@_isSubmitting"
-                              SpinnerText="Submitting..."
-                              BadgeIcon="@(_step == 2 ? "fa-flag-checkered" : "")"
-                              BadgeClass="bg-light text-success"
-                              HeaderClass="bg-dark text-white"
-                              OnStartOver="StartOver"
-                              OnBack="Back"
-                              OnNext="Next"
-                              OnFinish="Finish"
-                              NextButtonText="Next"
-                              FinishButtonText="Finish"
-                              InfoText="@CurrentInfo()" />
+                    Title="@CurrentTitle()"
+                    ShowStartOver="true"
+                    ShowBack="@(_step > 0)"
+                    ShowNext="@(_step < 2)"
+                    ShowFinish="@(_step == 2)"
+                    NextDisabled="@(!IsCurrentStepValid())"
+                    ShowSpinner="@_isSubmitting"
+                    SpinnerText="Submitting..."
+                    BadgeIcon="@(_step == 2 ? "fa-flag-checkered" : "")"
+                    BadgeClass="bg-light text-success"
+                    HeaderClass="bg-dark text-white"
+                    OnStartOver="StartOver"
+                    OnBack="Back"
+                    OnNext="Next"
+                    OnFinish="Finish"
+                    NextButtonText="Next"
+                    FinishButtonText="Finish"
+                    InfoText="@CurrentInfo()" />
 
             <div class="card-body">
                 @if (_step == 0) {
@@ -81,14 +81,12 @@
     private bool _isSubmitting;
     private bool _submitted;
 
-    private List<WizardStepper.WizardStepInfo> BuildSteps()
+    private Task Back()
     {
-        return new List<WizardStepper.WizardStepInfo>
-        {
-            new() { Name = "Plan", SelectedValue = _planChoice },
-            new() { Name = "Region", SelectedValue = _region },
-            new() { Name = "Notifications", SelectedValue = _email },
-        };
+        if (_step > 0) {
+            _step--;
+        }
+        return Task.CompletedTask;
     }
 
     private List<WizardSummary.SelectionItem> BuildSelections()
@@ -101,70 +99,13 @@
         };
     }
 
-    private Task GoToStep(int step)
+    private List<WizardStepper.WizardStepInfo> BuildSteps()
     {
-        _step = step;
-        return Task.CompletedTask;
-    }
-
-    private Task StartOver()
-    {
-        _step = 0;
-        _planChoice = "";
-        _region = "";
-        _email = "";
-        _submitted = false;
-        _isSubmitting = false;
-        return Task.CompletedTask;
-    }
-
-    private Task Back()
-    {
-        if (_step > 0) {
-            _step--;
-        }
-        return Task.CompletedTask;
-    }
-
-    private Task Next()
-    {
-        if (_step < 2 && IsCurrentStepValid()) {
-            _step++;
-        }
-        return Task.CompletedTask;
-    }
-
-    private async Task Finish()
-    {
-        if (!IsCurrentStepValid()) {
-            return;
-        }
-
-        _isSubmitting = true;
-        await Task.Delay(1000);
-        _isSubmitting = false;
-        _submitted = true;
-    }
-
-    private bool IsCurrentStepValid()
-    {
-        return _step switch
+        return new List<WizardStepper.WizardStepInfo>
         {
-            0 => !string.IsNullOrWhiteSpace(_planChoice),
-            1 => !string.IsNullOrWhiteSpace(_region),
-            2 => !string.IsNullOrWhiteSpace(_email),
-            _ => true,
-        };
-    }
-
-    private string CurrentTitle()
-    {
-        return _step switch
-        {
-            0 => "Choose your plan",
-            1 => "Pick a region",
-            2 => "Confirm notifications",
-            _ => "Wizard",
+            new() { Name = "Plan", SelectedValue = _planChoice },
+            new() { Name = "Region", SelectedValue = _region },
+            new() { Name = "Notifications", SelectedValue = _email },
         };
     }
 
@@ -179,6 +120,59 @@
         };
     }
 
+    private string CurrentTitle()
+    {
+        return _step switch
+        {
+            0 => "Choose your plan",
+            1 => "Pick a region",
+            2 => "Confirm notifications",
+            _ => "Wizard",
+        };
+    }
+
+    private async Task Finish()
+    {
+        if (!IsCurrentStepValid()) {
+            return;
+        }
+
+        _isSubmitting = true;
+        await Task.Delay(1000);
+        _isSubmitting = false;
+        _submitted = true;
+    }
+
+    private Task GoToStep(int step)
+    {
+        _step = step;
+        return Task.CompletedTask;
+    }
+
+    private bool IsCurrentStepValid()
+    {
+        return _step switch
+        {
+            0 => !string.IsNullOrWhiteSpace(_planChoice),
+            1 => !string.IsNullOrWhiteSpace(_region),
+            2 => !string.IsNullOrWhiteSpace(_email),
+            _ => true,
+        };
+    }
+
+    private Task Next()
+    {
+        if (_step < 2 && IsCurrentStepValid()) {
+            _step++;
+        }
+        return Task.CompletedTask;
+    }
+
+    private void OnEmailChanged(ChangeEventArgs args)
+    {
+        _email = args.Value?.ToString() ?? "";
+    }
+
     private void OnPlanChanged(ChangeEventArgs args)
     {
         _planChoice = args.Value?.ToString() ?? "";
@@ -189,8 +183,14 @@
         _region = args.Value?.ToString() ?? "";
     }
 
-    private void OnEmailChanged(ChangeEventArgs args)
+    private Task StartOver()
     {
-        _email = args.Value?.ToString() ?? "";
+        _step = 0;
+        _planChoice = "";
+        _region = "";
+        _email = "";
+        _submitted = false;
+        _isSubmitting = false;
+        return Task.CompletedTask;
     }
 }

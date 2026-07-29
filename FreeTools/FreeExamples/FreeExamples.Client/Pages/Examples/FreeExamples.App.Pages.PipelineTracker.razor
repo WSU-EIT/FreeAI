@@ -60,8 +60,8 @@
                 <option value="approval">📋 Approval Chain</option>
             </select>
             <InfoTip Title="Pipeline Types"
-                     Description="Different processes have different stages. An order goes from Placed → Preparing → Shipping → Delivered. A support ticket goes from New → Assigned → In Progress → Resolved → Closed. The stage names and icons change, but the visualization pattern is the same."
-                     Code="@_codePipelineTypes" />
+                    Description="Different processes have different stages. An order goes from Placed → Preparing → Shipping → Delivered. A support ticket goes from New → Assigned → In Progress → Resolved → Closed. The stage names and icons change, but the visualization pattern is the same."
+                    Code="@_codePipelineTypes" />
         </div>
 
         @* ── Horizontal Pipeline ── *@
@@ -84,8 +84,8 @@
                         <div class="text-center" role="button" @onclick="@(() => SelectStage(idx))">
                             @* Circle *@
                             <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 @GetCircleClasses(state)"
-                                 style="width:48px; height:48px; font-size:1.1rem; cursor:pointer; transition: all 0.3s;"
-                                 title="@stage.Title">
+                                    style="width:48px; height:48px; font-size:1.1rem; cursor:pointer; transition: all 0.3s;"
+                                    title="@stage.Title">
                                 @if (state == "completed") {
                                     <i class="fa-solid fa-check"></i>
                                 } else if (state == "error") {
@@ -153,8 +153,8 @@
                 <i class="fa-solid fa-arrows-rotate me-1"></i> Reset
             </button>
             <InfoTip Title="Advance / Error"
-                     Description="In a real app, stages advance automatically when a server-side event completes (e.g., a build finishes, a shipment arrives). Here you can manually advance or simulate a failure. The error state turns the stage red and shows an error message in the detail panel."
-                     Code="@_codeAdvance" />
+                    Description="In a real app, stages advance automatically when a server-side event completes (e.g., a build finishes, a shipment arrives). Here you can manually advance or simulate a failure. The error state turns the stage red and shows an error message in the detail panel."
+                    Code="@_codeAdvance" />
         </div>
 
         @* ── Vertical Timeline (alternate view) ── *@
@@ -162,8 +162,8 @@
             <div class="card-header bg-white py-2">
                 <span class="small fw-semibold"><i class="fa-solid fa-list-timeline me-1"></i> Timeline View
                     <InfoTip Title="Vertical Timeline"
-                             Description="This is the same data as the horizontal pipeline above, but displayed as a vertical timeline. Mobile-friendly since it doesn't need horizontal space. Each event shows the stage name, timestamp, and status. This is the FedEx / UPS tracking page layout."
-                             Code="@_codeTimeline" />
+                            Description="This is the same data as the horizontal pipeline above, but displayed as a vertical timeline. Mobile-friendly since it doesn't need horizontal space. Each event shows the stage name, timestamp, and status. This is the FedEx / UPS tracking page layout."
+                            Code="@_codeTimeline" />
                 </span>
             </div>
             <div class="card-body py-2">
@@ -177,7 +177,7 @@
                         @* Timeline indicator *@
                         <div class="d-flex flex-column align-items-center me-3">
                             <div class="rounded-circle d-flex align-items-center justify-content-center @GetCircleClassesSm(state)"
-                                 style="width:24px; height:24px; font-size:0.6rem;">
+                                    style="width:24px; height:24px; font-size:0.6rem;">
                                 @if (state == "completed") {
                                     <i class="fa-solid fa-check"></i>
                                 } else if (state == "error") {

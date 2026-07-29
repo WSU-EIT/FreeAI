@@ -107,6 +107,11 @@ public class BackgroundProcessor : BackgroundService
         }
     }
 
+    private async void ProcessQueueTimer(Object? source, ElapsedEventArgs e)
+    {
+        await GetTasksToProcess();
+    }
+
     private async void ProcessTasks(Object? source, ElapsedEventArgs e)
     {
         // Get any plugins that need to be processed that are not already processing.
@@ -133,11 +138,6 @@ public class BackgroundProcessor : BackgroundService
                 _plugins = _plugins.Where(x => x.Id != plugin.Id).ToList();
             }
         }
-    }
-
-    private async void ProcessQueueTimer(Object? source, ElapsedEventArgs e)
-    {
-        await GetTasksToProcess();
     }
 
     protected void ProcessTasksMessages(DataObjects.BooleanResponse? response)

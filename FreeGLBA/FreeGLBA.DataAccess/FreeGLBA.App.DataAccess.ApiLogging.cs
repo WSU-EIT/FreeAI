@@ -406,8 +406,7 @@ public partial class DataAccess
         Guid enabledByUserId, 
         string enabledByUserName, 
         int durationHours, 
-        string reason)
-    {
+        string reason){
         // Disable any existing active configs for this source system
         var existingConfigs = await data.BodyLoggingConfigs
             .Where(c => c.SourceSystemId == sourceSystemId && c.IsActive)

@@ -155,6 +155,12 @@
     protected string _rightSidebarClass = "";
 
     /// <summary>
+    /// Content rendered in the left sidebar. Hidden (and the column removed) when
+    /// <see cref="LeftSidebarPosition"/> is <c>"hidden"</c>.
+    /// </summary>
+    [Parameter] public RenderFragment? LeftSidebarContent { get; set; }
+
+    /// <summary>
     /// Positioning behaviour of the left sidebar.
     /// Accepted values:
     /// <list type="bullet">
@@ -164,6 +170,15 @@
     /// </list>
     /// </summary>
     [Parameter] public string LeftSidebarPosition { get; set; } = "sticky";
+
+    /// <summary>The primary content rendered in the wide centre column.</summary>
+    [Parameter] public RenderFragment? MainContent { get; set; }
+
+    /// <summary>
+    /// Content rendered in the right sidebar. Hidden (and the column removed) when
+    /// <see cref="RightSidebarPosition"/> is <c>"hidden"</c>.
+    /// </summary>
+    [Parameter] public RenderFragment? RightSidebarContent { get; set; }
 
     /// <summary>
     /// Positioning behaviour of the right sidebar. Same accepted values as
@@ -180,21 +195,6 @@
     /// </list>
     /// </summary>
     [Parameter] public string Variant { get; set; } = "default";
-
-    /// <summary>The primary content rendered in the wide centre column.</summary>
-    [Parameter] public RenderFragment? MainContent { get; set; }
-
-    /// <summary>
-    /// Content rendered in the left sidebar. Hidden (and the column removed) when
-    /// <see cref="LeftSidebarPosition"/> is <c>"hidden"</c>.
-    /// </summary>
-    [Parameter] public RenderFragment? LeftSidebarContent { get; set; }
-
-    /// <summary>
-    /// Content rendered in the right sidebar. Hidden (and the column removed) when
-    /// <see cref="RightSidebarPosition"/> is <c>"hidden"</c>.
-    /// </summary>
-    [Parameter] public RenderFragment? RightSidebarContent { get; set; }
 
     protected override void OnInitialized()
     {

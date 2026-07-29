@@ -24,8 +24,7 @@ public static class CompiledPluginDataAccessExtensions
         this IDataAccess da,
         Guid pluginId,
         long iteration,
-        IServiceProvider serviceProvider)
-    {
+        IServiceProvider serviceProvider){
         var output = new PluginExecuteResult
         {
             Messages = new List<string>(),
@@ -78,8 +77,7 @@ public static class CompiledPluginDataAccessExtensions
     public static async Task<PluginExecuteResult> ExecuteCompiledPluginAsync(
         this IDataAccess da,
         Guid pluginId,
-        IServiceProvider serviceProvider)
-    {
+        IServiceProvider serviceProvider){
         var output = new PluginExecuteResult
         {
             Messages = new List<string>(),

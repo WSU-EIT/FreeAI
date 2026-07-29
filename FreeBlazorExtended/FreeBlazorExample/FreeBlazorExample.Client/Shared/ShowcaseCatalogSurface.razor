@@ -99,9 +99,9 @@
                 <div class="catalog-component-card">
                     <label class="form-label small fw-semibold">Pick a country</label>
                     <AutoComplete
-                        GetAutoCompleteItems="@SearchCountries"
-                        PlaceholderText="Start typing..."
-                        OnSelected="@OnCountrySelected" />
+                            GetAutoCompleteItems="@SearchCountries"
+                            PlaceholderText="Start typing..."
+                            OnSelected="@OnCountrySelected" />
                     @if (!string.IsNullOrEmpty(_acValue)) {
                         <div class="mt-2 text-success small"><i class="fa-solid fa-check me-1"></i>Selected: <strong>@_acValue</strong></div>
                     }
@@ -192,7 +192,7 @@
                 <div class="catalog-component-card" style="max-width:360px">
                     <label class="form-label small fw-semibold">Password</label>
                     <TogglePasswordInput Value="_pwValue" OnChange="@(value => { _pwValue = value; StateHasChanged(); })"
-                                         Placeholder="Enter a password..." UseBootstrapInputGroup="true" />
+                            Placeholder="Enter a password..." UseBootstrapInputGroup="true" />
                     @if (!string.IsNullOrEmpty(_pwValue)) {
                         <div class="text-muted small mt-2">Length: @_pwValue.Length characters</div>
                     }
@@ -223,21 +223,21 @@
                         <div class="col-sm-6">
                             <label class="form-label small fw-semibold">Text</label>
                             <GetInput UserInputType="GetInput.InputType.Text"
-                                      PlaceholderText="Name"
-                                      OnInputAccepted="@(new Action<string>(value => { _giText = value; StateHasChanged(); }))" />
+                                    PlaceholderText="Name"
+                                    OnInputAccepted="@(new Action<string>(value => { _giText = value; StateHasChanged(); }))" />
                         </div>
                         <div class="col-sm-6">
                             <label class="form-label small fw-semibold">Select</label>
                             <GetInput UserInputType="GetInput.InputType.Select"
-                                      PlaceholderText="Choose a role"
-                                      UserInputOptions="@(new Dictionary<string, string> { { "Admin", "Admin" }, { "Manager", "Manager" }, { "User", "User" } })"
-                                      OnInputAccepted="@(new Action<string>(value => { _giSelect = value; StateHasChanged(); }))" />
+                                    PlaceholderText="Choose a role"
+                                    UserInputOptions="@(new Dictionary<string, string> { { "Admin", "Admin" }, { "Manager", "Manager" }, { "User", "User" } })"
+                                    OnInputAccepted="@(new Action<string>(value => { _giSelect = value; StateHasChanged(); }))" />
                         </div>
                         <div class="col-sm-12">
                             <label class="form-label small fw-semibold">Checkboxes</label>
                             <GetInput UserInputType="GetInput.InputType.Checkbox"
-                                      UserInputOptions="@(new Dictionary<string, string> { { "Read", "Read" }, { "Write", "Write" }, { "Delete", "Delete" } })"
-                                      OnInputAccepted="@(new Action<List<string>>(value => { _giCheck = string.Join(", ", value); StateHasChanged(); }))" />
+                                    UserInputOptions="@(new Dictionary<string, string> { { "Read", "Read" }, { "Write", "Write" }, { "Delete", "Delete" } })"
+                                    OnInputAccepted="@(new Action<List<string>>(value => { _giCheck = string.Join(", ", value); StateHasChanged(); }))" />
                         </div>
                     </div>
                     <div class="text-muted small mt-2">Values: "@_giText" / "@_giSelect" / "@_giCheck"</div>
@@ -258,7 +258,7 @@
                 <div class="catalog-component-card" style="max-width:420px">
                     <label class="form-label small fw-semibold">Tags</label>
                     <MultiSelect Options="@(_tagOptions.Select(tag => (tag, tag, _msValue?.Contains(tag) ?? false)).ToList())"
-                                 OnUpdate="@(selected => { _msValue = selected; StateHasChanged(); })" />
+                            OnUpdate="@(selected => { _msValue = selected; StateHasChanged(); })" />
                     @if (_msValue?.Count > 0) {
                         <div class="text-muted small mt-2">Selected: @string.Join(", ", _msValue)</div>
                     }
@@ -280,8 +280,8 @@
                     <label class="form-label small fw-semibold">Required skills</label>
                     <div class="input-group input-group-sm mb-2">
                         <input type="text" class="form-control" placeholder="Add a skill"
-                               @bind="_slNewItem" @bind:event="oninput"
-                               @onkeydown="@(args => { if (args.Key == "Enter") AddSkill(); })" />
+                                @bind="_slNewItem" @bind:event="oninput"
+                                @onkeydown="@(args => { if (args.Key == "Enter") AddSkill(); })" />
                         <button class="btn btn-outline-primary" type="button" @onclick="AddSkill" disabled="@string.IsNullOrWhiteSpace(_slNewItem)">
                             <i class="fa-solid fa-plus me-1"></i> Add
                         </button>
@@ -693,8 +693,8 @@
     private sealed class CatalogRow
     {
         public string Name { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 
     private readonly List<CatalogRow> _allRows = new()
@@ -773,25 +773,25 @@
 
     private sealed class CatalogCardGroup
     {
-        public string Title { get; set; } = string.Empty;
         public string BadgeText { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<CatalogCardItem> Items { get; set; } = new();
+        public string Title { get; set; } = string.Empty;
     }
 
     private sealed class CatalogCardItem
     {
         public string BadgeText { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string Summary { get; set; } = string.Empty;
-        public string Detail { get; set; } = string.Empty;
         public string CodePath { get; set; } = string.Empty;
+        public string Detail { get; set; } = string.Empty;
         public List<CatalogCardLink> Links { get; set; } = new();
+        public string Summary { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
     }
 
     private sealed class CatalogCardLink
     {
-        public string Label { get; set; } = string.Empty;
         public string Href { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
     }
 }

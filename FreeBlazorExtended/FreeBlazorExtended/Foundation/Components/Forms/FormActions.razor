@@ -25,10 +25,7 @@
         ChildContent — replaces all built-in buttons with a custom render fragment
 
     Example:
-        <FormActions SubmitText="Create Invoice"
-                     IsSubmitting="@_saving"
-                     OnSubmit="SaveAsync"
-                     OnCancel="NavigateBack" />
+        <FormActions SubmitText="Create Invoice" IsSubmitting="@_saving" OnSubmit="SaveAsync" OnCancel="NavigateBack" />
 *@
 @namespace FreeBlazorExtended.Components
 
@@ -115,10 +112,10 @@
     protected string _containerClass = "";
 
     /// <summary>
-    /// Label on the primary submit button. Default: <c>"Save"</c>.
-    /// Set to empty string to hide the submit button entirely.
+    /// Horizontal alignment of the button row.
+    /// Accepted values: <c>"left"</c>, <c>"center"</c>, <c>"right"</c> (default).
     /// </summary>
-    [Parameter] public string SubmitText { get; set; } = "Save";
+    [Parameter] public string Alignment { get; set; } = "right";
 
     /// <summary>
     /// Label on the secondary cancel button. Default: <c>"Cancel"</c>.
@@ -127,30 +124,10 @@
     [Parameter] public string CancelText { get; set; } = "Cancel";
 
     /// <summary>
-    /// Label on the tertiary reset button. Default: empty (button hidden).
-    /// Renders a <c>type="reset"</c> button that also triggers <see cref="OnReset"/>
-    /// when non-empty.
+    /// When provided, <em>replaces all built-in buttons</em> with a fully custom render fragment.
+    /// The container div and its alignment/layout CSS classes are still applied.
     /// </summary>
-    [Parameter] public string ResetText { get; set; } = "";
-
-    /// <summary>
-    /// Horizontal alignment of the button row.
-    /// Accepted values: <c>"left"</c>, <c>"center"</c>, <c>"right"</c> (default).
-    /// </summary>
-    [Parameter] public string Alignment { get; set; } = "right";
-
-    /// <summary>
-    /// When <c>true</c>, each button expands equally to fill the full row width.
-    /// Useful for mobile-first or modal footer layouts. Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool FullWidth { get; set; } = false;
-
-    /// <summary>
-    /// When <c>true</c>, stacks buttons vertically instead of horizontally.
-    /// Automatically applied on narrow viewports via CSS media query.
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool Stacked { get; set; } = false;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Reduces top margin and padding for use inside compact panels or modals.
@@ -159,18 +136,18 @@
     [Parameter] public bool Compact { get; set; } = false;
 
     /// <summary>
+    /// When <c>true</c>, each button expands equally to fill the full row width.
+    /// Useful for mobile-first or modal footer layouts. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool FullWidth { get; set; } = false;
+
+    /// <summary>
     /// When <c>true</c>, disables the submit button and overlays an inline Bootstrap spinner
     /// to indicate that the form submission is in progress. Set this to your component's
     /// saving/loading boolean to prevent double-submissions automatically.
     /// Default: <c>false</c>.
     /// </summary>
     [Parameter] public bool IsSubmitting { get; set; } = false;
-
-    /// <summary>
-    /// Invoked when the submit button is clicked (only if <see cref="IsSubmitting"/> is false).
-    /// Wire this to your save/submit handler: <code>OnSubmit="SaveAsync"</code>.
-    /// </summary>
-    [Parameter] public EventCallback OnSubmit { get; set; }
 
     /// <summary>
     /// Invoked when the cancel button is clicked.
@@ -186,10 +163,35 @@
     [Parameter] public EventCallback OnReset { get; set; }
 
     /// <summary>
-    /// When provided, <em>replaces all built-in buttons</em> with a fully custom render fragment.
-    /// The container div and its alignment/layout CSS classes are still applied.
+    /// Invoked when the submit button is clicked (only if <see cref="IsSubmitting"/> is false).
+    /// Wire this to your save/submit handler: <code>OnSubmit="SaveAsync"</code>.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnSubmit { get; set; }
+
+    /// <summary>
+    /// Label on the tertiary reset button. Default: empty (button hidden).
+    /// Renders a <c>type="reset"</c> button that also triggers <see cref="OnReset"/>
+    /// when non-empty.
+    /// </summary>
+    [Parameter] public string ResetText { get; set; } = "";
+
+    /// <summary>
+    /// When <c>true</c>, stacks buttons vertically instead of horizontally.
+    /// Automatically applied on narrow viewports via CSS media query.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Stacked { get; set; } = false;
+
+    /// <summary>
+    /// Label on the primary submit button. Default: <c>"Save"</c>.
+    /// Set to empty string to hide the submit button entirely.
+    /// </summary>
+    [Parameter] public string SubmitText { get; set; } = "Save";
+
+    protected async Task OnCancelClick()
+    {
+        await OnCancel.InvokeAsync();
+    }
 
     protected override void OnInitialized()
     {
@@ -199,6 +201,18 @@
     protected override void OnParametersSet()
     {
         SetDefaultValues();
+    }
+
+    protected async Task OnResetClick()
+    {
+        await OnReset.InvokeAsync();
+    }
+
+    protected async Task OnSubmitClick()
+    {
+        if (!IsSubmitting) {
+            await OnSubmit.InvokeAsync();
+        }
     }
 
     protected void SetDefaultValues()
@@ -226,22 +240,5 @@
         }
 
         _containerClass = _containerClass.Trim();
-    }
-
-    protected async Task OnSubmitClick()
-    {
-        if (!IsSubmitting) {
-            await OnSubmit.InvokeAsync();
-        }
-    }
-
-    protected async Task OnCancelClick()
-    {
-        await OnCancel.InvokeAsync();
-    }
-
-    protected async Task OnResetClick()
-    {
-        await OnReset.InvokeAsync();
     }
 }

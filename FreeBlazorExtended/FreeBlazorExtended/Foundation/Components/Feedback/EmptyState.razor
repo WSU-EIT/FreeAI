@@ -17,8 +17,8 @@
 
     Example (table empty state):
         <EmptyState Title="No invoices yet"
-                    Description="Create your first invoice to get started."
-                    IconClass="fas fa-file-invoice">
+                Description="Create your first invoice to get started."
+                IconClass="fas fa-file-invoice">
             <button class="btn btn-primary" @onclick="CreateInvoice">New Invoice</button>
         </EmptyState>
 *@
@@ -153,17 +153,29 @@
     protected string _containerClass = "";
 
     /// <summary>
-    /// Primary headline displayed in the centre of the empty-state panel.
-    /// Default: <c>"No data"</c>. Tailor to the specific context
-    /// (e.g. <c>"No invoices yet"</c>, <c>"No results for this filter"</c>).
+    /// Optional render fragment for call-to-action buttons or links displayed below the description.
+    /// Example: a "Create your first item" button or a "Clear filters" link.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "No data";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, reduces padding and minimum height for use inside cards,
+    /// panels, or modal bodies where vertical space is constrained. Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Compact { get; set; } = false;
 
     /// <summary>
     /// One-sentence explanation or guidance shown below the title in a muted font.
     /// Optional — use to tell the user why the list is empty and what they can do next.
     /// </summary>
     [Parameter] public string Description { get; set; } = "";
+
+    /// <summary>
+    /// When <c>true</c>, expands the container to fill the full viewport height.
+    /// Use for page-level empty states (e.g., an empty dashboard with no widgets).
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool FullHeight { get; set; } = false;
 
     /// <summary>
     /// FontAwesome class for the decorative icon displayed above the title.
@@ -175,23 +187,11 @@
     [Parameter] public string IconClass { get; set; } = "fas fa-inbox";
 
     /// <summary>
-    /// When <c>true</c>, reduces padding and minimum height for use inside cards,
-    /// panels, or modal bodies where vertical space is constrained. Default: <c>false</c>.
+    /// Primary headline displayed in the centre of the empty-state panel.
+    /// Default: <c>"No data"</c>. Tailor to the specific context
+    /// (e.g. <c>"No invoices yet"</c>, <c>"No results for this filter"</c>).
     /// </summary>
-    [Parameter] public bool Compact { get; set; } = false;
-
-    /// <summary>
-    /// When <c>true</c>, expands the container to fill the full viewport height.
-    /// Use for page-level empty states (e.g., an empty dashboard with no widgets).
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool FullHeight { get; set; } = false;
-
-    /// <summary>
-    /// Optional render fragment for call-to-action buttons or links displayed below the description.
-    /// Example: a "Create your first item" button or a "Clear filters" link.
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Title { get; set; } = "No data";
 
     protected override void OnInitialized()
     {

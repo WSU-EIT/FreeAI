@@ -6,23 +6,6 @@ namespace ExamplePlugin
     public class ExampleBackgroundProcess : IPluginBackgroundProcess
     {
         /// <summary>
-        /// Properties returned by the plugin.
-        /// The minimum properties that should be returned are:
-        /// Id (a unique Guid), Author, Name, Type, and Version
-        /// </summary>
-        public Dictionary<string, object> Properties() =>
-            new Dictionary<string, object> {
-                { "Id", new Guid("3961b30f-0c33-474b-a14c-a73174058f47") },
-                { "Author", "Brad Wickett" },
-                { "ContainsSensitiveData", false },
-                { "Description", "An example of a plugin for the background process engine." },
-                { "Name", "Plugin Example Background Process" },
-                { "SortOrder", 0 },
-                { "Type", "BackgroundProcess" },
-                { "Version", "1.0.0" }
-            };
-
-        /// <summary>
         /// An example plugin.
         /// </summary>
         /// <param name="objects">
@@ -36,8 +19,7 @@ namespace ExamplePlugin
             DataAccess da, 
             Plugins.Plugin plugin,
             long iteration
-        )
-        {
+        ){
             // Custom plugins will be called every time the background process runs, which is based on the interval
             // set in the appsettings.json file. If you need to only have this happen on specific days, or during
             // specific hours, you will need to add that logic here.
@@ -56,5 +38,21 @@ namespace ExamplePlugin
 
             return (Result: true, Messages: messages, Objects: null);
         }
+        /// <summary>
+        /// Properties returned by the plugin.
+        /// The minimum properties that should be returned are:
+        /// Id (a unique Guid), Author, Name, Type, and Version
+        /// </summary>
+        public Dictionary<string, object> Properties() =>
+            new Dictionary<string, object> {
+                { "Id", new Guid("3961b30f-0c33-474b-a14c-a73174058f47") },
+                { "Author", "Brad Wickett" },
+                { "ContainsSensitiveData", false },
+                { "Description", "An example of a plugin for the background process engine." },
+                { "Name", "Plugin Example Background Process" },
+                { "SortOrder", 0 },
+                { "Type", "BackgroundProcess" },
+                { "Version", "1.0.0" }
+            };
     }
 }

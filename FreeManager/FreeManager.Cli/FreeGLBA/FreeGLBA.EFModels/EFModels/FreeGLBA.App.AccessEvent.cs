@@ -9,26 +9,31 @@ namespace FreeGLBA.EFModels.EFModels;
 [Table("AccessEvents")]
 public partial class AccessEventItem
 {
-    public Guid SourceSystemId { get; set; } = Guid.Empty;
-
-    [MaxLength(200)]
-    public string SourceEventId { get; set; } = string.Empty;
-
     public DateTime AccessedAt { get; set; }
+
+    [MaxLength(50)]
+    public string AccessType { get; set; } = string.Empty;
+
+    public string AdditionalData { get; set; } = string.Empty;
+
+    [MaxLength(100)]
+    public string DataCategory { get; set; } = string.Empty;
+
+    [MaxLength(50)]
+    public string IpAddress { get; set; } = string.Empty;
+
+    [MaxLength(500)]
+    public string Purpose { get; set; } = string.Empty;
 
     public DateTime ReceivedAt { get; set; }
 
     [MaxLength(200)]
-    public string UserId { get; set; } = string.Empty;
+    public string SourceEventId { get; set; } = string.Empty;
 
-    [MaxLength(200)]
-    public string UserName { get; set; } = string.Empty;
-
-    [MaxLength(200)]
-    public string UserEmail { get; set; } = string.Empty;
-
-    [MaxLength(200)]
-    public string UserDepartment { get; set; } = string.Empty;
+    // Navigation properties
+    [ForeignKey("SourceSystemId")]
+    public virtual SourceSystemItem SourceSystem { get; set; } = null!;
+    public Guid SourceSystemId { get; set; } = Guid.Empty;
 
     [MaxLength(200)]
     public string SubjectId { get; set; } = string.Empty;
@@ -36,22 +41,16 @@ public partial class AccessEventItem
     [MaxLength(50)]
     public string SubjectType { get; set; } = string.Empty;
 
-    [MaxLength(100)]
-    public string DataCategory { get; set; } = string.Empty;
+    [MaxLength(200)]
+    public string UserDepartment { get; set; } = string.Empty;
 
-    [MaxLength(50)]
-    public string AccessType { get; set; } = string.Empty;
+    [MaxLength(200)]
+    public string UserEmail { get; set; } = string.Empty;
 
-    [MaxLength(500)]
-    public string Purpose { get; set; } = string.Empty;
+    [MaxLength(200)]
+    public string UserId { get; set; } = string.Empty;
 
-    [MaxLength(50)]
-    public string IpAddress { get; set; } = string.Empty;
-
-    public string AdditionalData { get; set; } = string.Empty;
-
-    // Navigation properties
-    [ForeignKey("SourceSystemId")]
-    public virtual SourceSystemItem SourceSystem { get; set; } = null!;
+    [MaxLength(200)]
+    public string UserName { get; set; } = string.Empty;
 
 }

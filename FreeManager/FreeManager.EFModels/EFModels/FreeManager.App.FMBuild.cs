@@ -10,27 +10,6 @@ namespace FreeManager.EFModels.EFModels;
 [Table("FMBuilds")]
 public class FMBuild
 {
-    [Key]
-    public Guid FMBuildId { get; set; } = Guid.NewGuid();
-
-    [Required]
-    public Guid FMProjectId { get; set; }
-
-    /// <summary>
-    /// Sequential build number for this project (1, 2, 3, etc.)
-    /// </summary>
-    public int BuildNumber { get; set; }
-
-    /// <summary>
-    /// Build status: Queued, Running, Succeeded, Failed
-    /// </summary>
-    [MaxLength(50)]
-    public string Status { get; set; } = "Queued";
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? StartedAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
-
     /// <summary>
     /// Path to the ZIP artifact on the server.
     /// </summary>
@@ -43,19 +22,39 @@ public class FMBuild
     public long? ArtifactSizeBytes { get; set; }
 
     /// <summary>
-    /// Full build log output.
+    /// Sequential build number for this project (1, 2, 3, etc.)
     /// </summary>
-    public string LogOutput { get; set; } = string.Empty;
+    public int BuildNumber { get; set; }
+    public DateTime? CompletedAt { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public Guid? CreatedBy { get; set; }
 
     /// <summary>
     /// Error message if build failed.
     /// </summary>
     [MaxLength(2000)]
     public string ErrorMessage { get; set; } = string.Empty;
+    [Key]
+    public Guid FMBuildId { get; set; } = Guid.NewGuid();
 
-    public Guid? CreatedBy { get; set; }
+    [Required]
+    public Guid FMProjectId { get; set; }
+
+    /// <summary>
+    /// Full build log output.
+    /// </summary>
+    public string LogOutput { get; set; } = string.Empty;
 
     // Navigation properties
     [ForeignKey("FMProjectId")]
     public virtual FMProject? Project { get; set; }
+    public DateTime? StartedAt { get; set; }
+
+    /// <summary>
+    /// Build status: Queued, Running, Succeeded, Failed
+    /// </summary>
+    [MaxLength(50)]
+    public string Status { get; set; } = "Queued";
 }

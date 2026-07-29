@@ -16,9 +16,22 @@ public sealed class BitbucketAdapter : IGitRepoAdapter
 {
     private readonly HttpClient _http;
 
-    public GitPlatform Platform => GitPlatform.Bitbucket;
-
     public BitbucketAdapter(HttpClient http) => _http = http;
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
+    {
+        if (resp.IsSuccessStatusCode) return;
+        var status = (int)resp.StatusCode;
+        var body   = await resp.Content.ReadAsStringAsync(ct);
+        var code   = status switch
+        {
+            401 or 403 => GitErrorCode.Unauthorized,
+            404        => GitErrorCode.NotFound,
+            429        => GitErrorCode.RateLimited,
+            _          => GitErrorCode.NetworkError
+        };
+        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
+    }
 
     // -------------------------------------------------------------------------
     // Public interface
@@ -54,9 +67,44 @@ public sealed class BitbucketAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<List<GitTreeNode>> GetTreeAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
+    public async Task<GitFileContent> GetFileContentAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
+        var safePath = path.TrimStart('/');
+        var url      = $"{ctx.BaseApiUrl}/2.0/repositories/{ctx.Owner}/{ctx.Repo}/src/{Uri.EscapeDataString(branch)}/{safePath}";
+
+        using var resp = await SendAsync(ctx, url, ct);
+        await EnsureSuccessAsync(resp, "Bitbucket", ct);
+
+        long? size = resp.Content.Headers.ContentLength;
+        if (size > 500 * 1024)
+            throw new GitRepoException(GitErrorCode.FileTooLarge,
+                $"File '{path}' is {size / 1024} KB which exceeds the 500 KB display limit.");
+
+        var bytes    = await resp.Content.ReadAsByteArrayAsync(ct);
+        var mimeHint = GetMimeHint(path);
+
+        if (IsBinaryContent(bytes))
+            return new GitFileContent(path, null, true, size ?? bytes.Length, mimeHint);
+
+        return new GitFileContent(path, System.Text.Encoding.UTF8.GetString(bytes), false, size ?? bytes.Length, null);
+    }
+
+    private static string? GetMimeHint(string path)
     {
+        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".png"  => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif"  => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf"  => "application/pdf",
+            _       => null
+        };
+    }
+
+    public async Task<List<GitTreeNode>> GetTreeAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
         var safePath = path?.Trim('/') ?? "";
         // Bitbucket src endpoint: branch in path, trailing slash requests directory listing
         var url = string.IsNullOrEmpty(safePath)
@@ -86,28 +134,15 @@ public sealed class BitbucketAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<GitFileContent> GetFileContentAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
+    private static bool IsBinaryContent(byte[] bytes)
     {
-        var safePath = path.TrimStart('/');
-        var url      = $"{ctx.BaseApiUrl}/2.0/repositories/{ctx.Owner}/{ctx.Repo}/src/{Uri.EscapeDataString(branch)}/{safePath}";
-
-        using var resp = await SendAsync(ctx, url, ct);
-        await EnsureSuccessAsync(resp, "Bitbucket", ct);
-
-        long? size = resp.Content.Headers.ContentLength;
-        if (size > 500 * 1024)
-            throw new GitRepoException(GitErrorCode.FileTooLarge,
-                $"File '{path}' is {size / 1024} KB which exceeds the 500 KB display limit.");
-
-        var bytes    = await resp.Content.ReadAsByteArrayAsync(ct);
-        var mimeHint = GetMimeHint(path);
-
-        if (IsBinaryContent(bytes))
-            return new GitFileContent(path, null, true, size ?? bytes.Length, mimeHint);
-
-        return new GitFileContent(path, System.Text.Encoding.UTF8.GetString(bytes), false, size ?? bytes.Length, null);
+        var check = Math.Min(bytes.Length, 8000);
+        for (var i = 0; i < check; i++)
+            if (bytes[i] == 0) return true;
+        return false;
     }
+
+    public GitPlatform Platform => GitPlatform.Bitbucket;
 
     // -------------------------------------------------------------------------
     // Helpers
@@ -132,42 +167,5 @@ public sealed class BitbucketAdapter : IGitRepoAdapter
         }
 
         return _http.SendAsync(req, ct);
-    }
-
-    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
-    {
-        if (resp.IsSuccessStatusCode) return;
-        var status = (int)resp.StatusCode;
-        var body   = await resp.Content.ReadAsStringAsync(ct);
-        var code   = status switch
-        {
-            401 or 403 => GitErrorCode.Unauthorized,
-            404        => GitErrorCode.NotFound,
-            429        => GitErrorCode.RateLimited,
-            _          => GitErrorCode.NetworkError
-        };
-        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
-    }
-
-    private static bool IsBinaryContent(byte[] bytes)
-    {
-        var check = Math.Min(bytes.Length, 8000);
-        for (var i = 0; i < check; i++)
-            if (bytes[i] == 0) return true;
-        return false;
-    }
-
-    private static string? GetMimeHint(string path)
-    {
-        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-        return ext switch
-        {
-            ".png"  => "image/png",
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".gif"  => "image/gif",
-            ".webp" => "image/webp",
-            ".pdf"  => "application/pdf",
-            _       => null
-        };
     }
 }

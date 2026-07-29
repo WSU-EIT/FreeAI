@@ -80,6 +80,49 @@ else
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = default!;
 
+    private string FormatKey(string unformattedKey)
+    {
+        var result = new StringBuilder();
+        int currentPosition = 0;
+        while (currentPosition + 4 < unformattedKey.Length)
+        {
+            result.Append(unformattedKey.AsSpan(currentPosition, 4)).Append(' ');
+            currentPosition += 4;
+        }
+        if (currentPosition < unformattedKey.Length)
+        {
+            result.Append(unformattedKey.AsSpan(currentPosition));
+        }
+
+        return result.ToString().ToLowerInvariant();
+    }
+
+    private string GenerateQrCodeUri(string email, string unformattedKey)
+    {
+        return string.Format(
+            CultureInfo.InvariantCulture,
+            AuthenticatorUriFormat,
+            UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
+            UrlEncoder.Encode(email),
+            unformattedKey);
+    }
+
+    private async ValueTask LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
+    {
+        // Load the authenticator key & QR code URI to display on the form
+        var unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
+        if (string.IsNullOrEmpty(unformattedKey))
+        {
+            await UserManager.ResetAuthenticatorKeyAsync(user);
+            unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
+        }
+
+        sharedKey = FormatKey(unformattedKey!);
+
+        var email = await UserManager.GetEmailAsync(user);
+        authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         Input ??= new();
@@ -128,49 +171,6 @@ else
         {
             RedirectManager.RedirectToWithStatus("Account/Manage/TwoFactorAuthentication", message, HttpContext);
         }
-    }
-
-    private async ValueTask LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
-    {
-        // Load the authenticator key & QR code URI to display on the form
-        var unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
-        if (string.IsNullOrEmpty(unformattedKey))
-        {
-            await UserManager.ResetAuthenticatorKeyAsync(user);
-            unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
-        }
-
-        sharedKey = FormatKey(unformattedKey!);
-
-        var email = await UserManager.GetEmailAsync(user);
-        authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
-    }
-
-    private string FormatKey(string unformattedKey)
-    {
-        var result = new StringBuilder();
-        int currentPosition = 0;
-        while (currentPosition + 4 < unformattedKey.Length)
-        {
-            result.Append(unformattedKey.AsSpan(currentPosition, 4)).Append(' ');
-            currentPosition += 4;
-        }
-        if (currentPosition < unformattedKey.Length)
-        {
-            result.Append(unformattedKey.AsSpan(currentPosition));
-        }
-
-        return result.ToString().ToLowerInvariant();
-    }
-
-    private string GenerateQrCodeUri(string email, string unformattedKey)
-    {
-        return string.Format(
-            CultureInfo.InvariantCulture,
-            AuthenticatorUriFormat,
-            UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
-            UrlEncoder.Encode(email),
-            unformattedKey);
     }
 
     private sealed class InputModel

@@ -147,6 +147,6 @@ public class EntityWizardUndoRedo
 public class UndoRedoEntry
 {
     public string Description { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
     public string StateSnapshot { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
 }

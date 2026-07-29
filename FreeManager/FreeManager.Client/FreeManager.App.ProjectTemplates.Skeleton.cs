@@ -9,31 +9,24 @@ namespace FreeManager.Client;
 
 public static partial class ProjectTemplates
 {
-    // ============================================================
-    // SKELETON TEMPLATES
-    // ============================================================
+    private static string GetSkeletonController(string name) => $@"using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-    private static string GetSkeletonDataObjects(string name) => $@"namespace FreeManager;
+namespace FreeManager.Server.Controllers;
 
-#region {name} DataObjects
+#region {name} API Endpoints
 // ============================================================================
 // {name.ToUpper()} PROJECT
-// Add your DTOs and models here.
+// Add your API endpoints here.
 // ============================================================================
 
-public partial class DataObjects
+public partial class DataController
 {{
-    public static partial class Endpoints
-    {{
-        public static class {name}
-        {{
-            // Define your API endpoints here
-            // public const string GetItems = ""api/Data/{name}_GetItems"";
-        }}
-    }}
-
-    // Add your DTOs here
-    // public class {name}Item {{ }}
+    // Add your endpoints here
+    // [HttpGet]
+    // [Authorize]
+    // [Route(""~/api/Data/{name}_GetItems"")]
+    // public async Task<ActionResult<List<DataObjects.{name}Item>>> {name}_GetItems() {{ }}
 }}
 
 #endregion
@@ -60,25 +53,31 @@ public partial class DataAccess
 
 #endregion
 ";
+    // ============================================================
+    // SKELETON TEMPLATES
+    // ============================================================
 
-    private static string GetSkeletonController(string name) => $@"using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+    private static string GetSkeletonDataObjects(string name) => $@"namespace FreeManager;
 
-namespace FreeManager.Server.Controllers;
-
-#region {name} API Endpoints
+#region {name} DataObjects
 // ============================================================================
 // {name.ToUpper()} PROJECT
-// Add your API endpoints here.
+// Add your DTOs and models here.
 // ============================================================================
 
-public partial class DataController
+public partial class DataObjects
 {{
-    // Add your endpoints here
-    // [HttpGet]
-    // [Authorize]
-    // [Route(""~/api/Data/{name}_GetItems"")]
-    // public async Task<ActionResult<List<DataObjects.{name}Item>>> {name}_GetItems() {{ }}
+    public static partial class Endpoints
+    {{
+        public static class {name}
+        {{
+            // Define your API endpoints here
+            // public const string GetItems = ""api/Data/{name}_GetItems"";
+        }}
+    }}
+
+    // Add your DTOs here
+    // public class {name}Item {{ }}
 }}
 
 #endregion

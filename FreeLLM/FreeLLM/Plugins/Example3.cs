@@ -5,23 +5,11 @@ namespace ExamplePlugin;
 
 public class Example3 : IPlugin
 {
-    public Dictionary<string, object> Properties() =>
-        new Dictionary<string, object> {
-            { "Id", new Guid("4dd6cae9-b9a7-4048-8f7c-f338151d46ab") },
-            { "Author", "Bradley R. Wickett" },
-            { "ContainsSensitiveData", true },
-            { "Name", "Plugin Example 3" },
-            { "SortOrder", 3 },
-            { "Type", "Example" },
-            { "Version", "1.0.0" },
-        };
-
     public async Task<(bool Result, List<string>? Messages, IEnumerable<object>? Objects)> Execute(
         DataAccess da,
         Plugins.Plugin plugin,
         DataObjects.User? currentUser
-    )
-    {
+    ){
         // Just added this to simulate a delay.
         await System.Threading.Tasks.Task.Delay(10);
 
@@ -46,4 +34,14 @@ public class Example3 : IPlugin
 
         return (Result: true, Messages: messages, Objects: output);
     }
+    public Dictionary<string, object> Properties() =>
+        new Dictionary<string, object> {
+            { "Id", new Guid("4dd6cae9-b9a7-4048-8f7c-f338151d46ab") },
+            { "Author", "Bradley R. Wickett" },
+            { "ContainsSensitiveData", true },
+            { "Name", "Plugin Example 3" },
+            { "SortOrder", 3 },
+            { "Type", "Example" },
+            { "Version", "1.0.0" },
+        };
 }

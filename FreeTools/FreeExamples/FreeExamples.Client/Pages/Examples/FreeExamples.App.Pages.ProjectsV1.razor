@@ -21,11 +21,11 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Split Panel Layout"
-                     Description="Uses Bootstrap's col-md-5 / col-md-7 split. The left panel is a scrollable tree list, the right panel shows selected project details."
-                     Code="@_codeSplit" />
+                    Description="Uses Bootstrap's col-md-5 / col-md-7 split. The left panel is a scrollable tree list, the right panel shows selected project details."
+                    Code="@_codeSplit" />
             <InfoTip Title="Breadcrumb Path"
-                     Description="The FullPath is computed by walking from the current node up through its parents, producing 'Root → Child → Grandchild'."
-                     Code="@_codeBreadcrumb" />
+                    Description="The FullPath is computed by walking from the current node up through its parents, producing 'Root → Child → Grandchild'."
+                    Code="@_codeBreadcrumb" />
         </div>
 
         <div class="row g-3">
@@ -50,7 +50,7 @@
                                         <span class="d-flex align-items-center gap-1">
                                             @if (hasKids) {
                                                 <i class="fa-solid @(isExp ? "fa-chevron-down" : "fa-chevron-right") text-muted" style="width:14px; cursor:pointer;"
-                                                   @onclick="() => { if (!_expanded.Remove(p.RecordId)) _expanded.Add(p.RecordId); }" @onclick:stopPropagation="true"></i>
+                                                        @onclick="() => { if (!_expanded.Remove(p.RecordId)) _expanded.Add(p.RecordId); }" @onclick:stopPropagation="true"></i>
                                             } else {
                                                 <span style="width:14px;"></span>
                                             }

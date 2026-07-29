@@ -131,13 +131,13 @@ dotnet ef database update</code></pre>
 }
 
 @code {
-    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
-    [Parameter] public List<DataObjects.GeneratedFileInfo> GeneratedFiles { get; set; } = new();
-    [Parameter] public bool IsSaving { get; set; }
-    [Parameter] public bool IsComplete { get; set; }
     [Parameter] public string ErrorMessage { get; set; } = "";
+    [Parameter] public List<DataObjects.GeneratedFileInfo> GeneratedFiles { get; set; } = new();
+    [Parameter] public bool IsComplete { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
     [Parameter] public EventCallback OnStartOver { get; set; }
     [Parameter] public EventCallback OnViewProject { get; set; }
+    [Parameter] public DataObjects.EntityWizardState State { get; set; } = new();
 
     private string GetFileIcon(string fileType) {
         return fileType switch {

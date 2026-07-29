@@ -30,6 +30,13 @@ public sealed class SmartsheetController : ControllerBase
         _store = store;
     }
 
+    private static HttpRequestMessage BuildRequest(HttpMethod method, string relativeUrl, string token)
+    {
+        var req = new HttpRequestMessage(method, relativeUrl);
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return req;
+    }
+
     // -------------------------------------------------------------------------
     // POST /api/Showcase/Smartsheet/connect
     // Body: { "token": "..." }
@@ -78,6 +85,57 @@ public sealed class SmartsheetController : ControllerBase
     }
 
     // -------------------------------------------------------------------------
+    // DELETE /api/Showcase/Smartsheet/disconnect
+    // Clears the server session and the cookie.
+    // -------------------------------------------------------------------------
+    [HttpDelete("disconnect")]
+    public IActionResult Disconnect()
+    {
+        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
+        _store.Remove(key);
+        Response.Cookies.Delete(ExternalApiSessionStore.CookieName,
+            new CookieOptions { Path = "/api/Showcase" });
+        return Ok(new { disconnected = true });
+    }
+
+    private static async Task<IActionResult> ForwardError(HttpResponseMessage resp)
+    {
+        var body = await resp.Content.ReadAsStringAsync();
+        return new ObjectResult(new { error = body }) { StatusCode = (int)resp.StatusCode };
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private ExternalApiSession? GetSession()
+    {
+        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
+        var session = _store.Get(key);
+        return session?.SmartsheetToken is null ? null : session;
+    }
+
+    // -------------------------------------------------------------------------
+    // GET /api/Showcase/Smartsheet/sheets/{id}?page=1&pageSize=500
+    // Returns one page of a sheet (columns + rows).
+    // -------------------------------------------------------------------------
+    [HttpGet("sheets/{id:long}")]
+    public async Task<IActionResult> GetSheet(long id,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 500){
+        var session = GetSession();
+        if (session is null) return Unauthorized(new { error = "No active Smartsheet session. Connect first." });
+
+        var url = $"sheets/{id}?pageSize={pageSize}&page={page}";
+        using var req = BuildRequest(HttpMethod.Get, url, session.SmartsheetToken!);
+        using var resp = await _http.SendAsync(req, HttpContext.RequestAborted);
+        if (!resp.IsSuccessStatusCode) return await ForwardError(resp);
+
+        // Stream the JSON straight back — the component already knows the Smartsheet schema
+        var json = await resp.Content.ReadAsStringAsync();
+        return Content(json, "application/json");
+    }
+
+    // -------------------------------------------------------------------------
     // GET /api/Showcase/Smartsheet/sheets
     // Lists all sheets the token owner can see.
     // -------------------------------------------------------------------------
@@ -111,65 +169,6 @@ public sealed class SmartsheetController : ControllerBase
             }
         }
         return Ok(sheets);
-    }
-
-    // -------------------------------------------------------------------------
-    // GET /api/Showcase/Smartsheet/sheets/{id}?page=1&pageSize=500
-    // Returns one page of a sheet (columns + rows).
-    // -------------------------------------------------------------------------
-    [HttpGet("sheets/{id:long}")]
-    public async Task<IActionResult> GetSheet(long id,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 500)
-    {
-        var session = GetSession();
-        if (session is null) return Unauthorized(new { error = "No active Smartsheet session. Connect first." });
-
-        var url = $"sheets/{id}?pageSize={pageSize}&page={page}";
-        using var req = BuildRequest(HttpMethod.Get, url, session.SmartsheetToken!);
-        using var resp = await _http.SendAsync(req, HttpContext.RequestAborted);
-        if (!resp.IsSuccessStatusCode) return await ForwardError(resp);
-
-        // Stream the JSON straight back — the component already knows the Smartsheet schema
-        var json = await resp.Content.ReadAsStringAsync();
-        return Content(json, "application/json");
-    }
-
-    // -------------------------------------------------------------------------
-    // DELETE /api/Showcase/Smartsheet/disconnect
-    // Clears the server session and the cookie.
-    // -------------------------------------------------------------------------
-    [HttpDelete("disconnect")]
-    public IActionResult Disconnect()
-    {
-        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
-        _store.Remove(key);
-        Response.Cookies.Delete(ExternalApiSessionStore.CookieName,
-            new CookieOptions { Path = "/api/Showcase" });
-        return Ok(new { disconnected = true });
-    }
-
-    // -------------------------------------------------------------------------
-    // Private helpers
-    // -------------------------------------------------------------------------
-
-    private ExternalApiSession? GetSession()
-    {
-        var key = Request.Cookies[ExternalApiSessionStore.CookieName];
-        var session = _store.Get(key);
-        return session?.SmartsheetToken is null ? null : session;
-    }
-
-    private static HttpRequestMessage BuildRequest(HttpMethod method, string relativeUrl, string token)
-    {
-        var req = new HttpRequestMessage(method, relativeUrl);
-        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return req;
-    }
-
-    private static async Task<IActionResult> ForwardError(HttpResponseMessage resp)
-    {
-        var body = await resp.Content.ReadAsStringAsync();
-        return new ObjectResult(new { error = body }) { StatusCode = (int)resp.StatusCode };
     }
 
     // ── Request/Response models ──────────────────────────────────────────────

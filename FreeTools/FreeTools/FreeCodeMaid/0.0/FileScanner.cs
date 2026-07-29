@@ -19,6 +19,18 @@ public sealed record ScanItem(string AbsolutePath, string RelativePath, FileActi
 /// </summary>
 public static class FileScanner
 {
+    private static List<string> GlobCs(string root, ReorderConfig config)
+    {
+        var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+        matcher.AddInclude("**/*.cs");
+        foreach (var exclude in config.Exclude)
+        {
+            matcher.AddExclude(exclude);
+        }
+
+        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(root)));
+        return result.Files.Select(f => f.Path).ToList();
+    }
     public static (string root, List<ScanItem> items) Scan(string target, ReorderConfig config)
     {
         target = Path.GetFullPath(target);
@@ -65,18 +77,5 @@ public static class FileScanner
 
         items.Sort((a, b) => string.Compare(a.RelativePath, b.RelativePath, StringComparison.OrdinalIgnoreCase));
         return (root, items);
-    }
-
-    private static List<string> GlobCs(string root, ReorderConfig config)
-    {
-        var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
-        matcher.AddInclude("**/*.cs");
-        foreach (var exclude in config.Exclude)
-        {
-            matcher.AddExclude(exclude);
-        }
-
-        var result = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(root)));
-        return result.Files.Select(f => f.Path).ToList();
     }
 }

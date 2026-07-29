@@ -7,10 +7,10 @@
                 Project Name <span class="text-danger">*</span>
             </label>
             <input type="text" id="project-name"
-                   class="form-control form-control-lg @Helpers.MissingValue(ProjectName)"
-                   value="@ProjectName"
-                   @oninput="OnProjectNameInput"
-                   placeholder="MyApp" />
+                    class="form-control form-control-lg @Helpers.MissingValue(ProjectName)"
+                    value="@ProjectName"
+                    @oninput="OnProjectNameInput"
+                    placeholder="MyApp" />
             <div class="form-text">
                 Must be a valid C# identifier: start with a letter, letters and numbers only.
                 This will be used for namespaces and file names.
@@ -28,10 +28,10 @@
                 Display Name
             </label>
             <input type="text" id="display-name"
-                   class="form-control"
-                   value="@DisplayName"
-                   @oninput="OnDisplayNameInput"
-                   placeholder="My Application" />
+                    class="form-control"
+                    value="@DisplayName"
+                    @oninput="OnDisplayNameInput"
+                    placeholder="My Application" />
             <div class="form-text">
                 Human-friendly name shown in the UI. If left blank, we'll use the project name.
             </div>
@@ -42,10 +42,10 @@
                 Description
             </label>
             <textarea id="description"
-                      class="form-control"
-                      rows="3"
-                      @bind="Description"
-                      placeholder="Brief description of your application..."></textarea>
+                    class="form-control"
+                    rows="3"
+                    @bind="Description"
+                    placeholder="Brief description of your application..."></textarea>
         </div>
     </div>
 

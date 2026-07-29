@@ -13,12 +13,6 @@
     private readonly List<FileItem> _files = BuildFiles();
     private string? _selectedFileName;
 
-    private Task HandleSelected(FileItem file)
-    {
-        _selectedFileName = file.FileName;
-        return Task.CompletedTask;
-    }
-
     private static List<FileItem> BuildFiles()
     {
         return new List<FileItem>
@@ -28,5 +22,11 @@
             new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2345678, ThumbnailIcon = "fa-solid fa-file-pdf" },
             new() { FileId = Guid.NewGuid(), FileName = "proposal.docx", Extension = ".docx", Bytes = 87400, ThumbnailIcon = "fa-solid fa-file-word" },
         };
+    }
+
+    private Task HandleSelected(FileItem file)
+    {
+        _selectedFileName = file.FileName;
+        return Task.CompletedTask;
     }
 }

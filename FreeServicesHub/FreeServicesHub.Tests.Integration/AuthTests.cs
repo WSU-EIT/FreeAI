@@ -16,17 +16,17 @@ public class AuthTests : IClassFixture<HubFixture>
     }
 
     [Fact]
-    public async Task AgentEndpoint_WithoutToken_Returns401()
-    {
-        var response = await _fixture.Client.PostAsync("/api/agent/jobs", null);
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
     public async Task AgentEndpoint_WithInvalidToken_Returns401()
     {
         using var client = _fixture.CreateAuthenticatedClient("totally-invalid-token-value");
         var response = await client.PostAsync("/api/agent/jobs", null);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AgentEndpoint_WithoutToken_Returns401()
+    {
+        var response = await _fixture.Client.PostAsync("/api/agent/jobs", null);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 

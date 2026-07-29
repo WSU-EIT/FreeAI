@@ -154,20 +154,20 @@
 
     public class ScorecardRow
     {
+        public int CriticalCount { get; set; }
+        public int DistinctRules { get; set; }
+        public DateTime? LastScanAt { get; set; }
+        public int MinorCount { get; set; }
+        public int ModerateCount { get; set; }
+        public int PageCount { get; set; }
+        public int SeriousCount { get; set; }
+        public string SiteBaseUrl { get; set; } = "";
         public Guid SiteId { get; set; }
         public string SiteName { get; set; } = "";
-        public string SiteBaseUrl { get; set; } = "";
-        public DateTime? LastScanAt { get; set; }
-        public int PageCount { get; set; }
-        public int TotalCount { get; set; }
-        public int CriticalCount { get; set; }
-        public int SeriousCount { get; set; }
-        public int ModerateCount { get; set; }
-        public int MinorCount { get; set; }
-        public int DistinctRules { get; set; }
+        public int TopRuleCount { get; set; }
         public string? TopRuleId { get; set; }
         public string? TopRuleMessage { get; set; }
-        public int TopRuleCount { get; set; }
+        public int TotalCount { get; set; }
     }
 
     public void Dispose() { Model.OnChange -= OnDataModelUpdated; }

@@ -11,10 +11,10 @@
     </div>
 
     <PipelineTracker Stages="_stages"
-                     CurrentStageIndex="@_current"
-                     ShowDetailsPanel="true"
-                     @bind-SelectedStageIndex="_selected"
-                     OnStageClick="HandleClick" />
+            CurrentStageIndex="@_current"
+            ShowDetailsPanel="true"
+            @bind-SelectedStageIndex="_selected"
+            OnStageClick="HandleClick" />
 
     <div class="card shadow-sm mt-3">
         <div class="card-body">
@@ -33,6 +33,14 @@
     private int? _selected = 1;
     private List<PipelineTracker.PipelineStage> _stages = CreateStages();
     private List<string> _clickLog = new() { "No stage clicks yet." };
+
+    private void AdvanceStage()
+    {
+        if (_current < _stages.Count - 1) {
+            _current++;
+            _selected = _current;
+        }
+    }
 
     private static List<PipelineTracker.PipelineStage> CreateStages()
     {
@@ -60,11 +68,11 @@
         return Task.CompletedTask;
     }
 
-    private void AdvanceStage()
+    private void MarkStageSkipped()
     {
-        if (_current < _stages.Count - 1) {
-            _current++;
-            _selected = _current;
+        if (_stages.Count > 2) {
+            _stages[2].State = PipelineTracker.PipelineStageState.Skipped;
+            _selected = 2;
         }
     }
 
@@ -74,13 +82,5 @@
         _selected = 0;
         _stages = CreateStages();
         _clickLog = new List<string> { "Tracker reset." };
-    }
-
-    private void MarkStageSkipped()
-    {
-        if (_stages.Count > 2) {
-            _stages[2].State = PipelineTracker.PipelineStageState.Skipped;
-            _selected = 2;
-        }
     }
 }

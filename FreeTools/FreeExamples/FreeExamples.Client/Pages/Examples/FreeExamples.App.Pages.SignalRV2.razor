@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Colored Avatar Circles"
-                     Description="Each user has a rounded-circle with a unique background color and initials. The color is stored per-user. This is the Google Docs/Figma collaborator avatar pattern. Small sizes (32px) keep the list compact."
-                     Code="@_codeAvatarCircle" />
+                    Description="Each user has a rounded-circle with a unique background color and initials. The color is stored per-user. This is the Google Docs/Figma collaborator avatar pattern. Small sizes (32px) keep the list compact."
+                    Code="@_codeAvatarCircle" />
             <InfoTip Title="Online/Offline Badges"
-                     Description="Each user shows a badge: bg-success for Online, bg-secondary for Offline. The list sorts online users first (OrderByDescending(u => u.Online)). The current page shows what the user is viewing — useful for collaboration awareness."
-                     Code="@_codeOnlineBadge" />
+                    Description="Each user shows a badge: bg-success for Online, bg-secondary for Offline. The list sorts online users first (OrderByDescending(u => u.Online)). The current page shows what the user is viewing — useful for collaboration awareness."
+                    Code="@_codeOnlineBadge" />
             <InfoTip Title="Toggle Simulation"
-                     Description="The 'Toggle Random' button simulates SignalR events by randomly changing a user's online status. In production, SignalR hub events (OnConnectedAsync/OnDisconnectedAsync) would update presence automatically in real-time."
-                     Code="@_codeToggleSim" />
+                    Description="The 'Toggle Random' button simulates SignalR events by randomly changing a user's online status. In production, SignalR hub events (OnConnectedAsync/OnDisconnectedAsync) would update presence automatically in real-time."
+                    Code="@_codeToggleSim" />
         </div>
         <div class="card shadow-sm border-0 mb-3"><div class="card-header bg-white d-flex justify-content-between py-2"><span class="small fw-semibold"><i class="fa-solid fa-circle text-success me-1" style="font-size:0.5rem;"></i> @_users.Count(u => u.Online) Online Now</span><button class="btn btn-sm btn-outline-primary" @onclick="ToggleUser"><i class="fa-solid fa-shuffle me-1"></i> Toggle Random</button></div><div class="card-body p-0">
             @foreach (var u in _users.OrderByDescending(u => u.Online).ThenBy(u => u.Name)) {

@@ -50,11 +50,16 @@
     private string? message;
     private ExternalLoginInfo? externalLoginInfo;
 
+    [SupplyParameterFromQuery]
+    private string? Action { get; set; }
+
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = default!;
+
+    private string? ProviderDisplayName => externalLoginInfo?.ProviderDisplayName;
 
     [SupplyParameterFromQuery]
     private string? RemoteError { get; set; }
@@ -62,10 +67,27 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    [SupplyParameterFromQuery]
-    private string? Action { get; set; }
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<ApplicationUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
+        }
+    }
 
-    private string? ProviderDisplayName => externalLoginInfo?.ProviderDisplayName;
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -184,28 +206,6 @@
         {
             message = $"Error: {string.Join(",", result.Errors.Select(error => error.Description))}";
         }
-    }
-
-    private ApplicationUser CreateUser()
-    {
-        try
-        {
-            return Activator.CreateInstance<ApplicationUser>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
-        }
-    }
-
-    private IUserEmailStore<ApplicationUser> GetEmailStore()
-    {
-        if (!UserManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-        }
-        return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 
     private sealed class InputModel

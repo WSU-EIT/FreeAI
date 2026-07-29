@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Drag-Drop Upload Zone"
-                     Description="The dashed-border zone uses border-dashed with bg-light to create a visual drop target. A cloud-upload icon and 'Drag here' text tell users what to do. The 'Choose Photo' button triggers file selection. This is the same upload pattern used on every production profile page."
-                     Code="@_codeDragDrop" />
+                    Description="The dashed-border zone uses border-dashed with bg-light to create a visual drop target. A cloud-upload icon and 'Drag here' text tell users what to do. The 'Choose Photo' button triggers file selection. This is the same upload pattern used on every production profile page."
+                    Code="@_codeDragDrop" />
             <InfoTip Title="Avatar Initials Preview"
-                     Description="The circular preview shows initials from the first/last name fields, updating live as you type. The rounded-circle with bg-primary and d-inline-flex creates the avatar. When a photo is uploaded, it would replace the initials. This is the standard user avatar component."
-                     Code="@_codeAvatarPreview" />
+                    Description="The circular preview shows initials from the first/last name fields, updating live as you type. The rounded-circle with bg-primary and d-inline-flex creates the avatar. When a photo is uploaded, it would replace the initials. This is the standard user avatar component."
+                    Code="@_codeAvatarPreview" />
             <InfoTip Title="File Type Validation"
-                     Description="The 'JPG, PNG, or GIF. Max 5MB.' text communicates file constraints. In production, the server validates MIME type and file size. The client-side InputFile component can filter with accept='.jpg,.png,.gif'. Rejected files show an alert-danger message."
-                     Code="@_codeFileValidation" />
+                    Description="The 'JPG, PNG, or GIF. Max 5MB.' text communicates file constraints. In production, the server validates MIME type and file size. The client-side InputFile component can filter with accept='.jpg,.png,.gif'. Rejected files show an alert-danger message."
+                    Code="@_codeFileValidation" />
         </div>
 
         <div class="row">
@@ -36,7 +36,7 @@
                 <div class="card shadow-sm border-0 text-center">
                     <div class="card-body py-4">
                         <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mx-auto mb-3"
-                             style="width:120px; height:120px; font-size:2.5rem; font-weight:600;">
+                                style="width:120px; height:120px; font-size:2.5rem; font-weight:600;">
                             @(_firstName.Length > 0 ? _firstName[0].ToString().ToUpper() : "?")@(_lastName.Length > 0 ? _lastName[0].ToString().ToUpper() : "")
                         </div>
                         <h5 class="mb-1">@(string.IsNullOrWhiteSpace(_firstName) ? "First" : _firstName) @(string.IsNullOrWhiteSpace(_lastName) ? "Last" : _lastName)</h5>

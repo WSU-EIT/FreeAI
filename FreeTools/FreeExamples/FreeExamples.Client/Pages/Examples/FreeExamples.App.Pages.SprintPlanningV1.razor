@@ -21,11 +21,11 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Drag to Assign"
-                     Description="Drag a ticket card from the backlog panel and drop it on the sprint panel. The ticket's SprintId is updated and saved immediately."
-                     Code="@_codeDrag" />
+                    Description="Drag a ticket card from the backlog panel and drop it on the sprint panel. The ticket's SprintId is updated and saved immediately."
+                    Code="@_codeDrag" />
             <InfoTip Title="Capacity Warning"
-                     Description="When planned story points exceed the sprint's capacity, the progress bar turns red and shows an 'Over capacity!' badge."
-                     Code="@_codeCapacity" />
+                    Description="When planned story points exceed the sprint's capacity, the progress bar turns red and shows an 'Over capacity!' badge."
+                    Code="@_codeCapacity" />
         </div>
 
         @* Sprint selector *@
@@ -69,8 +69,8 @@
             @* Right: Sprint *@
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm @(_dragOverSprint ? "border-primary border-2" : "")"
-                     @ondragover="() => _dragOverSprint = true" @ondragover:preventDefault="true"
-                     @ondrop="HandleDropOnSprint" @ondragleave="() => _dragOverSprint = false">
+                        @ondragover="() => _dragOverSprint = true" @ondragover:preventDefault="true"
+                        @ondrop="HandleDropOnSprint" @ondragleave="() => _dragOverSprint = false">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-1">
                         <span><i class="fa-solid fa-flag me-1"></i>@(_activeSprint?.Name ?? "Select Sprint")</span>
                         <span class="badge bg-white text-dark rounded-pill">@_sprintTickets.Count</span>

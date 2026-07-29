@@ -67,8 +67,8 @@
                     </ul>
                 </div>
                 <InfoTip Title="Saved Filters Dropdown"
-                         Description="In production apps like Helpdesk, users save filter combinations they use often (e.g. 'My Open Tickets', 'High Priority This Week'). The dropdown-menu lists these presets. Clicking one populates all filter fields at once."
-                         Code="@_codeSavedFilters" />
+                        Description="In production apps like Helpdesk, users save filter combinations they use often (e.g. 'My Open Tickets', 'High Priority This Week'). The dropdown-menu lists these presets. Clicking one populates all filter fields at once."
+                        Code="@_codeSavedFilters" />
                 @if (ActiveFilterCount > 0) {
                     <span class="badge bg-primary rounded-pill">@ActiveFilterCount active filter@(ActiveFilterCount > 1 ? "s" : "")</span>
                 }
@@ -80,8 +80,8 @@
                     <button class="btn @(_viewMode == "list" ? "btn-dark" : "btn-outline-dark")" @onclick="@(() => _viewMode = "list")"><i class="fa-solid fa-list"></i></button>
                 </div>
                 <InfoTip Title="btn-group View Toggle"
-                         Description="A btn-group with two buttons toggles between Grid and List views. The active button gets btn-dark while the inactive gets btn-outline-dark. This is the same pattern used in every production list page."
-                         Code="@_codeBtnGroup" />
+                        Description="A btn-group with two buttons toggles between Grid and List views. The active button gets btn-dark while the inactive gets btn-outline-dark. This is the same pattern used in every production list page."
+                        Code="@_codeBtnGroup" />
             </div>
         </div>
 
@@ -160,8 +160,8 @@
         </div>
 
         <InfoTip Title="Advanced Collapse Filter"
-                 Description="The 'Advanced' button uses Bootstrap collapse to reveal additional filter fields (date range, amount range). This keeps the default UI clean while giving power users access to more filters. The same pattern is used in Helpdesk Index and TouchPoints search."
-                 Code="@_codeCollapse" />
+                Description="The 'Advanced' button uses Bootstrap collapse to reveal additional filter fields (date range, amount range). This keeps the default UI clean while giving power users access to more filters. The same pattern is used in Helpdesk Index and TouchPoints search."
+                Code="@_codeCollapse" />
 
         @* ── Active Filter Pills ── *@
         @if (ActiveFilterCount > 0) {
@@ -237,11 +237,11 @@
 
         <div class="d-flex flex-wrap gap-1 mt-3">
             <InfoTip Title="input-group Search"
-                     Description="The search field uses input-group to prefix a magnifying glass icon. An 'X' button appears when text is entered. This is the standard search pattern across all production apps."
-                     Code="@_codeInputGroup" />
+                    Description="The search field uses input-group to prefix a magnifying glass icon. An 'X' button appears when text is entered. This is the standard search pattern across all production apps."
+                    Code="@_codeInputGroup" />
             <InfoTip Title="Filter Pills"
-                     Description="Active filters display as removable badge pills above the results. Each pill shows the filter name and value with a close button. Clicking X removes that individual filter. This gives users a clear visual of what's applied."
-                     Code="@_codeFilterPills" />
+                    Description="Active filters display as removable badge pills above the results. Each pill shows the filter name and value with a close button. Clicking X removes that individual filter. This gives users a clear visual of what's applied."
+                    Code="@_codeFilterPills" />
         </div>
     }
 }

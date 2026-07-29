@@ -6,6 +6,11 @@
 public static class RouteParser
 {
     /// <summary>
+    /// Build a full URL from base URL and route.
+    /// </summary>
+    public static string BuildUrl(string baseUrl, string route)
+        => baseUrl.TrimEnd('/') + "/" + route.TrimStart('/');
+    /// <summary>
     /// Check if a route contains parameters (e.g., "{id}", "{name}").
     /// </summary>
     public static bool HasParameter(string route)
@@ -21,8 +26,7 @@ public static class RouteParser
         string[] csvLines,
         int routeColumnIndex = 1,
         bool skipParameterizedRoutes = true,
-        string? tenantCode = null)
-    {
+        string? tenantCode = null){
         var routeSet = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); // route -> route (for dedup)
         var skipped = new List<string>();
         var hasTenantCode = !string.IsNullOrWhiteSpace(tenantCode);
@@ -90,15 +94,8 @@ public static class RouteParser
         string csvPath,
         int routeColumnIndex = 1,
         bool skipParameterizedRoutes = true,
-        string? tenantCode = null)
-    {
+        string? tenantCode = null){
         var lines = await File.ReadAllLinesAsync(csvPath);
         return ParseRoutesFromCsv(lines, routeColumnIndex, skipParameterizedRoutes, tenantCode);
     }
-
-    /// <summary>
-    /// Build a full URL from base URL and route.
-    /// </summary>
-    public static string BuildUrl(string baseUrl, string route)
-        => baseUrl.TrimEnd('/') + "/" + route.TrimStart('/');
 }

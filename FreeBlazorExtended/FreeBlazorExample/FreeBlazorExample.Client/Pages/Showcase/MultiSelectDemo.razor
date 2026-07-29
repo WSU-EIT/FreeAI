@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A multi-value selection control that binds to a List&lt;string&gt; and renders either as a tag-chip display, a searchable dropdown list, or an inline checkbox group — controlled by the DisplayMode parameter."
-        WhatEli5="A smarter version of the standard 'hold Ctrl to pick multiple' list box — shows your selections as colourful tags, has a search bar, and doesn't require any special keyboard tricks from the user."
-        Who=@(new[]{ "Developers building filter UIs where multiple values can be selected simultaneously", "Form builders adding tag, permission, or category selection to a record", "Any page where the user needs to pick N items from a known list" })
-        WhenUse=@(new[]{ "Filter bars (select multiple campuses, categories, statuses)", "Permission or role assignment", "Tagging and label selection on records" })
-        WhenNot=@(new[]{ "Single-value selection — use a plain <select> or GetInput with InputType=Select", "Very large option lists (1000+ items) where server-side filtering is needed — use AutoComplete instead" })
-        Why="The native HTML multi-select requires Ctrl+click which almost no user knows about. This gives a self-explanatory UI with visible tag chips for selected values and an optional search filter."
-        TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged (two-way)", "DisplayMode: Tags (chip badges), Dropdown (searchable list panel), Checkboxes (inline)", "MaxSelections: if set, disables further selection once the limit is reached", "Searchable=true adds a filter text input above the option list", "DropdownDirection: Down/Up — useful when the control is near the bottom of the viewport" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A multi-value selection control that binds to a List&lt;string&gt; and renders either as a tag-chip display, a searchable dropdown list, or an inline checkbox group — controlled by the DisplayMode parameter."
+            WhatEli5="A smarter version of the standard 'hold Ctrl to pick multiple' list box — shows your selections as colourful tags, has a search bar, and doesn't require any special keyboard tricks from the user."
+            Who=@(new[]{ "Developers building filter UIs where multiple values can be selected simultaneously", "Form builders adding tag, permission, or category selection to a record", "Any page where the user needs to pick N items from a known list" })
+            WhenUse=@(new[]{ "Filter bars (select multiple campuses, categories, statuses)", "Permission or role assignment", "Tagging and label selection on records" })
+            WhenNot=@(new[]{ "Single-value selection — use a plain <select> or GetInput with InputType=Select", "Very large option lists (1000+ items) where server-side filtering is needed — use AutoComplete instead" })
+            Why="The native HTML multi-select requires Ctrl+click which almost no user knows about. This gives a self-explanatory UI with visible tag chips for selected values and an optional search filter."
+            TechNotes=@(new[]{ "Binds to List<string> via Value / ValueChanged (two-way)", "DisplayMode: Tags (chip badges), Dropdown (searchable list panel), Checkboxes (inline)", "MaxSelections: if set, disables further selection once the limit is reached", "Searchable=true adds a filter text input above the option list", "DropdownDirection: Down/Up — useful when the control is near the bottom of the viewport" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -28,7 +28,7 @@
                     <p class="text-muted small mb-3">Standard multi-select with simple options.</p>
                     <label for="basicMultiSelect" class="form-label">Select fruits:</label>
                     <MultiSelect Options="@(_fruits.Select(x => (x, x, _selectedFruits.Contains(x))).ToList())"
-                        OnUpdate="@((List<string> vals) => { _selectedFruits = vals; StateHasChanged(); })" />
+                            OnUpdate="@((List<string> vals) => { _selectedFruits = vals; StateHasChanged(); })" />
                     @if (_selectedFruits.Any()) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected (@_selectedFruits.Count):</strong> @string.Join(", ", _selectedFruits)
@@ -47,7 +47,7 @@
                     <p class="text-muted small mb-3">Multi-select with search/filter functionality.</p>
                     <label for="searchableMultiSelect" class="form-label">Select countries:</label>
                     <MultiSelect Options="@(_countries.Select(x => (x, x, _selectedCountries.Contains(x))).ToList())"
-                        OnUpdate="@((List<string> vals) => { _selectedCountries = vals; StateHasChanged(); })" />
+                            OnUpdate="@((List<string> vals) => { _selectedCountries = vals; StateHasChanged(); })" />
                     @if (_selectedCountries.Any()) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected (@_selectedCountries.Count):</strong> @string.Join(", ", _selectedCountries)
@@ -68,7 +68,7 @@
                     <p class="text-muted small mb-3">Multi-select displaying selections as tags.</p>
                     <label for="tagsMultiSelect" class="form-label">Select technologies:</label>
                     <MultiSelect Options="@(_technologies.Select(x => (x, x, false)).ToList())"
-                        OnUpdate="@((List<string> vals) => { _selectedTech = vals; StateHasChanged(); })" />
+                            OnUpdate="@((List<string> vals) => { _selectedTech = vals; StateHasChanged(); })" />
                     @if (_selectedTech.Any()) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected (@_selectedTech.Count):</strong>
@@ -87,8 +87,8 @@
                     <p class="text-muted small mb-3">Multi-select limited to 3 selections.</p>
                     <label for="limitedMultiSelect" class="form-label">Select up to 3 items:</label>
                     <MultiSelect Options="@(_items.Select(x => (x, x, false)).ToList())"
-                        OnUpdate="@((List<string> vals) => { _selectedLimited = vals; StateHasChanged(); })"
-                        Size="5" />
+                            OnUpdate="@((List<string> vals) => { _selectedLimited = vals; StateHasChanged(); })"
+                            Size="5" />
                     @if (_selectedLimited.Any()) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected (@_selectedLimited.Count / 3):</strong> @string.Join(", ", _selectedLimited)
@@ -109,7 +109,7 @@
                     <p class="text-muted small mb-3">Multi-select with dropdown list display.</p>
                     <label for="dropdownMultiSelect" class="form-label">Permissions:</label>
                     <MultiSelect Options="@(_permissions.Select(x => (x, x, false)).ToList())"
-                        OnUpdate="@((List<string> vals) => { _selectedPermissions = vals; StateHasChanged(); })" />
+                            OnUpdate="@((List<string> vals) => { _selectedPermissions = vals; StateHasChanged(); })" />
                     @if (_selectedPermissions.Any()) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Permissions (@_selectedPermissions.Count):</strong> @string.Join(", ", _selectedPermissions)

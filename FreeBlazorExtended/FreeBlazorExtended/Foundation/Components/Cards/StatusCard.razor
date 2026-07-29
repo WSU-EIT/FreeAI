@@ -17,10 +17,10 @@
 
     Example:
         <StatusCard Title="API Gateway"
-                    Status="warning"
-                    StatusText="Degraded"
-                    Subtitle="us-east-1 region"
-                    Details="@(new() { ["Latency"] = "430 ms", ["Uptime"] = "99.1%" })">
+                Status="warning"
+                StatusText="Degraded"
+                Subtitle="us-east-1 region"
+                Details="@(new() { ["Latency"] = "430 ms", ["Uptime"] = "99.1%" })">
             <button class="btn btn-sm btn-outline-warning">View Logs</button>
         </StatusCard>
 *@
@@ -197,16 +197,18 @@
     protected string _statusText = "";
 
     /// <summary>
-    /// The entity name displayed as the card heading.
-    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for action buttons (View Logs, Restart) or supplemental links.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Secondary description rendered below the title in a muted, smaller font.
-    /// Optional — use for region, environment, or version context.
+    /// Key/value pairs rendered as labelled detail rows inside the card body.
+    /// Keys appear as muted labels; values appear in bold.
+    /// Example: <c>new() { ["Version"] = "2.1.0", ["Uptime"] = "99.9%" }</c>.
+    /// Optional — omit for a simple title + status card.
     /// </summary>
-    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public Dictionary<string, string> Details { get; set; } = new();
 
     /// <summary>
     /// Drives the left-border and badge colour of the card.
@@ -231,18 +233,16 @@
     [Parameter] public string StatusText { get; set; } = "";
 
     /// <summary>
-    /// Key/value pairs rendered as labelled detail rows inside the card body.
-    /// Keys appear as muted labels; values appear in bold.
-    /// Example: <c>new() { ["Version"] = "2.1.0", ["Uptime"] = "99.9%" }</c>.
-    /// Optional — omit for a simple title + status card.
+    /// Secondary description rendered below the title in a muted, smaller font.
+    /// Optional — use for region, environment, or version context.
     /// </summary>
-    [Parameter] public Dictionary<string, string> Details { get; set; } = new();
+    [Parameter] public string Subtitle { get; set; } = "";
 
     /// <summary>
-    /// Optional render fragment displayed in the card footer, separated by a top border.
-    /// Use for action buttons (View Logs, Restart) or supplemental links.
+    /// The entity name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Title { get; set; } = "";
 
     protected override void OnInitialized()
     {

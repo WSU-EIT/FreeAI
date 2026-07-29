@@ -10,24 +10,23 @@ public partial class DataObjects
     /// </summary>
     public class JsonRecord
     {
-        public Guid RecordId { get; set; }
-        public Guid TenantId { get; set; }
-
-        // --- Metadata (parsed first, before touching Contents) ---
-        public string RecordType { get; set; } = "";
-        public int SchemaVersion { get; set; } = 1;
-        public string Format { get; set; } = "json";
+        // --- Payload (the actual entity, JSON-serialized) ---
+        public string Contents { get; set; } = "";
 
         // --- Audit (tracked by the store, not by the entity) ---
         public DateTime Created { get; set; }
         public string? CreatedBy { get; set; }
-        public DateTime Modified { get; set; }
-        public string? ModifiedBy { get; set; }
         public bool Deleted { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public string Format { get; set; } = "json";
+        public DateTime Modified { get; set; }
+        public string? ModifiedBy { get; set; }
+        public Guid RecordId { get; set; }
 
-        // --- Payload (the actual entity, JSON-serialized) ---
-        public string Contents { get; set; } = "";
+        // --- Metadata (parsed first, before touching Contents) ---
+        public string RecordType { get; set; } = "";
+        public int SchemaVersion { get; set; } = 1;
+        public Guid TenantId { get; set; }
     }
 
     /// <summary>
@@ -36,10 +35,10 @@ public partial class DataObjects
     /// </summary>
     public interface IJsonEntity
     {
+        static abstract int CurrentSchemaVersion { get; }
+        static abstract string EntityType { get; }
         Guid RecordId { get; set; }
         Guid TenantId { get; set; }
-        static abstract string EntityType { get; }
-        static abstract int CurrentSchemaVersion { get; }
     }
 
     /// <summary>

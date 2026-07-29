@@ -47,14 +47,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Search & Category Filter"
-                     Description="The search box uses Blazor bind with oninput for instant filtering. MatchesSearch() checks the title, description, and variant titles against the search term. Category pill buttons set _categoryFilter which narrows FilteredCategories via LINQ Where(). Both filters combine — search within a category."
-                     Code="@_codeSearchFilter" />
+                    Description="The search box uses Blazor bind with oninput for instant filtering. MatchesSearch() checks the title, description, and variant titles against the search term. Category pill buttons set _categoryFilter which narrows FilteredCategories via LINQ Where(). Both filters combine — search within a category."
+                    Code="@_codeSearchFilter" />
             <InfoTip Title="Variant Cards with Latest Highlight"
-                     Description="Each feature can have variant cards showing different approaches. The last variant is highlighted with a gold border and star icon (border-warning + fa-star) to mark it as the latest/best version. This helps users find the most current implementation."
-                     Code="@_codeVariantCards" />
+                    Description="Each feature can have variant cards showing different approaches. The last variant is highlighted with a gold border and star icon (border-warning + fa-star) to mark it as the latest/best version. This helps users find the most current implementation."
+                    Code="@_codeVariantCards" />
             <InfoTip Title="Dynamic Category Registry"
-                     Description="All dashboard data is defined in a single _categories list of DashboardCategory objects. Each category has a title, icon, header class, and list of FeatureEntry items with optional variants. Adding a new example page means adding one line here — no other wiring needed."
-                     Code="@_codeCategoryRegistry" />
+                    Description="All dashboard data is defined in a single _categories list of DashboardCategory objects. Each category has a title, icon, header class, and list of FeatureEntry items with optional variants. Adding a new example page means adding one line here — no other wiring needed."
+                    Code="@_codeCategoryRegistry" />
         </div>
 
         @* Quick Stats *@
@@ -497,26 +497,24 @@ bool MatchesSearch(FeatureEntry f) {
 
     private class FeatureEntry
     {
-        public string Title { get; set; }
-        public string Route { get; set; }
-        public string Icon { get; set; }
-        public string Description { get; set; }
-        public List<VariantEntry>? Variants { get; set; }
-
         public FeatureEntry(string title, string route, string icon, string description)
         {
             Title = title; Route = route; Icon = icon; Description = description;
         }
+        public string Description { get; set; }
+        public string Icon { get; set; }
+        public string Route { get; set; }
+        public string Title { get; set; }
+        public List<VariantEntry>? Variants { get; set; }
     }
 
     private class VariantEntry
     {
-        public string Title { get; set; }
-        public string Route { get; set; }
-
         public VariantEntry(string title, string route)
         {
             Title = title; Route = route;
         }
+        public string Route { get; set; }
+        public string Title { get; set; }
     }
 }

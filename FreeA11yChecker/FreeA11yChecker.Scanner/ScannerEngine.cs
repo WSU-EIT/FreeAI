@@ -15,6 +15,241 @@ namespace FreeA11yChecker.Scanner;
 /// </summary>
 public static class ScannerEngine
 {
+    /// <summary>
+    /// Captures a CVD simulation screenshot by applying an SVG filter, taking a screenshot,
+    /// then removing the filter.
+    /// </summary>
+    private static async Task CaptureCvdScreenshot(IPage Page, string OutputDir,
+        string FileName, string CvdType, PageScanResult Result){
+        try {
+            string screenshotPath = Path.Combine(OutputDir, FileName + ".png");
+            await CvdSimulator.SimulateAndScreenshot(Page, CvdType, screenshotPath);
+            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, "cvd-" + CvdType));
+        } catch (Exception) {
+            // CVD simulation is best-effort.
+        }
+    }
+
+    // ================================================================
+    // Helper Methods
+    // ================================================================
+
+    /// <summary>
+    /// Waits for the page to finish hydrating before screenshots or DOM extraction runs.
+    /// Combines four signals: (1) Playwright NetworkIdle, (2) a poll of body innerText
+    /// until "Loading..." / "Please wait" / empty body text is gone, (3) a selector-based
+    /// wait for a hydrated layout element (nav/main/navbar-brand), and (4) a final settle
+    /// delay. This replaces the old "navigate, sleep N ms, screenshot" pattern that captured
+    /// the static App.razor shell on Blazor WASM pages. Safe to call on the post-auth page
+    /// too so the "landed" screenshot is stable.
+    /// </summary>
+    /// <summary>
+    /// Captures a sequence of JPEG screenshots over <paramref name="durationMs"/> at
+    /// <paramref name="intervalMs"/> spacing, dedupes consecutive identical frames by
+    /// SHA-256 hash, and returns one <see cref="ScreenshotInfo"/> per UNIQUE frame.
+    /// File names are numbered by elapsed milliseconds (e.g., <c>{prefix}-0000ms.jpeg</c>,
+    /// <c>{prefix}-1500ms.jpeg</c>) so they sort chronologically in the output dir.
+    ///
+    /// Use cases:
+    ///   1. Diagnose Blazor WASM hydration timing — watch the page transition from
+    ///      blank → loading-spinner → hydrated UI without guessing the right wait.
+    ///   2. Prove a page eventually rendered (or didn't) for compliance evidence.
+    ///   3. Capture animation / dynamic-content states that a single screenshot misses.
+    ///
+    /// Dedup is content-based (SHA-256 of JPEG bytes), so visually-identical frames
+    /// captured during a static-page wait are collapsed to a single output frame.
+    /// </summary>
+    public static async Task<List<ScreenshotInfo>> CaptureLoadSequenceAsync(
+        IPage Page, string FilenamePrefix, string LabelPrefix, int durationMs = 10000, int intervalMs = 500){
+        List<ScreenshotInfo> output = new List<ScreenshotInfo>();
+        if (durationMs <= 0 || intervalMs <= 0) return output;
+
+        Stopwatch sw = Stopwatch.StartNew();
+        string? lastHash = null;
+
+        while (sw.ElapsedMilliseconds < durationMs) {
+            int elapsedMs = (int)sw.ElapsedMilliseconds;
+            byte[]? frame = null;
+            try {
+                // PNG is lossless AND Playwright's PNG output is deterministic for the
+                // same rendered content — SHA-256 dedup of PNG bytes correctly collapses
+                // identical frames. JPEG re-encoding adds quantization noise per call so
+                // hash dedup never matched (that's why earlier dedup looked broken).
+                frame = await Page.ScreenshotAsync(new PageScreenshotOptions {
+                    FullPage = false,
+                    Timeout = 5000,
+                    Type = ScreenshotType.Png,
+                });
+            } catch { /* skip this frame on error and continue */ }
+
+            if (frame != null && frame.Length > 0) {
+                string hash = Convert.ToHexString(SHA256.HashData(frame));
+                if (hash != lastHash) {
+                    string filename = $"{FilenamePrefix}-{elapsedMs:D5}ms.png";
+                    string label = $"{LabelPrefix} +{elapsedMs}ms";
+                    output.Add(new ScreenshotInfo {
+                        Path = filename,
+                        Label = label,
+                        SizeBytes = frame.Length,
+                        Data = frame,
+                        ContentType = "image/png",
+                    });
+                    lastHash = hash;
+                }
+            }
+
+            // Sleep until next interval boundary, but bail out if duration exceeded.
+            int remaining = (int)(durationMs - sw.ElapsedMilliseconds);
+            if (remaining <= 0) break;
+            int delay = Math.Min(intervalMs, remaining);
+            await Task.Delay(delay);
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Legacy disk-based overlay screenshot (used by console runner).
+    /// </summary>
+    private static async Task CaptureOverlayScreenshot(IPage Page, string OutputDir,
+        string FileName, string Label, Func<Task> InjectOverlay, Func<Task> RemoveOverlay, PageScanResult Result){
+        try {
+            await InjectOverlay();
+            string screenshotPath = Path.Combine(OutputDir, FileName + ".png");
+            await Page.ScreenshotAsync(new PageScreenshotOptions {
+                Path = screenshotPath,
+                FullPage = true,
+            });
+            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, Label));
+        } catch (Exception) {
+            // Overlay injection is best-effort.
+        } finally {
+            // Always remove the overlay so the next screenshot starts clean.
+            try { await RemoveOverlay(); } catch { }
+        }
+    }
+
+    /// <summary>
+    /// Captures an overlay screenshot in-memory by injecting a visual overlay, taking a screenshot,
+    /// then removing the overlay. Best-effort — failures are logged but do not stop the scan.
+    /// </summary>
+    private static async Task CaptureOverlayScreenshotInMemory(IPage Page, string FileName, string Label,
+        Func<Task> InjectOverlay, Func<Task> RemoveOverlay, PageScanResult Result){
+        try {
+            await InjectOverlay();
+            byte[] data = await Page.ScreenshotAsync(new PageScreenshotOptions {
+                FullPage = true,
+            });
+            Result.Screenshots.Add(new ScreenshotInfo {
+                Path = FileName + ".png",
+                Label = Label,
+                SizeBytes = data.Length,
+                Data = data,
+                ContentType = "image/png",
+            });
+        } catch (Exception) {
+            // Overlay injection is best-effort.
+        } finally {
+            try { await RemoveOverlay(); } catch { }
+        }
+    }
+
+    /// <summary>
+    /// Captures a screen reader view screenshot by rendering a text-only accessible view.
+    /// </summary>
+    private static async Task CaptureScreenReaderView(IPage Page, string OutputDir, PageScanResult Result)
+    {
+        try {
+            await ScreenReaderView.InjectView(Page);
+            string screenshotPath = Path.Combine(OutputDir, "15-screenreader-view.png");
+            await Page.ScreenshotAsync(new PageScreenshotOptions {
+                Path = screenshotPath,
+                FullPage = true,
+            });
+            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, "screenreader-view"));
+            await ScreenReaderView.RemoveView(Page);
+        } catch (Exception) {
+            // Screen reader view is best-effort.
+        }
+    }
+
+    /// <summary>
+    /// Catalogs all images on the page with their URL and alt text status.
+    /// </summary>
+    private static async Task<List<ImageInfo>> CatalogImages(IPage Page)
+    {
+        List<ImageInfo> output = new List<ImageInfo>();
+
+        try {
+            string imagesJson = await Page.EvaluateAsync<string>(@"() => {
+                const images = [];
+                document.querySelectorAll('img').forEach(img => {
+                    images.push({
+                        url: img.src || '',
+                        altText: img.hasAttribute('alt') ? img.getAttribute('alt') : null,
+                        hasAlt: img.hasAttribute('alt')
+                    });
+                });
+                return JSON.stringify(images);
+            }");
+
+            using (JsonDocument doc = JsonDocument.Parse(imagesJson)) {
+                foreach (JsonElement imgEl in doc.RootElement.EnumerateArray()) {
+                    output.Add(new ImageInfo {
+                        Url = imgEl.GetProperty("url").GetString() ?? string.Empty,
+                        AltText = imgEl.TryGetProperty("altText", out JsonElement altEl) && altEl.ValueKind != JsonValueKind.Null
+                            ? altEl.GetString() : null,
+                        HasAlt = imgEl.GetProperty("hasAlt").GetBoolean(),
+                    });
+                }
+            }
+        } catch (Exception) {
+            // Image cataloging is best-effort.
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Creates a ScreenshotInfo from a file path and label. Reads file size if the file exists.
+    /// </summary>
+    private static ScreenshotInfo CreateScreenshotInfo(string FilePath, string Label)
+    {
+        long sizeBytes = 0;
+        try {
+            FileInfo fileInfo = new FileInfo(FilePath);
+            if (fileInfo.Exists) {
+                sizeBytes = fileInfo.Length;
+            }
+        } catch { }
+
+        return new ScreenshotInfo {
+            Path = FilePath,
+            Label = Label,
+            SizeBytes = sizeBytes,
+        };
+    }
+
+    /// <summary>
+    /// Converts a URL path or hostname to a safe directory name.
+    /// Replaces special characters with underscores.
+    /// </summary>
+    private static string SanitizePath(string Input)
+    {
+        if (String.IsNullOrWhiteSpace(Input) || Input == "/") {
+            return "_root";
+        }
+
+        string sanitized = Input.Trim('/').Replace("/", "_").Replace(":", "_").Replace("?", "_")
+            .Replace("&", "_").Replace("=", "_").Replace(" ", "_");
+
+        // Remove any remaining invalid path characters.
+        foreach (char invalidChar in Path.GetInvalidFileNameChars()) {
+            sanitized = sanitized.Replace(invalidChar, '_');
+        }
+
+        return sanitized;
+    }
     // ================================================================
     // ScanAll — Top-level entry point for scanning all configured sites
     // ================================================================
@@ -24,8 +259,7 @@ public static class ScannerEngine
     /// iterates each site, and returns a combined result.
     /// </summary>
     public static async Task<RunScanResult> ScanAll(ScanConfig Config, Action<ScanProgress>? OnProgress = null,
-        Action<string, PageScanResult>? OnPageComplete = null)
-    {
+        Action<string, PageScanResult>? OnPageComplete = null){
         RunScanResult output = new RunScanResult();
         output.StartedAt = DateTime.UtcNow;
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -73,286 +307,6 @@ public static class ScannerEngine
     }
 
     // ================================================================
-    // ScanSite — Scan all pages within a single site
-    // ================================================================
-
-    /// <summary>
-    /// Scans all pages in a site. Creates a browser context, handles authentication
-    /// if credentials are configured, then scans each page sequentially.
-    /// </summary>
-    public static async Task<SiteScanResult> ScanSite(IBrowser Browser, SiteConfig Site, ScanConfig Config,
-        string OutputDir, Action<ScanProgress>? OnProgress = null,
-        Action<PageScanResult>? OnPageComplete = null)
-    {
-        SiteScanResult output = new SiteScanResult();
-        output.BaseUrl = Site.BaseUrl;
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        // STORAGE-STATE REUSE — the canonical fix for "iter 1 auth works, iter 3 auth
-        // fails and breaks the rest of the crawl". Save Playwright's storage state
-        // (cookies + localStorage) to disk after a successful auth. On subsequent
-        // crawl iterations, load that file at context-creation time and SKIP the auth
-        // flow entirely — the cookies are already there. Auth is run once per crawl
-        // (or once per cold cache), not once per iteration.
-        //
-        // Lives in runs/.cookies/ (NOT runs/latest/) so the fresh-cli task that wipes
-        // runs/latest does NOT delete the auth state. Cookies are scoped per host.
-        string siteHostForCookie = "unknown";
-        try { siteHostForCookie = new Uri(Site.BaseUrl).Host; } catch { }
-        string cookiesDir = Path.Combine(Directory.GetParent(OutputDir)?.FullName ?? OutputDir, ".cookies");
-        Directory.CreateDirectory(cookiesDir);
-        string storageStatePath = Path.Combine(cookiesDir, $"{siteHostForCookie}.json");
-        bool reusingStorageState = File.Exists(storageStatePath);
-
-        var contextOptions = new BrowserNewContextOptions {
-            IgnoreHTTPSErrors = true,
-            UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
-            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
-            Locale = "en-US",
-            TimezoneId = "America/Los_Angeles",
-            ExtraHTTPHeaders = new Dictionary<string, string> {
-                ["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                ["Accept-Language"] = "en-US,en;q=0.9",
-                ["Sec-Ch-Ua"] = "\"Chromium\";v=\"136\", \"Google Chrome\";v=\"136\", \"Not.A/Brand\";v=\"99\"",
-                ["Sec-Ch-Ua-Mobile"] = "?0",
-                ["Sec-Ch-Ua-Platform"] = "\"Windows\"",
-                ["Upgrade-Insecure-Requests"] = "1",
-            },
-        };
-        if (reusingStorageState) {
-            contextOptions.StorageStatePath = storageStatePath;
-            OnProgress?.Invoke(new ScanProgress {
-                CurrentSite = Site.BaseUrl,
-                Message = $"Reusing saved auth from {storageStatePath} — skipping login flow",
-            });
-        }
-
-        IBrowserContext context = await Browser.NewContextAsync(contextOptions);
-
-        // Mask automation signals so sites don't detect Playwright as a bot.
-        await context.AddInitScriptAsync(@"
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-            window.chrome = { runtime: {} };
-        ");
-
-        // Auth-flow screenshots captured during login — prepended to the first page
-        // scanned for this site so they persist through the existing PageScanResult
-        // pipeline (web app → EF, console → disk). Three shots prove the
-        // "anonymous locked out / authenticated full access" compliance pair.
-        List<ScreenshotInfo> authScreenshots = new List<ScreenshotInfo>();
-
-        try {
-            // See if we need to authenticate. Skip entirely if we loaded a saved
-            // storage state — the cookies are already on the context.
-            if (reusingStorageState) {
-                output.AuthAttempted = true;
-                output.AuthSucceeded = true; // assume reused state is valid
-            } else if (Site.Credentials != null && !String.IsNullOrWhiteSpace(Site.Credentials.Username)) {
-                output.AuthAttempted = true;
-
-                // Inject the site BaseUrl so AuthHandler can build correct login URLs for
-                // virtual-app deployments (e.g. host/Touchpoints) where stripping to scheme+host
-                // would lose the sub-path.
-                if (String.IsNullOrWhiteSpace(Site.Credentials.BaseUrl)) {
-                    Site.Credentials.BaseUrl = Site.BaseUrl;
-                }
-
-                OnProgress?.Invoke(new ScanProgress {
-                    CurrentSite = Site.BaseUrl,
-                    Message = "Authenticating as '" + Site.Credentials.Username + "'...",
-                });
-
-                IPage authPage = await context.NewPageAsync();
-                try {
-                    // Forward each auth step as a ScanProgress event so the CLI / web UI
-                    // sees realtime per-step messages instead of a single "Authenticating..."
-                    // log followed by 30+ seconds of silence.
-                    Action<string> emitAuthStep = msg => OnProgress?.Invoke(new ScanProgress {
-                        CurrentSite = Site.BaseUrl,
-                        Message = msg,
-                    });
-                    AuthHandler.AuthScreenshotResult authResult =
-                        await AuthHandler.AuthenticateWithScreenshots(authPage, Site.Credentials, emitAuthStep);
-                    output.AuthSucceeded = authResult.Succeeded;
-
-                    // Build ScreenshotInfo entries for each captured frame.
-                    if (authResult.AnonymousFormBytes != null) {
-                        authScreenshots.Add(new ScreenshotInfo {
-                            Path = "00a-login-anonymous.jpeg",
-                            Label = "login-anonymous",
-                            SizeBytes = authResult.AnonymousFormBytes.Length,
-                            Data = authResult.AnonymousFormBytes,
-                            ContentType = "image/jpeg",
-                        });
-                    }
-                    if (authResult.CredentialsEnteredBytes != null) {
-                        authScreenshots.Add(new ScreenshotInfo {
-                            Path = "00b-login-credentials-entered.jpeg",
-                            Label = "login-credentials-entered",
-                            SizeBytes = authResult.CredentialsEnteredBytes.Length,
-                            Data = authResult.CredentialsEnteredBytes,
-                            ContentType = "image/jpeg",
-                        });
-                    }
-                    if (authResult.PostAuthBytes != null) {
-                        string postAuthName = authResult.PostAuthIsFailure
-                            ? "00c-login-FAILED.jpeg"
-                            : "00c-login-post-auth.jpeg";
-                        string postAuthLabel = authResult.PostAuthIsFailure
-                            ? "login-FAILED"
-                            : "login-post-auth";
-                        authScreenshots.Add(new ScreenshotInfo {
-                            Path = postAuthName,
-                            Label = postAuthLabel,
-                            SizeBytes = authResult.PostAuthBytes.Length,
-                            Data = authResult.PostAuthBytes,
-                            ContentType = "image/jpeg",
-                        });
-                    }
-                } finally {
-                    await authPage.CloseAsync();
-                }
-
-                // SAVE STORAGE STATE if auth succeeded — subsequent crawl iterations
-                // (same OutputDir / same site) will load this and skip the auth flow.
-                // Mountain of complexity removed: no more re-running the 3-step Flex login
-                // 5 times in a 5-iteration crawl, no more iter-3-flakes losing 25% of pages.
-                if (output.AuthSucceeded) {
-                    try {
-                        await context.StorageStateAsync(new BrowserContextStorageStateOptions {
-                            Path = storageStatePath,
-                        });
-                        OnProgress?.Invoke(new ScanProgress {
-                            CurrentSite = Site.BaseUrl,
-                            Message = $"Saved auth cookies → {storageStatePath} (will be reused on next iteration)",
-                        });
-                    } catch (Exception ex) {
-                        OnProgress?.Invoke(new ScanProgress {
-                            CurrentSite = Site.BaseUrl,
-                            Message = $"Failed to save storage state: {ex.Message} — next iteration will re-auth",
-                        });
-                    }
-                }
-            }
-
-            // Now scan each page.
-            int pageIndex = 0;
-            int totalPages = Site.Pages.Count;
-
-            foreach (PageConfig pageConfig in Site.Pages) {
-                pageIndex++;
-                // Build full URL — handle BaseUrl that may already contain a path prefix.
-                // Discovered paths are absolute from host root (e.g. "/em411/faq/"),
-                // so if BaseUrl already includes that prefix, build from origin instead.
-                string baseUrlTrimmed = Site.BaseUrl.TrimEnd('/');
-                Uri baseUri = new Uri(baseUrlTrimmed);
-                string basePath = baseUri.AbsolutePath.TrimEnd('/');
-                string pagePath = pageConfig.Path.StartsWith("/") ? pageConfig.Path : "/" + pageConfig.Path;
-
-                string fullUrl;
-                if (!string.IsNullOrEmpty(basePath) && basePath != "/" &&
-                    pagePath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase)) {
-                    fullUrl = baseUri.GetLeftPart(UriPartial.Authority) + pagePath;
-                } else {
-                    fullUrl = baseUrlTrimmed + pagePath;
-                }
-
-                string pageDir = Path.Combine(OutputDir, SanitizePath(pageConfig.Path));
-                Directory.CreateDirectory(pageDir);
-
-                OnProgress?.Invoke(new ScanProgress {
-                    CurrentPage = pageIndex,
-                    TotalPages = totalPages,
-                    CurrentSite = Site.BaseUrl,
-                    Message = "Scanning " + pageConfig.Path + "...",
-                });
-
-                // Open a new page for this scan.
-                IPage page = await context.NewPageAsync();
-                try {
-                    // Forward per-step progress for this page through the existing
-                    // OnProgress channel so users see live per-step status in the CLI.
-                    int capturedPageIndex = pageIndex;
-                    int capturedTotalPages = totalPages;
-                    Action<string> emitPageStep = msg => OnProgress?.Invoke(new ScanProgress {
-                        CurrentPage = capturedPageIndex,
-                        TotalPages = capturedTotalPages,
-                        CurrentSite = Site.BaseUrl,
-                        Message = "  " + msg, // indent so step lines visually differ from page header
-                    });
-                    PageScanResult pageResult = await ScanPage(page, Config, fullUrl, pageDir, emitPageStep);
-
-                    // Resiliency: if the first attempt produced an error AND zero issues across
-                    // all four tools, the page likely failed to load. Retry once with a fresh page.
-                    int firstIssueCount = (pageResult.AxeIssues?.Count ?? 0)
-                        + (pageResult.IbmIssues?.Count ?? 0)
-                        + (pageResult.HtmlCsIssues?.Count ?? 0)
-                        + (pageResult.HtmlCheckIssues?.Count ?? 0);
-                    if (!string.IsNullOrEmpty(pageResult.ErrorMessage) && firstIssueCount == 0) {
-                        emitPageStep("  → first attempt failed, retrying once after 2s...");
-                        await Task.Delay(2000);
-                        try { await page.CloseAsync(); } catch { }
-                        page = await context.NewPageAsync();
-                        PageScanResult retryResult = await ScanPage(page, Config, fullUrl, pageDir, emitPageStep);
-                        int retryIssueCount = (retryResult.AxeIssues?.Count ?? 0)
-                            + (retryResult.IbmIssues?.Count ?? 0)
-                            + (retryResult.HtmlCsIssues?.Count ?? 0)
-                            + (retryResult.HtmlCheckIssues?.Count ?? 0);
-                        if (retryIssueCount > 0 || string.IsNullOrEmpty(retryResult.ErrorMessage)) {
-                            pageResult = retryResult;
-                        }
-                    }
-
-                    // Prepend auth-flow screenshots to EVERY page so each folder contains
-                    // the full evidence chain: anonymous state → credentials entered →
-                    // post-auth landing → actual page content. This proves both that the
-                    // page requires login and that the scan ran authenticated.
-                    if (authScreenshots.Count > 0) {
-                        pageResult.Screenshots.InsertRange(0, authScreenshots);
-                    }
-
-                    output.Pages.Add(pageResult);
-
-                    // Fire the per-page callback IMMEDIATELY so callers (CLI / web app)
-                    // can persist artifacts to disk in real time. Without this, all
-                    // pages in an iteration sit in memory until the iteration ends —
-                    // a Ctrl+C mid-crawl loses everything since the last write.
-                    try { OnPageComplete?.Invoke(pageResult); } catch { /* never crash scan on persistence error */ }
-                } finally {
-                    try { await page.CloseAsync(); } catch { }
-                }
-            }
-
-            // Edge-case fix (validator-flagged): if the site had zero configured pages but auth
-            // screenshots were captured, attach them to a synthesized PageScanResult so the
-            // compliance-evidence pair (anonymous / credentials-entered / post-auth) is not lost.
-            if (authScreenshots.Count > 0 && output.Pages.Count == 0) {
-                output.Pages.Add(new PageScanResult {
-                    Url = Site.BaseUrl,
-                    Screenshots = new List<ScreenshotInfo>(authScreenshots),
-                });
-                authScreenshots.Clear();
-            }
-
-            // Cross-page consistency analysis — runs after all pages are scanned.
-            if (output.Pages.Count >= 2) {
-                try {
-                    output.CrossPageConsistencyJson = CrossPageConsistency.Compare(output.Pages);
-                } catch { }
-            }
-        } finally {
-            await context.CloseAsync();
-        }
-
-        stopwatch.Stop();
-        output.DurationMs = (int)stopwatch.ElapsedMilliseconds;
-
-        return output;
-    }
-
-    // ================================================================
     // ScanPage — The 23-step pipeline for a single page
     // ================================================================
 
@@ -362,8 +316,7 @@ public static class ScannerEngine
     /// CVD simulations, screen reader view — all in-memory, zero disk writes.
     /// </summary>
     public static async Task<PageScanResult> ScanPage(IPage Page, ScanConfig Config, string Url, string OutputDir,
-        Action<string>? OnStep = null)
-    {
+        Action<string>? OnStep = null){
         PageScanResult output = new PageScanResult();
         output.Url = Url;
         output.OutputDir = OutputDir;
@@ -869,80 +822,280 @@ public static class ScannerEngine
     }
 
     // ================================================================
-    // Helper Methods
+    // ScanSite — Scan all pages within a single site
     // ================================================================
 
     /// <summary>
-    /// Waits for the page to finish hydrating before screenshots or DOM extraction runs.
-    /// Combines four signals: (1) Playwright NetworkIdle, (2) a poll of body innerText
-    /// until "Loading..." / "Please wait" / empty body text is gone, (3) a selector-based
-    /// wait for a hydrated layout element (nav/main/navbar-brand), and (4) a final settle
-    /// delay. This replaces the old "navigate, sleep N ms, screenshot" pattern that captured
-    /// the static App.razor shell on Blazor WASM pages. Safe to call on the post-auth page
-    /// too so the "landed" screenshot is stable.
+    /// Scans all pages in a site. Creates a browser context, handles authentication
+    /// if credentials are configured, then scans each page sequentially.
     /// </summary>
-    /// <summary>
-    /// Captures a sequence of JPEG screenshots over <paramref name="durationMs"/> at
-    /// <paramref name="intervalMs"/> spacing, dedupes consecutive identical frames by
-    /// SHA-256 hash, and returns one <see cref="ScreenshotInfo"/> per UNIQUE frame.
-    /// File names are numbered by elapsed milliseconds (e.g., <c>{prefix}-0000ms.jpeg</c>,
-    /// <c>{prefix}-1500ms.jpeg</c>) so they sort chronologically in the output dir.
-    ///
-    /// Use cases:
-    ///   1. Diagnose Blazor WASM hydration timing — watch the page transition from
-    ///      blank → loading-spinner → hydrated UI without guessing the right wait.
-    ///   2. Prove a page eventually rendered (or didn't) for compliance evidence.
-    ///   3. Capture animation / dynamic-content states that a single screenshot misses.
-    ///
-    /// Dedup is content-based (SHA-256 of JPEG bytes), so visually-identical frames
-    /// captured during a static-page wait are collapsed to a single output frame.
-    /// </summary>
-    public static async Task<List<ScreenshotInfo>> CaptureLoadSequenceAsync(
-        IPage Page, string FilenamePrefix, string LabelPrefix, int durationMs = 10000, int intervalMs = 500)
-    {
-        List<ScreenshotInfo> output = new List<ScreenshotInfo>();
-        if (durationMs <= 0 || intervalMs <= 0) return output;
+    public static async Task<SiteScanResult> ScanSite(IBrowser Browser, SiteConfig Site, ScanConfig Config,
+        string OutputDir, Action<ScanProgress>? OnProgress = null,
+        Action<PageScanResult>? OnPageComplete = null){
+        SiteScanResult output = new SiteScanResult();
+        output.BaseUrl = Site.BaseUrl;
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
-        Stopwatch sw = Stopwatch.StartNew();
-        string? lastHash = null;
+        // STORAGE-STATE REUSE — the canonical fix for "iter 1 auth works, iter 3 auth
+        // fails and breaks the rest of the crawl". Save Playwright's storage state
+        // (cookies + localStorage) to disk after a successful auth. On subsequent
+        // crawl iterations, load that file at context-creation time and SKIP the auth
+        // flow entirely — the cookies are already there. Auth is run once per crawl
+        // (or once per cold cache), not once per iteration.
+        //
+        // Lives in runs/.cookies/ (NOT runs/latest/) so the fresh-cli task that wipes
+        // runs/latest does NOT delete the auth state. Cookies are scoped per host.
+        string siteHostForCookie = "unknown";
+        try { siteHostForCookie = new Uri(Site.BaseUrl).Host; } catch { }
+        string cookiesDir = Path.Combine(Directory.GetParent(OutputDir)?.FullName ?? OutputDir, ".cookies");
+        Directory.CreateDirectory(cookiesDir);
+        string storageStatePath = Path.Combine(cookiesDir, $"{siteHostForCookie}.json");
+        bool reusingStorageState = File.Exists(storageStatePath);
 
-        while (sw.ElapsedMilliseconds < durationMs) {
-            int elapsedMs = (int)sw.ElapsedMilliseconds;
-            byte[]? frame = null;
-            try {
-                // PNG is lossless AND Playwright's PNG output is deterministic for the
-                // same rendered content — SHA-256 dedup of PNG bytes correctly collapses
-                // identical frames. JPEG re-encoding adds quantization noise per call so
-                // hash dedup never matched (that's why earlier dedup looked broken).
-                frame = await Page.ScreenshotAsync(new PageScreenshotOptions {
-                    FullPage = false,
-                    Timeout = 5000,
-                    Type = ScreenshotType.Png,
+        var contextOptions = new BrowserNewContextOptions {
+            IgnoreHTTPSErrors = true,
+            UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
+            Locale = "en-US",
+            TimezoneId = "America/Los_Angeles",
+            ExtraHTTPHeaders = new Dictionary<string, string> {
+                ["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                ["Accept-Language"] = "en-US,en;q=0.9",
+                ["Sec-Ch-Ua"] = "\"Chromium\";v=\"136\", \"Google Chrome\";v=\"136\", \"Not.A/Brand\";v=\"99\"",
+                ["Sec-Ch-Ua-Mobile"] = "?0",
+                ["Sec-Ch-Ua-Platform"] = "\"Windows\"",
+                ["Upgrade-Insecure-Requests"] = "1",
+            },
+        };
+        if (reusingStorageState) {
+            contextOptions.StorageStatePath = storageStatePath;
+            OnProgress?.Invoke(new ScanProgress {
+                CurrentSite = Site.BaseUrl,
+                Message = $"Reusing saved auth from {storageStatePath} — skipping login flow",
+            });
+        }
+
+        IBrowserContext context = await Browser.NewContextAsync(contextOptions);
+
+        // Mask automation signals so sites don't detect Playwright as a bot.
+        await context.AddInitScriptAsync(@"
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            window.chrome = { runtime: {} };
+        ");
+
+        // Auth-flow screenshots captured during login — prepended to the first page
+        // scanned for this site so they persist through the existing PageScanResult
+        // pipeline (web app → EF, console → disk). Three shots prove the
+        // "anonymous locked out / authenticated full access" compliance pair.
+        List<ScreenshotInfo> authScreenshots = new List<ScreenshotInfo>();
+
+        try {
+            // See if we need to authenticate. Skip entirely if we loaded a saved
+            // storage state — the cookies are already on the context.
+            if (reusingStorageState) {
+                output.AuthAttempted = true;
+                output.AuthSucceeded = true; // assume reused state is valid
+            } else if (Site.Credentials != null && !String.IsNullOrWhiteSpace(Site.Credentials.Username)) {
+                output.AuthAttempted = true;
+
+                // Inject the site BaseUrl so AuthHandler can build correct login URLs for
+                // virtual-app deployments (e.g. host/Touchpoints) where stripping to scheme+host
+                // would lose the sub-path.
+                if (String.IsNullOrWhiteSpace(Site.Credentials.BaseUrl)) {
+                    Site.Credentials.BaseUrl = Site.BaseUrl;
+                }
+
+                OnProgress?.Invoke(new ScanProgress {
+                    CurrentSite = Site.BaseUrl,
+                    Message = "Authenticating as '" + Site.Credentials.Username + "'...",
                 });
-            } catch { /* skip this frame on error and continue */ }
 
-            if (frame != null && frame.Length > 0) {
-                string hash = Convert.ToHexString(SHA256.HashData(frame));
-                if (hash != lastHash) {
-                    string filename = $"{FilenamePrefix}-{elapsedMs:D5}ms.png";
-                    string label = $"{LabelPrefix} +{elapsedMs}ms";
-                    output.Add(new ScreenshotInfo {
-                        Path = filename,
-                        Label = label,
-                        SizeBytes = frame.Length,
-                        Data = frame,
-                        ContentType = "image/png",
+                IPage authPage = await context.NewPageAsync();
+                try {
+                    // Forward each auth step as a ScanProgress event so the CLI / web UI
+                    // sees realtime per-step messages instead of a single "Authenticating..."
+                    // log followed by 30+ seconds of silence.
+                    Action<string> emitAuthStep = msg => OnProgress?.Invoke(new ScanProgress {
+                        CurrentSite = Site.BaseUrl,
+                        Message = msg,
                     });
-                    lastHash = hash;
+                    AuthHandler.AuthScreenshotResult authResult =
+                        await AuthHandler.AuthenticateWithScreenshots(authPage, Site.Credentials, emitAuthStep);
+                    output.AuthSucceeded = authResult.Succeeded;
+
+                    // Build ScreenshotInfo entries for each captured frame.
+                    if (authResult.AnonymousFormBytes != null) {
+                        authScreenshots.Add(new ScreenshotInfo {
+                            Path = "00a-login-anonymous.jpeg",
+                            Label = "login-anonymous",
+                            SizeBytes = authResult.AnonymousFormBytes.Length,
+                            Data = authResult.AnonymousFormBytes,
+                            ContentType = "image/jpeg",
+                        });
+                    }
+                    if (authResult.CredentialsEnteredBytes != null) {
+                        authScreenshots.Add(new ScreenshotInfo {
+                            Path = "00b-login-credentials-entered.jpeg",
+                            Label = "login-credentials-entered",
+                            SizeBytes = authResult.CredentialsEnteredBytes.Length,
+                            Data = authResult.CredentialsEnteredBytes,
+                            ContentType = "image/jpeg",
+                        });
+                    }
+                    if (authResult.PostAuthBytes != null) {
+                        string postAuthName = authResult.PostAuthIsFailure
+                            ? "00c-login-FAILED.jpeg"
+                            : "00c-login-post-auth.jpeg";
+                        string postAuthLabel = authResult.PostAuthIsFailure
+                            ? "login-FAILED"
+                            : "login-post-auth";
+                        authScreenshots.Add(new ScreenshotInfo {
+                            Path = postAuthName,
+                            Label = postAuthLabel,
+                            SizeBytes = authResult.PostAuthBytes.Length,
+                            Data = authResult.PostAuthBytes,
+                            ContentType = "image/jpeg",
+                        });
+                    }
+                } finally {
+                    await authPage.CloseAsync();
+                }
+
+                // SAVE STORAGE STATE if auth succeeded — subsequent crawl iterations
+                // (same OutputDir / same site) will load this and skip the auth flow.
+                // Mountain of complexity removed: no more re-running the 3-step Flex login
+                // 5 times in a 5-iteration crawl, no more iter-3-flakes losing 25% of pages.
+                if (output.AuthSucceeded) {
+                    try {
+                        await context.StorageStateAsync(new BrowserContextStorageStateOptions {
+                            Path = storageStatePath,
+                        });
+                        OnProgress?.Invoke(new ScanProgress {
+                            CurrentSite = Site.BaseUrl,
+                            Message = $"Saved auth cookies → {storageStatePath} (will be reused on next iteration)",
+                        });
+                    } catch (Exception ex) {
+                        OnProgress?.Invoke(new ScanProgress {
+                            CurrentSite = Site.BaseUrl,
+                            Message = $"Failed to save storage state: {ex.Message} — next iteration will re-auth",
+                        });
+                    }
                 }
             }
 
-            // Sleep until next interval boundary, but bail out if duration exceeded.
-            int remaining = (int)(durationMs - sw.ElapsedMilliseconds);
-            if (remaining <= 0) break;
-            int delay = Math.Min(intervalMs, remaining);
-            await Task.Delay(delay);
+            // Now scan each page.
+            int pageIndex = 0;
+            int totalPages = Site.Pages.Count;
+
+            foreach (PageConfig pageConfig in Site.Pages) {
+                pageIndex++;
+                // Build full URL — handle BaseUrl that may already contain a path prefix.
+                // Discovered paths are absolute from host root (e.g. "/em411/faq/"),
+                // so if BaseUrl already includes that prefix, build from origin instead.
+                string baseUrlTrimmed = Site.BaseUrl.TrimEnd('/');
+                Uri baseUri = new Uri(baseUrlTrimmed);
+                string basePath = baseUri.AbsolutePath.TrimEnd('/');
+                string pagePath = pageConfig.Path.StartsWith("/") ? pageConfig.Path : "/" + pageConfig.Path;
+
+                string fullUrl;
+                if (!string.IsNullOrEmpty(basePath) && basePath != "/" &&
+                    pagePath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase)) {
+                    fullUrl = baseUri.GetLeftPart(UriPartial.Authority) + pagePath;
+                } else {
+                    fullUrl = baseUrlTrimmed + pagePath;
+                }
+
+                string pageDir = Path.Combine(OutputDir, SanitizePath(pageConfig.Path));
+                Directory.CreateDirectory(pageDir);
+
+                OnProgress?.Invoke(new ScanProgress {
+                    CurrentPage = pageIndex,
+                    TotalPages = totalPages,
+                    CurrentSite = Site.BaseUrl,
+                    Message = "Scanning " + pageConfig.Path + "...",
+                });
+
+                // Open a new page for this scan.
+                IPage page = await context.NewPageAsync();
+                try {
+                    // Forward per-step progress for this page through the existing
+                    // OnProgress channel so users see live per-step status in the CLI.
+                    int capturedPageIndex = pageIndex;
+                    int capturedTotalPages = totalPages;
+                    Action<string> emitPageStep = msg => OnProgress?.Invoke(new ScanProgress {
+                        CurrentPage = capturedPageIndex,
+                        TotalPages = capturedTotalPages,
+                        CurrentSite = Site.BaseUrl,
+                        Message = "  " + msg, // indent so step lines visually differ from page header
+                    });
+                    PageScanResult pageResult = await ScanPage(page, Config, fullUrl, pageDir, emitPageStep);
+
+                    // Resiliency: if the first attempt produced an error AND zero issues across
+                    // all four tools, the page likely failed to load. Retry once with a fresh page.
+                    int firstIssueCount = (pageResult.AxeIssues?.Count ?? 0)
+                        + (pageResult.IbmIssues?.Count ?? 0)
+                        + (pageResult.HtmlCsIssues?.Count ?? 0)
+                        + (pageResult.HtmlCheckIssues?.Count ?? 0);
+                    if (!string.IsNullOrEmpty(pageResult.ErrorMessage) && firstIssueCount == 0) {
+                        emitPageStep("  → first attempt failed, retrying once after 2s...");
+                        await Task.Delay(2000);
+                        try { await page.CloseAsync(); } catch { }
+                        page = await context.NewPageAsync();
+                        PageScanResult retryResult = await ScanPage(page, Config, fullUrl, pageDir, emitPageStep);
+                        int retryIssueCount = (retryResult.AxeIssues?.Count ?? 0)
+                            + (retryResult.IbmIssues?.Count ?? 0)
+                            + (retryResult.HtmlCsIssues?.Count ?? 0)
+                            + (retryResult.HtmlCheckIssues?.Count ?? 0);
+                        if (retryIssueCount > 0 || string.IsNullOrEmpty(retryResult.ErrorMessage)) {
+                            pageResult = retryResult;
+                        }
+                    }
+
+                    // Prepend auth-flow screenshots to EVERY page so each folder contains
+                    // the full evidence chain: anonymous state → credentials entered →
+                    // post-auth landing → actual page content. This proves both that the
+                    // page requires login and that the scan ran authenticated.
+                    if (authScreenshots.Count > 0) {
+                        pageResult.Screenshots.InsertRange(0, authScreenshots);
+                    }
+
+                    output.Pages.Add(pageResult);
+
+                    // Fire the per-page callback IMMEDIATELY so callers (CLI / web app)
+                    // can persist artifacts to disk in real time. Without this, all
+                    // pages in an iteration sit in memory until the iteration ends —
+                    // a Ctrl+C mid-crawl loses everything since the last write.
+                    try { OnPageComplete?.Invoke(pageResult); } catch { /* never crash scan on persistence error */ }
+                } finally {
+                    try { await page.CloseAsync(); } catch { }
+                }
+            }
+
+            // Edge-case fix (validator-flagged): if the site had zero configured pages but auth
+            // screenshots were captured, attach them to a synthesized PageScanResult so the
+            // compliance-evidence pair (anonymous / credentials-entered / post-auth) is not lost.
+            if (authScreenshots.Count > 0 && output.Pages.Count == 0) {
+                output.Pages.Add(new PageScanResult {
+                    Url = Site.BaseUrl,
+                    Screenshots = new List<ScreenshotInfo>(authScreenshots),
+                });
+                authScreenshots.Clear();
+            }
+
+            // Cross-page consistency analysis — runs after all pages are scanned.
+            if (output.Pages.Count >= 2) {
+                try {
+                    output.CrossPageConsistencyJson = CrossPageConsistency.Compare(output.Pages);
+                } catch { }
+            }
+        } finally {
+            await context.CloseAsync();
         }
+
+        stopwatch.Stop();
+        output.DurationMs = (int)stopwatch.ElapsedMilliseconds;
 
         return output;
     }
@@ -1001,166 +1154,5 @@ public static class ScannerEngine
         // (5) Final settle — minimum 1s, or Config.SettleDelayMs if larger. Lets post-
         // hydration animations / reflows complete before the screenshot fires.
         await Page.WaitForTimeoutAsync(Math.Max(1000, Config.SettleDelayMs));
-    }
-
-    /// <summary>
-    /// Captures an overlay screenshot in-memory by injecting a visual overlay, taking a screenshot,
-    /// then removing the overlay. Best-effort — failures are logged but do not stop the scan.
-    /// </summary>
-    private static async Task CaptureOverlayScreenshotInMemory(IPage Page, string FileName, string Label,
-        Func<Task> InjectOverlay, Func<Task> RemoveOverlay, PageScanResult Result)
-    {
-        try {
-            await InjectOverlay();
-            byte[] data = await Page.ScreenshotAsync(new PageScreenshotOptions {
-                FullPage = true,
-            });
-            Result.Screenshots.Add(new ScreenshotInfo {
-                Path = FileName + ".png",
-                Label = Label,
-                SizeBytes = data.Length,
-                Data = data,
-                ContentType = "image/png",
-            });
-        } catch (Exception) {
-            // Overlay injection is best-effort.
-        } finally {
-            try { await RemoveOverlay(); } catch { }
-        }
-    }
-
-    /// <summary>
-    /// Legacy disk-based overlay screenshot (used by console runner).
-    /// </summary>
-    private static async Task CaptureOverlayScreenshot(IPage Page, string OutputDir,
-        string FileName, string Label, Func<Task> InjectOverlay, Func<Task> RemoveOverlay, PageScanResult Result)
-    {
-        try {
-            await InjectOverlay();
-            string screenshotPath = Path.Combine(OutputDir, FileName + ".png");
-            await Page.ScreenshotAsync(new PageScreenshotOptions {
-                Path = screenshotPath,
-                FullPage = true,
-            });
-            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, Label));
-        } catch (Exception) {
-            // Overlay injection is best-effort.
-        } finally {
-            // Always remove the overlay so the next screenshot starts clean.
-            try { await RemoveOverlay(); } catch { }
-        }
-    }
-
-    /// <summary>
-    /// Captures a CVD simulation screenshot by applying an SVG filter, taking a screenshot,
-    /// then removing the filter.
-    /// </summary>
-    private static async Task CaptureCvdScreenshot(IPage Page, string OutputDir,
-        string FileName, string CvdType, PageScanResult Result)
-    {
-        try {
-            string screenshotPath = Path.Combine(OutputDir, FileName + ".png");
-            await CvdSimulator.SimulateAndScreenshot(Page, CvdType, screenshotPath);
-            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, "cvd-" + CvdType));
-        } catch (Exception) {
-            // CVD simulation is best-effort.
-        }
-    }
-
-    /// <summary>
-    /// Captures a screen reader view screenshot by rendering a text-only accessible view.
-    /// </summary>
-    private static async Task CaptureScreenReaderView(IPage Page, string OutputDir, PageScanResult Result)
-    {
-        try {
-            await ScreenReaderView.InjectView(Page);
-            string screenshotPath = Path.Combine(OutputDir, "15-screenreader-view.png");
-            await Page.ScreenshotAsync(new PageScreenshotOptions {
-                Path = screenshotPath,
-                FullPage = true,
-            });
-            Result.Screenshots.Add(CreateScreenshotInfo(screenshotPath, "screenreader-view"));
-            await ScreenReaderView.RemoveView(Page);
-        } catch (Exception) {
-            // Screen reader view is best-effort.
-        }
-    }
-
-    /// <summary>
-    /// Catalogs all images on the page with their URL and alt text status.
-    /// </summary>
-    private static async Task<List<ImageInfo>> CatalogImages(IPage Page)
-    {
-        List<ImageInfo> output = new List<ImageInfo>();
-
-        try {
-            string imagesJson = await Page.EvaluateAsync<string>(@"() => {
-                const images = [];
-                document.querySelectorAll('img').forEach(img => {
-                    images.push({
-                        url: img.src || '',
-                        altText: img.hasAttribute('alt') ? img.getAttribute('alt') : null,
-                        hasAlt: img.hasAttribute('alt')
-                    });
-                });
-                return JSON.stringify(images);
-            }");
-
-            using (JsonDocument doc = JsonDocument.Parse(imagesJson)) {
-                foreach (JsonElement imgEl in doc.RootElement.EnumerateArray()) {
-                    output.Add(new ImageInfo {
-                        Url = imgEl.GetProperty("url").GetString() ?? string.Empty,
-                        AltText = imgEl.TryGetProperty("altText", out JsonElement altEl) && altEl.ValueKind != JsonValueKind.Null
-                            ? altEl.GetString() : null,
-                        HasAlt = imgEl.GetProperty("hasAlt").GetBoolean(),
-                    });
-                }
-            }
-        } catch (Exception) {
-            // Image cataloging is best-effort.
-        }
-
-        return output;
-    }
-
-    /// <summary>
-    /// Creates a ScreenshotInfo from a file path and label. Reads file size if the file exists.
-    /// </summary>
-    private static ScreenshotInfo CreateScreenshotInfo(string FilePath, string Label)
-    {
-        long sizeBytes = 0;
-        try {
-            FileInfo fileInfo = new FileInfo(FilePath);
-            if (fileInfo.Exists) {
-                sizeBytes = fileInfo.Length;
-            }
-        } catch { }
-
-        return new ScreenshotInfo {
-            Path = FilePath,
-            Label = Label,
-            SizeBytes = sizeBytes,
-        };
-    }
-
-    /// <summary>
-    /// Converts a URL path or hostname to a safe directory name.
-    /// Replaces special characters with underscores.
-    /// </summary>
-    private static string SanitizePath(string Input)
-    {
-        if (String.IsNullOrWhiteSpace(Input) || Input == "/") {
-            return "_root";
-        }
-
-        string sanitized = Input.Trim('/').Replace("/", "_").Replace(":", "_").Replace("?", "_")
-            .Replace("&", "_").Replace("=", "_").Replace(" ", "_");
-
-        // Remove any remaining invalid path characters.
-        foreach (char invalidChar in Path.GetInvalidFileNameChars()) {
-            sanitized = sanitized.Replace(invalidChar, '_');
-        }
-
-        return sanitized;
     }
 }

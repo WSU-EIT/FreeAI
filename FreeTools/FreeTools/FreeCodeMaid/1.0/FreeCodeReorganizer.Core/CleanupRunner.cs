@@ -26,26 +26,21 @@ public readonly record struct CleanupResult(bool Ran, int ExitCode, string Outpu
 /// </summary>
 public static class CleanupRunner
 {
-    /// <summary>Clean a single file in place.</summary>
-    public static CleanupResult CleanFile(string file, bool full)
+    private static void AddExcludes(List<string> args, IReadOnlyList<string>? excludeGlobs)
     {
-        string dir = Path.GetDirectoryName(Path.GetFullPath(file)) ?? ".";
-
-        if (full)
+        if (excludeGlobs is null || excludeGlobs.Count == 0)
         {
-            string? project = FindNearest(file, "*.csproj");
-            if (project is null)
-            {
-                // No project context to drive analyzers/style — fall back to a whitespace pass.
-                return RunWhitespaceFolder(dir, Path.GetFileName(file));
-            }
-
-            string projDir = Path.GetDirectoryName(Path.GetFullPath(project)) ?? dir;
-            string rel = MakeRelative(projDir, Path.GetFullPath(file));
-            return RunDotnet(new[] { "format", project, "--include", rel, "--verbosity", "quiet" }, projDir);
+            return;
         }
 
-        return RunWhitespaceFolder(dir, Path.GetFileName(file));
+        args.Add("--exclude");
+        foreach (string g in excludeGlobs)
+        {
+            if (!string.IsNullOrWhiteSpace(g))
+            {
+                args.Add(g.Trim());
+            }
+        }
     }
 
     /// <summary>Clean a whole directory tree in place, skipping any paths in <paramref name="excludeGlobs"/>.</summary>
@@ -95,37 +90,67 @@ public static class CleanupRunner
 
         return RunWhitespaceFolder(dir, null, excludeGlobs);
     }
-
-    private static CleanupResult RunWhitespaceFolder(string dir, string? includeFile, IReadOnlyList<string>? excludeGlobs = null)
+    /// <summary>Clean a single file in place.</summary>
+    public static CleanupResult CleanFile(string file, bool full)
     {
-        var args = new List<string> { "format", "whitespace", dir, "--folder" };
-        if (includeFile is not null)
+        string dir = Path.GetDirectoryName(Path.GetFullPath(file)) ?? ".";
+
+        if (full)
         {
-            args.Add("--include");
-            args.Add(includeFile);
+            string? project = FindNearest(file, "*.csproj");
+            if (project is null)
+            {
+                // No project context to drive analyzers/style — fall back to a whitespace pass.
+                return RunWhitespaceFolder(dir, Path.GetFileName(file));
+            }
+
+            string projDir = Path.GetDirectoryName(Path.GetFullPath(project)) ?? dir;
+            string rel = MakeRelative(projDir, Path.GetFullPath(file));
+            return RunDotnet(new[] { "format", project, "--include", rel, "--verbosity", "quiet" }, projDir);
         }
 
-        AddExcludes(args, excludeGlobs);
-        args.Add("--verbosity");
-        args.Add("quiet");
-        return RunDotnet(args, dir);
+        return RunWhitespaceFolder(dir, Path.GetFileName(file));
     }
 
-    private static void AddExcludes(List<string> args, IReadOnlyList<string>? excludeGlobs)
+    // Walk up from a file or directory looking for the nearest file matching a pattern.
+    private static string? FindNearest(string start, string pattern)
     {
-        if (excludeGlobs is null || excludeGlobs.Count == 0)
+        string? dir = Directory.Exists(start) ? Path.GetFullPath(start) : Path.GetDirectoryName(Path.GetFullPath(start));
+        while (!string.IsNullOrEmpty(dir))
         {
-            return;
+            string[] hits = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
+            if (hits.Length > 0)
+            {
+                return hits[0];
+            }
+
+            dir = Path.GetDirectoryName(dir);
         }
 
-        args.Add("--exclude");
-        foreach (string g in excludeGlobs)
+        return null;
+    }
+
+    // Relative path of a file under baseDir (netstandard2.0 has no Path.GetRelativePath).
+    private static string MakeRelative(string baseDir, string fullFile)
+    {
+        string b = baseDir.TrimEnd('\\', '/') + "\\";
+        if (fullFile.StartsWith(b, StringComparison.OrdinalIgnoreCase))
         {
-            if (!string.IsNullOrWhiteSpace(g))
-            {
-                args.Add(g.Trim());
-            }
+            return fullFile.Substring(b.Length);
         }
+
+        return fullFile;
+    }
+
+    // Quote an argument for the command line (netstandard2.0 has no ProcessStartInfo.ArgumentList).
+    private static string Quote(string arg)
+    {
+        if (arg.Length > 0 && arg.IndexOf(' ') < 0 && arg.IndexOf('"') < 0)
+        {
+            return arg;
+        }
+
+        return "\"" + arg.Replace("\"", "\\\"") + "\"";
     }
 
     private static CleanupResult RunDotnet(IEnumerable<string> args, string workingDir)
@@ -162,44 +187,18 @@ public static class CleanupRunner
         }
     }
 
-    // Quote an argument for the command line (netstandard2.0 has no ProcessStartInfo.ArgumentList).
-    private static string Quote(string arg)
+    private static CleanupResult RunWhitespaceFolder(string dir, string? includeFile, IReadOnlyList<string>? excludeGlobs = null)
     {
-        if (arg.Length > 0 && arg.IndexOf(' ') < 0 && arg.IndexOf('"') < 0)
+        var args = new List<string> { "format", "whitespace", dir, "--folder" };
+        if (includeFile is not null)
         {
-            return arg;
+            args.Add("--include");
+            args.Add(includeFile);
         }
 
-        return "\"" + arg.Replace("\"", "\\\"") + "\"";
-    }
-
-    // Walk up from a file or directory looking for the nearest file matching a pattern.
-    private static string? FindNearest(string start, string pattern)
-    {
-        string? dir = Directory.Exists(start) ? Path.GetFullPath(start) : Path.GetDirectoryName(Path.GetFullPath(start));
-        while (!string.IsNullOrEmpty(dir))
-        {
-            string[] hits = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
-            if (hits.Length > 0)
-            {
-                return hits[0];
-            }
-
-            dir = Path.GetDirectoryName(dir);
-        }
-
-        return null;
-    }
-
-    // Relative path of a file under baseDir (netstandard2.0 has no Path.GetRelativePath).
-    private static string MakeRelative(string baseDir, string fullFile)
-    {
-        string b = baseDir.TrimEnd('\\', '/') + "\\";
-        if (fullFile.StartsWith(b, StringComparison.OrdinalIgnoreCase))
-        {
-            return fullFile.Substring(b.Length);
-        }
-
-        return fullFile;
+        AddExcludes(args, excludeGlobs);
+        args.Add("--verbosity");
+        args.Add("quiet");
+        return RunDotnet(args, dir);
     }
 }

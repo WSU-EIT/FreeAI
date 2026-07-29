@@ -7,10 +7,10 @@
                 Entity Name (Singular) <span class="text-danger">*</span>
             </label>
             <input type="text" id="entity-name"
-                   class="form-control form-control-lg @Helpers.MissingValue(EntityName)"
-                   value="@EntityName"
-                   @oninput="OnEntityNameInput"
-                   placeholder="Task" />
+                    class="form-control form-control-lg @Helpers.MissingValue(EntityName)"
+                    value="@EntityName"
+                    @oninput="OnEntityNameInput"
+                    placeholder="Task" />
             <div class="form-text">
                 The singular name of your entity (e.g., Task, Customer, Order).
             </div>
@@ -27,10 +27,10 @@
                 Plural Name <span class="text-danger">*</span>
             </label>
             <input type="text" id="plural-name"
-                   class="form-control @Helpers.MissingValue(PluralName)"
-                   value="@PluralName"
-                   @oninput="OnPluralNameInput"
-                   placeholder="Tasks" />
+                    class="form-control @Helpers.MissingValue(PluralName)"
+                    value="@PluralName"
+                    @oninput="OnPluralNameInput"
+                    placeholder="Tasks" />
             <div class="form-text">
                 Used for table names, collection properties, and API endpoints.
             </div>
@@ -41,10 +41,10 @@
                 Database Table Name
             </label>
             <input type="text" id="table-name"
-                   class="form-control"
-                   value="@TableName"
-                   @oninput="OnTableNameInput"
-                   placeholder="@(string.IsNullOrWhiteSpace(PluralName) ? "Tasks" : PluralName)" />
+                    class="form-control"
+                    value="@TableName"
+                    @oninput="OnTableNameInput"
+                    placeholder="@(string.IsNullOrWhiteSpace(PluralName) ? "Tasks" : PluralName)" />
             <div class="form-text">
                 Leave blank to use the plural name.
             </div>
@@ -56,24 +56,24 @@
             </label>
             <div class="btn-group w-100" role="group">
                 <input type="radio" class="btn-check" name="pk-type" id="pk-guid" 
-                       checked="@(PrimaryKeyType == "Guid")" 
-                       @onchange="@(e => OnPkTypeChange("Guid"))" />
+                        checked="@(PrimaryKeyType == "Guid")" 
+                        @onchange="@(e => OnPkTypeChange("Guid"))" />
                 <label class="btn btn-outline-primary" for="pk-guid">
                     <i class="fa-solid fa-fingerprint me-1"></i>
                     Guid <span class="text-muted small">(recommended)</span>
                 </label>
 
                 <input type="radio" class="btn-check" name="pk-type" id="pk-int"
-                       checked="@(PrimaryKeyType == "int")"
-                       @onchange="@(e => OnPkTypeChange("int"))" />
+                        checked="@(PrimaryKeyType == "int")"
+                        @onchange="@(e => OnPkTypeChange("int"))" />
                 <label class="btn btn-outline-primary" for="pk-int">
                     <i class="fa-solid fa-hashtag me-1"></i>
                     int
                 </label>
 
                 <input type="radio" class="btn-check" name="pk-type" id="pk-long"
-                       checked="@(PrimaryKeyType == "long")"
-                       @onchange="@(e => OnPkTypeChange("long"))" />
+                        checked="@(PrimaryKeyType == "long")"
+                        @onchange="@(e => OnPkTypeChange("long"))" />
                 <label class="btn btn-outline-primary" for="pk-long">
                     <i class="fa-solid fa-hashtag me-1"></i>
                     long

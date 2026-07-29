@@ -7,6 +7,560 @@ namespace FreeTools.WorkspaceReporter;
 
 internal partial class Program
 {
+    private static string FindRepoRoot(string startPath)
+    {
+        var dir = new DirectoryInfo(startPath);
+        while (dir is not null)
+        {
+            if (Directory.Exists(Path.Combine(dir.FullName, ".git")) ||
+                dir.GetFiles("*.sln").Length > 0)
+            {
+                return dir.FullName;
+            }
+            dir = dir.Parent;
+        }
+        return Path.GetFullPath(Path.Combine(startPath, "..", "..", "..", "..", ".."));
+    }
+
+    private static string GenerateProgressBar(double percentage, int width)
+    {
+        var filled = (int)(percentage * width / 100.0);
+        filled = Math.Clamp(filled, 0, width);
+        var empty = width - filled;
+        return $"[{'█'.ToString().PadRight(filled, '█')}{'░'.ToString().PadRight(empty, '░')}]";
+    }
+
+    private static void GenerateRouteMap(List<RouteEntry> allRoutes, StringBuilder sb)
+    {
+        sb.AppendLine("## 🗺️ Route Map");
+        sb.AppendLine();
+        sb.AppendLine("> Visual representation of the route hierarchy. GitHub renders this as an interactive diagram.");
+        sb.AppendLine();
+        sb.AppendLine("```mermaid");
+        sb.AppendLine("graph TD");
+        
+        // Build a tree structure
+        var nodeId = 0;
+        var nodeMap = new Dictionary<string, string>(); // path -> node id
+        
+        // Root node
+        sb.AppendLine("    ROOT[(\"/\")]");
+        nodeMap["/"] = "ROOT";
+
+        // Sort routes and build tree
+        var sortedRoutes = allRoutes.OrderBy(r => r.Route).ToList();
+        
+        foreach (var route in sortedRoutes)
+        {
+            var segments = route.Route.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length == 0) continue;
+
+            var currentPath = "";
+            var parentNode = "ROOT";
+
+            for (int i = 0; i < segments.Length; i++)
+            {
+                var segment = segments[i];
+                var isLast = i == segments.Length - 1;
+                currentPath += "/" + segment;
+
+                if (!nodeMap.ContainsKey(currentPath))
+                {
+                    nodeId++;
+                    var newNodeId = $"N{nodeId}";
+                    nodeMap[currentPath] = newNodeId;
+
+                    // Determine node style
+                    var hasParam = segment.Contains('{');
+                    var isAuthRequired = isLast && route.RequiresAuth;
+
+                    string nodeLabel;
+                    if (hasParam)
+                    {
+                        nodeLabel = $"{newNodeId}[[\"{segment}\"]]"; // Double bracket for parameters
+                    }
+                    else if (isLast && isAuthRequired)
+                    {
+                        nodeLabel = $"{newNodeId}[🔐 {segment}]";
+                    }
+                    else if (isLast)
+                    {
+                        nodeLabel = $"{newNodeId}[{segment}]";
+                    }
+                    else
+                    {
+                        nodeLabel = $"{newNodeId}({segment})"; // Rounded for intermediate
+                    }
+
+                    sb.AppendLine($"    {parentNode} --> {nodeLabel}");
+                }
+
+                parentNode = nodeMap[currentPath];
+            }
+        }
+
+        // Add styling
+        sb.AppendLine();
+        sb.AppendLine("    classDef authPage fill:#ff6b6b,stroke:#333,stroke-width:2px");
+        sb.AppendLine("    classDef paramRoute fill:#ffd93d,stroke:#333,stroke-width:2px");
+        
+        // Apply styles to auth nodes
+        var authNodes = allRoutes
+            .Where(r => r.RequiresAuth)
+            .Select(r => nodeMap.GetValueOrDefault("/" + r.Route.Trim('/').Split('/').Last()))
+            .Where(n => n != null)
+            .ToList();
+        
+        if (authNodes.Count > 0)
+        {
+            sb.AppendLine($"    class {string.Join(",", authNodes)} authPage");
+        }
+
+        sb.AppendLine("```");
+        sb.AppendLine();
+
+        // Route depth analysis
+        var routeDepths = allRoutes
+            .Select(r => new { Route = r, Depth = r.Route.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries).Length })
+            .GroupBy(x => x.Depth)
+            .OrderBy(g => g.Key)
+            .ToList();
+
+        sb.AppendLine("### Route Depth Analysis");
+        sb.AppendLine();
+        sb.AppendLine("| Depth | Count | Routes |");
+        sb.AppendLine("|------:|------:|--------|");
+
+        foreach (var group in routeDepths)
+        {
+            var routeList = string.Join(", ", group.Take(3).Select(x => $"`{x.Route.Route}`"));
+            if (group.Count() > 3)
+            {
+                routeList += $" +{group.Count() - 3} more";
+            }
+            sb.AppendLine($"| {group.Key} | {group.Count()} | {routeList} |");
+        }
+        sb.AppendLine();
+    }
+
+    private static async Task GenerateScreenshotGalleryAsync(
+        string snapshotsDir, string webProjectRoot, string repoRoot, StringBuilder sb){
+        sb.AppendLine("## 📸 Screenshot Gallery");
+        sb.AppendLine();
+
+        if (!Directory.Exists(snapshotsDir))
+        {
+            sb.AppendLine("> Screenshots directory not found. Run BrowserSnapshot first.");
+            sb.AppendLine();
+            return;
+        }
+
+        // Load metadata files to understand auth flow
+        var metadataFiles = Directory.GetFiles(snapshotsDir, "metadata.json", SearchOption.AllDirectories)
+            .OrderBy(f => f)
+            .ToList();
+
+        // Build a dictionary of route -> metadata
+        var routeMetadata = new Dictionary<string, ScreenshotHealthEntry>();
+        foreach (var metadataFile in metadataFiles)
+        {
+            try
+            {
+                var json = await File.ReadAllTextAsync(metadataFile);
+                var metadata = System.Text.Json.JsonSerializer.Deserialize<ScreenshotHealthEntry>(json, 
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (metadata != null && !string.IsNullOrEmpty(metadata.Route))
+                {
+                    routeMetadata[metadata.Route] = metadata;
+                }
+            }
+            catch { /* Skip invalid metadata */ }
+        }
+
+        // Group screenshots by route directory
+        var allRoutes = Directory.GetDirectories(snapshotsDir, "*", SearchOption.AllDirectories)
+            .Where(d => Directory.GetFiles(d, "*.png").Length > 0)
+            .Concat(new[] { snapshotsDir })
+            .Where(d => Directory.GetFiles(d, "*.png").Length > 0)
+            .Select(d =>
+            {
+                var relativePath = d == snapshotsDir ? "" : Path.GetRelativePath(snapshotsDir, d).Replace('\\', '/');
+                var route = string.IsNullOrEmpty(relativePath) ? "/" : "/" + relativePath;
+                var category = relativePath.Contains('/') ? relativePath.Split('/')[0] : 
+                              (string.IsNullOrEmpty(relativePath) ? "root" : relativePath);
+                
+                return new RouteScreenshots
+                {
+                    Route = route,
+                    Category = category,
+                    Directory = d,
+                    RelativeDir = string.IsNullOrEmpty(relativePath) ? "snapshots" : "snapshots/" + relativePath,
+                    Metadata = routeMetadata.GetValueOrDefault(route)
+                };
+            })
+            .ToList();
+
+        // Split into public and auth-required pages
+        // With the two-pass approach, all pages have default.png + logged-in.png.
+        // The _auth-flow directory has the global login screenshots.
+        var authFlowDir = allRoutes.FirstOrDefault(r => r.Route == "/_auth-flow");
+        var pageRoutes = allRoutes.Where(r => r.Route != "/_auth-flow").ToList();
+
+        var totalRoutes = pageRoutes.Count;
+        sb.AppendLine($"**{totalRoutes} pages captured** (public + authenticated views)");
+        sb.AppendLine();
+
+        // Quick status summary
+        var successCount = routeMetadata.Values.Count(m => m.IsSuccess && !m.IsSuspiciouslySmall);
+        var loggedInCount = routeMetadata.Values.Count(m => m.LoggedInFileSize > 0 && !m.LoggedInIsSuspiciouslySmall);
+        var errorCount = routeMetadata.Values.Count(m => m.IsHttpError || m.IsError);
+
+        sb.AppendLine("### Quick Status");
+        sb.AppendLine();
+        sb.AppendLine("| ✅ Public OK | 🔐 Logged-In OK | ❌ Errors |");
+        sb.AppendLine("|:----------:|:------------:|:---------:|");
+        sb.AppendLine($"| {successCount} | {loggedInCount} | {errorCount} |");
+        sb.AppendLine();
+
+        // === AUTH FLOW SECTION (shown once, collapsed — per-page views shown below) ===
+        if (authFlowDir != null)
+        {
+            var afDir = authFlowDir.RelativeDir;
+            var hasStep1 = File.Exists(Path.Combine(authFlowDir.Directory, "1-initial.png"));
+            var hasStep2 = File.Exists(Path.Combine(authFlowDir.Directory, "2-filled.png"));
+            var hasStep3 = File.Exists(Path.Combine(authFlowDir.Directory, "3-result.png"));
+
+            if (hasStep1 || hasStep2 || hasStep3)
+            {
+                sb.AppendLine("<details>");
+                sb.AppendLine("<summary><strong>🔐 Login Flow</strong> (session captured once, reused for all authenticated pages)</summary>");
+                sb.AppendLine();
+                sb.AppendLine("<table><tr>");
+
+                if (hasStep1)
+                {
+                    sb.AppendLine("<td align=\"center\">");
+                    sb.AppendLine($"<a href=\"{afDir}/1-initial.png\">");
+                    sb.AppendLine($"<img src=\"{afDir}/1-initial.png\" width=\"250\" />");
+                    sb.AppendLine("</a>");
+                    sb.AppendLine("<br /><strong>① Login Page</strong>");
+                    sb.AppendLine("</td>");
+                }
+                if (hasStep2)
+                {
+                    sb.AppendLine("<td align=\"center\">");
+                    sb.AppendLine($"<a href=\"{afDir}/2-filled.png\">");
+                    sb.AppendLine($"<img src=\"{afDir}/2-filled.png\" width=\"250\" />");
+                    sb.AppendLine("</a>");
+                    sb.AppendLine("<br /><strong>② Credentials Filled</strong>");
+                    sb.AppendLine("</td>");
+                }
+                if (hasStep3)
+                {
+                    sb.AppendLine("<td align=\"center\">");
+                    sb.AppendLine($"<a href=\"{afDir}/3-result.png\">");
+                    sb.AppendLine($"<img src=\"{afDir}/3-result.png\" width=\"250\" />");
+                    sb.AppendLine("</a>");
+                    sb.AppendLine("<br /><strong>③ After Login</strong>");
+                    sb.AppendLine("</td>");
+                }
+
+                sb.AppendLine("</tr></table>");
+                sb.AppendLine();
+                sb.AppendLine("</details>");
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+
+        // === ALL PAGES: Public vs Logged-In side by side ===
+        sb.AppendLine($"### 📸 All Pages — Public vs Login vs Logged-In ({pageRoutes.Count})");
+        sb.AppendLine();
+        sb.AppendLine("Each page is shown in up to three states: **🔓 Public** (not logged in), **🔑 Login Redirect** (auth redirect), and **🔐 Logged In** (authenticated).");
+        sb.AppendLine();
+
+        var byCategory = pageRoutes.GroupBy(r => r.Category).OrderBy(g => g.Key).ToList();
+
+        foreach (var group in byCategory)
+        {
+            var categoryName = group.Key == "root" ? "Home" : group.Key;
+            sb.AppendLine($"<details open>");
+            sb.AppendLine($"<summary><strong>📁 {categoryName}</strong> ({group.Count()} pages)</summary>");
+            sb.AppendLine();
+            sb.AppendLine("<table>");
+
+            var routes = group.OrderBy(r => r.Route).ToList();
+            for (int i = 0; i < routes.Count; i++)
+            {
+                sb.AppendLine("<tr>");
+                var routeScreenshot = routes[i];
+                var displayRoute = ShortenRoute(routeScreenshot.Route, 40);
+                var defaultPng = Path.Combine(routeScreenshot.Directory, "default.png");
+                var loginRedirectPng = Path.Combine(routeScreenshot.Directory, "login-redirect.png");
+                var loggedInPng = Path.Combine(routeScreenshot.Directory, "logged-in.png");
+                string? publicImgPath = null;
+                string? loginImgPath = null;
+                string? authImgPath = null;
+
+                if (File.Exists(defaultPng))
+                    publicImgPath = $"{routeScreenshot.RelativeDir}/default.png";
+                else
+                {
+                    var anyPng = Directory.GetFiles(routeScreenshot.Directory, "*.png")
+                        .FirstOrDefault(f => !Path.GetFileName(f).StartsWith("logged-in") && !Path.GetFileName(f).StartsWith("login-redirect"));
+                    if (anyPng != null)
+                        publicImgPath = $"{routeScreenshot.RelativeDir}/{Path.GetFileName(anyPng)}";
+                }
+
+                if (File.Exists(loginRedirectPng))
+                    loginImgPath = $"{routeScreenshot.RelativeDir}/login-redirect.png";
+
+                if (File.Exists(loggedInPng))
+                    authImgPath = $"{routeScreenshot.RelativeDir}/logged-in.png";
+
+                sb.AppendLine("<td colspan=\"3\" align=\"center\">");
+                sb.AppendLine($"<strong><code>{displayRoute}</code></strong>");
+                sb.AppendLine("<table><tr>");
+
+                // Column 1: Public (not logged in)
+                sb.AppendLine("<td align=\"center\">");
+                if (publicImgPath != null)
+                {
+                    sb.AppendLine($"<a href=\"{publicImgPath}\">");
+                    sb.AppendLine($"<img src=\"{publicImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (public)\" />");
+                    sb.AppendLine("</a>");
+                }
+                else
+                {
+                    sb.AppendLine("<sub><em>no capture</em></sub>");
+                }
+                sb.AppendLine("<br /><sub>🔓 Public</sub>");
+                sb.AppendLine("</td>");
+
+                // Column 2: Login Redirect (auth pages only)
+                sb.AppendLine("<td align=\"center\">");
+                if (loginImgPath != null)
+                {
+                    sb.AppendLine($"<a href=\"{loginImgPath}\">");
+                    sb.AppendLine($"<img src=\"{loginImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (login redirect)\" />");
+                    sb.AppendLine("</a>");
+                    sb.AppendLine("<br /><sub>🔑 Login Redirect</sub>");
+                }
+                else if (routeScreenshot.Metadata?.RequiresAuth == true)
+                {
+                    sb.AppendLine("<sub><em>no redirect capture</em></sub>");
+                    sb.AppendLine("<br /><sub>🔑 Login Redirect</sub>");
+                }
+                else
+                {
+                    sb.AppendLine("<sub><em>public page</em></sub>");
+                    sb.AppendLine("<br /><sub>—</sub>");
+                }
+                sb.AppendLine("</td>");
+
+                // Column 3: Logged In
+                sb.AppendLine("<td align=\"center\">");
+                if (authImgPath != null)
+                {
+                    sb.AppendLine($"<a href=\"{authImgPath}\">");
+                    sb.AppendLine($"<img src=\"{authImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (logged in)\" />");
+                    sb.AppendLine("</a>");
+                }
+                else
+                {
+                    sb.AppendLine("<sub><em>no auth capture</em></sub>");
+                }
+                sb.AppendLine("<br /><sub>🔐 Logged In</sub>");
+                sb.AppendLine("</td>");
+
+                sb.AppendLine("</tr></table>");
+                sb.AppendLine("</td>");
+                sb.AppendLine("</tr>");
+            }
+
+            sb.AppendLine("</table>");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        await Task.CompletedTask;
+    }
+
+    private static async Task GenerateScreenshotHealthAsync(string snapshotsDir, StringBuilder sb)
+    {
+        sb.AppendLine("## 📊 Screenshot Health");
+        sb.AppendLine();
+
+        if (!Directory.Exists(snapshotsDir))
+        {
+            sb.AppendLine("> Screenshots directory not found. Run BrowserSnapshot first.");
+            sb.AppendLine();
+            return;
+        }
+
+        // Find all metadata.json files
+        var metadataFiles = Directory.GetFiles(snapshotsDir, "metadata.json", SearchOption.AllDirectories)
+            .OrderBy(f => f)
+            .ToList();
+
+        if (metadataFiles.Count == 0)
+        {
+            sb.AppendLine("> No screenshot metadata found. Run BrowserSnapshot v2.1+ to generate metadata files.");
+            sb.AppendLine();
+            return;
+        }
+
+        // Parse all metadata
+        List<ScreenshotHealthEntry> entries = [];
+        foreach (var metadataFile in metadataFiles)
+        {
+            try
+            {
+                var json = await File.ReadAllTextAsync(metadataFile);
+                var metadata = JsonSerializer.Deserialize<ScreenshotHealthEntry>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                if (metadata != null)
+                {
+                    entries.Add(metadata);
+                }
+            }
+            catch
+            {
+                // Skip invalid metadata files
+            }
+        }
+
+        if (entries.Count == 0)
+        {
+            sb.AppendLine("> Could not parse any metadata files.");
+            sb.AppendLine();
+            return;
+        }
+
+        // Calculate statistics
+        var successCount = entries.Count(e => e.IsSuccess && !e.IsSuspiciouslySmall);
+        var suspiciousCount = entries.Count(e => e.IsSuspiciouslySmall);
+        var retriedCount = entries.Count(e => e.RetryAttempted);
+        var httpErrorCount = entries.Count(e => e.IsHttpError);
+        var errorCount = entries.Count(e => e.IsError);
+        var jsErrorCount = entries.Count(e => e.ConsoleErrors?.Count > 0);
+        
+        // Auth flow statistics
+        var authRequiredCount = entries.Count(e => e.RequiresAuth);
+        var authFlowCompletedCount = entries.Count(e => e.AuthFlowCompleted);
+        var publicCount = entries.Count - authRequiredCount;
+        var loggedInCount = entries.Count(e => e.LoggedInFileSize > 0);
+        var loggedInSuspiciousCount = entries.Count(e => e.LoggedInIsSuspiciouslySmall);
+
+        sb.AppendLine("| Status | Count | Description |");
+        sb.AppendLine("|--------|------:|-------------|");
+        sb.AppendLine($"| ✅ Public Success | {successCount} | Public screenshots > 10KB |");
+        sb.AppendLine($"| 🔐 Logged-In Captured | {loggedInCount} | Authenticated screenshots taken |");
+        sb.AppendLine($"| ⚠️ Public Suspicious | {suspiciousCount} | Public screenshots < 10KB (blank when not logged in) |");
+        sb.AppendLine($"| ⚠️ Logged-In Suspicious | {loggedInSuspiciousCount} | Auth screenshots < 10KB |");
+        sb.AppendLine($"| 🔄 Retried | {retriedCount} | Required retry attempt |");
+        sb.AppendLine($"| ❌ HTTP Error | {httpErrorCount} | 4xx/5xx responses |");
+        sb.AppendLine($"| 💥 Failed | {errorCount} | Browser/timeout errors |");
+        sb.AppendLine($"| 🔴 JS Errors | {jsErrorCount} | Pages with console errors |");
+        sb.AppendLine();
+
+        // Suspicious screenshots details
+        var suspicious = entries.Where(e => e.IsSuspiciouslySmall).ToList();
+        if (suspicious.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>⚠️ <strong>Suspicious Screenshots</strong> ({suspicious.Count})</summary>");
+            sb.AppendLine();
+            sb.AppendLine("| Route | Size | Status | JS Errors |");
+            sb.AppendLine("|-------|-----:|:------:|----------:|");
+            foreach (var entry in suspicious.OrderBy(e => e.Route))
+            {
+                var size = PathSanitizer.FormatBytes(entry.FileSize);
+                var status = entry.RetryAttempted ? "🔄 Retried" : "⚠️";
+                var jsErrors = entry.ConsoleErrors?.Count ?? 0;
+                sb.AppendLine($"| `{entry.Route}` | {size} | {status} | {jsErrors} |");
+            }
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // HTTP errors details
+        var httpErrors = entries.Where(e => e.IsHttpError).ToList();
+        if (httpErrors.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>❌ <strong>HTTP Errors</strong> ({httpErrors.Count})</summary>");
+            sb.AppendLine();
+            sb.AppendLine("| Route | Status Code |");
+            sb.AppendLine("|-------|------------:|");
+            foreach (var entry in httpErrors.OrderBy(e => e.Route))
+            {
+                sb.AppendLine($"| `{entry.Route}` | {entry.StatusCode} |");
+            }
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // JS errors details
+        var withJsErrors = entries.Where(e => e.ConsoleErrors?.Count > 0).ToList();
+        if (withJsErrors.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>🔴 <strong>Pages with JavaScript Errors</strong> ({withJsErrors.Count})</summary>");
+            sb.AppendLine();
+            foreach (var entry in withJsErrors.OrderBy(e => e.Route))
+            {
+                sb.AppendLine($"**`{entry.Route}`** ({entry.ConsoleErrors!.Count} errors)");
+                sb.AppendLine();
+                sb.AppendLine("```");
+                foreach (var error in entry.ConsoleErrors.Take(5))
+                {
+                    var errorMsg = error.Length > 200 ? error[..200] + "..." : error;
+                    sb.AppendLine(errorMsg);
+                }
+                if (entry.ConsoleErrors.Count > 5)
+                {
+                    sb.AppendLine($"... and {entry.ConsoleErrors.Count - 5} more errors");
+                }
+                sb.AppendLine("```");
+                sb.AppendLine();
+            }
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // Success rate
+        var totalAttempted = entries.Count;
+        var successRate = totalAttempted > 0 ? (successCount * 100.0 / totalAttempted) : 0;
+        sb.AppendLine($"**Overall Success Rate:** {successRate:F0}% ({successCount}/{totalAttempted} pages captured cleanly)");
+        sb.AppendLine();
+    }
+
+    private static string GetRefactoringRecommendation(FileEntry file)
+    {
+        if (file.Kind == "RazorPage" && file.LineCount > 600)
+            return "Extract components urgently";
+        if (file.Kind == "RazorPage" && file.LineCount > 450)
+            return "Consider extracting components";
+        if (file.Kind == "CSharpSource" && file.RelativePath.Contains("Migration"))
+            return "Auto-generated (OK)";
+        if (file.Kind == "CSharpSource" && file.LineCount > 900)
+            return "Split into multiple services";
+        if (file.Kind == "CSharpSource" && file.LineCount > 600)
+            return "Consider splitting into services";
+        if (file.Kind == "CSharpSource")
+            return "Review for single responsibility";
+        if (file.Kind == "RazorComponent" && file.LineCount > 450)
+            return "Split into smaller components";
+        return "Review for refactoring opportunities";
+    }
     private static async Task<int> Main(string[] args)
     {
         // Robustness: Optional startup delay
@@ -175,9 +729,177 @@ internal partial class Program
         return 0;
     }
 
-    private static async Task<WorkspaceStats> ProcessWorkspaceInventoryAsync(
-        string workspaceCsv, string csharpCsv, string razorCsv, StringBuilder sb, string targetProject)
+    private static FileEntry? ParseCsvLine(string line)
     {
+        if (string.IsNullOrWhiteSpace(line)) return null;
+
+        var fields = new List<string>();
+        var inQuotes = false;
+        var currentField = new StringBuilder();
+
+        foreach (var c in line)
+        {
+            if (c == '"')
+            {
+                inQuotes = !inQuotes;
+            }
+            else if (c == ',' && !inQuotes)
+            {
+                fields.Add(currentField.ToString());
+                currentField.Clear();
+            }
+            else
+            {
+                currentField.Append(c);
+            }
+        }
+        fields.Add(currentField.ToString());
+
+        if (fields.Count < 10) return null;
+
+        return new FileEntry
+        {
+            FilePath = fields[0],
+            RelativePath = fields[1],
+            Extension = fields[2],
+            SizeBytes = long.TryParse(fields[3], out var size) ? size : 0,
+            LineCount = long.TryParse(fields[4], out var lines) ? lines : 0,
+            CharCount = long.TryParse(fields[5], out var chars) ? chars : 0,
+            Kind = fields.Count > 9 ? fields[9] : ""
+        };
+    }
+
+    private static async Task ProcessPagesCsvAsync(string pagesCsv, StringBuilder sb)
+    {
+        sb.AppendLine("## 🛤️ Blazor Page Routes");
+        sb.AppendLine();
+        sb.AppendLine("> **Note:** This section shows Blazor pages with `@page` directives only.");
+        sb.AppendLine("> API endpoints (`/api/*`) are not included. Routes with parameters are skipped.");
+        sb.AppendLine();
+
+        if (!File.Exists(pagesCsv))
+        {
+            sb.AppendLine("> Pages CSV not found. Run PageScanner first.");
+            sb.AppendLine();
+            return;
+        }
+
+        var lines = await File.ReadAllLinesAsync(pagesCsv);
+        if (lines.Length < 2)
+        {
+            sb.AppendLine("> Pages CSV is empty.");
+            sb.AppendLine();
+            return;
+        }
+
+        var routes = new List<RouteEntry>();
+        var skippedRoutes = new List<RouteEntry>();
+        var authRequired = 0;
+        var publicRoutes = 0;
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            var parts = lines[i].Split(',');
+            if (parts.Length < 4) continue;
+
+            var route = parts[1].Trim('"').Trim();
+            var requiresAuth = parts[2].Trim().ToLower() == "true";
+            var project = parts[3].Trim('"').Trim();
+
+            if (string.IsNullOrEmpty(route)) continue;
+
+            var entry = new RouteEntry
+            {
+                Route = route,
+                RequiresAuth = requiresAuth,
+                Project = project
+            };
+
+            if (RouteParser.HasParameter(route))
+            {
+                skippedRoutes.Add(entry);
+                continue;
+            }
+
+            routes.Add(entry);
+
+            if (requiresAuth)
+                authRequired++;
+            else
+                publicRoutes++;
+        }
+
+        sb.AppendLine("### Route Summary");
+        sb.AppendLine();
+        sb.AppendLine("| Metric | Count |");
+        sb.AppendLine("|--------|------:|");
+        sb.AppendLine($"| **Testable Routes** | {routes.Count} |");
+        sb.AppendLine($"| **Public Routes** | {publicRoutes} |");
+        sb.AppendLine($"| **Auth Required** | {authRequired} |");
+        sb.AppendLine($"| **Skipped (parameters)** | {skippedRoutes.Count} |");
+        sb.AppendLine();
+
+        if (routes.Count > 0)
+        {
+            var publicPct = publicRoutes * 100.0 / routes.Count;
+            var authPct = authRequired * 100.0 / routes.Count;
+
+            sb.AppendLine("### Access Distribution");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            sb.AppendLine($"🔓 Public:     {GenerateProgressBar(publicPct, 30)} {publicPct:F0}%");
+            sb.AppendLine($"🔐 Protected:  {GenerateProgressBar(authPct, 30)} {authPct:F0}%");
+            sb.AppendLine("```");
+            sb.AppendLine();
+        }
+
+        var routesByProject = routes.GroupBy(r => r.Project).OrderBy(g => g.Key).ToList();
+
+        sb.AppendLine("### Routes by Area");
+        sb.AppendLine();
+
+        foreach (var group in routesByProject)
+        {
+            sb.AppendLine($"<details>");
+            sb.AppendLine($"<summary><strong>{group.Key}</strong> ({group.Count()} routes)</summary>");
+            sb.AppendLine();
+            sb.AppendLine("| Route | Auth |");
+            sb.AppendLine("|-------|:----:|");
+            foreach (var route in group.OrderBy(r => r.Route))
+            {
+                var authIcon = route.RequiresAuth ? "🔐" : "🔓";
+                sb.AppendLine($"| `{route.Route}` | {authIcon} |");
+            }
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        if (skippedRoutes.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary><strong>⚠️ Skipped Routes</strong> ({skippedRoutes.Count} routes with parameters)</summary>");
+            sb.AppendLine();
+            sb.AppendLine("These routes contain parameters (e.g., `{Id}`) and cannot be tested without valid values:");
+            sb.AppendLine();
+            sb.AppendLine("| Route | Auth |");
+            sb.AppendLine("|-------|:----:|");
+            foreach (var r in skippedRoutes.OrderBy(x => x.Route))
+            {
+                var authIcon = r.RequiresAuth ? "🔐" : "🔓";
+                sb.AppendLine($"| `{r.Route}` | {authIcon} |");
+            }
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // Generate Mermaid Route Map
+        GenerateRouteMap(routes.Concat(skippedRoutes).ToList(), sb);
+    }
+
+    private static async Task<WorkspaceStats> ProcessWorkspaceInventoryAsync(
+        string workspaceCsv, string csharpCsv, string razorCsv, StringBuilder sb, string targetProject){
         var stats = new WorkspaceStats();
 
         if (!File.Exists(workspaceCsv))
@@ -465,716 +1187,6 @@ internal partial class Program
         return stats;
     }
 
-    private static string GetRefactoringRecommendation(FileEntry file)
-    {
-        if (file.Kind == "RazorPage" && file.LineCount > 600)
-            return "Extract components urgently";
-        if (file.Kind == "RazorPage" && file.LineCount > 450)
-            return "Consider extracting components";
-        if (file.Kind == "CSharpSource" && file.RelativePath.Contains("Migration"))
-            return "Auto-generated (OK)";
-        if (file.Kind == "CSharpSource" && file.LineCount > 900)
-            return "Split into multiple services";
-        if (file.Kind == "CSharpSource" && file.LineCount > 600)
-            return "Consider splitting into services";
-        if (file.Kind == "CSharpSource")
-            return "Review for single responsibility";
-        if (file.Kind == "RazorComponent" && file.LineCount > 450)
-            return "Split into smaller components";
-        return "Review for refactoring opportunities";
-    }
-
-    private static async Task ProcessPagesCsvAsync(string pagesCsv, StringBuilder sb)
-    {
-        sb.AppendLine("## 🛤️ Blazor Page Routes");
-        sb.AppendLine();
-        sb.AppendLine("> **Note:** This section shows Blazor pages with `@page` directives only.");
-        sb.AppendLine("> API endpoints (`/api/*`) are not included. Routes with parameters are skipped.");
-        sb.AppendLine();
-
-        if (!File.Exists(pagesCsv))
-        {
-            sb.AppendLine("> Pages CSV not found. Run PageScanner first.");
-            sb.AppendLine();
-            return;
-        }
-
-        var lines = await File.ReadAllLinesAsync(pagesCsv);
-        if (lines.Length < 2)
-        {
-            sb.AppendLine("> Pages CSV is empty.");
-            sb.AppendLine();
-            return;
-        }
-
-        var routes = new List<RouteEntry>();
-        var skippedRoutes = new List<RouteEntry>();
-        var authRequired = 0;
-        var publicRoutes = 0;
-
-        for (int i = 1; i < lines.Length; i++)
-        {
-            var parts = lines[i].Split(',');
-            if (parts.Length < 4) continue;
-
-            var route = parts[1].Trim('"').Trim();
-            var requiresAuth = parts[2].Trim().ToLower() == "true";
-            var project = parts[3].Trim('"').Trim();
-
-            if (string.IsNullOrEmpty(route)) continue;
-
-            var entry = new RouteEntry
-            {
-                Route = route,
-                RequiresAuth = requiresAuth,
-                Project = project
-            };
-
-            if (RouteParser.HasParameter(route))
-            {
-                skippedRoutes.Add(entry);
-                continue;
-            }
-
-            routes.Add(entry);
-
-            if (requiresAuth)
-                authRequired++;
-            else
-                publicRoutes++;
-        }
-
-        sb.AppendLine("### Route Summary");
-        sb.AppendLine();
-        sb.AppendLine("| Metric | Count |");
-        sb.AppendLine("|--------|------:|");
-        sb.AppendLine($"| **Testable Routes** | {routes.Count} |");
-        sb.AppendLine($"| **Public Routes** | {publicRoutes} |");
-        sb.AppendLine($"| **Auth Required** | {authRequired} |");
-        sb.AppendLine($"| **Skipped (parameters)** | {skippedRoutes.Count} |");
-        sb.AppendLine();
-
-        if (routes.Count > 0)
-        {
-            var publicPct = publicRoutes * 100.0 / routes.Count;
-            var authPct = authRequired * 100.0 / routes.Count;
-
-            sb.AppendLine("### Access Distribution");
-            sb.AppendLine();
-            sb.AppendLine("```");
-            sb.AppendLine($"🔓 Public:     {GenerateProgressBar(publicPct, 30)} {publicPct:F0}%");
-            sb.AppendLine($"🔐 Protected:  {GenerateProgressBar(authPct, 30)} {authPct:F0}%");
-            sb.AppendLine("```");
-            sb.AppendLine();
-        }
-
-        var routesByProject = routes.GroupBy(r => r.Project).OrderBy(g => g.Key).ToList();
-
-        sb.AppendLine("### Routes by Area");
-        sb.AppendLine();
-
-        foreach (var group in routesByProject)
-        {
-            sb.AppendLine($"<details>");
-            sb.AppendLine($"<summary><strong>{group.Key}</strong> ({group.Count()} routes)</summary>");
-            sb.AppendLine();
-            sb.AppendLine("| Route | Auth |");
-            sb.AppendLine("|-------|:----:|");
-            foreach (var route in group.OrderBy(r => r.Route))
-            {
-                var authIcon = route.RequiresAuth ? "🔐" : "🔓";
-                sb.AppendLine($"| `{route.Route}` | {authIcon} |");
-            }
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        if (skippedRoutes.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary><strong>⚠️ Skipped Routes</strong> ({skippedRoutes.Count} routes with parameters)</summary>");
-            sb.AppendLine();
-            sb.AppendLine("These routes contain parameters (e.g., `{Id}`) and cannot be tested without valid values:");
-            sb.AppendLine();
-            sb.AppendLine("| Route | Auth |");
-            sb.AppendLine("|-------|:----:|");
-            foreach (var r in skippedRoutes.OrderBy(x => x.Route))
-            {
-                var authIcon = r.RequiresAuth ? "🔐" : "🔓";
-                sb.AppendLine($"| `{r.Route}` | {authIcon} |");
-            }
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // Generate Mermaid Route Map
-        GenerateRouteMap(routes.Concat(skippedRoutes).ToList(), sb);
-    }
-
-    private static void GenerateRouteMap(List<RouteEntry> allRoutes, StringBuilder sb)
-    {
-        sb.AppendLine("## 🗺️ Route Map");
-        sb.AppendLine();
-        sb.AppendLine("> Visual representation of the route hierarchy. GitHub renders this as an interactive diagram.");
-        sb.AppendLine();
-        sb.AppendLine("```mermaid");
-        sb.AppendLine("graph TD");
-        
-        // Build a tree structure
-        var nodeId = 0;
-        var nodeMap = new Dictionary<string, string>(); // path -> node id
-        
-        // Root node
-        sb.AppendLine("    ROOT[(\"/\")]");
-        nodeMap["/"] = "ROOT";
-
-        // Sort routes and build tree
-        var sortedRoutes = allRoutes.OrderBy(r => r.Route).ToList();
-        
-        foreach (var route in sortedRoutes)
-        {
-            var segments = route.Route.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (segments.Length == 0) continue;
-
-            var currentPath = "";
-            var parentNode = "ROOT";
-
-            for (int i = 0; i < segments.Length; i++)
-            {
-                var segment = segments[i];
-                var isLast = i == segments.Length - 1;
-                currentPath += "/" + segment;
-
-                if (!nodeMap.ContainsKey(currentPath))
-                {
-                    nodeId++;
-                    var newNodeId = $"N{nodeId}";
-                    nodeMap[currentPath] = newNodeId;
-
-                    // Determine node style
-                    var hasParam = segment.Contains('{');
-                    var isAuthRequired = isLast && route.RequiresAuth;
-
-                    string nodeLabel;
-                    if (hasParam)
-                    {
-                        nodeLabel = $"{newNodeId}[[\"{segment}\"]]"; // Double bracket for parameters
-                    }
-                    else if (isLast && isAuthRequired)
-                    {
-                        nodeLabel = $"{newNodeId}[🔐 {segment}]";
-                    }
-                    else if (isLast)
-                    {
-                        nodeLabel = $"{newNodeId}[{segment}]";
-                    }
-                    else
-                    {
-                        nodeLabel = $"{newNodeId}({segment})"; // Rounded for intermediate
-                    }
-
-                    sb.AppendLine($"    {parentNode} --> {nodeLabel}");
-                }
-
-                parentNode = nodeMap[currentPath];
-            }
-        }
-
-        // Add styling
-        sb.AppendLine();
-        sb.AppendLine("    classDef authPage fill:#ff6b6b,stroke:#333,stroke-width:2px");
-        sb.AppendLine("    classDef paramRoute fill:#ffd93d,stroke:#333,stroke-width:2px");
-        
-        // Apply styles to auth nodes
-        var authNodes = allRoutes
-            .Where(r => r.RequiresAuth)
-            .Select(r => nodeMap.GetValueOrDefault("/" + r.Route.Trim('/').Split('/').Last()))
-            .Where(n => n != null)
-            .ToList();
-        
-        if (authNodes.Count > 0)
-        {
-            sb.AppendLine($"    class {string.Join(",", authNodes)} authPage");
-        }
-
-        sb.AppendLine("```");
-        sb.AppendLine();
-
-        // Route depth analysis
-        var routeDepths = allRoutes
-            .Select(r => new { Route = r, Depth = r.Route.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries).Length })
-            .GroupBy(x => x.Depth)
-            .OrderBy(g => g.Key)
-            .ToList();
-
-        sb.AppendLine("### Route Depth Analysis");
-        sb.AppendLine();
-        sb.AppendLine("| Depth | Count | Routes |");
-        sb.AppendLine("|------:|------:|--------|");
-
-        foreach (var group in routeDepths)
-        {
-            var routeList = string.Join(", ", group.Take(3).Select(x => $"`{x.Route.Route}`"));
-            if (group.Count() > 3)
-            {
-                routeList += $" +{group.Count() - 3} more";
-            }
-            sb.AppendLine($"| {group.Key} | {group.Count()} | {routeList} |");
-        }
-        sb.AppendLine();
-    }
-
-    private static async Task GenerateScreenshotHealthAsync(string snapshotsDir, StringBuilder sb)
-    {
-        sb.AppendLine("## 📊 Screenshot Health");
-        sb.AppendLine();
-
-        if (!Directory.Exists(snapshotsDir))
-        {
-            sb.AppendLine("> Screenshots directory not found. Run BrowserSnapshot first.");
-            sb.AppendLine();
-            return;
-        }
-
-        // Find all metadata.json files
-        var metadataFiles = Directory.GetFiles(snapshotsDir, "metadata.json", SearchOption.AllDirectories)
-            .OrderBy(f => f)
-            .ToList();
-
-        if (metadataFiles.Count == 0)
-        {
-            sb.AppendLine("> No screenshot metadata found. Run BrowserSnapshot v2.1+ to generate metadata files.");
-            sb.AppendLine();
-            return;
-        }
-
-        // Parse all metadata
-        List<ScreenshotHealthEntry> entries = [];
-        foreach (var metadataFile in metadataFiles)
-        {
-            try
-            {
-                var json = await File.ReadAllTextAsync(metadataFile);
-                var metadata = JsonSerializer.Deserialize<ScreenshotHealthEntry>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-                if (metadata != null)
-                {
-                    entries.Add(metadata);
-                }
-            }
-            catch
-            {
-                // Skip invalid metadata files
-            }
-        }
-
-        if (entries.Count == 0)
-        {
-            sb.AppendLine("> Could not parse any metadata files.");
-            sb.AppendLine();
-            return;
-        }
-
-        // Calculate statistics
-        var successCount = entries.Count(e => e.IsSuccess && !e.IsSuspiciouslySmall);
-        var suspiciousCount = entries.Count(e => e.IsSuspiciouslySmall);
-        var retriedCount = entries.Count(e => e.RetryAttempted);
-        var httpErrorCount = entries.Count(e => e.IsHttpError);
-        var errorCount = entries.Count(e => e.IsError);
-        var jsErrorCount = entries.Count(e => e.ConsoleErrors?.Count > 0);
-        
-        // Auth flow statistics
-        var authRequiredCount = entries.Count(e => e.RequiresAuth);
-        var authFlowCompletedCount = entries.Count(e => e.AuthFlowCompleted);
-        var publicCount = entries.Count - authRequiredCount;
-        var loggedInCount = entries.Count(e => e.LoggedInFileSize > 0);
-        var loggedInSuspiciousCount = entries.Count(e => e.LoggedInIsSuspiciouslySmall);
-
-        sb.AppendLine("| Status | Count | Description |");
-        sb.AppendLine("|--------|------:|-------------|");
-        sb.AppendLine($"| ✅ Public Success | {successCount} | Public screenshots > 10KB |");
-        sb.AppendLine($"| 🔐 Logged-In Captured | {loggedInCount} | Authenticated screenshots taken |");
-        sb.AppendLine($"| ⚠️ Public Suspicious | {suspiciousCount} | Public screenshots < 10KB (blank when not logged in) |");
-        sb.AppendLine($"| ⚠️ Logged-In Suspicious | {loggedInSuspiciousCount} | Auth screenshots < 10KB |");
-        sb.AppendLine($"| 🔄 Retried | {retriedCount} | Required retry attempt |");
-        sb.AppendLine($"| ❌ HTTP Error | {httpErrorCount} | 4xx/5xx responses |");
-        sb.AppendLine($"| 💥 Failed | {errorCount} | Browser/timeout errors |");
-        sb.AppendLine($"| 🔴 JS Errors | {jsErrorCount} | Pages with console errors |");
-        sb.AppendLine();
-
-        // Suspicious screenshots details
-        var suspicious = entries.Where(e => e.IsSuspiciouslySmall).ToList();
-        if (suspicious.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>⚠️ <strong>Suspicious Screenshots</strong> ({suspicious.Count})</summary>");
-            sb.AppendLine();
-            sb.AppendLine("| Route | Size | Status | JS Errors |");
-            sb.AppendLine("|-------|-----:|:------:|----------:|");
-            foreach (var entry in suspicious.OrderBy(e => e.Route))
-            {
-                var size = PathSanitizer.FormatBytes(entry.FileSize);
-                var status = entry.RetryAttempted ? "🔄 Retried" : "⚠️";
-                var jsErrors = entry.ConsoleErrors?.Count ?? 0;
-                sb.AppendLine($"| `{entry.Route}` | {size} | {status} | {jsErrors} |");
-            }
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // HTTP errors details
-        var httpErrors = entries.Where(e => e.IsHttpError).ToList();
-        if (httpErrors.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>❌ <strong>HTTP Errors</strong> ({httpErrors.Count})</summary>");
-            sb.AppendLine();
-            sb.AppendLine("| Route | Status Code |");
-            sb.AppendLine("|-------|------------:|");
-            foreach (var entry in httpErrors.OrderBy(e => e.Route))
-            {
-                sb.AppendLine($"| `{entry.Route}` | {entry.StatusCode} |");
-            }
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // JS errors details
-        var withJsErrors = entries.Where(e => e.ConsoleErrors?.Count > 0).ToList();
-        if (withJsErrors.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>🔴 <strong>Pages with JavaScript Errors</strong> ({withJsErrors.Count})</summary>");
-            sb.AppendLine();
-            foreach (var entry in withJsErrors.OrderBy(e => e.Route))
-            {
-                sb.AppendLine($"**`{entry.Route}`** ({entry.ConsoleErrors!.Count} errors)");
-                sb.AppendLine();
-                sb.AppendLine("```");
-                foreach (var error in entry.ConsoleErrors.Take(5))
-                {
-                    var errorMsg = error.Length > 200 ? error[..200] + "..." : error;
-                    sb.AppendLine(errorMsg);
-                }
-                if (entry.ConsoleErrors.Count > 5)
-                {
-                    sb.AppendLine($"... and {entry.ConsoleErrors.Count - 5} more errors");
-                }
-                sb.AppendLine("```");
-                sb.AppendLine();
-            }
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // Success rate
-        var totalAttempted = entries.Count;
-        var successRate = totalAttempted > 0 ? (successCount * 100.0 / totalAttempted) : 0;
-        sb.AppendLine($"**Overall Success Rate:** {successRate:F0}% ({successCount}/{totalAttempted} pages captured cleanly)");
-        sb.AppendLine();
-    }
-
-    private static async Task GenerateScreenshotGalleryAsync(
-        string snapshotsDir, string webProjectRoot, string repoRoot, StringBuilder sb)
-    {
-        sb.AppendLine("## 📸 Screenshot Gallery");
-        sb.AppendLine();
-
-        if (!Directory.Exists(snapshotsDir))
-        {
-            sb.AppendLine("> Screenshots directory not found. Run BrowserSnapshot first.");
-            sb.AppendLine();
-            return;
-        }
-
-        // Load metadata files to understand auth flow
-        var metadataFiles = Directory.GetFiles(snapshotsDir, "metadata.json", SearchOption.AllDirectories)
-            .OrderBy(f => f)
-            .ToList();
-
-        // Build a dictionary of route -> metadata
-        var routeMetadata = new Dictionary<string, ScreenshotHealthEntry>();
-        foreach (var metadataFile in metadataFiles)
-        {
-            try
-            {
-                var json = await File.ReadAllTextAsync(metadataFile);
-                var metadata = System.Text.Json.JsonSerializer.Deserialize<ScreenshotHealthEntry>(json, 
-                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (metadata != null && !string.IsNullOrEmpty(metadata.Route))
-                {
-                    routeMetadata[metadata.Route] = metadata;
-                }
-            }
-            catch { /* Skip invalid metadata */ }
-        }
-
-        // Group screenshots by route directory
-        var allRoutes = Directory.GetDirectories(snapshotsDir, "*", SearchOption.AllDirectories)
-            .Where(d => Directory.GetFiles(d, "*.png").Length > 0)
-            .Concat(new[] { snapshotsDir })
-            .Where(d => Directory.GetFiles(d, "*.png").Length > 0)
-            .Select(d =>
-            {
-                var relativePath = d == snapshotsDir ? "" : Path.GetRelativePath(snapshotsDir, d).Replace('\\', '/');
-                var route = string.IsNullOrEmpty(relativePath) ? "/" : "/" + relativePath;
-                var category = relativePath.Contains('/') ? relativePath.Split('/')[0] : 
-                              (string.IsNullOrEmpty(relativePath) ? "root" : relativePath);
-                
-                return new RouteScreenshots
-                {
-                    Route = route,
-                    Category = category,
-                    Directory = d,
-                    RelativeDir = string.IsNullOrEmpty(relativePath) ? "snapshots" : "snapshots/" + relativePath,
-                    Metadata = routeMetadata.GetValueOrDefault(route)
-                };
-            })
-            .ToList();
-
-        // Split into public and auth-required pages
-        // With the two-pass approach, all pages have default.png + logged-in.png.
-        // The _auth-flow directory has the global login screenshots.
-        var authFlowDir = allRoutes.FirstOrDefault(r => r.Route == "/_auth-flow");
-        var pageRoutes = allRoutes.Where(r => r.Route != "/_auth-flow").ToList();
-
-        var totalRoutes = pageRoutes.Count;
-        sb.AppendLine($"**{totalRoutes} pages captured** (public + authenticated views)");
-        sb.AppendLine();
-
-        // Quick status summary
-        var successCount = routeMetadata.Values.Count(m => m.IsSuccess && !m.IsSuspiciouslySmall);
-        var loggedInCount = routeMetadata.Values.Count(m => m.LoggedInFileSize > 0 && !m.LoggedInIsSuspiciouslySmall);
-        var errorCount = routeMetadata.Values.Count(m => m.IsHttpError || m.IsError);
-
-        sb.AppendLine("### Quick Status");
-        sb.AppendLine();
-        sb.AppendLine("| ✅ Public OK | 🔐 Logged-In OK | ❌ Errors |");
-        sb.AppendLine("|:----------:|:------------:|:---------:|");
-        sb.AppendLine($"| {successCount} | {loggedInCount} | {errorCount} |");
-        sb.AppendLine();
-
-        // === AUTH FLOW SECTION (shown once, collapsed — per-page views shown below) ===
-        if (authFlowDir != null)
-        {
-            var afDir = authFlowDir.RelativeDir;
-            var hasStep1 = File.Exists(Path.Combine(authFlowDir.Directory, "1-initial.png"));
-            var hasStep2 = File.Exists(Path.Combine(authFlowDir.Directory, "2-filled.png"));
-            var hasStep3 = File.Exists(Path.Combine(authFlowDir.Directory, "3-result.png"));
-
-            if (hasStep1 || hasStep2 || hasStep3)
-            {
-                sb.AppendLine("<details>");
-                sb.AppendLine("<summary><strong>🔐 Login Flow</strong> (session captured once, reused for all authenticated pages)</summary>");
-                sb.AppendLine();
-                sb.AppendLine("<table><tr>");
-
-                if (hasStep1)
-                {
-                    sb.AppendLine("<td align=\"center\">");
-                    sb.AppendLine($"<a href=\"{afDir}/1-initial.png\">");
-                    sb.AppendLine($"<img src=\"{afDir}/1-initial.png\" width=\"250\" />");
-                    sb.AppendLine("</a>");
-                    sb.AppendLine("<br /><strong>① Login Page</strong>");
-                    sb.AppendLine("</td>");
-                }
-                if (hasStep2)
-                {
-                    sb.AppendLine("<td align=\"center\">");
-                    sb.AppendLine($"<a href=\"{afDir}/2-filled.png\">");
-                    sb.AppendLine($"<img src=\"{afDir}/2-filled.png\" width=\"250\" />");
-                    sb.AppendLine("</a>");
-                    sb.AppendLine("<br /><strong>② Credentials Filled</strong>");
-                    sb.AppendLine("</td>");
-                }
-                if (hasStep3)
-                {
-                    sb.AppendLine("<td align=\"center\">");
-                    sb.AppendLine($"<a href=\"{afDir}/3-result.png\">");
-                    sb.AppendLine($"<img src=\"{afDir}/3-result.png\" width=\"250\" />");
-                    sb.AppendLine("</a>");
-                    sb.AppendLine("<br /><strong>③ After Login</strong>");
-                    sb.AppendLine("</td>");
-                }
-
-                sb.AppendLine("</tr></table>");
-                sb.AppendLine();
-                sb.AppendLine("</details>");
-                sb.AppendLine();
-            }
-        }
-
-        sb.AppendLine("---");
-        sb.AppendLine();
-
-        // === ALL PAGES: Public vs Logged-In side by side ===
-        sb.AppendLine($"### 📸 All Pages — Public vs Login vs Logged-In ({pageRoutes.Count})");
-        sb.AppendLine();
-        sb.AppendLine("Each page is shown in up to three states: **🔓 Public** (not logged in), **🔑 Login Redirect** (auth redirect), and **🔐 Logged In** (authenticated).");
-        sb.AppendLine();
-
-        var byCategory = pageRoutes.GroupBy(r => r.Category).OrderBy(g => g.Key).ToList();
-
-        foreach (var group in byCategory)
-        {
-            var categoryName = group.Key == "root" ? "Home" : group.Key;
-            sb.AppendLine($"<details open>");
-            sb.AppendLine($"<summary><strong>📁 {categoryName}</strong> ({group.Count()} pages)</summary>");
-            sb.AppendLine();
-            sb.AppendLine("<table>");
-
-            var routes = group.OrderBy(r => r.Route).ToList();
-            for (int i = 0; i < routes.Count; i++)
-            {
-                sb.AppendLine("<tr>");
-                var routeScreenshot = routes[i];
-                var displayRoute = ShortenRoute(routeScreenshot.Route, 40);
-                var defaultPng = Path.Combine(routeScreenshot.Directory, "default.png");
-                var loginRedirectPng = Path.Combine(routeScreenshot.Directory, "login-redirect.png");
-                var loggedInPng = Path.Combine(routeScreenshot.Directory, "logged-in.png");
-                string? publicImgPath = null;
-                string? loginImgPath = null;
-                string? authImgPath = null;
-
-                if (File.Exists(defaultPng))
-                    publicImgPath = $"{routeScreenshot.RelativeDir}/default.png";
-                else
-                {
-                    var anyPng = Directory.GetFiles(routeScreenshot.Directory, "*.png")
-                        .FirstOrDefault(f => !Path.GetFileName(f).StartsWith("logged-in") && !Path.GetFileName(f).StartsWith("login-redirect"));
-                    if (anyPng != null)
-                        publicImgPath = $"{routeScreenshot.RelativeDir}/{Path.GetFileName(anyPng)}";
-                }
-
-                if (File.Exists(loginRedirectPng))
-                    loginImgPath = $"{routeScreenshot.RelativeDir}/login-redirect.png";
-
-                if (File.Exists(loggedInPng))
-                    authImgPath = $"{routeScreenshot.RelativeDir}/logged-in.png";
-
-                sb.AppendLine("<td colspan=\"3\" align=\"center\">");
-                sb.AppendLine($"<strong><code>{displayRoute}</code></strong>");
-                sb.AppendLine("<table><tr>");
-
-                // Column 1: Public (not logged in)
-                sb.AppendLine("<td align=\"center\">");
-                if (publicImgPath != null)
-                {
-                    sb.AppendLine($"<a href=\"{publicImgPath}\">");
-                    sb.AppendLine($"<img src=\"{publicImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (public)\" />");
-                    sb.AppendLine("</a>");
-                }
-                else
-                {
-                    sb.AppendLine("<sub><em>no capture</em></sub>");
-                }
-                sb.AppendLine("<br /><sub>🔓 Public</sub>");
-                sb.AppendLine("</td>");
-
-                // Column 2: Login Redirect (auth pages only)
-                sb.AppendLine("<td align=\"center\">");
-                if (loginImgPath != null)
-                {
-                    sb.AppendLine($"<a href=\"{loginImgPath}\">");
-                    sb.AppendLine($"<img src=\"{loginImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (login redirect)\" />");
-                    sb.AppendLine("</a>");
-                    sb.AppendLine("<br /><sub>🔑 Login Redirect</sub>");
-                }
-                else if (routeScreenshot.Metadata?.RequiresAuth == true)
-                {
-                    sb.AppendLine("<sub><em>no redirect capture</em></sub>");
-                    sb.AppendLine("<br /><sub>🔑 Login Redirect</sub>");
-                }
-                else
-                {
-                    sb.AppendLine("<sub><em>public page</em></sub>");
-                    sb.AppendLine("<br /><sub>—</sub>");
-                }
-                sb.AppendLine("</td>");
-
-                // Column 3: Logged In
-                sb.AppendLine("<td align=\"center\">");
-                if (authImgPath != null)
-                {
-                    sb.AppendLine($"<a href=\"{authImgPath}\">");
-                    sb.AppendLine($"<img src=\"{authImgPath}\" width=\"200\" alt=\"{routeScreenshot.Route} (logged in)\" />");
-                    sb.AppendLine("</a>");
-                }
-                else
-                {
-                    sb.AppendLine("<sub><em>no auth capture</em></sub>");
-                }
-                sb.AppendLine("<br /><sub>🔐 Logged In</sub>");
-                sb.AppendLine("</td>");
-
-                sb.AppendLine("</tr></table>");
-                sb.AppendLine("</td>");
-                sb.AppendLine("</tr>");
-            }
-
-            sb.AppendLine("</table>");
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        await Task.CompletedTask;
-    }
-
-    private static FileEntry? ParseCsvLine(string line)
-    {
-        if (string.IsNullOrWhiteSpace(line)) return null;
-
-        var fields = new List<string>();
-        var inQuotes = false;
-        var currentField = new StringBuilder();
-
-        foreach (var c in line)
-        {
-            if (c == '"')
-            {
-                inQuotes = !inQuotes;
-            }
-            else if (c == ',' && !inQuotes)
-            {
-                fields.Add(currentField.ToString());
-                currentField.Clear();
-            }
-            else
-            {
-                currentField.Append(c);
-            }
-        }
-        fields.Add(currentField.ToString());
-
-        if (fields.Count < 10) return null;
-
-        return new FileEntry
-        {
-            FilePath = fields[0],
-            RelativePath = fields[1],
-            Extension = fields[2],
-            SizeBytes = long.TryParse(fields[3], out var size) ? size : 0,
-            LineCount = long.TryParse(fields[4], out var lines) ? lines : 0,
-            CharCount = long.TryParse(fields[5], out var chars) ? chars : 0,
-            Kind = fields.Count > 9 ? fields[9] : ""
-        };
-    }
-
-    private static string GenerateProgressBar(double percentage, int width)
-    {
-        var filled = (int)(percentage * width / 100.0);
-        filled = Math.Clamp(filled, 0, width);
-        var empty = width - filled;
-        return $"[{'█'.ToString().PadRight(filled, '█')}{'░'.ToString().PadRight(empty, '░')}]";
-    }
-
     private static string ShortenPath(string path, int maxLength)
     {
         if (path.Length <= maxLength) return path;
@@ -1203,37 +1215,22 @@ internal partial class Program
         return $".../{last}";
     }
 
-    private static string FindRepoRoot(string startPath)
-    {
-        var dir = new DirectoryInfo(startPath);
-        while (dir is not null)
-        {
-            if (Directory.Exists(Path.Combine(dir.FullName, ".git")) ||
-                dir.GetFiles("*.sln").Length > 0)
-            {
-                return dir.FullName;
-            }
-            dir = dir.Parent;
-        }
-        return Path.GetFullPath(Path.Combine(startPath, "..", "..", "..", "..", ".."));
-    }
-
     private class FileEntry
     {
-        public string FilePath { get; set; } = "";
-        public string RelativePath { get; set; } = "";
-        public string Extension { get; set; } = "";
-        public long SizeBytes { get; set; }
-        public long LineCount { get; set; }
         public long CharCount { get; set; }
+        public string Extension { get; set; } = "";
+        public string FilePath { get; set; } = "";
         public string Kind { get; set; } = "";
+        public long LineCount { get; set; }
+        public string RelativePath { get; set; } = "";
+        public long SizeBytes { get; set; }
     }
 
     private class RouteEntry
     {
-        public string Route { get; set; } = "";
-        public bool RequiresAuth { get; set; }
         public string Project { get; set; } = "";
+        public bool RequiresAuth { get; set; }
+        public string Route { get; set; } = "";
     }
 
     private class WorkspaceStats
@@ -1246,35 +1243,28 @@ internal partial class Program
     // Helper class for route screenshots
     private class RouteScreenshots
     {
-        public string Route { get; set; } = "";
         public string Category { get; set; } = "";
         public string Directory { get; set; } = "";
-        public string RelativeDir { get; set; } = "";
         public ScreenshotHealthEntry? Metadata { get; set; }
+        public string RelativeDir { get; set; } = "";
+        public string Route { get; set; } = "";
     }
 
     private class ScreenshotHealthEntry
     {
-        public string Route { get; set; } = "";
-        public string Url { get; set; } = "";
-        public int StatusCode { get; set; }
-        public long FileSize { get; set; }
-        public bool IsSuspiciouslySmall { get; set; }
-        public bool RetryAttempted { get; set; }
-        public List<string>? ConsoleErrors { get; set; }
-        public DateTime CapturedAt { get; set; }
-        public bool IsSuccess { get; set; }
-        public bool IsHttpError { get; set; }
-        public bool IsError { get; set; }
-        public string? ErrorMessage { get; set; }
-        
-        // Auth flow fields
-        public bool RequiresAuth { get; set; }
         public bool AuthFlowCompleted { get; set; }
+        public string? AuthFlowNote { get; set; }
         public string? AuthStep1Path { get; set; }
         public string? AuthStep2Path { get; set; }
         public string? AuthStep3Path { get; set; }
-        public string? AuthFlowNote { get; set; }
+        public DateTime CapturedAt { get; set; }
+        public List<string>? ConsoleErrors { get; set; }
+        public string? ErrorMessage { get; set; }
+        public long FileSize { get; set; }
+        public bool IsError { get; set; }
+        public bool IsHttpError { get; set; }
+        public bool IsSuccess { get; set; }
+        public bool IsSuspiciouslySmall { get; set; }
 
         // Two-pass fields
         public long LoggedInFileSize { get; set; }
@@ -1283,5 +1273,12 @@ internal partial class Program
 
         // Per-page login redirect screenshot
         public string? LoginRedirectPath { get; set; }
+        
+        // Auth flow fields
+        public bool RequiresAuth { get; set; }
+        public bool RetryAttempted { get; set; }
+        public string Route { get; set; } = "";
+        public int StatusCode { get; set; }
+        public string Url { get; set; } = "";
     }
 }

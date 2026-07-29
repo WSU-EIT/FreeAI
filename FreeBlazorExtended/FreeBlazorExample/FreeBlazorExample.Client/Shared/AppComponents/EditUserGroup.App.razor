@@ -20,6 +20,8 @@
 }
 
 @code {
+    protected bool _loading = false;
+    protected string _pageName = "editusergroup";
     [Parameter] public string Area { get; set; } = String.Empty;
 
     /// <summary>
@@ -36,9 +38,6 @@
     /// The internal method allowing for 2-way binding with the @bind-Value option instead of @bind.
     /// </summary>
     [Parameter] public EventCallback<DataObjects.UserGroup> ValueChanged { get; set; }
-
-    protected bool _loading = false;
-    protected string _pageName = "editusergroup";
 
     public void Dispose() { 
         Model.OnChange -= StateHasChanged;

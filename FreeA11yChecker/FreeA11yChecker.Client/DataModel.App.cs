@@ -42,20 +42,13 @@ public partial class BlazorDataModel
     }
 
     /// <summary>
-    /// The list of configured sites for the current tenant.
-    /// Loaded by GetBlazorDataModelApp and used by the dashboard and scan pages.
+    /// Set this option to true if you wish to make sure all Blazor plugins are precompiled during page load.
+    /// If this is set to false then any components that have not yet been cached will take some time to load
+    /// in the interface while they are being compiled and cached.
     /// </summary>
-    public List<DataObjects.Site> SiteList {
+    public bool PrecompileBlazorPlugins {
         get {
-            return _SiteList;
-        }
-
-        set {
-            if (!ObjectsAreEqual(_SiteList, value)) {
-                _SiteList = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
+            return false;
         }
     }
 
@@ -78,13 +71,20 @@ public partial class BlazorDataModel
     }
 
     /// <summary>
-    /// Set this option to true if you wish to make sure all Blazor plugins are precompiled during page load.
-    /// If this is set to false then any components that have not yet been cached will take some time to load
-    /// in the interface while they are being compiled and cached.
+    /// The list of configured sites for the current tenant.
+    /// Loaded by GetBlazorDataModelApp and used by the dashboard and scan pages.
     /// </summary>
-    public bool PrecompileBlazorPlugins {
+    public List<DataObjects.Site> SiteList {
         get {
-            return false;
+            return _SiteList;
+        }
+
+        set {
+            if (!ObjectsAreEqual(_SiteList, value)) {
+                _SiteList = value;
+                _ModelUpdated = DateTime.UtcNow;
+                NotifyDataChanged();
+            }
         }
     }
 }

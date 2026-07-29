@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="User-Scoped Filtering"
-                     Description="The 'Viewing as' dropdown builds _techNames from distinct AssignedTo values. Selecting a tech calls Refresh() which filters _all to _myOrders matching that name and excluding Closed status. This simulates per-user filtering without authentication."
-                     Code="@_codeTechFilter" />
+                    Description="The 'Viewing as' dropdown builds _techNames from distinct AssignedTo values. Selecting a tech calls Refresh() which filters _all to _myOrders matching that name and excluding Closed status. This simulates per-user filtering without authentication."
+                    Code="@_codeTechFilter" />
             <InfoTip Title="Inline Status Button Group"
-                     Description="Each card has a btn-group with InProgress, OnHold, and Completed buttons. The active status gets btn-dark, others get btn-outline-dark. Tapping a button calls UpdateStatus() which sets the status, auto-fills CompletedDate when Completed, and saves via API."
-                     Code="@_codeStatusButtons" />
+                    Description="Each card has a btn-group with InProgress, OnHold, and Completed buttons. The active status gets btn-dark, others get btn-outline-dark. Tapping a button calls UpdateStatus() which sets the status, auto-fills CompletedDate when Completed, and saves via API."
+                    Code="@_codeStatusButtons" />
             <InfoTip Title="Conditional Completion Notes"
-                     Description="When a work order's status is Completed, a textarea for completion notes and a 'Save &amp; Close' button appear. This conditional section only renders when needed — keeping the card compact for in-progress items and expanding for completed ones."
-                     Code="@_codeCompletionNotes" />
+                    Description="When a work order's status is Completed, a textarea for completion notes and a 'Save &amp; Close' button appear. This conditional section only renders when needed — keeping the card compact for in-progress items and expanding for completed ones."
+                    Code="@_codeCompletionNotes" />
         </div>
 
         @* Technician selector *@

@@ -34,10 +34,10 @@ namespace FreeBlazorExtended.AgentMonitoring;
 /// </summary>
 public sealed class AgentRegistrationInfo
 {
-    public string HostName { get; set; } = string.Empty;
-    public string OsVersion { get; set; } = string.Empty;
     public string AgentVersion { get; set; } = string.Empty;
     public List<string> Capabilities { get; set; } = new List<string>();
+    public string HostName { get; set; } = string.Empty;
+    public string OsVersion { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -73,6 +73,47 @@ public class AgentHub : Hub
         return _agentToConnection.TryGetValue(agentId, out var conn) ? conn : null;
     }
 
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (_connectionToAgent.TryRemove(Context.ConnectionId, out Guid agentId)) {
+            _agentToConnection.TryRemove(agentId, out _);
+            _service.MarkAgentOffline(agentId);
+            _logger.LogInformation("Agent {AgentId} disconnected (connection {Conn})", agentId, Context.ConnectionId);
+        }
+        return base.OnDisconnectedAsync(exception);
+    }
+
+    /// <summary>
+    /// Pushes a heartbeat (CPU / memory / disk snapshot) up to the service.
+    /// </summary>
+    public async Task PushHeartbeat(Guid agentId, AgentMonitoring.AgentHeartbeat heartbeat)
+    {
+        if (heartbeat == null) {
+            throw new HubException("heartbeat is required.");
+        }
+        await _service.RecordAgentHeartbeat(agentId, heartbeat);
+    }
+
+    /// <summary>
+    /// Pushes the agent's IIS app-pool / site inventory.
+    /// </summary>
+    public Task PushIisInventory(Guid agentId, List<AgentMonitoring.AgentIisAppPool> pools, List<AgentMonitoring.AgentIisSite> sites)
+    {
+        _service.UpdateIisInventory(agentId,
+            pools ?? new List<AgentMonitoring.AgentIisAppPool>(),
+            sites ?? new List<AgentMonitoring.AgentIisSite>());
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Pushes the agent's installed-Windows-Service inventory.
+    /// </summary>
+    public Task PushServiceInventory(Guid agentId, List<AgentMonitoring.AgentService> services)
+    {
+        _service.UpdateServiceInventory(agentId, services ?? new List<AgentMonitoring.AgentService>());
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// First call from a freshly-started agent. Validates the registration key
     /// against <see cref="AgentMonitoringService"/> and returns the assigned
@@ -103,6 +144,16 @@ public class AgentHub : Hub
     }
 
     /// <summary>
+    /// Agent reports the outcome of a previously-issued command. The service
+    /// updates the matching <see cref="AgentMonitoring.AgentCommand"/> row.
+    /// </summary>
+    public Task ReportCommandResult(Guid commandId, bool succeeded, string? errorMessage)
+    {
+        _service.RecordCommandResult(commandId, succeeded, errorMessage);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
     /// Reconnect path -- agent already has an AgentId from a prior registration.
     /// Just establishes the connection-id mapping so commands can route.
     /// </summary>
@@ -118,56 +169,5 @@ public class AgentHub : Hub
 
         _logger.LogInformation("Agent {AgentId} resumed on connection {Conn}", agentId, Context.ConnectionId);
         return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Pushes a heartbeat (CPU / memory / disk snapshot) up to the service.
-    /// </summary>
-    public async Task PushHeartbeat(Guid agentId, AgentMonitoring.AgentHeartbeat heartbeat)
-    {
-        if (heartbeat == null) {
-            throw new HubException("heartbeat is required.");
-        }
-        await _service.RecordAgentHeartbeat(agentId, heartbeat);
-    }
-
-    /// <summary>
-    /// Pushes the agent's installed-Windows-Service inventory.
-    /// </summary>
-    public Task PushServiceInventory(Guid agentId, List<AgentMonitoring.AgentService> services)
-    {
-        _service.UpdateServiceInventory(agentId, services ?? new List<AgentMonitoring.AgentService>());
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Pushes the agent's IIS app-pool / site inventory.
-    /// </summary>
-    public Task PushIisInventory(Guid agentId, List<AgentMonitoring.AgentIisAppPool> pools, List<AgentMonitoring.AgentIisSite> sites)
-    {
-        _service.UpdateIisInventory(agentId,
-            pools ?? new List<AgentMonitoring.AgentIisAppPool>(),
-            sites ?? new List<AgentMonitoring.AgentIisSite>());
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Agent reports the outcome of a previously-issued command. The service
-    /// updates the matching <see cref="AgentMonitoring.AgentCommand"/> row.
-    /// </summary>
-    public Task ReportCommandResult(Guid commandId, bool succeeded, string? errorMessage)
-    {
-        _service.RecordCommandResult(commandId, succeeded, errorMessage);
-        return Task.CompletedTask;
-    }
-
-    public override Task OnDisconnectedAsync(Exception? exception)
-    {
-        if (_connectionToAgent.TryRemove(Context.ConnectionId, out Guid agentId)) {
-            _agentToConnection.TryRemove(agentId, out _);
-            _service.MarkAgentOffline(agentId);
-            _logger.LogInformation("Agent {AgentId} disconnected (connection {Conn})", agentId, Context.ConnectionId);
-        }
-        return base.OnDisconnectedAsync(exception);
     }
 }

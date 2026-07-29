@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Breadcrumb Navigation"
-                     Description="Bootstrap's breadcrumb component shows the current folder path. Each segment is clickable to navigate back. The last item has the 'active' class (not a link). NavigateTo(idx) trims the path. This is the SharePoint/Windows Explorer navigation pattern."
-                     Code="@_codeBreadcrumb" />
+                    Description="Bootstrap's breadcrumb component shows the current folder path. Each segment is clickable to navigate back. The last item has the 'active' class (not a link). NavigateTo(idx) trims the path. This is the SharePoint/Windows Explorer navigation pattern."
+                    Code="@_codeBreadcrumb" />
             <InfoTip Title="File Type Icons"
-                     Description="Each file gets an icon based on its extension: fa-file-pdf for PDF, fa-file-excel for XLSX, fa-file-word for DOCX, fa-folder for folders. A switch expression maps extensions to icons. This visual distinction helps users find files quickly."
-                     Code="@_codeFileIcons" />
+                    Description="Each file gets an icon based on its extension: fa-file-pdf for PDF, fa-file-excel for XLSX, fa-file-word for DOCX, fa-folder for folders. A switch expression maps extensions to icons. This visual distinction helps users find files quickly."
+                    Code="@_codeFileIcons" />
             <InfoTip Title="Folder Navigation in Table"
-                     Description="Clicking a folder row calls EnterFolder() which adds to the breadcrumb. The '..' row at the top calls GoUp(). Items are sorted folders-first with OrderByDescending(i => i.IsFolder). The table-hover class gives rows a highlight on hover."
-                     Code="@_codeFolderNav" />
+                    Description="Clicking a folder row calls EnterFolder() which adds to the breadcrumb. The '..' row at the top calls GoUp(). Items are sorted folders-first with OrderByDescending(i => i.IsFolder). The table-hover class gives rows a highlight on hover."
+                    Code="@_codeFolderNav" />
         </div>
 
         @* Breadcrumb *@

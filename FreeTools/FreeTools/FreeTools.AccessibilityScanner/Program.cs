@@ -243,8 +243,7 @@ internal class Program
         string siteUrl,
         SiteConfig siteConfig,
         ScannerConfig scannerConfig,
-        string runsDir)
-    {
+        string runsDir){
         var uri = new Uri(siteUrl);
         var siteFolderName = uri.Host.Replace('.', '-');
         var siteDir = Path.Combine(runsDir, siteFolderName);
@@ -325,8 +324,7 @@ internal class Program
         string pagePath,
         SiteConfig siteConfig,
         ScannerConfig scannerConfig,
-        string siteDir)
-    {
+        string siteDir){
         // Resolve the full URL (handles both relative and absolute paths)
         var fullUrl = ResolvePageUrl(siteUri, pagePath);
         var folderName = PagePathToFolderName(pagePath);
@@ -646,8 +644,7 @@ internal class Program
         List<string> consoleWarnings,
         List<string> consoleInfo,
         List<string> infoLines,
-        Dictionary<string, string>? headers)
-    {
+        Dictionary<string, string>? headers){
         // errors.log
         var errorsPath = Path.Combine(pageDir, "errors.log");
         if (consoleErrors.Count > 0)
@@ -2278,15 +2275,15 @@ internal class Program
     private class FoundRuleStats
     {
         public string CanonicalRuleId { get; set; } = "";
-        public string Severity { get; set; } = "moderate";
-        public string Message { get; set; } = "";
-        public string? HelpUrl { get; set; }
-        public string? WcagCriteria { get; set; }
         public string? ExampleSnippet { get; set; }
-        public int TotalInstances { get; set; }
+        public string? HelpUrl { get; set; }
+        public string Message { get; set; } = "";
         public int PageCount { get; set; }
+        public string Severity { get; set; } = "moderate";
         public HashSet<string> SiteUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         public HashSet<string> ToolsFound { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public int TotalInstances { get; set; }
+        public string? WcagCriteria { get; set; }
     }
 
     /// <summary>
@@ -4424,8 +4421,7 @@ internal class Program
         A11yToolResult axeResult,
         A11yToolResult htmlResult,
         A11yToolResult waveResult,
-        string pageDir)
-    {
+        string pageDir){
         var summary = new A11yPageSummary();
         var allIssues = new List<A11yIssue>();
         var toolResults = new[] { axeResult, htmlResult, waveResult };
@@ -4641,8 +4637,7 @@ internal class Program
         string pageDir,
         PageResult result,
         List<string> actions,
-        List<string> infoLines)
-    {
+        List<string> infoLines){
         // Get all img elements with src attributes
         var imgElements = await page.EvaluateAsync<ImageInfo[]>(@"
             () => Array.from(document.querySelectorAll('img[src]')).map(img => ({
@@ -4695,8 +4690,7 @@ internal class Program
         string pageDir,
         PageResult result,
         List<string> actions,
-        string label)
-    {
+        string label){
         var stepNumber = result.Screenshots.Count + 1;
         var fileName = $"{stepNumber:D2}-{SanitizeFileName(label)}.jpg";
         var filePath = Path.Combine(pageDir, fileName);
@@ -4755,8 +4749,7 @@ internal class Program
     /// </summary>
     private static async Task<bool> TryAuthFlowAsync(
         IPage page, SiteCredential cred, ScannerConfig config,
-        string pageDir, PageResult result, List<string> actions)
-    {
+        string pageDir, PageResult result, List<string> actions){
         var usernameSelectors = new[]
         {
             // ID-based selectors (FreeExamples, FreeCRM, FreeGLBA patterns)
@@ -5125,14 +5118,14 @@ internal class AppSettingsRoot
 
 internal class ScannerConfig
 {
-    public int SettleDelayMs { get; set; } = 3000;
-    public int TimeoutMs { get; set; } = 10000;
-    public int MaxConcurrency { get; set; } = 5;
     public bool Headless { get; set; } = true;
-    public string WcagLevel { get; set; } = "wcag21aa";
-    public string? WaveApiKey { get; set; }
-    public string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+    public int MaxConcurrency { get; set; } = 5;
+    public int SettleDelayMs { get; set; } = 3000;
     public Dictionary<string, SiteConfig> Sites { get; set; } = new();
+    public int TimeoutMs { get; set; } = 10000;
+    public string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+    public string? WaveApiKey { get; set; }
+    public string WcagLevel { get; set; } = "wcag21aa";
 }
 
 internal class SiteConfig
@@ -5143,8 +5136,8 @@ internal class SiteConfig
 
 internal class SiteCredential
 {
-    public string Username { get; set; } = "";
     public string Password { get; set; } = "";
+    public string Username { get; set; } = "";
 }
 
 // ============================================================================
@@ -5153,10 +5146,10 @@ internal class SiteCredential
 
 internal class SiteResult
 {
-    public string Url { get; set; } = "";
+    public CertInfo? Certificate { get; set; }
     public string FolderName { get; set; } = "";
     public List<PageResult> Pages { get; set; } = [];
-    public CertInfo? Certificate { get; set; }
+    public string Url { get; set; } = "";
 }
 
 /// <summary>
@@ -5164,41 +5157,41 @@ internal class SiteResult
 /// </summary>
 internal class CertInfo
 {
-    public string Subject { get; set; } = "";
-    public string Issuer { get; set; } = "";
-    public string Thumbprint { get; set; } = "";
-    public string SerialNumber { get; set; } = "";
-    public DateTime NotBefore { get; set; }
-    public DateTime NotAfter { get; set; }
     public int DaysUntilExpiry { get; set; }
-    public string SignatureAlgorithm { get; set; } = "";
-    public int KeySizeBits { get; set; }
-    public List<string> SubjectAlternativeNames { get; set; } = [];
-    public List<string> SanWsuDomains { get; set; } = [];
-    public List<string> SanOtherDomains { get; set; } = [];
     public string? ErrorMessage { get; set; }
+    public string Issuer { get; set; } = "";
+    public int KeySizeBits { get; set; }
+    public DateTime NotAfter { get; set; }
+    public DateTime NotBefore { get; set; }
+    public List<string> SanOtherDomains { get; set; } = [];
+    public List<string> SanWsuDomains { get; set; } = [];
+    public string SerialNumber { get; set; } = "";
+    public string SignatureAlgorithm { get; set; } = "";
+    public string Subject { get; set; } = "";
+    public List<string> SubjectAlternativeNames { get; set; } = [];
+    public string Thumbprint { get; set; } = "";
 }
 
 internal class PageResult
 {
-    public string PagePath { get; set; } = "";
-    public string FullUrl { get; set; } = "";
-    public string? FinalUrl { get; set; }
-    public string? Title { get; set; }
-    public string FolderName { get; set; } = "";
-    public int StatusCode { get; set; }
-    public long HtmlSize { get; set; }
-    public long ScreenshotSize { get; set; }
-    public bool Success { get; set; }
-    public string? ErrorMessage { get; set; }
-    public string? CredentialUsed { get; set; }
+    public A11yPageSummary? A11ySummary { get; set; }
+    public DateTime CapturedAt { get; set; }
     public List<string> ConsoleErrors { get; set; } = [];
     public List<string> ConsoleWarnings { get; set; } = [];
-    public List<ScreenshotEntry> Screenshots { get; set; } = [];
+    public string? CredentialUsed { get; set; }
+    public string? ErrorMessage { get; set; }
+    public string? FinalUrl { get; set; }
+    public string FolderName { get; set; } = "";
+    public string FullUrl { get; set; } = "";
+    public long HtmlSize { get; set; }
     public List<ImageEntry> Images { get; set; } = [];
     public long ImagesTotalSize { get; set; }
-    public DateTime CapturedAt { get; set; }
-    public A11yPageSummary? A11ySummary { get; set; }
+    public string PagePath { get; set; } = "";
+    public List<ScreenshotEntry> Screenshots { get; set; } = [];
+    public long ScreenshotSize { get; set; }
+    public int StatusCode { get; set; }
+    public bool Success { get; set; }
+    public string? Title { get; set; }
 }
 
 /// <summary>
@@ -5207,8 +5200,8 @@ internal class PageResult
 internal class ScreenshotEntry
 {
     public string FileName { get; set; } = "";
-    public string Label { get; set; } = "";
     public long FileSize { get; set; }
+    public string Label { get; set; } = "";
     public int StepNumber { get; set; }
 }
 
@@ -5217,10 +5210,10 @@ internal class ScreenshotEntry
 /// </summary>
 internal class ImageEntry
 {
-    public string FileName { get; set; } = "";
-    public string SourceUrl { get; set; } = "";
     public string AltText { get; set; } = "";
+    public string FileName { get; set; } = "";
     public long FileSize { get; set; }
+    public string SourceUrl { get; set; } = "";
 }
 
 /// <summary>
@@ -5228,17 +5221,16 @@ internal class ImageEntry
 /// </summary>
 internal class ImageInfo
 {
-    [JsonPropertyName("src")]
-    public string Src { get; set; } = "";
-
     [JsonPropertyName("alt")]
     public string Alt { get; set; } = "";
 
-    [JsonPropertyName("width")]
-    public int Width { get; set; }
-
     [JsonPropertyName("height")]
     public int Height { get; set; }
+    [JsonPropertyName("src")]
+    public string Src { get; set; } = "";
+
+    [JsonPropertyName("width")]
+    public int Width { get; set; }
 }
 
 // ============================================================================
@@ -5250,14 +5242,14 @@ internal class ImageInfo
 /// </summary>
 internal class A11yIssue
 {
-    public string Tool { get; set; } = "";
-    public string RuleId { get; set; } = "";
     public string CanonicalRuleId { get; set; } = "";
-    public string Severity { get; set; } = "moderate";
-    public string Message { get; set; } = "";
-    public string? Selector { get; set; }
-    public string? Snippet { get; set; }
     public string? HelpUrl { get; set; }
+    public string Message { get; set; } = "";
+    public string RuleId { get; set; } = "";
+    public string? Selector { get; set; }
+    public string Severity { get; set; } = "moderate";
+    public string? Snippet { get; set; }
+    public string Tool { get; set; } = "";
     public string? WcagCriteria { get; set; }
 }
 
@@ -5266,11 +5258,11 @@ internal class A11yIssue
 /// </summary>
 internal class A11yToolResult
 {
-    public string ToolName { get; set; } = "";
-    public string Status { get; set; } = "completed";
     public long DurationMs { get; set; }
     public string? ErrorMessage { get; set; }
     public List<A11yIssue> Issues { get; set; } = [];
+    public string Status { get; set; } = "completed";
+    public string ToolName { get; set; } = "";
 }
 
 /// <summary>
@@ -5278,15 +5270,15 @@ internal class A11yToolResult
 /// </summary>
 internal class A11yPageSummary
 {
+    public Dictionary<string, A11yToolSummary> ByTool { get; set; } = new();
+    public int Critical { get; set; }
+    public int Minor { get; set; }
+    public int Moderate { get; set; }
+    public List<A11yRankedRule> RankedRules { get; set; } = [];
+    public int Serious { get; set; }
     public List<string> ToolsRun { get; set; } = [];
     public List<string> ToolsSkipped { get; set; } = [];
     public int TotalViolations { get; set; }
-    public int Critical { get; set; }
-    public int Serious { get; set; }
-    public int Moderate { get; set; }
-    public int Minor { get; set; }
-    public Dictionary<string, A11yToolSummary> ByTool { get; set; } = new();
-    public List<A11yRankedRule> RankedRules { get; set; } = [];
 }
 
 /// <summary>
@@ -5294,11 +5286,11 @@ internal class A11yPageSummary
 /// </summary>
 internal class A11yToolSummary
 {
-    public int Total { get; set; }
     public int Critical { get; set; }
-    public int Serious { get; set; }
-    public int Moderate { get; set; }
     public int Minor { get; set; }
+    public int Moderate { get; set; }
+    public int Serious { get; set; }
+    public int Total { get; set; }
 }
 
 /// <summary>
@@ -5306,18 +5298,18 @@ internal class A11yToolSummary
 /// </summary>
 internal class A11yRankedRule
 {
-    public int Rank { get; set; }
     public string CanonicalRuleId { get; set; } = "";
-    public string Severity { get; set; } = "";
-    public string Consensus { get; set; } = "";
-    public double ConfidenceScore { get; set; }
     public string Confidence { get; set; } = "";
+    public double ConfidenceScore { get; set; }
+    public string Consensus { get; set; } = "";
+    public string? ExampleSnippet { get; set; }
+    public string? HelpUrl { get; set; }
+    public string Message { get; set; } = "";
+    public int Rank { get; set; }
+    public string Severity { get; set; } = "";
     public List<string> ToolsFound { get; set; } = [];
     public int TotalInstances { get; set; }
-    public string Message { get; set; } = "";
-    public string? HelpUrl { get; set; }
     public string? WcagCriteria { get; set; }
-    public string? ExampleSnippet { get; set; }
 }
 
 /// <summary>
@@ -5325,23 +5317,22 @@ internal class A11yRankedRule
 /// </summary>
 internal class AxeViolation
 {
+    [JsonPropertyName("help")]
+    public string Help { get; set; } = "";
+
+    [JsonPropertyName("helpUrl")]
+    public string? HelpUrl { get; set; }
     [JsonPropertyName("id")]
     public string Id { get; set; } = "";
 
     [JsonPropertyName("impact")]
     public string? Impact { get; set; }
 
-    [JsonPropertyName("help")]
-    public string Help { get; set; } = "";
-
-    [JsonPropertyName("helpUrl")]
-    public string? HelpUrl { get; set; }
+    [JsonPropertyName("nodes")]
+    public List<AxeNode> Nodes { get; set; } = [];
 
     [JsonPropertyName("tags")]
     public List<string> Tags { get; set; } = [];
-
-    [JsonPropertyName("nodes")]
-    public List<AxeNode> Nodes { get; set; } = [];
 }
 
 /// <summary>
@@ -5349,12 +5340,11 @@ internal class AxeViolation
 /// </summary>
 internal class AxeNode
 {
+    [JsonPropertyName("failureSummary")]
+    public string? FailureSummary { get; set; }
     [JsonPropertyName("html")]
     public string Html { get; set; } = "";
 
     [JsonPropertyName("target")]
     public List<string> Target { get; set; } = [];
-
-    [JsonPropertyName("failureSummary")]
-    public string? FailureSummary { get; set; }
 }

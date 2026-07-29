@@ -170,7 +170,7 @@ sc start FreeServicesHubAgent</code></pre>
                             <div>
                                 <label for="regKeyCount" class="form-label small fw-bold mb-1">Number of keys</label>
                                 <input type="number" id="regKeyCount" class="form-control form-control-sm" style="width:100px;"
-                                       min="1" max="50" @bind="_generateCount" />
+                                        min="1" max="50" @bind="_generateCount" />
                             </div>
                             <button type="button" class="btn btn-success" @onclick="GenerateKeys"
                                     disabled="@_generating" aria-label="Generate registration keys">
@@ -235,8 +235,8 @@ sc start FreeServicesHubAgent</code></pre>
                     <div>
                         <label for="agentMgmtFilter" class="form-label small fw-bold mb-1">Search</label>
                         <input type="search" id="agentMgmtFilter" class="form-control form-control-sm"
-                               placeholder="Name, hostname, OS…"
-                               @bind="_filterText" @bind:event="oninput" style="min-width:200px;" />
+                                placeholder="Name, hostname, OS…"
+                                @bind="_filterText" @bind:event="oninput" style="min-width:200px;" />
                     </div>
                     <div>
                         <label for="agentMgmtStatus" class="form-label small fw-bold mb-1">Status</label>
@@ -293,7 +293,7 @@ sc start FreeServicesHubAgent</code></pre>
                                     <tr>
                                         <td>
                                             <span class="badge @GetStatusBadge(agent.Status)"
-                                                  aria-label="@agent.Status" title="@agent.Status">&bull;</span>
+                                                    aria-label="@agent.Status" title="@agent.Status">&bull;</span>
                                         </td>
                                         <td><strong>@agent.Name</strong></td>
                                         <td><code class="small">@agent.Hostname</code></td>
@@ -365,7 +365,7 @@ sc start FreeServicesHubAgent</code></pre>
                                 </li>
                                 @foreach (var p in VisiblePageNumbers) {
                                     <li class="page-item @(p == _currentPage ? "active" : "")"
-                                        aria-current="@(p == _currentPage ? "page" : null)">
+                                            aria-current="@(p == _currentPage ? "page" : null)">
                                         <button class="page-link" @onclick="() => GoToPage(p)"
                                                 aria-label="Page @p">@p</button>
                                     </li>
@@ -440,7 +440,7 @@ sc start FreeServicesHubAgent</code></pre>
                                                 <td>
                                                     @if (key.UsedByAgentId.HasValue && key.UsedByAgentId != Guid.Empty) {
                                                         <a href="@(Helpers.BuildUrl("AgentDashboard"))"
-                                                           aria-label="View agent @key.UsedByAgentId.Value.ToString()[..8]">
+                                                                aria-label="View agent @key.UsedByAgentId.Value.ToString()[..8]">
                                                             @key.UsedByAgentId.Value.ToString()[..8]…
                                                         </a>
                                                     } else {
@@ -519,7 +519,7 @@ sc start FreeServicesHubAgent</code></pre>
         @* ═══════════ Delete Confirmation Modal ═══════════ *@
         @if (_deleteConfirmAgent != null) {
             <div class="modal d-block" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-modal="true"
-                 style="background-color: rgba(0,0,0,0.5);">
+                    style="background-color: rgba(0,0,0,0.5);">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-danger text-white">

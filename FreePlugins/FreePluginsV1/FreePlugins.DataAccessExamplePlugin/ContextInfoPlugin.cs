@@ -28,26 +28,6 @@ namespace FreePlugins.DataAccessExamplePlugin;
 public class ContextInfoPlugin : ICompiledGeneralPlugin
 {
     /// <summary>
-    /// Static property required by ICompiledPlugin interface.
-    /// </summary>
-    public static Type PluginType => typeof(ContextInfoPlugin);
-
-    /// <summary>
-    /// Plugin properties for compatibility with the existing plugin system.
-    /// </summary>
-    public Dictionary<string, object> Properties() => new() {
-        { "Id", Guid.Parse("4dd6cae9-b9a7-4048-8f7c-f338151d46ac") },
-        { "Author", "WSU EIT" },
-        { "ContainsSensitiveData", true },
-        { "Description", "Demonstrates accessing plugin metadata and context." },
-        { "Name", "Context Info Example (Compiled)" },
-        { "SortOrder", 3 },
-        { "Type", PluginTypes.General },
-        { "Version", "1.0.0" },
-        { "Enabled", true },
-    };
-
-    /// <summary>
     /// Execute the plugin and display context information.
     /// </summary>
     /// <remarks>
@@ -162,4 +142,23 @@ public class ContextInfoPlugin : ICompiledGeneralPlugin
 
         return PluginResult.Success(messages, output);
     }
+    /// <summary>
+    /// Static property required by ICompiledPlugin interface.
+    /// </summary>
+    public static Type PluginType => typeof(ContextInfoPlugin);
+
+    /// <summary>
+    /// Plugin properties for compatibility with the existing plugin system.
+    /// </summary>
+    public Dictionary<string, object> Properties() => new() {
+        { "Id", Guid.Parse("4dd6cae9-b9a7-4048-8f7c-f338151d46ac") },
+        { "Author", "WSU EIT" },
+        { "ContainsSensitiveData", true },
+        { "Description", "Demonstrates accessing plugin metadata and context." },
+        { "Name", "Context Info Example (Compiled)" },
+        { "SortOrder", 3 },
+        { "Type", PluginTypes.General },
+        { "Version", "1.0.0" },
+        { "Enabled", true },
+    };
 }

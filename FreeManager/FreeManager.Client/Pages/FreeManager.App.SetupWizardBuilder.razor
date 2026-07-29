@@ -48,8 +48,8 @@
                         <div class="mb-3">
                             <label class="form-label">Wizard Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control"
-                                   @bind="_wizard.Name"
-                                   placeholder="e.g., Tenant Onboarding" />
+                                    @bind="_wizard.Name"
+                                    placeholder="e.g., Tenant Onboarding" />
                             @if (!string.IsNullOrWhiteSpace(_wizard.Name) && !IsValidName(_wizard.Name)) {
                                 <div class="text-danger small mt-1">Name must be PascalCase (e.g., TenantOnboarding)</div>
                             }
@@ -57,8 +57,8 @@
                         <div class="mb-3">
                             <label class="form-label">Description</label>
                             <textarea class="form-control" rows="2"
-                                      @bind="_wizard.Description"
-                                      placeholder="Brief description of this wizard's purpose"></textarea>
+                                    @bind="_wizard.Description"
+                                    placeholder="Brief description of this wizard's purpose"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Icon</label>
@@ -84,15 +84,14 @@
                     <div class="card-body">
                         <div class="form-check mb-2">
                             <input type="checkbox" class="form-check-input" id="opt-completion"
-                                   @bind="_wizard.TrackCompletion" />
+                                    @bind="_wizard.TrackCompletion" />
                             <label class="form-check-label" for="opt-completion">
                                 <strong>Track Completion</strong>
                                 <div class="text-muted small">Record when users complete the wizard</div>
                             </label>
                         </div>
                         <div class="form-check mb-2">
-                            <input type="checkbox" class="form-check-input" id="opt-skip"
-                                   @bind="_wizard.AllowSkip" />
+                            <input type="checkbox" class="form-check-input" id="opt-skip" @bind="_wizard.AllowSkip" />
                             <label class="form-check-label" for="opt-skip">
                                 <strong>Allow Skip</strong>
                                 <div class="text-muted small">Let users skip optional steps</div>
@@ -100,7 +99,7 @@
                         </div>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="opt-persist"
-                                   @bind="_wizard.PersistStateAcrossSessions" />
+                                    @bind="_wizard.PersistStateAcrossSessions" />
                             <label class="form-check-label" for="opt-persist">
                                 <strong>Persist State</strong>
                                 <div class="text-muted small">Save progress if user leaves</div>
@@ -178,7 +177,7 @@
                                     var isExpanded = _expandedStepId == step.StepId;
                                     <div class="card mb-2 @(isExpanded ? "border-primary" : "")">
                                         <div class="card-header d-flex justify-content-between align-items-center py-2 cursor-pointer"
-                                             @onclick="@(() => ToggleStep(step.StepId))">
+                                                @onclick="@(() => ToggleStep(step.StepId))">
                                             <div class="d-flex align-items-center">
                                                 <span class="badge bg-primary me-2">@(step.Order + 1)</span>
                                                 <i class="fa-solid @step.Icon text-muted me-2"></i>
@@ -198,12 +197,12 @@
                                                     <div class="col-md-6">
                                                         <label class="form-label">Step Name <span class="text-danger">*</span></label>
                                                         <input type="text" class="form-control" @bind="step.Name"
-                                                               placeholder="e.g., Organization Details" />
+                                                                placeholder="e.g., Organization Details" />
                                                     </div>
                                                     <div class="col-md-3">
                                                         <label class="form-label">Short Name</label>
                                                         <input type="text" class="form-control" @bind="step.ShortName"
-                                                               placeholder="e.g., Org" />
+                                                                placeholder="e.g., Org" />
                                                     </div>
                                                     <div class="col-md-3">
                                                         <label class="form-label">Icon</label>
@@ -218,14 +217,14 @@
                                                     <div class="col-md-9">
                                                         <label class="form-label">Description</label>
                                                         <input type="text" class="form-control" @bind="step.Description"
-                                                               placeholder="Brief description shown to users" />
+                                                                placeholder="Brief description shown to users" />
                                                     </div>
                                                     <div class="col-md-3">
                                                         <label class="form-label">&nbsp;</label>
                                                         <div class="form-check mt-2">
                                                             <input type="checkbox" class="form-check-input"
-                                                                   id="step-optional-@step.StepId"
-                                                                   @bind="step.IsOptional" />
+                                                                    id="step-optional-@step.StepId"
+                                                                    @bind="step.IsOptional" />
                                                             <label class="form-check-label" for="step-optional-@step.StepId">
                                                                 Optional
                                                             </label>
@@ -258,7 +257,7 @@
                                                                         <tr>
                                                                             <td>
                                                                                 <input type="text" class="form-control form-control-sm"
-                                                                                       @bind="field.Name" placeholder="FieldName" />
+                                                                                        @bind="field.Name" placeholder="FieldName" />
                                                                             </td>
                                                                             <td>
                                                                                 <select class="form-select form-select-sm" @bind="field.Type">

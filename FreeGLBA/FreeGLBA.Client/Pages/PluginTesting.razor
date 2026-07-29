@@ -31,11 +31,11 @@
 
         <div class="row">
             <PluginPrompts @ref="_pluginPrompts"
-                ButtonClickHandler="PluginButtonClicked"
-                Class="prompt-wrapper mb-2"
-                HighlightMissingRequiredFields="true"
-                Plugin="_plugin"
-                OnValuesChange="PromptValuesChanged" />
+                    ButtonClickHandler="PluginButtonClicked"
+                    Class="prompt-wrapper mb-2"
+                    HighlightMissingRequiredFields="true"
+                    Plugin="_plugin"
+                    OnValuesChange="PromptValuesChanged" />
         </div>
     } else if (Model.Plugins.Count > 0) {
         bool haveDescriptions = Model.Plugins.Any(x => x.Type.ToLower() == "example" && !String.IsNullOrWhiteSpace(x.Description));

@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="KPI Summary Cards"
-                     Description="Four KPI cards in a row-cols-2 row-cols-md-4 grid show aggregate metrics: count, total amount, average priority, enabled count. Each uses LINQ (.Count, .Sum, .Average) on the same data list. This is the standard dashboard header pattern in every production app."
-                     Code="@_codeKpiCards" />
+                    Description="Four KPI cards in a row-cols-2 row-cols-md-4 grid show aggregate metrics: count, total amount, average priority, enabled count. Each uses LINQ (.Count, .Sum, .Average) on the same data list. This is the standard dashboard header pattern in every production app."
+                    Code="@_codeKpiCards" />
             <InfoTip Title="Progress Bar Breakdown"
-                     Description="Each status/category group gets a progress bar showing its percentage of the total. The bar width is calculated as (group.Count * 100 / total)%. The progress element uses Bootstrap's progress-bar class with a status-colored background. This is the Helpdesk dashboard pattern."
-                     Code="@_codeProgressBreakdown" />
+                    Description="Each status/category group gets a progress bar showing its percentage of the total. The bar width is calculated as (group.Count * 100 / total)%. The progress element uses Bootstrap's progress-bar class with a status-colored background. This is the Helpdesk dashboard pattern."
+                    Code="@_codeProgressBreakdown" />
             <InfoTip Title="Top N Leaderboard"
-                     Description="A table-sm table-hover shows the top 5 items by amount. LINQ OrderByDescending + Take(5) does the work. A rank counter increments per row. This leaderboard pattern appears in sales dashboards and reporting pages across production apps."
-                     Code="@_codeTopN" />
+                    Description="A table-sm table-hover shows the top 5 items by amount. LINQ OrderByDescending + Take(5) does the work. A rank counter increments per row. This leaderboard pattern appears in sales dashboards and reporting pages across production apps."
+                    Code="@_codeTopN" />
         </div>
 
         @* KPI Row *@

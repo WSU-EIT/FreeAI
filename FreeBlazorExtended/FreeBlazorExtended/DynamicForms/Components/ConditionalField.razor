@@ -88,15 +88,6 @@
     protected string _fieldClass = "";
 
     /// <summary>
-    /// Predicate evaluated on every parameter change. When it returns <c>true</c>,
-    /// <see cref="ChildContent"/> is rendered with the chosen entrance animation;
-    /// when it returns <c>false</c>, the content is completely unmounted.
-    /// <para><b>Required.</b></para>
-    /// Example: <c>Condition="@(() => _form.HasFeature)"</c>
-    /// </summary>
-    [Parameter] public Func<bool> Condition { get; set; } = () => false;
-
-    /// <summary>
     /// CSS entrance animation applied to the wrapper div when the field becomes visible.
     /// Accepted values: <c>"fade"</c> (default), <c>"slide-down"</c>, <c>"slide-up"</c>,
     /// <c>"none"</c> (instant, no animation).
@@ -108,6 +99,15 @@
     /// <para><b>Required</b> for the component to render anything.</para>
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Predicate evaluated on every parameter change. When it returns <c>true</c>,
+    /// <see cref="ChildContent"/> is rendered with the chosen entrance animation;
+    /// when it returns <c>false</c>, the content is completely unmounted.
+    /// <para><b>Required.</b></para>
+    /// Example: <c>Condition="@(() => _form.HasFeature)"</c>
+    /// </summary>
+    [Parameter] public Func<bool> Condition { get; set; } = () => false;
 
     protected override void OnInitialized()
     {

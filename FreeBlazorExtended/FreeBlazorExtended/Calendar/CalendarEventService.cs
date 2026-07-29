@@ -12,64 +12,12 @@ public partial class CalendarEventService
 {
     private static readonly ConcurrentDictionary<Guid, CalendarEvent> _events = new();
 
-    public Task<List<CalendarEvent>> GetCalendarEvents(Guid TenantId)
-    {
-        var events = _events.Values
-            .Where(e => e.TenantId == TenantId && !e.Deleted)
-            .ToList();
-        return Task.FromResult(events);
-    }
-
-    public Task<List<CalendarEvent>> GetEventsInRange(Guid TenantId, DateTime StartUtc, DateTime EndUtc)
-    {
-        var events = _events.Values
-            .Where(e => e.TenantId == TenantId && !e.Deleted &&
-                        e.StartUtc < EndUtc && e.EndUtc > StartUtc)
-            .ToList();
-        return Task.FromResult(events);
-    }
-
-    public Task<List<CalendarEvent>> GetResourceEvents(Guid TenantId, Guid ResourceId, DateTime StartUtc, DateTime EndUtc)
-    {
-        var events = _events.Values
-            .Where(e => e.TenantId == TenantId && !e.Deleted &&
-                        e.ResourceId == ResourceId &&
-                        e.StartUtc < EndUtc && e.EndUtc > StartUtc)
-            .OrderBy(e => e.StartUtc)
-            .ToList();
-        return Task.FromResult(events);
-    }
-
-    public Task<CalendarEvent?> GetCalendarEvent(Guid EventId)
-    {
-        _events.TryGetValue(EventId, out var evt);
-        return Task.FromResult(evt?.Deleted == false ? evt : null);
-    }
-
-    public Task<CalendarEvent> SaveCalendarEvent(CalendarEvent evt, string? UserId = null)
-    {
-        if (evt.EventId == Guid.Empty)
-            evt.EventId = Guid.NewGuid();
-
-        evt.LastModified = DateTime.UtcNow;
-        evt.LastModifiedBy = UserId;
-
-        if (!_events.ContainsKey(evt.EventId)) {
-            evt.Added = DateTime.UtcNow;
-            evt.AddedBy = UserId;
-        }
-
-        _events[evt.EventId] = evt;
-        return Task.FromResult(evt);
-    }
-
     public async Task<(bool hasConflict, List<CalendarEvent> conflicts)> CheckConflicts(
         Guid TenantId,
         Guid? ResourceId,
         DateTime StartUtc,
         DateTime EndUtc,
-        Guid? excludeEventId = null)
-    {
+        Guid? excludeEventId = null){
         if (!ResourceId.HasValue)
             return (false, new());
 
@@ -84,9 +32,27 @@ public partial class CalendarEventService
         return (conflicts.Count > 0, conflicts);
     }
 
-    public async Task<List<CalendarEvent>> ExpandRecurringEvent(
-        Guid EventId,
-        DateTime throughUtc)
+    public void ClearAllEvents()
+    {
+        _events.Clear();
+    }
+
+    public Task<DataObjects.BooleanResponse> DeleteCalendarEvent(Guid EventId, DataObjects.User? CurrentUser = null)
+    {
+        var output = new DataObjects.BooleanResponse();
+
+        if (_events.TryGetValue(EventId, out var evt)) {
+            evt.Deleted = true;
+            evt.LastModified = DateTime.UtcNow;
+            output.Result = true;
+        } else {
+            output.Messages.Add("Calendar event not found.");
+        }
+
+        return Task.FromResult(output);
+    }
+
+    public async Task<List<CalendarEvent>> ExpandRecurringEvent(Guid EventId, DateTime throughUtc)
     {
         var evt = await GetCalendarEvent(EventId);
         if (evt == null || string.IsNullOrEmpty(evt.RecurrenceRuleJson))
@@ -113,8 +79,7 @@ public partial class CalendarEventService
     private List<CalendarEvent> GenerateRecurrenceInstances(
         CalendarEvent baseEvent,
         RecurrenceRule rule,
-        DateTime throughUtc)
-    {
+        DateTime throughUtc){
         var instances = new List<CalendarEvent>();
         var current = baseEvent.StartUtc;
         var duration = baseEvent.EndUtc - baseEvent.StartUtc;
@@ -143,6 +108,40 @@ public partial class CalendarEventService
         return instances;
     }
 
+    public Task<CalendarEvent?> GetCalendarEvent(Guid EventId)
+    {
+        _events.TryGetValue(EventId, out var evt);
+        return Task.FromResult(evt?.Deleted == false ? evt : null);
+    }
+
+    public Task<List<CalendarEvent>> GetCalendarEvents(Guid TenantId)
+    {
+        var events = _events.Values
+            .Where(e => e.TenantId == TenantId && !e.Deleted)
+            .ToList();
+        return Task.FromResult(events);
+    }
+
+    public Task<List<CalendarEvent>> GetEventsInRange(Guid TenantId, DateTime StartUtc, DateTime EndUtc)
+    {
+        var events = _events.Values
+            .Where(e => e.TenantId == TenantId && !e.Deleted &&
+                        e.StartUtc < EndUtc && e.EndUtc > StartUtc)
+            .ToList();
+        return Task.FromResult(events);
+    }
+
+    public Task<List<CalendarEvent>> GetResourceEvents(Guid TenantId, Guid ResourceId, DateTime StartUtc, DateTime EndUtc)
+    {
+        var events = _events.Values
+            .Where(e => e.TenantId == TenantId && !e.Deleted &&
+                        e.ResourceId == ResourceId &&
+                        e.StartUtc < EndUtc && e.EndUtc > StartUtc)
+            .OrderBy(e => e.StartUtc)
+            .ToList();
+        return Task.FromResult(events);
+    }
+
     private DateTime IncrementByRule(DateTime current, RecurrenceRule rule)
     {
         return rule.Frequency switch
@@ -155,23 +154,20 @@ public partial class CalendarEventService
         };
     }
 
-    public Task<DataObjects.BooleanResponse> DeleteCalendarEvent(Guid EventId, DataObjects.User? CurrentUser = null)
+    public Task<CalendarEvent> SaveCalendarEvent(CalendarEvent evt, string? UserId = null)
     {
-        var output = new DataObjects.BooleanResponse();
+        if (evt.EventId == Guid.Empty)
+            evt.EventId = Guid.NewGuid();
 
-        if (_events.TryGetValue(EventId, out var evt)) {
-            evt.Deleted = true;
-            evt.LastModified = DateTime.UtcNow;
-            output.Result = true;
-        } else {
-            output.Messages.Add("Calendar event not found.");
+        evt.LastModified = DateTime.UtcNow;
+        evt.LastModifiedBy = UserId;
+
+        if (!_events.ContainsKey(evt.EventId)) {
+            evt.Added = DateTime.UtcNow;
+            evt.AddedBy = UserId;
         }
 
-        return Task.FromResult(output);
-    }
-
-    public void ClearAllEvents()
-    {
-        _events.Clear();
+        _events[evt.EventId] = evt;
+        return Task.FromResult(evt);
     }
 }

@@ -26,26 +26,6 @@ public class SampleBackgroundPlugin : ICompiledBackgroundProcessPlugin
     private static bool _firstRunLogged = false;
 
     /// <summary>
-    /// Static property required by ICompiledPlugin interface.
-    /// </summary>
-    public static Type PluginType => typeof(SampleBackgroundPlugin);
-
-    /// <summary>
-    /// Plugin properties for compatibility with the existing plugin system.
-    /// Note: When using [Plugin] attribute, this method is not called.
-    /// </summary>
-    public Dictionary<string, object> Properties() => new() {
-        { "Id", Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890") },
-        { "Name", "Sample Background Plugin" },
-        { "Type", PluginTypes.BackgroundProcess },
-        { "Version", "1.0.0" },
-        { "Author", "WSU EIT" },
-        { "Description", "A sample compiled plugin that demonstrates the NuGet-based plugin architecture." },
-        { "SortOrder", 100 },
-        { "Enabled", true },
-    };
-
-    /// <summary>
     /// Execute the background process.
     /// </summary>
     public async Task<PluginResult> ExecuteAsync(IPluginContext context, long iteration)
@@ -70,4 +50,24 @@ public class SampleBackgroundPlugin : ICompiledBackgroundProcessPlugin
 
         return PluginResult.Success([$"Sample plugin ran successfully on iteration {iteration}"]);
     }
+
+    /// <summary>
+    /// Static property required by ICompiledPlugin interface.
+    /// </summary>
+    public static Type PluginType => typeof(SampleBackgroundPlugin);
+
+    /// <summary>
+    /// Plugin properties for compatibility with the existing plugin system.
+    /// Note: When using [Plugin] attribute, this method is not called.
+    /// </summary>
+    public Dictionary<string, object> Properties() => new() {
+        { "Id", Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890") },
+        { "Name", "Sample Background Plugin" },
+        { "Type", PluginTypes.BackgroundProcess },
+        { "Version", "1.0.0" },
+        { "Author", "WSU EIT" },
+        { "Description", "A sample compiled plugin that demonstrates the NuGet-based plugin architecture." },
+        { "SortOrder", 100 },
+        { "Enabled", true },
+    };
 }

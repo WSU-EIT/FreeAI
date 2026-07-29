@@ -88,27 +88,27 @@
                     </div>
 
                     <InfoTip Title="Diff Viewer"
-                             Description="The diff editor shows two versions of a file side-by-side with changes highlighted in red (removed) and green (added). This is the same visual pattern as GitHub pull requests, VS Code's diff view, and Git's 'diff' command. The MonacoEditor component switches to diff mode when you provide a ValueToDiff parameter."
-                             Code="@_codeDiff" />
+                            Description="The diff editor shows two versions of a file side-by-side with changes highlighted in red (removed) and green (added). This is the same visual pattern as GitHub pull requests, VS Code's diff view, and Git's 'diff' command. The MonacoEditor component switches to diff mode when you provide a ValueToDiff parameter."
+                            Code="@_codeDiff" />
                 </div>
 
                 @if (_diffSideBySide) {
                     <MonacoEditor @ref="_diffEditor"
-                        Language="@_diffLanguage"
-                        Value="@_diffModified"
-                        ValueToDiff="@_diffOriginal"
-                        MinHeight="400px"
-                        ReadOnly="true"
-                        Id="diff-editor" />
+                            Language="@_diffLanguage"
+                            Value="@_diffModified"
+                            ValueToDiff="@_diffOriginal"
+                            MinHeight="400px"
+                            ReadOnly="true"
+                            Id="diff-editor" />
                 } else {
                     <MonacoEditor @ref="_diffEditorInline"
-                        Language="@_diffLanguage"
-                        Value="@_diffModified"
-                        ValueToDiff="@_diffOriginal"
-                        MinHeight="400px"
-                        ReadOnly="true"
-                        Id="diff-editor-inline"
-                        ConstructorOptionsForDiffEditor="@_inlineDiffOptions" />
+                            Language="@_diffLanguage"
+                            Value="@_diffModified"
+                            ValueToDiff="@_diffOriginal"
+                            MinHeight="400px"
+                            ReadOnly="true"
+                            Id="diff-editor-inline"
+                            ConstructorOptionsForDiffEditor="@_inlineDiffOptions" />
                 }
 
                 <div class="mt-2 small text-muted">
@@ -149,8 +149,8 @@
                     }
 
                     <InfoTip Title="API Notebook"
-                             Description="Type a JSON request body in the left editor, pick an endpoint from the dropdown, and click Send. The server executes the request and returns the JSON response in the right editor. This is the same workflow as Postman or the browser's DevTools Network tab — but built into the app."
-                             Code="@_codeNotebook" />
+                            Description="Type a JSON request body in the left editor, pick an endpoint from the dropdown, and click Send. The server executes the request and returns the JSON response in the right editor. This is the same workflow as Postman or the browser's DevTools Network tab — but built into the app."
+                            Code="@_codeNotebook" />
 
                     @* Auto-save status *@
                     <span class="ms-auto small">
@@ -162,8 +162,8 @@
                             <span class="text-danger"><i class="fa-solid fa-circle-xmark me-1"></i>Save failed</span>
                         }
                         <InfoTip Title="Auto-Save"
-                                 Description="The Monaco component has a built-in Timeout parameter (default 1000ms). Every time you stop typing for that duration, the ValueChanged event fires. We catch that event and POST the content to api/Data/SaveCodeSnippet. The status indicator shows Saving → Saved ✓ with timestamp, or Error ✗ if the server call fails."
-                                 Code="@_codeAutoSave" />
+                                Description="The Monaco component has a built-in Timeout parameter (default 1000ms). Every time you stop typing for that duration, the ValueChanged event fires. We catch that event and POST the content to api/Data/SaveCodeSnippet. The status indicator shows Saving → Saved ✓ with timestamp, or Error ✗ if the server call fails."
+                                Code="@_codeAutoSave" />
                     </span>
                 </div>
 
@@ -177,19 +177,19 @@
                             </div>
                             <div class="card-body p-0">
                                 <MonacoEditor @ref="_requestEditor"
-                                    Language="@MonacoEditor.MonacoLanguage.json"
-                                    @bind-Value="_requestBody"
-                                    MinHeight="350px"
-                                    Timeout="2000"
-                                    PlaceholderText="Type your JSON request body here..."
-                                    Id="request-editor" />
+                                        Language="@MonacoEditor.MonacoLanguage.json"
+                                        @bind-Value="_requestBody"
+                                        MinHeight="350px"
+                                        Timeout="2000"
+                                        PlaceholderText="Type your JSON request body here..."
+                                        Id="request-editor" />
                             </div>
                             <div class="card-footer bg-light py-1 d-flex justify-content-between align-items-center">
                                 <span class="small text-muted font-monospace">
                                     Ln @(_requestEditor?.EditorCursorPosition?.LineNumber ?? 1), Col @(_requestEditor?.EditorCursorPosition?.Column ?? 1)
                                     <InfoTip Title="Cursor Position"
-                                             Description="The Monaco component tracks cursor position via the EditorCursorPosition property. Every time you move the cursor, an event updates the Line and Column numbers — just like the status bar in VS Code. This requires no extra code; the component already exposes it."
-                                             Code="@_codeCursor" />
+                                            Description="The Monaco component tracks cursor position via the EditorCursorPosition property. Every time you move the cursor, an event updates the Line and Column numbers — just like the status bar in VS Code. This requires no extra code; the component already exposes it."
+                                            Code="@_codeCursor" />
                                 </span>
                                 <span class="small text-muted">JSON</span>
                             </div>
@@ -207,18 +207,18 @@
                             </div>
                             <div class="card-body p-0">
                                 <MonacoEditor @ref="_responseEditor"
-                                    Language="@MonacoEditor.MonacoLanguage.json"
-                                    @bind-Value="_responseBody"
-                                    MinHeight="350px"
-                                    ReadOnly="true"
-                                    PlaceholderText="Response will appear here after you click Send..."
-                                    Id="response-editor" />
+                                        Language="@MonacoEditor.MonacoLanguage.json"
+                                        @bind-Value="_responseBody"
+                                        MinHeight="350px"
+                                        ReadOnly="true"
+                                        PlaceholderText="Response will appear here after you click Send..."
+                                        Id="response-editor" />
                             </div>
                             <div class="card-footer bg-light py-1 d-flex justify-content-between align-items-center">
                                 <span class="small text-muted">Read-only
                                     <InfoTip Title="Read-Only Editor"
-                                             Description="The response editor is read-only — you can select and copy text, but you can't type in it. This is set with the ReadOnly parameter. The component calls Monaco's updateOptions({ readOnly: true }) through JS interop. The same pattern is used in the Git Browser for viewing source files."
-                                             Code="@_codeReadOnly" />
+                                            Description="The response editor is read-only — you can select and copy text, but you can't type in it. This is set with the ReadOnly parameter. The component calls Monaco's updateOptions({ readOnly: true }) through JS interop. The same pattern is used in the Git Browser for viewing source files."
+                                            Code="@_codeReadOnly" />
                                 </span>
                                 <span class="small text-muted">JSON</span>
                             </div>
@@ -233,8 +233,8 @@
                             <span class="small fw-semibold">
                                 <i class="fa-solid fa-bookmark me-1"></i> Saved Snippets (@_savedSnippets.Count)
                                 <InfoTip Title="Saved Snippets"
-                                         Description="Every time auto-save fires, the current request body is stored on the server via SaveCodeSnippet. You can click any saved snippet to reload it into the request editor. This demonstrates the full round-trip: type → debounce → save → reload."
-                                         Code="@_codeSnippets" />
+                                        Description="Every time auto-save fires, the current request body is stored on the server via SaveCodeSnippet. You can click any saved snippet to reload it into the request editor. This demonstrates the full round-trip: type → debounce → save → reload."
+                                        Code="@_codeSnippets" />
                             </span>
                             <button class="btn btn-sm btn-outline-secondary" @onclick="LoadSnippets">
                                 <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh
@@ -245,7 +245,7 @@
                                 <tbody>
                                     @foreach (var snippet in _savedSnippets) {
                                         <tr class="cursor-pointer @(snippet.SnippetId == _currentSnippetId ? "table-active" : "")"
-                                            @onclick="@(() => LoadSnippetIntoEditor(snippet))">
+                                                @onclick="@(() => LoadSnippetIntoEditor(snippet))">
                                             <td class="small fw-semibold">@snippet.Title</td>
                                             <td class="small text-muted">@snippet.Language</td>
                                             <td class="small text-muted text-end">@snippet.LastSaved.ToLocalTime().ToString("h:mm:ss tt")</td>

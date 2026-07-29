@@ -10,6 +10,59 @@ namespace FreeA11yChecker.Scanner;
 /// </summary>
 public static class ReadingLevelAnalyzer
 {
+    /// <summary>Counts sentences by looking for sentence-ending punctuation.</summary>
+    private static int CountSentences(string text)
+    {
+        int count = 0;
+        for (int i = 0; i < text.Length; i++) {
+            char c = text[i];
+            if (c == '.' || c == '!' || c == '?') {
+                count++;
+                // Skip consecutive punctuation (e.g., "..." or "?!")
+                while (i + 1 < text.Length && (text[i + 1] == '.' || text[i + 1] == '!' || text[i + 1] == '?'))
+                    i++;
+            }
+        }
+        return Math.Max(1, count);
+    }
+
+    /// <summary>
+    /// Estimates syllable count using a simple English heuristic:
+    /// count vowel groups, subtract silent e, minimum 1 per word.
+    /// </summary>
+    private static int CountSyllables(string text)
+    {
+        int total = 0;
+        string[] words = text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string rawWord in words) {
+            string word = rawWord.Trim('.', ',', '!', '?', ';', ':', '"', '\'', '(', ')').ToLowerInvariant();
+            if (word.Length == 0) continue;
+
+            int syllables = 0;
+            bool previousVowel = false;
+
+            for (int i = 0; i < word.Length; i++) {
+                bool isVowel = "aeiouy".Contains(word[i]);
+                if (isVowel && !previousVowel) syllables++;
+                previousVowel = isVowel;
+            }
+
+            // Subtract silent 'e' at end.
+            if (word.EndsWith('e') && syllables > 1) syllables--;
+
+            // Minimum 1 syllable per word.
+            total += Math.Max(1, syllables);
+        }
+
+        return total;
+    }
+
+    /// <summary>Counts words by splitting on whitespace.</summary>
+    private static int CountWords(string text)
+    {
+        return text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
     /// <summary>
     /// Extracts body text from the page and computes readability metrics.
     /// Returns JSON with Flesch-Kincaid Grade Level, Flesch Reading Ease, word/sentence/syllable counts.
@@ -84,59 +137,5 @@ public static class ReadingLevelAnalyzer
         } catch {
             return "{}";
         }
-    }
-
-    /// <summary>Counts words by splitting on whitespace.</summary>
-    private static int CountWords(string text)
-    {
-        return text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
-    }
-
-    /// <summary>Counts sentences by looking for sentence-ending punctuation.</summary>
-    private static int CountSentences(string text)
-    {
-        int count = 0;
-        for (int i = 0; i < text.Length; i++) {
-            char c = text[i];
-            if (c == '.' || c == '!' || c == '?') {
-                count++;
-                // Skip consecutive punctuation (e.g., "..." or "?!")
-                while (i + 1 < text.Length && (text[i + 1] == '.' || text[i + 1] == '!' || text[i + 1] == '?'))
-                    i++;
-            }
-        }
-        return Math.Max(1, count);
-    }
-
-    /// <summary>
-    /// Estimates syllable count using a simple English heuristic:
-    /// count vowel groups, subtract silent e, minimum 1 per word.
-    /// </summary>
-    private static int CountSyllables(string text)
-    {
-        int total = 0;
-        string[] words = text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (string rawWord in words) {
-            string word = rawWord.Trim('.', ',', '!', '?', ';', ':', '"', '\'', '(', ')').ToLowerInvariant();
-            if (word.Length == 0) continue;
-
-            int syllables = 0;
-            bool previousVowel = false;
-
-            for (int i = 0; i < word.Length; i++) {
-                bool isVowel = "aeiouy".Contains(word[i]);
-                if (isVowel && !previousVowel) syllables++;
-                previousVowel = isVowel;
-            }
-
-            // Subtract silent 'e' at end.
-            if (word.EndsWith('e') && syllables > 1) syllables--;
-
-            // Minimum 1 syllable per word.
-            total += Math.Max(1, syllables);
-        }
-
-        return total;
     }
 }

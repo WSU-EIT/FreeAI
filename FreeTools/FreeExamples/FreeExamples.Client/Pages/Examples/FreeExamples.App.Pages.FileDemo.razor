@@ -64,8 +64,8 @@
                 </button>
             </div>
             <InfoTip Title="Download Buttons"
-                     Description="These buttons ask the server to generate a file and send it to your browser. 'Text Report' creates a plain .txt file. 'CSV Export' creates a .csv file (a spreadsheet format). The server builds the file in memory, converts it to bytes, and JavaScript triggers your browser's save dialog."
-                     Code="await Helpers.DownloadFileToBrowser(result.FileName, result.FileData);" />
+                    Description="These buttons ask the server to generate a file and send it to your browser. 'Text Report' creates a plain .txt file. 'CSV Export' creates a .csv file (a spreadsheet format). The server builds the file in memory, converts it to bytes, and JavaScript triggers your browser's save dialog."
+                    Code="await Helpers.DownloadFileToBrowser(result.FileName, result.FileData);" />
         </div>
 
         @if (_downloading) {
@@ -76,14 +76,14 @@
             <div class="card-header">
                 <strong>Upload Files</strong>
                 <InfoTip Title="File Upload Area"
-                         Description="This is a drag-and-drop zone. You can either click inside the grey area to browse your computer for a file, or drag a file from your desktop and drop it here. The browser reads the file contents and sends them to the server. Only certain file types are allowed (.TXT, .CSV, .JSON, .XML) to keep things safe."
-                         Code="@_codeUpload" />
+                        Description="This is a drag-and-drop zone. You can either click inside the grey area to browse your computer for a file, or drag a file from your desktop and drop it here. The browser reads the file contents and sends them to the server. Only certain file types are allowed (.TXT, .CSV, .JSON, .XML) to keep things safe."
+                        Code="@_codeUpload" />
             </div>
             <div class="card-body">
                 <UploadFile UploadType="Microsoft.AspNetCore.Components.Forms.IBrowserFile"
-                    AllowMultipleUploads="true"
-                    SupportedFileTypes="@(new List<string> { ".txt", ".csv", ".json", ".xml" })"
-                    OnUploadComplete="@((List<DataObjects.FileStorage> files) => OnFilesUploaded(files))" />
+                        AllowMultipleUploads="true"
+                        SupportedFileTypes="@(new List<string> { ".txt", ".csv", ".json", ".xml" })"
+                        OnUploadComplete="@((List<DataObjects.FileStorage> files) => OnFilesUploaded(files))" />
             </div>
         </div>
 
@@ -92,8 +92,8 @@
                             <div class="card-header">
                                 <strong>Uploaded Files</strong> (@_uploadedFiles.Count)
                                 <InfoTip Title="File Listing Table"
-                                         Description="This table shows every file you uploaded. It updates instantly without reloading the page because Blazor re-renders just the changed parts (reactive rendering). Each row shows the file name, extension, size, and a delete button."
-                                         Code="@_codeFileList" />
+                                        Description="This table shows every file you uploaded. It updates instantly without reloading the page because Blazor re-renders just the changed parts (reactive rendering). Each row shows the file name, extension, size, and a delete button."
+                                        Code="@_codeFileList" />
                             </div>
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0" aria-label="Uploaded files">
@@ -104,8 +104,8 @@
                                 <th scope="col" class="text-end">
                                     Size
                                     <InfoTip Title="File Size Formatting"
-                                             Description="Computers store file sizes in bytes (a byte is 8 bits, the smallest unit of data). A text file might be 1,500 bytes. But that is hard to read, so we convert it: 1,500 bytes = 1.5 KB (kilobytes). 1,000 KB = 1 MB (megabytes). The FormatBytes() function does this math for us."
-                                             Code="@_codeFormatBytes" />
+                                            Description="Computers store file sizes in bytes (a byte is 8 bits, the smallest unit of data). A text file might be 1,500 bytes. But that is hard to read, so we convert it: 1,500 bytes = 1.5 KB (kilobytes). 1,000 KB = 1 MB (megabytes). The FormatBytes() function does this math for us."
+                                            Code="@_codeFormatBytes" />
                                 </th>
                                 <th scope="col"><span class="visually-hidden">Actions</span></th>
                             </tr>
@@ -116,8 +116,8 @@
                                     <td>@file.FileName</td>
                                     <td><span class="badge bg-secondary">@file.Extension</span>
                                         <InfoTip Title="File Extension Badge"
-                                                 Description="A file extension is the part after the dot in a file name (like .txt or .csv). It tells the computer what kind of file it is. Here we show it as a badge, a small colored label. This is a Bootstrap CSS class that makes text stand out."
-                                                 Code="@_codeBadge" />
+                                                Description="A file extension is the part after the dot in a file name (like .txt or .csv). It tells the computer what kind of file it is. Here we show it as a badge, a small colored label. This is a Bootstrap CSS class that makes text stand out."
+                                                Code="@_codeBadge" />
                                     </td>
                                     <td class="text-end">@FormatBytes(file.Bytes ?? 0)</td>
                                     <td class="text-end">
@@ -125,8 +125,8 @@
                                             <i class="fa-solid fa-trash" aria-hidden="true"></i>
                                         </button>
                                         <InfoTip Title="Remove Button"
-                                                 Description="Clicking the trash icon removes this file from the list. It does not reload the whole page. Blazor just removes that one row from the table. The onclick attribute tells Blazor: when someone clicks this button, run this C# method. The method removes the file from the list and Blazor automatically updates the display."
-                                                 Code="@_codeRemove" />
+                                                Description="Clicking the trash icon removes this file from the list. It does not reload the whole page. Blazor just removes that one row from the table. The onclick attribute tells Blazor: when someone clicks this button, run this C# method. The method removes the file from the list and Blazor automatically updates the display."
+                                                Code="@_codeRemove" />
                                     </td>
                                 </tr>
                             }

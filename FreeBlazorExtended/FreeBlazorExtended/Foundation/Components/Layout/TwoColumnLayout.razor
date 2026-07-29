@@ -139,6 +139,23 @@
     protected string _layoutClass = "";
     protected string _sidebarClass = "";
 
+    /// <summary>The primary page body content rendered in the wide main column.</summary>
+    [Parameter] public RenderFragment? MainContent { get; set; }
+
+    /// <summary>
+    /// Positioning behaviour of the sidebar panel.
+    /// Accepted values:
+    /// <list type="bullet">
+    ///   <item><c>"sticky"</c> — the sidebar pins to the top of the viewport while the main content scrolls (default)</item>
+    ///   <item><c>"floating"</c> — fixed position over the page; useful for panels that must stay in frame</item>
+    ///   <item><c>"default"</c> or any other value — static positioning, scrolls with the page</item>
+    /// </list>
+    /// </summary>
+    [Parameter] public string SidebarBehavior { get; set; } = "sticky";
+
+    /// <summary>The contextual or navigational content rendered in the sidebar column.</summary>
+    [Parameter] public RenderFragment? SidebarContent { get; set; }
+
     /// <summary>
     /// Controls which side the sidebar occupies.
     /// Accepted values: <c>"right"</c> (default), <c>"left"</c>.
@@ -152,23 +169,6 @@
     /// Default: <c>"default"</c>.
     /// </summary>
     [Parameter] public string SidebarWidth { get; set; } = "default";
-
-    /// <summary>
-    /// Positioning behaviour of the sidebar panel.
-    /// Accepted values:
-    /// <list type="bullet">
-    ///   <item><c>"sticky"</c> — the sidebar pins to the top of the viewport while the main content scrolls (default)</item>
-    ///   <item><c>"floating"</c> — fixed position over the page; useful for panels that must stay in frame</item>
-    ///   <item><c>"default"</c> or any other value — static positioning, scrolls with the page</item>
-    /// </list>
-    /// </summary>
-    [Parameter] public string SidebarBehavior { get; set; } = "sticky";
-
-    /// <summary>The primary page body content rendered in the wide main column.</summary>
-    [Parameter] public RenderFragment? MainContent { get; set; }
-
-    /// <summary>The contextual or navigational content rendered in the sidebar column.</summary>
-    [Parameter] public RenderFragment? SidebarContent { get; set; }
 
     protected override void OnInitialized()
     {

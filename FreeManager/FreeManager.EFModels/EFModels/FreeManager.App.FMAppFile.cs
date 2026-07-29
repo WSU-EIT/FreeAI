@@ -10,11 +10,14 @@ namespace FreeManager.EFModels.EFModels;
 [Table("FMAppFiles")]
 public class FMAppFile
 {
-    [Key]
-    public Guid FMAppFileId { get; set; } = Guid.NewGuid();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [Required]
-    public Guid FMProjectId { get; set; }
+    /// <summary>
+    /// Current version number (incremented on each save).
+    /// </summary>
+    public int CurrentVersion { get; set; } = 1;
+    public bool Deleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     /// <summary>
     /// Relative path like "DataObjects.App.MyProject.cs" or "Index.App.razor"
@@ -28,20 +31,16 @@ public class FMAppFile
     /// </summary>
     [MaxLength(50)]
     public string FileType { get; set; } = "Other";
+    [Key]
+    public Guid FMAppFileId { get; set; } = Guid.NewGuid();
 
-    /// <summary>
-    /// Current version number (incremented on each save).
-    /// </summary>
-    public int CurrentVersion { get; set; } = 1;
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public bool Deleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
+    [Required]
+    public Guid FMProjectId { get; set; }
 
     // Navigation properties
     [ForeignKey("FMProjectId")]
     public virtual FMProject? Project { get; set; }
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<FMAppFileVersion> Versions { get; set; } = new List<FMAppFileVersion>();
 }

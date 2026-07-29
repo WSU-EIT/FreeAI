@@ -42,14 +42,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Contract Builder Pattern"
-                     Description="A multi-section contract where the user fills in details (parties, terms, payment) and signs at the end. The progress bar shows completion across all sections. This is the DocuSign/HelloSign workflow where the contract is built step-by-step."
-                     Code="@_codeContractBuilder" />
+                    Description="A multi-section contract where the user fills in details (parties, terms, payment) and signs at the end. The progress bar shows completion across all sections. This is the DocuSign/HelloSign workflow where the contract is built step-by-step."
+                    Code="@_codeContractBuilder" />
             <InfoTip Title="Section Progress Tracking"
-                     Description="A progress bar at the top shows how many sections are complete. Each section has a card with a green check when done. The Submit button enables only when all sections (including signature) are complete. This linear completion pattern ensures nothing is missed."
-                     Code="@_codeSectionProgress" />
+                    Description="A progress bar at the top shows how many sections are complete. Each section has a card with a green check when done. The Submit button enables only when all sections (including signature) are complete. This linear completion pattern ensures nothing is missed."
+                    Code="@_codeSectionProgress" />
             <InfoTip Title="Date and Counter-Signature Fields"
-                     Description="Contract forms include auto-filled date fields (DateTime.Now) and placeholders for counter-signatures. The signed date locks when the signature is captured. In production, the server records the exact timestamp for legal compliance."
-                     Code="@_codeDateCounterSign" />
+                    Description="Contract forms include auto-filled date fields (DateTime.Now) and placeholders for counter-signatures. The signed date locks when the signature is captured. In production, the server records the exact timestamp for legal compliance."
+                    Code="@_codeDateCounterSign" />
         </div>
 
         @* Progress *@

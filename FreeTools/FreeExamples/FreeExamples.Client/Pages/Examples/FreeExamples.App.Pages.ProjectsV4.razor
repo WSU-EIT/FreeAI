@@ -21,8 +21,8 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Multi-Select Pattern"
-                     Description="Checkboxes let you pick 2-3 projects. The comparison view only renders when at least 2 are selected, up to a max of 3."
-                     Code="@_codeSelect" />
+                    Description="Checkboxes let you pick 2-3 projects. The comparison view only renders when at least 2 are selected, up to a max of 3."
+                    Code="@_codeSelect" />
         </div>
 
         @* Project selector *@
@@ -35,7 +35,7 @@
                         <div class="col">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" checked="@isSelected" disabled="@(!isSelected && _selectedIds.Count >= 3)"
-                                       @onchange="() => ToggleProject(p.RecordId)" id="@($"cmp-{p.RecordId}")"/>
+                                        @onchange="() => ToggleProject(p.RecordId)" id="@($"cmp-{p.RecordId}")"/>
                                 <label class="form-check-label small" for="@($"cmp-{p.RecordId}")">
                                     @if (!string.IsNullOrEmpty(p.Color)) { <span class="rounded-circle d-inline-block me-1" style="width:8px; height:8px; background:@p.Color;"></span> }
                                     @p.Name

@@ -6,6 +6,18 @@ namespace FreeTools.EndpointMapper;
 
 internal class Program
 {
+    private static string DetermineProject(string filePath, string root)
+    {
+        var relativePath = Path.GetRelativePath(root, filePath);
+        
+        if (relativePath.Contains("FreeTools.Web"))
+            return "FreeTools.Web";
+        if (relativePath.Contains("Account"))
+            return "Identity";
+            
+        var parts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return parts.Length > 0 ? parts[0] : "Unknown";
+    }
     private static async Task<int> Main(string[] args)
     {
         // Robustness: Optional startup delay
@@ -159,18 +171,5 @@ internal class Program
         ConsoleOutput.PrintDivider();
 
         return 0;
-    }
-
-    private static string DetermineProject(string filePath, string root)
-    {
-        var relativePath = Path.GetRelativePath(root, filePath);
-        
-        if (relativePath.Contains("FreeTools.Web"))
-            return "FreeTools.Web";
-        if (relativePath.Contains("Account"))
-            return "Identity";
-            
-        var parts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return parts.Length > 0 ? parts[0] : "Unknown";
     }
 }

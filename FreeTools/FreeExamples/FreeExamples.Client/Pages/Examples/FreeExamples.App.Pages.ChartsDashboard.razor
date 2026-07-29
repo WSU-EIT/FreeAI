@@ -55,21 +55,21 @@
                 <div class="card shadow-sm border-0" role="region" aria-label="Items by Status chart">
                     <div class="card-header bg-white"><h6 class="mb-0">Items by Status
                         <InfoTip Title="Pie Chart"
-                                 Description="This component renders a Highcharts pie chart. You pass it an array of name/value pairs, and it draws proportional slices. The chart is interactive — hover shows tooltips, clicking a slice fires the OnItemClicked callback so C# can respond to the click."
-                                 Code="@_codePieChart" />
+                                Description="This component renders a Highcharts pie chart. You pass it an array of name/value pairs, and it draws proportional slices. The chart is interactive — hover shows tooltips, clicking a slice fires the OnItemClicked callback so C# can respond to the click."
+                                Code="@_codePieChart" />
                     </h6></div>
                     <div class="card-body">
                         <div id="chart-status-pie" style="min-height:300px;" role="img" aria-label="Pie chart showing item counts by status">
                             <Highcharts @ref="_pieChart"
-                                ElementId="chart-status-pie"
-                                ChartTitle="Items by Status"
-                                ChartType="Highcharts.ChartTypes.Pie"
-                                SeriesDataItems="@_pieData"
-                                OnItemClicked="@((int i) => OnPieClicked(i))" />
+                                    ElementId="chart-status-pie"
+                                    ChartTitle="Items by Status"
+                                    ChartType="Highcharts.ChartTypes.Pie"
+                                    SeriesDataItems="@_pieData"
+                                    OnItemClicked="@((int i) => OnPieClicked(i))" />
                         </div>
                         <InfoTip Title="Drill-Down"
-                                 Description="When you click a pie slice, the chart fires a callback with the index of the clicked slice. The C# code looks up that index to find which status was clicked and shows a message. In a real app, this would navigate to a filtered list showing only items with that status."
-                                 Code="@_codeDrillDown" />
+                                Description="When you click a pie slice, the chart fires a callback with the index of the clicked slice. The C# code looks up that index to find which status was clicked and shows a message. In a real app, this would navigate to a filtered list showing only items with that status."
+                                Code="@_codeDrillDown" />
                     </div>
                 </div>
             </div>
@@ -77,18 +77,18 @@
                 <div class="card shadow-sm border-0" role="region" aria-label="Amount by Category chart">
                     <div class="card-header bg-white"><h6 class="mb-0">Amount by Category
                         <InfoTip Title="Column Chart"
-                                 Description="A column (bar) chart compares values side by side. Each bar's height represents a number. This chart shows two data series (Amount and Count) grouped by category. The yAxisText label describes what the vertical axis measures."
-                                 Code="@_codeColumnChart" />
+                                Description="A column (bar) chart compares values side by side. Each bar's height represents a number. This chart shows two data series (Amount and Count) grouped by category. The yAxisText label describes what the vertical axis measures."
+                                Code="@_codeColumnChart" />
                     </h6></div>
                     <div class="card-body">
                         <div id="chart-category-column" style="min-height:300px;" role="img" aria-label="Column chart showing amounts by category">
                             <Highcharts @ref="_columnChart"
-                                ElementId="chart-category-column"
-                                ChartTitle="Amount by Category"
-                                ChartType="Highcharts.ChartTypes.Column"
-                                yAxisText="Total Amount ($)"
-                                SeriesCategories="@_columnCategories"
-                                SeriesDataArrayItems="@_columnData" />
+                                    ElementId="chart-category-column"
+                                    ChartTitle="Amount by Category"
+                                    ChartType="Highcharts.ChartTypes.Column"
+                                    yAxisText="Total Amount ($)"
+                                    SeriesCategories="@_columnCategories"
+                                    SeriesDataArrayItems="@_columnData" />
                         </div>
                     </div>
                 </div>
