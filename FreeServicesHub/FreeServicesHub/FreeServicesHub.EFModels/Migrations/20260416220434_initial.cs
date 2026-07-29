@@ -9,6 +9,63 @@ namespace FreeServicesHub.EFModels.Migrations
     public partial class initial : Migration
     {
         /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "AgentHeartbeats");
+
+            migrationBuilder.DropTable(
+                name: "Agents");
+
+            migrationBuilder.DropTable(
+                name: "ApiClientTokens");
+
+            migrationBuilder.DropTable(
+                name: "CiCdTokenUsages");
+
+            migrationBuilder.DropTable(
+                name: "DepartmentGroups");
+
+            migrationBuilder.DropTable(
+                name: "FileStorage");
+
+            migrationBuilder.DropTable(
+                name: "HubJobs");
+
+            migrationBuilder.DropTable(
+                name: "PluginCache");
+
+            migrationBuilder.DropTable(
+                name: "RegistrationKeys");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
+
+            migrationBuilder.DropTable(
+                name: "TagItems");
+
+            migrationBuilder.DropTable(
+                name: "UDFLabels");
+
+            migrationBuilder.DropTable(
+                name: "UserInGroups");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "UserGroups");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
+        }
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -472,64 +529,6 @@ namespace FreeServicesHub.EFModels.Migrations
                 name: "IX_Users_TenantId",
                 table: "Users",
                 column: "TenantId");
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "AgentHeartbeats");
-
-            migrationBuilder.DropTable(
-                name: "Agents");
-
-            migrationBuilder.DropTable(
-                name: "ApiClientTokens");
-
-            migrationBuilder.DropTable(
-                name: "CiCdTokenUsages");
-
-            migrationBuilder.DropTable(
-                name: "DepartmentGroups");
-
-            migrationBuilder.DropTable(
-                name: "FileStorage");
-
-            migrationBuilder.DropTable(
-                name: "HubJobs");
-
-            migrationBuilder.DropTable(
-                name: "PluginCache");
-
-            migrationBuilder.DropTable(
-                name: "RegistrationKeys");
-
-            migrationBuilder.DropTable(
-                name: "Settings");
-
-            migrationBuilder.DropTable(
-                name: "TagItems");
-
-            migrationBuilder.DropTable(
-                name: "UDFLabels");
-
-            migrationBuilder.DropTable(
-                name: "UserInGroups");
-
-            migrationBuilder.DropTable(
-                name: "Tags");
-
-            migrationBuilder.DropTable(
-                name: "UserGroups");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Departments");
-
-            migrationBuilder.DropTable(
-                name: "Tenants");
         }
     }
 }

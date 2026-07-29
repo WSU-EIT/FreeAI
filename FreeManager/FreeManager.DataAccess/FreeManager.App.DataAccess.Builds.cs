@@ -45,102 +45,18 @@ namespace FreeManager;
 public partial class DataAccess
 {
     // ============================================================
-    // BUILD METHODS
+    // HELPER METHODS
     // ============================================================
 
-    public async Task<DataObjects.FMBuildInfo> FM_StartBuild(DataObjects.FMStartBuildRequest request, DataObjects.User CurrentUser)
+    /// <summary>
+    /// Computes SHA256 hash of content for change detection.
+    /// </summary>
+    private static string FM_ComputeHash(string content)
     {
-        var tenantId = CurrentUser.TenantId;
-        var userId = CurrentUser.UserId;
-
-        var project = await data.FMProjects
-            .Include(p => p.Builds)
-            .FirstOrDefaultAsync(p => p.FMProjectId == request.ProjectId
-                                   && p.TenantId == tenantId
-                                   && !p.Deleted);
-
-        if (project == null)
-        {
-            throw new ArgumentException("Project not found");
-        }
-
-        var buildNumber = (project.Builds.Any() ? project.Builds.Max(b => b.BuildNumber) : 0) + 1;
-
-        var build = new EFModels.EFModels.FMBuild
-        {
-            FMProjectId = project.FMProjectId,
-            BuildNumber = buildNumber,
-            Status = "Queued",
-            CreatedBy = userId
-        };
-
-        data.FMBuilds.Add(build);
-        await data.SaveChangesAsync();
-
-        return new DataObjects.FMBuildInfo
-        {
-            Id = build.FMBuildId,
-            ProjectId = build.FMProjectId,
-            BuildNumber = build.BuildNumber,
-            Status = build.Status,
-            CreatedAt = build.CreatedAt
-        };
-    }
-
-    public async Task<List<DataObjects.FMBuildInfo>> FM_GetBuilds(Guid projectId, DataObjects.User CurrentUser)
-    {
-        var tenantId = CurrentUser.TenantId;
-
-        var projectExists = await data.FMProjects
-            .AnyAsync(p => p.FMProjectId == projectId && p.TenantId == tenantId && !p.Deleted);
-
-        if (!projectExists) return new List<DataObjects.FMBuildInfo>();
-
-        var builds = await data.FMBuilds
-            .Where(b => b.FMProjectId == projectId)
-            .OrderByDescending(b => b.BuildNumber)
-            .Select(b => new DataObjects.FMBuildInfo
-            {
-                Id = b.FMBuildId,
-                ProjectId = b.FMProjectId,
-                BuildNumber = b.BuildNumber,
-                Status = b.Status,
-                CreatedAt = b.CreatedAt,
-                StartedAt = b.StartedAt,
-                CompletedAt = b.CompletedAt,
-                ArtifactSizeBytes = b.ArtifactSizeBytes,
-                ErrorMessage = b.ErrorMessage
-            })
-            .ToListAsync();
-
-        return builds;
-    }
-
-    public async Task<DataObjects.FMBuildDetailInfo?> FM_GetBuild(Guid buildId, DataObjects.User CurrentUser)
-    {
-        var tenantId = CurrentUser.TenantId;
-
-        var build = await data.FMBuilds
-            .Include(b => b.Project)
-            .Where(b => b.FMBuildId == buildId
-                     && b.Project != null
-                     && b.Project.TenantId == tenantId)
-            .Select(b => new DataObjects.FMBuildDetailInfo
-            {
-                Id = b.FMBuildId,
-                ProjectId = b.FMProjectId,
-                BuildNumber = b.BuildNumber,
-                Status = b.Status,
-                CreatedAt = b.CreatedAt,
-                StartedAt = b.StartedAt,
-                CompletedAt = b.CompletedAt,
-                ArtifactSizeBytes = b.ArtifactSizeBytes,
-                ErrorMessage = b.ErrorMessage,
-                LogOutput = b.LogOutput
-            })
-            .FirstOrDefaultAsync();
-
-        return build;
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var hash = sha256.ComputeHash(bytes);
+        return Convert.ToHexString(hash);
     }
 
     // ============================================================
@@ -198,6 +114,62 @@ public partial class DataAccess
         }
 
         return memoryStream.ToArray();
+    }
+
+    public async Task<DataObjects.FMBuildDetailInfo?> FM_GetBuild(Guid buildId, DataObjects.User CurrentUser)
+    {
+        var tenantId = CurrentUser.TenantId;
+
+        var build = await data.FMBuilds
+            .Include(b => b.Project)
+            .Where(b => b.FMBuildId == buildId
+                     && b.Project != null
+                     && b.Project.TenantId == tenantId)
+            .Select(b => new DataObjects.FMBuildDetailInfo
+            {
+                Id = b.FMBuildId,
+                ProjectId = b.FMProjectId,
+                BuildNumber = b.BuildNumber,
+                Status = b.Status,
+                CreatedAt = b.CreatedAt,
+                StartedAt = b.StartedAt,
+                CompletedAt = b.CompletedAt,
+                ArtifactSizeBytes = b.ArtifactSizeBytes,
+                ErrorMessage = b.ErrorMessage,
+                LogOutput = b.LogOutput
+            })
+            .FirstOrDefaultAsync();
+
+        return build;
+    }
+
+    public async Task<List<DataObjects.FMBuildInfo>> FM_GetBuilds(Guid projectId, DataObjects.User CurrentUser)
+    {
+        var tenantId = CurrentUser.TenantId;
+
+        var projectExists = await data.FMProjects
+            .AnyAsync(p => p.FMProjectId == projectId && p.TenantId == tenantId && !p.Deleted);
+
+        if (!projectExists) return new List<DataObjects.FMBuildInfo>();
+
+        var builds = await data.FMBuilds
+            .Where(b => b.FMProjectId == projectId)
+            .OrderByDescending(b => b.BuildNumber)
+            .Select(b => new DataObjects.FMBuildInfo
+            {
+                Id = b.FMBuildId,
+                ProjectId = b.FMProjectId,
+                BuildNumber = b.BuildNumber,
+                Status = b.Status,
+                CreatedAt = b.CreatedAt,
+                StartedAt = b.StartedAt,
+                CompletedAt = b.CompletedAt,
+                ArtifactSizeBytes = b.ArtifactSizeBytes,
+                ErrorMessage = b.ErrorMessage
+            })
+            .ToListAsync();
+
+        return builds;
     }
 
     /// <summary>
@@ -262,20 +234,47 @@ INSTALLATION:
 Generated: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC
 ================================================================================
 ";
-
     // ============================================================
-    // HELPER METHODS
+    // BUILD METHODS
     // ============================================================
 
-    /// <summary>
-    /// Computes SHA256 hash of content for change detection.
-    /// </summary>
-    private static string FM_ComputeHash(string content)
+    public async Task<DataObjects.FMBuildInfo> FM_StartBuild(DataObjects.FMStartBuildRequest request, DataObjects.User CurrentUser)
     {
-        using var sha256 = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(content);
-        var hash = sha256.ComputeHash(bytes);
-        return Convert.ToHexString(hash);
+        var tenantId = CurrentUser.TenantId;
+        var userId = CurrentUser.UserId;
+
+        var project = await data.FMProjects
+            .Include(p => p.Builds)
+            .FirstOrDefaultAsync(p => p.FMProjectId == request.ProjectId
+                                   && p.TenantId == tenantId
+                                   && !p.Deleted);
+
+        if (project == null)
+        {
+            throw new ArgumentException("Project not found");
+        }
+
+        var buildNumber = (project.Builds.Any() ? project.Builds.Max(b => b.BuildNumber) : 0) + 1;
+
+        var build = new EFModels.EFModels.FMBuild
+        {
+            FMProjectId = project.FMProjectId,
+            BuildNumber = buildNumber,
+            Status = "Queued",
+            CreatedBy = userId
+        };
+
+        data.FMBuilds.Add(build);
+        await data.SaveChangesAsync();
+
+        return new DataObjects.FMBuildInfo
+        {
+            Id = build.FMBuildId,
+            ProjectId = build.FMProjectId,
+            BuildNumber = build.BuildNumber,
+            Status = build.Status,
+            CreatedAt = build.CreatedAt
+        };
     }
 }
 

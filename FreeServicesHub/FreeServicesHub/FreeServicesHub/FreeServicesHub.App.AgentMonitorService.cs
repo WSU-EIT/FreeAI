@@ -31,8 +31,7 @@ public class AgentMonitorService : BackgroundService
     public AgentMonitorService(
         IHubContext<freeserviceshubHub, IsrHub> HubContext,
         IServiceProvider ServiceProvider,
-        ILogger<AgentMonitorService> Logger)
-    {
+        ILogger<AgentMonitorService> Logger){
         _hubContext = HubContext;
         _serviceProvider = ServiceProvider;
         _logger = Logger;

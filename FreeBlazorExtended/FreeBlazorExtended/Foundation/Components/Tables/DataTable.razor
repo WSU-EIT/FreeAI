@@ -36,10 +36,10 @@
             @if (ShowSearch) {
                 <div class="datatable-search">
                     <input type="text" class="form-control form-control-sm"
-                        placeholder="Search..."
-                        @bind="_searchTerm"
-                        @bind:event="oninput"
-                        aria-label="Search table" />
+                            placeholder="Search..."
+                            @bind="_searchTerm"
+                            @bind:event="oninput"
+                            aria-label="Search table" />
                 </div>
             }
             @if (ChildContent != null) {
@@ -56,16 +56,16 @@
                         @if (Selectable) {
                             <th scope="col" class="datatable-checkbox-col" role="columnheader">
                                 <input type="checkbox"
-                                    @onchange="@((ChangeEventArgs e) => SelectAllToggled(e))"
-                                    aria-label="Select all rows" />
+                                        @onchange="@((ChangeEventArgs e) => SelectAllToggled(e))"
+                                        aria-label="Select all rows" />
                             </th>
                         }
                         @foreach (var column in _columns) {
                             <th scope="col"
-                                class="@GetColumnHeaderClass(column)"
-                                role="columnheader"
-                                @onclick="@(() => SortColumn(column.PropertyName))"
-                                style="@(AllowSort && column.Sortable ? "cursor: pointer;" : "")">
+                                    class="@GetColumnHeaderClass(column)"
+                                    role="columnheader"
+                                    @onclick="@(() => SortColumn(column.PropertyName))"
+                                    style="@(AllowSort && column.Sortable ? "cursor: pointer;" : "")">
                                 <div class="d-flex align-items-center gap-2">
                                     <span>@column.Header</span>
                                     @if (AllowSort && column.Sortable && _sortColumn == column.PropertyName) {
@@ -82,9 +82,9 @@
                             @if (Selectable) {
                                 <td class="datatable-checkbox-col">
                                     <input type="checkbox"
-                                        @onchange="@((ChangeEventArgs e) => RowToggled(item, e))"
-                                        @key="item"
-                                        aria-label="Select row" />
+                                            @onchange="@((ChangeEventArgs e) => RowToggled(item, e))"
+                                            @key="item"
+                                            aria-label="Select row" />
                                 </td>
                             }
                             @foreach (var column in _columns) {

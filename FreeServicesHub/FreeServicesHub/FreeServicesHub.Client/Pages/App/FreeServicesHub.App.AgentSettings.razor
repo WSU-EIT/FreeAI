@@ -68,9 +68,9 @@
                 <div>
                     <label for="agentSettingsFilter" class="form-label small fw-bold mb-1">Search agents</label>
                     <input type="search" id="agentSettingsFilter" class="form-control form-control-sm"
-                           placeholder="Filter by name, service, status…"
-                           aria-describedby="agentSettingsFilterHelp"
-                           @bind="_filterText" @bind:event="oninput" style="min-width:220px;" />
+                            placeholder="Filter by name, service, status…"
+                            aria-describedby="agentSettingsFilterHelp"
+                            @bind="_filterText" @bind:event="oninput" style="min-width:220px;" />
                     <div id="agentSettingsFilterHelp" class="form-text visually-hidden">
                         Filters the table by agent name, service name, or status.
                     </div>
@@ -141,13 +141,13 @@
                             <tr class="@(isEditing ? "table-active" : "")">
                                 <td>
                                     <span class="badge @GetServiceStatusBadge(info.ServiceStatus)"
-                                          aria-label="@info.ServiceStatus" title="@info.ServiceStatus">&bull;</span>
+                                            aria-label="@info.ServiceStatus" title="@info.ServiceStatus">&bull;</span>
                                 </td>
                                 <td>
                                     @if (isEditing) {
                                         <label for="editAgentName-@info.AgentId" class="visually-hidden">Agent name</label>
                                         <input type="text" id="editAgentName-@info.AgentId"
-                                               class="form-control form-control-sm" @bind="_editAgentName" />
+                                                class="form-control form-control-sm" @bind="_editAgentName" />
                                     } else {
                                         <strong>@info.AgentName</strong>
                                     }
@@ -180,7 +180,7 @@
                                     @if (isEditing) {
                                         <label for="editHubUrl-@info.AgentId" class="visually-hidden">Hub URL</label>
                                         <input type="text" id="editHubUrl-@info.AgentId"
-                                               class="form-control form-control-sm" @bind="_editHubUrl" />
+                                                class="form-control form-control-sm" @bind="_editHubUrl" />
                                     } else {
                                         <small class="text-truncate d-inline-block" style="max-width:180px;" title="@info.HubUrl">@info.HubUrl</small>
                                     }
@@ -189,8 +189,8 @@
                                     @if (isEditing) {
                                         <label for="editHeartbeat-@info.AgentId" class="visually-hidden">Heartbeat interval (seconds)</label>
                                         <input type="number" id="editHeartbeat-@info.AgentId"
-                                               class="form-control form-control-sm" @bind="_editHeartbeatInterval"
-                                               min="5" max="3600" style="width:80px;" />
+                                                class="form-control form-control-sm" @bind="_editHeartbeatInterval"
+                                                min="5" max="3600" style="width:80px;" />
                                     } else {
                                         @info.HeartbeatIntervalSeconds
                                     }
@@ -254,9 +254,8 @@
                         </li>
                         @foreach (var p in VisiblePageNumbers) {
                             <li class="page-item @(p == _currentPage ? "active" : "")"
-                                aria-current="@(p == _currentPage ? "page" : null)">
-                                <button class="page-link" @onclick="() => GoToPage(p)"
-                                        aria-label="Page @p">@p</button>
+                                    aria-current="@(p == _currentPage ? "page" : null)">
+                                <button class="page-link" @onclick="() => GoToPage(p)" aria-label="Page @p">@p</button>
                             </li>
                         }
                         <li class="page-item @(_currentPage >= TotalPages ? "disabled" : "")">

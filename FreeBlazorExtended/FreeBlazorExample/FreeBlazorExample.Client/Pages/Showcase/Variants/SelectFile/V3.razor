@@ -7,16 +7,13 @@
 
     <h2 class="h5">Available Files</h2>
     <SelectFile Files="_available"
-                OnFileSelected="AddAttachment"
-                ShowRefreshButton="true"
-                OnRefresh="ReloadAvailable" />
+            OnFileSelected="AddAttachment"
+            ShowRefreshButton="true"
+            OnRefresh="ReloadAvailable" />
 
     <h2 class="h5 mt-4">Selected Attachments</h2>
     <p class="text-muted">Attachments: @_attachments.Count</p>
-    <RenderFiles Files="_attachments"
-                 OnDelete="RemoveAttachment"
-                 UseDeleteConfirmation="true"
-                 DeleteText="Remove" />
+    <RenderFiles Files="_attachments" OnDelete="RemoveAttachment" UseDeleteConfirmation="true" DeleteText="Remove" />
 </div>
 
 @code {
@@ -30,18 +27,6 @@
         }
 
         _attachments.Add(Clone(file));
-        return Task.CompletedTask;
-    }
-
-    private Task RemoveAttachment(FileItem file)
-    {
-        _attachments = _attachments.Where(item => item.FileId != file.FileId).ToList();
-        return Task.CompletedTask;
-    }
-
-    private Task ReloadAvailable()
-    {
-        _available = BuildAvailableFiles();
         return Task.CompletedTask;
     }
 
@@ -75,5 +60,17 @@
     private static byte[] InlineSvgBytes()
     {
         return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#198754'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+
+    private Task ReloadAvailable()
+    {
+        _available = BuildAvailableFiles();
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveAttachment(FileItem file)
+    {
+        _attachments = _attachments.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
     }
 }

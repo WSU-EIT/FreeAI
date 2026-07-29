@@ -117,7 +117,7 @@
                                 </h2>
                                 <div class="progress metric-bar mx-auto" style="max-width:200px;">
                                     <div class="progress-bar @GetMetricClass(_latestHeartbeat.CpuPercent, 70, 90)" role="progressbar"
-                                         style="width: @_latestHeartbeat.CpuPercent.ToString("F0")%"></div>
+                                            style="width: @_latestHeartbeat.CpuPercent.ToString("F0")%"></div>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                                 </div>
                                 <div class="progress metric-bar mx-auto" style="max-width:200px;">
                                     <div class="progress-bar @GetMetricClass(_latestHeartbeat.MemoryPercent, 75, 90)" role="progressbar"
-                                         style="width: @_latestHeartbeat.MemoryPercent.ToString("F0")%"></div>
+                                            style="width: @_latestHeartbeat.MemoryPercent.ToString("F0")%"></div>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +154,7 @@
                                     </div>
                                     <div class="progress metric-bar mx-auto" style="max-width:200px;">
                                         <div class="progress-bar @GetMetricClass(disk.Percent, 80, 95)" role="progressbar"
-                                             style="width: @disk.Percent.ToString("F0")%"></div>
+                                                style="width: @disk.Percent.ToString("F0")%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -254,9 +254,9 @@
 
     protected class LogEntry
     {
-        public DateTime Timestamp { get; set; }
-        public string Status { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
     }
 
     public void Dispose()

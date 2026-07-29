@@ -116,10 +116,10 @@
                                             </span>
                                             @if (prop.MaxLength.HasValue) {
                                                 <span class="badge bg-light text-dark ms-1 maxlen-badge" 
-                                                      @onclick="@(() => EditMaxLengthInline(prop))" 
-                                                      @onclick:stopPropagation="true"
-                                                      title="Click to edit"
-                                                      style="cursor: pointer;">
+                                                        @onclick="@(() => EditMaxLengthInline(prop))" 
+                                                        @onclick:stopPropagation="true"
+                                                        title="Click to edit"
+                                                        style="cursor: pointer;">
                                                     @prop.MaxLength
                                                 </span>
                                             }
@@ -129,12 +129,12 @@
                                         <td>
                                             @if (_inlineEditingMaxLengthId == prop.Id) {
                                                 <input type="number" class="form-control form-control-sm" style="width: 70px;"
-                                                       value="@prop.MaxLength" 
-                                                       @onchange="@(e => SaveMaxLengthInline(prop, e))"
-                                                       @onblur="CancelInlineEdit" />
+                                                        value="@prop.MaxLength" 
+                                                        @onchange="@(e => SaveMaxLengthInline(prop, e))"
+                                                        @onblur="CancelInlineEdit" />
                                             } else {
                                                 <span class="editable-value" @onclick="@(() => EditMaxLengthInline(prop))" 
-                                                      style="cursor: pointer;" title="Click to edit">
+                                                        style="cursor: pointer;" title="Click to edit">
                                                     @(prop.MaxLength?.ToString() ?? "-")
                                                 </span>
                                             }
@@ -213,12 +213,10 @@
                                     </td>
                                     <td style="width: 80px;">
                                         <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-primary" 
-                                                    @onclick="() => EditEnum(enumDef)">
+                                            <button class="btn btn-outline-primary" @onclick="() => EditEnum(enumDef)">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
-                                            <button class="btn btn-outline-danger" 
-                                                    @onclick="() => DeleteEnum(enumDef)">
+                                            <button class="btn btn-outline-danger" @onclick="() => DeleteEnum(enumDef)">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </div>
@@ -313,11 +311,11 @@
             @if (_showPreview) {
                 <div class="card-body p-0">
                     <FreeManager_App_EntityWizardLivePreview EntityName="@EntityName"
-                                                  PluralName="@(EntityName + "s")"
-                                                  PrimaryKeyName="@(EntityName + "Id")"
-                                                  PrimaryKeyType="@PrimaryKeyType"
-                                                  Properties="Properties"
-                                                  Enums="Enums" />
+                            PluralName="@(EntityName + "s")"
+                            PrimaryKeyName="@(EntityName + "Id")"
+                            PrimaryKeyType="@PrimaryKeyType"
+                            Properties="Properties"
+                            Enums="Enums" />
                 </div>
             }
         </div>
@@ -326,19 +324,19 @@
 
 @* Property Editor Modal *@
 <FreeManager_App_EntityWizardPropertyEditor IsOpen="_showPropertyModal"
-                                 IsOpenChanged="OnPropertyModalChanged"
-                                 Property="_editingProperty"
-                                 PropertyChanged="OnPropertyChanged"
-                                 Enums="Enums"
-                                 OnSave="SaveProperty"
-                                 OnAddEnum="AddEnumFromProperty" />
+        IsOpenChanged="OnPropertyModalChanged"
+        Property="_editingProperty"
+        PropertyChanged="OnPropertyChanged"
+        Enums="Enums"
+        OnSave="SaveProperty"
+        OnAddEnum="AddEnumFromProperty" />
 
 @* Enum Editor Modal *@
 <FreeManager_App_EntityWizardEnumEditor IsOpen="_showEnumModal"
-                             IsOpenChanged="OnEnumModalChanged"
-                             EnumDef="_editingEnum"
-                             EnumDefChanged="OnEnumDefChanged"
-                             OnSave="SaveEnum" />
+        IsOpenChanged="OnEnumModalChanged"
+        EnumDef="_editingEnum"
+        EnumDefChanged="OnEnumDefChanged"
+        OnSave="SaveEnum" />
 
 <style>
     .snippets-grid {

@@ -120,8 +120,8 @@
                 <div class="card-body py-2">
                     @if (totalChecksRun > 0) {
                         <div class="progress mb-3" style="height:10px;" role="progressbar"
-                             aria-valuenow="@((int)overallPassRate)" aria-valuemin="0" aria-valuemax="100"
-                             aria-label="Overall rule pass rate">
+                                aria-valuenow="@((int)overallPassRate)" aria-valuemin="0" aria-valuemax="100"
+                                aria-label="Overall rule pass rate">
                             <div class="progress-bar @passBarColor" style="width:@overallPassRate.ToString("F0")%;"></div>
                         </div>
                     }
@@ -317,11 +317,11 @@
                                         <div class="mb-2">
                                             <label class="form-label small mb-0">Reason <span class="text-danger">*</span></label>
                                             <textarea class="form-control form-control-sm" rows="2" @bind="_suppressForm.Reason"
-                                                      placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
+                                                    placeholder="e.g. WSU Spine framework provided by external party — cannot modify"></textarea>
                                         </div>
                                         <div class="form-check mb-2">
                                             <input class="form-check-input" type="checkbox" id="suppressTenantWide_@violation.A11yViolationId"
-                                                   @bind="_suppressApplyTenantWide" />
+                                                    @bind="_suppressApplyTenantWide" />
                                             <label class="form-check-label small" for="suppressTenantWide_@violation.A11yViolationId">
                                                 <strong>Apply to all sites in this tenant</strong> (uncheck to scope to this site only)
                                             </label>

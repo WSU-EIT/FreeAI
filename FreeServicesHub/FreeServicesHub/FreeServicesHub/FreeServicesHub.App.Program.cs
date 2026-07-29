@@ -48,8 +48,7 @@ public partial class Program
 
     // See if we have app-specific configuration values to load.
     private static ConfigurationHelperLoader MyConfigurationHelpersLoadApp(
-        ConfigurationHelperLoader output, WebApplicationBuilder builder)
-    {
+        ConfigurationHelperLoader output, WebApplicationBuilder builder){
         output.CiCdAdminToken = builder.Configuration.GetValue<string>("App:CiCdAdminToken", "") ?? string.Empty;
         output.CiCdMaxAgentRegistrations = builder.Configuration.GetValue<int>("App:CiCdMaxAgentRegistrations", 10);
         output.AgentHeartbeatIntervalSeconds = builder.Configuration.GetValue<int>("App:AgentHeartbeatIntervalSeconds", 30);

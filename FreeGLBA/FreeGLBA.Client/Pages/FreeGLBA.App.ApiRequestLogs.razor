@@ -408,13 +408,13 @@
     }
 
     private class FilterState {
-        public string TimeRange { get; set; } = "24h";
-        public string? SourceSystemId { get; set; }
-        public string? StatusFilter { get; set; }
         public long? MinDurationMs { get; set; }
-        public string? SearchTerm { get; set; }
         public int Page { get; set; } = 1;
+        public string? SearchTerm { get; set; }
         public string SortColumn { get; set; } = "RequestedAt";
         public bool SortDescending { get; set; } = true;
+        public string? SourceSystemId { get; set; }
+        public string? StatusFilter { get; set; }
+        public string TimeRange { get; set; } = "24h";
     }
 }

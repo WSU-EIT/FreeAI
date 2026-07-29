@@ -16,6 +16,49 @@ class Program
 
     private static readonly string[] ValidModules = ["Tags", "Appointments", "Invoices", "EmailTemplates", "Locations", "Payments", "Services", "all"];
 
+    private static (string? removeExe, string? renameExe) FindExeTools()
+    {
+        var searchPaths = new List<string>
+        {
+            AppContext.BaseDirectory,
+            Environment.CurrentDirectory,
+        };
+
+        // Add parent directories to search for FreeCRM-utilities
+        var current = AppContext.BaseDirectory;
+        for (int i = 0; i < 5; i++)
+        {
+            var parent = Directory.GetParent(current);
+            if (parent == null) break;
+            current = parent.FullName;
+
+            searchPaths.Add(Path.Combine(current, "FreeCRM-utilities"));
+            searchPaths.Add(current);
+        }
+
+        string? removeExe = null;
+        string? renameExe = null;
+
+        foreach (var dir in searchPaths)
+        {
+            if (!Directory.Exists(dir)) continue;
+
+            var removePath = Path.Combine(dir, RemoveExeName);
+            var renamePath = Path.Combine(dir, RenameExeName);
+
+            if (removeExe == null && File.Exists(removePath))
+                removeExe = removePath;
+
+            if (renameExe == null && File.Exists(renamePath))
+                renameExe = renamePath;
+
+            if (removeExe != null && renameExe != null)
+                break;
+        }
+
+        return (removeExe, renameExe);
+    }
+
     static async Task<int> Main(string[] args)
     {
         Console.WriteLine();
@@ -71,6 +114,89 @@ class Program
                 WriteError($"  Inner: {ex.InnerException.Message}");
             return 1;
         }
+    }
+
+    private static ForkOptions? ParseArguments(string[] args)
+    {
+        var options = new ForkOptions();
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+
+            if (arg is "-h" or "--help" or "-?")
+                return null;
+
+            if (arg is "-n" or "--name" && i + 1 < args.Length)
+                options.NewName = args[++i];
+            else if (arg is "-m" or "--modules" && i + 1 < args.Length)
+                options.ModuleSelection = args[++i];
+            else if (arg is "-o" or "--output" && i + 1 < args.Length)
+                options.OutputDirectory = args[++i];
+            else if (arg is "-b" or "--branch" && i + 1 < args.Length)
+                options.Branch = args[++i];
+            else if (!arg.StartsWith('-'))
+            {
+                // Positional arguments
+                if (string.IsNullOrEmpty(options.NewName))
+                    options.NewName = arg;
+                else if (string.IsNullOrEmpty(options.ModuleSelection))
+                    options.ModuleSelection = arg;
+                else if (string.IsNullOrEmpty(options.OutputDirectory))
+                    options.OutputDirectory = arg;
+            }
+        }
+
+        if (string.IsNullOrEmpty(options.NewName) ||
+            string.IsNullOrEmpty(options.ModuleSelection) ||
+            string.IsNullOrEmpty(options.OutputDirectory))
+            return null;
+
+        return options;
+    }
+
+    private static async Task<int> RunExeAsync(string exePath, string arguments, string workingDirectory)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = arguments,
+            WorkingDirectory = workingDirectory,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = psi };
+
+        var outputBuilder = new StringBuilder();
+        var errorBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (_, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                outputBuilder.AppendLine(e.Data);
+                Console.WriteLine($"    {e.Data}");
+            }
+        };
+
+        process.ErrorDataReceived += (_, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                errorBuilder.AppendLine(e.Data);
+                Console.WriteLine($"    [ERR] {e.Data}");
+            }
+        };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync();
+        return process.ExitCode;
     }
 
     private static async Task RunForkAsync(ForkOptions options, string removeExe, string renameExe)
@@ -198,93 +324,6 @@ class Program
         }
     }
 
-    private static async Task<int> RunExeAsync(string exePath, string arguments, string workingDirectory)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = exePath,
-            Arguments = arguments,
-            WorkingDirectory = workingDirectory,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true
-        };
-
-        using var process = new Process { StartInfo = psi };
-
-        var outputBuilder = new StringBuilder();
-        var errorBuilder = new StringBuilder();
-
-        process.OutputDataReceived += (_, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data))
-            {
-                outputBuilder.AppendLine(e.Data);
-                Console.WriteLine($"    {e.Data}");
-            }
-        };
-
-        process.ErrorDataReceived += (_, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data))
-            {
-                errorBuilder.AppendLine(e.Data);
-                Console.WriteLine($"    [ERR] {e.Data}");
-            }
-        };
-
-        process.Start();
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-
-        await process.WaitForExitAsync();
-        return process.ExitCode;
-    }
-
-    private static (string? removeExe, string? renameExe) FindExeTools()
-    {
-        var searchPaths = new List<string>
-        {
-            AppContext.BaseDirectory,
-            Environment.CurrentDirectory,
-        };
-
-        // Add parent directories to search for FreeCRM-utilities
-        var current = AppContext.BaseDirectory;
-        for (int i = 0; i < 5; i++)
-        {
-            var parent = Directory.GetParent(current);
-            if (parent == null) break;
-            current = parent.FullName;
-
-            searchPaths.Add(Path.Combine(current, "FreeCRM-utilities"));
-            searchPaths.Add(current);
-        }
-
-        string? removeExe = null;
-        string? renameExe = null;
-
-        foreach (var dir in searchPaths)
-        {
-            if (!Directory.Exists(dir)) continue;
-
-            var removePath = Path.Combine(dir, RemoveExeName);
-            var renamePath = Path.Combine(dir, RenameExeName);
-
-            if (removeExe == null && File.Exists(removePath))
-                removeExe = removePath;
-
-            if (renameExe == null && File.Exists(renamePath))
-                renameExe = renamePath;
-
-            if (removeExe != null && renameExe != null)
-                break;
-        }
-
-        return (removeExe, renameExe);
-    }
-
     private static void SetAttributesNormal(string path)
     {
         foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
@@ -292,109 +331,6 @@ class Program
             try { File.SetAttributes(file, FileAttributes.Normal); }
             catch { /* Best effort */ }
         }
-    }
-
-    private static void WriteFilesToDisk(Dictionary<string, byte[]> files, string outputDir)
-    {
-        // Clear output directory (preserve .git if exists)
-        if (Directory.Exists(outputDir))
-        {
-            foreach (var entry in Directory.GetFileSystemEntries(outputDir))
-            {
-                var name = Path.GetFileName(entry);
-                if (name == ".git") continue;
-
-                if (Directory.Exists(entry))
-                    Directory.Delete(entry, recursive: true);
-                else
-                    File.Delete(entry);
-            }
-        }
-        else
-        {
-            Directory.CreateDirectory(outputDir);
-        }
-
-        // Write all files
-        foreach (var kvp in files)
-        {
-            var fullPath = Path.Combine(outputDir, kvp.Key);
-            var dir = Path.GetDirectoryName(fullPath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.WriteAllBytes(fullPath, kvp.Value);
-        }
-    }
-
-    private static ForkOptions? ParseArguments(string[] args)
-    {
-        var options = new ForkOptions();
-
-        for (int i = 0; i < args.Length; i++)
-        {
-            var arg = args[i];
-
-            if (arg is "-h" or "--help" or "-?")
-                return null;
-
-            if (arg is "-n" or "--name" && i + 1 < args.Length)
-                options.NewName = args[++i];
-            else if (arg is "-m" or "--modules" && i + 1 < args.Length)
-                options.ModuleSelection = args[++i];
-            else if (arg is "-o" or "--output" && i + 1 < args.Length)
-                options.OutputDirectory = args[++i];
-            else if (arg is "-b" or "--branch" && i + 1 < args.Length)
-                options.Branch = args[++i];
-            else if (!arg.StartsWith('-'))
-            {
-                // Positional arguments
-                if (string.IsNullOrEmpty(options.NewName))
-                    options.NewName = arg;
-                else if (string.IsNullOrEmpty(options.ModuleSelection))
-                    options.ModuleSelection = arg;
-                else if (string.IsNullOrEmpty(options.OutputDirectory))
-                    options.OutputDirectory = arg;
-            }
-        }
-
-        if (string.IsNullOrEmpty(options.NewName) ||
-            string.IsNullOrEmpty(options.ModuleSelection) ||
-            string.IsNullOrEmpty(options.OutputDirectory))
-            return null;
-
-        return options;
-    }
-
-    private static bool ValidateOptions(ForkOptions options)
-    {
-        if (!System.Text.RegularExpressions.Regex.IsMatch(options.NewName, @"^[A-Za-z][A-Za-z0-9]*$"))
-        {
-            WriteError($"Invalid project name: '{options.NewName}'");
-            Console.WriteLine("  Name must start with a letter and contain only letters and numbers.");
-            return false;
-        }
-
-        var selMatch = System.Text.RegularExpressions.Regex.Match(
-            options.ModuleSelection,
-            @"^(keep|remove):(.+)$",
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
-        if (!selMatch.Success)
-        {
-            WriteError($"Invalid module selection: '{options.ModuleSelection}'");
-            return false;
-        }
-
-        var module = selMatch.Groups[2].Value;
-        if (!ValidModules.Contains(module, StringComparer.OrdinalIgnoreCase))
-        {
-            WriteError($"Invalid module: '{module}'");
-            Console.WriteLine($"  Valid modules: {string.Join(", ", ValidModules)}");
-            return false;
-        }
-
-        return true;
     }
 
     private static void ShowUsage()
@@ -430,16 +366,80 @@ class Program
         Console.WriteLine("Note: Requires Windows to run the exe tools, or Wine on Linux/Mac.");
     }
 
+    private static bool ValidateOptions(ForkOptions options)
+    {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(options.NewName, @"^[A-Za-z][A-Za-z0-9]*$"))
+        {
+            WriteError($"Invalid project name: '{options.NewName}'");
+            Console.WriteLine("  Name must start with a letter and contain only letters and numbers.");
+            return false;
+        }
+
+        var selMatch = System.Text.RegularExpressions.Regex.Match(
+            options.ModuleSelection,
+            @"^(keep|remove):(.+)$",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        if (!selMatch.Success)
+        {
+            WriteError($"Invalid module selection: '{options.ModuleSelection}'");
+            return false;
+        }
+
+        var module = selMatch.Groups[2].Value;
+        if (!ValidModules.Contains(module, StringComparer.OrdinalIgnoreCase))
+        {
+            WriteError($"Invalid module: '{module}'");
+            Console.WriteLine($"  Valid modules: {string.Join(", ", ValidModules)}");
+            return false;
+        }
+
+        return true;
+    }
+    private static void WriteError(string msg) => Console.WriteLine($"[ERROR] {msg}");
+
+    private static void WriteFilesToDisk(Dictionary<string, byte[]> files, string outputDir)
+    {
+        // Clear output directory (preserve .git if exists)
+        if (Directory.Exists(outputDir))
+        {
+            foreach (var entry in Directory.GetFileSystemEntries(outputDir))
+            {
+                var name = Path.GetFileName(entry);
+                if (name == ".git") continue;
+
+                if (Directory.Exists(entry))
+                    Directory.Delete(entry, recursive: true);
+                else
+                    File.Delete(entry);
+            }
+        }
+        else
+        {
+            Directory.CreateDirectory(outputDir);
+        }
+
+        // Write all files
+        foreach (var kvp in files)
+        {
+            var fullPath = Path.Combine(outputDir, kvp.Key);
+            var dir = Path.GetDirectoryName(fullPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            File.WriteAllBytes(fullPath, kvp.Value);
+        }
+    }
+
     private static void WriteStep(string msg) => Console.WriteLine($"[STEP] {msg}");
     private static void WriteSuccess(string msg) => Console.WriteLine($"[OK] {msg}");
     private static void WriteWarning(string msg) => Console.WriteLine($"[WARN] {msg}");
-    private static void WriteError(string msg) => Console.WriteLine($"[ERROR] {msg}");
 }
 
 class ForkOptions
 {
-    public string NewName { get; set; } = "";
-    public string ModuleSelection { get; set; } = "";
-    public string OutputDirectory { get; set; } = "";
     public string Branch { get; set; } = "main";
+    public string ModuleSelection { get; set; } = "";
+    public string NewName { get; set; } = "";
+    public string OutputDirectory { get; set; } = "";
 }

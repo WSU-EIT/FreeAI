@@ -11,15 +11,15 @@
             }
 
             <NetworkChart @ref="_chartRef"
-                          Nodes="_nodes"
-                          Relationships="_relationships"
-                          NetworkSolver="@_currentSolver"
-                          Seed="@_currentSeed"
-                          OnElementSelected="@(new Action<string>(OnNodeClicked))"
-                          OnRelationshipSelected="@(new Action<string>(OnEdgeClicked))"
-                          OnLoadFailed="@(new Action(HandleLoadFailed))"
-                          ElementId="interactive-net"
-                          StartNodeId="hub" />
+                    Nodes="_nodes"
+                    Relationships="_relationships"
+                    NetworkSolver="@_currentSolver"
+                    Seed="@_currentSeed"
+                    OnElementSelected="@(new Action<string>(OnNodeClicked))"
+                    OnRelationshipSelected="@(new Action<string>(OnEdgeClicked))"
+                    OnLoadFailed="@(new Action(HandleLoadFailed))"
+                    ElementId="interactive-net"
+                    StartNodeId="hub" />
         </div>
 
         <div class="col-lg-4">
@@ -93,9 +93,9 @@
     private string? _selectedEdge;
     private bool _loadFailed;
 
-    private void OnNodeClicked(string id)
+    private void HandleLoadFailed()
     {
-        _selectedNode = id;
+        _loadFailed = true;
     }
 
     private void OnEdgeClicked(string id)
@@ -103,16 +103,9 @@
         _selectedEdge = id;
     }
 
-    private void HandleLoadFailed()
+    private void OnNodeClicked(string id)
     {
-        _loadFailed = true;
-    }
-
-    private async Task RandomizeLayout()
-    {
-        if (_chartRef is not null) {
-            _currentSeed = await _chartRef.RandomizeLayout();
-        }
+        _selectedNode = id;
     }
 
     private async Task OnSolverChanged(ChangeEventArgs args)
@@ -123,13 +116,20 @@
         }
     }
 
-    private string SelectedNodeLabel()
+    private async Task RandomizeLayout()
     {
-        return _nodes.FirstOrDefault(node => node.id == _selectedNode)?.label ?? "(none)";
+        if (_chartRef is not null) {
+            _currentSeed = await _chartRef.RandomizeLayout();
+        }
     }
 
     private string SelectedEdgeLabel()
     {
         return _relationships.FirstOrDefault(edge => edge.id == _selectedEdge)?.label ?? "(none)";
+    }
+
+    private string SelectedNodeLabel()
+    {
+        return _nodes.FirstOrDefault(node => node.id == _selectedNode)?.label ?? "(none)";
     }
 }

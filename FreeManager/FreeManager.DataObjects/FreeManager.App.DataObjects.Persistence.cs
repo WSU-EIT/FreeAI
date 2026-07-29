@@ -27,18 +27,18 @@ public partial class DataObjects
     /// </summary>
     public class FMSavedProject
     {
-        public Guid FMProjectId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Status { get; set; } = "Draft";
-        public int EntityCount { get; set; }
-        public int RelationshipCount { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public int EntityCount { get; set; }
 
         /// <summary>Full wizard state JSON - only populated for edit</summary>
         public string? EntityWizardStateJson { get; set; }
+        public Guid FMProjectId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int RelationshipCount { get; set; }
+        public string Status { get; set; } = "Draft";
+        public DateTime UpdatedAt { get; set; }
     }
 
     /// <summary>
@@ -46,14 +46,14 @@ public partial class DataObjects
     /// </summary>
     public class FMSavedProjectFilter
     {
-        public string? Search { get; set; }
-        public string? Status { get; set; }
-        public string SortColumn { get; set; } = "UpdatedAt";
-        public bool SortDescending { get; set; } = true;
+        public bool IncludeDeleted { get; set; } = false;
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 20;
+        public string? Search { get; set; }
         public int Skip => (Page - 1) * PageSize;
-        public bool IncludeDeleted { get; set; } = false;
+        public string SortColumn { get; set; } = "UpdatedAt";
+        public bool SortDescending { get; set; } = true;
+        public string? Status { get; set; }
     }
 
     /// <summary>
@@ -61,11 +61,11 @@ public partial class DataObjects
     /// </summary>
     public class FMSavedProjectFilterResult
     {
-        public List<FMSavedProject> Records { get; set; } = new();
-        public int TotalRecords { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        public List<FMSavedProject> Records { get; set; } = new();
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalRecords { get; set; }
     }
 
     /// <summary>
@@ -73,23 +73,22 @@ public partial class DataObjects
     /// </summary>
     public class FMSaveWizardProjectRequest
     {
+        /// <summary>Description</summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>Display name</summary>
+        public string DisplayName { get; set; } = string.Empty;
+
+        /// <summary>Entity count (denormalized)</summary>
+        public int EntityCount { get; set; }
+
+        /// <summary>Full EntityWizardState serialized as JSON</summary>
+        public string EntityWizardStateJson { get; set; } = string.Empty;
         /// <summary>Project ID - null for new, existing ID for update</summary>
         public Guid? FMProjectId { get; set; }
 
         /// <summary>Project name (C# identifier)</summary>
         public string Name { get; set; } = string.Empty;
-
-        /// <summary>Display name</summary>
-        public string DisplayName { get; set; } = string.Empty;
-
-        /// <summary>Description</summary>
-        public string Description { get; set; } = string.Empty;
-
-        /// <summary>Full EntityWizardState serialized as JSON</summary>
-        public string EntityWizardStateJson { get; set; } = string.Empty;
-
-        /// <summary>Entity count (denormalized)</summary>
-        public int EntityCount { get; set; }
 
         /// <summary>Relationship count (denormalized)</summary>
         public int RelationshipCount { get; set; }
@@ -104,9 +103,9 @@ public partial class DataObjects
     /// </summary>
     public class GeneratedFileForDownload
     {
+        public string Content { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
         public string FolderPath { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -114,12 +113,12 @@ public partial class DataObjects
     /// </summary>
     public class FMProjectZipResponse
     {
-        public bool Success { get; set; }
-        public string? ErrorMessage { get; set; }
-        public string FileName { get; set; } = string.Empty;
         public string Base64Content { get; set; } = string.Empty;
+        public string? ErrorMessage { get; set; }
         public int FileCount { get; set; }
+        public string FileName { get; set; } = string.Empty;
         public long FileSizeBytes { get; set; }
+        public bool Success { get; set; }
     }
 }
 

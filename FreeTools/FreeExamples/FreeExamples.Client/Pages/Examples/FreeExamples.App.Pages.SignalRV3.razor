@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Live Polling Pattern"
-                     Description="Users vote on options in real-time. As votes come in via SignalR, the progress bars update immediately across all connected browsers. The vote count and percentage recalculate live. This is the Slido/Mentimeter live poll pattern."
-                     Code="@_codePolling" />
+                    Description="Users vote on options in real-time. As votes come in via SignalR, the progress bars update immediately across all connected browsers. The vote count and percentage recalculate live. This is the Slido/Mentimeter live poll pattern."
+                    Code="@_codePolling" />
             <InfoTip Title="Progress Bar for Votes"
-                     Description="Each poll option uses a progress bar with the vote percentage as width. The count shows inside the bar. As users vote, the bar widths animate. Color varies by position (winner gets bg-success). This gives instant visual feedback."
-                     Code="@_codeVoteBar" />
+                    Description="Each poll option uses a progress bar with the vote percentage as width. The count shows inside the bar. As users vote, the bar widths animate. Color varies by position (winner gets bg-success). This gives instant visual feedback."
+                    Code="@_codeVoteBar" />
             <InfoTip Title="Real-Time Vote Count"
-                     Description="The total vote count updates in a badge. In production, SignalR broadcasts each vote to all clients. The server maintains the authoritative count. Clients optimistically update their UI before confirmation."
-                     Code="@_codeVoteCount" />
+                    Description="The total vote count updates in a badge. In production, SignalR broadcasts each vote to all clients. The server maintains the authoritative count. Clients optimistically update their UI before confirmation."
+                    Code="@_codeVoteCount" />
         </div>
         <div class="card shadow-sm border-0 mb-3"><div class="card-header bg-primary text-white"><i class="fa-solid fa-question me-1"></i> What's the most important feature for our next release?</div><div class="card-body">
             @foreach (var opt in _options) {

@@ -4,7 +4,57 @@ namespace FreeBlazorExample.Client.Shared;
 
 public static class ShowcaseExampleManifest
 {
-    public static string FirstExampleRoute => BuildPages().First().Route;
+    private static IEnumerable<ExampleNav.NavPage> BuildCoreDemoPages()
+    {
+        var category = "Core Demos";
+        var categoryRoute = Helpers.BuildShowcaseAnchorUrl("core-components");
+
+        return
+        [
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("autocomplete"), "AutoComplete"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("autogrowtext"), "AutoGrow Text"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("confirmationcode"), "Confirmation Code"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("datetimepicker"), "Date Time Picker"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("deleteconfirmation"), "Delete Confirmation"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("getinput"), "GetInput"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("multiselect"), "MultiSelect"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("pagedrecordset"), "Paged Recordset"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("stringlist"), "StringList"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("togglepassword"), "Toggle Password"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("github-repo"), "GitHub Repo Browser"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("generic-git"), "Git Repo Browser"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("smartsheet"), "Smartsheet Viewer"),
+        ];
+    }
+
+    private static IEnumerable<ExampleNav.NavPage> BuildFeaturePages()
+    {
+        var category = "Full Features";
+        var categoryRoute = Helpers.BuildShowcaseAnchorUrl("full-features");
+
+        return
+        [
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature101-dynamic-forms"), "Feature 101 Dynamic Forms"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature102-multi-view-sync"), "Feature 102 Multi-View Sync"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature103-calendar"), "Feature 103 Calendar & Scheduling"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature104-user-preferences"), "Feature 104 User Preferences"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature105-agent-monitoring"), "Feature 105 Agent Monitoring"),
+            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature107-hierarchical-tree"), "Feature 107 Hierarchical Tree"),
+        ];
+    }
+
+    private static ExampleNav.NavPage BuildPage(string category, string categoryRoute, string route, string title, string? parentTitle = null, string? parentRoute = null)
+    {
+        return new ExampleNav.NavPage
+        {
+            Category = category,
+            CategoryRoute = categoryRoute,
+            Route = route,
+            Title = title,
+            ParentTitle = parentTitle,
+            ParentRoute = parentRoute,
+        };
+    }
 
     public static List<ExampleNav.NavPage> BuildPages()
     {
@@ -49,45 +99,6 @@ public static class ShowcaseExampleManifest
         return pages;
     }
 
-    private static IEnumerable<ExampleNav.NavPage> BuildCoreDemoPages()
-    {
-        var category = "Core Demos";
-        var categoryRoute = Helpers.BuildShowcaseAnchorUrl("core-components");
-
-        return
-        [
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("autocomplete"), "AutoComplete"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("autogrowtext"), "AutoGrow Text"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("confirmationcode"), "Confirmation Code"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("datetimepicker"), "Date Time Picker"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("deleteconfirmation"), "Delete Confirmation"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("getinput"), "GetInput"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("multiselect"), "MultiSelect"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("pagedrecordset"), "Paged Recordset"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("stringlist"), "StringList"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("togglepassword"), "Toggle Password"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("github-repo"), "GitHub Repo Browser"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("generic-git"), "Git Repo Browser"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("smartsheet"), "Smartsheet Viewer"),
-        ];
-    }
-
-    private static IEnumerable<ExampleNav.NavPage> BuildFeaturePages()
-    {
-        var category = "Full Features";
-        var categoryRoute = Helpers.BuildShowcaseAnchorUrl("full-features");
-
-        return
-        [
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature101-dynamic-forms"), "Feature 101 Dynamic Forms"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature102-multi-view-sync"), "Feature 102 Multi-View Sync"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature103-calendar"), "Feature 103 Calendar & Scheduling"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature104-user-preferences"), "Feature 104 User Preferences"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature105-agent-monitoring"), "Feature 105 Agent Monitoring"),
-            BuildPage(category, categoryRoute, Helpers.BuildShowcaseUrl("feature107-hierarchical-tree"), "Feature 107 Hierarchical Tree"),
-        ];
-    }
-
     private static IEnumerable<ExampleNav.NavPage> BuildVariantFamilyPages(string category, string categoryAnchor, IEnumerable<(string Title, string Segment)> families)
     {
         foreach (var family in families) {
@@ -102,17 +113,5 @@ public static class ShowcaseExampleManifest
             }
         }
     }
-
-    private static ExampleNav.NavPage BuildPage(string category, string categoryRoute, string route, string title, string? parentTitle = null, string? parentRoute = null)
-    {
-        return new ExampleNav.NavPage
-        {
-            Category = category,
-            CategoryRoute = categoryRoute,
-            Route = route,
-            Title = title,
-            ParentTitle = parentTitle,
-            ParentRoute = parentRoute,
-        };
-    }
+    public static string FirstExampleRoute => BuildPages().First().Route;
 }

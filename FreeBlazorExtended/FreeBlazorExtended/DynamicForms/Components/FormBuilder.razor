@@ -251,16 +251,44 @@
 @code {
     private FormDefinition FormDef = new();
     private FormField? _selectedField;
-    private bool IsEditMode { get; set; }
 
     [Parameter]
     public Guid FormId { get; set; }
+    private bool IsEditMode { get; set; }
+
+    [Parameter]
+    public EventCallback<FormDefinition> OnSaved { get; set; }
 
     [Parameter]
     public Guid TenantId { get; set; }
 
-    [Parameter]
-    public EventCallback<FormDefinition> OnSaved { get; set; }
+    private void AddField()
+    {
+        _selectedField = new FormField();
+        if (FormDef.Fields == null)
+            FormDef.Fields = new();
+    }
+
+    private void ClearSelection()
+    {
+        _selectedField = null;
+    }
+
+    private void DeleteField(FormField field)
+    {
+        FormDef.Fields?.Remove(field);
+        ClearSelection();
+    }
+
+    private void EditField(FormField field)
+    {
+        _selectedField = field;
+    }
+
+    private bool IsOptionField(FormFieldType type)
+    {
+        return type is FormFieldType.Select or FormFieldType.Radio or FormFieldType.Checkbox or FormFieldType.Multiselect;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -279,22 +307,19 @@
         }
     }
 
-    private void AddField()
+    private string OptionsToString()
     {
-        _selectedField = new FormField();
-        if (FormDef.Fields == null)
-            FormDef.Fields = new();
+        if (_selectedField?.Options == null || _selectedField.Options.Count == 0)
+            return string.Empty;
+
+        return string.Join("\n", _selectedField.Options.Select(o => $"{o.key}|{o.label}"));
     }
 
-    private void EditField(FormField field)
+    private void ResetForm()
     {
-        _selectedField = field;
-    }
-
-    private void DeleteField(FormField field)
-    {
-        FormDef.Fields?.Remove(field);
+        FormDef = new FormDefinition { TenantId = TenantId };
         ClearSelection();
+        IsEditMode = false;
     }
 
     private void SaveField()
@@ -311,11 +336,6 @@
         ClearSelection();
     }
 
-    private void ClearSelection()
-    {
-        _selectedField = null;
-    }
-
     private async Task SaveForm()
     {
         if (string.IsNullOrWhiteSpace(FormDef.Name))
@@ -323,26 +343,6 @@
 
         var saved = await FormService.SaveFormDefinition(FormDef);
         await OnSaved.InvokeAsync(saved);
-    }
-
-    private void ResetForm()
-    {
-        FormDef = new FormDefinition { TenantId = TenantId };
-        ClearSelection();
-        IsEditMode = false;
-    }
-
-    private bool IsOptionField(FormFieldType type)
-    {
-        return type is FormFieldType.Select or FormFieldType.Radio or FormFieldType.Checkbox or FormFieldType.Multiselect;
-    }
-
-    private string OptionsToString()
-    {
-        if (_selectedField?.Options == null || _selectedField.Options.Count == 0)
-            return string.Empty;
-
-        return string.Join("\n", _selectedField.Options.Select(o => $"{o.key}|{o.label}"));
     }
 
     private void UpdateOptions(string? text)

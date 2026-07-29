@@ -15,31 +15,30 @@ namespace FreeAI.LocalTests
         // Simple message model for chat payloads
         public sealed class Msg
         {
-            public string role { get; }
-            public string content { get; }
-
             public Msg(string role, string content)
             {
                 this.role = role;
                 this.content = content;
             }
+            public string content { get; }
+            public string role { get; }
         }
 
         public sealed class AzureOpenAiSettings
         {
-            public required string Endpoint { get; init; }                 // e.g. "https://<resource>.openai.azure.com"
-            public required string Deployment { get; init; }               // chat/completions deployment name
-            public string? EmbeddingsDeployment { get; init; }             // optional
             public required string ApiKey { get; init; }                   // Azure OpenAI API key
             public string ApiVersion { get; init; } = "2024-06-01";        // default API version
+            public required string Deployment { get; init; }               // chat/completions deployment name
+            public string? EmbeddingsDeployment { get; init; }             // optional
+            public required string Endpoint { get; init; }                 // e.g. "https://<resource>.openai.azure.com"
 
             // Budgeting + tokenizer (defaults aligned with original Program.cs sample)
             public int MaxContextTokens { get; init; } = 128_000;          // model context window for prompts+response
             public int ReplyMaxTokens { get; init; } = 1_000;              // cap for assistant reply (parity with original)
-            public string TokenizerEncoding { get; init; } = "o200k_base"; // SharpToken encoding to use
 
             // Optional: default temperature for requests
             public double Temperature { get; init; } = 0.0;
+            public string TokenizerEncoding { get; init; } = "o200k_base"; // SharpToken encoding to use
         }
 
         public static async Task ChatWithAi(string message, AzureOpenAiSettings settings)

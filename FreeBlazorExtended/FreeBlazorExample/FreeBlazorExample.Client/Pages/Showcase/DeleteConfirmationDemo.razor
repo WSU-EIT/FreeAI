@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A two-stage UI control: an initial Delete button that transitions to a Confirm/Cancel pair on first click, preventing accidental data deletion with zero boilerplate inline logic on the calling page."
-        WhatEli5="A delete button that asks 'are you sure?' before actually deleting — so a misclick never wipes out real data."
-        Who=@(new[]{ "Any CRUD list or detail page that has a delete action", "Form builders who want safe delete without writing the two-step state logic themselves every time", "UX designers standardising destructive-action patterns across the app" })
-        WhenUse=@(new[]{ "List rows with a delete button next to each record", "Detail pages with a 'Delete this record' action", "Any destructive action where an accidental click would have lasting consequences" })
-        WhenNot=@(new[]{ "Bulk-delete scenarios — a confirmation modal dialog is better for 'delete 47 records'", "Non-destructive actions where undo is trivially available" })
-        Why="Single-click deletes cause support tickets and user frustration. Re-implementing the two-step state pattern on every page is repetitive and inconsistent. One component handles it everywhere."
-        TechNotes=@(new[]{ "Internal _confirming bool toggles between the initial button and the confirm/cancel pair", "OnConfirmed: EventCallback fired only after the second click — no value passed, just a signal", "All three button texts (DeleteText, CancelText, ConfirmDeleteText), icon classes, and CSS button classes are Parameters", "ButtonSize parameter maps to Bootstrap btn-sm/btn-lg; defaults to standard size", "Disabled parameter blocks the initial click entirely (useful during async operations)" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A two-stage UI control: an initial Delete button that transitions to a Confirm/Cancel pair on first click, preventing accidental data deletion with zero boilerplate inline logic on the calling page."
+            WhatEli5="A delete button that asks 'are you sure?' before actually deleting — so a misclick never wipes out real data."
+            Who=@(new[]{ "Any CRUD list or detail page that has a delete action", "Form builders who want safe delete without writing the two-step state logic themselves every time", "UX designers standardising destructive-action patterns across the app" })
+            WhenUse=@(new[]{ "List rows with a delete button next to each record", "Detail pages with a 'Delete this record' action", "Any destructive action where an accidental click would have lasting consequences" })
+            WhenNot=@(new[]{ "Bulk-delete scenarios — a confirmation modal dialog is better for 'delete 47 records'", "Non-destructive actions where undo is trivially available" })
+            Why="Single-click deletes cause support tickets and user frustration. Re-implementing the two-step state pattern on every page is repetitive and inconsistent. One component handles it everywhere."
+            TechNotes=@(new[]{ "Internal _confirming bool toggles between the initial button and the confirm/cancel pair", "OnConfirmed: EventCallback fired only after the second click — no value passed, just a signal", "All three button texts (DeleteText, CancelText, ConfirmDeleteText), icon classes, and CSS button classes are Parameters", "ButtonSize parameter maps to Bootstrap btn-sm/btn-lg; defaults to standard size", "Disabled parameter blocks the initial click entirely (useful during async operations)" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -44,10 +44,10 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Customized button text for domain-specific language.</p>
                     <DeleteConfirmation
-                        OnConfirmed="@(async () => await CustomTextDelete())"
-                        DeleteText="Remove Record"
-                        CancelText="Keep It"
-                        ConfirmDeleteText="Yes, Remove It" />
+                            OnConfirmed="@(async () => await CustomTextDelete())"
+                            DeleteText="Remove Record"
+                            CancelText="Keep It"
+                            ConfirmDeleteText="Yes, Remove It" />
                     @if (_customTextDeleteConfirmed) {
                         <div class="alert alert-success mt-3 mb-0" role="alert">
                             <i class="fas fa-check-circle me-2"></i>Record removed successfully!
@@ -66,9 +66,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted small mb-3">Using large button sizing for better visibility.</p>
-                    <DeleteConfirmation
-                        OnConfirmed="@(async () => await LargeDelete())"
-                        ButtonSize="large" />
+                    <DeleteConfirmation OnConfirmed="@(async () => await LargeDelete())" ButtonSize="large" />
                     @if (_largeDeleteConfirmed) {
                         <div class="alert alert-success mt-3 mb-0" role="alert">
                             <i class="fas fa-check-circle me-2"></i>Delete confirmed!
@@ -86,8 +84,8 @@
                 <div class="card-body">
                     <p class="text-muted small mb-3">Delete button disabled until conditions are met.</p>
                     <DeleteConfirmation
-                        OnConfirmed="@(async () => await DisabledDelete())"
-                        Disabled="@(!_enableDelete)" />
+                            OnConfirmed="@(async () => await DisabledDelete())"
+                            Disabled="@(!_enableDelete)" />
                     <div class="form-check mt-3">
                         <input class="form-check-input" type="checkbox" id="enableDeleteCheck" @onchange="@((ChangeEventArgs e) => _enableDelete = (bool)e.Value!)" />
                         <label class="form-check-label" for="enableDeleteCheck">
@@ -271,15 +269,15 @@
         _customTextDeleteConfirmed = false;
     }
 
+    protected async Task DisabledDelete()
+    {
+        await Task.CompletedTask;
+    }
+
     protected async Task LargeDelete()
     {
         _largeDeleteConfirmed = true;
         await Task.Delay(2000);
         _largeDeleteConfirmed = false;
-    }
-
-    protected async Task DisabledDelete()
-    {
-        await Task.CompletedTask;
     }
 }

@@ -28,40 +28,13 @@ namespace LoginPlugin
     /// </summary>
     public class LoginWithPrompts : IPluginAuth
     {
-        /// <summary>
-        /// Properties returned by the plugin.
-        /// The minimum properties that should be returned are:
-        /// Author, ContainsSensitiveData, Name, Type, Version
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> Properties() =>
-            new Dictionary<string, object> {
-                { "Id", new Guid("a5a8354d-f5c6-435e-90e6-2bf86f0b4d35") },
-                { "Author", "Brad Wickett" },
-                { "ContainsSensitiveData", false },
-                { "Name", "Plugin - Login with Prompts" },
-                { "Prompts", new List<PluginPrompt> 
-                    {
-                        new PluginPrompt { Name = "Username", Type = PluginPromptType.Text },
-                        new PluginPrompt { Name = "Password", Type = PluginPromptType.Password },
-                    }
-                },
-                { "Type", "Auth" },
-                { "Version", "1.0.0" },
-                { "LimitToTenants", new List<Guid> { new Guid("00000000-0000-0000-0000-000000000001") }},
-                { "ButtonText", "Plugin - Login with Prompts Example" },
-                { "ButtonClass", "btn btn-primary" },
-                { "ButtonIcon", "<i class=\"icon fa-solid fa-sign-in-alt\"></i>" },
-            };
-
         public async Task<(bool Result, List<string>? Messages, IEnumerable<object>? Objects)> Login(
             DataAccess da,
             Plugins.Plugin plugin,
             string url,
             Guid tenantId,
             Microsoft.AspNetCore.Http.HttpContext httpContext
-        )
-        {
+        ){
             var messages = new List<string>();
             bool result = false;
 
@@ -145,8 +118,7 @@ namespace LoginPlugin
             string url,
             Guid tenantId,
             Microsoft.AspNetCore.Http.HttpContext httpContext
-        )
-        {
+        ){
             await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
 
             var output = new List<object>();
@@ -169,6 +141,31 @@ namespace LoginPlugin
 
             return (Result: result, Messages: messages, Objects: output);
         }
+        /// <summary>
+        /// Properties returned by the plugin.
+        /// The minimum properties that should be returned are:
+        /// Author, ContainsSensitiveData, Name, Type, Version
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, object> Properties() =>
+            new Dictionary<string, object> {
+                { "Id", new Guid("a5a8354d-f5c6-435e-90e6-2bf86f0b4d35") },
+                { "Author", "Brad Wickett" },
+                { "ContainsSensitiveData", false },
+                { "Name", "Plugin - Login with Prompts" },
+                { "Prompts", new List<PluginPrompt> 
+                    {
+                        new PluginPrompt { Name = "Username", Type = PluginPromptType.Text },
+                        new PluginPrompt { Name = "Password", Type = PluginPromptType.Password },
+                    }
+                },
+                { "Type", "Auth" },
+                { "Version", "1.0.0" },
+                { "LimitToTenants", new List<Guid> { new Guid("00000000-0000-0000-0000-000000000001") }},
+                { "ButtonText", "Plugin - Login with Prompts Example" },
+                { "ButtonClass", "btn btn-primary" },
+                { "ButtonIcon", "<i class=\"icon fa-solid fa-sign-in-alt\"></i>" },
+            };
 
         //private T? GetOrPost<T>(string url, object? post = null)
         //{
@@ -201,18 +198,18 @@ namespace LoginPlugin
         public class OktaAuthentication
         {
             public bool Authenticated { get; set; }
+            public string? Department { get; set; }
+            public string? Email { get; set; }
+            public DateTime? Expires { get; set; }
             public string? FirstName { get; set; }
+            public List<string>? Groups { get; set; } = new List<string>();
             public string? LastName { get; set; }
             public string? MiddleName { get; set; }
             public string? Name { get; set; }
-            public string? Email { get; set; }
-            public string? PreferredEmail { get; set; }
-            public string? WSUID { get; set; }
             public string? NID { get; set; }
-            public string? Department { get; set; }
+            public string? PreferredEmail { get; set; }
             public string? Title { get; set; }
-            public List<string>? Groups { get; set; } = new List<string>();
-            public DateTime? Expires { get; set; }
+            public string? WSUID { get; set; }
         }
     }
 }

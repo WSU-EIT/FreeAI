@@ -12,86 +12,86 @@ public partial class DataObjects
     /// <summary>SourceSystem data transfer object.</summary>
     public class SourceSystem
     {
-        public string Name { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
         /// <summary>Hashed API key</summary>
         public string ApiKey { get; set; } = string.Empty;
         public string ContactEmail { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public long EventCount { get; set; } = 0;
         public bool IsActive { get; set; } = true;
         public DateTime? LastEventReceivedAt { get; set; }
-        public long EventCount { get; set; } = 0;
+        public string Name { get; set; } = string.Empty;
     }
 
     /// <summary>Filter criteria for SourceSystem queries.</summary>
     public class SourceSystemFilter
     {
-        public string? Search { get; set; }
-        public string SortColumn { get; set; } = "SourceSystemId";
-        public bool SortDescending { get; set; } = true;
+        public bool? IsActiveFilter { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 25;
+        public string? Search { get; set; }
         public int Skip => (Page - 1) * PageSize;
-        public bool? IsActiveFilter { get; set; }
+        public string SortColumn { get; set; } = "SourceSystemId";
+        public bool SortDescending { get; set; } = true;
     }
 
     /// <summary>Paginated result for SourceSystem queries.</summary>
     public class SourceSystemFilterResult
     {
-        public List<SourceSystem> Records { get; set; } = new();
-        public int TotalRecords { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        public List<SourceSystem> Records { get; set; } = new();
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalRecords { get; set; }
     }
 
 
     /// <summary>AccessEvent data transfer object.</summary>
     public class AccessEvent
     {
-        public Guid SourceSystemId { get; set; }
+        public DateTime AccessedAt { get; set; }
+        public string AccessType { get; set; } = string.Empty;
+        /// <summary>JSON for flexible extras</summary>
+        public string AdditionalData { get; set; } = string.Empty;
+        public string DataCategory { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = string.Empty;
+        public string Purpose { get; set; } = string.Empty;
+        public DateTime ReceivedAt { get; set; }
         /// <summary>Dedupe key from source</summary>
         public string SourceEventId { get; set; } = string.Empty;
-        public DateTime AccessedAt { get; set; }
-        public DateTime ReceivedAt { get; set; }
-        public string UserId { get; set; } = string.Empty;
-        public string UserName { get; set; } = string.Empty;
-        public string UserEmail { get; set; } = string.Empty;
-        public string UserDepartment { get; set; } = string.Empty;
+        public Guid SourceSystemId { get; set; }
+        /// <summary>Display name for related SourceSystem.</summary>
+        public string SourceSystemName { get; set; } = string.Empty;
         /// <summary>Student/employee ID</summary>
         public string SubjectId { get; set; } = string.Empty;
         public string SubjectType { get; set; } = string.Empty;
-        public string DataCategory { get; set; } = string.Empty;
-        public string AccessType { get; set; } = string.Empty;
-        public string Purpose { get; set; } = string.Empty;
-        public string IpAddress { get; set; } = string.Empty;
-        /// <summary>JSON for flexible extras</summary>
-        public string AdditionalData { get; set; } = string.Empty;
-        /// <summary>Display name for related SourceSystem.</summary>
-        public string SourceSystemName { get; set; } = string.Empty;
+        public string UserDepartment { get; set; } = string.Empty;
+        public string UserEmail { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
     }
 
     /// <summary>Filter criteria for AccessEvent queries.</summary>
     public class AccessEventFilter
     {
-        public string? Search { get; set; }
-        public string SortColumn { get; set; } = "AccessEventId";
-        public bool SortDescending { get; set; } = true;
+        public (DateTime? Start, DateTime? End)? AccessedAtFilter { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 25;
-        public int Skip => (Page - 1) * PageSize;
-        public Guid SourceSystemIdFilter { get; set; }
-        public (DateTime? Start, DateTime? End)? AccessedAtFilter { get; set; }
         public (DateTime? Start, DateTime? End)? ReceivedAtFilter { get; set; }
+        public string? Search { get; set; }
+        public int Skip => (Page - 1) * PageSize;
+        public string SortColumn { get; set; } = "AccessEventId";
+        public bool SortDescending { get; set; } = true;
+        public Guid SourceSystemIdFilter { get; set; }
     }
 
     /// <summary>Paginated result for AccessEvent queries.</summary>
     public class AccessEventFilterResult
     {
-        public List<AccessEvent> Records { get; set; } = new();
-        public int TotalRecords { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        public List<AccessEvent> Records { get; set; } = new();
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalRecords { get; set; }
     }
 
 
@@ -99,9 +99,9 @@ public partial class DataObjects
     public class DataSubject
     {
         public string ExternalId { get; set; } = string.Empty;
-        public string SubjectType { get; set; } = string.Empty;
         public DateTime FirstAccessedAt { get; set; }
         public DateTime LastAccessedAt { get; set; }
+        public string SubjectType { get; set; } = string.Empty;
         public long TotalAccessCount { get; set; } = 0;
         public int UniqueAccessorCount { get; set; } = 0;
     }
@@ -109,68 +109,68 @@ public partial class DataObjects
     /// <summary>Filter criteria for DataSubject queries.</summary>
     public class DataSubjectFilter
     {
-        public string? Search { get; set; }
-        public string SortColumn { get; set; } = "DataSubjectId";
-        public bool SortDescending { get; set; } = true;
-        public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 25;
-        public int Skip => (Page - 1) * PageSize;
         public (DateTime? Start, DateTime? End)? FirstAccessedAtFilter { get; set; }
         public (DateTime? Start, DateTime? End)? LastAccessedAtFilter { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 25;
+        public string? Search { get; set; }
+        public int Skip => (Page - 1) * PageSize;
+        public string SortColumn { get; set; } = "DataSubjectId";
+        public bool SortDescending { get; set; } = true;
         public (decimal? Min, decimal? Max)? UniqueAccessorCountFilter { get; set; }
     }
 
     /// <summary>Paginated result for DataSubject queries.</summary>
     public class DataSubjectFilterResult
     {
-        public List<DataSubject> Records { get; set; } = new();
-        public int TotalRecords { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        public List<DataSubject> Records { get; set; } = new();
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalRecords { get; set; }
     }
 
 
     /// <summary>ComplianceReport data transfer object.</summary>
     public class ComplianceReport
     {
-        public string ReportType { get; set; } = string.Empty;
+        public string FileUrl { get; set; } = string.Empty;
         public DateTime GeneratedAt { get; set; }
         public string GeneratedBy { get; set; } = string.Empty;
-        public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
-        public long TotalEvents { get; set; } = 0;
-        public int UniqueUsers { get; set; } = 0;
-        public int UniqueSubjects { get; set; } = 0;
+        public DateTime PeriodStart { get; set; }
         /// <summary>JSON report content</summary>
         public string ReportData { get; set; } = string.Empty;
-        public string FileUrl { get; set; } = string.Empty;
+        public string ReportType { get; set; } = string.Empty;
+        public long TotalEvents { get; set; } = 0;
+        public int UniqueSubjects { get; set; } = 0;
+        public int UniqueUsers { get; set; } = 0;
     }
 
     /// <summary>Filter criteria for ComplianceReport queries.</summary>
     public class ComplianceReportFilter
     {
-        public string? Search { get; set; }
-        public string SortColumn { get; set; } = "ComplianceReportId";
-        public bool SortDescending { get; set; } = true;
+        public (DateTime? Start, DateTime? End)? GeneratedAtFilter { get; set; }
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 25;
-        public int Skip => (Page - 1) * PageSize;
-        public (DateTime? Start, DateTime? End)? GeneratedAtFilter { get; set; }
-        public (DateTime? Start, DateTime? End)? PeriodStartFilter { get; set; }
         public (DateTime? Start, DateTime? End)? PeriodEndFilter { get; set; }
-        public (decimal? Min, decimal? Max)? UniqueUsersFilter { get; set; }
+        public (DateTime? Start, DateTime? End)? PeriodStartFilter { get; set; }
+        public string? Search { get; set; }
+        public int Skip => (Page - 1) * PageSize;
+        public string SortColumn { get; set; } = "ComplianceReportId";
+        public bool SortDescending { get; set; } = true;
         public (decimal? Min, decimal? Max)? UniqueSubjectsFilter { get; set; }
+        public (decimal? Min, decimal? Max)? UniqueUsersFilter { get; set; }
     }
 
     /// <summary>Paginated result for ComplianceReport queries.</summary>
     public class ComplianceReportFilterResult
     {
-        public List<ComplianceReport> Records { get; set; } = new();
-        public int TotalRecords { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        public List<ComplianceReport> Records { get; set; } = new();
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalRecords { get; set; }
     }
 
 

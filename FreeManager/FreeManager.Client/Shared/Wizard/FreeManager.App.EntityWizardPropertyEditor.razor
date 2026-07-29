@@ -22,9 +22,9 @@
                                 Property Name <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-lg @Helpers.MissingValue(Property.Name)"
-                                   @bind="Property.Name" @bind:event="oninput"
-                                   @onfocusout="OnNameChanged"
-                                   placeholder="e.g., CustomerName, Status, CreatedAt" />
+                                    @bind="Property.Name" @bind:event="oninput"
+                                    @onfocusout="OnNameChanged"
+                                    placeholder="e.g., CustomerName, Status, CreatedAt" />
                             <div class="form-text">
                                 Must be a valid C# identifier (letters and numbers, starts with letter).
                             </div>
@@ -32,13 +32,13 @@
 
                         @* Smart Name Suggestion *@
                         <FreeManager_App_EntityWizardSmartSuggestion PropertyName="@Property.Name"
-                                                         CurrentType="@_selectedType"
-                                                         OnApply="ApplySmartSuggestion" />
+                                CurrentType="@_selectedType"
+                                OnApply="ApplySmartSuggestion" />
 
                         @* Visual Type Picker *@
                         <FreeManager_App_EntityWizardTypePicker SelectedType="@_selectedType" 
-                                                     SelectedTypeChanged="OnTypePickerChanged"
-                                                     OnTypeSelected="OnTypeChanged" />
+                                SelectedTypeChanged="OnTypePickerChanged"
+                                OnTypeSelected="OnTypeChanged" />
                     </div>
 
                     @* ============================================================ *@
@@ -89,8 +89,8 @@
                                         <label class="form-label">Max Length</label>
                                         <div class="input-group">
                                             <input type="number" class="form-control" 
-                                                   @bind="Property.MaxLength"
-                                                   placeholder="Leave blank for unlimited" />
+                                                    @bind="Property.MaxLength"
+                                                    placeholder="Leave blank for unlimited" />
                                             <span class="input-group-text">chars</span>
                                         </div>
                                         <div class="form-text">
@@ -109,8 +109,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Default Value</label>
                                     <input type="text" class="form-control"
-                                           @bind="Property.DefaultValue"
-                                           placeholder="@GetDefaultPlaceholder()" />
+                                            @bind="Property.DefaultValue"
+                                            placeholder="@GetDefaultPlaceholder()" />
                                     <div class="form-text">
                                         C# expression for the default value. Leave blank for type default.
                                     </div>
@@ -135,7 +135,7 @@
                                     <div class="col-md-6">
                                         <div class="form-check form-switch mb-2">
                                             <input class="form-check-input" type="checkbox" id="prop-required"
-                                                   @bind="Property.IsRequired" />
+                                                    @bind="Property.IsRequired" />
                                             <label class="form-check-label" for="prop-required">
                                                 <strong>Required</strong>
                                             </label>
@@ -145,8 +145,8 @@
                                     <div class="col-md-6">
                                         <div class="form-check form-switch mb-2">
                                             <input class="form-check-input" type="checkbox" id="prop-nullable"
-                                                   @bind="Property.IsNullable" 
-                                                   disabled="@Property.IsRequired" />
+                                                    @bind="Property.IsNullable" 
+                                                    disabled="@Property.IsRequired" />
                                             <label class="form-check-label" for="prop-nullable">
                                                 <strong>Nullable</strong>
                                             </label>
@@ -157,7 +157,7 @@
 
                                 <div class="form-check form-switch mb-2">
                                     <input class="form-check-input" type="checkbox" id="prop-system"
-                                           @bind="Property.IsSystemField" />
+                                            @bind="Property.IsSystemField" />
                                     <label class="form-check-label" for="prop-system">
                                         <strong>System Field</strong>
                                     </label>
@@ -166,7 +166,7 @@
 
                                 <div class="form-check form-switch mb-2">
                                     <input class="form-check-input" type="checkbox" id="prop-filterable"
-                                           @bind="Property.IsFilterable" />
+                                            @bind="Property.IsFilterable" />
                                     <label class="form-check-label" for="prop-filterable">
                                         <strong>Filterable</strong>
                                     </label>
@@ -195,8 +195,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Description / Comment</label>
                                     <textarea class="form-control" rows="2"
-                                              @bind="Property.Description"
-                                              placeholder="Brief description of this property (optional)"></textarea>
+                                            @bind="Property.Description"
+                                            placeholder="Brief description of this property (optional)"></textarea>
                                     <div class="form-text">
                                         This becomes a code comment in the generated entity.
                                     </div>
@@ -217,9 +217,7 @@
                             Save & Add Another
                         </button>
                     }
-                    <button type="button" class="btn btn-primary" 
-                            @onclick="Save"
-                            disabled="@(!CanSave())">
+                    <button type="button" class="btn btn-primary" @onclick="Save" disabled="@(!CanSave())">
                         <i class="fa-solid fa-save me-1"></i>
                         Save Property
                     </button>

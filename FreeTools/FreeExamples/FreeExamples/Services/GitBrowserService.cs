@@ -20,19 +20,18 @@ public class GitBrowserService : IDisposable
     /// </summary>
     private class MemoryNode
     {
-        public string Name { get; set; } = "";
-        public string RelativePath { get; set; } = "";
-        public bool IsDirectory { get; set; }
-        public long Size { get; set; }
+        /// <summary>Children keyed by name (only populated for directories).</summary>
+        public Dictionary<string, MemoryNode>? Children { get; set; }
+        public string? Content { get; set; }
         public string Extension { get; set; } = "";
         public bool IsBinary { get; set; }
-        public string? Content { get; set; }
+        public bool IsDirectory { get; set; }
+        public string Name { get; set; } = "";
+        public string RelativePath { get; set; } = "";
 
         /// <summary>SHA blob hash for lazy-loading file content from the API.</summary>
         public string? Sha { get; set; }
-
-        /// <summary>Children keyed by name (only populated for directories).</summary>
-        public Dictionary<string, MemoryNode>? Children { get; set; }
+        public long Size { get; set; }
     }
 
     private readonly ConcurrentDictionary<string, MemoryNode> _repos = new(StringComparer.OrdinalIgnoreCase);

@@ -11,14 +11,14 @@
     </div>
 
     <ShowcaseAbout
-        WhatTechnical="A full-featured scheduling UI component with month/week/day views, RRULE-based recurrence, exception handling (single-occurrence overrides), slot reservation, and conflict/overlap detection."
-        WhatEli5="A complete calendar you can drop into any page — click a day to add an event, set it to repeat every Tuesday, and the system will warn you if two events try to occupy the same slot."
-        Who=@(new[]{ "Staff booking appointments, rooms, or equipment", "Admins managing recurring events (weekly meetings, maintenance windows)", "Developers building scheduling into any business workflow without starting from scratch" })
-        WhenUse=@(new[]{ "Appointment scheduling with hard time slots", "Recurring event management (daily standups, weekly reports)", "Resource reservation where double-booking must be prevented" })
-        WhenNot=@(new[]{ "Simple 'pick a date' inputs — use the DateTimePicker component", "Read-only calendar displays with no interaction — lighter third-party widgets exist" })
-        Why="Calendar UI is deceptively complex — recurrence rules, exception handling, timezone math, and conflict detection each take weeks to get right. This provides a production-tested starting point."
-        TechNotes=@(new[]{ "Recurrence encoded as RRULE strings (RFC 5545); parsed at render time to expand occurrence dates", "Exception events: a separate CalendarEventException row overrides a single occurrence of a recurring event", "Overlap detection runs a time-range intersection query before committing a save", "CalendarEventService: GetEvents, GetEvent, SaveEvent, DeleteEvent, GetOccurrences(dateRange)", "Month view uses a 6-row × 7-column grid; day cells clip overflow with '+N more' badges linking to a day detail view" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
+            WhatTechnical="A full-featured scheduling UI component with month/week/day views, RRULE-based recurrence, exception handling (single-occurrence overrides), slot reservation, and conflict/overlap detection."
+            WhatEli5="A complete calendar you can drop into any page — click a day to add an event, set it to repeat every Tuesday, and the system will warn you if two events try to occupy the same slot."
+            Who=@(new[]{ "Staff booking appointments, rooms, or equipment", "Admins managing recurring events (weekly meetings, maintenance windows)", "Developers building scheduling into any business workflow without starting from scratch" })
+            WhenUse=@(new[]{ "Appointment scheduling with hard time slots", "Recurring event management (daily standups, weekly reports)", "Resource reservation where double-booking must be prevented" })
+            WhenNot=@(new[]{ "Simple 'pick a date' inputs — use the DateTimePicker component", "Read-only calendar displays with no interaction — lighter third-party widgets exist" })
+            Why="Calendar UI is deceptively complex — recurrence rules, exception handling, timezone math, and conflict detection each take weeks to get right. This provides a production-tested starting point."
+            TechNotes=@(new[]{ "Recurrence encoded as RRULE strings (RFC 5545); parsed at render time to expand occurrence dates", "Exception events: a separate CalendarEventException row overrides a single occurrence of a recurring event", "Overlap detection runs a time-range intersection query before committing a save", "CalendarEventService: GetEvents, GetEvent, SaveEvent, DeleteEvent, GetOccurrences(dateRange)", "Month view uses a 6-row × 7-column grid; day cells clip overflow with '+N more' badges linking to a day detail view" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "Service + UI", ["Persisted"] = "Yes — SQL via EF Core", ["Real-time"] = "No", ["Auth required"] = "Yes", ["Multi-tenant"] = "Yes" }) />
 
     <div class="row mt-4">
         <div class="col-lg-8">
@@ -56,7 +56,7 @@
                                     var isToday = date.Date == DateTime.Now.Date;
 
                                     <div class="calendar-cell @(isCurrentMonth ? "" : "other-month") @(isToday ? "today" : "")"
-                                         @onclick="() => SelectDate(date)">
+                                            @onclick="() => SelectDate(date)">
                                         <div class="calendar-cell-date">@date.Day</div>
                                         <div class="calendar-cell-events">
                                             @foreach (var evt in dayEvents.Take(2))
@@ -306,10 +306,25 @@
     private List<CalendarEvent> _events = new();
     private CalendarEvent _newEvent = new();
 
-    protected override async Task OnInitializedAsync()
+    private async Task AddEvent()
     {
+        if (string.IsNullOrWhiteSpace(_newEvent.Title) || _newEvent.StartUtc == default || _newEvent.EndUtc == default)
+            return;
+
+        if (_newEvent.EndUtc <= _newEvent.StartUtc)
+            _newEvent.EndUtc = _newEvent.StartUtc.AddHours(1);
+
+        _newEvent.TenantId = _tenantId;
+        await CalendarService.SaveCalendarEvent(_newEvent);
+
+        _newEvent = new CalendarEvent();
         await LoadEvents();
-        LoadSampleEvents();
+    }
+
+    private async Task DeleteEvent(CalendarEvent evt)
+    {
+        await CalendarService.DeleteCalendarEvent(evt.EventId);
+        await LoadEvents();
     }
 
     private async Task LoadEvents()
@@ -371,19 +386,20 @@
         _ = LoadEvents();
     }
 
-    private void PreviousMonth()
-    {
-        CurrentMonth = CurrentMonth.AddMonths(-1);
-    }
-
     private void NextMonth()
     {
         CurrentMonth = CurrentMonth.AddMonths(1);
     }
 
-    private void TodayMonth()
+    protected override async Task OnInitializedAsync()
     {
-        CurrentMonth = DateTime.Now;
+        await LoadEvents();
+        LoadSampleEvents();
+    }
+
+    private void PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
     }
 
     private void SelectDate(DateTime date)
@@ -391,24 +407,8 @@
         _selectedDate = date;
     }
 
-    private async Task AddEvent()
+    private void TodayMonth()
     {
-        if (string.IsNullOrWhiteSpace(_newEvent.Title) || _newEvent.StartUtc == default || _newEvent.EndUtc == default)
-            return;
-
-        if (_newEvent.EndUtc <= _newEvent.StartUtc)
-            _newEvent.EndUtc = _newEvent.StartUtc.AddHours(1);
-
-        _newEvent.TenantId = _tenantId;
-        await CalendarService.SaveCalendarEvent(_newEvent);
-
-        _newEvent = new CalendarEvent();
-        await LoadEvents();
-    }
-
-    private async Task DeleteEvent(CalendarEvent evt)
-    {
-        await CalendarService.DeleteCalendarEvent(evt.EventId);
-        await LoadEvents();
+        CurrentMonth = DateTime.Now;
     }
 }

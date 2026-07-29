@@ -42,21 +42,21 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Content Gate Pattern"
-                     Description="The main content is blurred/blocked behind an overlay until the user acknowledges and signs. The overlay uses position-absolute with a semi-transparent background. Once signed, the overlay fades and content becomes accessible. This is the GLBA compliance gate pattern."
-                     Code="@_codeContentGate" />
+                    Description="The main content is blurred/blocked behind an overlay until the user acknowledges and signs. The overlay uses position-absolute with a semi-transparent background. Once signed, the overlay fades and content becomes accessible. This is the GLBA compliance gate pattern."
+                    Code="@_codeContentGate" />
             <InfoTip Title="Blur Overlay with CSS"
-                     Description="The content behind the gate uses filter:blur(4px) and pointer-events:none to prevent interaction. The overlay div sits on top with position-absolute and a centered card with the sign-in form. On completion, both the blur and overlay are removed."
-                     Code="@_codeBlurOverlay" />
+                    Description="The content behind the gate uses filter:blur(4px) and pointer-events:none to prevent interaction. The overlay div sits on top with position-absolute and a centered card with the sign-in form. On completion, both the blur and overlay are removed."
+                    Code="@_codeBlurOverlay" />
             <InfoTip Title="Compliance Acknowledgment Steps"
-                     Description="GLBA and FERPA compliance requires specific steps: 1) Read policy text, 2) Check acknowledgment box, 3) Sign. Each step must complete before the next enables. The UI guides users through this sequence with disabled states and visual cues."
-                     Code="@_codeComplianceSteps" />
+                    Description="GLBA and FERPA compliance requires specific steps: 1) Read policy text, 2) Check acknowledgment box, 3) Sign. Each step must complete before the next enables. The UI guides users through this sequence with disabled states and visual cues."
+                    Code="@_codeComplianceSteps" />
         </div>
 
         @* Blurred/blocked content behind the gate *@
         <div class="position-relative">
             @if (!_consentGranted) {
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                     style="z-index:10; background:rgba(255,255,255,0.85); backdrop-filter:blur(4px);">
+                        style="z-index:10; background:rgba(255,255,255,0.85); backdrop-filter:blur(4px);">
                     <div class="card shadow-lg border-danger" style="max-width:600px; width:90%;">
                         <div class="card-header bg-danger text-white">
                             <i class="fa-solid fa-lock me-1"></i> GLBA Consent Required

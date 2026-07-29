@@ -9,9 +9,8 @@
 </button>
 
 @code {
-    [Parameter] public string? TenantCode { get; set; }
-
     protected string _pageName = "doubleclick";
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose() { }
 
@@ -29,11 +28,6 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
-        Model.View = _pageName;
-    }
-
     protected void OnClick()
     {
         Console.WriteLine("Clicked at " + DateTime.Now.ToString());
@@ -42,5 +36,10 @@
     protected void OnDoubleClick()
     {
         Console.WriteLine("Double-Clicked at " + DateTime.Now.ToString());
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.View = _pageName;
     }
 }

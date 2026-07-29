@@ -35,8 +35,8 @@
                                 Project Name <span class="text-danger">*</span>
                             </label>
                             <input type="text" class="form-control form-control-lg"
-                                   placeholder="e.g., MyInventory, AssetTracker"
-                                   @bind="_projectName" @bind:event="oninput" />
+                                    placeholder="e.g., MyInventory, AssetTracker"
+                                    @bind="_projectName" @bind:event="oninput" />
                             <div class="form-text">
                                 Used for namespaces and file names. Letters and numbers only.
                             </div>
@@ -55,8 +55,8 @@
                                 Display Name
                             </label>
                             <input type="text" class="form-control"
-                                   placeholder="e.g., My Inventory System"
-                                   @bind="_displayName" />
+                                    placeholder="e.g., My Inventory System"
+                                    @bind="_displayName" />
                             <div class="form-text">
                                 Human-readable name shown in the UI.
                             </div>
@@ -80,7 +80,7 @@
                                                 </div>
                                                 <div class="col-7">
                                                     <input type="text" class="form-control form-control-sm"
-                                                           @bind="entity.CustomName" placeholder="@entity.OriginalName" />
+                                                            @bind="entity.CustomName" placeholder="@entity.OriginalName" />
                                                 </div>
                                             </div>
                                         }
@@ -215,42 +215,31 @@
     private bool _showCustomization = false;
     private List<EntityCustomization> _entityCustomizations = new();
 
-    public void Dispose() {
-        Model.OnChange -= StateHasChanged;
-    }
-
-    protected override void OnInitialized() {
-        Model.View = _pageName;
-        Model.OnChange += StateHasChanged;
-
-        // Get template from query string
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        _templateId = query["template"] ?? "freebase";
-
-        // Initialize entity customizations
-        InitializeEntityCustomizations();
-    }
-
-    private void InitializeEntityCustomizations() {
-        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
-        if (template != null) {
-            _entityCustomizations = template.Entities
-                .OrderBy(e => e.SortOrder)
-                .Select(e => new EntityCustomization { OriginalName = e.Name, CustomName = "" })
-                .ToList();
-        } else {
-            _entityCustomizations = new();
-        }
-    }
-
-    private bool IsValidProjectName(string name) {
-        return !string.IsNullOrWhiteSpace(name) &&
-               System.Text.RegularExpressions.Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$");
-    }
-
     private bool CanGenerate() {
         return IsValidProjectName(_projectName);
+    }
+
+    private DataObjects.EntityWizardState CreateWizardState() {
+        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
+        if (template == null) {
+            throw new InvalidOperationException($"Template '{_templateId}' not found");
+        }
+
+        // Build entity rename dictionary from customizations
+        var entityRenames = _entityCustomizations
+            .Where(c => !string.IsNullOrWhiteSpace(c.CustomName))
+            .ToDictionary(c => c.OriginalName, c => c.CustomName);
+
+        // Use the helper to convert template to wizard state
+        return DataObjects.ApplicationTemplates.ToWizardState(
+            template,
+            _projectName,
+            string.IsNullOrWhiteSpace(_displayName) ? _projectName : _displayName,
+            entityRenames.Count > 0 ? entityRenames : null);
+    }
+
+    public void Dispose() {
+        Model.OnChange -= StateHasChanged;
     }
 
     private async Task GenerateProject() {
@@ -274,37 +263,6 @@
             Model.ErrorMessage($"Error generating project: {ex.Message}");
         }
     }
-
-    private DataObjects.EntityWizardState CreateWizardState() {
-        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
-        if (template == null) {
-            throw new InvalidOperationException($"Template '{_templateId}' not found");
-        }
-
-        // Build entity rename dictionary from customizations
-        var entityRenames = _entityCustomizations
-            .Where(c => !string.IsNullOrWhiteSpace(c.CustomName))
-            .ToDictionary(c => c.OriginalName, c => c.CustomName);
-
-        // Use the helper to convert template to wizard state
-        return DataObjects.ApplicationTemplates.ToWizardState(
-            template,
-            _projectName,
-            string.IsNullOrWhiteSpace(_displayName) ? _projectName : _displayName,
-            entityRenames.Count > 0 ? entityRenames : null);
-    }
-
-    private DataObjects.ApplicationTemplate? GetTemplate(string templateId) =>
-        DataObjects.ApplicationTemplates.GetById(templateId);
-
-    private string GetTemplateIcon(string templateId) =>
-        GetTemplate(templateId)?.Icon ?? "fa-cube";
-
-    private string GetTemplateName(string templateId) =>
-        GetTemplate(templateId)?.Name ?? "Template";
-
-    private List<DataObjects.EntityDefinition> GetTemplateEntities(string templateId) =>
-        GetTemplate(templateId)?.Entities.OrderBy(e => e.SortOrder).ToList() ?? new();
 
     private string GetEntityDiagram(string template) => template switch {
         "freebase" => @"Category
@@ -330,8 +288,50 @@
         _ => ""
     };
 
+    private DataObjects.ApplicationTemplate? GetTemplate(string templateId) =>
+        DataObjects.ApplicationTemplates.GetById(templateId);
+
+    private List<DataObjects.EntityDefinition> GetTemplateEntities(string templateId) =>
+        GetTemplate(templateId)?.Entities.OrderBy(e => e.SortOrder).ToList() ?? new();
+
+    private string GetTemplateIcon(string templateId) =>
+        GetTemplate(templateId)?.Icon ?? "fa-cube";
+
+    private string GetTemplateName(string templateId) =>
+        GetTemplate(templateId)?.Name ?? "Template";
+
+    private void InitializeEntityCustomizations() {
+        var template = DataObjects.ApplicationTemplates.GetById(_templateId);
+        if (template != null) {
+            _entityCustomizations = template.Entities
+                .OrderBy(e => e.SortOrder)
+                .Select(e => new EntityCustomization { OriginalName = e.Name, CustomName = "" })
+                .ToList();
+        } else {
+            _entityCustomizations = new();
+        }
+    }
+
+    private bool IsValidProjectName(string name) {
+        return !string.IsNullOrWhiteSpace(name) &&
+               System.Text.RegularExpressions.Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$");
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+
+        // Get template from query string
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        _templateId = query["template"] ?? "freebase";
+
+        // Initialize entity customizations
+        InitializeEntityCustomizations();
+    }
+
     private class EntityCustomization {
-        public string OriginalName { get; set; } = "";
         public string CustomName { get; set; } = "";
+        public string OriginalName { get; set; } = "";
     }
 }

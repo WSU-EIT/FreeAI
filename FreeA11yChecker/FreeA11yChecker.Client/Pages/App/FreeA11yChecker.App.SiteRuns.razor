@@ -183,7 +183,7 @@
                 </div>
                 <div class="col-auto">
                     <input type="text" class="form-control form-control-sm" placeholder="Search pages..." aria-label="Search pages by URL or title"
-                           @bind="_pageSearchText" @bind:event="oninput" @bind:after="StateHasChanged" style="min-width:180px;" />
+                            @bind="_pageSearchText" @bind:event="oninput" @bind:after="StateHasChanged" style="min-width:180px;" />
                 </div>
                 <div class="col-auto ms-auto">
                     <button class="btn btn-sm btn-outline-secondary me-1" @onclick="ExpandAllRuns" title="Expand all scan runs">
@@ -202,8 +202,8 @@
                     <div @key="run.ScanRunId" class="list-group-item p-0 @borderClass">
                         @* ── Run Header (clickable to expand) ── *@
                         <div class="d-flex align-items-center p-3 cursor-pointer" role="button" tabindex="0"
-                             @onclick="() => ToggleRunExpand(run)"
-                             @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ToggleRunExpand(run); })">
+                                @onclick="() => ToggleRunExpand(run)"
+                                @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ToggleRunExpand(run); })">
                             <div class="me-3">
                                 @((MarkupString)GetRunStatusIcon(run.Status))
                             </div>
@@ -314,7 +314,7 @@
                                                 bool pageExpanded = _expandedPageIds.Contains(pr.PageScanResultId);
                                                 string pageDetailUrl = Helpers.BuildUrl("Pages/" + pr.PageScanResultId);
                                                 <tr @key="pr.PageScanResultId" class="cursor-pointer @(pageExpanded ? "table-active" : "")"
-                                                    @onclick="() => TogglePageExpand(pr)">
+                                                        @onclick="() => TogglePageExpand(pr)">
                                                     <td><i class="fas @(pageExpanded ? "fa-chevron-down" : "fa-chevron-right") text-muted" style="font-size:0.7rem;"></i></td>
                                                     <td>
                                                         <strong>@(String.IsNullOrWhiteSpace(pr.PageTitle) ? pr.Url : pr.PageTitle)</strong>

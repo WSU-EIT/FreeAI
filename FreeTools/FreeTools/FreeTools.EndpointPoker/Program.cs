@@ -157,8 +157,7 @@ internal class Program
         int index,
         int totalCount,
         string baseUrl,
-        string outputDir)
-    {
+        string outputDir){
         var result = new PokeResult
         {
             Index = index,
@@ -201,46 +200,6 @@ internal class Program
         }
 
         return result;
-    }
-
-    private static void WriteResultsInOrder(
-        ConcurrentDictionary<int, PokeResult> results,
-        ref int nextIndexToWrite,
-        object writeLock,
-        bool flush = false)
-    {
-        lock (writeLock)
-        {
-            while (results.TryGetValue(nextIndexToWrite, out var result))
-            {
-                WriteResult(result);
-                results.TryRemove(nextIndexToWrite, out _);
-                nextIndexToWrite++;
-            }
-
-            if (flush && results.Count > 0)
-            {
-                foreach (var kvp in results.OrderBy(k => k.Key))
-                {
-                    WriteResult(kvp.Value);
-                }
-                results.Clear();
-            }
-        }
-    }
-
-    private static void WriteResult(PokeResult result)
-    {
-        Console.WriteLine($"[{result.Number}/{result.TotalCount}] {result.Route}");
-        
-        if (result.IsConnectionError)
-        {
-            Console.WriteLine($"  !! Error: {result.ErrorMessage}");
-        }
-        else
-        {
-            Console.WriteLine($"  -> Status: {result.StatusCode}, Saved: {Path.GetFileName(result.FilePath)} ({result.FileSize:N0} bytes)");
-        }
     }
 
     private static async Task<bool> VerifyBlazorFrameworkMimeTypesAsync(HttpClient httpClient, string baseUrl)
@@ -296,21 +255,60 @@ internal class Program
 
         return allPassed;
     }
+
+    private static void WriteResult(PokeResult result)
+    {
+        Console.WriteLine($"[{result.Number}/{result.TotalCount}] {result.Route}");
+        
+        if (result.IsConnectionError)
+        {
+            Console.WriteLine($"  !! Error: {result.ErrorMessage}");
+        }
+        else
+        {
+            Console.WriteLine($"  -> Status: {result.StatusCode}, Saved: {Path.GetFileName(result.FilePath)} ({result.FileSize:N0} bytes)");
+        }
+    }
+
+    private static void WriteResultsInOrder(
+        ConcurrentDictionary<int, PokeResult> results,
+        ref int nextIndexToWrite,
+        object writeLock,
+        bool flush = false){
+        lock (writeLock)
+        {
+            while (results.TryGetValue(nextIndexToWrite, out var result))
+            {
+                WriteResult(result);
+                results.TryRemove(nextIndexToWrite, out _);
+                nextIndexToWrite++;
+            }
+
+            if (flush && results.Count > 0)
+            {
+                foreach (var kvp in results.OrderBy(k => k.Key))
+                {
+                    WriteResult(kvp.Value);
+                }
+                results.Clear();
+            }
+        }
+    }
 }
 
 // Result tracking for ordered output
 internal class PokeResult
 {
-    public int Index { get; set; }
-    public int Number { get; set; }
-    public int TotalCount { get; set; }
-    public string Route { get; set; } = "";
-    public string Url { get; set; } = "";
-    public int StatusCode { get; set; }
-    public bool IsSuccess { get; set; }
-    public bool IsHttpError { get; set; }
-    public bool IsConnectionError { get; set; }
     public string? ErrorMessage { get; set; }
     public string? FilePath { get; set; }
     public int FileSize { get; set; }
+    public int Index { get; set; }
+    public bool IsConnectionError { get; set; }
+    public bool IsHttpError { get; set; }
+    public bool IsSuccess { get; set; }
+    public int Number { get; set; }
+    public string Route { get; set; } = "";
+    public int StatusCode { get; set; }
+    public int TotalCount { get; set; }
+    public string Url { get; set; } = "";
 }

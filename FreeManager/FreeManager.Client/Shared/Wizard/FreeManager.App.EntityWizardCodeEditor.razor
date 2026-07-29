@@ -48,19 +48,19 @@
     <div class="editor-container" style="height: @Height; border: 1px solid #dee2e6; border-radius: 0.375rem; overflow: hidden;">
         @if (_showDiff && !string.IsNullOrEmpty(File.OriginalContent)) {
             <MonacoEditor Id="@($"editor-diff-{EditorId}")"
-                          Language="@File.Language"
-                          Value="@File.Content"
-                          ValueToDiff="@File.OriginalContent"
-                          ReadOnly="true"
-                          MinHeight="@Height"
-                          Class="wizard-code-editor" />
+                    Language="@File.Language"
+                    Value="@File.Content"
+                    ValueToDiff="@File.OriginalContent"
+                    ReadOnly="true"
+                    MinHeight="@Height"
+                    Class="wizard-code-editor" />
         } else {
             <MonacoEditor Id="@($"editor-{EditorId}")"
-                          Language="@File.Language"
-                          @bind-Value="CurrentContent"
-                          ReadOnly="@ReadOnly"
-                          MinHeight="@Height"
-                          Class="wizard-code-editor" />
+                    Language="@File.Language"
+                    @bind-Value="CurrentContent"
+                    ReadOnly="@ReadOnly"
+                    MinHeight="@Height"
+                    Class="wizard-code-editor" />
         }
     </div>
 

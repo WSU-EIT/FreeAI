@@ -34,18 +34,17 @@ public record GitBranch(string Name, string? CommitSha, bool IsDefault);
 /// </summary>
 public class GitTreeNode
 {
-    public string Name { get; set; } = string.Empty;
-    public string Path { get; set; } = string.Empty;
-    public GitNodeType Type { get; set; }
-    public string? Sha { get; set; }
-    public long? Size { get; set; }
+    /// <summary>Null until the directory has been lazy-loaded; empty list means loaded but empty.</summary>
+    public List<GitTreeNode>? Children { get; set; }
     public string? DownloadUrl { get; set; }
 
     /// <summary>Whether the directory node is currently expanded in the UI.</summary>
     public bool IsExpanded { get; set; }
-
-    /// <summary>Null until the directory has been lazy-loaded; empty list means loaded but empty.</summary>
-    public List<GitTreeNode>? Children { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Path { get; set; } = string.Empty;
+    public string? Sha { get; set; }
+    public long? Size { get; set; }
+    public GitNodeType Type { get; set; }
 }
 
 /// <summary>The decoded content of a file retrieved from a repository.</summary>

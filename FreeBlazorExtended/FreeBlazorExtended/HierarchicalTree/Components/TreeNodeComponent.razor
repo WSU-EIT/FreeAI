@@ -7,8 +7,8 @@
 
 <div class="tree-node" style="margin-left: @(Depth * 20)px">
     <div class="tree-node-content"
-         @onclick="@(async () => await OnNodeSelected.InvokeAsync(Node))"
-         style="@(IsSelected ? "background-color: #e7f3ff;" : "")">
+            @onclick="@(async () => await OnNodeSelected.InvokeAsync(Node))"
+            style="@(IsSelected ? "background-color: #e7f3ff;" : "")">
 
         @if (HasChildren)
         {
@@ -41,13 +41,13 @@
         @foreach (var child in Children)
         {
             <TreeNodeComponent Node="child"
-                               Depth="@(Depth + 1)"
-                               AllNodes="AllNodes"
-                               SelectedNode="SelectedNode"
-                               OnNodeSelected="OnNodeSelected"
-                               OnAddChild="OnAddChild"
-                               OnDelete="OnDelete"
-                               TreeService="TreeService" />
+                    Depth="@(Depth + 1)"
+                    AllNodes="AllNodes"
+                    SelectedNode="SelectedNode"
+                    OnNodeSelected="OnNodeSelected"
+                    OnAddChild="OnAddChild"
+                    OnDelete="OnDelete"
+                    TreeService="TreeService" />
         }
     }
 </div>
@@ -98,25 +98,18 @@
 </style>
 
 @code {
+    [Parameter]
+    public List<TreeNode> AllNodes { get; set; } = new();
     private List<TreeNode> Children { get; set; } = new();
-    private bool IsExpanded { get; set; }
+
+    [Parameter]
+    public int Depth { get; set; } = 0;
     private bool HasChildren => Children.Count > 0;
+    private bool IsExpanded { get; set; }
     private bool IsSelected => SelectedNode?.TreeNodeId == Node.TreeNodeId;
 
     [Parameter]
     public TreeNode Node { get; set; } = new();
-
-    [Parameter]
-    public int Depth { get; set; } = 0;
-
-    [Parameter]
-    public List<TreeNode> AllNodes { get; set; } = new();
-
-    [Parameter]
-    public TreeNode? SelectedNode { get; set; }
-
-    [Parameter]
-    public EventCallback<TreeNode> OnNodeSelected { get; set; }
 
     [Parameter]
     public EventCallback<TreeNode> OnAddChild { get; set; }
@@ -125,13 +118,13 @@
     public EventCallback<TreeNode> OnDelete { get; set; }
 
     [Parameter]
-    public TreeService? TreeService { get; set; }
+    public EventCallback<TreeNode> OnNodeSelected { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        IsExpanded = Node.IsExpanded;
-        await LoadChildrenAsync();
-    }
+    [Parameter]
+    public TreeNode? SelectedNode { get; set; }
+
+    [Parameter]
+    public TreeService? TreeService { get; set; }
 
     private async Task LoadChildrenAsync()
     {
@@ -143,6 +136,12 @@
         {
             Children = await TreeService.GetTreeNodeChildren(Node.TreeNodeId);
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsExpanded = Node.IsExpanded;
+        await LoadChildrenAsync();
     }
 
     private async Task ToggleExpanded()

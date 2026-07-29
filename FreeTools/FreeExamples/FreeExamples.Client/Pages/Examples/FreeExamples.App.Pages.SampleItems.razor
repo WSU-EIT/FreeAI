@@ -77,23 +77,23 @@
                     </button>
                 </div>
                 <InfoTip Title="Action Buttons"
-                         Description="These buttons perform actions on your data. Add New opens a blank form for a new record. Export CSV downloads all your filtered data as a spreadsheet. Clear resets all your search filters. Show/Hide Filter toggles the search bar. Refresh reloads data from the server. Buttons turn grey (disabled) while loading to prevent double-clicks."
-                         Code="@_codeActionBtn" />
+                        Description="These buttons perform actions on your data. Add New opens a blank form for a new record. Export CSV downloads all your filtered data as a spreadsheet. Clear resets all your search filters. Show/Hide Filter toggles the search bar. Refresh reloads data from the server. Buttons turn grey (disabled) while loading to prevent double-clicks."
+                        Code="@_codeActionBtn" />
 
                 @if (Filter.ShowFilters && !Filter.Loading) {
                     <div class="keyword-search mb-2">
                         <label for="sampleitems-filter-keyword">Search
                             <InfoTip Title="Keyword Search"
-                                     Description="When you type in this box and press Enter (or tab away), the page sends your search term to the server. The server searches the Name, Description, and Category fields for matches. This is called a filter — it narrows down the full list to only matching records."
-                                     Code="@_codeKeywordSearch" />
+                                    Description="When you type in this box and press Enter (or tab away), the page sends your search term to the server. The server searches the Name, Description, and Category fields for matches. This is called a filter — it narrows down the full list to only matching records."
+                                    Code="@_codeKeywordSearch" />
                         </label>
                         <div class="fixed-200">
                             <input type="text"
-                                   id="sampleitems-filter-keyword"
-                                   class="form-control"
-                                   value="@Filter.Keyword"
-                                   @onchange="KeywordChanged"
-                                   placeholder="Search name, description, category..." />
+                                    id="sampleitems-filter-keyword"
+                                    class="form-control"
+                                    value="@Filter.Keyword"
+                                    @onchange="KeywordChanged"
+                                    placeholder="Search name, description, category..." />
                         </div>
                     </div>
                 }
@@ -105,8 +105,8 @@
                 <div class="col col-lg-2 col-md-3 col-sm-4 col-12 mb-2">
                     <label for="sampleitems-filter-status">Status
                         <InfoTip Title="Filter Dropdowns"
-                                 Description="These dropdown lists let you narrow results by one value. When you select Active, only Active items are shown. Selecting All removes the filter. The bind attribute connects the dropdown to a C# variable — when you change the selection, Blazor automatically updates the variable and re-fetches data."
-                                 Code="@_codeFilterDropdown" />
+                                Description="These dropdown lists let you narrow results by one value. When you select Active, only Active items are shown. Selecting All removes the filter. The bind attribute connects the dropdown to a C# variable — when you change the selection, Blazor automatically updates the variable and re-fetches data."
+                                Code="@_codeFilterDropdown" />
                     </label>
                     <select class="form-select" size="5" id="sampleitems-filter-status" @bind="Filter.Status" @bind:after="LoadFilter">
                         @if (string.IsNullOrWhiteSpace(Filter.Status)) {
@@ -152,15 +152,15 @@
             <div class="mb-2">
                 <div class="form-check form-switch">
                     <input type="checkbox"
-                        id="sampleitems-filter-IncludeDeletedRecords"
-                        class="form-check-input"
-                        @bind="Filter.IncludeDeletedItems"
-                        @bind:after="LoadFilter" />
+                            id="sampleitems-filter-IncludeDeletedRecords"
+                            class="form-check-input"
+                            @bind="Filter.IncludeDeletedItems"
+                            @bind:after="LoadFilter" />
                     <label for="sampleitems-filter-IncludeDeletedRecords" class="form-check-label">
                         Include Deleted Records
                         <InfoTip Title="Toggle Switch"
-                                 Description="This is a Bootstrap switch — a styled checkbox that looks like a sliding toggle. When turned on, soft-deleted records (items marked as deleted but not permanently removed) appear in the list. Soft delete means the record stays in the database with a Deleted flag instead of being erased."
-                                 Code="@_codeToggleSwitch" />
+                                Description="This is a Bootstrap switch — a styled checkbox that looks like a sliding toggle. When turned on, soft-deleted records (items marked as deleted but not permanently removed) appear in the list. Soft delete means the record stays in the database with a Deleted flag instead of being erased."
+                                Code="@_codeToggleSwitch" />
                     </label>
                 </div>
             </div>
@@ -174,26 +174,26 @@
             } else {
                 <div class="d-flex flex-wrap gap-1 mb-1">
                     <InfoTip Title="Pagination"
-                             Description="Pagination splits a long list into pages (like pages of a book). Instead of loading all records at once, the server sends only 10 at a time. You click page numbers or Next/Previous to see more. This makes the page load faster and uses less memory."
-                             Code="@_codePagination" />
+                            Description="Pagination splits a long list into pages (like pages of a book). Instead of loading all records at once, the server sends only 10 at a time. You click page numbers or Next/Previous to see more. This makes the page load faster and uses less memory."
+                            Code="@_codePagination" />
                     <InfoTip Title="Page Size"
-                             Description="The dropdown next to the record count controls how many rows appear per page. Choosing 25 shows more rows but takes longer to load. Choosing 10 keeps the page fast. The value is sent to the server with each request so it only returns that many records."
-                             Code="@_codePageSize" />
+                            Description="The dropdown next to the record count controls how many rows appear per page. Choosing 25 shows more rows but takes longer to load. Choosing 10 keeps the page fast. The value is sent to the server with each request so it only returns that many records."
+                            Code="@_codePageSize" />
                     <InfoTip Title="Column Sorting"
-                             Description="Clicking a column header sorts the data by that column. The arrow shows which direction: ascending (A to Z, 1 to 9) or descending (Z to A, 9 to 1). Sorting happens on the server — the full dataset is sorted before the page of results is returned."
-                             Code="@_codeSorting" />
+                            Description="Clicking a column header sorts the data by that column. The arrow shows which direction: ascending (A to Z, 1 to 9) or descending (Z to A, 9 to 1). Sorting happens on the server — the full dataset is sorted before the page of results is returned."
+                            Code="@_codeSorting" />
                     <InfoTip Title="Edit Link"
-                             Description="Clicking the Edit button in a row navigates to the edit page for that specific record. The record's unique ID (a GUID — a long random string) is passed in the URL. The edit page uses that ID to load the full record from the server."
-                             Code="@_codeEditLink" />
+                            Description="Clicking the Edit button in a row navigates to the edit page for that specific record. The record's unique ID (a GUID — a long random string) is passed in the URL. The edit page uses that ID to load the full record from the server."
+                            Code="@_codeEditLink" />
                 </div>
                 <PagedRecordset ActionHandlers="ActionHandlers"
-                    Configuration="Config"
-                    Formatters="Formatters"
-                    NavigationCallbackHander="NavigationCallbackHandler"
-                    NavigationLocation="PagedRecordset.NavLocation.Both"
-                    RecordData="Data"
-                    RowClasses="_rowClasses"
-                    UseBootstrap="true" />
+                        Configuration="Config"
+                        Formatters="Formatters"
+                        NavigationCallbackHander="NavigationCallbackHandler"
+                        NavigationLocation="PagedRecordset.NavLocation.Both"
+                        RecordData="Data"
+                        RowClasses="_rowClasses"
+                        UseBootstrap="true" />
             }
         }
     }

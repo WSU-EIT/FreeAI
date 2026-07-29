@@ -43,24 +43,24 @@
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
             <label for="siteSearchInput" class="visually-hidden">Search sites</label>
             <input type="text" id="siteSearchInput" class="form-control" placeholder="Search sites..."
-                   style="max-width:400px;"
-                   @bind="_searchText" @bind:event="oninput" />
+                    style="max-width:400px;"
+                    @bind="_searchText" @bind:event="oninput" />
             <fieldset class="btn-group btn-group-sm m-0 p-0 border-0" style="display:inline-flex;">
                 <legend class="visually-hidden">Filter by enabled status</legend>
                 <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterAll" autocomplete="off"
-                       checked="@(_enabledFilter == "all")" @onchange="@(() => SetEnabledFilter("all"))" />
+                        checked="@(_enabledFilter == "all")" @onchange="@(() => SetEnabledFilter("all"))" />
                 <label class="btn btn-outline-secondary" for="enabledFilterAll">
                     All <span class="badge bg-secondary ms-1">@_sites.Count</span>
                 </label>
 
                 <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterEnabled" autocomplete="off"
-                       checked="@(_enabledFilter == "enabled")" @onchange="@(() => SetEnabledFilter("enabled"))" />
+                        checked="@(_enabledFilter == "enabled")" @onchange="@(() => SetEnabledFilter("enabled"))" />
                 <label class="btn btn-outline-success" for="enabledFilterEnabled">
                     Enabled only <span class="badge bg-success ms-1">@_sites.Count(s => s.Enabled)</span>
                 </label>
 
                 <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterDisabled" autocomplete="off"
-                       checked="@(_enabledFilter == "disabled")" @onchange="@(() => SetEnabledFilter("disabled"))" />
+                        checked="@(_enabledFilter == "disabled")" @onchange="@(() => SetEnabledFilter("disabled"))" />
                 <label class="btn btn-outline-secondary" for="enabledFilterDisabled">
                     Disabled only <span class="badge bg-dark ms-1">@_sites.Count(s => !s.Enabled)</span>
                 </label>
@@ -69,8 +69,7 @@
 
         @* ── Bulk Edit Toolbar ── *@
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-            <button class="btn btn-sm @(_bulkMode ? "btn-primary" : "btn-outline-primary")"
-                    @onclick="ToggleBulkMode">
+            <button class="btn btn-sm @(_bulkMode ? "btn-primary" : "btn-outline-primary")" @onclick="ToggleBulkMode">
                 <i class="fas fa-check-double me-1"></i>Bulk Edit
             </button>
             @if (_bulkMode) {
@@ -177,9 +176,9 @@
                 <div class="me-2" @onclick:stopPropagation="true">
                     @{var checkState = GetSiteCheckState(site);}
                     <input type="checkbox" class="form-check-input" id="site-check-@site.SiteId"
-                           aria-label="@($"Select {site.Name}")"
-                           checked="@(checkState != "unchecked")"
-                           @onchange="@(e => ToggleSite(site, (bool)e.Value!))" />
+                            aria-label="@($"Select {site.Name}")"
+                            checked="@(checkState != "unchecked")"
+                            @onchange="@(e => ToggleSite(site, (bool)e.Value!))" />
                 </div>
             }
             <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId))" class="flex-grow-1 text-decoration-none text-reset">
@@ -256,14 +255,14 @@
                     </button>
                 }
                 <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))" class="btn btn-sm btn-outline-secondary me-1"
-                   title="@($"Settings: {site.Name}")"
-                   aria-label="@($"Settings: {site.Name}")">
+                        title="@($"Settings: {site.Name}")"
+                        aria-label="@($"Settings: {site.Name}")">
                     <i class="fas fa-cog" aria-hidden="true"></i>
                 </a>
                 <DeleteConfirmation OnConfirmed="@(() => DeleteSite(site.SiteId))"
-                                    CancelText="@Helpers.ConfirmButtonTextCancel"
-                                    DeleteText="@Helpers.ConfirmButtonTextDelete"
-                                    ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                        CancelText="@Helpers.ConfirmButtonTextCancel"
+                        DeleteText="@Helpers.ConfirmButtonTextDelete"
+                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
             </div>
         </div>
         @if (_bulkMode && hasChildren && isExpanded) {
@@ -343,9 +342,9 @@
                                 <i class="fas fa-arrow-up" aria-hidden="true"></i>
                             </button>
                             <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))"
-                               class="btn btn-sm btn-outline-secondary me-1"
-                               title="@($"Edit page: {page.Path}")"
-                               aria-label="@($"Edit page: {page.Path}")">
+                                    class="btn btn-sm btn-outline-secondary me-1"
+                                    title="@($"Edit page: {page.Path}")"
+                                    aria-label="@($"Edit page: {page.Path}")">
                                 <i class="fas fa-cog" aria-hidden="true"></i>
                             </a>
                         </div>
@@ -368,7 +367,7 @@
         int groupTotal = CountDescendants(node);
         int groupEnabled = CountEnabledDescendants(node);
         <div class="list-group-item list-group-item-light d-flex align-items-center fw-bold"
-             style="padding-left: @(12 + indent)px;">
+                style="padding-left: @(12 + indent)px;">
             <button class="btn btn-sm btn-link p-0 me-2 text-dark" style="width:20px;"
                     @onclick="() => ToggleTreeNode(node.Key)" @onclick:preventDefault="true"
                     aria-label="@(isExpanded ? "Collapse " + node.Label : "Expand " + node.Label)"
@@ -380,9 +379,9 @@
                     @{ bool groupAllEnabled = groupEnabled == groupTotal && groupTotal > 0;
                        bool groupNoneEnabled = groupEnabled == 0; }
                     <input type="checkbox" class="form-check-input" id="group-check-@node.Key"
-                           aria-label="@($"Select all sites under {node.Label}")"
-                           checked="@groupAllEnabled"
-                           @onchange="@(e => ToggleGroupNode(node, (bool)e.Value!))" />
+                            aria-label="@($"Select all sites under {node.Label}")"
+                            checked="@groupAllEnabled"
+                            @onchange="@(e => ToggleGroupNode(node, (bool)e.Value!))" />
                 </div>
             }
             <i class="fas fa-globe me-2 text-muted" role="button" @onclick="() => ToggleTreeNode(node.Key)"></i>
@@ -390,7 +389,7 @@
             <span class="badge bg-light text-dark border ms-2">@groupTotal</span>
             @if (_bulkMode) {
                 <span class="badge @(groupEnabled == groupTotal ? "bg-success" : groupEnabled > 0 ? "bg-warning text-dark" : "bg-secondary") ms-1"
-                      style="font-size:0.7rem;">@groupEnabled enabled</span>
+                        style="font-size:0.7rem;">@groupEnabled enabled</span>
                 <div class="btn-group ms-2" @onclick:stopPropagation="true">
                     <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.7rem;"
                             @onclick="() => SetGroupEnabled(node, true)" @onclick:preventDefault="true"
@@ -1151,10 +1150,10 @@
 
     private class SiteTreeNode
     {
+        public List<SiteTreeNode> Children { get; set; } = new();
         public string Key { get; set; } = "";
         public string Label { get; set; } = "";
         public DataObjects.Site? Site { get; set; }
-        public List<SiteTreeNode> Children { get; set; } = new();
     }
 
     private void ToggleTreeNode(string key)

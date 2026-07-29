@@ -40,24 +40,24 @@ public partial class DataObjects
     /// </summary>
     public class FMProjectInfo
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public List<string> IncludedModules { get; set; } = new();
-        public string Status { get; set; } = string.Empty;
+        public int BuildCount { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
 
         /// <summary>Number of entities from Entity Wizard</summary>
         public int EntityCount { get; set; }
 
+        public int FileCount { get; set; }
+        public Guid Id { get; set; }
+        public List<string> IncludedModules { get; set; } = new();
+        public FMBuildInfo? LastBuild { get; set; }
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>Number of relationships from Entity Wizard</summary>
         public int RelationshipCount { get; set; }
-
-        public int FileCount { get; set; }
-        public int BuildCount { get; set; }
-        public FMBuildInfo? LastBuild { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime UpdatedAt { get; set; }
     }
 
     /// <summary>
@@ -65,20 +65,19 @@ public partial class DataObjects
     /// </summary>
     public class FMCreateProjectRequest
     {
-        /// <summary>Project template to use.</summary>
-        public FMProjectTemplate Template { get; set; } = FMProjectTemplate.Starter;
-
-        /// <summary>Project name - must be valid C# identifier.</summary>
-        public string Name { get; set; } = string.Empty;
+        /// <summary>Project description.</summary>
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>Human-friendly display name.</summary>
         public string DisplayName { get; set; } = string.Empty;
 
-        /// <summary>Project description.</summary>
-        public string Description { get; set; } = string.Empty;
-
         /// <summary>Optional modules to include (e.g., ["Tags", "Appointments"]).</summary>
         public List<string> IncludedModules { get; set; } = new();
+
+        /// <summary>Project name - must be valid C# identifier.</summary>
+        public string Name { get; set; } = string.Empty;
+        /// <summary>Project template to use.</summary>
+        public FMProjectTemplate Template { get; set; } = FMProjectTemplate.Starter;
     }
 
     /// <summary>
@@ -86,9 +85,9 @@ public partial class DataObjects
     /// </summary>
     public class FMUpdateProjectRequest
     {
-        public Guid Id { get; set; }
-        public string DisplayName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public Guid Id { get; set; }
         public string Status { get; set; } = string.Empty;
     }
 
@@ -101,11 +100,11 @@ public partial class DataObjects
     /// </summary>
     public class FMAppFileInfo
     {
-        public Guid Id { get; set; }
-        public Guid ProjectId { get; set; }
+        public int CurrentVersion { get; set; }
         public string FilePath { get; set; } = string.Empty;
         public string FileType { get; set; } = string.Empty;
-        public int CurrentVersion { get; set; }
+        public Guid Id { get; set; }
+        public Guid ProjectId { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
 
@@ -114,13 +113,13 @@ public partial class DataObjects
     /// </summary>
     public class FMAppFileContent
     {
-        public Guid Id { get; set; }
-        public Guid ProjectId { get; set; }
+        public string Content { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string FileType { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public int Version { get; set; }
+        public Guid Id { get; set; }
+        public Guid ProjectId { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int Version { get; set; }
     }
 
     /// <summary>
@@ -128,14 +127,13 @@ public partial class DataObjects
     /// </summary>
     public class FMSaveFileRequest
     {
-        public Guid FileId { get; set; }
+        /// <summary>Optional commit message.</summary>
+        public string Comment { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
 
         /// <summary>Expected version - save fails if file was modified.</summary>
         public int ExpectedVersion { get; set; }
-
-        /// <summary>Optional commit message.</summary>
-        public string Comment { get; set; } = string.Empty;
+        public Guid FileId { get; set; }
     }
 
     /// <summary>
@@ -143,9 +141,9 @@ public partial class DataObjects
     /// </summary>
     public class FMSaveFileResponse
     {
-        public bool Success { get; set; }
-        public int NewVersion { get; set; }
         public string Message { get; set; } = string.Empty;
+        public int NewVersion { get; set; }
+        public bool Success { get; set; }
     }
 
     /// <summary>
@@ -153,10 +151,10 @@ public partial class DataObjects
     /// </summary>
     public class FMCreateFileRequest
     {
-        public Guid ProjectId { get; set; }
+        public string Content { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string FileType { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
+        public Guid ProjectId { get; set; }
     }
 
     /// <summary>
@@ -164,11 +162,11 @@ public partial class DataObjects
     /// </summary>
     public class FMFileVersionInfo
     {
+        public string Comment { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public string CreatedByName { get; set; } = string.Empty;
         public Guid Id { get; set; }
         public int Version { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string Comment { get; set; } = string.Empty;
-        public string CreatedByName { get; set; } = string.Empty;
     }
 
     // ============================================================
@@ -180,15 +178,15 @@ public partial class DataObjects
     /// </summary>
     public class FMBuildInfo
     {
+        public long? ArtifactSizeBytes { get; set; }
+        public int BuildNumber { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
         public Guid Id { get; set; }
         public Guid ProjectId { get; set; }
-        public int BuildNumber { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
         public DateTime? StartedAt { get; set; }
-        public DateTime? CompletedAt { get; set; }
-        public long? ArtifactSizeBytes { get; set; }
-        public string ErrorMessage { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 
     /// <summary>

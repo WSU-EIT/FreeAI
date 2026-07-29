@@ -10,43 +10,6 @@ namespace FreeExamples.Server.Controllers;
 public partial class DataController
 {
     /// <summary>
-    /// Get comments for a SampleItem.
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/GetComments")]
-    public ActionResult<List<DataObjects.SampleComment>> GetComments(
-        [FromBody] Guid sampleItemId,
-        [FromServices] CommentService commentService)
-    {
-        return Ok(commentService.GetComments(sampleItemId));
-    }
-
-    /// <summary>
-    /// Save a comment (insert or update).
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/SaveComment")]
-    public async Task<ActionResult<DataObjects.SampleComment>> SaveComment(
-        [FromBody] DataObjects.SampleComment comment,
-        [FromServices] CommentService commentService)
-    {
-        var saved = commentService.SaveComment(comment);
-
-        await da.SignalRUpdate(new DataObjects.SignalRUpdate {
-            TenantId = CurrentUser.TenantId,
-            ItemId = saved.SampleItemId,
-            UserId = CurrentUser.UserId,
-            UpdateType = DataObjects.SignalRUpdateType.CommentSaved,
-            Message = "comment",
-            Object = saved,
-        });
-
-        return Ok(saved);
-    }
-
-    /// <summary>
     /// Delete a comment.
     /// </summary>
     [HttpPost]
@@ -54,8 +17,7 @@ public partial class DataController
     [Route("~/api/Data/DeleteComment")]
     public async Task<ActionResult<DataObjects.BooleanResponse>> DeleteComment(
         [FromBody] Guid commentId,
-        [FromServices] CommentService commentService)
-    {
+        [FromServices] CommentService commentService){
         var result = commentService.DeleteComment(commentId);
 
         if (result) {
@@ -69,5 +31,39 @@ public partial class DataController
         }
 
         return Ok(new DataObjects.BooleanResponse { Result = result });
+    }
+    /// <summary>
+    /// Get comments for a SampleItem.
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/GetComments")]
+    public ActionResult<List<DataObjects.SampleComment>> GetComments(
+        [FromBody] Guid sampleItemId,
+        [FromServices] CommentService commentService){
+        return Ok(commentService.GetComments(sampleItemId));
+    }
+
+    /// <summary>
+    /// Save a comment (insert or update).
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/SaveComment")]
+    public async Task<ActionResult<DataObjects.SampleComment>> SaveComment(
+        [FromBody] DataObjects.SampleComment comment,
+        [FromServices] CommentService commentService){
+        var saved = commentService.SaveComment(comment);
+
+        await da.SignalRUpdate(new DataObjects.SignalRUpdate {
+            TenantId = CurrentUser.TenantId,
+            ItemId = saved.SampleItemId,
+            UserId = CurrentUser.UserId,
+            UpdateType = DataObjects.SignalRUpdateType.CommentSaved,
+            Message = "comment",
+            Object = saved,
+        });
+
+        return Ok(saved);
     }
 }

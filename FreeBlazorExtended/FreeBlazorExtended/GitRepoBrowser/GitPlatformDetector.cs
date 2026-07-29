@@ -14,6 +14,23 @@ namespace FreeBlazorExtended.GitRepoBrowser;
 
 public static class GitPlatformDetector
 {
+    private static string BuildBaseApiUrl(GitPlatform platform, string host, string scheme) =>
+        platform switch
+        {
+            // Cloud platforms — canonical well-known API roots
+            GitPlatform.GitHub    => "https://api.github.com",
+            GitPlatform.GitLab    => host == "gitlab.com"
+                                         ? "https://gitlab.com/api/v4"
+                                         : $"{scheme}://{host}/api/v4",
+            GitPlatform.Bitbucket => "https://api.bitbucket.org",
+
+            // Self-hosted / enterprise — version prefix baked into BaseApiUrl
+            GitPlatform.GitHubEnterprise => $"https://{host}/api/v3",
+            GitPlatform.Gitea            => $"{scheme}://{host}/api/v1",
+            GitPlatform.AzureDevOps      => $"https://dev.azure.com",
+
+            _ => throw new ArgumentException($"Cannot build API URL for unsupported platform '{platform}'.")
+        };
     /// <summary>
     /// Parses <paramref name="rawUrl"/> and returns the resolved platform details.
     /// </summary>
@@ -24,8 +41,7 @@ public static class GitPlatformDetector
     /// <exception cref="ArgumentException">Thrown when the URL is invalid or the platform cannot be determined.</exception>
     public static (GitPlatform Platform, string Owner, string Repo, string BaseApiUrl) Detect(
         string rawUrl,
-        GitPlatform? platformOverride = null)
-    {
+        GitPlatform? platformOverride = null){
         if (string.IsNullOrWhiteSpace(rawUrl))
             throw new ArgumentException("Repository URL cannot be empty.", nameof(rawUrl));
 
@@ -77,22 +93,4 @@ public static class GitPlatformDetector
 
         return (platform, owner, repo, baseApiUrl);
     }
-
-    private static string BuildBaseApiUrl(GitPlatform platform, string host, string scheme) =>
-        platform switch
-        {
-            // Cloud platforms — canonical well-known API roots
-            GitPlatform.GitHub    => "https://api.github.com",
-            GitPlatform.GitLab    => host == "gitlab.com"
-                                         ? "https://gitlab.com/api/v4"
-                                         : $"{scheme}://{host}/api/v4",
-            GitPlatform.Bitbucket => "https://api.bitbucket.org",
-
-            // Self-hosted / enterprise — version prefix baked into BaseApiUrl
-            GitPlatform.GitHubEnterprise => $"https://{host}/api/v3",
-            GitPlatform.Gitea            => $"{scheme}://{host}/api/v1",
-            GitPlatform.AzureDevOps      => $"https://dev.azure.com",
-
-            _ => throw new ArgumentException($"Cannot build API URL for unsupported platform '{platform}'.")
-        };
 }

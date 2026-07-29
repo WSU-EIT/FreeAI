@@ -20,10 +20,10 @@
 
     Example (ratio mode):
         <ProgressCard Title="Storage Used"
-                      Current="@usedGb"
-                      Total="@totalGb"
-                      BarColor="warning"
-                      RemainingText="@($"{totalGb - usedGb} GB free")" />
+                Current="@usedGb"
+                Total="@totalGb"
+                BarColor="warning"
+                RemainingText="@($"{totalGb - usedGb} GB free")" />
 
     Example (percent mode):
         <ProgressCard Title="Sprint Velocity" Percent="72" BarColor="success" />
@@ -190,24 +190,18 @@
     protected int _displayTotal = 0;
 
     /// <summary>
-    /// The task or resource name displayed as the card heading.
-    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// Bootstrap contextual colour applied to the progress bar fill.
+    /// Accepted values: <c>"primary"</c> (default), <c>"success"</c>, <c>"warning"</c>,
+    /// <c>"danger"</c>, <c>"info"</c>.
+    /// Choose <c>"warning"</c> or <c>"danger"</c> when the metric is approaching a limit.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string BarColor { get; set; } = "primary";
 
     /// <summary>
-    /// Secondary description displayed below the title in a muted font.
-    /// Optional — use for context such as a deadline or category.
+    /// Optional render fragment displayed in the card footer, separated by a top border.
+    /// Use for action buttons or supplemental status information.
     /// </summary>
-    [Parameter] public string Subtitle { get; set; } = "";
-
-    /// <summary>
-    /// Direct completion percentage in the range 0–100.
-    /// Ignored when both <see cref="Current"/> and <see cref="Total"/> are set
-    /// (the component calculates the percentage from those values instead).
-    /// Default: <c>0</c>.
-    /// </summary>
-    [Parameter] public decimal Percent { get; set; } = 0;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// The numerator of the completion ratio (e.g. bytes used, tasks done).
@@ -218,25 +212,12 @@
     [Parameter] public int? Current { get; set; }
 
     /// <summary>
-    /// The denominator of the completion ratio (e.g. total bytes, total tasks).
-    /// Required for ratio mode to work; ignored when <see cref="Current"/> is null.
+    /// Direct completion percentage in the range 0–100.
+    /// Ignored when both <see cref="Current"/> and <see cref="Total"/> are set
+    /// (the component calculates the percentage from those values instead).
+    /// Default: <c>0</c>.
     /// </summary>
-    [Parameter] public int? Total { get; set; }
-
-    /// <summary>
-    /// Bootstrap contextual colour applied to the progress bar fill.
-    /// Accepted values: <c>"primary"</c> (default), <c>"success"</c>, <c>"warning"</c>,
-    /// <c>"danger"</c>, <c>"info"</c>.
-    /// Choose <c>"warning"</c> or <c>"danger"</c> when the metric is approaching a limit.
-    /// </summary>
-    [Parameter] public string BarColor { get; set; } = "primary";
-
-    /// <summary>
-    /// When <c>true</c> (default), renders metric rows below the bar showing the
-    /// <c>Current / Total</c> ratio and the <see cref="RemainingText"/>.
-    /// Set to <c>false</c> for a compact bar-only layout.
-    /// </summary>
-    [Parameter] public bool ShowMetrics { get; set; } = true;
+    [Parameter] public decimal Percent { get; set; } = 0;
 
     /// <summary>
     /// Custom text for the "Remaining:" metric row (e.g. <c>"3 GB free"</c>, <c>"4 days left"</c>).
@@ -246,10 +227,29 @@
     [Parameter] public string RemainingText { get; set; } = "";
 
     /// <summary>
-    /// Optional render fragment displayed in the card footer, separated by a top border.
-    /// Use for action buttons or supplemental status information.
+    /// When <c>true</c> (default), renders metric rows below the bar showing the
+    /// <c>Current / Total</c> ratio and the <see cref="RemainingText"/>.
+    /// Set to <c>false</c> for a compact bar-only layout.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool ShowMetrics { get; set; } = true;
+
+    /// <summary>
+    /// Secondary description displayed below the title in a muted font.
+    /// Optional — use for context such as a deadline or category.
+    /// </summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>
+    /// The task or resource name displayed as the card heading.
+    /// <para><b>Required.</b> The card renders nothing when this is empty or whitespace.</para>
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    /// <summary>
+    /// The denominator of the completion ratio (e.g. total bytes, total tasks).
+    /// Required for ratio mode to work; ignored when <see cref="Current"/> is null.
+    /// </summary>
+    [Parameter] public int? Total { get; set; }
 
     protected override void OnInitialized()
     {

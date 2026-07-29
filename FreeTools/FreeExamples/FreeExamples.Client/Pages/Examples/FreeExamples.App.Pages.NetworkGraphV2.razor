@@ -10,14 +10,14 @@
         <AboutSection Title="V2: Dependency Map" Subtitle="Package dependency visualization showing which libraries depend on which" IconClass="fa-solid fa-diagram-project"><p class="small text-muted mb-0">Package dependency visualization showing which libraries depend on which</p></AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Indented Dependency Tree"
-                     Description="Dependencies are shown as an indented list using ps-3 (padding-start) for each nesting level. The arrow character (&#8627;) visually indicates 'depends on'. This is the same tree view used in NuGet Package Manager and npm ls output."
-                     Code="@_codeIndentedTree" />
+                    Description="Dependencies are shown as an indented list using ps-3 (padding-start) for each nesting level. The arrow character (&#8627;) visually indicates 'depends on'. This is the same tree view used in NuGet Package Manager and npm ls output."
+                    Code="@_codeIndentedTree" />
             <InfoTip Title="list-group for Tree Nodes"
-                     Description="list-group-flush inside a card creates a clean tree view. Each top-level package is a list-group-item with its dependencies indented below. The card-header labels the context (NuGet, npm, etc.). No collapse needed for shallow trees."
-                     Code="@_codeListGroupTree" />
+                    Description="list-group-flush inside a card creates a clean tree view. Each top-level package is a list-group-item with its dependencies indented below. The card-header labels the context (NuGet, npm, etc.). No collapse needed for shallow trees."
+                    Code="@_codeListGroupTree" />
             <InfoTip Title="Version Badge Pattern"
-                     Description="Package versions appear in parentheses next to the name. In production, outdated versions get a bg-warning badge and latest versions get bg-success. This visual version status is used in DependencyManager for tracking updates."
-                     Code="@_codeVersionBadge" />
+                    Description="Package versions appear in parentheses next to the name. In production, outdated versions get a bg-warning badge and latest versions get bg-success. This visual version status is used in DependencyManager for tracking updates."
+                    Code="@_codeVersionBadge" />
         </div>
         <div class='card shadow-sm border-0 mb-3'><div class='card-header bg-white py-2'><span class='small fw-semibold'>NuGet Package Dependencies</span></div><div class='card-body p-0'><div class='list-group list-group-flush'><div class='list-group-item py-2'><div class='small fw-semibold'>Microsoft.AspNetCore.App (8.0)</div><div class='small text-muted ps-3'>&#8627; Microsoft.Extensions.DependencyInjection (8.0.1)</div><div class='small text-muted ps-4'>&#8627; Microsoft.Extensions.DependencyInjection.Abstractions (8.0.2)</div><div class='small text-muted ps-3'>&#8627; Microsoft.Extensions.Logging (8.0.1)</div></div><div class='list-group-item py-2'><div class='small fw-semibold'>Entity Framework Core (8.0.4)</div><div class='small text-muted ps-3'>&#8627; Microsoft.Data.SqlClient (5.2.0)</div><div class='small text-muted ps-3'>&#8627; Microsoft.Extensions.Caching.Memory (8.0.1)</div></div></div></div></div>
     }

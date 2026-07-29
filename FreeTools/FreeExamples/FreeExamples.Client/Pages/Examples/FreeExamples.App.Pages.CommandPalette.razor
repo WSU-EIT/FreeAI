@@ -59,8 +59,8 @@
             </button>
             <div class="small text-muted mt-2">Click the button above to open the command palette</div>
             <InfoTip Title="Trigger Pattern"
-                     Description="In production, this would be triggered by a keyboard shortcut (Ctrl+K or Ctrl+P). The button is a fallback for discoverability. GitHub shows 'Type / to search' in the nav bar. VS Code shows a search icon. The key insight: the palette is always one keystroke away."
-                     Code="@_codeTrigger" />
+                    Description="In production, this would be triggered by a keyboard shortcut (Ctrl+K or Ctrl+P). The button is a fallback for discoverability. GitHub shows 'Type / to search' in the nav bar. VS Code shows a search icon. The key insight: the palette is always one keystroke away."
+                    Code="@_codeTrigger" />
         </div>
 
         @* ── Selected Items History ── *@
@@ -99,12 +99,12 @@
         @if (_paletteOpen) {
             @* Backdrop *@
             <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center"
-                 style="z-index:1055; background:rgba(0,0,0,0.5); padding-top:10vh;"
-                 @onclick="ClosePalette">
+                    style="z-index:1055; background:rgba(0,0,0,0.5); padding-top:10vh;"
+                    @onclick="ClosePalette">
 
                 @* Palette Dialog *@
                 <div class="bg-white rounded-3 shadow-lg d-flex flex-column" style="width:min(600px, 90vw); max-height:70vh;"
-                     @onclick:stopPropagation>
+                        @onclick:stopPropagation>
 
                     @* Search Input *@
                     <div class="p-3 border-bottom">
@@ -117,12 +117,12 @@
                                 }
                             </span>
                             <input type="text" class="form-control form-control-lg border-start-0"
-                                   placeholder="Search sample items..."
-                                   @bind="_searchTerm"
-                                   @bind:event="oninput"
-                                   @bind:after="OnSearchInput"
-                                   @onkeydown="HandleKeydown"
-                                   autofocus />
+                                    placeholder="Search sample items..."
+                                    @bind="_searchTerm"
+                                    @bind:event="oninput"
+                                    @bind:after="OnSearchInput"
+                                    @onkeydown="HandleKeydown"
+                                    autofocus />
                         </div>
                     </div>
 
@@ -140,7 +140,7 @@
                                 @foreach (var item in group) {
                                     int idx = globalIdx++;
                                     <div class="px-3 py-2 d-flex align-items-center border-bottom @(idx == _highlightIndex ? "bg-primary bg-opacity-10" : "")"
-                                         role="button" @onclick="@(() => SelectItem(item))">
+                                            role="button" @onclick="@(() => SelectItem(item))">
                                         <i class="fa-solid fa-file-lines text-muted me-2"></i>
                                         <div class="flex-grow-1">
                                             <span class="small fw-semibold">@((MarkupString)HighlightMatch(item.Name, _searchTerm))</span>
@@ -178,11 +178,11 @@
 
         <div class="d-flex flex-wrap gap-1 mt-2">
             <InfoTip Title="Category Grouping"
-                     Description="Results are grouped by Category using LINQ's GroupBy. Each group gets a header row with the category name and count badge. Within each group, items are listed by name. The highlight index counts across all groups linearly (global index)."
-                     Code="@_codeGrouping" />
+                    Description="Results are grouped by Category using LINQ's GroupBy. Each group gets a header row with the category name and count badge. Within each group, items are listed by name. The highlight index counts across all groups linearly (global index)."
+                    Code="@_codeGrouping" />
             <InfoTip Title="Keyboard Shortcut Footer"
-                     Description="The footer shows available keyboard shortcuts using kbd elements. This is a discoverability pattern — users learn the shortcuts by seeing them. VS Code, GitHub, and Figma all show shortcut hints in their command palettes."
-                     Code="@_codeFooter" />
+                    Description="The footer shows available keyboard shortcuts using kbd elements. This is a discoverability pattern — users learn the shortcuts by seeing them. VS Code, GitHub, and Figma all show shortcut hints in their command palettes."
+                    Code="@_codeFooter" />
         </div>
     }
 }

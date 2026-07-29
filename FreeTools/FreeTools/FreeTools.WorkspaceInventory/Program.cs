@@ -16,8 +16,152 @@ internal partial class Program
     private const long DefaultMaxParseSizeBytes = 1024 * 1024;
     private const int DefaultMaxThreads = 10;
 
-    [GeneratedRegex(@"@page\s+""([^""]+)""", RegexOptions.Compiled)]
-    private static partial Regex PageDirectiveRegex();
+    private static string BuildAzureDevOpsUrl(string orgUrl, string project, string repo, string branch, string relativePath)
+    {
+        var encodedPath = Uri.EscapeDataString("/" + relativePath);
+        return $"{orgUrl}/{Uri.EscapeDataString(project)}/_git/{Uri.EscapeDataString(repo)}?path={encodedPath}&version=GB{Uri.EscapeDataString(branch)}";
+    }
+
+    private static void ClassifyAndExtractMetadata(FileInventoryItem item, string content)
+    {
+        switch (item.Extension)
+        {
+            case ".razor":
+                ExtractRazorMetadata(item, content);
+                break;
+            case ".cs":
+                item.Kind = "CSharpSource";
+                ExtractCSharpMetadata(item, content);
+                break;
+            case ".csproj":
+                item.Kind = "ProjectFile";
+                break;
+            case ".sln":
+                item.Kind = "SolutionFile";
+                break;
+            case ".json" or ".config" or ".xml" or ".yaml" or ".yml":
+                item.Kind = "Config";
+                break;
+            case ".md":
+                item.Kind = "Markdown";
+                break;
+            default:
+                item.Kind = "Other";
+                break;
+        }
+    }
+
+    private static string ClassifyByExtension(string extension) => extension switch
+    {
+        ".razor" => "RazorComponent",
+        ".cs" => "CSharpSource",
+        ".csproj" => "ProjectFile",
+        ".sln" => "SolutionFile",
+        ".json" or ".config" or ".xml" or ".yaml" or ".yml" => "Config",
+        ".md" => "Markdown",
+        _ => "Other"
+    };
+
+    private static bool ContainsExcludedDir(string relativePath, HashSet<string> excludeSet)
+    {
+        var segments = relativePath.Split('/', '\\');
+        return segments.Any(s => excludeSet.Contains(s));
+    }
+
+    private static (long lines, long chars) CountLinesAndChars(string content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return (0, 0);
+
+        long lineCount = 0;
+        foreach (var c in content)
+        {
+            if (c == '\n')
+                lineCount++;
+        }
+
+        if (content.Length > 0 && content[^1] != '\n')
+            lineCount++;
+
+        return (lineCount, content.Length);
+    }
+
+    private static string CsvEscape(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return "\"\"";
+
+        return $"\"{value.Replace("\"", "\"\"")}\"";
+    }
+
+    private static void ExtractCSharpMetadata(FileInventoryItem item, string content)
+    {
+        try
+        {
+            var tree = CSharpSyntaxTree.ParseText(content);
+            var root = tree.GetRoot();
+
+            var namespaces = root.DescendantNodes()
+                .OfType<BaseNamespaceDeclarationSyntax>()
+                .Select(n => n.Name.ToString())
+                .Distinct()
+                .ToList();
+
+            if (namespaces.Count > 0)
+            {
+                item.Namespaces = string.Join(";", namespaces);
+            }
+
+            var types = root.DescendantNodes()
+                .OfType<TypeDeclarationSyntax>()
+                .Select(t => t.Identifier.Text)
+                .Concat(root.DescendantNodes()
+                    .OfType<EnumDeclarationSyntax>()
+                    .Select(e => e.Identifier.Text))
+                .Distinct()
+                .ToList();
+
+            if (types.Count > 0)
+            {
+                item.DeclaredTypes = string.Join(";", types);
+            }
+        }
+        catch
+        {
+        }
+    }
+
+    private static void ExtractRazorMetadata(FileInventoryItem item, string content)
+    {
+        var pageMatches = PageDirectiveRegex().Matches(content);
+        if (pageMatches.Count > 0)
+        {
+            item.Kind = "RazorPage";
+            item.Routes = string.Join(";", pageMatches.Select(m => m.Groups[1].Value));
+        }
+        else
+        {
+            item.Kind = "RazorComponent";
+        }
+
+        item.RequiresAuth = content.Contains("@attribute [Authorize", StringComparison.Ordinal);
+    }
+
+    private static string FindRepoRoot(string startPath)
+    {
+        var dir = new DirectoryInfo(startPath);
+        while (dir is not null)
+        {
+            if (Directory.Exists(Path.Combine(dir.FullName, ".git")) ||
+                dir.GetFiles("*.sln").Length > 0)
+            {
+                return dir.FullName;
+            }
+            dir = dir.Parent;
+        }
+
+        return Path.GetFullPath(Path.Combine(startPath, "..", "..", "..", "..", ".."));
+    }
 
     private static async Task<int> Main(string[] args)
     {
@@ -335,122 +479,8 @@ internal partial class Program
         return 0;
     }
 
-    private static void ClassifyAndExtractMetadata(FileInventoryItem item, string content)
-    {
-        switch (item.Extension)
-        {
-            case ".razor":
-                ExtractRazorMetadata(item, content);
-                break;
-            case ".cs":
-                item.Kind = "CSharpSource";
-                ExtractCSharpMetadata(item, content);
-                break;
-            case ".csproj":
-                item.Kind = "ProjectFile";
-                break;
-            case ".sln":
-                item.Kind = "SolutionFile";
-                break;
-            case ".json" or ".config" or ".xml" or ".yaml" or ".yml":
-                item.Kind = "Config";
-                break;
-            case ".md":
-                item.Kind = "Markdown";
-                break;
-            default:
-                item.Kind = "Other";
-                break;
-        }
-    }
-
-    private static string ClassifyByExtension(string extension) => extension switch
-    {
-        ".razor" => "RazorComponent",
-        ".cs" => "CSharpSource",
-        ".csproj" => "ProjectFile",
-        ".sln" => "SolutionFile",
-        ".json" or ".config" or ".xml" or ".yaml" or ".yml" => "Config",
-        ".md" => "Markdown",
-        _ => "Other"
-    };
-
-    private static void ExtractRazorMetadata(FileInventoryItem item, string content)
-    {
-        var pageMatches = PageDirectiveRegex().Matches(content);
-        if (pageMatches.Count > 0)
-        {
-            item.Kind = "RazorPage";
-            item.Routes = string.Join(";", pageMatches.Select(m => m.Groups[1].Value));
-        }
-        else
-        {
-            item.Kind = "RazorComponent";
-        }
-
-        item.RequiresAuth = content.Contains("@attribute [Authorize", StringComparison.Ordinal);
-    }
-
-    private static void ExtractCSharpMetadata(FileInventoryItem item, string content)
-    {
-        try
-        {
-            var tree = CSharpSyntaxTree.ParseText(content);
-            var root = tree.GetRoot();
-
-            var namespaces = root.DescendantNodes()
-                .OfType<BaseNamespaceDeclarationSyntax>()
-                .Select(n => n.Name.ToString())
-                .Distinct()
-                .ToList();
-
-            if (namespaces.Count > 0)
-            {
-                item.Namespaces = string.Join(";", namespaces);
-            }
-
-            var types = root.DescendantNodes()
-                .OfType<TypeDeclarationSyntax>()
-                .Select(t => t.Identifier.Text)
-                .Concat(root.DescendantNodes()
-                    .OfType<EnumDeclarationSyntax>()
-                    .Select(e => e.Identifier.Text))
-                .Distinct()
-                .ToList();
-
-            if (types.Count > 0)
-            {
-                item.DeclaredTypes = string.Join(";", types);
-            }
-        }
-        catch
-        {
-        }
-    }
-
-    private static string BuildAzureDevOpsUrl(string orgUrl, string project, string repo, string branch, string relativePath)
-    {
-        var encodedPath = Uri.EscapeDataString("/" + relativePath);
-        return $"{orgUrl}/{Uri.EscapeDataString(project)}/_git/{Uri.EscapeDataString(repo)}?path={encodedPath}&version=GB{Uri.EscapeDataString(branch)}";
-    }
-
-    private static (long lines, long chars) CountLinesAndChars(string content)
-    {
-        if (string.IsNullOrEmpty(content))
-            return (0, 0);
-
-        long lineCount = 0;
-        foreach (var c in content)
-        {
-            if (c == '\n')
-                lineCount++;
-        }
-
-        if (content.Length > 0 && content[^1] != '\n')
-            lineCount++;
-
-        return (lineCount, content.Length);
-    }
+    [GeneratedRegex(@"@page\s+""([^""]+)""", RegexOptions.Compiled)]
+    private static partial Regex PageDirectiveRegex();
 
     private static async Task WriteCsvAsync(string csvPath, List<FileInventoryItem> inventory)
     {
@@ -499,36 +529,6 @@ internal partial class Program
         await File.WriteAllTextAsync(csvPath, "FilePath,RelativePath,Extension,SizeBytes,LineCount,CharCount,CreatedUtc,ModifiedUtc,ReadError,Kind,Namespaces,DeclaredTypes,Routes,RequiresAuth,AzureDevOpsUrl\n", Encoding.UTF8);
     }
 
-    private static string CsvEscape(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-            return "\"\"";
-
-        return $"\"{value.Replace("\"", "\"\"")}\"";
-    }
-
-    private static bool ContainsExcludedDir(string relativePath, HashSet<string> excludeSet)
-    {
-        var segments = relativePath.Split('/', '\\');
-        return segments.Any(s => excludeSet.Contains(s));
-    }
-
-    private static string FindRepoRoot(string startPath)
-    {
-        var dir = new DirectoryInfo(startPath);
-        while (dir is not null)
-        {
-            if (Directory.Exists(Path.Combine(dir.FullName, ".git")) ||
-                dir.GetFiles("*.sln").Length > 0)
-            {
-                return dir.FullName;
-            }
-            dir = dir.Parent;
-        }
-
-        return Path.GetFullPath(Path.Combine(startPath, "..", "..", "..", "..", ".."));
-    }
-
     private static void WriteProgress(int current, int total, string relativePath, long sizeBytes, long? lineCount, string? kind, string? error = null)
     {
         if (error is not null)
@@ -547,20 +547,20 @@ internal partial class Program
 
     private sealed class FileInventoryItem
     {
-        public string FilePath { get; set; } = "";
-        public string RelativePath { get; set; } = "";
-        public string Extension { get; set; } = "";
-        public long SizeBytes { get; set; }
-        public long? LineCount { get; set; }
+        public string? AzureDevOpsUrl { get; set; }
         public long? CharCount { get; set; }
         public DateTime? CreatedUtc { get; set; }
-        public DateTime? ModifiedUtc { get; set; }
-        public string? ReadError { get; set; }
-        public string? Kind { get; set; }
-        public string? Namespaces { get; set; }
         public string? DeclaredTypes { get; set; }
-        public string? Routes { get; set; }
+        public string Extension { get; set; } = "";
+        public string FilePath { get; set; } = "";
+        public string? Kind { get; set; }
+        public long? LineCount { get; set; }
+        public DateTime? ModifiedUtc { get; set; }
+        public string? Namespaces { get; set; }
+        public string? ReadError { get; set; }
+        public string RelativePath { get; set; } = "";
         public bool? RequiresAuth { get; set; }
-        public string? AzureDevOpsUrl { get; set; }
+        public string? Routes { get; set; }
+        public long SizeBytes { get; set; }
     }
 }

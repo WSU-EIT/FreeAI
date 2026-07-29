@@ -11,24 +11,6 @@ namespace FreeExamples.Server.Controllers;
 public partial class DataController
 {
     /// <summary>
-    /// GetMany for git repo entries: POST a GitBrowseRequest with RepoUrl and optional Path.
-    /// Returns list of GitRepoEntry (folders first, then files).
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/GetGitRepoContents")]
-    public async Task<ActionResult<List<DataObjects.GitRepoEntry>>> GetGitRepoContents(
-        [FromBody] DataObjects.GitBrowseRequest request,
-        [FromServices] GitBrowserService gitService)
-    {
-        if (string.IsNullOrWhiteSpace(request.RepoUrl))
-            return Ok(new List<DataObjects.GitRepoEntry>());
-
-        var entries = await gitService.BrowseAsync(request.RepoUrl, request.Path);
-        return Ok(entries);
-    }
-
-    /// <summary>
     /// Get a single file's content from a git repo.
     /// POST a GitFileRequest with RepoUrl and FilePath.
     /// </summary>
@@ -37,12 +19,27 @@ public partial class DataController
     [Route("~/api/Data/GetGitFileContent")]
     public async Task<ActionResult<DataObjects.GitFileContent>> GetGitFileContent(
         [FromBody] DataObjects.GitFileRequest request,
-        [FromServices] GitBrowserService gitService)
-    {
+        [FromServices] GitBrowserService gitService){
         if (string.IsNullOrWhiteSpace(request.RepoUrl) || string.IsNullOrWhiteSpace(request.FilePath))
             return Ok(new DataObjects.GitFileContent { Content = "No file specified." });
 
         var content = await gitService.GetFileAsync(request.RepoUrl, request.FilePath);
         return Ok(content);
+    }
+    /// <summary>
+    /// GetMany for git repo entries: POST a GitBrowseRequest with RepoUrl and optional Path.
+    /// Returns list of GitRepoEntry (folders first, then files).
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/GetGitRepoContents")]
+    public async Task<ActionResult<List<DataObjects.GitRepoEntry>>> GetGitRepoContents(
+        [FromBody] DataObjects.GitBrowseRequest request,
+        [FromServices] GitBrowserService gitService){
+        if (string.IsNullOrWhiteSpace(request.RepoUrl))
+            return Ok(new List<DataObjects.GitRepoEntry>());
+
+        var entries = await gitService.BrowseAsync(request.RepoUrl, request.Path);
+        return Ok(entries);
     }
 }

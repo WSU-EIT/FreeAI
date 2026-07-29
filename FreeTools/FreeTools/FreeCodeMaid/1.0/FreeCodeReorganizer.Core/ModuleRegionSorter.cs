@@ -28,6 +28,128 @@ internal static class ModuleRegionSorter
 
     private static readonly Regex LeadingBlankLines = new(@"\A(?:[ \t]*\r?\n)+", RegexOptions.Compiled);
 
+    private static int CommonPrefixLength(List<string> a, List<string> b)
+    {
+        int n = Math.Min(a.Count, b.Count), i = 0;
+        while (i < n && string.Equals(a[i], b[i], StringComparison.Ordinal))
+        {
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>Walks the markers as a stack; returns each member's region stack, or null if malformed.</summary>
+    private static List<List<string>>? ComputeTags(TypeDeclarationSyntax type, List<MemberDeclarationSyntax> members)
+    {
+        var stack = new List<string>();
+        var tags = new List<List<string>>(members.Count);
+
+        if (!ProcessMarkers(type.OpenBraceToken.TrailingTrivia, stack))
+        {
+            return null;
+        }
+
+        foreach (MemberDeclarationSyntax m in members)
+        {
+            if (!ProcessMarkers(m.GetLeadingTrivia(), stack))
+            {
+                return null;
+            }
+
+            tags.Add(new List<string>(stack));
+        }
+
+        if (!ProcessMarkers(type.CloseBraceToken.LeadingTrivia, stack) || stack.Count != 0)
+        {
+            return null;
+        }
+
+        return tags;
+    }
+
+    private static string DetectIndent(List<MemberDeclarationSyntax> members)
+    {
+        SyntaxTriviaList lead = members[0].GetLeadingTrivia();
+        for (int i = lead.Count - 1; i >= 0; i--)
+        {
+            if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia))
+            {
+                return lead[i].ToString();
+            }
+        }
+
+        return "        ";
+    }
+
+    private static bool ProcessMarkers(SyntaxTriviaList trivia, List<string> stack)
+    {
+        foreach (SyntaxTrivia t in trivia)
+        {
+            if (!t.IsKind(SyntaxKind.SingleLineCommentTrivia))
+            {
+                continue;
+            }
+
+            Match m = MarkerComment.Match(t.ToString());
+            if (!m.Success)
+            {
+                continue;
+            }
+
+            string name = m.Groups[2].Value.Trim();
+            if (m.Groups[1].Value == "Start")
+            {
+                stack.Add(name);
+            }
+            else
+            {
+                if (stack.Count == 0 || !string.Equals(stack[stack.Count - 1], name, StringComparison.Ordinal))
+                {
+                    return false; // End without a matching open Start — malformed
+                }
+
+                stack.RemoveAt(stack.Count - 1);
+            }
+        }
+
+        return true;
+    }
+
+    private static bool SameRegionNames(List<List<string>> a, List<List<string>> b)
+    {
+        var sa = new SortedSet<string>(a.SelectMany(x => x), StringComparer.Ordinal);
+        var sb = new SortedSet<string>(b.SelectMany(x => x), StringComparer.Ordinal);
+        return sa.SetEquals(sb);
+    }
+
+    private static SyntaxTriviaList StripMarkerTrivia(SyntaxTriviaList trivia)
+    {
+        var result = new List<SyntaxTrivia>();
+        for (int i = 0; i < trivia.Count; i++)
+        {
+            SyntaxTrivia t = trivia[i];
+            if (t.IsKind(SyntaxKind.SingleLineCommentTrivia) && MarkerComment.IsMatch(t.ToString()))
+            {
+                if (result.Count > 0 && result[result.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
+                {
+                    result.RemoveAt(result.Count - 1);
+                }
+
+                if (i + 1 < trivia.Count && trivia[i + 1].IsKind(SyntaxKind.EndOfLineTrivia))
+                {
+                    i++;
+                }
+
+                continue;
+            }
+
+            result.Add(t);
+        }
+
+        return SyntaxFactory.TriviaList(result);
+    }
+
     /// <summary>
     /// Returns the reorganized type (markers preserved/regenerated), the ORIGINAL type if nothing needs
     /// to move, or null if the markers are malformed / too disruptive to sort safely (caller skips).
@@ -36,8 +158,7 @@ internal static class ModuleRegionSorter
         TypeDeclarationSyntax type,
         IComparer<MemberDeclarationSyntax> comparer,
         ReorderConfig config,
-        string eol)
-    {
+        string eol){
         List<MemberDeclarationSyntax> members = type.Members.ToList();
         if (members.Count < 2)
         {
@@ -150,127 +271,5 @@ internal static class ModuleRegionSorter
         }
 
         return newType;
-    }
-
-    /// <summary>Walks the markers as a stack; returns each member's region stack, or null if malformed.</summary>
-    private static List<List<string>>? ComputeTags(TypeDeclarationSyntax type, List<MemberDeclarationSyntax> members)
-    {
-        var stack = new List<string>();
-        var tags = new List<List<string>>(members.Count);
-
-        if (!ProcessMarkers(type.OpenBraceToken.TrailingTrivia, stack))
-        {
-            return null;
-        }
-
-        foreach (MemberDeclarationSyntax m in members)
-        {
-            if (!ProcessMarkers(m.GetLeadingTrivia(), stack))
-            {
-                return null;
-            }
-
-            tags.Add(new List<string>(stack));
-        }
-
-        if (!ProcessMarkers(type.CloseBraceToken.LeadingTrivia, stack) || stack.Count != 0)
-        {
-            return null;
-        }
-
-        return tags;
-    }
-
-    private static bool ProcessMarkers(SyntaxTriviaList trivia, List<string> stack)
-    {
-        foreach (SyntaxTrivia t in trivia)
-        {
-            if (!t.IsKind(SyntaxKind.SingleLineCommentTrivia))
-            {
-                continue;
-            }
-
-            Match m = MarkerComment.Match(t.ToString());
-            if (!m.Success)
-            {
-                continue;
-            }
-
-            string name = m.Groups[2].Value.Trim();
-            if (m.Groups[1].Value == "Start")
-            {
-                stack.Add(name);
-            }
-            else
-            {
-                if (stack.Count == 0 || !string.Equals(stack[stack.Count - 1], name, StringComparison.Ordinal))
-                {
-                    return false; // End without a matching open Start — malformed
-                }
-
-                stack.RemoveAt(stack.Count - 1);
-            }
-        }
-
-        return true;
-    }
-
-    private static bool SameRegionNames(List<List<string>> a, List<List<string>> b)
-    {
-        var sa = new SortedSet<string>(a.SelectMany(x => x), StringComparer.Ordinal);
-        var sb = new SortedSet<string>(b.SelectMany(x => x), StringComparer.Ordinal);
-        return sa.SetEquals(sb);
-    }
-
-    private static int CommonPrefixLength(List<string> a, List<string> b)
-    {
-        int n = Math.Min(a.Count, b.Count), i = 0;
-        while (i < n && string.Equals(a[i], b[i], StringComparison.Ordinal))
-        {
-            i++;
-        }
-
-        return i;
-    }
-
-    private static string DetectIndent(List<MemberDeclarationSyntax> members)
-    {
-        SyntaxTriviaList lead = members[0].GetLeadingTrivia();
-        for (int i = lead.Count - 1; i >= 0; i--)
-        {
-            if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia))
-            {
-                return lead[i].ToString();
-            }
-        }
-
-        return "        ";
-    }
-
-    private static SyntaxTriviaList StripMarkerTrivia(SyntaxTriviaList trivia)
-    {
-        var result = new List<SyntaxTrivia>();
-        for (int i = 0; i < trivia.Count; i++)
-        {
-            SyntaxTrivia t = trivia[i];
-            if (t.IsKind(SyntaxKind.SingleLineCommentTrivia) && MarkerComment.IsMatch(t.ToString()))
-            {
-                if (result.Count > 0 && result[result.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
-                {
-                    result.RemoveAt(result.Count - 1);
-                }
-
-                if (i + 1 < trivia.Count && trivia[i + 1].IsKind(SyntaxKind.EndOfLineTrivia))
-                {
-                    i++;
-                }
-
-                continue;
-            }
-
-            result.Add(t);
-        }
-
-        return SyntaxFactory.TriviaList(result);
     }
 }

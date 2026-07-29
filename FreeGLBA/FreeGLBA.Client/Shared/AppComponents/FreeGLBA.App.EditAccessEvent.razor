@@ -109,7 +109,7 @@
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Access Type <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @Helpers.MissingValue(Item.AccessType)" list="accessTypeList" 
-                                       @bind="Item.AccessType" placeholder="e.g., View, Export, Print" />
+                                        @bind="Item.AccessType" placeholder="e.g., View, Export, Print" />
                                 <datalist id="accessTypeList">
                                     <option value="View" />
                                     <option value="Export" />
@@ -151,12 +151,12 @@
                         <div class="mb-3">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="accessMode" id="singleAccess" 
-                                       checked="@(!_bulkAccessMode)" @onchange="() => SetAccessMode(false)" />
+                                        checked="@(!_bulkAccessMode)" @onchange="() => SetAccessMode(false)" />
                                 <label class="form-check-label" for="singleAccess">Single Subject</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="accessMode" id="bulkAccess" 
-                                       checked="@_bulkAccessMode" @onchange="() => SetAccessMode(true)" />
+                                        checked="@_bulkAccessMode" @onchange="() => SetAccessMode(true)" />
                                 <label class="form-check-label" for="bulkAccess">Bulk Access (CSV Export, etc.)</label>
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                                 <div class="col-md-8 mb-3">
                                     <label class="form-label">Subject IDs <span class="text-danger">*</span> <span class="badge bg-secondary">@_parsedSubjectCount subjects</span></label>
                                     <textarea class="form-control font-monospace" rows="4" @bind="_bulkSubjectIdsText" @bind:event="oninput" @bind:after="ParseBulkSubjectIds"
-                                              placeholder="S12345678&#10;S23456789&#10;S34567890&#10;...or paste comma-separated: S12345678, S23456789, S34567890"></textarea>
+                                            placeholder="S12345678&#10;S23456789&#10;S34567890&#10;...or paste comma-separated: S12345678, S23456789, S34567890"></textarea>
                                     <div class="form-text">Paste subject IDs from your export. Duplicates will be removed automatically.</div>
                                 </div>
                                 <div class="col-md-4 mb-3">

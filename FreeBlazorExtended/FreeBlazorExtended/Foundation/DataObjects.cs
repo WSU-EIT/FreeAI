@@ -50,11 +50,14 @@ public partial class DataObjects
     /// </summary>
     public partial class User
     {
-        /// <summary>Stable identifier for the user. <see cref="Guid.Empty"/> indicates an unauthenticated or system caller.</summary>
-        public Guid UserId { get; set; }
+        /// <summary>
+        /// <c>true</c> when the user has administrative privileges in the host application.
+        /// Feature services may use this flag to gate destructive operations.
+        /// </summary>
+        public bool Admin { get; set; }
 
-        /// <summary>The tenant this user belongs to. Passed through to tenant-scoped service methods.</summary>
-        public Guid TenantId { get; set; }
+        /// <summary>Primary email address. Used for display; not validated by this library.</summary>
+        public string Email { get; set; } = String.Empty;
 
         /// <summary>User's given name — displayed in audit logs and UI greetings.</summary>
         public string FirstName { get; set; } = String.Empty;
@@ -62,13 +65,9 @@ public partial class DataObjects
         /// <summary>User's family name — combined with <see cref="FirstName"/> for display.</summary>
         public string LastName { get; set; } = String.Empty;
 
-        /// <summary>Primary email address. Used for display; not validated by this library.</summary>
-        public string Email { get; set; } = String.Empty;
-
-        /// <summary>
-        /// <c>true</c> when the user has administrative privileges in the host application.
-        /// Feature services may use this flag to gate destructive operations.
-        /// </summary>
-        public bool Admin { get; set; }
+        /// <summary>The tenant this user belongs to. Passed through to tenant-scoped service methods.</summary>
+        public Guid TenantId { get; set; }
+        /// <summary>Stable identifier for the user. <see cref="Guid.Empty"/> indicates an unauthenticated or system caller.</summary>
+        public Guid UserId { get; set; }
     }
 }

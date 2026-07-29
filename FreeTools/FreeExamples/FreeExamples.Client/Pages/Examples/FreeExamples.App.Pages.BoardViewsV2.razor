@@ -20,15 +20,11 @@
         </AboutSection>
 
         <div class="d-flex flex-wrap gap-1 mb-3">
-            <InfoTip Title="Sprint-Scoped Filtering"
-                     Description="@_descSprintFilter"
-                     Code="@_codeSprintFilter" />
+            <InfoTip Title="Sprint-Scoped Filtering" Description="@_descSprintFilter" Code="@_codeSprintFilter" />
             <InfoTip Title="Mini Burndown Progress Bar"
-                     Description="A Bootstrap progress bar shows done points / total points as a percentage. Computed properties (BurndownTotal, BurndownDone) keep the logic out of markup. The remaining count is displayed as text beside the bar."
-                     Code="@_codeBurndown" />
-            <InfoTip Title="Drag-and-Drop Kanban Columns"
-                     Description="@_descDragDrop"
-                     Code="@_codeDragDrop" />
+                    Description="A Bootstrap progress bar shows done points / total points as a percentage. Computed properties (BurndownTotal, BurndownDone) keep the logic out of markup. The remaining count is displayed as text beside the bar."
+                    Code="@_codeBurndown" />
+            <InfoTip Title="Drag-and-Drop Kanban Columns" Description="@_descDragDrop" Code="@_codeDragDrop" />
         </div>
 
         @* Sprint selector *@
@@ -69,7 +65,7 @@
                     var colTickets = _sprintTickets.Where(t => t.Status == status).OrderBy(t => t.SortOrder).ToList();
                     <div class="flex-shrink-0" style="width:220px;">
                         <div class="card border-0 shadow-sm"
-                             @ondragover:preventDefault="true" @ondrop="() => HandleDrop(status)">
+                                @ondragover:preventDefault="true" @ondrop="() => HandleDrop(status)">
                             <div class="card-header bg-dark text-white py-1 d-flex justify-content-between small">
                                 <span>@status</span><span class="badge bg-white text-dark rounded-pill">@colTickets.Count</span>
                             </div>

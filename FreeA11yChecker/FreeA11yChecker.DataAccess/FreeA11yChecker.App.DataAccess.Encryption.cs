@@ -5,8 +5,8 @@ namespace FreeA11yChecker;
 
 public partial interface IDataAccess
 {
-    string EncryptString(string plainText, string key);
     string DecryptString(string cipherText, string key);
+    string EncryptString(string plainText, string key);
 }
 
 public partial class DataAccess

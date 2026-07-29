@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A textarea that listens to its own input event and adjusts its CSS height to match its scrollHeight, giving it MinRows as a floor and MaxRows as a ceiling. No JavaScript interop required."
-        WhatEli5="A text box that grows taller as you type so you never have to scroll inside it — but it also won't take over the whole page if someone pastes a novel."
-        Who=@(new[]{ "Form builders adding comment, notes, or description fields", "Developers who want a textarea that feels as natural as a messaging app input", "Any UI where the amount of text the user will enter is unpredictable" })
-        WhenUse=@(new[]{ "Comment boxes, notes fields, bio/description inputs", "Any textarea where a fixed height would either waste whitespace or force internal scrolling", "Forms where content length varies wildly between users" })
-        WhenNot=@(new[]{ "Code editors or very long structured text — use MonacoEditor instead", "Inputs where a fixed height is a deliberate design choice (e.g., a constrained log viewer)" })
-        Why="A fixed-height textarea that forces scroll feels cramped for short content and confusing for long content. Auto-grow matches the input to its content so it always looks just right."
-        TechNotes=@(new[]{ "Height adjustment triggered by the oninput event via a one-liner JS interop call (element.style.height = element.scrollHeight + 'px')", "MinRows sets the initial height via inline style rows attribute; MaxRows caps via max-height with overflow-y:auto", "MaxLength enforced via the native maxlength HTML attribute", "Fully keyboard accessible; no custom event handlers on the host page needed" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A textarea that listens to its own input event and adjusts its CSS height to match its scrollHeight, giving it MinRows as a floor and MaxRows as a ceiling. No JavaScript interop required."
+            WhatEli5="A text box that grows taller as you type so you never have to scroll inside it — but it also won't take over the whole page if someone pastes a novel."
+            Who=@(new[]{ "Form builders adding comment, notes, or description fields", "Developers who want a textarea that feels as natural as a messaging app input", "Any UI where the amount of text the user will enter is unpredictable" })
+            WhenUse=@(new[]{ "Comment boxes, notes fields, bio/description inputs", "Any textarea where a fixed height would either waste whitespace or force internal scrolling", "Forms where content length varies wildly between users" })
+            WhenNot=@(new[]{ "Code editors or very long structured text — use MonacoEditor instead", "Inputs where a fixed height is a deliberate design choice (e.g., a constrained log viewer)" })
+            Why="A fixed-height textarea that forces scroll feels cramped for short content and confusing for long content. Auto-grow matches the input to its content so it always looks just right."
+            TechNotes=@(new[]{ "Height adjustment triggered by the oninput event via a one-liner JS interop call (element.style.height = element.scrollHeight + 'px')", "MinRows sets the initial height via inline style rows attribute; MaxRows caps via max-height with overflow-y:auto", "MaxLength enforced via the native maxlength HTML attribute", "Fully keyboard accessible; no custom event handlers on the host page needed" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -98,7 +98,7 @@
                     <p class="text-muted small mb-3">Multi-line code or technical input.</p>
                     <label for="codeBox" class="form-label">Code snippet:</label>
                     <AutoGrowText @bind-Value="@_codeText" MinimumHeight="90px" Placeholder="Paste code here..."
-                        Class="form-control font-monospace" />
+                            Class="form-control font-monospace" />
                     @if (!string.IsNullOrEmpty(_codeText)) {
                         <small class="text-muted">Lines: @_codeText.Split('\n').Length</small>
                     }

@@ -49,12 +49,11 @@
 </div>
 
 @code {
-    [Parameter] public DataObjects.DataSubject Item { get; set; } = new();
-    [Parameter] public EventCallback<DataObjects.DataSubject> OnSave { get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
-
     private bool IsNew => Item.DataSubjectId == default;
+    [Parameter] public DataObjects.DataSubject Item { get; set; } = new();
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<DataObjects.DataSubject> OnSave { get; set; }
+    private async Task Cancel() => await OnCancel.InvokeAsync();
 
     private async Task Save() => await OnSave.InvokeAsync(Item);
-    private async Task Cancel() => await OnCancel.InvokeAsync();
 }

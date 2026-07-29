@@ -33,6 +33,10 @@ internal class ReorganizeDocumentCommand : Command
         this.logger = Requires.NotNull(traceSource, nameof(traceSource));
     }
 
+    /// <summary>Reads the native settings into a Core.ReorderConfig (shared with the repository command).</summary>
+    private Task<Core.ReorderConfig> BuildConfigAsync(CancellationToken cancellationToken)
+        => ConfigReader.ReadAsync(this.Extensibility, cancellationToken);
+
     /// <inheritdoc/>
     public override CommandConfiguration CommandConfiguration => new("%FreeCodeReorganizer.ReorganizeDocument.DisplayName%")
     {
@@ -131,8 +135,4 @@ internal class ReorganizeDocumentCommand : Command
 
         this.logger.TraceInformation("Reorganize: document reorganized.");
     }
-
-    /// <summary>Reads the native settings into a Core.ReorderConfig (shared with the repository command).</summary>
-    private Task<Core.ReorderConfig> BuildConfigAsync(CancellationToken cancellationToken)
-        => ConfigReader.ReadAsync(this.Extensibility, cancellationToken);
 }

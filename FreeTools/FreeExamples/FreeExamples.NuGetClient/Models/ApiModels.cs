@@ -16,14 +16,13 @@ public class ApiTestRequest
 /// </summary>
 public class ApiTestResponse
 {
-    /// <summary>Whether the request was successful.</summary>
-    public bool Success { get; set; }
+    /// <summary>The API key name that authenticated this request.</summary>
+    public string? AuthenticatedAs { get; set; }
 
     /// <summary>Response message from the server.</summary>
     public string? Message { get; set; }
-
-    /// <summary>The API key name that authenticated this request.</summary>
-    public string? AuthenticatedAs { get; set; }
+    /// <summary>Whether the request was successful.</summary>
+    public bool Success { get; set; }
 
     /// <summary>Server-side UTC timestamp.</summary>
     public DateTime Timestamp { get; set; }

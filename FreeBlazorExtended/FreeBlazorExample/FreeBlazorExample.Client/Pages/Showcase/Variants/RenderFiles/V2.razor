@@ -7,13 +7,13 @@
     <p class="text-muted">Last opened: @_lastOpened</p>
 
     <RenderFiles Files="_files"
-                 OnClick="HandleOpen"
-                 OnDelete="HandleDelete"
-                 UseDeleteConfirmation="true"
-                 DeleteText="Remove"
-                 CancelText="Keep"
-                 ConfirmDeleteText="Yes, remove"
-                 EmptyText="All files removed." />
+            OnClick="HandleOpen"
+            OnDelete="HandleDelete"
+            UseDeleteConfirmation="true"
+            DeleteText="Remove"
+            CancelText="Keep"
+            ConfirmDeleteText="Yes, remove"
+            EmptyText="All files removed." />
 
     <button type="button" class="btn btn-outline-secondary btn-sm mt-3" @onclick="ResetFiles">Reset</button>
 </div>
@@ -21,24 +21,6 @@
 @code {
     private List<FileItem> _files = BuildFiles();
     private string _lastOpened = "(none)";
-
-    private Task HandleOpen(FileItem file)
-    {
-        _lastOpened = file.FileName;
-        return Task.CompletedTask;
-    }
-
-    private Task HandleDelete(FileItem file)
-    {
-        _files = _files.Where(item => item.FileId != file.FileId).ToList();
-        return Task.CompletedTask;
-    }
-
-    private void ResetFiles()
-    {
-        _files = BuildFiles();
-        _lastOpened = "(none)";
-    }
 
     private static List<FileItem> BuildFiles()
     {
@@ -50,5 +32,23 @@
             new() { FileId = Guid.NewGuid(), FileName = "brief.docx", Extension = ".docx", Bytes = 94400, ThumbnailIcon = "fa-solid fa-file-word" },
             new() { FileId = Guid.NewGuid(), FileName = "bundle.zip", Extension = ".zip", Bytes = 3020000, ThumbnailIcon = "fa-solid fa-file-zipper" },
         };
+    }
+
+    private Task HandleDelete(FileItem file)
+    {
+        _files = _files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleOpen(FileItem file)
+    {
+        _lastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private void ResetFiles()
+    {
+        _files = BuildFiles();
+        _lastOpened = "(none)";
     }
 }

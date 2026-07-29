@@ -34,7 +34,7 @@
             <div class="input-group input-group-sm" style="max-width:260px;">
                 <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
                 <input type="text" class="form-control" placeholder="@SearchPlaceholder"
-                       @bind="_searchTerm" @bind:event="oninput" />
+                        @bind="_searchTerm" @bind:event="oninput" />
                 @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
                     <button class="btn btn-outline-secondary" type="button" @onclick="ClearSearch">
                         <i class="fa-solid fa-times"></i>
@@ -55,7 +55,7 @@
             var headerVariant = string.IsNullOrWhiteSpace(column.Color) ? "secondary" : column.Color;
 
             <div class="card shadow-sm border-0 flex-fill"
-                 style="min-width:260px; max-width:340px; background:#f8f9fa;">
+                    style="min-width:260px; max-width:340px; background:#f8f9fa;">
 
                 @* Column header *@
                 <div class="card-header text-white py-2 bg-@headerVariant">
@@ -69,11 +69,11 @@
 
                 @* Drop zone (entire column body) *@
                 <div class="card-body p-2 @(isDropTarget ? "border border-2 border-primary" : "") @(overLimit ? "border border-2 border-danger" : "")"
-                     style="min-height:120px; transition: border-color 0.15s;"
-                     @ondragover="@(() => HandleColumnDragOver(column.Id))"
-                     @ondragover:preventDefault="true"
-                     @ondrop="@(() => HandleColumnDrop(column.Id))"
-                     @ondragleave="HandleColumnDragLeave">
+                        style="min-height:120px; transition: border-color 0.15s;"
+                        @ondragover="@(() => HandleColumnDragOver(column.Id))"
+                        @ondragover:preventDefault="true"
+                        @ondrop="@(() => HandleColumnDrop(column.Id))"
+                        @ondragleave="HandleColumnDragLeave">
 
                     @if (!colCards.Any()) {
                         <div class="text-center text-muted small py-3">
@@ -91,23 +91,23 @@
 
                         @* Drop slot above each card (lets caller drop at a specific position) *@
                         <div class="kanban-drop-slot @(IsActiveSlot(column.Id, slotIndex) ? "bg-primary bg-opacity-25" : "")"
-                             style="height:6px; margin:2px 0; border-radius:3px; transition: background-color 0.15s;"
-                             @ondragover="@(() => HandleSlotDragOver(column.Id, slotIndex))"
-                             @ondragover:preventDefault="true"
-                             @ondrop="@(() => HandleSlotDrop(column.Id, slotIndex))"
-                             @ondragleave="HandleSlotDragLeave"></div>
+                                style="height:6px; margin:2px 0; border-radius:3px; transition: background-color 0.15s;"
+                                @ondragover="@(() => HandleSlotDragOver(column.Id, slotIndex))"
+                                @ondragover:preventDefault="true"
+                                @ondrop="@(() => HandleSlotDrop(column.Id, slotIndex))"
+                                @ondragleave="HandleSlotDragLeave"></div>
 
                         <div class="card mb-2 shadow-sm @(isDragging ? "opacity-50" : "") @(isSelected ? "border-primary border-2" : "")"
-                             draggable="@((!ReadOnly).ToString().ToLower())"
-                             style="@(ReadOnly ? "cursor: default;" : "cursor: grab;")"
-                             @ondragstart="@(() => HandleCardDragStart(card))"
-                             @ondragend="HandleCardDragEnd"
-                             role="@(cardIsOpenable ? "button" : null)"
-                             tabindex="@(cardIsOpenable ? 0 : -1)"
-                             aria-label="@(cardIsOpenable ? $"Open card {card.Title}" : null)"
-                             @onkeydown="@(e => HandleCardKeyDown(e, card))"
-                             @onkeydown:preventDefault="cardIsOpenable"
-                             @onclick="@(() => HandleCardClick(card))">
+                                draggable="@((!ReadOnly).ToString().ToLower())"
+                                style="@(ReadOnly ? "cursor: default;" : "cursor: grab;")"
+                                @ondragstart="@(() => HandleCardDragStart(card))"
+                                @ondragend="HandleCardDragEnd"
+                                role="@(cardIsOpenable ? "button" : null)"
+                                tabindex="@(cardIsOpenable ? 0 : -1)"
+                                aria-label="@(cardIsOpenable ? $"Open card {card.Title}" : null)"
+                                @onkeydown="@(e => HandleCardKeyDown(e, card))"
+                                @onkeydown:preventDefault="cardIsOpenable"
+                                @onclick="@(() => HandleCardClick(card))">
                             <div class="card-body p-2">
                                 @if (CardTemplate != null) {
                                     @CardTemplate(card)
@@ -120,11 +120,11 @@
 
                     @* Trailing drop slot (drop at end of column) *@
                     <div class="kanban-drop-slot @(IsActiveSlot(column.Id, colCards.Count) ? "bg-primary bg-opacity-25" : "")"
-                         style="height:12px; margin-top:2px; border-radius:3px; transition: background-color 0.15s;"
-                         @ondragover="@(() => HandleSlotDragOver(column.Id, colCards.Count))"
-                         @ondragover:preventDefault="true"
-                         @ondrop="@(() => HandleSlotDrop(column.Id, colCards.Count))"
-                         @ondragleave="HandleSlotDragLeave"></div>
+                            style="height:12px; margin-top:2px; border-radius:3px; transition: background-color 0.15s;"
+                            @ondragover="@(() => HandleSlotDragOver(column.Id, colCards.Count))"
+                            @ondragover:preventDefault="true"
+                            @ondrop="@(() => HandleSlotDrop(column.Id, colCards.Count))"
+                            @ondragleave="HandleSlotDragLeave"></div>
                 </div>
             </div>
         }
@@ -375,35 +375,35 @@
 
     public class KanbanColumn
     {
-        public string Id { get; set; } = "";
-        public string Title { get; set; } = "";
-        /// <summary>Bootstrap variant suffix: "primary", "success", "warning", "danger", etc.</summary>
-        public string? Color { get; set; }
         /// <summary>WIP limit. When exceeded, the column body shows a red border.</summary>
         public int? CardLimit { get; set; }
+        /// <summary>Bootstrap variant suffix: "primary", "success", "warning", "danger", etc.</summary>
+        public string? Color { get; set; }
+        public string Id { get; set; } = "";
         public int SortOrder { get; set; }
+        public string Title { get; set; } = "";
     }
 
     public class KanbanCard
     {
-        public string Id { get; set; } = "";
-        public string ColumnId { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string? Description { get; set; }
         public string? Assignee { get; set; }
+        public string ColumnId { get; set; } = "";
+        public string? Description { get; set; }
+        public DateTime? DueDate { get; set; }
+        public string Id { get; set; } = "";
+        public List<string> Labels { get; set; } = new();
         /// <summary>Free-text or "low" / "medium" / "high".</summary>
         public string? Priority { get; set; }
-        public List<string> Labels { get; set; } = new();
-        public DateTime? DueDate { get; set; }
         public int SortOrder { get; set; }
+        public string Title { get; set; } = "";
     }
 
     public class KanbanCardMovedEventArgs
     {
         public string CardId { get; set; } = "";
         public string FromColumnId { get; set; } = "";
-        public string ToColumnId { get; set; } = "";
         /// <summary>Index within the destination column after the move.</summary>
         public int NewSortOrder { get; set; }
+        public string ToColumnId { get; set; } = "";
     }
 }

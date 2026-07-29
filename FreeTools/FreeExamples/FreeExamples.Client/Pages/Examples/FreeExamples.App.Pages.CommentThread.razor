@@ -60,8 +60,8 @@
             </select>
             <span class="badge bg-secondary rounded-pill">@_comments.Count comments</span>
             <InfoTip Title="Item Selector"
-                     Description="Comments are attached to a specific record (like a Jira issue or helpdesk ticket). The dropdown picks which SampleItem you're commenting on. In a real app, this would be the ticket detail page."
-                     Code="@_codeItemSelect" />
+                    Description="Comments are attached to a specific record (like a Jira issue or helpdesk ticket). The dropdown picks which SampleItem you're commenting on. In a real app, this would be the ticket detail page."
+                    Code="@_codeItemSelect" />
         </div>
 
         @* ── Comment Thread ── *@
@@ -69,8 +69,8 @@
             <div class="card-header bg-white py-2">
                 <span class="small fw-semibold"><i class="fa-solid fa-message me-1"></i> Discussion</span>
                 <InfoTip Title="Comment Thread"
-                         Description="Comments are ordered oldest-first (chat style) so the conversation reads top-to-bottom like a book. Each comment shows an avatar circle with initials, the author name, a relative timestamp, and the message text. This is the same layout Jira, GitHub, and Slack use."
-                         Code="@_codeThread" />
+                        Description="Comments are ordered oldest-first (chat style) so the conversation reads top-to-bottom like a book. Each comment shows an avatar circle with initials, the author name, a relative timestamp, and the message text. This is the same layout Jira, GitHub, and Slack use."
+                        Code="@_codeThread" />
             </div>
             <div class="card-body" style="max-height:450px; overflow-y:auto;">
                 @if (!_comments.Any()) {
@@ -83,8 +83,8 @@
                         <div class="d-flex mb-3 @(_recentIds.Contains(comment.CommentId) ? "bg-info bg-opacity-10 rounded p-2" : "")">
                             @* Avatar *@
                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0 me-2"
-                                 style="width:36px; height:36px; font-size:0.8rem; font-weight:600;"
-                                 title="@comment.AuthorName">
+                                    style="width:36px; height:36px; font-size:0.8rem; font-weight:600;"
+                                    title="@comment.AuthorName">
                                 @comment.AuthorInitials
                             </div>
 
@@ -98,8 +98,8 @@
                                     @if (comment.Edited.HasValue) {
                                         <span class="text-muted small fst-italic">(edited)</span>
                                         <InfoTip Title="Edited Marker"
-                                                 Description="When a comment has been edited, we show '(edited)' next to the timestamp. The Edited property stores the edit time. Hovering shows the original post time. This is the same pattern GitHub and Slack use."
-                                                 Code="@_codeEdited" />
+                                                Description="When a comment has been edited, we show '(edited)' next to the timestamp. The Edited property stores the edit time. Hovering shows the original post time. This is the same pattern GitHub and Slack use."
+                                                Code="@_codeEdited" />
                                     }
                                 </div>
 
@@ -147,12 +147,12 @@
             <div class="card-footer bg-light">
                 <div class="d-flex gap-2">
                     <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:36px; height:36px; font-size:0.8rem; font-weight:600;">
+                            style="width:36px; height:36px; font-size:0.8rem; font-weight:600;">
                         @_currentUserInitials
                     </div>
                     <div class="flex-grow-1">
                         <textarea class="form-control form-control-sm" rows="2" @bind="_newCommentText"
-                                  placeholder="Write a comment..." @onkeydown="HandleCommentKeydown"></textarea>
+                                placeholder="Write a comment..." @onkeydown="HandleCommentKeydown"></textarea>
                     </div>
                     <div class="d-flex align-items-end">
                         <button class="btn btn-primary btn-sm" @onclick="AddComment"
@@ -168,8 +168,8 @@
                 <div class="small text-muted mt-1">
                     Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to send
                     <InfoTip Title="Add Comment"
-                             Description="The comment input follows the chat pattern: textarea at the bottom, Send button on the right. Ctrl+Enter is a keyboard shortcut for power users. The button disables while saving to prevent double-submits. After saving, the textarea clears and the new comment appears at the bottom."
-                             Code="@_codeAddComment" />
+                            Description="The comment input follows the chat pattern: textarea at the bottom, Send button on the right. Ctrl+Enter is a keyboard shortcut for power users. The button disables while saving to prevent double-submits. After saving, the textarea clears and the new comment appears at the bottom."
+                            Code="@_codeAddComment" />
                 </div>
             </div>
         </div>
@@ -177,14 +177,14 @@
         @* InfoTip row *@
         <div class="d-flex flex-wrap gap-1 mt-2">
             <InfoTip Title="Relative Timestamps"
-                     Description="Instead of showing '2025-06-28 14:32:05', we show 'just now', '2 min ago', '1 hour ago', 'yesterday'. This is calculated by subtracting the comment time from DateTime.UtcNow and picking the right unit. The full timestamp is still available on hover (title attribute)."
-                     Code="@_codeRelativeTime" />
+                    Description="Instead of showing '2025-06-28 14:32:05', we show 'just now', '2 min ago', '1 hour ago', 'yesterday'. This is calculated by subtracting the comment time from DateTime.UtcNow and picking the right unit. The full timestamp is still available on hover (title attribute)."
+                    Code="@_codeRelativeTime" />
             <InfoTip Title="Avatar Initials"
-                     Description="Instead of loading profile pictures (which requires image hosting), we extract the user's initials and show them in a colored circle. 'John Smith' becomes 'JS'. This is done with string splitting — no image required. The same pattern is used in Microsoft Teams and Outlook."
-                     Code="@_codeAvatar" />
+                    Description="Instead of loading profile pictures (which requires image hosting), we extract the user's initials and show them in a colored circle. 'John Smith' becomes 'JS'. This is done with string splitting — no image required. The same pattern is used in Microsoft Teams and Outlook."
+                    Code="@_codeAvatar" />
             <InfoTip Title="Two-Click Delete"
-                     Description="Clicking Delete shows Cancel and Confirm buttons. You must click Confirm to actually delete. This prevents accidental deletions — the same pattern used on EditSampleItem and the BootstrapShowcase cards."
-                     Code="@_codeTwoClick" />
+                    Description="Clicking Delete shows Cancel and Confirm buttons. You must click Confirm to actually delete. This prevents accidental deletions — the same pattern used on EditSampleItem and the BootstrapShowcase cards."
+                    Code="@_codeTwoClick" />
         </div>
     }
 }

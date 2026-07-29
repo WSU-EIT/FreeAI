@@ -61,8 +61,8 @@
             </div>
             <span class="badge bg-secondary rounded-pill">@_galleryItems.Count items</span>
             <InfoTip Title="Grid Columns"
-                     Description="The column count is set using Bootstrap's row-cols-* classes. 'row-cols-2' puts 2 items per row, 'row-cols-3' puts 3. This is fully responsive — on mobile it always drops to 1 column. No custom CSS needed."
-                     Code="@_codeGridCols" />
+                    Description="The column count is set using Bootstrap's row-cols-* classes. 'row-cols-2' puts 2 items per row, 'row-cols-3' puts 3. This is fully responsive — on mobile it always drops to 1 column. No custom CSS needed."
+                    Code="@_codeGridCols" />
         </div>
 
         @* ── Thumbnail Grid ── *@
@@ -74,7 +74,7 @@
                     <div class="card border-0 shadow-sm h-100" role="button" @onclick="@(() => OpenLightbox(idx))">
                         @* Placeholder tile acting as image *@
                         <div class="card-img-top d-flex align-items-center justify-content-center text-white"
-                             style="height:180px; background:@item.Color;">
+                                style="height:180px; background:@item.Color;">
                             <i class="@item.Icon fa-3x opacity-75"></i>
                         </div>
                         <div class="card-body py-2">
@@ -95,7 +95,7 @@
 
             @* Backdrop *@
             <div class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column" style="z-index:1055; background:rgba(0,0,0,0.9);"
-                 @onclick="CloseLightbox" @onkeydown="HandleLightboxKeydown" tabindex="0">
+                    @onclick="CloseLightbox" @onkeydown="HandleLightboxKeydown" tabindex="0">
 
                 @* Top bar *@
                 <div class="d-flex justify-content-between align-items-center p-3" @onclick:stopPropagation>
@@ -119,7 +119,7 @@
 
                     @* Large image placeholder *@
                     <div class="d-flex align-items-center justify-content-center text-white rounded shadow-lg"
-                         style="width:60vw; height:60vh; max-width:800px; max-height:600px; background:@current.Color;">
+                            style="width:60vw; height:60vh; max-width:800px; max-height:600px; background:@current.Color;">
                         <div class="text-center">
                             <i class="@current.Icon fa-5x opacity-75 mb-3"></i>
                             <div class="h5">@current.Title</div>
@@ -139,8 +139,8 @@
                         int thumbIdx = i;
                         var thumb = _galleryItems[i];
                         <div class="d-flex align-items-center justify-content-center rounded @(thumbIdx == _lightboxIndex ? "border border-2 border-white" : "opacity-50")"
-                             style="width:48px; height:48px; min-width:48px; background:@thumb.Color; cursor:pointer;"
-                             @onclick="@(() => _lightboxIndex = thumbIdx)" @onclick:stopPropagation>
+                                style="width:48px; height:48px; min-width:48px; background:@thumb.Color; cursor:pointer;"
+                                @onclick="@(() => _lightboxIndex = thumbIdx)" @onclick:stopPropagation>
                             <i class="@thumb.Icon text-white small"></i>
                         </div>
                     }
@@ -151,14 +151,14 @@
         @* ── InfoTips Row ── *@
         <div class="d-flex flex-wrap gap-1 mt-2">
             <InfoTip Title="Lightbox Overlay"
-                     Description="The lightbox is a full-screen div positioned fixed over everything (z-index 1055). A dark semi-transparent background dims the page. The image is centered using flexbox. Clicking the backdrop closes it. This is the same concept as a Bootstrap modal but manually built for maximum control."
-                     Code="@_codeLightbox" />
+                    Description="The lightbox is a full-screen div positioned fixed over everything (z-index 1055). A dark semi-transparent background dims the page. The image is centered using flexbox. Clicking the backdrop closes it. This is the same concept as a Bootstrap modal but manually built for maximum control."
+                    Code="@_codeLightbox" />
             <InfoTip Title="Keyboard Navigation"
-                     Description="The lightbox container has tabindex=0 and an onkeydown handler. ArrowLeft goes to the previous image, ArrowRight to the next, and Escape closes the lightbox. This makes the gallery accessible without a mouse."
-                     Code="@_codeKeyboardNav" />
+                    Description="The lightbox container has tabindex=0 and an onkeydown handler. ArrowLeft goes to the previous image, ArrowRight to the next, and Escape closes the lightbox. This makes the gallery accessible without a mouse."
+                    Code="@_codeKeyboardNav" />
             <InfoTip Title="Thumbnail Strip"
-                     Description="The bottom row shows small versions of all images. The current image has a white border; others are dimmed (opacity-50). Clicking a thumbnail jumps directly to that image. The strip scrolls horizontally (overflow-auto) if there are many items."
-                     Code="@_codeThumbs" />
+                    Description="The bottom row shows small versions of all images. The current image has a white border; others are dimmed (opacity-50). Clicking a thumbnail jumps directly to that image. The strip scrolls horizontally (overflow-auto) if there are many items."
+                    Code="@_codeThumbs" />
         </div>
     }
 }

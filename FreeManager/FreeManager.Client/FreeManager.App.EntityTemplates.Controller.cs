@@ -12,41 +12,6 @@ namespace FreeManager;
 public static partial class EntityTemplates
 {
     // ============================================================
-    // MULTI-ENTITY CONTROLLER TEMPLATE
-    // ============================================================
-
-    private static string GenerateControllerMulti(
-        List<DataObjects.EntityDefinition> entities,
-        List<DataObjects.RelationshipDefinition> relationships,
-        DataObjects.EntityWizardOptions options,
-        string projectName)
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine("using Microsoft.AspNetCore.Mvc;");
-        sb.AppendLine("using Microsoft.EntityFrameworkCore;");
-        sb.AppendLine();
-        sb.AppendLine($"namespace {projectName}.Server.Controllers;");
-        sb.AppendLine();
-        sb.AppendLine($"// ============================================================================");
-        sb.AppendLine($"// {projectName.ToUpper()} PROJECT API ENDPOINTS");
-        sb.AppendLine($"// ============================================================================");
-        sb.AppendLine();
-        sb.AppendLine($"public partial class DataController");
-        sb.AppendLine($"{{");
-
-        foreach (var entity in entities)
-        {
-            sb.AppendLine(GenerateController(entity, relationships, entities, options, projectName));
-            sb.AppendLine();
-        }
-
-        sb.AppendLine($"}}");
-
-        return sb.ToString();
-    }
-
-    // ============================================================
     // SINGLE-ENTITY CONTROLLER TEMPLATE (with Lookup endpoints)
     // ============================================================
 
@@ -55,8 +20,7 @@ public static partial class EntityTemplates
         List<DataObjects.RelationshipDefinition> relationships,
         List<DataObjects.EntityDefinition> allEntities,
         DataObjects.EntityWizardOptions options,
-        string projectName)
-    {
+        string projectName){
         var sb = new StringBuilder();
         var pkProp = entity.Properties.FirstOrDefault(p => p.IsPrimaryKey);
         var pkType = pkProp?.Type ?? "Guid";
@@ -125,6 +89,39 @@ public static partial class EntityTemplates
     private static string GenerateController(DataObjects.EntityDefinition entity, DataObjects.EntityWizardOptions options, string projectName)
     {
         return GenerateController(entity, new List<DataObjects.RelationshipDefinition>(), new List<DataObjects.EntityDefinition>(), options, projectName);
+    }
+    // ============================================================
+    // MULTI-ENTITY CONTROLLER TEMPLATE
+    // ============================================================
+
+    private static string GenerateControllerMulti(
+        List<DataObjects.EntityDefinition> entities,
+        List<DataObjects.RelationshipDefinition> relationships,
+        DataObjects.EntityWizardOptions options,
+        string projectName){
+        var sb = new StringBuilder();
+
+        sb.AppendLine("using Microsoft.AspNetCore.Mvc;");
+        sb.AppendLine("using Microsoft.EntityFrameworkCore;");
+        sb.AppendLine();
+        sb.AppendLine($"namespace {projectName}.Server.Controllers;");
+        sb.AppendLine();
+        sb.AppendLine($"// ============================================================================");
+        sb.AppendLine($"// {projectName.ToUpper()} PROJECT API ENDPOINTS");
+        sb.AppendLine($"// ============================================================================");
+        sb.AppendLine();
+        sb.AppendLine($"public partial class DataController");
+        sb.AppendLine($"{{");
+
+        foreach (var entity in entities)
+        {
+            sb.AppendLine(GenerateController(entity, relationships, entities, options, projectName));
+            sb.AppendLine();
+        }
+
+        sb.AppendLine($"}}");
+
+        return sb.ToString();
     }
 }
 

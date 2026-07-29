@@ -29,8 +29,8 @@ from Files.razor were removed because this lives under the index page.
                 <label id="directoryPathLabel" for="directoryPathInput" class="form-label">Enter Directory Path:</label>
                 <div class="input-group">
                     <input id="directoryPathInput" @bind="DirectoryPath" @bind:event="oninput"
-                    placeholder="e.g. C:\\Users\\YourName\\source\\repos\\YourProject"
-                    class="form-control" />
+                            placeholder="e.g. C:\\Users\\YourName\\source\\repos\\YourProject"
+                            class="form-control" />
                 </div>
             </section>
 
@@ -40,8 +40,8 @@ from Files.razor were removed because this lives under the index page.
                     Your Personal Modification Instructions:
                 </label>
                 <textarea id="modificationInstructionsInput" @bind="ModificationInstructions" @bind:event="oninput"
-                placeholder="Enter your instructions for code modifications..."
-                class="form-control" rows="3" aria-describedby="instructionsHelp"></textarea>
+                        placeholder="Enter your instructions for code modifications..."
+                        class="form-control" rows="3" aria-describedby="instructionsHelp"></textarea>
                 <div id="instructionsHelp" class="form-text">
                     These instructions will appear at the very top of the final update.
                 </div>
@@ -64,8 +64,8 @@ from Files.razor were removed because this lives under the index page.
                             @foreach(var opt in group) {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="@opt.Key" id="chk_mod_@opt.Key"
-                                    checked="@SelectedModificationOptionKeys.Contains(opt.Key)"
-                                    @onchange="() => ToggleModificationOption(opt.Key)" />
+                                            checked="@SelectedModificationOptionKeys.Contains(opt.Key)"
+                                            @onchange="() => ToggleModificationOption(opt.Key)" />
                                     <label class="form-check-label" for="chk_mod_@opt.Key">
                                         <strong>@opt.Key</strong> – @opt.Description
                                     </label>
@@ -154,10 +154,10 @@ from Files.razor were removed because this lives under the index page.
             <section class="mb-3">
                 <label id="plainTextFilterLabel" for="plainTextFilterInput" class="form-label">Plain Text Search Filter:</label>
                 <input id="plainTextFilterInput"
-                value="@plainTextFilter"
-                placeholder="Enter text to search in file paths"
-                class="form-control"
-                @oninput="@(e => { plainTextFilter = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
+                        value="@plainTextFilter"
+                        placeholder="Enter text to search in file paths"
+                        class="form-control"
+                        @oninput="@(e => { plainTextFilter = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
             </section>
 
             <!-- Collapsible Filters & Stats -->
@@ -170,8 +170,8 @@ from Files.razor were removed because this lives under the index page.
                             @foreach(var type in fileTypes) {
                                 <div class="form-check me-3">
                                     <input type="checkbox" id="chk_@type" class="form-check-input"
-                                    @onchange="e => { ToggleFileType(type, e.Value); UpdateSummaryDebounced(); StateHasChanged(); }"
-                                    checked="@selectedFileTypes.Contains(type.ToLower())" />
+                                            @onchange="e => { ToggleFileType(type, e.Value); UpdateSummaryDebounced(); StateHasChanged(); }"
+                                            checked="@selectedFileTypes.Contains(type.ToLower())" />
                                     <label class="form-check-label" for="chk_@type">@type</label>
                                 </div>
                             }
@@ -207,10 +207,10 @@ from Files.razor were removed because this lives under the index page.
                     <div class="mb-3">
                         <label id="wildcardFilterLabel" for="wildcardFilterInput" class="form-label">Wildcard Filter (e.g. *.cs, */Views/*):</label>
                         <input id="wildcardFilterInput"
-                        value="@filterText"
-                        placeholder="Enter wildcard filter"
-                        class="form-control"
-                        @oninput="@(e => { filterText = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
+                                value="@filterText"
+                                placeholder="Enter wildcard filter"
+                                class="form-control"
+                                @oninput="@(e => { filterText = e.Value?.ToString() ?? string.Empty; UpdateSummaryDebounced(); StateHasChanged(); })" />
                         <div class="form-text">Common filters: *.cs, *.cshtml, *.js, *.css, *.razor, etc.</div>
                     </div>
                 </section>
@@ -233,7 +233,7 @@ from Files.razor were removed because this lives under the index page.
                         <li class="list-group-item">
                             <div class="form-check">
                                 <input type="checkbox" id="chk_file_@item.FileName" class="form-check-input"
-                                @bind="item.IsSelected" @bind:event="oninput" />
+                                        @bind="item.IsSelected" @bind:event="oninput" />
                                 <label class="form-check-label" for="chk_file_@item.FileName">
                                     @item.FullPath
                                     @if(fileSizeIndicators.ContainsKey(item.FullPath)) {
@@ -394,11 +394,11 @@ from Files.razor were removed because this lives under the index page.
     #region File Items, Modification Options & Toggles
     private class FileItem
     {
+        public int? CharCount { get; set; }
         public string FileName { get; set; }
         public string FullPath { get; set; }
         public bool IsSelected { get; set; }
         public int? LineCount { get; set; }
-        public int? CharCount { get; set; }
     }
     private List<FileItem> fileItems = new();
     private string filterText { get; set; } = "";
@@ -461,9 +461,9 @@ I look forward to working with you to accomplish our goals on this project.
 
     public class ModificationOption
     {
-        public string Key { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
+        public string Key { get; set; }
     }
     private List<ModificationOption> ModificationOptions = new();
     private List<string> SelectedModificationOptionKeys = new();
@@ -796,16 +796,16 @@ I look forward to working with you to accomplish our goals on this project.
     #region API Data Classes
     public class FileContentItem
     {
+        public string Content { get; set; }
         public string FileName { get; set; }
         public string FullPath { get; set; }
-        public string Content { get; set; }
     }
     public class FileMetadataItem
     {
+        public int CharCount { get; set; }
         public string FileName { get; set; }
         public string FullPath { get; set; }
         public int LineCount { get; set; }
-        public int CharCount { get; set; }
     }
     #endregion
 

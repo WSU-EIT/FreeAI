@@ -12,17 +12,6 @@ using Microsoft.VisualStudio.Extensibility.Commands;
 
 internal static class ReorganizerMenus
 {
-    /// <summary>Nested submenu holding the repo-wide commands.</summary>
-    [VisualStudioContribution]
-    public static MenuConfiguration RepositorySubmenu => new("%FreeCodeReorganizer.Menu.Repository.DisplayName%")
-    {
-        Children = new[]
-        {
-            MenuChild.Command<ReorganizeRepositoryCommand>(),
-            MenuChild.Command<CleanUpRepositoryCommand>(),
-        },
-    };
-
     /// <summary>The top-level "FreeCodeReorganizer" menu (under Extensions).</summary>
     [VisualStudioContribution]
     public static MenuConfiguration MainMenu => new("%FreeCodeReorganizer.Menu.DisplayName%")
@@ -37,6 +26,16 @@ internal static class ReorganizerMenus
             MenuChild.Command<CleanUpDocumentCommand>(),
             MenuChild.Separator,
             MenuChild.Menu(RepositorySubmenu),
+        },
+    };
+    /// <summary>Nested submenu holding the repo-wide commands.</summary>
+    [VisualStudioContribution]
+    public static MenuConfiguration RepositorySubmenu => new("%FreeCodeReorganizer.Menu.Repository.DisplayName%")
+    {
+        Children = new[]
+        {
+            MenuChild.Command<ReorganizeRepositoryCommand>(),
+            MenuChild.Command<CleanUpRepositoryCommand>(),
         },
     };
 }

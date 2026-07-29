@@ -21,9 +21,9 @@
 
     @if (_showSignaturePad) {
         <Signature @key="_signatureInstance"
-                   @ref="_signatureRef"
-                   IncludeClearButton="true"
-                   @bind-Value="_currentSignature" />
+                @ref="_signatureRef"
+                IncludeClearButton="true"
+                @bind-Value="_currentSignature" />
     } else {
         <div class="alert alert-secondary" role="status">The signature pad is currently unmounted.</div>
     }
@@ -45,9 +45,20 @@ Saved value:
     private int _signatureInstance;
     private FreeBlazorExtended.Signature.Signature? _signatureRef;
 
-    private void SaveCurrent()
+    private async Task ClearProgrammatically()
     {
-        _savedSignature = _currentSignature;
+        if (_signatureRef is not null) {
+            await _signatureRef.Clear();
+        }
+    }
+
+    private static string PreviewValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) {
+            return "(empty)";
+        }
+
+        return value.Length <= 80 ? value : value[..80] + "...";
     }
 
     private void ReloadSaved()
@@ -60,11 +71,9 @@ Saved value:
         _signatureInstance++;
     }
 
-    private async Task ClearProgrammatically()
+    private void SaveCurrent()
     {
-        if (_signatureRef is not null) {
-            await _signatureRef.Clear();
-        }
+        _savedSignature = _currentSignature;
     }
 
     private void TogglePad()
@@ -73,14 +82,5 @@ Saved value:
         if (_showSignaturePad) {
             _signatureInstance++;
         }
-    }
-
-    private static string PreviewValue(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) {
-            return "(empty)";
-        }
-
-        return value.Length <= 80 ? value : value[..80] + "...";
     }
 }

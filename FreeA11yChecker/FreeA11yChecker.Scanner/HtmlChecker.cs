@@ -10,8 +10,8 @@ namespace FreeA11yChecker.Scanner;
 public class HtmlCheckResult
 {
     public List<A11yIssue> Issues { get; set; } = new();
-    public int TotalChecks { get; set; }
     public int PassCount { get; set; }
+    public int TotalChecks { get; set; }
 }
 
 /// <summary>
@@ -26,22 +26,6 @@ public static class HtmlChecker
     /// alongside the issue list returned from <see cref="CheckWithStats"/>.
     /// </summary>
     public const int TotalRules = 20;
-
-    /// <summary>
-    /// Runs all rules and returns issues plus pass-rate stats. Pass count is
-    /// (TotalRules - distinct rule IDs that produced at least one issue) — a rule
-    /// that fired multiple times still counts as one failed rule.
-    /// </summary>
-    public static HtmlCheckResult CheckWithStats(string html)
-    {
-        var issues = Check(html);
-        int failedRules = issues.Select(i => i.RuleId).Distinct(StringComparer.OrdinalIgnoreCase).Count();
-        return new HtmlCheckResult {
-            Issues = issues,
-            TotalChecks = TotalRules,
-            PassCount = Math.Max(0, TotalRules - failedRules),
-        };
-    }
 
     /// <summary>
     /// Runs all 20 HTML checks against the provided HTML string
@@ -201,6 +185,22 @@ public static class HtmlChecker
             issues.Add(CreateIssue("text-justified", "moderate", "Inline style uses text-align: justify which can reduce readability", m.Value));
 
         return issues;
+    }
+
+    /// <summary>
+    /// Runs all rules and returns issues plus pass-rate stats. Pass count is
+    /// (TotalRules - distinct rule IDs that produced at least one issue) — a rule
+    /// that fired multiple times still counts as one failed rule.
+    /// </summary>
+    public static HtmlCheckResult CheckWithStats(string html)
+    {
+        var issues = Check(html);
+        int failedRules = issues.Select(i => i.RuleId).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        return new HtmlCheckResult {
+            Issues = issues,
+            TotalChecks = TotalRules,
+            PassCount = Math.Max(0, TotalRules - failedRules),
+        };
     }
 
     /// <summary>

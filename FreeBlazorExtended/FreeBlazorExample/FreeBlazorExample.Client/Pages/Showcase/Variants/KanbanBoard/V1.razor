@@ -8,17 +8,17 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <KanbanBoard Columns="_columns"
-                         Cards="_cards"
-                         OnCardMoved="HandleMoved"
-                         OnCardClick="HandleClick"
-                         SelectedCardId="@_selectedCard?.Id" />
+                    Cards="_cards"
+                    OnCardMoved="HandleMoved"
+                    OnCardClick="HandleClick"
+                    SelectedCardId="@_selectedCard?.Id" />
         </div>
         <div class="col-lg-4">
             <ShowcaseKanbanCardEditor Cards="_cards"
-                                      Columns="_columns"
-                                      SelectedCard="_selectedCard"
-                                      SelectedCardChanged="HandleSelectionChanged"
-                                      Subtitle="Use the default board, then open any card to edit its full details." />
+                    Columns="_columns"
+                    SelectedCard="_selectedCard"
+                    SelectedCardChanged="HandleSelectionChanged"
+                    Subtitle="Use the default board, then open any card to edit its full details." />
         </div>
     </div>
 </div>
@@ -41,25 +41,6 @@
     };
 
     private KanbanBoard.KanbanCard? _selectedCard;
-
-    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
-    {
-        ApplyMove(_cards, args);
-        StateHasChanged();
-        return Task.CompletedTask;
-    }
-
-    private Task HandleClick(KanbanBoard.KanbanCard card)
-    {
-        _selectedCard = card;
-        return Task.CompletedTask;
-    }
-
-    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
-    {
-        _selectedCard = card;
-        return Task.CompletedTask;
-    }
 
     private static void ApplyMove(List<KanbanBoard.KanbanCard> cards, KanbanBoard.KanbanCardMovedEventArgs args)
     {
@@ -91,5 +72,24 @@
                 sourceCards[i].SortOrder = i;
             }
         }
+    }
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        ApplyMove(_cards, args);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
     }
 }

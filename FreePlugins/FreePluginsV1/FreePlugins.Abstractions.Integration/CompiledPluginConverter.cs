@@ -9,6 +9,17 @@ namespace FreePlugins.Integration;
 public static class CompiledPluginConverter
 {
     /// <summary>
+    /// Gets all compiled plugins as Plugin objects.
+    /// </summary>
+    public static List<Plugin> GetAllAsPlugins()
+    {
+        return CompiledPluginRegistry.AllPlugins
+            .Select(e => ToPlugin(e.Metadata))
+            .OrderBy(p => p.SortOrder)
+            .ThenBy(p => p.Name)
+            .ToList();
+    }
+    /// <summary>
     /// Converts a PluginMetadata to a Plugin object for compatibility with existing code.
     /// </summary>
     public static Plugin ToPlugin(PluginMetadata metadata)
@@ -44,17 +55,5 @@ public static class CompiledPluginConverter
             Version = metadata.Version,
             AdditionalAssemblies = new List<string>(),
         };
-    }
-
-    /// <summary>
-    /// Gets all compiled plugins as Plugin objects.
-    /// </summary>
-    public static List<Plugin> GetAllAsPlugins()
-    {
-        return CompiledPluginRegistry.AllPlugins
-            .Select(e => ToPlugin(e.Metadata))
-            .OrderBy(p => p.SortOrder)
-            .ThenBy(p => p.Name)
-            .ToList();
     }
 }

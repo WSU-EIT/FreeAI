@@ -24,16 +24,16 @@
                     <i class="fa-solid fa-floppy-disk me-1"></i> Save
                 </button>
                 <InfoTip Title="Save Button"
-                         Description="Clicking Save sends the record to the server as a POST request. The server checks if the record already exists (by its ID) — if yes, it updates; if no, it creates a new one. This is the SaveMany pattern: the same endpoint handles both inserts and updates."
-                         Code="@_codeSave" />
+                        Description="Clicking Save sends the record to the server as a POST request. The server checks if the record already exists (by its ID) — if yes, it updates; if no, it creates a new one. This is the SaveMany pattern: the same endpoint handles both inserts and updates."
+                        Code="@_codeSave" />
                 @if (!_isNew) {
                     <DeleteConfirmation OnConfirmed="Delete"
-                        CancelText="@Helpers.ConfirmButtonTextCancel"
-                        DeleteText="@Helpers.ConfirmButtonTextDelete"
-                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                            CancelText="@Helpers.ConfirmButtonTextCancel"
+                            DeleteText="@Helpers.ConfirmButtonTextDelete"
+                            ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
                     <InfoTip Title="Two-Click Delete"
-                             Description="To prevent accidental deletion, the Delete button requires two clicks: first click shows Confirm Delete, second click actually deletes. This pattern is used in every project. The record is soft deleted — marked as deleted but not erased from the database."
-                             Code="@_codeDeleteConfirm" />
+                            Description="To prevent accidental deletion, the Delete button requires two clicks: first click shows Confirm Delete, second click actually deletes. This pattern is used in every project. The record is soft deleted — marked as deleted but not erased from the database."
+                            Code="@_codeDeleteConfirm" />
                 }
             </div>
         </div>
@@ -44,16 +44,16 @@
 
         <RequiredIndicator />
         <InfoTip Title="Required Fields"
-                 Description="The red asterisk (*) next to a field label means that field must be filled in before you can save. If you try to save with an empty required field, the input box turns red (via the is-invalid CSS class) to show you what is missing."
-                 Code="@_codeRequired" />
+                Description="The red asterisk (*) next to a field label means that field must be filled in before you can save. If you try to save with an empty required field, the input box turns red (via the is-invalid CSS class) to show you what is missing."
+                Code="@_codeRequired" />
 
         <div class="row">
             <div class="col-md-6 mb-2">
                 <label for="edit-name"><Language Tag="Name" /> <span class="text-danger">*</span></label>
                 <input type="text" id="edit-name" class="form-control @Helpers.MissingValue(_item.Name)" @bind="_item.Name" />
                 <InfoTip Title="Validation Highlight"
-                         Description="When a required field is empty, Helpers.MissingValue() adds the is-invalid CSS class, which makes the input border turn red. This gives you instant visual feedback — you can see what needs fixing without reading error messages."
-                         Code="@_codeValidation" />
+                        Description="When a required field is empty, Helpers.MissingValue() adds the is-invalid CSS class, which makes the input border turn red. This gives you instant visual feedback — you can see what needs fixing without reading error messages."
+                        Code="@_codeValidation" />
             </div>
             <div class="col-md-6 mb-2">
                 <label for="edit-category">Category</label>
@@ -100,8 +100,8 @@
         @if (!_isNew) {
             <LastModifiedMessage DataObject="@_item" />
             <InfoTip Title="Last Modified"
-                     Description="This component shows who last edited the record and when. It helps teams track changes. The data comes from audit fields (LastModifiedBy, LastModifiedDate) that the server updates automatically on every save."
-                     Code="@_codeLastModified" />
+                    Description="This component shows who last edited the record and when. It helps teams track changes. The data comes from audit fields (LastModifiedBy, LastModifiedDate) that the server updates automatically on every save."
+                    Code="@_codeLastModified" />
         }
     }
 }

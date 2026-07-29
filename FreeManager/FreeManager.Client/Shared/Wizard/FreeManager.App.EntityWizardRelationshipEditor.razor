@@ -285,8 +285,8 @@
                             @foreach (var type in Enum.GetValues<DataObjects.RelationshipType>())
                             {
                                 <input type="radio" class="btn-check" name="relType" id="relType-@type" 
-                                       checked="@(_newRelationship.Type == type)" 
-                                       @onchange="@(() => OnTypeChanged(type))" />
+                                        checked="@(_newRelationship.Type == type)" 
+                                        @onchange="@(() => OnTypeChanged(type))" />
                                 <label class="btn btn-outline-primary" for="relType-@type">
                                     <span class="badge @GetRelationshipTypeBadge(type) me-1">@GetRelationshipTypeLabel(type)</span>
                                     @type
@@ -366,13 +366,13 @@
                         <div class="col-md-6">
                             <label class="form-label">Source Navigation Property</label>
                             <input type="text" class="form-control" @bind="_newRelationship.SourceNavigationProperty"
-                                   placeholder="@GetSuggestedSourceNav()" />
+                                    placeholder="@GetSuggestedSourceNav()" />
                             <div class="form-text">Property on @(_newRelationship.SourceEntityName ?? "Source") that holds @(_newRelationship.TargetEntityName ?? "Target")(s)</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Target Navigation Property</label>
                             <input type="text" class="form-control" @bind="_newRelationship.TargetNavigationProperty"
-                                   placeholder="@GetSuggestedTargetNav()" />
+                                    placeholder="@GetSuggestedTargetNav()" />
                             <div class="form-text">Property on @(_newRelationship.TargetEntityName ?? "Target") that points to @(_newRelationship.SourceEntityName ?? "Source")</div>
                         </div>
                     </div>
@@ -382,13 +382,13 @@
                         <div class="col-md-6">
                             <label class="form-label">Foreign Key Property</label>
                             <input type="text" class="form-control" @bind="_newRelationship.ForeignKeyProperty"
-                                   placeholder="@GetSuggestedFK()" />
+                                    placeholder="@GetSuggestedFK()" />
                             <div class="form-text">FK column on the dependent entity</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Relationship Name</label>
                             <input type="text" class="form-control" @bind="_newRelationship.Name"
-                                   placeholder="@GetSuggestedName()" />
+                                    placeholder="@GetSuggestedName()" />
                         </div>
                     </div>
 
@@ -421,9 +421,9 @@
                             </label>
                             <div class="input-group">
                                 <input type="text" class="form-control @GetLinkTableValidationClass()" 
-                                       @bind="_newRelationship.JoinEntityName"
-                                       @bind:event="oninput"
-                                       placeholder="@GetSuggestedLinkTableName()" />
+                                        @bind="_newRelationship.JoinEntityName"
+                                        @bind:event="oninput"
+                                        placeholder="@GetSuggestedLinkTableName()" />
                                 <button class="btn btn-outline-warning" type="button" @onclick="AutoFillLinkTableName" title="Auto-generate name">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                                 </button>

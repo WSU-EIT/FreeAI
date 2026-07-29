@@ -25,8 +25,7 @@ public static class ServiceCollectionExtensions
     /// </example>
     public static IServiceCollection AddGlbaClient(
         this IServiceCollection services,
-        Action<GlbaClientOptions> configure)
-    {
+        Action<GlbaClientOptions> configure){
         services.Configure(configure);
 
         services.AddHttpClient<IGlbaClient, GlbaClient>((sp, client) =>
@@ -58,10 +57,7 @@ public static class ServiceCollectionExtensions
     /// );
     /// </code>
     /// </example>
-    public static IServiceCollection AddGlbaClient(
-        this IServiceCollection services,
-        string endpoint,
-        string apiKey)
+    public static IServiceCollection AddGlbaClient(this IServiceCollection services, string endpoint, string apiKey)
     {
         return services.AddGlbaClient(options =>
         {
@@ -95,8 +91,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGlbaClient(
         this IServiceCollection services,
         Action<GlbaClientOptions> configure,
-        Action<HttpClient>? configureHttpClient)
-    {
+        Action<HttpClient>? configureHttpClient){
         services.Configure(configure);
 
         services.AddHttpClient<IGlbaClient, GlbaClient>((sp, client) =>

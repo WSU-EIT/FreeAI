@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Notification Alert Types"
-                     Description="Each notification uses alert-(Type) to set color: alert-info for general, alert-success for positive, alert-warning for warnings. The icon also varies by type. This auto-color pattern is used in production notification systems across all apps."
-                     Code="@_codeAlertTypes" />
+                    Description="Each notification uses alert-(Type) to set color: alert-info for general, alert-success for positive, alert-warning for warnings. The icon also varies by type. This auto-color pattern is used in production notification systems across all apps."
+                    Code="@_codeAlertTypes" />
             <InfoTip Title="Dismissible Notifications"
-                     Description="Each notification has a btn-close that removes it from the list. The list is managed in C# (_notifications.Remove(n)). In production, dismissed notifications are marked as read via API. New ones push to the top with Insert(0, ...)."
-                     Code="@_codeDismissible" />
+                    Description="Each notification has a btn-close that removes it from the list. The list is managed in C# (_notifications.Remove(n)). In production, dismissed notifications are marked as read via API. New ones push to the top with Insert(0, ...)."
+                    Code="@_codeDismissible" />
             <InfoTip Title="Empty State Pattern"
-                     Description="When no notifications exist, a centered icon (fa-bell-slash) and text tell the user. This empty state prevents a confusing blank screen. Every production list page has an empty state with an icon and helpful message."
-                     Code="@_codeEmptyState" />
+                    Description="When no notifications exist, a centered icon (fa-bell-slash) and text tell the user. This empty state prevents a confusing blank screen. Every production list page has an empty state with an icon and helpful message."
+                    Code="@_codeEmptyState" />
         </div>
         <div class="d-flex justify-content-between mb-3"><h5>Notification Center</h5><button class="btn btn-sm btn-outline-primary" @onclick="SimulateNotification"><i class="fa-solid fa-plus me-1"></i> Simulate Notification</button></div>
         @foreach (var n in _notifications) {

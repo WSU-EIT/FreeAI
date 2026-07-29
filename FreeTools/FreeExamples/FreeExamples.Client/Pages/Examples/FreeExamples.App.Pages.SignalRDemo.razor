@@ -62,13 +62,13 @@
                         <h6 class="mb-0">
                             <i class="fa-solid fa-users me-1"></i> Active Users
                             <InfoTip Title="Active Users Presence"
-                                     Description="This list shows who is online right now. The server tracks each user's last activity time. Users active in the last 30 seconds show as Active (green); those quiet for 30s to 5min show as Away (yellow). After 5 minutes they disappear. The You badge marks your own entry."
-                                     Code="@_codeActiveUsers" />
+                                    Description="This list shows who is online right now. The server tracks each user's last activity time. Users active in the last 30 seconds show as Active (green); those quiet for 30s to 5min show as Away (yellow). After 5 minutes they disappear. The You badge marks your own entry."
+                                    Code="@_codeActiveUsers" />
                             @{ int onlineCount = Model.ActiveUsers.Count(x => x.LastAccess > DateTime.UtcNow.AddMinutes(-5)); }
                             <span class="badge bg-success rounded-pill ms-1">@onlineCount online</span>
                             <InfoTip Title="Online Count Badge"
-                                     Description="This green pill-shaped badge shows how many users are currently online. It recalculates every time SignalR delivers an update. The rounded-pill class makes the badge oval-shaped. The count comes from filtering the active users list by last access time."
-                                     Code="@_codeOnlineCount" />
+                                    Description="This green pill-shaped badge shows how many users are currently online. It recalculates every time SignalR delivers an update. The rounded-pill class makes the badge oval-shaped. The count comes from filtering the active users list by last access time."
+                                    Code="@_codeOnlineCount" />
                         </h6>
                     </div>
                     <div class="card-body p-0" style="max-height:400px; overflow:auto;">
@@ -119,8 +119,8 @@
                     <div class="card-header bg-white py-3">
                         <h6 class="mb-0"><i class="fa-solid fa-bolt me-1"></i> Quick Add (Broadcasts to All Tabs)
                             <InfoTip Title="Quick Add Form"
-                                     Description="This mini-form saves a new item and broadcasts the save to all connected browser tabs via SignalR. The Enter key also triggers save (via onkeydown). After saving, every browser tab receives a SignalR update and can choose to refresh its data."
-                                     Code="@_codeQuickAdd" />
+                                    Description="This mini-form saves a new item and broadcasts the save to all connected browser tabs via SignalR. The Enter key also triggers save (via onkeydown). After saving, every browser tab receives a SignalR update and can choose to refresh its data."
+                                    Code="@_codeQuickAdd" />
                         </h6>
                     </div>
                     <div class="card-body">
@@ -128,7 +128,7 @@
                             <div class="col-md-5">
                                 <label class="form-label small">Name</label>
                                 <input type="text" class="form-control" placeholder="Item name..." @bind="_newItemName"
-                                       @onkeydown="@(async (e) => { if (e.Key == "Enter") await SaveItem(); })" />
+                                        @onkeydown="@(async (e) => { if (e.Key == "Enter") await SaveItem(); })" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small">Category</label>
@@ -165,8 +165,8 @@
                             <h6 class="mb-0">
                                 <i class="fa-solid fa-rss me-1"></i> Activity Feed
                                 <InfoTip Title="Activity Feed"
-                                         Description="This scrollable list shows every SignalR event in real time — saves, deletes, and data changes. Each entry has a colored icon (green disk = saved, red trash = deleted), a description, and a millisecond-precision timestamp. New events appear at the top."
-                                         Code="@_codeActivityFeed" />
+                                        Description="This scrollable list shows every SignalR event in real time — saves, deletes, and data changes. Each entry has a colored icon (green disk = saved, red trash = deleted), a description, and a millisecond-precision timestamp. New events appear at the top."
+                                        Code="@_codeActivityFeed" />
                                 @if (_activityLog.Any()) {
                                     <span class="badge bg-primary rounded-pill ms-1">@_activityLog.Count</span>
                                 }
@@ -217,8 +217,8 @@
                                         @_pendingUpdates pending
                                     </span>
                                     <InfoTip Title="Pending Updates Badge"
-                                             Description="When Auto-apply is off, incoming SignalR updates are queued instead of applied immediately. This yellow badge pulses to get your attention, showing how many updates are waiting. Click Apply to merge them into the table. This pattern prevents jarring table refreshes while you are reading."
-                                             Code="@_codePending" />
+                                            Description="When Auto-apply is off, incoming SignalR updates are queued instead of applied immediately. This yellow badge pulses to get your attention, showing how many updates are waiting. Click Apply to merge them into the table. This pattern prevents jarring table refreshes while you are reading."
+                                            Code="@_codePending" />
                                 }
                             </h6>
                             <div class="d-flex gap-2 align-items-center">
@@ -226,8 +226,8 @@
                                     <input type="checkbox" class="form-check-input" id="auto-apply" @bind="_autoApply" />
                                     <label class="form-check-label small" for="auto-apply">Auto-apply
                                         <InfoTip Title="Auto-Apply Toggle"
-                                                 Description="When ON, every SignalR update is applied to the table immediately — rows appear, update, or disappear in real time. When OFF, updates queue up and the pending badge shows the count. You decide when to apply them. This gives users control over when their view changes."
-                                                 Code="@_codeAutoApply" />
+                                                Description="When ON, every SignalR update is applied to the table immediately — rows appear, update, or disappear in real time. When OFF, updates queue up and the pending badge shows the count. You decide when to apply them. This gives users control over when their view changes."
+                                                Code="@_codeAutoApply" />
                                     </label>
                                 </div>
                                 @if (!_autoApply && _pendingUpdates > 0) {
@@ -247,8 +247,8 @@
                                 <tr class="table-light">
                                     <th>Name
                                         <InfoTip Title="Row Highlight"
-                                                 Description="When a row receives a SignalR update, it briefly turns light blue (table-info) and shows a bolt icon. This visual flash draws your eye to what changed. The highlight fades after a few seconds. The _recentlyUpdatedIds set tracks which rows were just updated."
-                                                 Code="@_codeRowHighlight" />
+                                                Description="When a row receives a SignalR update, it briefly turns light blue (table-info) and shows a bolt icon. This visual flash draws your eye to what changed. The highlight fades after a few seconds. The _recentlyUpdatedIds set tracks which rows were just updated."
+                                                Code="@_codeRowHighlight" />
                                     </th>
                                     <th>Category</th>
                                     <th>Status</th>
@@ -470,8 +470,8 @@
 
     private class ActivityEntry
     {
+        public string Message { get; set; } = "";
         public DateTime Time { get; set; }
         public string Type { get; set; } = "";
-        public string Message { get; set; } = "";
     }
 }

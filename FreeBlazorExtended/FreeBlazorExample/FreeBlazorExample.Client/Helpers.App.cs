@@ -18,53 +18,8 @@ public static partial class Helpers
     {
         return true;
     }
-
-    public static string BuildShowcaseUrl(string? subUrl = null)
-    {
-        if (string.IsNullOrWhiteSpace(subUrl)) {
-            return BuildUrl("showcase");
-        }
-
-        return BuildUrl("showcase/" + subUrl.Trim().TrimStart('/'));
-    }
-
-    public static string BuildShowcaseAnchorUrl(string? anchorId)
-    {
-        var normalizedAnchor = NormalizeShowcaseAnchor(anchorId);
-
-        if (string.IsNullOrWhiteSpace(normalizedAnchor)) {
-            return BuildShowcaseUrl();
-        }
-
-        return BuildUrl("showcase#" + normalizedAnchor);
-    }
-
-    public static string BuildShowcaseCatalogUrl(string? subUrl = null)
-    {
-        if (string.IsNullOrWhiteSpace(subUrl)) {
-            return BuildUrl("showcase/catalog");
-        }
-
-        return BuildUrl("showcase/catalog/" + subUrl.Trim().TrimStart('/'));
-    }
-
-    public static string BuildShowcaseCatalogAnchorUrl(string? anchorId)
-    {
-        var normalizedAnchor = NormalizeShowcaseAnchor(anchorId);
-
-        if (string.IsNullOrWhiteSpace(normalizedAnchor)) {
-            return BuildShowcaseCatalogUrl();
-        }
-
-        return BuildUrl("showcase/catalog#" + normalizedAnchor);
-    }
-
-    private static string NormalizeShowcaseAnchor(string? anchorId)
-    {
-        return (anchorId ?? string.Empty).Trim().TrimStart('#');
-    }
-
     // {{ModuleItemStart:Tags}}
+
     public static List<DataObjects.Tag> AvailableTagListApp(DataObjects.TagModule? Module, List<Guid> ExcludeTags)
     {
         var output = new List<DataObjects.Tag>();
@@ -86,13 +41,44 @@ public static partial class Helpers
     }
     // {{ModuleItemEnd:Tags}}
 
-    private static List<string> GetDeletedRecordTypesApp()
+    public static string BuildShowcaseAnchorUrl(string? anchorId)
     {
-        var output = new List<string>();
+        var normalizedAnchor = NormalizeShowcaseAnchor(anchorId);
 
-        // Add any app-specific deleted record types here.
+        if (string.IsNullOrWhiteSpace(normalizedAnchor)) {
+            return BuildShowcaseUrl();
+        }
 
-        return output;
+        return BuildUrl("showcase#" + normalizedAnchor);
+    }
+
+    public static string BuildShowcaseCatalogAnchorUrl(string? anchorId)
+    {
+        var normalizedAnchor = NormalizeShowcaseAnchor(anchorId);
+
+        if (string.IsNullOrWhiteSpace(normalizedAnchor)) {
+            return BuildShowcaseCatalogUrl();
+        }
+
+        return BuildUrl("showcase/catalog#" + normalizedAnchor);
+    }
+
+    public static string BuildShowcaseCatalogUrl(string? subUrl = null)
+    {
+        if (string.IsNullOrWhiteSpace(subUrl)) {
+            return BuildUrl("showcase/catalog");
+        }
+
+        return BuildUrl("showcase/catalog/" + subUrl.Trim().TrimStart('/'));
+    }
+
+    public static string BuildShowcaseUrl(string? subUrl = null)
+    {
+        if (string.IsNullOrWhiteSpace(subUrl)) {
+            return BuildUrl("showcase");
+        }
+
+        return BuildUrl("showcase/" + subUrl.Trim().TrimStart('/'));
     }
 
     /// <summary>
@@ -138,6 +124,24 @@ public static partial class Helpers
         return output;
     }
 
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
+
+        // Add any app-specific deleted record types here.
+
+        return output;
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
+        get {
+            // Add any app-specific admin menu items here.
+            var output = new List<DataObjects.MenuItem>();
+
+            return output;
+        }
+    }
+
     public static List<DataObjects.MenuItem> MenuItemsApp {
         get {
             // Add any app-specific top-level menu items here.
@@ -159,13 +163,9 @@ public static partial class Helpers
         }
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
-        get {
-            // Add any app-specific admin menu items here.
-            var output = new List<DataObjects.MenuItem>();
-
-            return output;
-        }
+    private static string NormalizeShowcaseAnchor(string? anchorId)
+    {
+        return (anchorId ?? string.Empty).Trim().TrimStart('#');
     }
 
     public static async Task ProcessSignalRUpdateApp(DataObjects.SignalRUpdate update)

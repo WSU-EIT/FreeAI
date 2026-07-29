@@ -14,85 +14,6 @@ namespace FreeBlazorExtended.Foundation;
 public class DataTableOptions
 {
     /// <summary>
-    /// Allows the user to sort rows by clicking column headers.
-    /// Default: <c>true</c>. Set to <c>false</c> for read-only display tables
-    /// where ordering is controlled entirely by the caller.
-    /// </summary>
-    public bool EnableSorting { get; set; } = true;
-
-    /// <summary>
-    /// Shows a per-column search input so the user can narrow rows by value.
-    /// Default: <c>true</c>. Disable for very large server-paginated datasets
-    /// where client-side filtering is impractical.
-    /// </summary>
-    public bool EnableFiltering { get; set; } = true;
-
-    /// <summary>
-    /// Shows page-navigation controls below the table.
-    /// Default: <c>true</c>. Set to <c>false</c> when the caller manages paging
-    /// externally (e.g., server-side pagination via a custom toolbar).
-    /// </summary>
-    public bool EnablePagination { get; set; } = true;
-
-    /// <summary>
-    /// Number of rows displayed per page when <see cref="EnablePagination"/> is <c>true</c>.
-    /// Default: <c>25</c>. Common values: 10, 25, 50, 100.
-    /// </summary>
-    public int PageSize { get; set; } = 25;
-
-    /// <summary>
-    /// Renders a leading checkbox column so the user can select individual rows.
-    /// Default: <c>false</c>. Enable when the table drives a bulk-action workflow.
-    /// Wire the component's <c>OnSelectionChanged</c> callback to react to changes.
-    /// </summary>
-    public bool EnableSelection { get; set; } = false;
-
-    /// <summary>
-    /// Allows rows to expand in place to reveal additional detail content.
-    /// Default: <c>false</c>. Enable together with an <c>ExpansionContent</c>
-    /// render fragment to show nested or supplemental row data on demand.
-    /// </summary>
-    public bool EnableExpansion { get; set; } = false;
-
-    /// <summary>
-    /// Shows a bulk-action toolbar when one or more rows are selected.
-    /// Default: <c>false</c>. Pair with <see cref="EnableSelection"/> and supply
-    /// <c>BulkActionsContent</c> to expose contextual operations (delete, export, etc.).
-    /// </summary>
-    public bool EnableBulkActions { get; set; } = false;
-
-    /// <summary>
-    /// Renders a column-visibility picker so the user can show/hide individual columns.
-    /// Default: <c>false</c>. Useful for wide tables with many optional fields.
-    /// </summary>
-    public bool EnableColumnSelector { get; set; } = false;
-
-    /// <summary>
-    /// Shows an export button (CSV/Excel) in the table toolbar.
-    /// Default: <c>false</c>. The host must wire an <c>OnExport</c> callback;
-    /// this flag only controls whether the button is visible.
-    /// </summary>
-    public bool EnableExport { get; set; } = false;
-
-    /// <summary>
-    /// Renders animated skeleton rows while data is loading.
-    /// Default: <c>true</c>. Set to <c>false</c> if you prefer a spinner overlay.
-    /// </summary>
-    public bool ShowSkeletonLoading { get; set; } = true;
-
-    /// <summary>
-    /// Applies alternating row background shading (Bootstrap <c>table-striped</c>).
-    /// Default: <c>true</c>. Set to <c>false</c> for a flat, uniform look.
-    /// </summary>
-    public bool Striped { get; set; } = true;
-
-    /// <summary>
-    /// Highlights the row under the cursor on hover (Bootstrap <c>table-hover</c>).
-    /// Default: <c>true</c>. Disable for purely informational tables.
-    /// </summary>
-    public bool Hover { get; set; } = true;
-
-    /// <summary>
     /// Draws borders on all cells (Bootstrap <c>table-bordered</c>).
     /// Default: <c>false</c>. Enable for dense data grids where cell boundaries
     /// improve readability.
@@ -117,6 +38,84 @@ public class DataTableOptions
     /// Accepted values: <c>"asc"</c> (default) or <c>"desc"</c>.
     /// </summary>
     public string DefaultSortDirection { get; set; } = "asc";
+
+    /// <summary>
+    /// Shows a bulk-action toolbar when one or more rows are selected.
+    /// Default: <c>false</c>. Pair with <see cref="EnableSelection"/> and supply
+    /// <c>BulkActionsContent</c> to expose contextual operations (delete, export, etc.).
+    /// </summary>
+    public bool EnableBulkActions { get; set; } = false;
+
+    /// <summary>
+    /// Renders a column-visibility picker so the user can show/hide individual columns.
+    /// Default: <c>false</c>. Useful for wide tables with many optional fields.
+    /// </summary>
+    public bool EnableColumnSelector { get; set; } = false;
+
+    /// <summary>
+    /// Allows rows to expand in place to reveal additional detail content.
+    /// Default: <c>false</c>. Enable together with an <c>ExpansionContent</c>
+    /// render fragment to show nested or supplemental row data on demand.
+    /// </summary>
+    public bool EnableExpansion { get; set; } = false;
+
+    /// <summary>
+    /// Shows an export button (CSV/Excel) in the table toolbar.
+    /// Default: <c>false</c>. The host must wire an <c>OnExport</c> callback;
+    /// this flag only controls whether the button is visible.
+    /// </summary>
+    public bool EnableExport { get; set; } = false;
+
+    /// <summary>
+    /// Shows a per-column search input so the user can narrow rows by value.
+    /// Default: <c>true</c>. Disable for very large server-paginated datasets
+    /// where client-side filtering is impractical.
+    /// </summary>
+    public bool EnableFiltering { get; set; } = true;
+
+    /// <summary>
+    /// Shows page-navigation controls below the table.
+    /// Default: <c>true</c>. Set to <c>false</c> when the caller manages paging
+    /// externally (e.g., server-side pagination via a custom toolbar).
+    /// </summary>
+    public bool EnablePagination { get; set; } = true;
+
+    /// <summary>
+    /// Renders a leading checkbox column so the user can select individual rows.
+    /// Default: <c>false</c>. Enable when the table drives a bulk-action workflow.
+    /// Wire the component's <c>OnSelectionChanged</c> callback to react to changes.
+    /// </summary>
+    public bool EnableSelection { get; set; } = false;
+    /// <summary>
+    /// Allows the user to sort rows by clicking column headers.
+    /// Default: <c>true</c>. Set to <c>false</c> for read-only display tables
+    /// where ordering is controlled entirely by the caller.
+    /// </summary>
+    public bool EnableSorting { get; set; } = true;
+
+    /// <summary>
+    /// Highlights the row under the cursor on hover (Bootstrap <c>table-hover</c>).
+    /// Default: <c>true</c>. Disable for purely informational tables.
+    /// </summary>
+    public bool Hover { get; set; } = true;
+
+    /// <summary>
+    /// Number of rows displayed per page when <see cref="EnablePagination"/> is <c>true</c>.
+    /// Default: <c>25</c>. Common values: 10, 25, 50, 100.
+    /// </summary>
+    public int PageSize { get; set; } = 25;
+
+    /// <summary>
+    /// Renders animated skeleton rows while data is loading.
+    /// Default: <c>true</c>. Set to <c>false</c> if you prefer a spinner overlay.
+    /// </summary>
+    public bool ShowSkeletonLoading { get; set; } = true;
+
+    /// <summary>
+    /// Applies alternating row background shading (Bootstrap <c>table-striped</c>).
+    /// Default: <c>true</c>. Set to <c>false</c> for a flat, uniform look.
+    /// </summary>
+    public bool Striped { get; set; } = true;
 }
 
 /// <summary>
@@ -126,47 +125,22 @@ public class DataTableOptions
 public class DataTableColumn
 {
     /// <summary>
-    /// Unique identifier for the column. Must match the property name on the row model
-    /// when using automatic reflection-based rendering, or the key used in a custom
-    /// template render fragment.
+    /// Horizontal text alignment within cells. Accepted values: <c>"left"</c> (default),
+    /// <c>"center"</c>, <c>"right"</c>.
     /// </summary>
-    public string Key { get; set; } = "";
+    public string Align { get; set; } = "left";
 
     /// <summary>
-    /// The text displayed in the column header cell. Should be concise and human-readable.
+    /// Additional CSS class(es) applied to every <c>&lt;td&gt;</c> in this column.
+    /// Useful for alignment helpers (<c>"text-end"</c>) or width constraints.
     /// </summary>
-    public string Header { get; set; } = "";
-
-    /// <summary>
-    /// Controls whether this column is rendered. Default: <c>true</c>.
-    /// Toggle at runtime to let users show/hide columns via <see cref="DataTableOptions.EnableColumnSelector"/>.
-    /// </summary>
-    public bool Visible { get; set; } = true;
-
-    /// <summary>
-    /// Whether clicking the column header cycles through sort directions.
-    /// Default: <c>true</c>. Set to <c>false</c> for computed or multi-source columns
-    /// where server-side sorting is not supported.
-    /// </summary>
-    public bool Sortable { get; set; } = true;
+    public string CssClass { get; set; } = "";
 
     /// <summary>
     /// Whether a filter input is rendered for this column.
     /// Default: <c>true</c>. Disable for ID columns or columns that should never be filtered.
     /// </summary>
     public bool Filterable { get; set; } = true;
-
-    /// <summary>
-    /// CSS width for the column (e.g. <c>"120px"</c>, <c>"15%"</c>, <c>"auto"</c>).
-    /// Default: <c>"auto"</c> — the browser distributes remaining width evenly.
-    /// </summary>
-    public string Width { get; set; } = "auto";
-
-    /// <summary>
-    /// Horizontal text alignment within cells. Accepted values: <c>"left"</c> (default),
-    /// <c>"center"</c>, <c>"right"</c>.
-    /// </summary>
-    public string Align { get; set; } = "left";
 
     /// <summary>
     /// Optional .NET format string applied when the cell value is rendered as a string
@@ -176,10 +150,34 @@ public class DataTableColumn
     public string Format { get; set; } = "";
 
     /// <summary>
-    /// Additional CSS class(es) applied to every <c>&lt;td&gt;</c> in this column.
-    /// Useful for alignment helpers (<c>"text-end"</c>) or width constraints.
+    /// The text displayed in the column header cell. Should be concise and human-readable.
     /// </summary>
-    public string CssClass { get; set; } = "";
+    public string Header { get; set; } = "";
+    /// <summary>
+    /// Unique identifier for the column. Must match the property name on the row model
+    /// when using automatic reflection-based rendering, or the key used in a custom
+    /// template render fragment.
+    /// </summary>
+    public string Key { get; set; } = "";
+
+    /// <summary>
+    /// Whether clicking the column header cycles through sort directions.
+    /// Default: <c>true</c>. Set to <c>false</c> for computed or multi-source columns
+    /// where server-side sorting is not supported.
+    /// </summary>
+    public bool Sortable { get; set; } = true;
+
+    /// <summary>
+    /// Controls whether this column is rendered. Default: <c>true</c>.
+    /// Toggle at runtime to let users show/hide columns via <see cref="DataTableOptions.EnableColumnSelector"/>.
+    /// </summary>
+    public bool Visible { get; set; } = true;
+
+    /// <summary>
+    /// CSS width for the column (e.g. <c>"120px"</c>, <c>"15%"</c>, <c>"auto"</c>).
+    /// Default: <c>"auto"</c> — the browser distributes remaining width evenly.
+    /// </summary>
+    public string Width { get; set; } = "auto";
 }
 
 /// <summary>The direction rows are ordered in a sorted column.</summary>
@@ -230,6 +228,11 @@ public enum FilterCondition
 public class DataTableFilter
 {
     /// <summary>
+    /// When <c>false</c> (default), string comparisons ignore case.
+    /// Set to <c>true</c> for case-sensitive filtering (e.g., reference codes).
+    /// </summary>
+    public bool CaseSensitive { get; set; } = false;
+    /// <summary>
     /// The <see cref="DataTableColumn.Key"/> of the column this filter targets.
     /// Must match a key in the table's column definition list.
     /// </summary>
@@ -249,12 +252,6 @@ public class DataTableFilter
     /// For <see cref="FilterCondition.In"/>, pass an <see cref="IEnumerable{T}"/>.
     /// </summary>
     public object Value { get; set; }
-
-    /// <summary>
-    /// When <c>false</c> (default), string comparisons ignore case.
-    /// Set to <c>true</c> for case-sensitive filtering (e.g., reference codes).
-    /// </summary>
-    public bool CaseSensitive { get; set; } = false;
 }
 
 /// <summary>

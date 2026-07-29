@@ -74,7 +74,7 @@
                                 <div class="@itemClass" title="@file.FilePath">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <a href="javascript:void(0);" class="text-decoration-none flex-grow-1 text-truncate @(_selectedFile?.Id == file.Id ? "text-white" : "")"
-                                           @onclick="() => SelectFile(file)">
+                                                @onclick="() => SelectFile(file)">
                                             <i class="@GetFileIcon(file.FileType) me-1"></i>
                                             @GetFileName(file.FilePath)
                                         </a>
@@ -121,11 +121,11 @@
                             </span>
                         </div>
                         <MonacoEditor @ref="_monacoEditor"
-                            Id="fm-code-editor"
-                            Class="fm-code-editor"
-                            MinHeight="calc(100vh - 220px)"
-                            Language="@GetLanguageFromFileType(_selectedFile.FileType)"
-                            @bind-Value="_editorContent" />
+                                Id="fm-code-editor"
+                                Class="fm-code-editor"
+                                MinHeight="calc(100vh - 220px)"
+                                Language="@GetLanguageFromFileType(_selectedFile.FileType)"
+                                @bind-Value="_editorContent" />
                     }
                 </div>
             </div>

@@ -8,32 +8,32 @@ namespace FreeGLBA;
 
 public partial interface IDataAccess
 {
-    // SourceSystem methods
-    Task<DataObjects.SourceSystemFilterResult> GetSourceSystemsAsync(DataObjects.SourceSystemFilter filter);
-    Task<DataObjects.SourceSystem?> GetSourceSystemAsync(Guid id);
-    Task<List<DataObjects.SourceSystemLookup>> GetSourceSystemLookupsAsync();
-    Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto);
+    Task<bool> DeleteAccessEventAsync(Guid id);
+    Task<bool> DeleteComplianceReportAsync(Guid id);
+    Task<bool> DeleteDataSubjectAsync(Guid id);
     Task<bool> DeleteSourceSystemAsync(Guid id);
+    Task<DataObjects.AccessEvent?> GetAccessEventAsync(Guid id);
+    Task<List<DataObjects.AccessEventLookup>> GetAccessEventLookupsAsync();
 
     // AccessEvent methods
     Task<DataObjects.AccessEventFilterResult> GetAccessEventsAsync(DataObjects.AccessEventFilter filter);
-    Task<DataObjects.AccessEvent?> GetAccessEventAsync(Guid id);
-    Task<List<DataObjects.AccessEventLookup>> GetAccessEventLookupsAsync();
-    Task<DataObjects.AccessEvent?> SaveAccessEventAsync(DataObjects.AccessEvent dto);
-    Task<bool> DeleteAccessEventAsync(Guid id);
-
-    // DataSubject methods
-    Task<DataObjects.DataSubjectFilterResult> GetDataSubjectsAsync(DataObjects.DataSubjectFilter filter);
-    Task<DataObjects.DataSubject?> GetDataSubjectAsync(Guid id);
-    Task<List<DataObjects.DataSubjectLookup>> GetDataSubjectLookupsAsync();
-    Task<DataObjects.DataSubject?> SaveDataSubjectAsync(DataObjects.DataSubject dto);
-    Task<bool> DeleteDataSubjectAsync(Guid id);
+    Task<DataObjects.ComplianceReport?> GetComplianceReportAsync(Guid id);
+    Task<List<DataObjects.ComplianceReportLookup>> GetComplianceReportLookupsAsync();
 
     // ComplianceReport methods
     Task<DataObjects.ComplianceReportFilterResult> GetComplianceReportsAsync(DataObjects.ComplianceReportFilter filter);
-    Task<DataObjects.ComplianceReport?> GetComplianceReportAsync(Guid id);
-    Task<List<DataObjects.ComplianceReportLookup>> GetComplianceReportLookupsAsync();
+    Task<DataObjects.DataSubject?> GetDataSubjectAsync(Guid id);
+    Task<List<DataObjects.DataSubjectLookup>> GetDataSubjectLookupsAsync();
+
+    // DataSubject methods
+    Task<DataObjects.DataSubjectFilterResult> GetDataSubjectsAsync(DataObjects.DataSubjectFilter filter);
+    Task<DataObjects.SourceSystem?> GetSourceSystemAsync(Guid id);
+    Task<List<DataObjects.SourceSystemLookup>> GetSourceSystemLookupsAsync();
+    // SourceSystem methods
+    Task<DataObjects.SourceSystemFilterResult> GetSourceSystemsAsync(DataObjects.SourceSystemFilter filter);
+    Task<DataObjects.AccessEvent?> SaveAccessEventAsync(DataObjects.AccessEvent dto);
     Task<DataObjects.ComplianceReport?> SaveComplianceReportAsync(DataObjects.ComplianceReport dto);
-    Task<bool> DeleteComplianceReportAsync(Guid id);
+    Task<DataObjects.DataSubject?> SaveDataSubjectAsync(DataObjects.DataSubject dto);
+    Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto);
 
 }

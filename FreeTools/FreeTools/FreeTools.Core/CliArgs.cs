@@ -5,25 +5,40 @@
 /// </summary>
 public static class CliArgs
 {
-    public static bool HasFlag(List<string> args, string flag)
+    /// <summary>
+    /// Check if an environment variable is set to "true" (case-insensitive).
+    /// </summary>
+    public static bool GetEnvBool(string envVar)
     {
-        var index = args.FindIndex(a => a.Equals(flag, StringComparison.OrdinalIgnoreCase));
-        if (index >= 0)
-        {
-            args.RemoveAt(index);
-            return true;
-        }
-        return false;
+        var value = Environment.GetEnvironmentVariable(envVar);
+        return string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
     }
 
-    public static bool HasFlag(List<string> args, params string[] flags)
+    // --- Environment Variable Helpers ---
+
+    /// <summary>
+    /// Get a string value from environment variable or CLI arg, with fallback default.
+    /// </summary>
+    public static string GetEnvOrArg(string envVar, string[] args, int argIndex, string defaultValue)
     {
-        foreach (var flag in flags)
-        {
-            if (HasFlag(args, flag))
-                return true;
-        }
-        return false;
+        return Environment.GetEnvironmentVariable(envVar)
+            ?? (args.Length > argIndex ? args[argIndex] : null)
+            ?? defaultValue;
+    }
+
+    /// <summary>
+    /// Get an integer value from environment variable or CLI arg, with fallback default.
+    /// </summary>
+    public static int GetEnvOrArgInt(string envVar, string[] args, int argIndex, int defaultValue)
+    {
+        var envValue = Environment.GetEnvironmentVariable(envVar);
+        if (int.TryParse(envValue, out var envInt))
+            return envInt;
+
+        if (args.Length > argIndex && int.TryParse(args[argIndex], out var argInt))
+            return argInt;
+
+        return defaultValue;
     }
 
     public static string? GetOption(List<string> args, string prefix)
@@ -61,40 +76,24 @@ public static class CliArgs
             throw new ArgumentException($"Missing required argument: {name}");
         return args[index];
     }
-
-    // --- Environment Variable Helpers ---
-
-    /// <summary>
-    /// Get a string value from environment variable or CLI arg, with fallback default.
-    /// </summary>
-    public static string GetEnvOrArg(string envVar, string[] args, int argIndex, string defaultValue)
+    public static bool HasFlag(List<string> args, string flag)
     {
-        return Environment.GetEnvironmentVariable(envVar)
-            ?? (args.Length > argIndex ? args[argIndex] : null)
-            ?? defaultValue;
+        var index = args.FindIndex(a => a.Equals(flag, StringComparison.OrdinalIgnoreCase));
+        if (index >= 0)
+        {
+            args.RemoveAt(index);
+            return true;
+        }
+        return false;
     }
 
-    /// <summary>
-    /// Get an integer value from environment variable or CLI arg, with fallback default.
-    /// </summary>
-    public static int GetEnvOrArgInt(string envVar, string[] args, int argIndex, int defaultValue)
+    public static bool HasFlag(List<string> args, params string[] flags)
     {
-        var envValue = Environment.GetEnvironmentVariable(envVar);
-        if (int.TryParse(envValue, out var envInt))
-            return envInt;
-
-        if (args.Length > argIndex && int.TryParse(args[argIndex], out var argInt))
-            return argInt;
-
-        return defaultValue;
-    }
-
-    /// <summary>
-    /// Check if an environment variable is set to "true" (case-insensitive).
-    /// </summary>
-    public static bool GetEnvBool(string envVar)
-    {
-        var value = Environment.GetEnvironmentVariable(envVar);
-        return string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+        foreach (var flag in flags)
+        {
+            if (HasFlag(args, flag))
+                return true;
+        }
+        return false;
     }
 }

@@ -11,9 +11,9 @@ namespace FreeA11yChecker.Scanner;
 public class IbmRunResult
 {
     public List<A11yIssue> Issues { get; set; } = new();
+    public int ManualCount { get; set; }
     public int PassCount { get; set; }
     public int PotentialCount { get; set; }
-    public int ManualCount { get; set; }
 }
 
 /// <summary>
@@ -24,6 +24,74 @@ public class IbmRunResult
 public static class IbmEqualAccessRunner
 {
     private const string IbmCdnUrl = "https://cdn.jsdelivr.net/npm/accessibility-checker-engine@latest/ace.js";
+
+    /// <summary>
+    /// Draws colored outlines on elements that IBM EA flagged,
+    /// with severity-based colors and a summary banner.
+    /// </summary>
+    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
+    {
+        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
+            v.Selector,
+            v.Severity,
+            v.RuleId,
+            v.Message,
+        }));
+
+        await page.EvaluateAsync(@"(data) => {
+            const violations = JSON.parse(data);
+            const colorMap = {
+                serious:  '#d32f2f',
+                moderate: '#f9a825',
+                minor:    '#1565c0'
+            };
+
+            violations.forEach(v => {
+                if (!v.Selector) return;
+                try {
+                    const el = document.querySelector(v.Selector);
+                    if (el) {
+                        const color = colorMap[v.Severity] || '#f9a825';
+                        el.style.outline = '3px dotted ' + color;
+                        el.style.outlineOffset = '2px';
+                        el.setAttribute('data-a11y-overlay', 'ibm');
+                    }
+                } catch(e) { /* selector may be invalid */ }
+            });
+
+            const banner = document.createElement('div');
+            banner.id = 'a11y-ibm-overlay-banner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
+                'background:#1a2744;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
+                'display:flex;gap:16px;align-items:center;';
+
+            const counts = { serious: 0, moderate: 0, minor: 0 };
+            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
+
+            banner.innerHTML = '<strong>IBM Equal Access</strong> ' +
+                Object.entries(counts).filter(([,c]) => c > 0)
+                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
+                    .join(' | ');
+
+            document.body.prepend(banner);
+        }", violationsJson);
+    }
+
+    /// <summary>
+    /// Removes the IBM EA overlay outlines and summary banner from the page.
+    /// </summary>
+    public static async Task RemoveOverlay(IPage page)
+    {
+        await page.EvaluateAsync(@"() => {
+            document.querySelectorAll('[data-a11y-overlay=""ibm""]').forEach(el => {
+                el.style.outline = '';
+                el.style.outlineOffset = '';
+                el.removeAttribute('data-a11y-overlay');
+            });
+            const banner = document.getElementById('a11y-ibm-overlay-banner');
+            if (banner) banner.remove();
+        }");
+    }
 
     /// <summary>
     /// Injects IBM Equal Access engine into the page and runs analysis.
@@ -156,73 +224,5 @@ public static class IbmEqualAccessRunner
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Draws colored outlines on elements that IBM EA flagged,
-    /// with severity-based colors and a summary banner.
-    /// </summary>
-    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
-    {
-        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
-            v.Selector,
-            v.Severity,
-            v.RuleId,
-            v.Message,
-        }));
-
-        await page.EvaluateAsync(@"(data) => {
-            const violations = JSON.parse(data);
-            const colorMap = {
-                serious:  '#d32f2f',
-                moderate: '#f9a825',
-                minor:    '#1565c0'
-            };
-
-            violations.forEach(v => {
-                if (!v.Selector) return;
-                try {
-                    const el = document.querySelector(v.Selector);
-                    if (el) {
-                        const color = colorMap[v.Severity] || '#f9a825';
-                        el.style.outline = '3px dotted ' + color;
-                        el.style.outlineOffset = '2px';
-                        el.setAttribute('data-a11y-overlay', 'ibm');
-                    }
-                } catch(e) { /* selector may be invalid */ }
-            });
-
-            const banner = document.createElement('div');
-            banner.id = 'a11y-ibm-overlay-banner';
-            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
-                'background:#1a2744;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
-                'display:flex;gap:16px;align-items:center;';
-
-            const counts = { serious: 0, moderate: 0, minor: 0 };
-            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
-
-            banner.innerHTML = '<strong>IBM Equal Access</strong> ' +
-                Object.entries(counts).filter(([,c]) => c > 0)
-                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
-                    .join(' | ');
-
-            document.body.prepend(banner);
-        }", violationsJson);
-    }
-
-    /// <summary>
-    /// Removes the IBM EA overlay outlines and summary banner from the page.
-    /// </summary>
-    public static async Task RemoveOverlay(IPage page)
-    {
-        await page.EvaluateAsync(@"() => {
-            document.querySelectorAll('[data-a11y-overlay=""ibm""]').forEach(el => {
-                el.style.outline = '';
-                el.style.outlineOffset = '';
-                el.removeAttribute('data-a11y-overlay');
-            });
-            const banner = document.getElementById('a11y-ibm-overlay-banner');
-            if (banner) banner.remove();
-        }");
     }
 }

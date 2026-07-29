@@ -31,6 +31,198 @@ public class ScannerBackgroundService : BackgroundService
         _logger = Logger;
     }
 
+    /// <summary>
+    /// Broadcasts scan completion to connected SignalR clients.
+    /// </summary>
+    private async Task BroadcastComplete(IHubContext<freeallycheckerHub, IsrHub> HubContext,
+        DataObjects.ScanRun ScanRun, string SiteName){
+        try {
+            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
+                TenantId = ScanRun.TenantId,
+                ItemId = ScanRun.ScanRunId,
+                UpdateType = DataObjects.SignalRUpdateType.ScanComplete,
+                Message = "ScanComplete",
+                Object = ScanRun,
+            };
+
+            if (ScanRun.TenantId != Guid.Empty) {
+                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
+            }
+        } catch (Exception ex) {
+            _logger.LogWarning(ex, "Error broadcasting scan completion");
+        }
+    }
+
+    /// <summary>
+    /// Broadcasts scan failure to connected SignalR clients.
+    /// </summary>
+    private async Task BroadcastFailed(IHubContext<freeallycheckerHub, IsrHub> HubContext,
+        DataObjects.ScanRun ScanRun, string ErrorMessage){
+        try {
+            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
+                TenantId = ScanRun.TenantId,
+                ItemId = ScanRun.ScanRunId,
+                UpdateType = DataObjects.SignalRUpdateType.ScanFailed,
+                Message = ErrorMessage,
+                Object = ScanRun,
+            };
+
+            if (ScanRun.TenantId != Guid.Empty) {
+                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
+            }
+        } catch (Exception ex) {
+            _logger.LogWarning(ex, "Error broadcasting scan failure");
+        }
+    }
+
+    /// <summary>
+    /// Broadcasts a detailed log entry to connected SignalR clients.
+    /// Used to stream real-time console-like output to the browser.
+    /// </summary>
+    private async Task BroadcastLog(IHubContext<freeallycheckerHub, IsrHub> HubContext,
+        DataObjects.ScanRun ScanRun, string Level, string Category, string Message){
+        try {
+            DataObjects.ScanLogEntry logEntry = new DataObjects.ScanLogEntry {
+                ScanRunId = ScanRun.ScanRunId,
+                SiteId = ScanRun.SiteId,
+                Timestamp = DateTime.UtcNow,
+                Level = Level,
+                Category = Category,
+                Message = Message,
+            };
+
+            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
+                TenantId = ScanRun.TenantId,
+                ItemId = ScanRun.ScanRunId,
+                UpdateType = DataObjects.SignalRUpdateType.ScanLog,
+                Message = Message,
+                Object = logEntry,
+            };
+
+            if (ScanRun.TenantId != Guid.Empty) {
+                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
+            }
+        } catch {
+            // Log broadcasting is best-effort.
+        }
+    }
+
+    /// <summary>
+    /// Broadcasts scan progress to connected SignalR clients.
+    /// </summary>
+    private async Task BroadcastProgress(IHubContext<freeallycheckerHub, IsrHub> HubContext,
+        DataObjects.ScanRun ScanRun, string SiteName, int CurrentPage, int TotalPages, string CurrentUrl, string Message,
+        int PagesScanned = 0, int TotalViolations = 0, int CriticalCount = 0, int SeriousCount = 0,
+        int ModerateCount = 0, int MinorCount = 0, DataObjects.PageScanResult? CompletedPageResult = null){
+        try {
+            DataObjects.ScanProgress progress = new DataObjects.ScanProgress {
+                ScanRunId = ScanRun.ScanRunId,
+                SiteId = ScanRun.SiteId,
+                SiteName = SiteName,
+                CurrentPage = CurrentPage,
+                TotalPages = TotalPages,
+                CurrentUrl = CurrentUrl,
+                Message = Message,
+                PagesScanned = PagesScanned,
+                TotalViolations = TotalViolations,
+                CriticalCount = CriticalCount,
+                SeriousCount = SeriousCount,
+                ModerateCount = ModerateCount,
+                MinorCount = MinorCount,
+                CompletedPageResult = CompletedPageResult,
+            };
+
+            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
+                TenantId = ScanRun.TenantId,
+                ItemId = ScanRun.ScanRunId,
+                UpdateType = DataObjects.SignalRUpdateType.ScanProgress,
+                Message = "ScanProgress",
+                Object = progress,
+            };
+
+            if (ScanRun.TenantId != Guid.Empty) {
+                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
+            }
+        } catch (Exception ex) {
+            _logger.LogWarning(ex, "Error broadcasting scan progress");
+        }
+    }
+
+    /// <summary>
+    /// Broadcasts scan started (Queued→Running transition) to connected SignalR clients.
+    /// </summary>
+    private async Task BroadcastStarted(IHubContext<freeallycheckerHub, IsrHub> HubContext,
+        DataObjects.ScanRun ScanRun, string SiteName){
+        try {
+            ScanRun.SiteName = SiteName;
+            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
+                TenantId = ScanRun.TenantId,
+                ItemId = ScanRun.ScanRunId,
+                UpdateType = DataObjects.SignalRUpdateType.ScanStarted,
+                Message = "ScanStarted",
+                Object = ScanRun,
+            };
+
+            if (ScanRun.TenantId != Guid.Empty) {
+                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
+            }
+        } catch (Exception ex) {
+            _logger.LogWarning(ex, "Error broadcasting scan started");
+        }
+    }
+
+    /// <summary>
+    /// "EM EIT" + "https://em.wsu.edu/eit/help-desk" -> "EM EIT / help-desk".
+    /// </summary>
+    private static string BuildDiscoveredSiteName(string parentName, string fullUrl)
+    {
+        try {
+            Uri u = new Uri(fullUrl);
+            string lastSegment = u.AbsolutePath.TrimEnd('/').Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault() ?? u.Host;
+            return string.IsNullOrWhiteSpace(parentName)
+                ? lastSegment
+                : parentName + " / " + lastSegment;
+        } catch {
+            return string.IsNullOrWhiteSpace(parentName) ? "Discovered" : parentName + " / discovered";
+        }
+    }
+
+    /// <summary>
+    /// Combines a site BaseUrl with a discovered path. Discovered paths come from
+    /// <see cref="Uri.AbsolutePath"/> (see ScannerEngine.DiscoverLinks) so anything starting
+    /// with "/" is absolute-from-domain-root and must be combined with the origin only —
+    /// NEVER appended to the parent BaseUrl's path component.
+    /// </summary>
+    private static string CombineUrl(string baseUrl, string path)
+    {
+        if (string.IsNullOrWhiteSpace(baseUrl)) return string.Empty;
+        if (string.IsNullOrWhiteSpace(path)) return baseUrl.TrimEnd('/');
+
+        try {
+            Uri baseUri = new Uri(baseUrl.TrimEnd('/'));
+            string origin = baseUri.GetLeftPart(UriPartial.Authority); // https://em.wsu.edu
+
+            // Already-absolute URL.
+            if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                return path.TrimEnd('/');
+            }
+
+            // Absolute-from-domain-root path — combine with origin only.
+            // Bug fix: previously this would do `baseUrl + path` and produce things like
+            // `https://em.wsu.edu/eit/eit-help-desk/eit/` from parent `/eit/eit-help-desk`
+            // + discovered `/eit/`. The scanner returns AbsolutePath, never relative paths.
+            if (path.StartsWith("/")) {
+                return (origin + path).TrimEnd('/');
+            }
+
+            // Truly relative path (rare for discovered links). Resolve against base.
+            return new Uri(baseUri, path).AbsoluteUri.TrimEnd('/');
+        } catch {
+            return string.Empty;
+        }
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("ScannerBackgroundService started");
@@ -86,6 +278,27 @@ public class ScannerBackgroundService : BackgroundService
         }
 
         _logger.LogInformation("ScannerBackgroundService stopped");
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024.0).ToString("F1") + " KB";
+        return (bytes / (1024.0 * 1024.0)).ToString("F1") + " MB";
+    }
+
+    private static string GetContentType(string filePath)
+    {
+        string ext = Path.GetExtension(filePath).ToLower();
+        return ext switch {
+            ".jpeg" or ".jpg" => "image/jpeg",
+            ".png" => "image/png",
+            ".json" => "application/json",
+            ".html" or ".htm" => "text/html",
+            ".md" => "text/markdown",
+            ".log" or ".txt" => "text/plain",
+            _ => "application/octet-stream",
+        };
     }
 
     /// <summary>
@@ -153,8 +366,7 @@ public class ScannerBackgroundService : BackgroundService
     /// results, and broadcasts SignalR progress.
     /// </summary>
     private async Task RunScan(DataObjects.ScanRun ScanRun, IDataAccess Da, IConfigurationHelper Config,
-        IHubContext<freeallycheckerHub, IsrHub> HubContext, CancellationToken StoppingToken)
-    {
+        IHubContext<freeallycheckerHub, IsrHub> HubContext, CancellationToken StoppingToken){
         Microsoft.Playwright.IBrowser? browser = null;
 
         try {
@@ -601,14 +813,6 @@ public class ScannerBackgroundService : BackgroundService
     }
 
     /// <summary>
-    /// Saves a batch of violations to the database.
-    /// </summary>
-    private async Task SaveViolations(IDataAccess Da, List<DataObjects.A11yViolation> Violations)
-    {
-        await Da.SaveViolations(Violations);
-    }
-
-    /// <summary>
     /// Saves each discovered same-host path as a new top-level <see cref="DataObjects.Site"/>
     /// record with <c>Enabled = false</c>. The user uses bulk-enable tools on the Sites list to
     /// opt in to scanning each newly-found URL. Duplicates (against any existing Site BaseUrl
@@ -685,58 +889,6 @@ public class ScannerBackgroundService : BackgroundService
     }
 
     /// <summary>
-    /// Combines a site BaseUrl with a discovered path. Discovered paths come from
-    /// <see cref="Uri.AbsolutePath"/> (see ScannerEngine.DiscoverLinks) so anything starting
-    /// with "/" is absolute-from-domain-root and must be combined with the origin only —
-    /// NEVER appended to the parent BaseUrl's path component.
-    /// </summary>
-    private static string CombineUrl(string baseUrl, string path)
-    {
-        if (string.IsNullOrWhiteSpace(baseUrl)) return string.Empty;
-        if (string.IsNullOrWhiteSpace(path)) return baseUrl.TrimEnd('/');
-
-        try {
-            Uri baseUri = new Uri(baseUrl.TrimEnd('/'));
-            string origin = baseUri.GetLeftPart(UriPartial.Authority); // https://em.wsu.edu
-
-            // Already-absolute URL.
-            if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-                path.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
-                return path.TrimEnd('/');
-            }
-
-            // Absolute-from-domain-root path — combine with origin only.
-            // Bug fix: previously this would do `baseUrl + path` and produce things like
-            // `https://em.wsu.edu/eit/eit-help-desk/eit/` from parent `/eit/eit-help-desk`
-            // + discovered `/eit/`. The scanner returns AbsolutePath, never relative paths.
-            if (path.StartsWith("/")) {
-                return (origin + path).TrimEnd('/');
-            }
-
-            // Truly relative path (rare for discovered links). Resolve against base.
-            return new Uri(baseUri, path).AbsoluteUri.TrimEnd('/');
-        } catch {
-            return string.Empty;
-        }
-    }
-
-    /// <summary>
-    /// "EM EIT" + "https://em.wsu.edu/eit/help-desk" -> "EM EIT / help-desk".
-    /// </summary>
-    private static string BuildDiscoveredSiteName(string parentName, string fullUrl)
-    {
-        try {
-            Uri u = new Uri(fullUrl);
-            string lastSegment = u.AbsolutePath.TrimEnd('/').Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault() ?? u.Host;
-            return string.IsNullOrWhiteSpace(parentName)
-                ? lastSegment
-                : parentName + " / " + lastSegment;
-        } catch {
-            return string.IsNullOrWhiteSpace(parentName) ? "Discovered" : parentName + " / discovered";
-        }
-    }
-
-    /// <summary>
     /// Saves discovered external links as new Site records with Enabled=false.
     /// These sites are added for awareness but NOT automatically scanned.
     /// Skips URLs that match the current site's own BaseUrl.
@@ -789,177 +941,11 @@ public class ScannerBackgroundService : BackgroundService
     }
 
     /// <summary>
-    /// Broadcasts scan progress to connected SignalR clients.
+    /// Saves a batch of violations to the database.
     /// </summary>
-    private async Task BroadcastProgress(IHubContext<freeallycheckerHub, IsrHub> HubContext,
-        DataObjects.ScanRun ScanRun, string SiteName, int CurrentPage, int TotalPages, string CurrentUrl, string Message,
-        int PagesScanned = 0, int TotalViolations = 0, int CriticalCount = 0, int SeriousCount = 0,
-        int ModerateCount = 0, int MinorCount = 0, DataObjects.PageScanResult? CompletedPageResult = null)
+    private async Task SaveViolations(IDataAccess Da, List<DataObjects.A11yViolation> Violations)
     {
-        try {
-            DataObjects.ScanProgress progress = new DataObjects.ScanProgress {
-                ScanRunId = ScanRun.ScanRunId,
-                SiteId = ScanRun.SiteId,
-                SiteName = SiteName,
-                CurrentPage = CurrentPage,
-                TotalPages = TotalPages,
-                CurrentUrl = CurrentUrl,
-                Message = Message,
-                PagesScanned = PagesScanned,
-                TotalViolations = TotalViolations,
-                CriticalCount = CriticalCount,
-                SeriousCount = SeriousCount,
-                ModerateCount = ModerateCount,
-                MinorCount = MinorCount,
-                CompletedPageResult = CompletedPageResult,
-            };
-
-            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
-                TenantId = ScanRun.TenantId,
-                ItemId = ScanRun.ScanRunId,
-                UpdateType = DataObjects.SignalRUpdateType.ScanProgress,
-                Message = "ScanProgress",
-                Object = progress,
-            };
-
-            if (ScanRun.TenantId != Guid.Empty) {
-                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
-            }
-        } catch (Exception ex) {
-            _logger.LogWarning(ex, "Error broadcasting scan progress");
-        }
-    }
-
-    /// <summary>
-    /// Broadcasts scan started (Queued→Running transition) to connected SignalR clients.
-    /// </summary>
-    private async Task BroadcastStarted(IHubContext<freeallycheckerHub, IsrHub> HubContext,
-        DataObjects.ScanRun ScanRun, string SiteName)
-    {
-        try {
-            ScanRun.SiteName = SiteName;
-            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
-                TenantId = ScanRun.TenantId,
-                ItemId = ScanRun.ScanRunId,
-                UpdateType = DataObjects.SignalRUpdateType.ScanStarted,
-                Message = "ScanStarted",
-                Object = ScanRun,
-            };
-
-            if (ScanRun.TenantId != Guid.Empty) {
-                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
-            }
-        } catch (Exception ex) {
-            _logger.LogWarning(ex, "Error broadcasting scan started");
-        }
-    }
-
-    /// <summary>
-    /// Broadcasts scan completion to connected SignalR clients.
-    /// </summary>
-    private async Task BroadcastComplete(IHubContext<freeallycheckerHub, IsrHub> HubContext,
-        DataObjects.ScanRun ScanRun, string SiteName)
-    {
-        try {
-            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
-                TenantId = ScanRun.TenantId,
-                ItemId = ScanRun.ScanRunId,
-                UpdateType = DataObjects.SignalRUpdateType.ScanComplete,
-                Message = "ScanComplete",
-                Object = ScanRun,
-            };
-
-            if (ScanRun.TenantId != Guid.Empty) {
-                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
-            }
-        } catch (Exception ex) {
-            _logger.LogWarning(ex, "Error broadcasting scan completion");
-        }
-    }
-
-    /// <summary>
-    /// Broadcasts scan failure to connected SignalR clients.
-    /// </summary>
-    private async Task BroadcastFailed(IHubContext<freeallycheckerHub, IsrHub> HubContext,
-        DataObjects.ScanRun ScanRun, string ErrorMessage)
-    {
-        try {
-            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
-                TenantId = ScanRun.TenantId,
-                ItemId = ScanRun.ScanRunId,
-                UpdateType = DataObjects.SignalRUpdateType.ScanFailed,
-                Message = ErrorMessage,
-                Object = ScanRun,
-            };
-
-            if (ScanRun.TenantId != Guid.Empty) {
-                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
-            }
-        } catch (Exception ex) {
-            _logger.LogWarning(ex, "Error broadcasting scan failure");
-        }
-    }
-
-    /// <summary>
-    /// Broadcasts a detailed log entry to connected SignalR clients.
-    /// Used to stream real-time console-like output to the browser.
-    /// </summary>
-    private async Task BroadcastLog(IHubContext<freeallycheckerHub, IsrHub> HubContext,
-        DataObjects.ScanRun ScanRun, string Level, string Category, string Message)
-    {
-        try {
-            DataObjects.ScanLogEntry logEntry = new DataObjects.ScanLogEntry {
-                ScanRunId = ScanRun.ScanRunId,
-                SiteId = ScanRun.SiteId,
-                Timestamp = DateTime.UtcNow,
-                Level = Level,
-                Category = Category,
-                Message = Message,
-            };
-
-            DataObjects.SignalRUpdate update = new DataObjects.SignalRUpdate {
-                TenantId = ScanRun.TenantId,
-                ItemId = ScanRun.ScanRunId,
-                UpdateType = DataObjects.SignalRUpdateType.ScanLog,
-                Message = Message,
-                Object = logEntry,
-            };
-
-            if (ScanRun.TenantId != Guid.Empty) {
-                await HubContext.Clients.Group(ScanRun.TenantId.ToString()).SignalRUpdate(update);
-            }
-        } catch {
-            // Log broadcasting is best-effort.
-        }
-    }
-
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1024 * 1024) return (bytes / 1024.0).ToString("F1") + " KB";
-        return (bytes / (1024.0 * 1024.0)).ToString("F1") + " MB";
-    }
-
-    private static string TruncateMessage(string message, int maxLength)
-    {
-        if (String.IsNullOrWhiteSpace(message)) return "";
-        message = message.Replace("\n", " ").Replace("\r", "").Trim();
-        if (message.Length <= maxLength) return message;
-        return message[..maxLength] + "...";
-    }
-
-    private static string GetContentType(string filePath)
-    {
-        string ext = Path.GetExtension(filePath).ToLower();
-        return ext switch {
-            ".jpeg" or ".jpg" => "image/jpeg",
-            ".png" => "image/png",
-            ".json" => "application/json",
-            ".html" or ".htm" => "text/html",
-            ".md" => "text/markdown",
-            ".log" or ".txt" => "text/plain",
-            _ => "application/octet-stream",
-        };
+        await Da.SaveViolations(Violations);
     }
 
     private static string SlugifyPath(string path)
@@ -970,5 +956,13 @@ public class ScannerBackgroundService : BackgroundService
             slug = slug.Replace(c, '_');
         }
         return string.IsNullOrEmpty(slug) ? "_root" : slug;
+    }
+
+    private static string TruncateMessage(string message, int maxLength)
+    {
+        if (String.IsNullOrWhiteSpace(message)) return "";
+        message = message.Replace("\n", " ").Replace("\r", "").Trim();
+        if (message.Length <= maxLength) return message;
+        return message[..maxLength] + "...";
     }
 }

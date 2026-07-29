@@ -23,15 +23,23 @@ public class EFUserPreferencesStore : IUserPreferencesStore
         _serviceProvider = serviceProvider;
     }
 
-    private IDataAccess? GetDataAccess()
+    public async Task DeleteAsync(Guid TenantId, Guid UserId)
     {
+        var da = GetDataAccess();
+        if (da == null || !da.DatabaseOpen) {
+            await _fallback.DeleteAsync(TenantId, UserId);
+            return;
+        }
+
         try {
-            // IDataAccess is registered as Transient — resolve a fresh instance
-            // per call so we get a fresh DbContext (DataAccess owns its own
-            // EFDataModel internally and is IDisposable).
-            return _serviceProvider.GetService(typeof(IDataAccess)) as IDataAccess;
+            using (da as IDisposable) {
+                if (da is DataAccess concrete) {
+                    await concrete.DeleteUserPreferencesRow(TenantId, UserId);
+                    return;
+                }
+            }
         } catch {
-            return null;
+            await _fallback.DeleteAsync(TenantId, UserId);
         }
     }
 
@@ -55,6 +63,18 @@ public class EFUserPreferencesStore : IUserPreferencesStore
         return null;
     }
 
+    private IDataAccess? GetDataAccess()
+    {
+        try {
+            // IDataAccess is registered as Transient — resolve a fresh instance
+            // per call so we get a fresh DbContext (DataAccess owns its own
+            // EFDataModel internally and is IDisposable).
+            return _serviceProvider.GetService(typeof(IDataAccess)) as IDataAccess;
+        } catch {
+            return null;
+        }
+    }
+
     public async Task SaveAsync(UserPreferences prefs)
     {
         var da = GetDataAccess();
@@ -72,26 +92,6 @@ public class EFUserPreferencesStore : IUserPreferencesStore
             }
         } catch {
             await _fallback.SaveAsync(prefs);
-        }
-    }
-
-    public async Task DeleteAsync(Guid TenantId, Guid UserId)
-    {
-        var da = GetDataAccess();
-        if (da == null || !da.DatabaseOpen) {
-            await _fallback.DeleteAsync(TenantId, UserId);
-            return;
-        }
-
-        try {
-            using (da as IDisposable) {
-                if (da is DataAccess concrete) {
-                    await concrete.DeleteUserPreferencesRow(TenantId, UserId);
-                    return;
-                }
-            }
-        } catch {
-            await _fallback.DeleteAsync(TenantId, UserId);
         }
     }
 }

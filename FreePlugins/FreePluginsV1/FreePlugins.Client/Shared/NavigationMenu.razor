@@ -15,7 +15,7 @@
                 }
             </a>
             <button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navbarSupportedContent"
-            aria-expanded="false" aria-label="Toggle navigation">
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse" id="navBarToggler">
@@ -207,28 +207,10 @@
 </header>
 
 @code {
-    public void Dispose() { }
-
-    protected override void OnInitialized()
-    {
-        Model.OnChange += StateHasChanged;
-    }
-
     protected bool AdminView {
         get {
             var adminMenuItems = MenuItemsAdmin.Select(x => x.PageNames).SelectMany(x => x).ToList();
             if (adminMenuItems.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)) {
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    protected bool PluginsView {
-        get {
-            var pluginMenuItems = MenuItemsPlugins.Select(x => x.PageNames).SelectMany(x => x).ToList();
-            if (pluginMenuItems.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)) {
                 return true;
             }
 
@@ -461,6 +443,17 @@
         }
     }
 
+    protected bool PluginsView {
+        get {
+            var pluginMenuItems = MenuItemsPlugins.Select(x => x.PageNames).SelectMany(x => x).ToList();
+            if (pluginMenuItems.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     protected string UserAvatarUrl {
         get {
             string output = "";
@@ -471,5 +464,11 @@
 
             return output;
         }
+    }
+    public void Dispose() { }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += StateHasChanged;
     }
 }

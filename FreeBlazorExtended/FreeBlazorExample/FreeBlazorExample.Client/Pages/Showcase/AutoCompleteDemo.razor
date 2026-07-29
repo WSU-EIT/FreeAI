@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A text input bound to a string list that opens a filtered dropdown of matching suggestions as the user types, supporting minimum-character thresholds, max-results caps, case sensitivity, and a custom-entry allow/deny flag."
-        WhatEli5="A text box that suggests matching options as you type — like a search bar that shows guesses before you finish typing."
-        Who=@(new[]{ "Developers adding search-as-you-type UX to any text field", "Form builders where the valid values are too long for a <select> but should still guide the user", "Any UI where free text is allowed but known values are preferred" })
-        WhenUse=@(new[]{ "Fields with a large option list where typing to filter is faster than scrolling a dropdown", "Search boxes where partial matches are expected", "Tags or label entry where both free text and suggestions are valid" })
-        WhenNot=@(new[]{ "Small fixed option lists (≤10 items) — a plain <select> is less surprising", "Fields that must be restricted to the list — use MultiSelect with AllowCustom=false and a validation rule instead" })
-        Why="Standard <datalist> is inconsistent across browsers and can't be styled. This provides a predictable, accessible, styleable alternative with full Blazor data binding."
-        TechNotes=@(new[]{ "Filters the Options list client-side on each keystroke; no server round-trip unless the caller provides a dynamic options source via a callback", "MinChars prevents the dropdown opening until the user has typed enough to produce useful results", "AllowCustom=false: OnSelected fires only when the user picks a suggestion; the input reverts if they blur without selecting", "Keyboard navigation: ArrowDown/Up move through suggestions; Enter selects; Escape closes" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A text input bound to a string list that opens a filtered dropdown of matching suggestions as the user types, supporting minimum-character thresholds, max-results caps, case sensitivity, and a custom-entry allow/deny flag."
+            WhatEli5="A text box that suggests matching options as you type — like a search bar that shows guesses before you finish typing."
+            Who=@(new[]{ "Developers adding search-as-you-type UX to any text field", "Form builders where the valid values are too long for a <select> but should still guide the user", "Any UI where free text is allowed but known values are preferred" })
+            WhenUse=@(new[]{ "Fields with a large option list where typing to filter is faster than scrolling a dropdown", "Search boxes where partial matches are expected", "Tags or label entry where both free text and suggestions are valid" })
+            WhenNot=@(new[]{ "Small fixed option lists (≤10 items) — a plain <select> is less surprising", "Fields that must be restricted to the list — use MultiSelect with AllowCustom=false and a validation rule instead" })
+            Why="Standard <datalist> is inconsistent across browsers and can't be styled. This provides a predictable, accessible, styleable alternative with full Blazor data binding."
+            TechNotes=@(new[]{ "Filters the Options list client-side on each keystroke; no server round-trip unless the caller provides a dynamic options source via a callback", "MinChars prevents the dropdown opening until the user has typed enough to produce useful results", "AllowCustom=false: OnSelected fires only when the user picks a suggestion; the input reverts if they blur without selecting", "Keyboard navigation: ArrowDown/Up move through suggestions; Enter selects; Escape closes" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -28,8 +28,8 @@
                     <p class="text-muted small mb-3">Standard autocomplete with filtering suggestions.</p>
                     <label class="form-label">Select a country:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchCountries"
-                        OnSelected="@(item => _selectedCountry = item.label)"
-                        PlaceholderText="Start typing..." />
+                            OnSelected="@(item => _selectedCountry = item.label)"
+                            PlaceholderText="Start typing..." />
                     @if (!string.IsNullOrEmpty(_selectedCountry)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_selectedCountry
@@ -48,9 +48,9 @@
                     <p class="text-muted small mb-3">Suggestions only appear after typing 3 characters.</p>
                     <label class="form-label">Select a city:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchCities"
-                        OnSelected="@(item => _selectedCity = item.label)"
-                        PlaceholderText="Search cities (3+ chars)..."
-                        MinimumCharacters="3" />
+                            OnSelected="@(item => _selectedCity = item.label)"
+                            PlaceholderText="Search cities (3+ chars)..."
+                            MinimumCharacters="3" />
                     @if (!string.IsNullOrEmpty(_selectedCity)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_selectedCity
@@ -71,9 +71,9 @@
                     <p class="text-muted small mb-3">Auto-highlights the first result so Enter immediately selects it.</p>
                     <label class="form-label">Select a programming language:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchLanguages"
-                        OnSelected="@(item => _selectedLanguage = item.label)"
-                        PlaceholderText="Choose language..."
-                        HighlightFirstMatch="true" />
+                            OnSelected="@(item => _selectedLanguage = item.label)"
+                            PlaceholderText="Choose language..."
+                            HighlightFirstMatch="true" />
                     @if (!string.IsNullOrEmpty(_selectedLanguage)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_selectedLanguage
@@ -92,9 +92,9 @@
                     <p class="text-muted small mb-3">1 second debounce before the lookup fires — useful for async data sources.</p>
                     <label class="form-label">Select a framework:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchFrameworks"
-                        OnSelected="@(item => _selectedFramework = item.label)"
-                        PlaceholderText="Search frameworks..."
-                        LookupDelay="1000" />
+                            OnSelected="@(item => _selectedFramework = item.label)"
+                            PlaceholderText="Search frameworks..."
+                            LookupDelay="1000" />
                     @if (!string.IsNullOrEmpty(_selectedFramework)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected:</strong> @_selectedFramework
@@ -115,8 +115,8 @@
                     <p class="text-muted small mb-3">Autocomplete in a disabled state.</p>
                     <label class="form-label">Disabled autocomplete:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchCountries"
-                        PlaceholderText="Cannot interact..."
-                        Disabled="true" />
+                            PlaceholderText="Cannot interact..."
+                            Disabled="true" />
                 </div>
             </div>
         </div>
@@ -130,8 +130,8 @@
                     <p class="text-muted small mb-3">Results return a key (id) and a label — OnSelected receives both.</p>
                     <label class="form-label">Select a color:</label>
                     <AutoComplete GetAutoCompleteItems="@SearchColors"
-                        OnSelected="@OnColorSelected"
-                        PlaceholderText="Choose color..." />
+                            OnSelected="@OnColorSelected"
+                            PlaceholderText="Choose color..." />
                     @if (!string.IsNullOrEmpty(_selectedColor)) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Key:</strong> @_selectedColorKey &nbsp; <strong>Label:</strong> @_selectedColor
@@ -240,15 +240,15 @@
 
 @@code {{
     private string _selected = "";
-
-    private Task&lt;List&lt;(string key, string label)&gt;?&gt; SearchCountries(string text) =>
-        Task.FromResult&lt;List&lt;(string key, string label)&gt;?&gt;(
-            _countryList
-                .Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
-                .Select(c => (c, c))
+SearchCountries(string text) =>
+        Task.FromResult&lt;Select(c => (c, c))
                 .ToList()
         );
 
+    private Task&lt;List&lt;(string key, string label)&gt;?&gt; List&lt;(string key, string label)&gt;?&gt;(
+            _countryList
+                .Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
+                .
     private List&lt;string&gt; _countryList = new() {{
         "United States", "United Kingdom", "Canada", "Australia"
     }};
@@ -315,33 +315,33 @@
         ("pink", "Pink"), ("brown", "Brown"), ("gray", "Gray"), ("black", "Black")
     };
 
-    private Task<List<(string key, string label)>?> SearchCountries(string text) =>
-        Task.FromResult<List<(string key, string label)>?>(
-            _countries.Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
-                      .Select(c => (c, c)).ToList());
+    private void OnColorSelected((string key, string label) item) {
+        _selectedColorKey = item.key;
+        _selectedColor = item.label;
+    }
 
     private Task<List<(string key, string label)>?> SearchCities(string text) =>
         Task.FromResult<List<(string key, string label)>?>(
             _cities.Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
                    .Select(c => (c, c)).ToList());
 
-    private Task<List<(string key, string label)>?> SearchLanguages(string text) =>
+    private Task<List<(string key, string label)>?> SearchColors(string text) =>
         Task.FromResult<List<(string key, string label)>?>(
-            _languages.Where(l => l.Contains(text, StringComparison.OrdinalIgnoreCase))
-                      .Select(l => (l, l)).ToList());
+            _colors.Where(c => c.label.Contains(text, StringComparison.OrdinalIgnoreCase))
+                   .ToList());
+
+    private Task<List<(string key, string label)>?> SearchCountries(string text) =>
+        Task.FromResult<List<(string key, string label)>?>(
+            _countries.Where(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))
+                      .Select(c => (c, c)).ToList());
 
     private Task<List<(string key, string label)>?> SearchFrameworks(string text) =>
         Task.FromResult<List<(string key, string label)>?>(
             _frameworks.Where(f => f.Contains(text, StringComparison.OrdinalIgnoreCase))
                        .Select(f => (f, f)).ToList());
 
-    private Task<List<(string key, string label)>?> SearchColors(string text) =>
+    private Task<List<(string key, string label)>?> SearchLanguages(string text) =>
         Task.FromResult<List<(string key, string label)>?>(
-            _colors.Where(c => c.label.Contains(text, StringComparison.OrdinalIgnoreCase))
-                   .ToList());
-
-    private void OnColorSelected((string key, string label) item) {
-        _selectedColorKey = item.key;
-        _selectedColor = item.label;
-    }
+            _languages.Where(l => l.Contains(text, StringComparison.OrdinalIgnoreCase))
+                      .Select(l => (l, l)).ToList());
 }

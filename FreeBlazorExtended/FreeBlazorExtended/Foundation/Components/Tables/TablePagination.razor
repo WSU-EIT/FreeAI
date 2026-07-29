@@ -20,10 +20,10 @@
 
     Example:
         <TablePagination TotalItems="@_totalCount"
-                         CurrentPage="@_page"
-                         PageSize="@_pageSize"
-                         OnPageChanged="LoadPageAsync"
-                         OnPageSizeChanged="ChangePageSizeAsync" />
+                CurrentPage="@_page"
+                PageSize="@_pageSize"
+                OnPageChanged="LoadPageAsync"
+                OnPageSizeChanged="ChangePageSizeAsync" />
 *@
 @namespace FreeBlazorExtended.Components
 
@@ -36,8 +36,8 @@
                     <span class="ms-3">
                         <label for="pageSizeSelect" class="me-2">@PageSizeLabel:</label>
                         <select id="pageSizeSelect" class="form-select form-select-sm d-inline-block" style="width: auto;"
-                            @onchange="PageSizeChanged"
-                            aria-label="Items per page">
+                                @onchange="PageSizeChanged"
+                                aria-label="Items per page">
                             @foreach (int size in _pageSizeOptions) {
                                 <option value="@size" selected="@(PageSize == size)">@size</option>
                             }

@@ -21,8 +21,7 @@ public static partial class PagePatterns
     /// </summary>
     public static List<(string FileName, string FileType, string Content)> GetApiDocumentationFiles(
         string projectName,
-        DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.EntityDefinition? entity = null){
         List<(string, string, string)> files = new();
 
         files.Add(($"{projectName}.App.ApiExplorer.razor", "RazorComponent", GetApiDocumentation_ApiExplorer(projectName, entity)));
@@ -249,122 +248,6 @@ public static partial class PagePatterns
         public bool Required {{ get; set; }} = false;
         public string? Description {{ get; set; }}
     }}
-}}
-";
-
-    // ============================================================
-    // ENDPOINT TREE - Left Navigation Panel
-    // ============================================================
-
-    private static string GetApiDocumentation_EndpointTree(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - EndpointTree.razor *@
-@* API Endpoint Tree - Grouped navigation by controller *@
-
-@typeparam TEndpoint
-
-<div class=""endpoint-tree"">
-    @foreach (var group in GroupedEndpoints)
-    {{
-        <div class=""controller-group"">
-            <div class=""controller-header px-3 py-2 bg-light border-bottom d-flex align-items-center cursor-pointer""
-                 @onclick=""@(() => ToggleController(group.Key))"">
-                <i class=""fa-solid @(IsExpanded(group.Key) ? ""fa-chevron-down"" : ""fa-chevron-right"") me-2 small""></i>
-                <strong>@group.Key</strong>
-                <span class=""badge bg-secondary ms-auto"">@group.Count()</span>
-            </div>
-
-            @if (IsExpanded(group.Key))
-            {{
-                <div class=""endpoint-list"">
-                    @foreach (var endpoint in group)
-                    {{
-                        <div class=""endpoint-item px-3 py-2 border-bottom d-flex align-items-center @(IsSelected(endpoint) ? ""bg-primary-subtle"" : """")""
-                             style=""cursor: pointer;""
-                             @onclick=""@(() => SelectEndpoint(endpoint))"">
-                            <span class=""badge @GetMethodBadgeClass(GetMethod(endpoint)) me-2"" style=""width: 60px;"">
-                                @GetMethod(endpoint)
-                            </span>
-                            <span class=""text-truncate small"" title=""@GetPath(endpoint)"">@GetPath(endpoint)</span>
-                            @if (GetRequiresAuth(endpoint))
-                            {{
-                                <i class=""fa-solid fa-lock ms-auto text-muted small"" title=""Requires authentication""></i>
-                            }}
-                        </div>
-                    }}
-                </div>
-            }}
-        </div>
-    }}
-
-    @if (!GroupedEndpoints.Any())
-    {{
-        <div class=""text-center text-muted py-4"">
-            <i class=""fa-solid fa-search fa-2x mb-2 opacity-50""></i>
-            <p class=""mb-0"">No endpoints found</p>
-        </div>
-    }}
-</div>
-
-<style>
-    .endpoint-tree .controller-header:hover {{
-        background-color: #e9ecef !important;
-    }}
-    .endpoint-tree .endpoint-item:hover {{
-        background-color: #f8f9fa;
-    }}
-    .cursor-pointer {{
-        cursor: pointer;
-    }}
-</style>
-
-@code {{
-    [Parameter] public List<TEndpoint> Endpoints {{ get; set; }} = new();
-    [Parameter] public TEndpoint? SelectedEndpoint {{ get; set; }}
-    [Parameter] public EventCallback<TEndpoint> OnSelect {{ get; set; }}
-    [Parameter] public HashSet<string> ExpandedControllers {{ get; set; }} = new();
-
-    private IEnumerable<IGrouping<string, TEndpoint>> GroupedEndpoints =>
-        Endpoints.GroupBy(e => GetController(e)).OrderBy(g => g.Key);
-
-    private bool IsExpanded(string controller) => ExpandedControllers.Contains(controller);
-
-    private bool IsSelected(TEndpoint endpoint) =>
-        SelectedEndpoint != null && GetPath(SelectedEndpoint).Equals(GetPath(endpoint));
-
-    private void ToggleController(string controller)
-    {{
-        if (ExpandedControllers.Contains(controller))
-            ExpandedControllers.Remove(controller);
-        else
-            ExpandedControllers.Add(controller);
-    }}
-
-    private async Task SelectEndpoint(TEndpoint endpoint)
-    {{
-        await OnSelect.InvokeAsync(endpoint);
-    }}
-
-    // Reflection helpers to access endpoint properties
-    private string GetController(TEndpoint endpoint) =>
-        endpoint?.GetType().GetProperty(""Controller"")?.GetValue(endpoint)?.ToString() ?? ""Unknown"";
-
-    private string GetMethod(TEndpoint endpoint) =>
-        endpoint?.GetType().GetProperty(""Method"")?.GetValue(endpoint)?.ToString() ?? ""GET"";
-
-    private string GetPath(TEndpoint endpoint) =>
-        endpoint?.GetType().GetProperty(""Path"")?.GetValue(endpoint)?.ToString() ?? """";
-
-    private bool GetRequiresAuth(TEndpoint endpoint) =>
-        (bool)(endpoint?.GetType().GetProperty(""RequiresAuth"")?.GetValue(endpoint) ?? true);
-
-    private string GetMethodBadgeClass(string method) => method.ToUpper() switch
-    {{
-        ""GET"" => ""bg-success"",
-        ""POST"" => ""bg-primary"",
-        ""PUT"" => ""bg-warning text-dark"",
-        ""PATCH"" => ""bg-info"",
-        ""DELETE"" => ""bg-danger"",
-        _ => ""bg-secondary""
-    }};
 }}
 ";
 
@@ -643,6 +526,311 @@ var content = await response.Content.ReadAsStringAsync();"";
 ";
 
     // ============================================================
+    // ENDPOINT TREE - Left Navigation Panel
+    // ============================================================
+
+    private static string GetApiDocumentation_EndpointTree(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - EndpointTree.razor *@
+@* API Endpoint Tree - Grouped navigation by controller *@
+
+@typeparam TEndpoint
+
+<div class=""endpoint-tree"">
+    @foreach (var group in GroupedEndpoints)
+    {{
+        <div class=""controller-group"">
+            <div class=""controller-header px-3 py-2 bg-light border-bottom d-flex align-items-center cursor-pointer""
+                 @onclick=""@(() => ToggleController(group.Key))"">
+                <i class=""fa-solid @(IsExpanded(group.Key) ? ""fa-chevron-down"" : ""fa-chevron-right"") me-2 small""></i>
+                <strong>@group.Key</strong>
+                <span class=""badge bg-secondary ms-auto"">@group.Count()</span>
+            </div>
+
+            @if (IsExpanded(group.Key))
+            {{
+                <div class=""endpoint-list"">
+                    @foreach (var endpoint in group)
+                    {{
+                        <div class=""endpoint-item px-3 py-2 border-bottom d-flex align-items-center @(IsSelected(endpoint) ? ""bg-primary-subtle"" : """")""
+                             style=""cursor: pointer;""
+                             @onclick=""@(() => SelectEndpoint(endpoint))"">
+                            <span class=""badge @GetMethodBadgeClass(GetMethod(endpoint)) me-2"" style=""width: 60px;"">
+                                @GetMethod(endpoint)
+                            </span>
+                            <span class=""text-truncate small"" title=""@GetPath(endpoint)"">@GetPath(endpoint)</span>
+                            @if (GetRequiresAuth(endpoint))
+                            {{
+                                <i class=""fa-solid fa-lock ms-auto text-muted small"" title=""Requires authentication""></i>
+                            }}
+                        </div>
+                    }}
+                </div>
+            }}
+        </div>
+    }}
+
+    @if (!GroupedEndpoints.Any())
+    {{
+        <div class=""text-center text-muted py-4"">
+            <i class=""fa-solid fa-search fa-2x mb-2 opacity-50""></i>
+            <p class=""mb-0"">No endpoints found</p>
+        </div>
+    }}
+</div>
+
+<style>
+    .endpoint-tree .controller-header:hover {{
+        background-color: #e9ecef !important;
+    }}
+    .endpoint-tree .endpoint-item:hover {{
+        background-color: #f8f9fa;
+    }}
+    .cursor-pointer {{
+        cursor: pointer;
+    }}
+</style>
+
+@code {{
+    [Parameter] public List<TEndpoint> Endpoints {{ get; set; }} = new();
+    [Parameter] public TEndpoint? SelectedEndpoint {{ get; set; }}
+    [Parameter] public EventCallback<TEndpoint> OnSelect {{ get; set; }}
+    [Parameter] public HashSet<string> ExpandedControllers {{ get; set; }} = new();
+
+    private IEnumerable<IGrouping<string, TEndpoint>> GroupedEndpoints =>
+        Endpoints.GroupBy(e => GetController(e)).OrderBy(g => g.Key);
+
+    private bool IsExpanded(string controller) => ExpandedControllers.Contains(controller);
+
+    private bool IsSelected(TEndpoint endpoint) =>
+        SelectedEndpoint != null && GetPath(SelectedEndpoint).Equals(GetPath(endpoint));
+
+    private void ToggleController(string controller)
+    {{
+        if (ExpandedControllers.Contains(controller))
+            ExpandedControllers.Remove(controller);
+        else
+            ExpandedControllers.Add(controller);
+    }}
+
+    private async Task SelectEndpoint(TEndpoint endpoint)
+    {{
+        await OnSelect.InvokeAsync(endpoint);
+    }}
+
+    // Reflection helpers to access endpoint properties
+    private string GetController(TEndpoint endpoint) =>
+        endpoint?.GetType().GetProperty(""Controller"")?.GetValue(endpoint)?.ToString() ?? ""Unknown"";
+
+    private string GetMethod(TEndpoint endpoint) =>
+        endpoint?.GetType().GetProperty(""Method"")?.GetValue(endpoint)?.ToString() ?? ""GET"";
+
+    private string GetPath(TEndpoint endpoint) =>
+        endpoint?.GetType().GetProperty(""Path"")?.GetValue(endpoint)?.ToString() ?? """";
+
+    private bool GetRequiresAuth(TEndpoint endpoint) =>
+        (bool)(endpoint?.GetType().GetProperty(""RequiresAuth"")?.GetValue(endpoint) ?? true);
+
+    private string GetMethodBadgeClass(string method) => method.ToUpper() switch
+    {{
+        ""GET"" => ""bg-success"",
+        ""POST"" => ""bg-primary"",
+        ""PUT"" => ""bg-warning text-dark"",
+        ""PATCH"" => ""bg-info"",
+        ""DELETE"" => ""bg-danger"",
+        _ => ""bg-secondary""
+    }};
+}}
+";
+
+    // ============================================================
+    // RESPONSE VIEWER - JSON Response Display
+    // ============================================================
+
+    private static string GetApiDocumentation_ResponseViewer(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - ResponseViewer.razor *@
+@* API Response Viewer - Displays formatted JSON response *@
+
+<div class=""modal fade show d-block"" tabindex=""-1"" style=""background: rgba(0,0,0,0.5);"">
+    <div class=""modal-dialog modal-xl"">
+        <div class=""modal-content"">
+            <div class=""modal-header @GetStatusHeaderClass()"">
+                <h5 class=""modal-title"">
+                    <i class=""fa-solid @GetStatusIcon() me-2""></i>
+                    Response: <span class=""fw-bold"">@StatusCode</span>
+                    <span class=""ms-3 small"">@ResponseTime ms</span>
+                </h5>
+                <button type=""button"" class=""btn-close"" @onclick=""Close""></button>
+            </div>
+            <div class=""modal-body p-0"">
+                @* Status Summary *@
+                <div class=""p-3 border-bottom bg-light"">
+                    <div class=""row text-center"">
+                        <div class=""col"">
+                            <div class=""small text-muted"">Status</div>
+                            <div class=""fw-bold @GetStatusTextClass()"">@GetStatusText()</div>
+                        </div>
+                        <div class=""col"">
+                            <div class=""small text-muted"">Time</div>
+                            <div class=""fw-bold"">@ResponseTime ms</div>
+                        </div>
+                        <div class=""col"">
+                            <div class=""small text-muted"">Size</div>
+                            <div class=""fw-bold"">@GetResponseSize()</div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Response Tabs *@
+                <ul class=""nav nav-tabs px-3 pt-2"" role=""tablist"">
+                    <li class=""nav-item"">
+                        <button class=""nav-link @(_activeTab == ""pretty"" ? ""active"" : """")""
+                                @onclick=""@(() => _activeTab = ""pretty"")"">
+                            <i class=""fa-solid fa-code me-1""></i>Pretty
+                        </button>
+                    </li>
+                    <li class=""nav-item"">
+                        <button class=""nav-link @(_activeTab == ""raw"" ? ""active"" : """")""
+                                @onclick=""@(() => _activeTab = ""raw"")"">
+                            <i class=""fa-solid fa-file-lines me-1""></i>Raw
+                        </button>
+                    </li>
+                    <li class=""nav-item"">
+                        <button class=""nav-link @(_activeTab == ""headers"" ? ""active"" : """")""
+                                @onclick=""@(() => _activeTab = ""headers"")"">
+                            <i class=""fa-solid fa-list me-1""></i>Headers
+                        </button>
+                    </li>
+                </ul>
+
+                @* Tab Content *@
+                <div class=""p-3"" style=""max-height: 60vh; overflow-y: auto;"">
+                    @if (_activeTab == ""pretty"")
+                    {{
+                        <div class=""bg-dark text-light p-3 rounded position-relative"">
+                            <button class=""btn btn-sm btn-outline-light position-absolute""
+                                    style=""top: 8px; right: 8px;"" @onclick=""CopyResponse"">
+                                <i class=""fa-solid fa-copy""></i>
+                            </button>
+                            <pre class=""mb-0"" style=""white-space: pre-wrap; word-break: break-word;""><code>@FormatJson()</code></pre>
+                        </div>
+                    }}
+                    else if (_activeTab == ""raw"")
+                    {{
+                        <div class=""bg-light p-3 rounded border"">
+                            <pre class=""mb-0"" style=""white-space: pre-wrap; word-break: break-word;"">@Response</pre>
+                        </div>
+                    }}
+                    else if (_activeTab == ""headers"")
+                    {{
+                        <table class=""table table-sm"">
+                            <thead class=""table-light"">
+                                <tr>
+                                    <th>Header</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Content-Type</code></td>
+                                    <td>application/json</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Content-Length</code></td>
+                                    <td>@Response.Length</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }}
+                </div>
+            </div>
+            <div class=""modal-footer"">
+                <button type=""button"" class=""btn btn-outline-secondary"" @onclick=""CopyResponse"">
+                    <i class=""fa-solid fa-copy me-2""></i>Copy Response
+                </button>
+                <button type=""button"" class=""btn btn-primary"" @onclick=""Close"">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {{
+    [Parameter] public string Response {{ get; set; }} = string.Empty;
+    [Parameter] public int StatusCode {{ get; set; }}
+    [Parameter] public long ResponseTime {{ get; set; }}
+    [Parameter] public EventCallback OnClose {{ get; set; }}
+
+    private string _activeTab = ""pretty"";
+
+    private async Task Close() => await OnClose.InvokeAsync();
+
+    private async Task CopyResponse()
+    {{
+        // Copy to clipboard functionality would go here
+        await Task.CompletedTask;
+    }}
+
+    private string FormatJson()
+    {{
+        try
+        {{
+            var obj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(Response);
+            return System.Text.Json.JsonSerializer.Serialize(obj, new System.Text.Json.JsonSerializerOptions
+            {{
+                WriteIndented = true
+            }});
+        }}
+        catch
+        {{
+            return Response;
+        }}
+    }}
+
+    private string GetResponseSize()
+    {{
+        var bytes = System.Text.Encoding.UTF8.GetByteCount(Response);
+        if (bytes < 1024) return $""{{bytes}} B"";
+        if (bytes < 1024 * 1024) return $""{{bytes / 1024.0:F1}} KB"";
+        return $""{{bytes / (1024.0 * 1024.0):F1}} MB"";
+    }}
+
+    private string GetStatusText() => StatusCode switch
+    {{
+        200 => ""OK"",
+        201 => ""Created"",
+        204 => ""No Content"",
+        400 => ""Bad Request"",
+        401 => ""Unauthorized"",
+        403 => ""Forbidden"",
+        404 => ""Not Found"",
+        500 => ""Internal Server Error"",
+        _ => $""HTTP {{StatusCode}}""
+    }};
+
+    private string GetStatusHeaderClass() => StatusCode switch
+    {{
+        >= 200 and < 300 => ""bg-success text-white"",
+        >= 400 and < 500 => ""bg-warning"",
+        >= 500 => ""bg-danger text-white"",
+        _ => """"
+    }};
+
+    private string GetStatusTextClass() => StatusCode switch
+    {{
+        >= 200 and < 300 => ""text-success"",
+        >= 400 and < 500 => ""text-warning"",
+        >= 500 => ""text-danger"",
+        _ => """"
+    }};
+
+    private string GetStatusIcon() => StatusCode switch
+    {{
+        >= 200 and < 300 => ""fa-check-circle"",
+        >= 400 and < 500 => ""fa-exclamation-triangle"",
+        >= 500 => ""fa-times-circle"",
+        _ => ""fa-question-circle""
+    }};
+}}
+";
+
+    // ============================================================
     // TRY IT PANEL - Interactive Request Testing
     // ============================================================
 
@@ -901,195 +1089,6 @@ var content = await response.Content.ReadAsStringAsync();"";
         public string Key {{ get; set; }} = string.Empty;
         public string Value {{ get; set; }} = string.Empty;
     }}
-}}
-";
-
-    // ============================================================
-    // RESPONSE VIEWER - JSON Response Display
-    // ============================================================
-
-    private static string GetApiDocumentation_ResponseViewer(string name, DataObjects.EntityDefinition? entity) => $@"@* {name} - ResponseViewer.razor *@
-@* API Response Viewer - Displays formatted JSON response *@
-
-<div class=""modal fade show d-block"" tabindex=""-1"" style=""background: rgba(0,0,0,0.5);"">
-    <div class=""modal-dialog modal-xl"">
-        <div class=""modal-content"">
-            <div class=""modal-header @GetStatusHeaderClass()"">
-                <h5 class=""modal-title"">
-                    <i class=""fa-solid @GetStatusIcon() me-2""></i>
-                    Response: <span class=""fw-bold"">@StatusCode</span>
-                    <span class=""ms-3 small"">@ResponseTime ms</span>
-                </h5>
-                <button type=""button"" class=""btn-close"" @onclick=""Close""></button>
-            </div>
-            <div class=""modal-body p-0"">
-                @* Status Summary *@
-                <div class=""p-3 border-bottom bg-light"">
-                    <div class=""row text-center"">
-                        <div class=""col"">
-                            <div class=""small text-muted"">Status</div>
-                            <div class=""fw-bold @GetStatusTextClass()"">@GetStatusText()</div>
-                        </div>
-                        <div class=""col"">
-                            <div class=""small text-muted"">Time</div>
-                            <div class=""fw-bold"">@ResponseTime ms</div>
-                        </div>
-                        <div class=""col"">
-                            <div class=""small text-muted"">Size</div>
-                            <div class=""fw-bold"">@GetResponseSize()</div>
-                        </div>
-                    </div>
-                </div>
-
-                @* Response Tabs *@
-                <ul class=""nav nav-tabs px-3 pt-2"" role=""tablist"">
-                    <li class=""nav-item"">
-                        <button class=""nav-link @(_activeTab == ""pretty"" ? ""active"" : """")""
-                                @onclick=""@(() => _activeTab = ""pretty"")"">
-                            <i class=""fa-solid fa-code me-1""></i>Pretty
-                        </button>
-                    </li>
-                    <li class=""nav-item"">
-                        <button class=""nav-link @(_activeTab == ""raw"" ? ""active"" : """")""
-                                @onclick=""@(() => _activeTab = ""raw"")"">
-                            <i class=""fa-solid fa-file-lines me-1""></i>Raw
-                        </button>
-                    </li>
-                    <li class=""nav-item"">
-                        <button class=""nav-link @(_activeTab == ""headers"" ? ""active"" : """")""
-                                @onclick=""@(() => _activeTab = ""headers"")"">
-                            <i class=""fa-solid fa-list me-1""></i>Headers
-                        </button>
-                    </li>
-                </ul>
-
-                @* Tab Content *@
-                <div class=""p-3"" style=""max-height: 60vh; overflow-y: auto;"">
-                    @if (_activeTab == ""pretty"")
-                    {{
-                        <div class=""bg-dark text-light p-3 rounded position-relative"">
-                            <button class=""btn btn-sm btn-outline-light position-absolute""
-                                    style=""top: 8px; right: 8px;"" @onclick=""CopyResponse"">
-                                <i class=""fa-solid fa-copy""></i>
-                            </button>
-                            <pre class=""mb-0"" style=""white-space: pre-wrap; word-break: break-word;""><code>@FormatJson()</code></pre>
-                        </div>
-                    }}
-                    else if (_activeTab == ""raw"")
-                    {{
-                        <div class=""bg-light p-3 rounded border"">
-                            <pre class=""mb-0"" style=""white-space: pre-wrap; word-break: break-word;"">@Response</pre>
-                        </div>
-                    }}
-                    else if (_activeTab == ""headers"")
-                    {{
-                        <table class=""table table-sm"">
-                            <thead class=""table-light"">
-                                <tr>
-                                    <th>Header</th>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><code>Content-Type</code></td>
-                                    <td>application/json</td>
-                                </tr>
-                                <tr>
-                                    <td><code>Content-Length</code></td>
-                                    <td>@Response.Length</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    }}
-                </div>
-            </div>
-            <div class=""modal-footer"">
-                <button type=""button"" class=""btn btn-outline-secondary"" @onclick=""CopyResponse"">
-                    <i class=""fa-solid fa-copy me-2""></i>Copy Response
-                </button>
-                <button type=""button"" class=""btn btn-primary"" @onclick=""Close"">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@code {{
-    [Parameter] public string Response {{ get; set; }} = string.Empty;
-    [Parameter] public int StatusCode {{ get; set; }}
-    [Parameter] public long ResponseTime {{ get; set; }}
-    [Parameter] public EventCallback OnClose {{ get; set; }}
-
-    private string _activeTab = ""pretty"";
-
-    private async Task Close() => await OnClose.InvokeAsync();
-
-    private async Task CopyResponse()
-    {{
-        // Copy to clipboard functionality would go here
-        await Task.CompletedTask;
-    }}
-
-    private string FormatJson()
-    {{
-        try
-        {{
-            var obj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(Response);
-            return System.Text.Json.JsonSerializer.Serialize(obj, new System.Text.Json.JsonSerializerOptions
-            {{
-                WriteIndented = true
-            }});
-        }}
-        catch
-        {{
-            return Response;
-        }}
-    }}
-
-    private string GetResponseSize()
-    {{
-        var bytes = System.Text.Encoding.UTF8.GetByteCount(Response);
-        if (bytes < 1024) return $""{{bytes}} B"";
-        if (bytes < 1024 * 1024) return $""{{bytes / 1024.0:F1}} KB"";
-        return $""{{bytes / (1024.0 * 1024.0):F1}} MB"";
-    }}
-
-    private string GetStatusText() => StatusCode switch
-    {{
-        200 => ""OK"",
-        201 => ""Created"",
-        204 => ""No Content"",
-        400 => ""Bad Request"",
-        401 => ""Unauthorized"",
-        403 => ""Forbidden"",
-        404 => ""Not Found"",
-        500 => ""Internal Server Error"",
-        _ => $""HTTP {{StatusCode}}""
-    }};
-
-    private string GetStatusHeaderClass() => StatusCode switch
-    {{
-        >= 200 and < 300 => ""bg-success text-white"",
-        >= 400 and < 500 => ""bg-warning"",
-        >= 500 => ""bg-danger text-white"",
-        _ => """"
-    }};
-
-    private string GetStatusTextClass() => StatusCode switch
-    {{
-        >= 200 and < 300 => ""text-success"",
-        >= 400 and < 500 => ""text-warning"",
-        >= 500 => ""text-danger"",
-        _ => """"
-    }};
-
-    private string GetStatusIcon() => StatusCode switch
-    {{
-        >= 200 and < 300 => ""fa-check-circle"",
-        >= 400 and < 500 => ""fa-exclamation-triangle"",
-        >= 500 => ""fa-times-circle"",
-        _ => ""fa-question-circle""
-    }};
 }}
 ";
 }

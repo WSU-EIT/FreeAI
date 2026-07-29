@@ -38,26 +38,18 @@ public class PresentationHub : Hub
         _sync = sync;
     }
 
-    public override async Task OnConnectedAsync()
+    /// <summary>
+    /// Re-pushes the current session state to every client in the group.
+    /// Useful after a Master mutates state out-of-band (e.g. SetBlankScreen,
+    /// AddSessionItem) and wants slaves to refresh.
+    /// </summary>
+    public async Task BroadcastSessionUpdate(Guid sessionId)
     {
-        // The caller must follow up with JoinSession to actually be useful;
-        // until then the connection is unscoped. Nothing to register yet.
-        await base.OnConnectedAsync();
-    }
+        var session = await _sync.GetPresentationSession(sessionId);
+        if (session == null)
+            throw new HubException("Session not found.");
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        if (_connectionContexts.TryRemove(Context.ConnectionId, out var ctx)) {
-            await _sync.UnregisterClient(ctx.SessionId.ToString(), Context.ConnectionId);
-            try {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, ctx.SessionId.ToString());
-            } catch { }
-
-            // Notify remaining clients that the audience headcount changed.
-            await Clients.Group(ctx.SessionId.ToString()).SendAsync("ClientCountChanged", _connectionContexts.Values.Count(c => c.SessionId == ctx.SessionId));
-        }
-
-        await base.OnDisconnectedAsync(exception);
+        await Clients.Group(sessionId.ToString()).SendAsync("SessionUpdated", session);
     }
 
     /// <summary>
@@ -107,6 +99,28 @@ public class PresentationHub : Hub
         await Clients.Group(sessionId.ToString()).SendAsync("ClientCountChanged", count);
     }
 
+    public override async Task OnConnectedAsync()
+    {
+        // The caller must follow up with JoinSession to actually be useful;
+        // until then the connection is unscoped. Nothing to register yet.
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (_connectionContexts.TryRemove(Context.ConnectionId, out var ctx)) {
+            await _sync.UnregisterClient(ctx.SessionId.ToString(), Context.ConnectionId);
+            try {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, ctx.SessionId.ToString());
+            } catch { }
+
+            // Notify remaining clients that the audience headcount changed.
+            await Clients.Group(ctx.SessionId.ToString()).SendAsync("ClientCountChanged", _connectionContexts.Values.Count(c => c.SessionId == ctx.SessionId));
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
     /// <summary>
     /// Master-only. Mutates the session's active item and broadcasts
     /// <c>ActiveItemChanged</c> to every client in the session group.
@@ -124,20 +138,6 @@ public class PresentationHub : Hub
 
         await _sync.SetActiveItem(sessionId, itemId);
         await Clients.Group(sessionId.ToString()).SendAsync("ActiveItemChanged", itemId);
-    }
-
-    /// <summary>
-    /// Re-pushes the current session state to every client in the group.
-    /// Useful after a Master mutates state out-of-band (e.g. SetBlankScreen,
-    /// AddSessionItem) and wants slaves to refresh.
-    /// </summary>
-    public async Task BroadcastSessionUpdate(Guid sessionId)
-    {
-        var session = await _sync.GetPresentationSession(sessionId);
-        if (session == null)
-            throw new HubException("Session not found.");
-
-        await Clients.Group(sessionId.ToString()).SendAsync("SessionUpdated", session);
     }
 
     private sealed record ConnectionContext(Guid SessionId, string ClientType);

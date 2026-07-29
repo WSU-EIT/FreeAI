@@ -18,11 +18,11 @@ namespace FreeServicesHub.Agent;
 /// </summary>
 internal sealed class AgentOptions
 {
-    public string HubUrl { get; set; } = "https://localhost:7271";
-    public string RegistrationKey { get; set; } = "";
+    public string AgentName { get; set; } = "";
     public string ApiClientToken { get; set; } = "";
     public int HeartbeatIntervalSeconds { get; set; } = 30;
-    public string AgentName { get; set; } = "";
+    public string HubUrl { get; set; } = "https://localhost:7271";
+    public string RegistrationKey { get; set; } = "";
 }
 
 /// <summary>
@@ -30,17 +30,17 @@ internal sealed class AgentOptions
 /// </summary>
 internal sealed record SystemSnapshot
 {
+    public double CpuUsagePercent { get; init; }
+    public List<DriveSnapshot> Drives { get; init; } = [];
+    public long FreeMemoryMb { get; init; }
     public string MachineName { get; init; } = "";
+    public double MemoryUsagePercent { get; init; }
     public string OsDescription { get; init; } = "";
     public int ProcessorCount { get; init; }
-    public double CpuUsagePercent { get; init; }
-    public long TotalMemoryMb { get; init; }
-    public long FreeMemoryMb { get; init; }
-    public long UsedMemoryMb { get; init; }
-    public double MemoryUsagePercent { get; init; }
-    public List<DriveSnapshot> Drives { get; init; } = [];
-    public TimeSpan Uptime { get; init; }
     public DateTime TimestampUtc { get; init; }
+    public long TotalMemoryMb { get; init; }
+    public TimeSpan Uptime { get; init; }
+    public long UsedMemoryMb { get; init; }
 }
 
 /// <summary>
@@ -48,10 +48,10 @@ internal sealed record SystemSnapshot
 /// </summary>
 internal sealed record DriveSnapshot
 {
-    public string Name { get; init; } = "";
     public string DriveFormat { get; init; } = "";
-    public double TotalGb { get; init; }
     public double FreeGb { get; init; }
+    public string Name { get; init; } = "";
+    public double TotalGb { get; init; }
     public double UsedPercent { get; init; }
 }
 
@@ -60,13 +60,13 @@ internal sealed record DriveSnapshot
 /// </summary>
 internal sealed record WindowsServiceSnapshot
 {
-    public string ServiceName { get; init; } = "";
+    public string Description { get; init; } = "";
     public string DisplayName { get; init; } = "";
-    public string Status { get; init; } = "";
-    public string StartupType { get; init; } = "";
     public string LogOnAccount { get; init; } = "";
     public int ProcessId { get; init; }
-    public string Description { get; init; } = "";
+    public string ServiceName { get; init; } = "";
+    public string StartupType { get; init; } = "";
+    public string Status { get; init; } = "";
 }
 
 /// <summary>
@@ -713,8 +713,7 @@ public sealed class AgentWorkerService : BackgroundService
     }
 
     private async Task ReportJobStatus(HttpClient httpClient, Guid jobId, string status,
-        string? result, string? errorMessage, CancellationToken ct)
-    {
+        string? result, string? errorMessage, CancellationToken ct){
         try
         {
             var update = new[]
@@ -1192,9 +1191,9 @@ internal sealed class ExponentialBackoffRetryPolicy : IRetryPolicy
 internal sealed class AgentSettingsUpdatePayload
 {
     public Guid AgentId { get; set; }
-    public string? HubUrl { get; set; }
-    public int? HeartbeatIntervalSeconds { get; set; }
     public string? AgentName { get; set; }
+    public int? HeartbeatIntervalSeconds { get; set; }
+    public string? HubUrl { get; set; }
     public string? StartupType { get; set; }
 }
 

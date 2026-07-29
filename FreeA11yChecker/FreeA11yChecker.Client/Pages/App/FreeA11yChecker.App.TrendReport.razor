@@ -105,7 +105,7 @@
                         <div @key="site.SiteId" class="border-bottom trend-site-row">
                             @* ── Site Header Row (clickable) ── *@
                             <div class="d-flex align-items-center px-3 py-2 @borderClass" style="cursor:pointer;"
-                                 @onclick="() => ToggleSite(site.SiteId)">
+                                    @onclick="() => ToggleSite(site.SiteId)">
                                 <div class="me-2">
                                     <i class="fas @chevron text-muted"></i>
                                 </div>
@@ -126,7 +126,7 @@
                                                 + (run.CriticalCount > 0 ? " (" + run.CriticalCount + " critical)" : "")
                                                 + " — " + run.Status;
                                             <div @key="run.ScanRunId" style="width:8px; height:28px; border-radius:3px; flex-shrink:0;"
-                                                 class="@dotColor heartbeat-dot" title="@dotTitle"></div>
+                                                    class="@dotColor heartbeat-dot" title="@dotTitle"></div>
                                         }
                                     } else {
                                         <span class="text-muted small"><em>No scans yet</em></span>
@@ -173,12 +173,12 @@
 
                                         <div class="mb-3">
                                             <Highcharts ChartType="Highcharts.ChartTypes.Column"
-                                                        ChartTitle="Violations Over Time"
-                                                        ChartSubtitle="@site.Name"
-                                                        ElementId="@chartId"
-                                                        yAxisText="Violations"
-                                                        SeriesCategories="@cats"
-                                                        SeriesDataArrayItems="@chartData" />
+                                                    ChartTitle="Violations Over Time"
+                                                    ChartSubtitle="@site.Name"
+                                                    ElementId="@chartId"
+                                                    yAxisText="Violations"
+                                                    SeriesCategories="@cats"
+                                                    SeriesDataArrayItems="@chartData" />
                                             <div id="@chartId" style="min-height:300px;"></div>
                                         </div>
 
@@ -205,7 +205,7 @@
 
                                             <div @key="run.ScanRunId" class="card mb-1 @runBorder">
                                                 <div class="card-header py-1 px-3 d-flex align-items-center flex-wrap" style="cursor:pointer;"
-                                                     @onclick="() => ToggleRun(run.ScanRunId)">
+                                                        @onclick="() => ToggleRun(run.ScanRunId)">
                                                     <i class="fas @runChevron text-muted me-2 small"></i>
                                                     <a href="@Helpers.BuildUrl($"Scans/{run.ScanRunId}")" @onclick:stopPropagation="true">
                                                         <strong class="me-2">#@runNumber</strong>

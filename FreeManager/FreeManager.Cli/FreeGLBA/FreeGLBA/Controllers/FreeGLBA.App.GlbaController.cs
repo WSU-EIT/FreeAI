@@ -20,56 +20,26 @@ public class GlbaController : ControllerBase
         _da = da;
     }
 
-    // ============================================================
-    // EXTERNAL ENDPOINTS (API Key Auth via middleware)
-    // ============================================================
-
     /// <summary>
-    /// Receive a single event from an external source system.
-    /// Requires API key in Authorization header: Bearer {api-key}
+    /// Get recent events for the dashboard feed.
     /// </summary>
-    [HttpPost("events")]
-    public async Task<ActionResult<DataObjects.GlbaEventResponse>> PostEvent(
-        [FromBody] DataObjects.GlbaEventRequest request)
-    {
-        // Get source system from middleware (set by ApiKeyMiddleware)
-        var source = HttpContext.Items["SourceSystem"] as DataObjects.SourceSystem;
-        if (source == null)
-        {
-            return Unauthorized(new { error = "invalid_api_key", message = "API key is invalid or inactive" });
-        }
-
-        var result = await _da.ProcessGlbaEventAsync(request, source.SourceSystemId);
-
-        return result.Status switch
-        {
-            "accepted" => Created($"/api/glba/events/{result.EventId}", result),
-            "duplicate" => Conflict(result),
-            _ => BadRequest(result)
-        };
+    [HttpGet("events/recent")]
+    [Authorize]
+    public async Task<ActionResult<List<DataObjects.AccessEvent>>> GetRecentEvents(
+        [FromQuery] int limit = 50){
+        var events = await _da.GetRecentAccessEventsAsync(Math.Min(limit, 100));
+        return Ok(events);
     }
 
     /// <summary>
-    /// Receive a batch of events from an external source system.
-    /// Maximum 1000 events per request.
+    /// Get source system status for the dashboard.
     /// </summary>
-    [HttpPost("events/batch")]
-    public async Task<ActionResult<DataObjects.GlbaBatchResponse>> PostBatch(
-        [FromBody] List<DataObjects.GlbaEventRequest> events)
+    [HttpGet("sources/status")]
+    [Authorize]
+    public async Task<ActionResult<List<DataObjects.SourceSystem>>> GetSourceStatus()
     {
-        var source = HttpContext.Items["SourceSystem"] as DataObjects.SourceSystem;
-        if (source == null)
-        {
-            return Unauthorized(new { error = "invalid_api_key", message = "API key is invalid or inactive" });
-        }
-
-        if (events.Count > 1000)
-        {
-            return BadRequest(new { error = "batch_too_large", message = "Maximum 1000 events per batch" });
-        }
-
-        var result = await _da.ProcessGlbaBatchAsync(events, source.SourceSystemId);
-        return Ok(result);
+        var sources = await _da.GetSourceSystemsAsync();
+        return Ok(sources);
     }
 
     // ============================================================
@@ -88,25 +58,52 @@ public class GlbaController : ControllerBase
     }
 
     /// <summary>
-    /// Get recent events for the dashboard feed.
+    /// Receive a batch of events from an external source system.
+    /// Maximum 1000 events per request.
     /// </summary>
-    [HttpGet("events/recent")]
-    [Authorize]
-    public async Task<ActionResult<List<DataObjects.AccessEvent>>> GetRecentEvents(
-        [FromQuery] int limit = 50)
-    {
-        var events = await _da.GetRecentAccessEventsAsync(Math.Min(limit, 100));
-        return Ok(events);
+    [HttpPost("events/batch")]
+    public async Task<ActionResult<DataObjects.GlbaBatchResponse>> PostBatch(
+        [FromBody] List<DataObjects.GlbaEventRequest> events){
+        var source = HttpContext.Items["SourceSystem"] as DataObjects.SourceSystem;
+        if (source == null)
+        {
+            return Unauthorized(new { error = "invalid_api_key", message = "API key is invalid or inactive" });
+        }
+
+        if (events.Count > 1000)
+        {
+            return BadRequest(new { error = "batch_too_large", message = "Maximum 1000 events per batch" });
+        }
+
+        var result = await _da.ProcessGlbaBatchAsync(events, source.SourceSystemId);
+        return Ok(result);
     }
 
+    // ============================================================
+    // EXTERNAL ENDPOINTS (API Key Auth via middleware)
+    // ============================================================
+
     /// <summary>
-    /// Get source system status for the dashboard.
+    /// Receive a single event from an external source system.
+    /// Requires API key in Authorization header: Bearer {api-key}
     /// </summary>
-    [HttpGet("sources/status")]
-    [Authorize]
-    public async Task<ActionResult<List<DataObjects.SourceSystem>>> GetSourceStatus()
-    {
-        var sources = await _da.GetSourceSystemsAsync();
-        return Ok(sources);
+    [HttpPost("events")]
+    public async Task<ActionResult<DataObjects.GlbaEventResponse>> PostEvent(
+        [FromBody] DataObjects.GlbaEventRequest request){
+        // Get source system from middleware (set by ApiKeyMiddleware)
+        var source = HttpContext.Items["SourceSystem"] as DataObjects.SourceSystem;
+        if (source == null)
+        {
+            return Unauthorized(new { error = "invalid_api_key", message = "API key is invalid or inactive" });
+        }
+
+        var result = await _da.ProcessGlbaEventAsync(request, source.SourceSystemId);
+
+        return result.Status switch
+        {
+            "accepted" => Created($"/api/glba/events/{result.EventId}", result),
+            "duplicate" => Conflict(result),
+            _ => BadRequest(result)
+        };
     }
 }

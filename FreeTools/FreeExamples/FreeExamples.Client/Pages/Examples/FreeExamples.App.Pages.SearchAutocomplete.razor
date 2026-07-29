@@ -63,13 +63,13 @@
                             }
                         </span>
                         <input type="text" class="form-control border-start-0"
-                               placeholder="Search sample items..."
-                               @bind="_searchTerm"
-                               @bind:event="oninput"
-                               @bind:after="OnSearchInput"
-                               @onfocus="OnFocus"
-                               @onkeydown="HandleKeydown"
-                               @onblur="OnBlur" />
+                                placeholder="Search sample items..."
+                                @bind="_searchTerm"
+                                @bind:event="oninput"
+                                @bind:after="OnSearchInput"
+                                @onfocus="OnFocus"
+                                @onkeydown="HandleKeydown"
+                                @onblur="OnBlur" />
                         @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
                             <button class="btn btn-outline-secondary" @onclick="ClearSearch" @onmousedown:preventDefault>
                                 <i class="fa-solid fa-times"></i>
@@ -78,8 +78,8 @@
                     </div>
 
                     <InfoTip Title="Debounced Search Input"
-                             Description="Every keystroke resets a 400ms timer. Only when you stop typing for 400ms does the actual API call fire. This prevents flooding the server with requests while you're still typing 'engineering'. The Timer Demo page explains this pattern in detail."
-                             Code="@_codeDebounce" />
+                            Description="Every keystroke resets a 400ms timer. Only when you stop typing for 400ms does the actual API call fire. This prevents flooding the server with requests while you're still typing 'engineering'. The Timer Demo page explains this pattern in detail."
+                            Code="@_codeDebounce" />
 
                     @* ── Dropdown Results ── *@
                     @if (_showDropdown && (_suggestions.Any() || _recentSearches.Any() || (_searchTerm?.Length >= 2 && !_searching))) {
@@ -160,14 +160,14 @@
         @* ── InfoTips Row ── *@
         <div class="d-flex flex-wrap gap-1 mt-2">
             <InfoTip Title="Keyboard Navigation"
-                     Description="Arrow Up/Down moves a highlighted index through the suggestion list. Enter selects the highlighted item. Escape closes the dropdown. This is the same interaction model as Google's search autocomplete and VS Code's command palette."
-                     Code="@_codeKeyboard" />
+                    Description="Arrow Up/Down moves a highlighted index through the suggestion list. Enter selects the highlighted item. Escape closes the dropdown. This is the same interaction model as Google's search autocomplete and VS Code's command palette."
+                    Code="@_codeKeyboard" />
             <InfoTip Title="Result Highlighting"
-                     Description="The matching portion of each suggestion's name is wrapped in a <strong> tag so it appears bold. For example, searching 'eng' in 'Engineering' renders as '<strong>Eng</strong>ineering'. This helps users see why each result matched."
-                     Code="@_codeHighlight" />
+                    Description="The matching portion of each suggestion's name is wrapped in a <strong> tag so it appears bold. For example, searching 'eng' in 'Engineering' renders as '<strong>Eng</strong>ineering'. This helps users see why each result matched."
+                    Code="@_codeHighlight" />
             <InfoTip Title="Recent Searches"
-                     Description="The last 5 search terms are stored in a list. When you focus the empty search box, recent searches appear. Clicking one fills the search box and re-runs the search. In a production app, these would be stored in localStorage for persistence across sessions."
-                     Code="@_codeRecent" />
+                    Description="The last 5 search terms are stored in a list. When you focus the empty search box, recent searches appear. Clicking one fills the search box and re-runs the search. In a production app, these would be stored in localStorage for persistence across sessions."
+                    Code="@_codeRecent" />
         </div>
     }
 }

@@ -71,7 +71,7 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                             <input type="text" class="form-control" placeholder="Search by user ID, name, email, department..."
-                                   @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
+                                    @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -308,7 +308,7 @@
                                     </td>
                                     <td>
                                         <a href="@Helpers.BuildUrl($"AccessEvents?search={item.UserId}")" 
-                                           class="btn btn-sm btn-outline-primary" title="View Events">
+                                                class="btn btn-sm btn-outline-primary" title="View Events">
                                             <i class="fa-solid fa-list"></i>
                                         </a>
                                     </td>

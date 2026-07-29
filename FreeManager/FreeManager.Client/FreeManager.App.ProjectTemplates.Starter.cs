@@ -9,220 +9,6 @@ namespace FreeManager.Client;
 
 public static partial class ProjectTemplates
 {
-    // ============================================================
-    // STARTER TEMPLATES (Working example with Settings storage)
-    // ============================================================
-
-    private static string GetStarterDataObjects(string name) => $@"using System.Text.Json.Serialization;
-
-namespace FreeManager;
-
-#region {name} DataObjects
-// ============================================================================
-// {name.ToUpper()} PROJECT - STARTER TEMPLATE
-// This template provides a working Items list stored in the Settings table.
-// No database migration required!
-// ============================================================================
-
-public partial class DataObjects
-{{
-    public static partial class Endpoints
-    {{
-        public static class {name}
-        {{
-            public const string GetItems = ""api/Data/{name}_GetItems"";
-            public const string SaveItem = ""api/Data/{name}_SaveItem"";
-            public const string DeleteItem = ""api/Data/{name}_DeleteItem"";
-        }}
-    }}
-
-    /// <summary>
-    /// {name} item - stored as JSON in Settings table.
-    /// </summary>
-    public class {name}Item
-    {{
-        public Guid Id {{ get; set; }} = Guid.NewGuid();
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
-        public bool IsComplete {{ get; set; }} = false;
-        public DateTime CreatedAt {{ get; set; }} = DateTime.UtcNow;
-        public DateTime? CompletedAt {{ get; set; }}
-    }}
-
-    /// <summary>
-    /// Request to save an item.
-    /// </summary>
-    public class {name}SaveRequest
-    {{
-        public Guid? Id {{ get; set; }}
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
-        public bool IsComplete {{ get; set; }} = false;
-    }}
-}}
-
-#endregion
-";
-
-    private static string GetStarterDataAccess(string name) => $@"using System.Text.Json;
-
-namespace FreeManager;
-
-#region {name} DataAccess
-// ============================================================================
-// {name.ToUpper()} PROJECT - STARTER TEMPLATE
-// Business logic using Settings table for JSON storage.
-// ============================================================================
-
-public partial interface IDataAccess
-{{
-    Task<List<DataObjects.{name}Item>> {name}_GetItems(DataObjects.User CurrentUser);
-    Task<DataObjects.{name}Item?> {name}_SaveItem(DataObjects.{name}SaveRequest request, DataObjects.User CurrentUser);
-    Task<DataObjects.BooleanResponse> {name}_DeleteItem(Guid itemId, DataObjects.User CurrentUser);
-}}
-
-public partial class DataAccess
-{{
-    private const string {name}SettingsKey = ""{name}_Items"";
-
-    public async Task<List<DataObjects.{name}Item>> {name}_GetItems(DataObjects.User CurrentUser)
-    {{
-        var items = await {name}_LoadItems(CurrentUser.TenantId);
-        return items.OrderByDescending(x => x.CreatedAt).ToList();
-    }}
-
-    public async Task<DataObjects.{name}Item?> {name}_SaveItem(DataObjects.{name}SaveRequest request, DataObjects.User CurrentUser)
-    {{
-        List<DataObjects.{name}Item> items = await {name}_LoadItems(CurrentUser.TenantId);
-        DataObjects.{name}Item item;
-
-        if (request.Id.HasValue && request.Id != Guid.Empty) {{
-            item = items.FirstOrDefault(x => x.Id == request.Id.Value) ?? new DataObjects.{name}Item();
-            item.Name = request.Name;
-            item.Description = request.Description;
-
-            if (request.IsComplete && !item.IsComplete) {{
-                item.CompletedAt = DateTime.UtcNow;
-            }} else if (!request.IsComplete) {{
-                item.CompletedAt = null;
-            }}
-            item.IsComplete = request.IsComplete;
-
-            if (!items.Any(x => x.Id == item.Id)) {{
-                items.Add(item);
-            }}
-        }} else {{
-            item = new DataObjects.{name}Item {{
-                Id = Guid.NewGuid(),
-                Name = request.Name,
-                Description = request.Description,
-                IsComplete = request.IsComplete,
-                CreatedAt = DateTime.UtcNow
-            }};
-            items.Add(item);
-        }}
-
-        await {name}_SaveItems(items, CurrentUser.TenantId);
-        return item;
-    }}
-
-    public async Task<DataObjects.BooleanResponse> {name}_DeleteItem(Guid itemId, DataObjects.User CurrentUser)
-    {{
-        DataObjects.BooleanResponse output = new();
-        List<DataObjects.{name}Item> items = await {name}_LoadItems(CurrentUser.TenantId);
-
-        int removed = items.RemoveAll(x => x.Id == itemId);
-        if (removed > 0) {{
-            await {name}_SaveItems(items, CurrentUser.TenantId);
-            output.Result = true;
-        }} else {{
-            output.Messages.Add(""Item not found"");
-        }}
-
-        return output;
-    }}
-
-    private async Task<List<DataObjects.{name}Item>> {name}_LoadItems(Guid tenantId)
-    {{
-        DataObjects.Setting? setting = await GetSetting({name}SettingsKey, tenantId);
-        if (setting == null || string.IsNullOrEmpty(setting.Value)) {{
-            return new List<DataObjects.{name}Item>();
-        }}
-        return JsonSerializer.Deserialize<List<DataObjects.{name}Item>>(setting.Value) ?? new();
-    }}
-
-    private async Task {name}_SaveItems(List<DataObjects.{name}Item> items, Guid tenantId)
-    {{
-        string json = JsonSerializer.Serialize(items);
-        await SaveSetting({name}SettingsKey, json, tenantId);
-    }}
-}}
-
-#endregion
-";
-
-    private static string GetStarterController(string name) => $@"using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace FreeManager.Server.Controllers;
-
-#region {name} API Endpoints
-// ============================================================================
-// {name.ToUpper()} PROJECT - STARTER TEMPLATE
-// REST API endpoints for {name} items.
-// ============================================================================
-
-public partial class DataController
-{{
-    [HttpGet]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.GetItems}}"")]
-    public async Task<ActionResult<List<DataObjects.{name}Item>>> {name}_GetItems()
-    {{
-        return await da.{name}_GetItems(CurrentUser);
-    }}
-
-    [HttpPost]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.SaveItem}}"")]
-    public async Task<ActionResult<DataObjects.{name}Item?>> {name}_SaveItem([FromBody] DataObjects.{name}SaveRequest request)
-    {{
-        return await da.{name}_SaveItem(request, CurrentUser);
-    }}
-
-    [HttpDelete]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.DeleteItem}}"")]
-    public async Task<ActionResult<DataObjects.BooleanResponse>> {name}_DeleteItem([FromQuery] Guid itemId)
-    {{
-        return await da.{name}_DeleteItem(itemId, CurrentUser);
-    }}
-}}
-
-#endregion
-";
-
-    private static string GetStarterGlobalSettings(string name) => $@"namespace FreeManager;
-
-#region {name} Settings
-// ============================================================================
-// {name.ToUpper()} PROJECT - STARTER TEMPLATE
-// App configuration and constants.
-// ============================================================================
-
-public static partial class GlobalSettings
-{{
-    public static class {name}
-    {{
-        public static string AppName {{ get; set; }} = ""{name}"";
-        public static string Version {{ get; set; }} = ""1.0.0"";
-        public static string Description {{ get; set; }} = ""A {name} application built with FreeManager"";
-    }}
-}}
-
-#endregion
-";
-
     private static string GetStarterComponent(string name) => $@"@implements IDisposable
 @inject BlazorDataModel Model
 @inject HttpClient Http
@@ -377,6 +163,219 @@ public static partial class GlobalSettings
         }} catch {{ }}
     }}
 }}
+";
+
+    private static string GetStarterController(string name) => $@"using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FreeManager.Server.Controllers;
+
+#region {name} API Endpoints
+// ============================================================================
+// {name.ToUpper()} PROJECT - STARTER TEMPLATE
+// REST API endpoints for {name} items.
+// ============================================================================
+
+public partial class DataController
+{{
+    [HttpGet]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.GetItems}}"")]
+    public async Task<ActionResult<List<DataObjects.{name}Item>>> {name}_GetItems()
+    {{
+        return await da.{name}_GetItems(CurrentUser);
+    }}
+
+    [HttpPost]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.SaveItem}}"")]
+    public async Task<ActionResult<DataObjects.{name}Item?>> {name}_SaveItem([FromBody] DataObjects.{name}SaveRequest request)
+    {{
+        return await da.{name}_SaveItem(request, CurrentUser);
+    }}
+
+    [HttpDelete]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.DeleteItem}}"")]
+    public async Task<ActionResult<DataObjects.BooleanResponse>> {name}_DeleteItem([FromQuery] Guid itemId)
+    {{
+        return await da.{name}_DeleteItem(itemId, CurrentUser);
+    }}
+}}
+
+#endregion
+";
+
+    private static string GetStarterDataAccess(string name) => $@"using System.Text.Json;
+
+namespace FreeManager;
+
+#region {name} DataAccess
+// ============================================================================
+// {name.ToUpper()} PROJECT - STARTER TEMPLATE
+// Business logic using Settings table for JSON storage.
+// ============================================================================
+
+public partial interface IDataAccess
+{{
+    Task<List<DataObjects.{name}Item>> {name}_GetItems(DataObjects.User CurrentUser);
+    Task<DataObjects.{name}Item?> {name}_SaveItem(DataObjects.{name}SaveRequest request, DataObjects.User CurrentUser);
+    Task<DataObjects.BooleanResponse> {name}_DeleteItem(Guid itemId, DataObjects.User CurrentUser);
+}}
+
+public partial class DataAccess
+{{
+    private const string {name}SettingsKey = ""{name}_Items"";
+
+    public async Task<List<DataObjects.{name}Item>> {name}_GetItems(DataObjects.User CurrentUser)
+    {{
+        var items = await {name}_LoadItems(CurrentUser.TenantId);
+        return items.OrderByDescending(x => x.CreatedAt).ToList();
+    }}
+
+    public async Task<DataObjects.{name}Item?> {name}_SaveItem(DataObjects.{name}SaveRequest request, DataObjects.User CurrentUser)
+    {{
+        List<DataObjects.{name}Item> items = await {name}_LoadItems(CurrentUser.TenantId);
+        DataObjects.{name}Item item;
+
+        if (request.Id.HasValue && request.Id != Guid.Empty) {{
+            item = items.FirstOrDefault(x => x.Id == request.Id.Value) ?? new DataObjects.{name}Item();
+            item.Name = request.Name;
+            item.Description = request.Description;
+
+            if (request.IsComplete && !item.IsComplete) {{
+                item.CompletedAt = DateTime.UtcNow;
+            }} else if (!request.IsComplete) {{
+                item.CompletedAt = null;
+            }}
+            item.IsComplete = request.IsComplete;
+
+            if (!items.Any(x => x.Id == item.Id)) {{
+                items.Add(item);
+            }}
+        }} else {{
+            item = new DataObjects.{name}Item {{
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Description = request.Description,
+                IsComplete = request.IsComplete,
+                CreatedAt = DateTime.UtcNow
+            }};
+            items.Add(item);
+        }}
+
+        await {name}_SaveItems(items, CurrentUser.TenantId);
+        return item;
+    }}
+
+    public async Task<DataObjects.BooleanResponse> {name}_DeleteItem(Guid itemId, DataObjects.User CurrentUser)
+    {{
+        DataObjects.BooleanResponse output = new();
+        List<DataObjects.{name}Item> items = await {name}_LoadItems(CurrentUser.TenantId);
+
+        int removed = items.RemoveAll(x => x.Id == itemId);
+        if (removed > 0) {{
+            await {name}_SaveItems(items, CurrentUser.TenantId);
+            output.Result = true;
+        }} else {{
+            output.Messages.Add(""Item not found"");
+        }}
+
+        return output;
+    }}
+
+    private async Task<List<DataObjects.{name}Item>> {name}_LoadItems(Guid tenantId)
+    {{
+        DataObjects.Setting? setting = await GetSetting({name}SettingsKey, tenantId);
+        if (setting == null || string.IsNullOrEmpty(setting.Value)) {{
+            return new List<DataObjects.{name}Item>();
+        }}
+        return JsonSerializer.Deserialize<List<DataObjects.{name}Item>>(setting.Value) ?? new();
+    }}
+
+    private async Task {name}_SaveItems(List<DataObjects.{name}Item> items, Guid tenantId)
+    {{
+        string json = JsonSerializer.Serialize(items);
+        await SaveSetting({name}SettingsKey, json, tenantId);
+    }}
+}}
+
+#endregion
+";
+    // ============================================================
+    // STARTER TEMPLATES (Working example with Settings storage)
+    // ============================================================
+
+    private static string GetStarterDataObjects(string name) => $@"using System.Text.Json.Serialization;
+
+namespace FreeManager;
+
+#region {name} DataObjects
+// ============================================================================
+// {name.ToUpper()} PROJECT - STARTER TEMPLATE
+// This template provides a working Items list stored in the Settings table.
+// No database migration required!
+// ============================================================================
+
+public partial class DataObjects
+{{
+    public static partial class Endpoints
+    {{
+        public static class {name}
+        {{
+            public const string GetItems = ""api/Data/{name}_GetItems"";
+            public const string SaveItem = ""api/Data/{name}_SaveItem"";
+            public const string DeleteItem = ""api/Data/{name}_DeleteItem"";
+        }}
+    }}
+
+    /// <summary>
+    /// {name} item - stored as JSON in Settings table.
+    /// </summary>
+    public class {name}Item
+    {{
+        public Guid Id {{ get; set; }} = Guid.NewGuid();
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
+        public bool IsComplete {{ get; set; }} = false;
+        public DateTime CreatedAt {{ get; set; }} = DateTime.UtcNow;
+        public DateTime? CompletedAt {{ get; set; }}
+    }}
+
+    /// <summary>
+    /// Request to save an item.
+    /// </summary>
+    public class {name}SaveRequest
+    {{
+        public Guid? Id {{ get; set; }}
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
+        public bool IsComplete {{ get; set; }} = false;
+    }}
+}}
+
+#endregion
+";
+
+    private static string GetStarterGlobalSettings(string name) => $@"namespace FreeManager;
+
+#region {name} Settings
+// ============================================================================
+// {name.ToUpper()} PROJECT - STARTER TEMPLATE
+// App configuration and constants.
+// ============================================================================
+
+public static partial class GlobalSettings
+{{
+    public static class {name}
+    {{
+        public static string AppName {{ get; set; }} = ""{name}"";
+        public static string Version {{ get; set; }} = ""1.0.0"";
+        public static string Description {{ get; set; }} = ""A {name} application built with FreeManager"";
+    }}
+}}
+
+#endregion
 ";
 
     private static string GetStarterPage(string name) => $@"@page ""/{name}""

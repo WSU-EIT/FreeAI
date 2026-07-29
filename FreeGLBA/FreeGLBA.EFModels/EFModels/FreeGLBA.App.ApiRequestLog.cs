@@ -19,31 +19,44 @@ public partial class ApiRequestLogItem
     [Key]
     public Guid ApiRequestLogId { get; set; }
     
-    // === WHO ===
-    public Guid SourceSystemId { get; set; }
+    [MaxLength(50)]
+    public string AuthType { get; set; } = string.Empty;  // ApiKey, JWT, etc.
+    
+    public bool BodyLoggingEnabled { get; set; }
+    
+    // === TRACING ===
+    [MaxLength(100)]
+    public string CorrelationId { get; set; } = string.Empty;
+    
+    public long DurationMs { get; set; }
+    
+    [MaxLength(1000)]
+    public string ErrorMessage { get; set; } = string.Empty;
+    
+    [MaxLength(500)]
+    public string ExceptionType { get; set; } = string.Empty;
     
     [MaxLength(200)]
-    public string SourceSystemName { get; set; } = string.Empty;
-    
-    [MaxLength(200)]
-    public string UserId { get; set; } = string.Empty;
-    
-    [MaxLength(200)]
-    public string UserName { get; set; } = string.Empty;
-    
-    public Guid? TenantId { get; set; }
+    public string ForwardedFor { get; set; } = string.Empty;
     
     // === WHAT ===
     [MaxLength(10)]
     public string HttpMethod { get; set; } = string.Empty;  // GET, POST, etc.
     
-    [MaxLength(500)]
-    public string RequestPath { get; set; } = string.Empty;
+    // === WHERE ===
+    [MaxLength(50)]
+    public string IpAddress { get; set; } = string.Empty;
+    
+    public bool IsSuccess { get; set; }
     
     [MaxLength(2000)]
     public string QueryString { get; set; } = string.Empty;
     
-    public string RequestHeaders { get; set; } = string.Empty;  // JSON
+    [MaxLength(100)]
+    public string RelatedEntityId { get; set; } = string.Empty;
+    
+    [MaxLength(100)]
+    public string RelatedEntityType { get; set; } = string.Empty;
     
     public string RequestBody { get; set; } = string.Empty;  // Truncated to 4KB
     
@@ -52,47 +65,34 @@ public partial class ApiRequestLogItem
     // === WHEN ===
     public DateTime RequestedAt { get; set; }
     
-    public DateTime RespondedAt { get; set; }
-    
-    public long DurationMs { get; set; }
-    
-    // === WHERE ===
-    [MaxLength(50)]
-    public string IpAddress { get; set; } = string.Empty;
+    public string RequestHeaders { get; set; } = string.Empty;  // JSON
     
     [MaxLength(500)]
-    public string UserAgent { get; set; } = string.Empty;
+    public string RequestPath { get; set; } = string.Empty;
     
-    [MaxLength(200)]
-    public string ForwardedFor { get; set; } = string.Empty;
-    
-    // === RESULT ===
-    public int StatusCode { get; set; }
-    
-    public bool IsSuccess { get; set; }
+    public DateTime RespondedAt { get; set; }
     
     public string ResponseBody { get; set; } = string.Empty;  // Truncated
     
     public int ResponseBodySize { get; set; }
     
-    [MaxLength(1000)]
-    public string ErrorMessage { get; set; } = string.Empty;
+    // === WHO ===
+    public Guid SourceSystemId { get; set; }
+    
+    [MaxLength(200)]
+    public string SourceSystemName { get; set; } = string.Empty;
+    
+    // === RESULT ===
+    public int StatusCode { get; set; }
+    
+    public Guid? TenantId { get; set; }
     
     [MaxLength(500)]
-    public string ExceptionType { get; set; } = string.Empty;
+    public string UserAgent { get; set; } = string.Empty;
     
-    // === TRACING ===
-    [MaxLength(100)]
-    public string CorrelationId { get; set; } = string.Empty;
+    [MaxLength(200)]
+    public string UserId { get; set; } = string.Empty;
     
-    [MaxLength(50)]
-    public string AuthType { get; set; } = string.Empty;  // ApiKey, JWT, etc.
-    
-    [MaxLength(100)]
-    public string RelatedEntityId { get; set; } = string.Empty;
-    
-    [MaxLength(100)]
-    public string RelatedEntityType { get; set; } = string.Empty;
-    
-    public bool BodyLoggingEnabled { get; set; }
+    [MaxLength(200)]
+    public string UserName { get; set; } = string.Empty;
 }

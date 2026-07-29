@@ -3,14 +3,18 @@
 @inject NavigationManager NavManager
 
 <ExampleNav Pages="@_pages"
-            CurrentRoute="@_currentRoute"
-            HomeUrl="@Helpers.BuildShowcaseUrl()"
-            HomeLabel="Showcase"
-            HomeIcon="fa-solid fa-house" />
+        CurrentRoute="@_currentRoute"
+        HomeUrl="@Helpers.BuildShowcaseUrl()"
+        HomeLabel="Showcase"
+        HomeIcon="fa-solid fa-house" />
 
 @code {
     private List<ExampleNav.NavPage> _pages = new();
     private string _currentRoute = "";
+
+    public void Dispose() {
+        NavManager.LocationChanged -= OnLocationChanged;
+    }
 
     protected override void OnInitialized() {
         _pages = ShowcaseExampleManifest.BuildPages();
@@ -21,9 +25,5 @@
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e) {
         _currentRoute = e.Location;
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose() {
-        NavManager.LocationChanged -= OnLocationChanged;
     }
 }

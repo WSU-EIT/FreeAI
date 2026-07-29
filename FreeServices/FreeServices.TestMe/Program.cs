@@ -520,8 +520,7 @@ static async Task<int> RunTest2(string projectDir, int heartbeats, int interval,
 // ═══════════════════════════════════════════════════════════════════════
 
 static async Task<int> InstallTestService(
-    string serviceName, string exePath, string publishDir, string logPath, int interval)
-{
+    string serviceName, string exePath, string publishDir, string logPath, int interval){
     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         return await RunCommandAsync("sc.exe",

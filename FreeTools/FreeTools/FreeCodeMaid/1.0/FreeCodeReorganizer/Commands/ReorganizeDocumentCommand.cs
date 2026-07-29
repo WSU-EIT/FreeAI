@@ -30,6 +30,21 @@ namespace FreeCodeReorganizer.Commands
     [Command(PackageGuids.FreeCodeReorganizerCmdSet, PackageIds.ReorganizeDocument)]
     internal sealed class ReorganizeDocumentCommand : BaseCommand<ReorganizeDocumentCommand>
     {
+        /// <summary>
+        /// Detects the dominant newline style of the source so the engine emits matching line
+        /// endings. Defaults to the document's first newline; falls back to the OS newline.
+        /// </summary>
+        private static string DetectEol(string text)
+        {
+            int idx = text.IndexOf('\n');
+            if (idx > 0 && text[idx - 1] == '\r') {
+                return "\r\n";
+            }
+            if (idx >= 0) {
+                return "\n";
+            }
+            return Environment.NewLine;
+        }
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             // We start on the UI thread (commands are invoked there). Getting the active document
@@ -104,22 +119,6 @@ namespace FreeCodeReorganizer.Commands
 
             await VS.StatusBar.ShowMessageAsync(
                 $"FreeCodeReorganizer: reorganized {result.TypesReordered} type(s), collapsed {result.BracesCollapsed} brace(s).");
-        }
-
-        /// <summary>
-        /// Detects the dominant newline style of the source so the engine emits matching line
-        /// endings. Defaults to the document's first newline; falls back to the OS newline.
-        /// </summary>
-        private static string DetectEol(string text)
-        {
-            int idx = text.IndexOf('\n');
-            if (idx > 0 && text[idx - 1] == '\r') {
-                return "\r\n";
-            }
-            if (idx >= 0) {
-                return "\n";
-            }
-            return Environment.NewLine;
         }
     }
 }

@@ -19,9 +19,9 @@
                             <div class="btn-group w-100" role="group">
                                 @foreach (var source in _sourceTypes) {
                                     <input type="radio" class="btn-check" name="sourceType"
-                                           id="source-@source.Type" autocomplete="off"
-                                           checked="@(_selectedSource == source.Type)"
-                                           @onchange="@(() => _selectedSource = source.Type)" />
+                                            id="source-@source.Type" autocomplete="off"
+                                            checked="@(_selectedSource == source.Type)"
+                                            @onchange="@(() => _selectedSource = source.Type)" />
                                     <label class="btn btn-outline-primary" for="source-@source.Type">
                                         <i class="fa-solid @source.Icon me-1"></i>
                                         @source.Name
@@ -42,8 +42,8 @@
                                 Paste your @GetSourceLabel() below:
                             </label>
                             <textarea class="form-control font-monospace" rows="12"
-                                      @bind="_inputText" @bind:event="oninput"
-                                      placeholder="@GetPlaceholder()"></textarea>
+                                    @bind="_inputText" @bind:event="oninput"
+                                    placeholder="@GetPlaceholder()"></textarea>
                         </div>
                     } else {
                         @* Results View *@

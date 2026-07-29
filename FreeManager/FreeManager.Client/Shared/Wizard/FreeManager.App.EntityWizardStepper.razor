@@ -30,7 +30,7 @@
             @* Connector Line *@
             @if (stepIndex < Steps.Count - 1) {
                 <div class="position-absolute @(isCompleted ? "bg-success" : "bg-secondary")" 
-                     style="height: 3px; top: 14px; left: 50%; width: 100%; z-index: 1; opacity: 0.4;"></div>
+                        style="height: 3px; top: 14px; left: 50%; width: 100%; z-index: 1; opacity: 0.4;"></div>
             }
 
             @* Step Label *@
@@ -49,9 +49,9 @@
 </div>
 
 @code {
-    [Parameter] public List<DataObjects.WizardStepInfo> Steps { get; set; } = new();
     [Parameter] public int CurrentStep { get; set; }
     [Parameter] public EventCallback<int> OnStepClick { get; set; }
+    [Parameter] public List<DataObjects.WizardStepInfo> Steps { get; set; } = new();
 
     private async Task HandleStepClick(int stepIndex) {
         // Only allow clicking on completed steps

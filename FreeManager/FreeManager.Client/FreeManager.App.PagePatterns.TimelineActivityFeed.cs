@@ -16,8 +16,7 @@ public static partial class PagePatterns
     /// </summary>
     public static List<(string FileName, string FileType, string Content)> GetTimelineActivityFeedFiles(
         string projectName,
-        DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.EntityDefinition? entity = null){
         List<(string, string, string)> files = new();
 
         files.Add(($"{projectName}.App.Timeline.razor", "RazorComponent", GetTimelineActivityFeed_Timeline(projectName, entity)));

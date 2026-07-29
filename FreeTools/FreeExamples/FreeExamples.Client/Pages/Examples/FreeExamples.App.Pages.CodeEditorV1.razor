@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Code Block with pre + Monospace"
-                     Description="The query editor uses a pre element with bg-dark text-light and font-family:monospace. This preserves whitespace and indentation. The dark background mimics VS Code/SSMS. In production, Monaco Editor replaces this with full IntelliSense."
-                     Code="@_codePreBlock" />
+                    Description="The query editor uses a pre element with bg-dark text-light and font-family:monospace. This preserves whitespace and indentation. The dark background mimics VS Code/SSMS. In production, Monaco Editor replaces this with full IntelliSense."
+                    Code="@_codePreBlock" />
             <InfoTip Title="Run Button in Header"
-                     Description="The card-header has a d-flex justify-content-between layout with a title on the left and a Run button (btn-success) on the right. The fa-play icon makes it instantly recognizable. This header-with-action pattern is used in every tool page."
-                     Code="@_codeRunButton" />
+                    Description="The card-header has a d-flex justify-content-between layout with a title on the left and a Run button (btn-success) on the right. The fa-play icon makes it instantly recognizable. This header-with-action pattern is used in every tool page."
+                    Code="@_codeRunButton" />
             <InfoTip Title="Results Table with Status Badge"
-                     Description="Query results show in a table-sm table-hover below the editor. The card-header shows row count and execution time with a 'Success' badge. This split layout (editor above, results below) is the SSMS/Azure Data Studio pattern."
-                     Code="@_codeResultsTable" />
+                    Description="Query results show in a table-sm table-hover below the editor. The card-header shows row count and execution time with a 'Success' badge. This split layout (editor above, results below) is the SSMS/Azure Data Studio pattern."
+                    Code="@_codeResultsTable" />
         </div>
         <div class="card shadow-sm border-0 mb-3">
             <div class="card-header bg-dark text-white d-flex justify-content-between py-1"><span class="small"><i class="fa-solid fa-database me-1"></i> Query Editor</span><button class="btn btn-sm btn-success" @onclick="RunQuery"><i class="fa-solid fa-play me-1"></i> Run</button></div>

@@ -22,6 +22,19 @@ public sealed class ExternalApiSessionStore
     private readonly ConcurrentDictionary<string, ExternalApiSession> _store = new();
 
     // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /// <summary>Prunes all expired sessions. Called automatically on Create.</summary>
+    private void Cleanup()
+    {
+        var now = DateTime.UtcNow;
+        foreach (var kv in _store)
+            if (kv.Value.ExpiresAt < now)
+                _store.TryRemove(kv.Key, out _);
+    }
+
+    // -------------------------------------------------------------------------
     // CRUD
     // -------------------------------------------------------------------------
 
@@ -55,19 +68,6 @@ public sealed class ExternalApiSessionStore
         if (!string.IsNullOrWhiteSpace(key))
             _store.TryRemove(key, out _);
     }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    /// <summary>Prunes all expired sessions. Called automatically on Create.</summary>
-    private void Cleanup()
-    {
-        var now = DateTime.UtcNow;
-        foreach (var kv in _store)
-            if (kv.Value.ExpiresAt < now)
-                _store.TryRemove(kv.Key, out _);
-    }
 }
 
 /// <summary>
@@ -76,17 +76,16 @@ public sealed class ExternalApiSessionStore
 /// </summary>
 public sealed class ExternalApiSession
 {
-    // Smartsheet ---
-    public string? SmartsheetToken { get; set; }
+    public DateTime ExpiresAt { get; set; }
+    public string? GitBaseApiUrl   { get; set; }
+    public string? GitOwner        { get; set; }
+    public string? GitPlatform     { get; set; }  // enum name string
+    public string? GitRepo         { get; set; }
 
     // Git (shared between GitHubRepoBrowser and GenericGitRepoBrowser) ---
     public string? GitRepoUrl      { get; set; }
     public string? GitToken        { get; set; }
     public string? GitUsername     { get; set; }
-    public string? GitPlatform     { get; set; }  // enum name string
-    public string? GitOwner        { get; set; }
-    public string? GitRepo         { get; set; }
-    public string? GitBaseApiUrl   { get; set; }
-
-    public DateTime ExpiresAt { get; set; }
+    // Smartsheet ---
+    public string? SmartsheetToken { get; set; }
 }

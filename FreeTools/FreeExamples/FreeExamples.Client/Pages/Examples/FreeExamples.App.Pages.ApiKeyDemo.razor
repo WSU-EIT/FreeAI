@@ -70,17 +70,17 @@
                         @* Generate new key *@
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" placeholder="Key name (e.g. Mobile App)"
-                                   @bind="_newKeyName" @bind:event="oninput"
-                                   @onkeydown="@(async (e) => { if (e.Key == "Enter") await GenerateKey(); })"
-                                   aria-label="New API key name" />
+                                    @bind="_newKeyName" @bind:event="oninput"
+                                    @onkeydown="@(async (e) => { if (e.Key == "Enter") await GenerateKey(); })"
+                                    aria-label="New API key name" />
                             <button class="btn btn-success" @onclick="GenerateKey"
                                     disabled="@string.IsNullOrWhiteSpace(_newKeyName)"
                                     aria-label="Generate new API key">
                                 <i class="fa fa-plus me-1" aria-hidden="true"></i> Generate
                             </button>
                             <InfoTip Title="Generate Key"
-                                     Description="Clicking Generate creates a cryptographically random 32-byte key. The server stores only the SHA-256 hash (a one-way scramble) — never the raw key. The plaintext key is shown once in the yellow warning box. If you lose it, you must generate a new one. This is how real API keys work (GitHub, Stripe, etc.)."
-                                     Code="@_codeGenerate" />
+                                    Description="Clicking Generate creates a cryptographically random 32-byte key. The server stores only the SHA-256 hash (a one-way scramble) — never the raw key. The plaintext key is shown once in the yellow warning box. If you lose it, you must generate a new one. This is how real API keys work (GitHub, Stripe, etc.)."
+                                    Code="@_codeGenerate" />
                         </div>
 
                         @* Plaintext key display (shown once) *@
@@ -90,8 +90,8 @@
                                 <div class="flex-grow-1">
                                     <div class="fw-semibold small">Copy this key now — it won't be shown again!
                                         <InfoTip Title="One-Time Key Display"
-                                                 Description="This yellow warning box shows the raw API key exactly once. After you navigate away or generate another key, it disappears forever. The Copy button puts the key on your clipboard. This pattern mimics how GitHub Personal Access Tokens work — shown once, stored hashed."
-                                                 Code="@_codeOneTime" />
+                                                Description="This yellow warning box shows the raw API key exactly once. After you navigate away or generate another key, it disappears forever. The Copy button puts the key on your clipboard. This pattern mimics how GitHub Personal Access Tokens work — shown once, stored hashed."
+                                                Code="@_codeOneTime" />
                                     </div>
                                     <code class="d-block my-1 text-break" style="font-size: 0.8em;">@_lastGeneratedKey</code>
                                     <button class="btn btn-sm btn-outline-dark" @onclick="CopyKeyToClipboard"
@@ -99,8 +99,8 @@
                                         <i class="fa fa-copy me-1" aria-hidden="true"></i> Copy
                                     </button>
                                     <InfoTip Title="Copy to Clipboard"
-                                             Description="This button uses the browser's Clipboard API to copy the key to your clipboard. One click — the text is copied without selecting it manually. In code, navigator.clipboard.writeText() is called via JavaScript interop. A success toast confirms the copy."
-                                             Code="@_codeCopy" />
+                                            Description="This button uses the browser's Clipboard API to copy the key to your clipboard. One click — the text is copied without selecting it manually. In code, navigator.clipboard.writeText() is called via JavaScript interop. A success toast confirms the copy."
+                                            Code="@_codeCopy" />
                                 </div>
                             </div>
                         }
@@ -133,8 +133,8 @@
                                         <i class="fa fa-ban" aria-hidden="true"></i>
                                     </button>
                                     <InfoTip Title="Revoke Key"
-                                             Description="Revoking a key marks it as inactive in the database. Any future requests using that key will be rejected with a 401 error. The key is not deleted — it stays in the list as Revoked (red badge) for audit purposes. This is safer than deleting because you keep a record of what existed."
-                                             Code="@_codeRevoke" />
+                                            Description="Revoking a key marks it as inactive in the database. Any future requests using that key will be rejected with a 401 error. The key is not deleted — it stays in the list as Revoked (red badge) for audit purposes. This is safer than deleting because you keep a record of what existed."
+                                            Code="@_codeRevoke" />
                                 }
                             </div>
                         }
@@ -167,8 +167,8 @@
                     <div class="card-header bg-dark text-white py-2">
                         <i class="fa fa-terminal me-1" aria-hidden="true"></i> Test Console
                         <InfoTip Title="Test Console"
-                                 Description="This panel lets you send real HTTP requests to the protected API endpoint. You choose a method (GET or POST), paste an API key into the Bearer Token field, and click Send. The response shows the status code (200 = success, 401 = unauthorized) and the response body. It is like Postman built into the page."
-                                 Code="@_codeTestConsole" />
+                                Description="This panel lets you send real HTTP requests to the protected API endpoint. You choose a method (GET or POST), paste an API key into the Bearer Token field, and click Send. The response shows the status code (200 = success, 401 = unauthorized) and the response body. It is like Postman built into the page."
+                                Code="@_codeTestConsole" />
                     </div>
                     <div class="card-body">
                         <div class="row g-2 mb-3">
@@ -184,7 +184,7 @@
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text" aria-hidden="true"><i class="fa fa-lock text-muted"></i></span>
                                     <input type="text" class="form-control font-monospace" placeholder="Paste API key here..."
-                                           @bind="_testApiKey" aria-label="API key for test request" />
+                                            @bind="_testApiKey" aria-label="API key for test request" />
                                 </div>
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold">Request Body</label>
                                 <input type="text" class="form-control form-control-sm" placeholder="Test message..."
-                                       @bind="_testMessage" aria-label="Test message body" />
+                                        @bind="_testMessage" aria-label="Test message body" />
                             </div>
                         }
 
@@ -216,8 +216,8 @@
                                 <i class="fa fa-times me-1" aria-hidden="true"></i> Send Bad Key
                             </button>
                             <InfoTip Title="Failure Test Buttons"
-                                     Description="These buttons intentionally send invalid requests so you can see what happens. Send Without Key omits the Authorization header entirely — the middleware returns 401. Send Bad Key sends a random string — the hash will not match any stored key, so it also returns 401. This demonstrates the security in action."
-                                     Code="@_codeFailBtns" />
+                                    Description="These buttons intentionally send invalid requests so you can see what happens. Send Without Key omits the Authorization header entirely — the middleware returns 401. Send Bad Key sends a random string — the hash will not match any stored key, so it also returns 401. This demonstrates the security in action."
+                                    Code="@_codeFailBtns" />
                         </div>
 
                         @* Response display *@
@@ -241,8 +241,8 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span><i class="fa fa-list me-1" aria-hidden="true"></i> Request Log
                                 <InfoTip Title="Request Log"
-                                         Description="Every API request is logged here with timestamp, HTTP method, which key was used, the response status code, and a detail message. Green rows = successful (200). Red rows = unauthorized (401). This audit log is essential for security — in production you would use this to detect suspicious activity."
-                                         Code="@_codeRequestLog" />
+                                        Description="Every API request is logged here with timestamp, HTTP method, which key was used, the response status code, and a detail message. Green rows = successful (200). Red rows = unauthorized (401). This audit log is essential for security — in production you would use this to detect suspicious activity."
+                                        Code="@_codeRequestLog" />
                             </span>
                             <button class="btn btn-outline-light btn-sm" @onclick="RefreshLogs"
                                     aria-label="Refresh request log">

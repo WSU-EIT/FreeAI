@@ -48,156 +48,15 @@ namespace FreeManager;
 
 public partial interface IDataAccess
 {
-    Task<DataObjects.FMSavedProjectFilterResult> FM_GetSavedProjects(DataObjects.FMSavedProjectFilter filter, DataObjects.User CurrentUser);
-    Task<DataObjects.FMSavedProject?> FM_GetSavedProject(Guid projectId, DataObjects.User CurrentUser);
-    Task<DataObjects.FMSavedProject> FM_SaveWizardProject(DataObjects.FMSaveWizardProjectRequest request, DataObjects.User CurrentUser);
     Task<DataObjects.BooleanResponse> FM_DeleteSavedProject(Guid projectId, DataObjects.User CurrentUser);
     Task<DataObjects.FMProjectZipResponse> FM_DownloadProjectZip(Guid projectId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMSavedProject?> FM_GetSavedProject(Guid projectId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMSavedProjectFilterResult> FM_GetSavedProjects(DataObjects.FMSavedProjectFilter filter, DataObjects.User CurrentUser);
+    Task<DataObjects.FMSavedProject> FM_SaveWizardProject(DataObjects.FMSaveWizardProjectRequest request, DataObjects.User CurrentUser);
 }
 
 public partial class DataAccess
 {
-    public async Task<DataObjects.FMSavedProjectFilterResult> FM_GetSavedProjects(
-        DataObjects.FMSavedProjectFilter filter,
-        DataObjects.User CurrentUser)
-    {
-        var tenantId = CurrentUser.TenantId;
-        var query = data.FMProjects.Where(p => p.TenantId == tenantId);
-
-        if (!filter.IncludeDeleted)
-            query = query.Where(p => !p.Deleted);
-
-        if (!string.IsNullOrWhiteSpace(filter.Search))
-        {
-            var search = filter.Search.ToLower();
-            query = query.Where(p => p.Name.ToLower().Contains(search) ||
-                                    p.DisplayName.ToLower().Contains(search) ||
-                                    p.Description.ToLower().Contains(search));
-        }
-
-        if (!string.IsNullOrWhiteSpace(filter.Status))
-            query = query.Where(p => p.Status == filter.Status);
-
-        var total = await query.CountAsync();
-
-        query = filter.SortColumn switch
-        {
-            "Name" => filter.SortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
-            "CreatedAt" => filter.SortDescending ? query.OrderByDescending(p => p.CreatedAt) : query.OrderBy(p => p.CreatedAt),
-            "EntityCount" => filter.SortDescending ? query.OrderByDescending(p => p.EntityCount) : query.OrderBy(p => p.EntityCount),
-            _ => filter.SortDescending ? query.OrderByDescending(p => p.UpdatedAt) : query.OrderBy(p => p.UpdatedAt)
-        };
-
-        var items = await query
-            .Skip(filter.Skip)
-            .Take(filter.PageSize)
-            .Select(p => new DataObjects.FMSavedProject
-            {
-                FMProjectId = p.FMProjectId,
-                Name = p.Name,
-                DisplayName = p.DisplayName,
-                Description = p.Description,
-                Status = p.Status,
-                EntityCount = p.EntityCount,
-                RelationshipCount = p.RelationshipCount,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt
-            })
-            .ToListAsync();
-
-        return new DataObjects.FMSavedProjectFilterResult
-        {
-            Records = items,
-            TotalRecords = total,
-            Page = filter.Page,
-            PageSize = filter.PageSize
-        };
-    }
-
-    public async Task<DataObjects.FMSavedProject?> FM_GetSavedProject(Guid projectId, DataObjects.User CurrentUser)
-    {
-        var tenantId = CurrentUser.TenantId;
-
-        return await data.FMProjects
-            .Where(p => p.FMProjectId == projectId && p.TenantId == tenantId && !p.Deleted)
-            .Select(p => new DataObjects.FMSavedProject
-            {
-                FMProjectId = p.FMProjectId,
-                Name = p.Name,
-                DisplayName = p.DisplayName,
-                Description = p.Description,
-                Status = p.Status,
-                EntityCount = p.EntityCount,
-                RelationshipCount = p.RelationshipCount,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt,
-                EntityWizardStateJson = p.EntityWizardStateJson
-            })
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<DataObjects.FMSavedProject> FM_SaveWizardProject(
-        DataObjects.FMSaveWizardProjectRequest request,
-        DataObjects.User CurrentUser)
-    {
-        var tenantId = CurrentUser.TenantId;
-        var userId = CurrentUser.UserId;
-        var isNew = !request.FMProjectId.HasValue || request.FMProjectId == Guid.Empty;
-
-        EFModels.EFModels.FMProject project;
-
-        if (isNew)
-        {
-            project = new EFModels.EFModels.FMProject
-            {
-                FMProjectId = Guid.NewGuid(),
-                TenantId = tenantId,
-                Name = request.Name,
-                DisplayName = request.DisplayName,
-                Description = request.Description,
-                Status = "Draft",
-                EntityWizardStateJson = request.EntityWizardStateJson,
-                EntityCount = request.EntityCount,
-                RelationshipCount = request.RelationshipCount,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                CreatedBy = userId
-            };
-            data.FMProjects.Add(project);
-        }
-        else
-        {
-            project = await data.FMProjects
-                .FirstOrDefaultAsync(p => p.FMProjectId == request.FMProjectId!.Value
-                                       && p.TenantId == tenantId
-                                       && !p.Deleted)
-                ?? throw new ArgumentException("Project not found");
-
-            project.Name = request.Name;
-            project.DisplayName = request.DisplayName;
-            project.Description = request.Description;
-            project.EntityWizardStateJson = request.EntityWizardStateJson;
-            project.EntityCount = request.EntityCount;
-            project.RelationshipCount = request.RelationshipCount;
-            project.UpdatedAt = DateTime.UtcNow;
-        }
-
-        await data.SaveChangesAsync();
-
-        return new DataObjects.FMSavedProject
-        {
-            FMProjectId = project.FMProjectId,
-            Name = project.Name,
-            DisplayName = project.DisplayName,
-            Description = project.Description,
-            Status = project.Status,
-            EntityCount = project.EntityCount,
-            RelationshipCount = project.RelationshipCount,
-            CreatedAt = project.CreatedAt,
-            UpdatedAt = project.UpdatedAt
-        };
-    }
-
     public async Task<DataObjects.BooleanResponse> FM_DeleteSavedProject(Guid projectId, DataObjects.User CurrentUser)
     {
         var tenantId = CurrentUser.TenantId;
@@ -357,6 +216,144 @@ To Use These Files:
         }
 
         return response;
+    }
+
+    public async Task<DataObjects.FMSavedProject?> FM_GetSavedProject(Guid projectId, DataObjects.User CurrentUser)
+    {
+        var tenantId = CurrentUser.TenantId;
+
+        return await data.FMProjects
+            .Where(p => p.FMProjectId == projectId && p.TenantId == tenantId && !p.Deleted)
+            .Select(p => new DataObjects.FMSavedProject
+            {
+                FMProjectId = p.FMProjectId,
+                Name = p.Name,
+                DisplayName = p.DisplayName,
+                Description = p.Description,
+                Status = p.Status,
+                EntityCount = p.EntityCount,
+                RelationshipCount = p.RelationshipCount,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt,
+                EntityWizardStateJson = p.EntityWizardStateJson
+            })
+            .FirstOrDefaultAsync();
+    }
+    public async Task<DataObjects.FMSavedProjectFilterResult> FM_GetSavedProjects(
+        DataObjects.FMSavedProjectFilter filter,
+        DataObjects.User CurrentUser){
+        var tenantId = CurrentUser.TenantId;
+        var query = data.FMProjects.Where(p => p.TenantId == tenantId);
+
+        if (!filter.IncludeDeleted)
+            query = query.Where(p => !p.Deleted);
+
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            var search = filter.Search.ToLower();
+            query = query.Where(p => p.Name.ToLower().Contains(search) ||
+                                    p.DisplayName.ToLower().Contains(search) ||
+                                    p.Description.ToLower().Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Status))
+            query = query.Where(p => p.Status == filter.Status);
+
+        var total = await query.CountAsync();
+
+        query = filter.SortColumn switch
+        {
+            "Name" => filter.SortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+            "CreatedAt" => filter.SortDescending ? query.OrderByDescending(p => p.CreatedAt) : query.OrderBy(p => p.CreatedAt),
+            "EntityCount" => filter.SortDescending ? query.OrderByDescending(p => p.EntityCount) : query.OrderBy(p => p.EntityCount),
+            _ => filter.SortDescending ? query.OrderByDescending(p => p.UpdatedAt) : query.OrderBy(p => p.UpdatedAt)
+        };
+
+        var items = await query
+            .Skip(filter.Skip)
+            .Take(filter.PageSize)
+            .Select(p => new DataObjects.FMSavedProject
+            {
+                FMProjectId = p.FMProjectId,
+                Name = p.Name,
+                DisplayName = p.DisplayName,
+                Description = p.Description,
+                Status = p.Status,
+                EntityCount = p.EntityCount,
+                RelationshipCount = p.RelationshipCount,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt
+            })
+            .ToListAsync();
+
+        return new DataObjects.FMSavedProjectFilterResult
+        {
+            Records = items,
+            TotalRecords = total,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        };
+    }
+
+    public async Task<DataObjects.FMSavedProject> FM_SaveWizardProject(
+        DataObjects.FMSaveWizardProjectRequest request,
+        DataObjects.User CurrentUser){
+        var tenantId = CurrentUser.TenantId;
+        var userId = CurrentUser.UserId;
+        var isNew = !request.FMProjectId.HasValue || request.FMProjectId == Guid.Empty;
+
+        EFModels.EFModels.FMProject project;
+
+        if (isNew)
+        {
+            project = new EFModels.EFModels.FMProject
+            {
+                FMProjectId = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = request.Name,
+                DisplayName = request.DisplayName,
+                Description = request.Description,
+                Status = "Draft",
+                EntityWizardStateJson = request.EntityWizardStateJson,
+                EntityCount = request.EntityCount,
+                RelationshipCount = request.RelationshipCount,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                CreatedBy = userId
+            };
+            data.FMProjects.Add(project);
+        }
+        else
+        {
+            project = await data.FMProjects
+                .FirstOrDefaultAsync(p => p.FMProjectId == request.FMProjectId!.Value
+                                       && p.TenantId == tenantId
+                                       && !p.Deleted)
+                ?? throw new ArgumentException("Project not found");
+
+            project.Name = request.Name;
+            project.DisplayName = request.DisplayName;
+            project.Description = request.Description;
+            project.EntityWizardStateJson = request.EntityWizardStateJson;
+            project.EntityCount = request.EntityCount;
+            project.RelationshipCount = request.RelationshipCount;
+            project.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await data.SaveChangesAsync();
+
+        return new DataObjects.FMSavedProject
+        {
+            FMProjectId = project.FMProjectId,
+            Name = project.Name,
+            DisplayName = project.DisplayName,
+            Description = project.Description,
+            Status = project.Status,
+            EntityCount = project.EntityCount,
+            RelationshipCount = project.RelationshipCount,
+            CreatedAt = project.CreatedAt,
+            UpdatedAt = project.UpdatedAt
+        };
     }
 
     /// <summary>

@@ -25,13 +25,13 @@ public partial class DataObjects
 
     public partial class SignalRUpdate
     {
-        public Guid? TenantId { get; set; }
         public Guid? ItemId { get; set; }
-        public Guid? UserId { get; set; }
-        public string? UserDisplayName { get; set; }
-        public string UpdateType { get; set; } = "Unknown";
         public string Message { get; set; } = "";
         public object? Object { get; set; }
         public string? ObjectAsString { get; set; }
+        public Guid? TenantId { get; set; }
+        public string UpdateType { get; set; } = "Unknown";
+        public string? UserDisplayName { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

@@ -63,27 +63,27 @@ namespace FreeManager;
 /// </summary>
 public partial interface IDataAccess
 {
-    // Projects
-    Task<List<DataObjects.FMProjectInfo>> FM_GetProjects(DataObjects.User CurrentUser);
-    Task<DataObjects.FMProjectInfo?> FM_GetProject(Guid projectId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMAppFileInfo?> FM_CreateAppFile(DataObjects.FMCreateFileRequest request, DataObjects.User CurrentUser);
     Task<DataObjects.FMProjectInfo> FM_CreateProject(DataObjects.FMCreateProjectRequest request, DataObjects.User CurrentUser);
-    Task<DataObjects.BooleanResponse> FM_UpdateProject(DataObjects.FMUpdateProjectRequest request, DataObjects.User CurrentUser);
+    Task<DataObjects.BooleanResponse> FM_DeleteAppFile(Guid fileId, DataObjects.User CurrentUser);
     Task<DataObjects.BooleanResponse> FM_DeleteProject(Guid projectId, DataObjects.User CurrentUser);
     Task<byte[]?> FM_ExportProjectAsZip(Guid projectId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMAppFileContent?> FM_GetAppFile(Guid fileId, DataObjects.User CurrentUser);
 
     // Files
     Task<List<DataObjects.FMAppFileInfo>> FM_GetAppFiles(Guid projectId, DataObjects.User CurrentUser);
-    Task<DataObjects.FMAppFileContent?> FM_GetAppFile(Guid fileId, DataObjects.User CurrentUser);
-    Task<DataObjects.FMSaveFileResponse> FM_SaveAppFile(DataObjects.FMSaveFileRequest request, DataObjects.User CurrentUser);
-    Task<DataObjects.FMAppFileInfo?> FM_CreateAppFile(DataObjects.FMCreateFileRequest request, DataObjects.User CurrentUser);
-    Task<DataObjects.BooleanResponse> FM_DeleteAppFile(Guid fileId, DataObjects.User CurrentUser);
-    Task<List<DataObjects.FMFileVersionInfo>> FM_GetFileVersions(Guid fileId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMBuildDetailInfo?> FM_GetBuild(Guid buildId, DataObjects.User CurrentUser);
+    Task<List<DataObjects.FMBuildInfo>> FM_GetBuilds(Guid projectId, DataObjects.User CurrentUser);
     Task<DataObjects.FMAppFileContent?> FM_GetFileVersion(Guid versionId, DataObjects.User CurrentUser);
+    Task<List<DataObjects.FMFileVersionInfo>> FM_GetFileVersions(Guid fileId, DataObjects.User CurrentUser);
+    Task<DataObjects.FMProjectInfo?> FM_GetProject(Guid projectId, DataObjects.User CurrentUser);
+    // Projects
+    Task<List<DataObjects.FMProjectInfo>> FM_GetProjects(DataObjects.User CurrentUser);
+    Task<DataObjects.FMSaveFileResponse> FM_SaveAppFile(DataObjects.FMSaveFileRequest request, DataObjects.User CurrentUser);
 
     // Builds
     Task<DataObjects.FMBuildInfo> FM_StartBuild(DataObjects.FMStartBuildRequest request, DataObjects.User CurrentUser);
-    Task<List<DataObjects.FMBuildInfo>> FM_GetBuilds(Guid projectId, DataObjects.User CurrentUser);
-    Task<DataObjects.FMBuildDetailInfo?> FM_GetBuild(Guid buildId, DataObjects.User CurrentUser);
+    Task<DataObjects.BooleanResponse> FM_UpdateProject(DataObjects.FMUpdateProjectRequest request, DataObjects.User CurrentUser);
 }
 
 /// <summary>

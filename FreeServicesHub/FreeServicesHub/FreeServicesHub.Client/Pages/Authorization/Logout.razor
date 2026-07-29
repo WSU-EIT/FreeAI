@@ -17,9 +17,8 @@
     </div>
 }
 @code {
-    [Parameter] public string? TenantCode { get; set; }
-
     protected string _pageName = "logout";
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose() { 
         Model.OnChange -= OnDataModelUpdated;
@@ -76,16 +75,16 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-        Model.View = _pageName;
-    }
-
     protected void OnDataModelUpdated()
     {
         if (Model.View == _pageName) {
             StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
     }
 }

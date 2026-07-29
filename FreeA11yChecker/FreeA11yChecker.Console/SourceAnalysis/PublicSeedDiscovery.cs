@@ -92,13 +92,23 @@ public static class PublicSeedDiscovery
         return results.ToList();
     }
 
+    private static bool IsLocElement(XmlReader reader)
+    {
+        if (!string.Equals(reader.LocalName, "loc", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var ns = reader.NamespaceURI ?? string.Empty;
+        return ns.Length == 0 || string.Equals(ns, SitemapNamespace, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static async Task ProcessSitemapAsync(
         HttpClient client,
         Uri sitemapUrl,
         Uri baseUri,
         HashSet<string> results,
-        HashSet<string> visited)
-    {
+        HashSet<string> visited){
         if (!visited.Add(sitemapUrl.AbsoluteUri))
         {
             return;
@@ -199,35 +209,6 @@ public static class PublicSeedDiscovery
         }
     }
 
-    private static bool IsLocElement(XmlReader reader)
-    {
-        if (!string.Equals(reader.LocalName, "loc", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        var ns = reader.NamespaceURI ?? string.Empty;
-        return ns.Length == 0 || string.Equals(ns, SitemapNamespace, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static async Task<string?> TryGetStringAsync(HttpClient client, Uri uri)
-    {
-        var bytes = await TryGetBytesAsync(client, uri).ConfigureAwait(false);
-        if (bytes is null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return System.Text.Encoding.UTF8.GetString(bytes);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
     private static async Task<byte[]?> TryGetBytesAsync(HttpClient client, Uri uri)
     {
         try
@@ -259,6 +240,24 @@ public static class PublicSeedDiscovery
             }
 
             return buffer.ToArray();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static async Task<string?> TryGetStringAsync(HttpClient client, Uri uri)
+    {
+        var bytes = await TryGetBytesAsync(client, uri).ConfigureAwait(false);
+        if (bytes is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return System.Text.Encoding.UTF8.GetString(bytes);
         }
         catch
         {

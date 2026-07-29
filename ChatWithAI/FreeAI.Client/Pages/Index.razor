@@ -8,10 +8,9 @@
 }
 
 @code {
-    [Parameter] public string? TenantCode { get; set; }
-
     protected bool _loadedData = false;
     protected string _pageName = "home";
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose()
     {

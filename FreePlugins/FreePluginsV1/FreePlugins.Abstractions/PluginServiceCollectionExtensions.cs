@@ -40,9 +40,7 @@ public static class PluginServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="assembly">The assembly to scan.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddPluginsFromAssembly(
-        this IServiceCollection services,
-        Assembly assembly)
+    public static IServiceCollection AddPluginsFromAssembly(this IServiceCollection services, Assembly assembly)
     {
         IEnumerable<Type> pluginTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
@@ -69,37 +67,6 @@ public static class PluginServiceCollectionExtensions
     public static IServiceCollection AddPluginsFromCallingAssembly(this IServiceCollection services)
     {
         return services.AddPluginsFromAssembly(Assembly.GetCallingAssembly());
-    }
-
-    /// <summary>
-    /// Gets all registered compiled plugin registrations.
-    /// </summary>
-    /// <param name="services">The service provider.</param>
-    public static IEnumerable<CompiledPluginRegistration> GetCompiledPlugins(this IServiceProvider services)
-    {
-        return services.GetServices<CompiledPluginRegistration>();
-    }
-
-    private static PluginMetadata GetPluginMetadata(Type pluginType)
-    {
-        // See if the plugin has metadata from an attribute
-        PluginAttribute? attribute = pluginType.GetCustomAttribute<PluginAttribute>();
-        if (attribute != null) {
-            return attribute.ToMetadata(pluginType);
-        }
-
-        // Fall back to creating an instance and calling Properties().
-        // This requires a parameterless constructor.
-        if (pluginType.GetConstructor(Type.EmptyTypes) != null) {
-            object? instance = Activator.CreateInstance(pluginType);
-            if (instance is IPluginBase pluginBase) {
-                Dictionary<string, object> properties = pluginBase.Properties();
-                return CreateMetadataFromProperties(pluginType, properties);
-            }
-        }
-
-        throw new InvalidOperationException(
-            $"Plugin type {pluginType.Name} must have a [Plugin] attribute or a parameterless constructor.");
     }
 
     private static PluginMetadata CreateMetadataFromProperties(Type pluginType, Dictionary<string, object> properties)
@@ -137,6 +104,37 @@ public static class PluginServiceCollectionExtensions
         };
 
         return output;
+    }
+
+    /// <summary>
+    /// Gets all registered compiled plugin registrations.
+    /// </summary>
+    /// <param name="services">The service provider.</param>
+    public static IEnumerable<CompiledPluginRegistration> GetCompiledPlugins(this IServiceProvider services)
+    {
+        return services.GetServices<CompiledPluginRegistration>();
+    }
+
+    private static PluginMetadata GetPluginMetadata(Type pluginType)
+    {
+        // See if the plugin has metadata from an attribute
+        PluginAttribute? attribute = pluginType.GetCustomAttribute<PluginAttribute>();
+        if (attribute != null) {
+            return attribute.ToMetadata(pluginType);
+        }
+
+        // Fall back to creating an instance and calling Properties().
+        // This requires a parameterless constructor.
+        if (pluginType.GetConstructor(Type.EmptyTypes) != null) {
+            object? instance = Activator.CreateInstance(pluginType);
+            if (instance is IPluginBase pluginBase) {
+                Dictionary<string, object> properties = pluginBase.Properties();
+                return CreateMetadataFromProperties(pluginType, properties);
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"Plugin type {pluginType.Name} must have a [Plugin] attribute or a parameterless constructor.");
     }
 }
 

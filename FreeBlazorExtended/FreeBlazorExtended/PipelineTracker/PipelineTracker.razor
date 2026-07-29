@@ -43,8 +43,8 @@
                     <div class="text-center" role="button" @onclick="@(() => HandleStageClick(idx))" style="cursor:pointer;">
                         @* Circle *@
                         <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 @GetCircleClasses(effectiveState)"
-                             style="width:48px; height:48px; font-size:1.1rem; transition: all 0.3s;"
-                             title="@stage.Name">
+                                style="width:48px; height:48px; font-size:1.1rem; transition: all 0.3s;"
+                                title="@stage.Name">
                             @if (effectiveState == PipelineStageState.Completed) {
                                 <i class="fa-solid fa-check"></i>
                             } else if (effectiveState == PipelineStageState.Error) {
@@ -115,12 +115,6 @@
 
 @code {
     /// <summary>
-    /// The ordered list of pipeline stages to display, left to right.
-    /// <para><b>Required.</b> Each <see cref="PipelineStage"/> must have a <see cref="PipelineStage.Name"/>.</para>
-    /// </summary>
-    [Parameter] public List<PipelineStage> Stages { get; set; } = new();
-
-    /// <summary>
     /// Zero-based index of the stage currently in progress.
     /// <para><b>Required.</b></para>
     /// Stages with an index lower than this value are rendered as Completed (green);
@@ -135,14 +129,6 @@
     [Parameter] public EventCallback<int> OnStageClick { get; set; }
 
     /// <summary>
-    /// When <c>true</c>, clicking a stage renders a detail card below the pipeline
-    /// showing <see cref="PipelineStage.Notes"/>, <see cref="PipelineStage.CompletedBy"/>,
-    /// and <see cref="PipelineStage.CompletedAt"/>. Pairs with <see cref="SelectedStageIndex"/>.
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool ShowDetailsPanel { get; set; } = false;
-
-    /// <summary>
     /// Zero-based index of the stage whose detail card is currently shown.
     /// Use <c>@bind-SelectedStageIndex</c> for two-way binding.
     /// </summary>
@@ -151,19 +137,26 @@
     /// <summary>Supports <c>@bind-SelectedStageIndex</c> two-way binding.</summary>
     [Parameter] public EventCallback<int?> SelectedStageIndexChanged { get; set; }
 
-    private async Task HandleStageClick(int idx)
-    {
-        if (ShowDetailsPanel) {
-            SelectedStageIndex = idx;
-            if (SelectedStageIndexChanged.HasDelegate) {
-                await SelectedStageIndexChanged.InvokeAsync(idx);
-            }
-        }
+    /// <summary>
+    /// When <c>true</c>, clicking a stage renders a detail card below the pipeline
+    /// showing <see cref="PipelineStage.Notes"/>, <see cref="PipelineStage.CompletedBy"/>,
+    /// and <see cref="PipelineStage.CompletedAt"/>. Pairs with <see cref="SelectedStageIndex"/>.
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool ShowDetailsPanel { get; set; } = false;
+    /// <summary>
+    /// The ordered list of pipeline stages to display, left to right.
+    /// <para><b>Required.</b> Each <see cref="PipelineStage"/> must have a <see cref="PipelineStage.Name"/>.</para>
+    /// </summary>
+    [Parameter] public List<PipelineStage> Stages { get; set; } = new();
 
-        if (OnStageClick.HasDelegate) {
-            await OnStageClick.InvokeAsync(idx);
-        }
-    }
+    private string GetCircleClasses(PipelineStageState state) => state switch {
+        PipelineStageState.Completed => "bg-success text-white",
+        PipelineStageState.InProgress => "bg-primary text-white shadow",
+        PipelineStageState.Error => "bg-danger text-white",
+        PipelineStageState.Skipped => "bg-secondary text-white opacity-75",
+        _ => "bg-light text-muted border",
+    };
 
     /// <summary>
     /// If the stage already declares an explicit state, honor it. Otherwise infer
@@ -182,14 +175,6 @@
         return PipelineStageState.Pending;
     }
 
-    private string GetCircleClasses(PipelineStageState state) => state switch {
-        PipelineStageState.Completed => "bg-success text-white",
-        PipelineStageState.InProgress => "bg-primary text-white shadow",
-        PipelineStageState.Error => "bg-danger text-white",
-        PipelineStageState.Skipped => "bg-secondary text-white opacity-75",
-        _ => "bg-light text-muted border",
-    };
-
     private string GetLabelClasses(PipelineStageState state) => state switch {
         PipelineStageState.Completed => "text-success",
         PipelineStageState.InProgress => "fw-bold text-primary",
@@ -206,29 +191,43 @@
         _ => "bg-secondary",
     };
 
+    private async Task HandleStageClick(int idx)
+    {
+        if (ShowDetailsPanel) {
+            SelectedStageIndex = idx;
+            if (SelectedStageIndexChanged.HasDelegate) {
+                await SelectedStageIndexChanged.InvokeAsync(idx);
+            }
+        }
+
+        if (OnStageClick.HasDelegate) {
+            await OnStageClick.InvokeAsync(idx);
+        }
+    }
+
     /// <summary>Describes a single stage in the pipeline tracker.</summary>
     public class PipelineStage
     {
-        /// <summary>Unique identifier for the stage. Used for keying and callbacks.</summary>
-        public string Id { get; set; } = "";
-        /// <summary>Display label shown beneath the stage circle. <b>Required.</b></summary>
-        public string Name { get; set; } = "";
+        /// <summary>UTC timestamp when the stage completed; shown in the detail panel.</summary>
+        public DateTime? CompletedAt { get; set; }
+        /// <summary>Name or id of the user/system that completed the stage; shown in the detail panel.</summary>
+        public string? CompletedBy { get; set; }
         /// <summary>Optional longer description shown in the detail panel when <c>ShowDetailsPanel</c> is true.</summary>
         public string? Description { get; set; }
         /// <summary>Font Awesome class for a small icon inside the stage circle (e.g. <c>"fa-solid fa-gear"</c>).</summary>
         public string? Icon { get; set; }
+        /// <summary>Unique identifier for the stage. Used for keying and callbacks.</summary>
+        public string Id { get; set; } = "";
+        /// <summary>Display label shown beneath the stage circle. <b>Required.</b></summary>
+        public string Name { get; set; } = "";
+        /// <summary>Free-form notes displayed in the detail panel when <c>ShowDetailsPanel</c> is true.</summary>
+        public string? Notes { get; set; }
         /// <summary>
         /// Explicit state override. When set to <see cref="PipelineStageState.Error"/> or
         /// <see cref="PipelineStageState.Skipped"/>, this value overrides the automatic
         /// inference from <c>CurrentStageIndex</c>.
         /// </summary>
         public PipelineStageState State { get; set; } = PipelineStageState.Pending;
-        /// <summary>UTC timestamp when the stage completed; shown in the detail panel.</summary>
-        public DateTime? CompletedAt { get; set; }
-        /// <summary>Name or id of the user/system that completed the stage; shown in the detail panel.</summary>
-        public string? CompletedBy { get; set; }
-        /// <summary>Free-form notes displayed in the detail panel when <c>ShowDetailsPanel</c> is true.</summary>
-        public string? Notes { get; set; }
     }
 
     /// <summary>Visual state of a <see cref="PipelineStage"/>.</summary>

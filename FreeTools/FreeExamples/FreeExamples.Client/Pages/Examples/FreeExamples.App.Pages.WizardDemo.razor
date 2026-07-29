@@ -55,19 +55,19 @@
 
             @* Wizard Stepper - Clickable breadcrumbs with connector lines *@
             <FreeExamples.Client.Shared.Wizard.WizardStepper
-                Steps="@GetStepperInfo()"
-                CurrentStep="@_currentStep"
-                OnStepClick="@GoToStep" />
+                    Steps="@GetStepperInfo()"
+                    CurrentStep="@_currentStep"
+                    OnStepClick="@GoToStep" />
             <InfoTip Title="Wizard Stepper"
-                     Description="The numbered circles at the top show your progress through the wizard. Completed steps are clickable — you can jump back to review or change answers. The current step is highlighted. Connector lines between circles show the flow."
-                     Code="@_codeStepper" />
+                    Description="The numbered circles at the top show your progress through the wizard. Completed steps are clickable — you can jump back to review or change answers. The current step is highlighted. Connector lines between circles show the flow."
+                    Code="@_codeStepper" />
 
             @* Selection Summary - Shows previous selections as badges *@
             @if (_currentStep > 0) {
                 <FreeExamples.Client.Shared.Wizard.WizardSummary Selections="@GetSelections()" />
                 <InfoTip Title="Selection Summary"
-                         Description="These colored badge pills show what you chose in previous steps — like breadcrumbs of your decisions. They remind you what you picked without going back. They appear between the stepper and the current step content."
-                         Code="@_codeSummary" />
+                        Description="These colored badge pills show what you chose in previous steps — like breadcrumbs of your decisions. They remind you what you picked without going back. They appear between the stepper and the current step content."
+                        Code="@_codeSummary" />
             }
 
             @* Main Wizard Card *@
@@ -75,44 +75,44 @@
                 @switch (_currentStep) {
                     case 0:
                         <FreeExamples.Client.Shared.Wizard.WizardStepHeader
-                            StepNumber="1"
-                            Title="Select a Category"
-                            ShowNext="true"
-                            NextDisabled="@(string.IsNullOrWhiteSpace(_selectedCategory))"
-                            OnNext="@Next" />
+                                StepNumber="1"
+                                Title="Select a Category"
+                                ShowNext="true"
+                                NextDisabled="@(string.IsNullOrWhiteSpace(_selectedCategory))"
+                                OnNext="@Next" />
                         <InfoTip Title="Step Navigation"
-                                 Description="Back and Next buttons control movement through steps. Next is disabled (greyed out) until required fields are filled. The NextDisabled parameter is calculated from validation — for example, preventing advancing without picking a category."
-                                 Code="@_codeStepNav" />
+                                Description="Back and Next buttons control movement through steps. Next is disabled (greyed out) until required fields are filled. The NextDisabled parameter is calculated from validation — for example, preventing advancing without picking a category."
+                                Code="@_codeStepNav" />
                         break;
                     case 1:
                         <FreeExamples.Client.Shared.Wizard.WizardStepHeader
-                            StepNumber="2"
-                            Title="Enter Details"
-                            ShowBack="true"
-                            ShowNext="true"
-                            NextDisabled="@(string.IsNullOrWhiteSpace(_itemName))"
-                            OnBack="@Back"
-                            OnNext="@Next" />
+                                StepNumber="2"
+                                Title="Enter Details"
+                                ShowBack="true"
+                                ShowNext="true"
+                                NextDisabled="@(string.IsNullOrWhiteSpace(_itemName))"
+                                OnBack="@Back"
+                                OnNext="@Next" />
                         break;
                     case 2:
                         <FreeExamples.Client.Shared.Wizard.WizardStepHeader
-                            StepNumber="3"
-                            Title="Set Priority"
-                            ShowBack="true"
-                            ShowNext="true"
-                            NextDisabled="@(_priority < 1 || _priority > 5)"
-                            OnBack="@Back"
-                            OnNext="@Next" />
+                                StepNumber="3"
+                                Title="Set Priority"
+                                ShowBack="true"
+                                ShowNext="true"
+                                NextDisabled="@(_priority < 1 || _priority > 5)"
+                                OnBack="@Back"
+                                OnNext="@Next" />
                         break;
                     case 3:
                         <FreeExamples.Client.Shared.Wizard.WizardStepHeader
-                            StepNumber="4"
-                            Title="Review & Submit"
-                            ShowBack="true"
-                            ShowFinish="true"
-                            OnBack="@Back"
-                            OnFinish="@Finish"
-                            HeaderClass="bg-success text-white" />
+                                StepNumber="4"
+                                Title="Review & Submit"
+                                ShowBack="true"
+                                ShowFinish="true"
+                                OnBack="@Back"
+                                OnFinish="@Finish"
+                                HeaderClass="bg-success text-white" />
                         break;
                 }
 
@@ -125,8 +125,8 @@
                                         <label for="wizard-category" class="form-label fw-semibold">
                                             Category <span class="text-danger" aria-hidden="true">*</span>
                                             <InfoTip Title="Required Fields"
-                                                     Description="The red asterisk means this field must be filled in. If you click Next without selecting a value, the field turns red with an error message. The _attemptedNext flag tracks whether you have tried to advance — validation errors only show after your first attempt so the form does not start angry."
-                                                     Code="@_codeWizardRequired" />
+                                                    Description="The red asterisk means this field must be filled in. If you click Next without selecting a value, the field turns red with an error message. The _attemptedNext flag tracks whether you have tried to advance — validation errors only show after your first attempt so the form does not start angry."
+                                                    Code="@_codeWizardRequired" />
                                         </label>
                                     <select id="wizard-category"
                                             class="form-select @((_attemptedNext && string.IsNullOrWhiteSpace(_selectedCategory)) ? "is-invalid" : "")"
@@ -158,14 +158,14 @@
                                         Name <span class="text-danger" aria-hidden="true">*</span>
                                     </label>
                                     <input type="text"
-                                           id="wizard-name"
-                                           class="form-control @((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "is-invalid" : "")"
-                                           @bind="_itemName"
-                                           @bind:event="oninput"
-                                           placeholder="Enter a descriptive name"
-                                           aria-required="true"
-                                           aria-describedby="name-help @((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "name-error" : "")"
-                                           aria-invalid="@((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "true" : null)" />
+                                            id="wizard-name"
+                                            class="form-control @((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "is-invalid" : "")"
+                                            @bind="_itemName"
+                                            @bind:event="oninput"
+                                            placeholder="Enter a descriptive name"
+                                            aria-required="true"
+                                            aria-describedby="name-help @((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "name-error" : "")"
+                                            aria-invalid="@((_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) ? "true" : null)" />
                                     <div id="name-help" class="form-text">Provide a name for this item (required).</div>
                                     @if (_attemptedNext && string.IsNullOrWhiteSpace(_itemName)) {
                                         <div id="name-error" class="invalid-feedback" role="alert">
@@ -185,14 +185,14 @@
                                         Priority <span class="text-danger" aria-hidden="true">*</span>
                                     </label>
                                     <input type="number"
-                                           id="wizard-priority"
-                                           class="form-control @((_attemptedNext && (_priority < 1 || _priority > 5)) ? "is-invalid" : "")"
-                                           @bind="_priority"
-                                           min="1"
-                                           max="5"
-                                           aria-required="true"
-                                           aria-describedby="priority-help @((_attemptedNext && (_priority < 1 || _priority > 5)) ? "priority-error" : "")"
-                                           aria-invalid="@((_attemptedNext && (_priority < 1 || _priority > 5)) ? "true" : null)" />
+                                            id="wizard-priority"
+                                            class="form-control @((_attemptedNext && (_priority < 1 || _priority > 5)) ? "is-invalid" : "")"
+                                            @bind="_priority"
+                                            min="1"
+                                            max="5"
+                                            aria-required="true"
+                                            aria-describedby="priority-help @((_attemptedNext && (_priority < 1 || _priority > 5)) ? "priority-error" : "")"
+                                            aria-invalid="@((_attemptedNext && (_priority < 1 || _priority > 5)) ? "true" : null)" />
                                     <div id="priority-help" class="form-text">Enter a priority between 1 (lowest) and 5 (highest).</div>
                                     @if (_attemptedNext && (_priority < 1 || _priority > 5)) {
                                         <div id="priority-error" class="invalid-feedback" role="alert">
@@ -209,8 +209,8 @@
                                 <legend class="visually-hidden">Step 4: Review & Submit</legend>
                                 <h6 class="mb-3"><i class="fa fa-clipboard-check me-1" aria-hidden="true"></i> Review Your Selections
                                     <InfoTip Title="Review Step"
-                                             Description="The final step shows all your choices in a summary table before submitting. This is a common UX pattern — let users verify everything before committing. The Finish button replaces Next, signaling that this is the last step. No data is saved until you click Finish."
-                                             Code="@_codeReview" />
+                                            Description="The final step shows all your choices in a summary table before submitting. This is a common UX pattern — let users verify everything before committing. The Finish button replaces Next, signaling that this is the last step. No data is saved until you click Finish."
+                                            Code="@_codeReview" />
                                 </h6>
                                 <div class="table-responsive">
                                     <table class="table table-bordered mb-0" aria-label="Review of your wizard selections">

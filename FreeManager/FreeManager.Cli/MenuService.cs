@@ -16,80 +16,120 @@ namespace FreeManager.Cli;
 public static class MenuService
 {
     /// <summary>
-    /// Show the main menu and handle user selections.
+    /// Interactive wizard to create an application from Application Templates.
     /// </summary>
-    public static async Task ShowMainMenu()
+    private static async Task CreateApplicationWizard()
     {
-        while (true)
+        Console.Clear();
+        ShowHeader();
+
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("           CREATE APPLICATION FROM TEMPLATE                    ");
+        Console.ResetColor();
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.WriteLine();
+
+        // Step 1: Select Application Template
+        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
+
+        Console.WriteLine("  STEP 1: Choose an application template");
+        Console.WriteLine("  ┌────────────────────────────────────────────────────────────┐");
+        for (int i = 0; i < appTemplates.Count; i++)
         {
-            Console.Clear();
-            ShowHeader();
-            ShowMainMenuOptions();
-
-            Console.Write("Select option: ");
-            var key = Console.ReadKey();
-            Console.WriteLine();
-            Console.WriteLine();
-
-            switch (char.ToUpper(key.KeyChar))
-            {
-                case '1':
-                    await CreateProjectWizard();
-                    break;
-                case '2':
-                    await CreateApplicationWizard();
-                    break;
-                case '3':
-                    ShowTemplateList();
-                    break;
-                case '4':
-                    ShowHelp();
-                    break;
-                case '0':
-                    Console.WriteLine("Exiting...");
-                    return;
-                default:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Invalid option. Please try again.");
-                    Console.ResetColor();
-                    Console.WriteLine();
-                    Console.WriteLine("Press any key to continue...");
-                    Console.ReadKey(true);
-                    break;
-            }
+            var t = appTemplates[i];
+            var color = t.Template == CliApplicationTemplate.FreeAudit ? ConsoleColor.Red : ConsoleColor.Yellow;
+            Console.Write("  │  ");
+            Console.ForegroundColor = color;
+            Console.Write($"{i + 1}. {t.Name}");
+            Console.ResetColor();
+            Console.WriteLine($" [{t.Difficulty}]");
+            Console.WriteLine($"  │     {t.Description}");
+            Console.WriteLine($"  │     Entities: {t.EntityCount}");
+            Console.Write("  │     Features: ");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(string.Join(", ", t.Features.Take(3)) + (t.Features.Count > 3 ? "..." : ""));
+            Console.ResetColor();
+            if (i < appTemplates.Count - 1) Console.WriteLine("  │");
         }
-    }
+        Console.WriteLine("  └────────────────────────────────────────────────────────────┘");
+        Console.WriteLine();
 
-    /// <summary>
-    /// Show the application header with box drawing.
-    /// </summary>
-    private static void ShowHeader()
-    {
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("╔══════════════════════════════════════════════════════════════╗");
-        Console.WriteLine("║           FreeManager - FreeCRM Project Generator            ║");
-        Console.WriteLine("╚══════════════════════════════════════════════════════════════╝");
+        Console.Write("  Select template (1-3): ");
+        if (!int.TryParse(Console.ReadLine(), out int templateChoice) || templateChoice < 1 || templateChoice > appTemplates.Count)
+        {
+            ShowError("Invalid template selection.");
+            return;
+        }
+
+        var selectedAppTemplate = appTemplates[templateChoice - 1];
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"  ✓ Selected: {selectedAppTemplate.Name}");
         Console.ResetColor();
         Console.WriteLine();
-    }
 
-    /// <summary>
-    /// Show main menu options.
-    /// </summary>
-    private static void ShowMainMenuOptions()
-    {
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("                          MAIN MENU                            ");
+        // Step 2: Enter Application Name
+        Console.WriteLine("  STEP 2: Enter application name");
+        Console.WriteLine("          Example: FreeGLBA, AssetTracker, InventoryApp");
+        Console.Write("  Application name: ");
+        var projectName = Console.ReadLine()?.Trim() ?? "";
+
+        if (string.IsNullOrWhiteSpace(projectName) || !Regex.IsMatch(projectName, @"^[A-Za-z][A-Za-z0-9]*$"))
+        {
+            ShowError("Invalid name. Must start with a letter and contain only letters and numbers.");
+            return;
+        }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"  ✓ Application name: {projectName}");
         Console.ResetColor();
+        Console.WriteLine();
+
+        // Step 3: Output Directory
+        var defaultOutput = Path.Combine(Environment.CurrentDirectory, projectName);
+        Console.WriteLine("  STEP 3: Output directory");
+        Console.WriteLine($"          Default: {defaultOutput}");
+        Console.Write("  Output directory (press Enter for default): ");
+        var outputInput = Console.ReadLine()?.Trim();
+        var outputPath = string.IsNullOrWhiteSpace(outputInput) ? defaultOutput : outputInput;
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"  ✓ Output: {outputPath}");
+        Console.ResetColor();
+        Console.WriteLine();
+
+        // Preview
         Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.WriteLine("  1. Create Simple Project (Empty, Skeleton, Starter, FullCrud)");
-        Console.WriteLine("  2. Create Application (FreeBase, FreeTracker, FreeAudit)");
-        Console.WriteLine("  3. List Available Templates");
-        Console.WriteLine("  4. Help / Command Line Usage");
+        Console.WriteLine("                         PREVIEW                               ");
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.WriteLine($"  Template:    {selectedAppTemplate.Name}");
+        Console.WriteLine($"  Application: {projectName}");
+        Console.WriteLine($"  Output:      {outputPath}");
+        Console.WriteLine($"  Difficulty:  {selectedAppTemplate.Difficulty}");
+        Console.WriteLine($"  Entities:    {selectedAppTemplate.EntityCount}");
         Console.WriteLine();
-        Console.WriteLine("  0. Exit");
+        Console.WriteLine("  This will generate a complete application with:");
+        foreach (var feature in selectedAppTemplate.Features)
+        {
+            Console.WriteLine($"    • {feature}");
+        }
+
         Console.WriteLine();
+        Console.Write("  Create this application? (Y/N): ");
+        var confirm = Console.ReadKey();
+        Console.WriteLine();
+
+        if (char.ToUpper(confirm.KeyChar) != 'Y')
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("  Application creation cancelled.");
+            Console.ResetColor();
+            WaitForKey();
+            return;
+        }
+
+        await GenerateApplication(selectedAppTemplate.Template, projectName, outputPath);
+        WaitForKey();
     }
 
     /// <summary>
@@ -212,172 +252,6 @@ public static class MenuService
     }
 
     /// <summary>
-    /// Interactive wizard to create an application from Application Templates.
-    /// </summary>
-    private static async Task CreateApplicationWizard()
-    {
-        Console.Clear();
-        ShowHeader();
-
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("           CREATE APPLICATION FROM TEMPLATE                    ");
-        Console.ResetColor();
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.WriteLine();
-
-        // Step 1: Select Application Template
-        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
-
-        Console.WriteLine("  STEP 1: Choose an application template");
-        Console.WriteLine("  ┌────────────────────────────────────────────────────────────┐");
-        for (int i = 0; i < appTemplates.Count; i++)
-        {
-            var t = appTemplates[i];
-            var color = t.Template == CliApplicationTemplate.FreeAudit ? ConsoleColor.Red : ConsoleColor.Yellow;
-            Console.Write("  │  ");
-            Console.ForegroundColor = color;
-            Console.Write($"{i + 1}. {t.Name}");
-            Console.ResetColor();
-            Console.WriteLine($" [{t.Difficulty}]");
-            Console.WriteLine($"  │     {t.Description}");
-            Console.WriteLine($"  │     Entities: {t.EntityCount}");
-            Console.Write("  │     Features: ");
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine(string.Join(", ", t.Features.Take(3)) + (t.Features.Count > 3 ? "..." : ""));
-            Console.ResetColor();
-            if (i < appTemplates.Count - 1) Console.WriteLine("  │");
-        }
-        Console.WriteLine("  └────────────────────────────────────────────────────────────┘");
-        Console.WriteLine();
-
-        Console.Write("  Select template (1-3): ");
-        if (!int.TryParse(Console.ReadLine(), out int templateChoice) || templateChoice < 1 || templateChoice > appTemplates.Count)
-        {
-            ShowError("Invalid template selection.");
-            return;
-        }
-
-        var selectedAppTemplate = appTemplates[templateChoice - 1];
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"  ✓ Selected: {selectedAppTemplate.Name}");
-        Console.ResetColor();
-        Console.WriteLine();
-
-        // Step 2: Enter Application Name
-        Console.WriteLine("  STEP 2: Enter application name");
-        Console.WriteLine("          Example: FreeGLBA, AssetTracker, InventoryApp");
-        Console.Write("  Application name: ");
-        var projectName = Console.ReadLine()?.Trim() ?? "";
-
-        if (string.IsNullOrWhiteSpace(projectName) || !Regex.IsMatch(projectName, @"^[A-Za-z][A-Za-z0-9]*$"))
-        {
-            ShowError("Invalid name. Must start with a letter and contain only letters and numbers.");
-            return;
-        }
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"  ✓ Application name: {projectName}");
-        Console.ResetColor();
-        Console.WriteLine();
-
-        // Step 3: Output Directory
-        var defaultOutput = Path.Combine(Environment.CurrentDirectory, projectName);
-        Console.WriteLine("  STEP 3: Output directory");
-        Console.WriteLine($"          Default: {defaultOutput}");
-        Console.Write("  Output directory (press Enter for default): ");
-        var outputInput = Console.ReadLine()?.Trim();
-        var outputPath = string.IsNullOrWhiteSpace(outputInput) ? defaultOutput : outputInput;
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"  ✓ Output: {outputPath}");
-        Console.ResetColor();
-        Console.WriteLine();
-
-        // Preview
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.WriteLine("                         PREVIEW                               ");
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.WriteLine($"  Template:    {selectedAppTemplate.Name}");
-        Console.WriteLine($"  Application: {projectName}");
-        Console.WriteLine($"  Output:      {outputPath}");
-        Console.WriteLine($"  Difficulty:  {selectedAppTemplate.Difficulty}");
-        Console.WriteLine($"  Entities:    {selectedAppTemplate.EntityCount}");
-        Console.WriteLine();
-        Console.WriteLine("  This will generate a complete application with:");
-        foreach (var feature in selectedAppTemplate.Features)
-        {
-            Console.WriteLine($"    • {feature}");
-        }
-
-        Console.WriteLine();
-        Console.Write("  Create this application? (Y/N): ");
-        var confirm = Console.ReadKey();
-        Console.WriteLine();
-
-        if (char.ToUpper(confirm.KeyChar) != 'Y')
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("  Application creation cancelled.");
-            Console.ResetColor();
-            WaitForKey();
-            return;
-        }
-
-        await GenerateApplication(selectedAppTemplate.Template, projectName, outputPath);
-        WaitForKey();
-    }
-
-    /// <summary>
-    /// Generate a project with the specified template.
-    /// </summary>
-    public static async Task GenerateProject(CliProjectTemplate template, string projectName, string outputPath)
-    {
-        Console.WriteLine();
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("                    GENERATING PROJECT                         ");
-        Console.ResetColor();
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-
-        try
-        {
-            // Create output directory
-            Directory.CreateDirectory(outputPath);
-
-            var files = CliProjectTemplates.GetTemplateFiles(template, projectName);
-            int current = 0;
-
-            foreach (var file in files)
-            {
-                current++;
-                Console.Write($"  [{current}/{files.Count}] Creating {file.FileName}... ");
-                var filePath = Path.Combine(outputPath, file.FileName);
-                await File.WriteAllTextAsync(filePath, file.Content);
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("✓");
-                Console.ResetColor();
-            }
-
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("═══════════════════════════════════════════════════════════════");
-            Console.WriteLine("                    PROJECT CREATED SUCCESSFULLY               ");
-            Console.WriteLine("═══════════════════════════════════════════════════════════════");
-            Console.ResetColor();
-            Console.WriteLine($"  Location: {outputPath}");
-            Console.WriteLine($"  Files created: {files.Count}");
-            Console.WriteLine();
-
-            ShowNextSteps(template, projectName);
-        }
-        catch (Exception ex)
-        {
-            ShowError($"Failed to create project: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Generate an application from an Application Template.
     /// </summary>
     public static async Task GenerateApplication(CliApplicationTemplate template, string projectName, string outputPath)
@@ -489,6 +363,55 @@ public static class MenuService
     }
 
     /// <summary>
+    /// Generate a project with the specified template.
+    /// </summary>
+    public static async Task GenerateProject(CliProjectTemplate template, string projectName, string outputPath)
+    {
+        Console.WriteLine();
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("                    GENERATING PROJECT                         ");
+        Console.ResetColor();
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+
+        try
+        {
+            // Create output directory
+            Directory.CreateDirectory(outputPath);
+
+            var files = CliProjectTemplates.GetTemplateFiles(template, projectName);
+            int current = 0;
+
+            foreach (var file in files)
+            {
+                current++;
+                Console.Write($"  [{current}/{files.Count}] Creating {file.FileName}... ");
+                var filePath = Path.Combine(outputPath, file.FileName);
+                await File.WriteAllTextAsync(filePath, file.Content);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("✓");
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("═══════════════════════════════════════════════════════════════");
+            Console.WriteLine("                    PROJECT CREATED SUCCESSFULLY               ");
+            Console.WriteLine("═══════════════════════════════════════════════════════════════");
+            Console.ResetColor();
+            Console.WriteLine($"  Location: {outputPath}");
+            Console.WriteLine($"  Files created: {files.Count}");
+            Console.WriteLine();
+
+            ShowNextSteps(template, projectName);
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Failed to create project: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Maps file type to export path in project folder structure.
     /// Matches the web export structure exactly.
     /// </summary>
@@ -561,6 +484,54 @@ Generated by FreeManager CLI
 ";
 
     /// <summary>
+    /// Show next steps after application creation.
+    /// </summary>
+    private static void ShowApplicationNextSteps(CliApplicationTemplate template, string projectName)
+    {
+        Console.WriteLine("  NEXT STEPS:");
+        Console.WriteLine("  ┌────────────────────────────────────────────────────────────┐");
+        Console.WriteLine("  │  1. Copy the generated files to your FreeCRM project:     │");
+        Console.WriteLine("  │     • *.App.*.cs (EFModel)    → FreeManager.EFModels      │");
+        Console.WriteLine("  │     • *.App.DataObjects.cs    → FreeManager.DataObjects   │");
+        Console.WriteLine("  │     • *.App.DataAccess.cs     → FreeManager.DataAccess    │");
+        Console.WriteLine("  │     • *.App.*Controller.cs    → FreeManager/Controllers   │");
+        Console.WriteLine("  │     • *.razor                 → FreeManager.Client/Pages  │");
+        Console.WriteLine("  │                                                            │");
+        Console.WriteLine("  │  2. Run EF migrations:                                     │");
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine($"  │     dotnet ef migrations add {projectName}_Initial \\       │");
+        Console.WriteLine("  │       --startup-project ../FreeManager                     │");
+        Console.WriteLine("  │     dotnet ef database update \\                            │");
+        Console.WriteLine("  │       --startup-project ../FreeManager                     │");
+        Console.ResetColor();
+
+        if (template == CliApplicationTemplate.FreeAudit)
+        {
+            Console.WriteLine("  │                                                            │");
+            Console.WriteLine("  │  3. Configure external API (FreeAudit specific):          │");
+            Console.WriteLine("  │     • Add SourceSystem records with hashed API keys       │");
+            Console.WriteLine("  │     • External systems POST to /api/glba/events           │");
+            Console.WriteLine("  │     • Review the GlbaController for customization         │");
+        }
+
+        Console.WriteLine("  │                                                            │");
+        Console.WriteLine($"  │  {(template == CliApplicationTemplate.FreeAudit ? "4" : "3")}. Build and run your application                        │");
+        Console.WriteLine("  └────────────────────────────────────────────────────────────┘");
+    }
+
+    /// <summary>
+    /// Show error message.
+    /// </summary>
+    private static void ShowError(string message)
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"  ✗ ERROR: {message}");
+        Console.ResetColor();
+        WaitForKey();
+    }
+
+    /// <summary>
     /// Shows the folder structure created.
     /// </summary>
     private static void ShowFolderStructure(string outputPath, string projectName)
@@ -589,56 +560,16 @@ Generated by FreeManager CLI
     }
 
     /// <summary>
-    /// Show list of available templates.
+    /// Show the application header with box drawing.
     /// </summary>
-    private static void ShowTemplateList()
+    private static void ShowHeader()
     {
-        Console.Clear();
-        ShowHeader();
-
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("                   AVAILABLE TEMPLATES                         ");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("╔══════════════════════════════════════════════════════════════╗");
+        Console.WriteLine("║           FreeManager - FreeCRM Project Generator            ║");
+        Console.WriteLine("╚══════════════════════════════════════════════════════════════╝");
         Console.ResetColor();
-        Console.WriteLine("═══════════════════════════════════════════════════════════════");
         Console.WriteLine();
-
-        // Simple Project Templates
-        Console.WriteLine("  SIMPLE PROJECT TEMPLATES (for 'new' command):");
-        Console.WriteLine("  ┌──────────────┬───────┬─────────────────────────────────────────┐");
-        Console.WriteLine("  │ Template     │ Files │ Description                             │");
-        Console.WriteLine("  ├──────────────┼───────┼─────────────────────────────────────────┤");
-
-        var templates = CliProjectTemplates.GetTemplates();
-        foreach (var t in templates)
-        {
-            var name = t.IsRecommended ? $"{t.Name} *" : t.Name;
-            var desc = t.Description.Length > 39 ? t.Description[..36] + "..." : t.Description;
-            Console.WriteLine($"  │ {name.PadRight(12)} │ {t.FileCount,5} │ {desc.PadRight(39)} │");
-        }
-        Console.WriteLine("  └──────────────┴───────┴─────────────────────────────────────────┘");
-        Console.WriteLine("  (* = Recommended)");
-        Console.WriteLine();
-
-        // Application Templates
-        Console.WriteLine("  APPLICATION TEMPLATES (for 'app' command):");
-        Console.WriteLine("  ┌──────────────┬──────────────┬──────────┬──────────────────────┐");
-        Console.WriteLine("  │ Template     │ Difficulty   │ Entities │ Description          │");
-        Console.WriteLine("  ├──────────────┼──────────────┼──────────┼──────────────────────┤");
-
-        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
-        foreach (var t in appTemplates)
-        {
-            var desc = t.Description.Length > 20 ? t.Description[..17] + "..." : t.Description;
-            Console.Write("  │ ");
-            Console.ForegroundColor = t.Template == CliApplicationTemplate.FreeAudit ? ConsoleColor.Red : ConsoleColor.Yellow;
-            Console.Write(t.Name.PadRight(12));
-            Console.ResetColor();
-            Console.WriteLine($" │ {t.Difficulty.PadRight(12)} │ {t.EntityCount,8} │ {desc.PadRight(20)} │");
-        }
-        Console.WriteLine("  └──────────────┴──────────────┴──────────┴──────────────────────┘");
-
-        WaitForKey();
     }
 
     /// <summary>
@@ -724,6 +655,69 @@ Generated by FreeManager CLI
 
         WaitForKey();
     }
+    /// <summary>
+    /// Show the main menu and handle user selections.
+    /// </summary>
+    public static async Task ShowMainMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+            ShowHeader();
+            ShowMainMenuOptions();
+
+            Console.Write("Select option: ");
+            var key = Console.ReadKey();
+            Console.WriteLine();
+            Console.WriteLine();
+
+            switch (char.ToUpper(key.KeyChar))
+            {
+                case '1':
+                    await CreateProjectWizard();
+                    break;
+                case '2':
+                    await CreateApplicationWizard();
+                    break;
+                case '3':
+                    ShowTemplateList();
+                    break;
+                case '4':
+                    ShowHelp();
+                    break;
+                case '0':
+                    Console.WriteLine("Exiting...");
+                    return;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Invalid option. Please try again.");
+                    Console.ResetColor();
+                    Console.WriteLine();
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey(true);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Show main menu options.
+    /// </summary>
+    private static void ShowMainMenuOptions()
+    {
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("                          MAIN MENU                            ");
+        Console.ResetColor();
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.WriteLine("  1. Create Simple Project (Empty, Skeleton, Starter, FullCrud)");
+        Console.WriteLine("  2. Create Application (FreeBase, FreeTracker, FreeAudit)");
+        Console.WriteLine("  3. List Available Templates");
+        Console.WriteLine("  4. Help / Command Line Usage");
+        Console.WriteLine();
+        Console.WriteLine("  0. Exit");
+        Console.WriteLine();
+    }
 
     /// <summary>
     /// Show next steps after project creation.
@@ -756,50 +750,55 @@ Generated by FreeManager CLI
     }
 
     /// <summary>
-    /// Show next steps after application creation.
+    /// Show list of available templates.
     /// </summary>
-    private static void ShowApplicationNextSteps(CliApplicationTemplate template, string projectName)
+    private static void ShowTemplateList()
     {
-        Console.WriteLine("  NEXT STEPS:");
-        Console.WriteLine("  ┌────────────────────────────────────────────────────────────┐");
-        Console.WriteLine("  │  1. Copy the generated files to your FreeCRM project:     │");
-        Console.WriteLine("  │     • *.App.*.cs (EFModel)    → FreeManager.EFModels      │");
-        Console.WriteLine("  │     • *.App.DataObjects.cs    → FreeManager.DataObjects   │");
-        Console.WriteLine("  │     • *.App.DataAccess.cs     → FreeManager.DataAccess    │");
-        Console.WriteLine("  │     • *.App.*Controller.cs    → FreeManager/Controllers   │");
-        Console.WriteLine("  │     • *.razor                 → FreeManager.Client/Pages  │");
-        Console.WriteLine("  │                                                            │");
-        Console.WriteLine("  │  2. Run EF migrations:                                     │");
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine($"  │     dotnet ef migrations add {projectName}_Initial \\       │");
-        Console.WriteLine("  │       --startup-project ../FreeManager                     │");
-        Console.WriteLine("  │     dotnet ef database update \\                            │");
-        Console.WriteLine("  │       --startup-project ../FreeManager                     │");
+        Console.Clear();
+        ShowHeader();
+
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("                   AVAILABLE TEMPLATES                         ");
         Console.ResetColor();
-
-        if (template == CliApplicationTemplate.FreeAudit)
-        {
-            Console.WriteLine("  │                                                            │");
-            Console.WriteLine("  │  3. Configure external API (FreeAudit specific):          │");
-            Console.WriteLine("  │     • Add SourceSystem records with hashed API keys       │");
-            Console.WriteLine("  │     • External systems POST to /api/glba/events           │");
-            Console.WriteLine("  │     • Review the GlbaController for customization         │");
-        }
-
-        Console.WriteLine("  │                                                            │");
-        Console.WriteLine($"  │  {(template == CliApplicationTemplate.FreeAudit ? "4" : "3")}. Build and run your application                        │");
-        Console.WriteLine("  └────────────────────────────────────────────────────────────┘");
-    }
-
-    /// <summary>
-    /// Show error message.
-    /// </summary>
-    private static void ShowError(string message)
-    {
+        Console.WriteLine("═══════════════════════════════════════════════════════════════");
         Console.WriteLine();
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"  ✗ ERROR: {message}");
-        Console.ResetColor();
+
+        // Simple Project Templates
+        Console.WriteLine("  SIMPLE PROJECT TEMPLATES (for 'new' command):");
+        Console.WriteLine("  ┌──────────────┬───────┬─────────────────────────────────────────┐");
+        Console.WriteLine("  │ Template     │ Files │ Description                             │");
+        Console.WriteLine("  ├──────────────┼───────┼─────────────────────────────────────────┤");
+
+        var templates = CliProjectTemplates.GetTemplates();
+        foreach (var t in templates)
+        {
+            var name = t.IsRecommended ? $"{t.Name} *" : t.Name;
+            var desc = t.Description.Length > 39 ? t.Description[..36] + "..." : t.Description;
+            Console.WriteLine($"  │ {name.PadRight(12)} │ {t.FileCount,5} │ {desc.PadRight(39)} │");
+        }
+        Console.WriteLine("  └──────────────┴───────┴─────────────────────────────────────────┘");
+        Console.WriteLine("  (* = Recommended)");
+        Console.WriteLine();
+
+        // Application Templates
+        Console.WriteLine("  APPLICATION TEMPLATES (for 'app' command):");
+        Console.WriteLine("  ┌──────────────┬──────────────┬──────────┬──────────────────────┐");
+        Console.WriteLine("  │ Template     │ Difficulty   │ Entities │ Description          │");
+        Console.WriteLine("  ├──────────────┼──────────────┼──────────┼──────────────────────┤");
+
+        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
+        foreach (var t in appTemplates)
+        {
+            var desc = t.Description.Length > 20 ? t.Description[..17] + "..." : t.Description;
+            Console.Write("  │ ");
+            Console.ForegroundColor = t.Template == CliApplicationTemplate.FreeAudit ? ConsoleColor.Red : ConsoleColor.Yellow;
+            Console.Write(t.Name.PadRight(12));
+            Console.ResetColor();
+            Console.WriteLine($" │ {t.Difficulty.PadRight(12)} │ {t.EntityCount,8} │ {desc.PadRight(20)} │");
+        }
+        Console.WriteLine("  └──────────────┴──────────────┴──────────┴──────────────────────┘");
+
         WaitForKey();
     }
 

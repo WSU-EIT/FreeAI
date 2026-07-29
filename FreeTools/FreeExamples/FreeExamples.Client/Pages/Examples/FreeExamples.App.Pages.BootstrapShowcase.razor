@@ -55,8 +55,8 @@
         @* Tabs Demo *@
         <h5 class="mb-3" id="tabs-heading">Tabs
             <InfoTip Title="Tabs Navigation"
-                     Description="Tabs organize content into panels. Only one tab panel is visible at a time. When you click a tab, Blazor updates a _activeTab variable and re-renders to show the matching panel. The aria-selected attribute tells screen readers which tab is active."
-                     Code="@_codeTabs" />
+                    Description="Tabs organize content into panels. Only one tab panel is visible at a time. When you click a tab, Blazor updates a _activeTab variable and re-renders to show the matching panel. The aria-selected attribute tells screen readers which tab is active."
+                    Code="@_codeTabs" />
         </h5>
         <ul class="nav nav-tabs mb-3" role="tablist" aria-labelledby="tabs-heading">
             <li class="nav-item" role="presentation">
@@ -110,8 +110,8 @@
                             <div class="card-footer bg-white border-top-0 pt-0 pb-3">
                                 <button class="btn btn-sm btn-outline-primary" @onclick="@(() => OnEditClicked(item))" title="Edit @item.Name" aria-label="Edit @item.Name"><i class="fa fa-edit" aria-hidden="true"></i></button>
                                     <InfoTip Title="Two-Click Delete (Card)"
-                                             Description="The trash icon starts the delete. When clicked, it changes to show Cancel and Confirm buttons. You must click Confirm to actually delete. This prevents accidents — especially important on touch screens where taps can be imprecise."
-                                             Code="@_codeTwoClickDelete" />
+                                            Description="The trash icon starts the delete. When clicked, it changes to show Cancel and Confirm buttons. You must click Confirm to actually delete. This prevents accidents — especially important on touch screens where taps can be imprecise."
+                                            Code="@_codeTwoClickDelete" />
                                 @if (_confirmDeleteId == item.SampleItemId) {
                                     <button class="btn btn-sm btn-outline-secondary" @onclick="CancelDelete" title="Cancel delete" aria-label="Cancel delete">
                                         <i class="fa fa-times" aria-hidden="true"></i>
@@ -135,8 +135,8 @@
             <div class="mb-4">
                 <h6>Status Badges
                     <InfoTip Title="Status Badges"
-                             Description="A badge is a small colored label. The color communicates meaning at a glance: green = good/active, red = error/failed, yellow = warning/draft, grey = archived. The CSS class bg-success, bg-danger, etc. sets the color. Badges are used everywhere."
-                             Code="@_codeBadges" />
+                            Description="A badge is a small colored label. The color communicates meaning at a glance: green = good/active, red = error/failed, yellow = warning/draft, grey = archived. The CSS class bg-success, bg-danger, etc. sets the color. Badges are used everywhere."
+                            Code="@_codeBadges" />
                 </h6>
                 <span class="badge bg-success me-1" role="status">Active</span>
                 <span class="badge bg-danger me-1" role="status">Failed</span>
@@ -164,8 +164,8 @@
             <div class="mb-4">
                 <h6>Radzen Dialog
                     <InfoTip Title="Modal Dialog"
-                             Description="A modal is a popup window that appears on top of the page and blocks interaction with everything behind it. It focuses your attention on one task (like confirming a delete or entering information). Clicking outside or pressing Escape closes it."
-                             Code="@_codeModal" />
+                            Description="A modal is a popup window that appears on top of the page and blocks interaction with everything behind it. It focuses your attention on one task (like confirming a delete or entering information). Clicking outside or pressing Escape closes it."
+                            Code="@_codeModal" />
                 </h6>
                 <p class="small text-muted">Click to open a modal dialog.</p>
                 <button class="btn btn-primary" @onclick="OpenDialog" aria-label="Open example dialog">
@@ -176,9 +176,9 @@
                 <h6>Delete Confirmation</h6>
                 <p class="small text-muted">Two-click delete pattern: Delete → Confirm Delete.</p>
                 <DeleteConfirmation OnConfirmed="OnDeleteConfirmed"
-                    CancelText="@Helpers.ConfirmButtonTextCancel"
-                    DeleteText="@Helpers.ConfirmButtonTextDelete"
-                    ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                        CancelText="@Helpers.ConfirmButtonTextCancel"
+                        DeleteText="@Helpers.ConfirmButtonTextDelete"
+                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
             </div>
             </div>
         }
@@ -191,8 +191,8 @@
             <div class="mb-4">
                 <h6>Search with Clear Button
                     <InfoTip Title="Search with Clear"
-                             Description="This input has a search icon on the left and a clear (X) button on the right. The X only appears when you have typed something. Clicking it empties the search box instantly. The bind:event=oninput makes it update as you type, not just when you leave the field."
-                             Code="@_codeSearchClear" />
+                            Description="This input has a search icon on the left and a clear (X) button on the right. The X only appears when you have typed something. Clicking it empties the search box instantly. The bind:event=oninput makes it update as you type, not just when you leave the field."
+                            Code="@_codeSearchClear" />
                 </h6>
                 <p class="small text-muted">Input group with search icon and dismissable clear button. Pattern from FreeCICD FilterBar.</p>
                 <div class="input-group" style="max-width: 400px;">
@@ -200,11 +200,11 @@
                         <i class="fa fa-search text-muted"></i>
                     </span>
                     <input type="text"
-                           class="form-control border-start-0"
-                           placeholder="Search items..."
-                           @bind="_searchTerm"
-                           @bind:event="oninput"
-                           aria-label="Search items" />
+                            class="form-control border-start-0"
+                            placeholder="Search items..."
+                            @bind="_searchTerm"
+                            @bind:event="oninput"
+                            aria-label="Search items" />
                     @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
                         <button class="btn btn-outline-secondary border-start-0" type="button"
                                 @onclick="@(() => _searchTerm = "")" aria-label="Clear search">
@@ -221,28 +221,28 @@
             <div class="mb-4">
                 <h6>Toggle Switches
                     <InfoTip Title="Toggle Switches"
-                             Description="A toggle switch is a styled checkbox that looks like a physical on/off switch. It is more intuitive than a checkbox for settings like Enable Notifications because the sliding action makes the on/off state visually obvious."
-                             Code="@_codeToggles" />
+                            Description="A toggle switch is a styled checkbox that looks like a physical on/off switch. It is more intuitive than a checkbox for settings like Enable Notifications because the sliding action makes the on/off state visually obvious."
+                            Code="@_codeToggles" />
                 </h6>
                 <p class="small text-muted">Bootstrap switch toggles for boolean settings. Pattern from FreeCICD Dashboard.</p>
                 <div class="d-flex flex-column gap-2" style="max-width: 300px;">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-notifications"
-                               checked="@_enableNotifications" @onchange="@(e => _enableNotifications = (bool)(e.Value ?? false))" />
+                                checked="@_enableNotifications" @onchange="@(e => _enableNotifications = (bool)(e.Value ?? false))" />
                         <label class="form-check-label" for="switch-notifications">
                             <i class="fa fa-bell me-1" aria-hidden="true"></i> Enable Notifications
                         </label>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-darkmode"
-                               checked="@_darkMode" @onchange="@(e => _darkMode = (bool)(e.Value ?? false))" />
+                                checked="@_darkMode" @onchange="@(e => _darkMode = (bool)(e.Value ?? false))" />
                         <label class="form-check-label" for="switch-darkmode">
                             <i class="fa fa-moon me-1" aria-hidden="true"></i> Dark Mode
                         </label>
                     </div>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-autosave"
-                               checked="@_autoSave" @onchange="@(e => _autoSave = (bool)(e.Value ?? false))" />
+                                checked="@_autoSave" @onchange="@(e => _autoSave = (bool)(e.Value ?? false))" />
                         <label class="form-check-label" for="switch-autosave">
                             <i class="fa fa-save me-1" aria-hidden="true"></i> Auto-Save
                         </label>
@@ -257,8 +257,8 @@
             <div class="mb-4">
                 <h6>Required Field Validation (ADA)
                     <InfoTip Title="Form Validation"
-                             Description="When you click Validate, the code checks each required field. Empty fields get a red border (is-invalid), and an error message appears below them with role=alert so screen readers announce it. The aria-invalid attribute also communicates the error state programmatically."
-                             Code="@_codeFormValidation" />
+                            Description="When you click Validate, the code checks each required field. Empty fields get a red border (is-invalid), and an error message appears below them with role=alert so screen readers announce it. The aria-invalid attribute also communicates the error state programmatically."
+                            Code="@_codeFormValidation" />
                 </h6>
                 <p class="small text-muted">
                     Inline validation with <code>aria-required</code>, <code>aria-invalid</code>, and <code>role="alert"</code>.
@@ -270,12 +270,12 @@
                             Email <span class="text-danger" aria-hidden="true">*</span>
                         </label>
                         <input type="email" id="demo-email"
-                               class="form-control @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "is-invalid" : !string.IsNullOrWhiteSpace(_demoEmail) ? "is-valid" : "")"
-                               @bind="_demoEmail" @bind:event="oninput"
-                               placeholder="user@example.com"
-                               aria-required="true"
-                               aria-describedby="email-help @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "email-err" : "")"
-                               aria-invalid="@(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "true" : null)" />
+                                class="form-control @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "is-invalid" : !string.IsNullOrWhiteSpace(_demoEmail) ? "is-valid" : "")"
+                                @bind="_demoEmail" @bind:event="oninput"
+                                placeholder="user@example.com"
+                                aria-required="true"
+                                aria-describedby="email-help @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "email-err" : "")"
+                                aria-invalid="@(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "true" : null)" />
                         <div id="email-help" class="form-text">We'll never share your email.</div>
                         @if (_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail)) {
                             <div id="email-err" class="invalid-feedback" role="alert">
@@ -325,8 +325,8 @@
             <div class="mb-4">
                 <h6>Accordion / Collapsible Sections
                     <InfoTip Title="Accordion"
-                             Description="An accordion is a list of collapsible sections — click a header to expand its content, click again to collapse. Only one section is open at a time. This saves vertical space when you have lots of content. The expand/collapse is done by toggling an _openAccordion variable."
-                             Code="@_codeAccordion" />
+                            Description="An accordion is a list of collapsible sections — click a header to expand its content, click again to collapse. Only one section is open at a time. This saves vertical space when you have lots of content. The expand/collapse is done by toggling an _openAccordion variable."
+                            Code="@_codeAccordion" />
                 </h6>
                 <p class="small text-muted">Bootstrap accordion for expandable content sections.</p>
                 <div class="accordion" id="demoAccordion">
@@ -357,8 +357,8 @@
             <div class="mb-4">
                 <h6>Card / Table View Toggle
                     <InfoTip Title="View Toggle"
-                             Description="These buttons let you switch between two ways of viewing the same data: as visual cards or as a compact table. The _viewMode variable controls which is rendered. Both views show the same data — just laid out differently. Card view is scannable; table view is dense and sortable."
-                             Code="@_codeViewToggle" />
+                            Description="These buttons let you switch between two ways of viewing the same data: as visual cards or as a compact table. The _viewMode variable controls which is rendered. Both views show the same data — just laid out differently. Card view is scannable; table view is dense and sortable."
+                            Code="@_codeViewToggle" />
                 </h6>
                 <p class="small text-muted">Switch between card and table views. Pattern from FreeCICD Pipeline Dashboard.</p>
                 <div class="btn-group mb-3" role="group" aria-label="View mode">
@@ -461,8 +461,8 @@
             <div class="mb-4">
                 <h6>Toast Notifications
                     <InfoTip Title="Toast Notifications"
-                             Description="A toast is a brief message that pops up at the top of the page and fades away after a few seconds (like bread popping out of a toaster). It confirms that an action worked (Saved!) or warns about a problem. The Model.AddMessage() method triggers the toast from anywhere in code."
-                             Code="@_codeToast" />
+                            Description="A toast is a brief message that pops up at the top of the page and fades away after a few seconds (like bread popping out of a toaster). It confirms that an action worked (Saved!) or warns about a problem. The Model.AddMessage() method triggers the toast from anywhere in code."
+                            Code="@_codeToast" />
                 </h6>
                 <p class="small text-muted">Trigger toast messages using the framework's <code>Model.AddMessage()</code> pattern.</p>
                 <div class="d-flex flex-wrap gap-2">

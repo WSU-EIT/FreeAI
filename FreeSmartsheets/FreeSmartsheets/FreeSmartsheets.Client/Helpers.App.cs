@@ -18,8 +18,8 @@ public static partial class Helpers
     {
         return true;
     }
-
     // {{ModuleItemStart:Tags}}
+
     public static List<DataObjects.Tag> AvailableTagListApp(DataObjects.TagModule? Module, List<Guid> ExcludeTags)
     {
         var output = new List<DataObjects.Tag>();
@@ -40,15 +40,6 @@ public static partial class Helpers
         return output;
     }
     // {{ModuleItemEnd:Tags}}
-
-    private static List<string> GetDeletedRecordTypesApp()
-    {
-        var output = new List<string>();
-
-        // Add any app-specific deleted record types here.
-
-        return output;
-    }
 
     /// <summary>
     /// Gets the deleted records for a specific app type.
@@ -93,6 +84,24 @@ public static partial class Helpers
         return output;
     }
 
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
+
+        // Add any app-specific deleted record types here.
+
+        return output;
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
+        get {
+            // Add any app-specific admin menu items here.
+            var output = new List<DataObjects.MenuItem>();
+
+            return output;
+        }
+    }
+
     public static List<DataObjects.MenuItem> MenuItemsApp {
         get {
             // Add any app-specific top-level menu items here.
@@ -109,15 +118,6 @@ public static partial class Helpers
             //        AppAdminOnly = false,
             //    });
             //}
-
-            return output;
-        }
-    }
-
-    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
-        get {
-            // Add any app-specific admin menu items here.
-            var output = new List<DataObjects.MenuItem>();
 
             return output;
         }

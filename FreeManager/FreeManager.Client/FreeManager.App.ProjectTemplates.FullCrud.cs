@@ -9,54 +9,49 @@ namespace FreeManager.Client;
 
 public static partial class ProjectTemplates
 {
-    // ============================================================
-    // FULL CRUD TEMPLATES (EF Entity based)
-    // ============================================================
+    private static string GetFullCrudController(string name) => $@"using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-    private static string GetFullCrudDataObjects(string name) => $@"namespace FreeManager;
+namespace FreeManager.Server.Controllers;
 
-#region {name} DataObjects
+#region {name} API Endpoints
 // ============================================================================
 // {name.ToUpper()} PROJECT - FULL CRUD TEMPLATE
-// DTOs for database-backed CRUD operations.
+// REST API endpoints with full CRUD operations.
 // ============================================================================
 
-public partial class DataObjects
+public partial class DataController
 {{
-    public static partial class Endpoints
+    [HttpGet]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.GetItems}}"")]
+    public async Task<ActionResult<List<DataObjects.{name}ItemInfo>>> {name}_GetItems()
     {{
-        public static class {name}
-        {{
-            public const string GetItems = ""api/Data/{name}_GetItems"";
-            public const string GetItem = ""api/Data/{name}_GetItem"";
-            public const string SaveItem = ""api/Data/{name}_SaveItem"";
-            public const string DeleteItem = ""api/Data/{name}_DeleteItem"";
-        }}
+        return await da.{name}_GetItems(CurrentUser);
     }}
 
-    /// <summary>
-    /// {name} item DTO for API responses.
-    /// </summary>
-    public class {name}ItemInfo
+    [HttpGet]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.GetItem}}"")]
+    public async Task<ActionResult<DataObjects.{name}ItemInfo?>> {name}_GetItem([FromQuery] Guid itemId)
     {{
-        public Guid Id {{ get; set; }}
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
-        public bool IsComplete {{ get; set; }}
-        public DateTime CreatedAt {{ get; set; }}
-        public DateTime UpdatedAt {{ get; set; }}
-        public DateTime? CompletedAt {{ get; set; }}
+        return await da.{name}_GetItem(itemId, CurrentUser);
     }}
 
-    /// <summary>
-    /// Request to save an item.
-    /// </summary>
-    public class {name}SaveRequest
+    [HttpPost]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.SaveItem}}"")]
+    public async Task<ActionResult<DataObjects.{name}ItemInfo?>> {name}_SaveItem([FromBody] DataObjects.{name}SaveRequest request)
     {{
-        public Guid? Id {{ get; set; }}
-        public string Name {{ get; set; }} = string.Empty;
-        public string Description {{ get; set; }} = string.Empty;
-        public bool IsComplete {{ get; set; }}
+        return await da.{name}_SaveItem(request, CurrentUser);
+    }}
+
+    [HttpDelete]
+    [Authorize]
+    [Route($""~/{{DataObjects.Endpoints.{name}.DeleteItem}}"")]
+    public async Task<ActionResult<DataObjects.BooleanResponse>> {name}_DeleteItem([FromQuery] Guid itemId)
+    {{
+        return await da.{name}_DeleteItem(itemId, CurrentUser);
     }}
 }}
 
@@ -200,51 +195,73 @@ public partial class DataAccess
 
 #endregion
 ";
+    // ============================================================
+    // FULL CRUD TEMPLATES (EF Entity based)
+    // ============================================================
 
-    private static string GetFullCrudController(string name) => $@"using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+    private static string GetFullCrudDataObjects(string name) => $@"namespace FreeManager;
 
-namespace FreeManager.Server.Controllers;
-
-#region {name} API Endpoints
+#region {name} DataObjects
 // ============================================================================
 // {name.ToUpper()} PROJECT - FULL CRUD TEMPLATE
-// REST API endpoints with full CRUD operations.
+// DTOs for database-backed CRUD operations.
 // ============================================================================
 
-public partial class DataController
+public partial class DataObjects
 {{
-    [HttpGet]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.GetItems}}"")]
-    public async Task<ActionResult<List<DataObjects.{name}ItemInfo>>> {name}_GetItems()
+    public static partial class Endpoints
     {{
-        return await da.{name}_GetItems(CurrentUser);
+        public static class {name}
+        {{
+            public const string GetItems = ""api/Data/{name}_GetItems"";
+            public const string GetItem = ""api/Data/{name}_GetItem"";
+            public const string SaveItem = ""api/Data/{name}_SaveItem"";
+            public const string DeleteItem = ""api/Data/{name}_DeleteItem"";
+        }}
     }}
 
-    [HttpGet]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.GetItem}}"")]
-    public async Task<ActionResult<DataObjects.{name}ItemInfo?>> {name}_GetItem([FromQuery] Guid itemId)
+    /// <summary>
+    /// {name} item DTO for API responses.
+    /// </summary>
+    public class {name}ItemInfo
     {{
-        return await da.{name}_GetItem(itemId, CurrentUser);
+        public Guid Id {{ get; set; }}
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
+        public bool IsComplete {{ get; set; }}
+        public DateTime CreatedAt {{ get; set; }}
+        public DateTime UpdatedAt {{ get; set; }}
+        public DateTime? CompletedAt {{ get; set; }}
     }}
 
-    [HttpPost]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.SaveItem}}"")]
-    public async Task<ActionResult<DataObjects.{name}ItemInfo?>> {name}_SaveItem([FromBody] DataObjects.{name}SaveRequest request)
+    /// <summary>
+    /// Request to save an item.
+    /// </summary>
+    public class {name}SaveRequest
     {{
-        return await da.{name}_SaveItem(request, CurrentUser);
+        public Guid? Id {{ get; set; }}
+        public string Name {{ get; set; }} = string.Empty;
+        public string Description {{ get; set; }} = string.Empty;
+        public bool IsComplete {{ get; set; }}
     }}
+}}
 
-    [HttpDelete]
-    [Authorize]
-    [Route($""~/{{DataObjects.Endpoints.{name}.DeleteItem}}"")]
-    public async Task<ActionResult<DataObjects.BooleanResponse>> {name}_DeleteItem([FromQuery] Guid itemId)
-    {{
-        return await da.{name}_DeleteItem(itemId, CurrentUser);
-    }}
+#endregion
+";
+
+    private static string GetFullCrudDbContext(string name) => $@"using Microsoft.EntityFrameworkCore;
+
+namespace FreeManager.EFModels.EFModels;
+
+#region {name} DbContext Extension
+// ============================================================================
+// {name.ToUpper()} PROJECT - FULL CRUD TEMPLATE
+// DbSet registration for EF Core.
+// ============================================================================
+
+public partial class EFDataModel
+{{
+    public virtual DbSet<{name}Item> {name}Items {{ get; set; }} = null!;
 }}
 
 #endregion
@@ -291,24 +308,6 @@ public class {name}Item
     public DateTime? DeletedAt {{ get; set; }}
 
     public virtual Tenant? Tenant {{ get; set; }}
-}}
-
-#endregion
-";
-
-    private static string GetFullCrudDbContext(string name) => $@"using Microsoft.EntityFrameworkCore;
-
-namespace FreeManager.EFModels.EFModels;
-
-#region {name} DbContext Extension
-// ============================================================================
-// {name.ToUpper()} PROJECT - FULL CRUD TEMPLATE
-// DbSet registration for EF Core.
-// ============================================================================
-
-public partial class EFDataModel
-{{
-    public virtual DbSet<{name}Item> {name}Items {{ get; set; }} = null!;
 }}
 
 #endregion

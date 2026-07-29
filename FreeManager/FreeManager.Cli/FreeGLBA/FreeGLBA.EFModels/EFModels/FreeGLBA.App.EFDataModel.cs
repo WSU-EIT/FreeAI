@@ -10,8 +10,8 @@ namespace FreeGLBA.EFModels.EFModels;
 
 public partial class EFDataModel : DbContext
 {
-    public virtual DbSet<SourceSystemItem> SourceSystems { get; set; } = null!;
     public virtual DbSet<AccessEventItem> AccessEvents { get; set; } = null!;
-    public virtual DbSet<DataSubjectItem> DataSubjects { get; set; } = null!;
     public virtual DbSet<ComplianceReportItem> ComplianceReports { get; set; } = null!;
+    public virtual DbSet<DataSubjectItem> DataSubjects { get; set; } = null!;
+    public virtual DbSet<SourceSystemItem> SourceSystems { get; set; } = null!;
 }

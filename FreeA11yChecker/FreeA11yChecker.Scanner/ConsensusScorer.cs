@@ -76,8 +76,7 @@ public static class ConsensusScorer
         List<A11yIssue> axeIssues,
         List<A11yIssue> htmlcheckIssues,
         List<A11yIssue> htmlcsIssues,
-        List<A11yIssue> ibmIssues)
-    {
+        List<A11yIssue> ibmIssues){
         var summary = new A11yPageSummary();
         var allIssues = new List<A11yIssue>();
         var toolSets = new (string Name, List<A11yIssue> Issues)[]

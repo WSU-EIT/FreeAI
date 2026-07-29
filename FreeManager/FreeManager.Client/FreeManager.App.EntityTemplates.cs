@@ -277,8 +277,7 @@ public static partial class EntityTemplates
     /// </summary>
     private static List<DataObjects.EntityDefinition> GenerateJoinEntitiesForManyToMany(
         List<DataObjects.RelationshipDefinition> relationships,
-        List<DataObjects.EntityDefinition> existingEntities)
-    {
+        List<DataObjects.EntityDefinition> existingEntities){
         var joinEntities = new List<DataObjects.EntityDefinition>();
 
         foreach (var rel in relationships.Where(r => r.Type == DataObjects.RelationshipType.ManyToMany))
@@ -342,6 +341,19 @@ public static partial class EntityTemplates
         return joinEntities;
     }
 
+    /// <summary>
+    /// Get relationships where this entity is the parent (has children).
+    /// </summary>
+    private static List<DataObjects.RelationshipDefinition> GetChildRelationships(
+        string entityName,
+        List<DataObjects.RelationshipDefinition> relationships){
+        return relationships
+            .Where(r => r.SourceEntityName == entityName &&
+                       (r.Type == DataObjects.RelationshipType.OneToMany ||
+                        r.Type == DataObjects.RelationshipType.ManyToMany))
+            .ToList();
+    }
+
     // ============================================================
     // RELATIONSHIP HELPERS
     // ============================================================
@@ -351,24 +363,9 @@ public static partial class EntityTemplates
     /// </summary>
     private static List<DataObjects.RelationshipDefinition> GetParentRelationships(
         string entityName,
-        List<DataObjects.RelationshipDefinition> relationships)
-    {
+        List<DataObjects.RelationshipDefinition> relationships){
         return relationships
             .Where(r => r.TargetEntityName == entityName && r.SourceEntityName != entityName)
-            .ToList();
-    }
-
-    /// <summary>
-    /// Get relationships where this entity is the parent (has children).
-    /// </summary>
-    private static List<DataObjects.RelationshipDefinition> GetChildRelationships(
-        string entityName,
-        List<DataObjects.RelationshipDefinition> relationships)
-    {
-        return relationships
-            .Where(r => r.SourceEntityName == entityName &&
-                       (r.Type == DataObjects.RelationshipType.OneToMany ||
-                        r.Type == DataObjects.RelationshipType.ManyToMany))
             .ToList();
     }
 }

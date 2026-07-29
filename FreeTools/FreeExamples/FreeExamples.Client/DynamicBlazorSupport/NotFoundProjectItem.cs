@@ -14,9 +14,9 @@
 
         public override string BasePath { get; }
 
-        public override string FilePath { get; }
-
         public override bool Exists => false;
+
+        public override string FilePath { get; }
 
         public override string PhysicalPath => throw new NotSupportedException();
 

@@ -171,43 +171,12 @@
 
 @code {
     private readonly List<ShowcaseSectionData> _sections = new();
+    private int CoreDemoCount => _sections.FirstOrDefault(section => section.AnchorId == "core-components")?.Items.Count ?? 0;
 
     private int FeatureCount => _sections.FirstOrDefault(section => section.AnchorId == "full-features")?.Items.Count ?? 0;
-    private int CoreDemoCount => _sections.FirstOrDefault(section => section.AnchorId == "core-components")?.Items.Count ?? 0;
+    private int TotalDemoPageCount => FeatureCount + CoreDemoCount + VariantPageCount;
     private int VariantFamilyCount => _sections.Where(section => section.AnchorId.Contains("variants")).Sum(section => section.Items.Count);
     private int VariantPageCount => _sections.Where(section => section.AnchorId.Contains("variants")).Sum(section => section.Items.Sum(item => item.Links.Count));
-    private int TotalDemoPageCount => FeatureCount + CoreDemoCount + VariantPageCount;
-
-    protected override void OnInitialized()
-    {
-        _sections.Add(BuildFeatureSection());
-        _sections.Add(BuildCoreComponentSection());
-        _sections.Add(BuildTier1Section());
-        _sections.Add(BuildTier2ASection());
-        _sections.Add(BuildTier2BSection());
-    }
-
-    private static ShowcaseSectionData BuildFeatureSection()
-    {
-        return new ShowcaseSectionData
-        {
-            AnchorId = "full-features",
-            Title = "Full Features",
-            BadgeText = "6 features",
-            Description = "Complex, multi-service capabilities that cover a real business workflow end to end.",
-            Accent = "success",
-            ColumnClass = "col-md-6 col-lg-4",
-            Items = new List<ShowcaseCardItem>
-            {
-                new() { BadgeText = "101", IconClass = "fa-solid fa-list-check", Title = "Dynamic Forms", Summary = "JSON-schema-driven form builder and renderer.", Detail = "Use this for forms that vary by customer, workflow, or survey definition.", CodePath = "FreeBlazorExtended/DynamicForms/", Links = SingleLink("View Demo", "showcase/feature101-dynamic-forms") },
-                new() { BadgeText = "102", IconClass = "fa-solid fa-display", Title = "Multi-View Sync", Summary = "SignalR-backed master/slave session for synchronized views.", Detail = "Use this for projectors, guided workflows, and shared presentation surfaces.", CodePath = "FreeBlazorExtended/MultiViewSync/", Links = SingleLink("View Demo", "showcase/feature102-multi-view-sync") },
-                new() { BadgeText = "103", IconClass = "fa-regular fa-calendar", Title = "Calendar & Scheduling", Summary = "Calendar, recurrence, reservation, and conflict-detection surface.", Detail = "Use this for appointment booking and resource scheduling scenarios.", CodePath = "FreeBlazorExtended/Calendar/", Links = SingleLink("View Demo", "showcase/feature103-calendar") },
-                new() { BadgeText = "104", IconClass = "fa-solid fa-sliders", Title = "User Preferences", Summary = "Server-persisted per-user settings with roaming preference state.", Detail = "Use this for preferences that must survive cache clears and follow users across devices.", CodePath = "FreeBlazorExtended/UserPreferences/", Links = SingleLink("View Demo", "showcase/feature104-user-preferences") },
-                new() { BadgeText = "105", IconClass = "fa-solid fa-server", Title = "Agent Monitoring", Summary = "Distributed Windows host monitoring and remote command surface.", Detail = "Use this for central monitoring of services, IIS pools, and host telemetry.", CodePath = "FreeBlazorExtended/AgentMonitoring/", Links = SingleLink("View Demo", "showcase/feature105-agent-monitoring") },
-                new() { BadgeText = "107", IconClass = "fa-solid fa-sitemap", Title = "Hierarchical Tree", Summary = "Recursive tree with drag-to-reparent and cycle prevention.", Detail = "Use this for org charts, folder structures, category trees, and menu builders.", CodePath = "FreeBlazorExtended/HierarchicalTree/", Links = SingleLink("View Demo", "showcase/feature107-hierarchical-tree") },
-            },
-        };
-    }
 
     private static ShowcaseSectionData BuildCoreComponentSection()
     {
@@ -231,6 +200,28 @@
                 new() { IconClass = "fa-solid fa-table", Title = "Paged Recordset", Summary = "Generic paginated table with sorting and row actions.", CodePath = "FreeBlazor.PagedRecordset", Links = SingleLink("Demo", "showcase/pagedrecordset") },
                 new() { IconClass = "fa-solid fa-list", Title = "StringList", Summary = "Editable List<string> with add, edit, delete, and reorder behavior.", CodePath = "FreeBlazor.StringList", Links = SingleLink("Demo", "showcase/stringlist") },
                 new() { IconClass = "fa-solid fa-eye-slash", Title = "Toggle Password", Summary = "Password input with show/hide toggle and optional strength indicator.", CodePath = "FreeBlazor.TogglePasswordInput", Links = SingleLink("Demo", "showcase/togglepassword") },
+            },
+        };
+    }
+
+    private static ShowcaseSectionData BuildFeatureSection()
+    {
+        return new ShowcaseSectionData
+        {
+            AnchorId = "full-features",
+            Title = "Full Features",
+            BadgeText = "6 features",
+            Description = "Complex, multi-service capabilities that cover a real business workflow end to end.",
+            Accent = "success",
+            ColumnClass = "col-md-6 col-lg-4",
+            Items = new List<ShowcaseCardItem>
+            {
+                new() { BadgeText = "101", IconClass = "fa-solid fa-list-check", Title = "Dynamic Forms", Summary = "JSON-schema-driven form builder and renderer.", Detail = "Use this for forms that vary by customer, workflow, or survey definition.", CodePath = "FreeBlazorExtended/DynamicForms/", Links = SingleLink("View Demo", "showcase/feature101-dynamic-forms") },
+                new() { BadgeText = "102", IconClass = "fa-solid fa-display", Title = "Multi-View Sync", Summary = "SignalR-backed master/slave session for synchronized views.", Detail = "Use this for projectors, guided workflows, and shared presentation surfaces.", CodePath = "FreeBlazorExtended/MultiViewSync/", Links = SingleLink("View Demo", "showcase/feature102-multi-view-sync") },
+                new() { BadgeText = "103", IconClass = "fa-regular fa-calendar", Title = "Calendar & Scheduling", Summary = "Calendar, recurrence, reservation, and conflict-detection surface.", Detail = "Use this for appointment booking and resource scheduling scenarios.", CodePath = "FreeBlazorExtended/Calendar/", Links = SingleLink("View Demo", "showcase/feature103-calendar") },
+                new() { BadgeText = "104", IconClass = "fa-solid fa-sliders", Title = "User Preferences", Summary = "Server-persisted per-user settings with roaming preference state.", Detail = "Use this for preferences that must survive cache clears and follow users across devices.", CodePath = "FreeBlazorExtended/UserPreferences/", Links = SingleLink("View Demo", "showcase/feature104-user-preferences") },
+                new() { BadgeText = "105", IconClass = "fa-solid fa-server", Title = "Agent Monitoring", Summary = "Distributed Windows host monitoring and remote command surface.", Detail = "Use this for central monitoring of services, IIS pools, and host telemetry.", CodePath = "FreeBlazorExtended/AgentMonitoring/", Links = SingleLink("View Demo", "showcase/feature105-agent-monitoring") },
+                new() { BadgeText = "107", IconClass = "fa-solid fa-sitemap", Title = "Hierarchical Tree", Summary = "Recursive tree with drag-to-reparent and cycle prevention.", Detail = "Use this for org charts, folder structures, category trees, and menu builders.", CodePath = "FreeBlazorExtended/HierarchicalTree/", Links = SingleLink("View Demo", "showcase/feature107-hierarchical-tree") },
             },
         };
     }
@@ -323,6 +314,15 @@
         };
     }
 
+    protected override void OnInitialized()
+    {
+        _sections.Add(BuildFeatureSection());
+        _sections.Add(BuildCoreComponentSection());
+        _sections.Add(BuildTier1Section());
+        _sections.Add(BuildTier2ASection());
+        _sections.Add(BuildTier2BSection());
+    }
+
     private static List<ShowcaseLink> SingleLink(string label, string route)
     {
         return new List<ShowcaseLink>
@@ -333,24 +333,24 @@
 
     private sealed class ShowcaseSectionData
     {
-        public string AnchorId { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string BadgeText { get; set; } = "";
-        public string Description { get; set; } = "";
         public string Accent { get; set; } = "primary";
+        public string AnchorId { get; set; } = "";
+        public string BadgeText { get; set; } = "";
         public string ColumnClass { get; set; } = "col-md-6 col-lg-4";
+        public string Description { get; set; } = "";
         public List<ShowcaseCardItem> Items { get; set; } = new();
+        public string Title { get; set; } = "";
     }
 
     private sealed class ShowcaseCardItem
     {
-        public string Title { get; set; } = "";
-        public string IconClass { get; set; } = "";
         public string BadgeText { get; set; } = "";
-        public string Summary { get; set; } = "";
-        public string Detail { get; set; } = "";
         public string CodePath { get; set; } = "";
+        public string Detail { get; set; } = "";
+        public string IconClass { get; set; } = "";
         public List<ShowcaseLink> Links { get; set; } = new();
+        public string Summary { get; set; } = "";
+        public string Title { get; set; } = "";
     }
 
     private sealed class ShowcaseLink

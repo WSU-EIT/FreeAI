@@ -12,15 +12,15 @@ namespace FreeA11yChecker.Scanner;
 /// </summary>
 public class HtmlCsRunResult
 {
-    public List<A11yIssue> Issues { get; set; } = new();
-    public int ErrorCount { get; set; }
-    public int WarningCount { get; set; }
-    public int NoticeCount { get; set; }
     public int DistinctFailedRules { get; set; }
-    /// <summary>HTMLCS WCAG 2.0 AA contains ~84 distinct rule codes. Constant per standard.</summary>
-    public int TotalRulesInStandard { get; set; } = 84;
+    public int ErrorCount { get; set; }
+    public List<A11yIssue> Issues { get; set; } = new();
+    public int NoticeCount { get; set; }
     /// <summary>Computed: TotalRulesInStandard - DistinctFailedRules. Floor at 0.</summary>
     public int PassCount => Math.Max(0, TotalRulesInStandard - DistinctFailedRules);
+    /// <summary>HTMLCS WCAG 2.0 AA contains ~84 distinct rule codes. Constant per standard.</summary>
+    public int TotalRulesInStandard { get; set; } = 84;
+    public int WarningCount { get; set; }
 }
 
 public static class HtmlCodeSnifferRunner
@@ -45,6 +45,91 @@ public static class HtmlCodeSnifferRunner
         }
 
         return cachePath;
+    }
+
+    /// <summary>
+    /// Draws colored outlines on elements that HTMLCS flagged,
+    /// with severity-based colors and a summary banner.
+    /// </summary>
+    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
+    {
+        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
+            v.Selector,
+            v.Severity,
+            v.RuleId,
+            v.Message,
+        }));
+
+        await page.EvaluateAsync(@"(data) => {
+            const violations = JSON.parse(data);
+            const colorMap = {
+                serious:  '#d32f2f',
+                moderate: '#f9a825',
+                minor:    '#1565c0'
+            };
+
+            violations.forEach(v => {
+                if (!v.Selector) return;
+                try {
+                    const el = document.querySelector(v.Selector);
+                    if (el) {
+                        const color = colorMap[v.Severity] || '#f9a825';
+                        el.style.outline = '3px dashed ' + color;
+                        el.style.outlineOffset = '2px';
+                        el.setAttribute('data-a11y-overlay', 'htmlcs');
+                    }
+                } catch(e) { /* selector may be invalid */ }
+            });
+
+            const banner = document.createElement('div');
+            banner.id = 'a11y-htmlcs-overlay-banner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
+                'background:#2d2d44;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
+                'display:flex;gap:16px;align-items:center;';
+
+            const counts = { serious: 0, moderate: 0, minor: 0 };
+            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
+
+            banner.innerHTML = '<strong>HTML_CodeSniffer</strong> ' +
+                Object.entries(counts).filter(([,c]) => c > 0)
+                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
+                    .join(' | ');
+
+            document.body.prepend(banner);
+        }", violationsJson);
+    }
+
+    /// <summary>
+    /// Parses WCAG success criteria from HTMLCS code strings.
+    /// e.g., "WCAG2AA.Principle1.Guideline1_1.1_1_1.H37" → "1.1.1"
+    /// </summary>
+    private static string ParseWcagFromCode(string code)
+    {
+        if (string.IsNullOrEmpty(code)) return string.Empty;
+
+        // Pattern: after "Guideline\d_\d." there is the SC number like "1_1_1" or "2_4_1"
+        Match m = Regex.Match(code, @"Guideline\d+_\d+\.(\d+)_(\d+)_(\d+)");
+        if (m.Success) {
+            return m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value;
+        }
+
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Removes the HTMLCS overlay outlines and summary banner from the page.
+    /// </summary>
+    public static async Task RemoveOverlay(IPage page)
+    {
+        await page.EvaluateAsync(@"() => {
+            document.querySelectorAll('[data-a11y-overlay=""htmlcs""]').forEach(el => {
+                el.style.outline = '';
+                el.style.outlineOffset = '';
+                el.removeAttribute('data-a11y-overlay');
+            });
+            const banner = document.getElementById('a11y-htmlcs-overlay-banner');
+            if (banner) banner.remove();
+        }");
     }
 
     /// <summary>
@@ -142,90 +227,5 @@ public static class HtmlCodeSnifferRunner
                 .Distinct(StringComparer.OrdinalIgnoreCase).Count();
         } catch { /* leave defaults */ }
         return output;
-    }
-
-    /// <summary>
-    /// Draws colored outlines on elements that HTMLCS flagged,
-    /// with severity-based colors and a summary banner.
-    /// </summary>
-    public static async Task InjectOverlay(IPage page, List<A11yIssue> violations)
-    {
-        string violationsJson = JsonSerializer.Serialize(violations.Select(v => new {
-            v.Selector,
-            v.Severity,
-            v.RuleId,
-            v.Message,
-        }));
-
-        await page.EvaluateAsync(@"(data) => {
-            const violations = JSON.parse(data);
-            const colorMap = {
-                serious:  '#d32f2f',
-                moderate: '#f9a825',
-                minor:    '#1565c0'
-            };
-
-            violations.forEach(v => {
-                if (!v.Selector) return;
-                try {
-                    const el = document.querySelector(v.Selector);
-                    if (el) {
-                        const color = colorMap[v.Severity] || '#f9a825';
-                        el.style.outline = '3px dashed ' + color;
-                        el.style.outlineOffset = '2px';
-                        el.setAttribute('data-a11y-overlay', 'htmlcs');
-                    }
-                } catch(e) { /* selector may be invalid */ }
-            });
-
-            const banner = document.createElement('div');
-            banner.id = 'a11y-htmlcs-overlay-banner';
-            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;' +
-                'background:#2d2d44;color:#fff;padding:8px 16px;font:14px/1.4 sans-serif;' +
-                'display:flex;gap:16px;align-items:center;';
-
-            const counts = { serious: 0, moderate: 0, minor: 0 };
-            violations.forEach(v => { counts[v.Severity] = (counts[v.Severity] || 0) + 1; });
-
-            banner.innerHTML = '<strong>HTML_CodeSniffer</strong> ' +
-                Object.entries(counts).filter(([,c]) => c > 0)
-                    .map(([sev, c]) => '<span style=""color:' + (colorMap[sev] || '#fff') + '"">' + c + ' ' + sev + '</span>')
-                    .join(' | ');
-
-            document.body.prepend(banner);
-        }", violationsJson);
-    }
-
-    /// <summary>
-    /// Removes the HTMLCS overlay outlines and summary banner from the page.
-    /// </summary>
-    public static async Task RemoveOverlay(IPage page)
-    {
-        await page.EvaluateAsync(@"() => {
-            document.querySelectorAll('[data-a11y-overlay=""htmlcs""]').forEach(el => {
-                el.style.outline = '';
-                el.style.outlineOffset = '';
-                el.removeAttribute('data-a11y-overlay');
-            });
-            const banner = document.getElementById('a11y-htmlcs-overlay-banner');
-            if (banner) banner.remove();
-        }");
-    }
-
-    /// <summary>
-    /// Parses WCAG success criteria from HTMLCS code strings.
-    /// e.g., "WCAG2AA.Principle1.Guideline1_1.1_1_1.H37" → "1.1.1"
-    /// </summary>
-    private static string ParseWcagFromCode(string code)
-    {
-        if (string.IsNullOrEmpty(code)) return string.Empty;
-
-        // Pattern: after "Guideline\d_\d." there is the SC number like "1_1_1" or "2_4_1"
-        Match m = Regex.Match(code, @"Guideline\d+_\d+\.(\d+)_(\d+)_(\d+)");
-        if (m.Success) {
-            return m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value;
-        }
-
-        return string.Empty;
     }
 }

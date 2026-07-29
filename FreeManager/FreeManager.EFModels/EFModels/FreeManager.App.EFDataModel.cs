@@ -21,14 +21,14 @@ namespace FreeManager.EFModels.EFModels;
 /// </summary>
 public partial class EFDataModel
 {
+    public virtual DbSet<FMAppFile> FMAppFiles { get; set; } = null!;
+    public virtual DbSet<FMAppFileVersion> FMAppFileVersions { get; set; } = null!;
+    public virtual DbSet<FMBuild> FMBuilds { get; set; } = null!;
     // ============================================================
     // FREEMANAGER DbSets
     // ============================================================
 
     public virtual DbSet<FMProject> FMProjects { get; set; } = null!;
-    public virtual DbSet<FMAppFile> FMAppFiles { get; set; } = null!;
-    public virtual DbSet<FMAppFileVersion> FMAppFileVersions { get; set; } = null!;
-    public virtual DbSet<FMBuild> FMBuilds { get; set; } = null!;
 
     // ============================================================
     // ENTITY CONFIGURATION

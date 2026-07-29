@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Quiz Timer Pattern"
-                     Description="Each quiz question has a countdown timer. When time runs out, the answer is auto-submitted (or marked unanswered). The timer resets for each new question. This is the standardized testing / certification exam pattern."
-                     Code="@_codeQuizTimer" />
+                    Description="Each quiz question has a countdown timer. When time runs out, the answer is auto-submitted (or marked unanswered). The timer resets for each new question. This is the standardized testing / certification exam pattern."
+                    Code="@_codeQuizTimer" />
             <InfoTip Title="Question Progress Indicator"
-                     Description="A progress bar or 'Question 3 of 10' label tracks overall quiz progress. Each question dot below can be colored: bg-success (answered), bg-warning (flagged), bg-secondary (unanswered). This helps test-takers manage their time."
-                     Code="@_codeQuestionProgress" />
+                    Description="A progress bar or 'Question 3 of 10' label tracks overall quiz progress. Each question dot below can be colored: bg-success (answered), bg-warning (flagged), bg-secondary (unanswered). This helps test-takers manage their time."
+                    Code="@_codeQuestionProgress" />
             <InfoTip Title="Time Pressure Color Coding"
-                     Description="The timer changes color as time runs out: text-primary (plenty of time), text-warning (half time), text-danger (critical). This gradual color shift creates urgency without sudden surprises. The display-4 size makes it always visible."
-                     Code="@_codeTimePressure" />
+                    Description="The timer changes color as time runs out: text-primary (plenty of time), text-warning (half time), text-danger (critical). This gradual color shift creates urgency without sudden surprises. The display-4 size makes it always visible."
+                    Code="@_codeTimePressure" />
         </div>
         <div class="card shadow-sm border-0 mb-3"><div class="card-header bg-primary text-white d-flex justify-content-between"><span>Question @(_currentQ + 1) of @_questions.Count</span><span class="badge bg-light text-dark">@_timeLeft s remaining</span></div><div class="card-body">
             <div class="progress mb-3" style="height:4px;"><div class="progress-bar @(_timeLeft <= 5 ? "bg-danger" : "bg-success")" style="width:@(_timeLeft * 100 / 30)%"></div></div>

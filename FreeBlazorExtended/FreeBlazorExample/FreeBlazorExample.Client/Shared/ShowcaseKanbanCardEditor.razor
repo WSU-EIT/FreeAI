@@ -82,10 +82,10 @@
                 <div class="col-md-6">
                     <label class="form-label" for="@($"{_idPrefix}-due")">Due date</label>
                     <input id="@($"{_idPrefix}-due")"
-                           type="date"
-                           class="form-control"
-                           value="@FormatDateInput(_draft.DueDate)"
-                           @onchange="HandleDueDateChanged" />
+                            type="date"
+                            class="form-control"
+                            value="@FormatDateInput(_draft.DueDate)"
+                            @onchange="HandleDueDateChanged" />
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="@($"{_idPrefix}-labels")">Labels</label>
@@ -434,12 +434,12 @@
 
     private sealed class CardDraft
     {
-        public string Id { get; set; } = string.Empty;
-        public string ColumnId { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
         public string? Assignee { get; set; }
-        public string? Priority { get; set; }
+        public string ColumnId { get; set; } = string.Empty;
+        public string? Description { get; set; }
         public DateTime? DueDate { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string? Priority { get; set; }
+        public string Title { get; set; } = string.Empty;
     }
 }

@@ -19,6 +19,11 @@ namespace FreeServicesHub.Server.Hubs
             _serviceProvider = serviceProvider;
         }
 
+        public async Task JoinGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        }
+
         public async Task JoinTenantId(string TenantId)
         {
             if (!tenants.Contains(TenantId)) {
@@ -37,11 +42,6 @@ namespace FreeServicesHub.Server.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
         }
 
-        public async Task JoinGroup(string groupName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-        }
-
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
@@ -53,49 +53,6 @@ namespace FreeServicesHub.Server.Hubs
                 await Groups.AddToGroupAsync(Context.ConnectionId, "Agent_" + agentId.ToString());
                 await Groups.AddToGroupAsync(Context.ConnectionId, "Agents");
             }
-        }
-
-        public async Task SendHeartbeat(DataObjects.AgentHeartbeat heartbeat)
-        {
-            // Extract AgentId from the authenticated connection's claims
-            var agentIdClaim = Context.User?.FindFirst("AgentId")?.Value;
-            if (Guid.TryParse(agentIdClaim, out var agentId))
-            {
-                heartbeat.AgentId = agentId;
-            }
-
-            using var scope = _serviceProvider.CreateScope();
-            var da = scope.ServiceProvider.GetRequiredService<IDataAccess>();
-            await da.SaveHeartbeat(heartbeat);
-        }
-
-        /// <summary>
-        /// Hub → Agent: request current service settings from a specific agent.
-        /// The agent listens for "RequestSettings" and responds with ReportAgentSettings.
-        /// </summary>
-        public async Task RequestAgentSettings(Guid agentId)
-        {
-            await Clients.Group("Agent_" + agentId.ToString()).SignalRUpdate(new DataObjects.SignalRUpdate
-            {
-                UpdateType = DataObjects.SignalRUpdateType.AgentSettingsReport,
-                Message = "RequestSettings",
-                ItemId = agentId,
-            });
-        }
-
-        /// <summary>
-        /// Hub → Agent: push updated settings to a specific agent.
-        /// The agent listens for "UpdateSettings" and applies the changes.
-        /// </summary>
-        public async Task UpdateAgentSettings(DataObjects.AgentSettingsUpdate settings)
-        {
-            await Clients.Group("Agent_" + settings.AgentId.ToString()).SignalRUpdate(new DataObjects.SignalRUpdate
-            {
-                UpdateType = DataObjects.SignalRUpdateType.AgentSettingsUpdated,
-                Message = "UpdateSettings",
-                ItemId = settings.AgentId,
-                Object = settings,
-            });
         }
 
         /// <summary>
@@ -124,6 +81,34 @@ namespace FreeServicesHub.Server.Hubs
             });
         }
 
+        /// <summary>
+        /// Hub → Agent: request current service settings from a specific agent.
+        /// The agent listens for "RequestSettings" and responds with ReportAgentSettings.
+        /// </summary>
+        public async Task RequestAgentSettings(Guid agentId)
+        {
+            await Clients.Group("Agent_" + agentId.ToString()).SignalRUpdate(new DataObjects.SignalRUpdate
+            {
+                UpdateType = DataObjects.SignalRUpdateType.AgentSettingsReport,
+                Message = "RequestSettings",
+                ItemId = agentId,
+            });
+        }
+
+        public async Task SendHeartbeat(DataObjects.AgentHeartbeat heartbeat)
+        {
+            // Extract AgentId from the authenticated connection's claims
+            var agentIdClaim = Context.User?.FindFirst("AgentId")?.Value;
+            if (Guid.TryParse(agentIdClaim, out var agentId))
+            {
+                heartbeat.AgentId = agentId;
+            }
+
+            using var scope = _serviceProvider.CreateScope();
+            var da = scope.ServiceProvider.GetRequiredService<IDataAccess>();
+            await da.SaveHeartbeat(heartbeat);
+        }
+
         public async Task SignalRUpdate(DataObjects.SignalRUpdate update)
         {
             if (update.TenantId.HasValue) {
@@ -132,6 +117,21 @@ namespace FreeServicesHub.Server.Hubs
                 // This is a non-tenant-specific update.
                 await Clients.All.SignalRUpdate(update);
             }
+        }
+
+        /// <summary>
+        /// Hub → Agent: push updated settings to a specific agent.
+        /// The agent listens for "UpdateSettings" and applies the changes.
+        /// </summary>
+        public async Task UpdateAgentSettings(DataObjects.AgentSettingsUpdate settings)
+        {
+            await Clients.Group("Agent_" + settings.AgentId.ToString()).SignalRUpdate(new DataObjects.SignalRUpdate
+            {
+                UpdateType = DataObjects.SignalRUpdateType.AgentSettingsUpdated,
+                Message = "UpdateSettings",
+                ItemId = settings.AgentId,
+                Object = settings,
+            });
         }
     }
 }

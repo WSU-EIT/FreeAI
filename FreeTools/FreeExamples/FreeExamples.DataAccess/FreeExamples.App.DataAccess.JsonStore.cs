@@ -5,9 +5,9 @@ namespace FreeExamples;
 
 public partial interface IDataAccess
 {
+    DataObjects.BooleanResponse DeleteJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity;
     List<T> GetJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity;
     List<T> SaveJsonRecords<T>(List<T> records, DataObjects.User? currentUser) where T : class, DataObjects.IJsonEntity;
-    DataObjects.BooleanResponse DeleteJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity;
 }
 
 public partial class DataAccess
@@ -20,32 +20,28 @@ public partial class DataAccess
         WriteIndented = false,
     };
 
-    private void SeedJsonDataIfNeeded()
+    public DataObjects.BooleanResponse DeleteJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity
     {
-        if (_jsonDataSeeded) return;
-        _jsonDataSeeded = true;
+        SeedJsonDataIfNeeded();
+        var output = new DataObjects.BooleanResponse();
 
-        SeedProjects();
-        SeedTickets();
-        SeedSprints();
-        SeedBoardConfigs();
-        SeedWorkOrders();
-        SeedBudgetRequests();
-        SeedEquipment();
-        SeedEvaluations();
-        SeedOnboarding();
-    }
-
-    private T? TryDeserialize<T>(DataObjects.JsonRecord record) where T : class, DataObjects.IJsonEntity
-    {
-        if (record.RecordType != T.EntityType) return null;
-        if (record.SchemaVersion > T.CurrentSchemaVersion) return null;
-
-        try {
-            return JsonSerializer.Deserialize<T>(record.Contents, _jsonOptions);
-        } catch {
-            return null;
+        if (ids == null || ids.Count == 0) {
+            output.Messages.Add("You must provide IDs to delete.");
+            return output;
         }
+
+        int deleted = 0;
+        foreach (var id in ids) {
+            if (_jsonStore.TryGetValue(id, out var record) && record.RecordType == T.EntityType) {
+                record.Deleted = true;
+                record.DeletedAt = DateTime.UtcNow;
+                deleted++;
+            }
+        }
+
+        output.Result = true;
+        output.Messages.Add($"Deleted {deleted} record(s).");
+        return output;
     }
 
     public List<T> GetJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity
@@ -107,27 +103,31 @@ public partial class DataAccess
         return saved;
     }
 
-    public DataObjects.BooleanResponse DeleteJsonRecords<T>(List<Guid>? ids) where T : class, DataObjects.IJsonEntity
+    private void SeedJsonDataIfNeeded()
     {
-        SeedJsonDataIfNeeded();
-        var output = new DataObjects.BooleanResponse();
+        if (_jsonDataSeeded) return;
+        _jsonDataSeeded = true;
 
-        if (ids == null || ids.Count == 0) {
-            output.Messages.Add("You must provide IDs to delete.");
-            return output;
+        SeedProjects();
+        SeedTickets();
+        SeedSprints();
+        SeedBoardConfigs();
+        SeedWorkOrders();
+        SeedBudgetRequests();
+        SeedEquipment();
+        SeedEvaluations();
+        SeedOnboarding();
+    }
+
+    private T? TryDeserialize<T>(DataObjects.JsonRecord record) where T : class, DataObjects.IJsonEntity
+    {
+        if (record.RecordType != T.EntityType) return null;
+        if (record.SchemaVersion > T.CurrentSchemaVersion) return null;
+
+        try {
+            return JsonSerializer.Deserialize<T>(record.Contents, _jsonOptions);
+        } catch {
+            return null;
         }
-
-        int deleted = 0;
-        foreach (var id in ids) {
-            if (_jsonStore.TryGetValue(id, out var record) && record.RecordType == T.EntityType) {
-                record.Deleted = true;
-                record.DeletedAt = DateTime.UtcNow;
-                deleted++;
-            }
-        }
-
-        output.Result = true;
-        output.Messages.Add($"Deleted {deleted} record(s).");
-        return output;
     }
 }

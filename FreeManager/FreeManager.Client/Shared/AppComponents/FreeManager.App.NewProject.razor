@@ -58,14 +58,14 @@
                                 bool isSelected = _request.Template == template.Template;
                                 <div class="col-md-6 mb-2">
                                     <div class="card h-100 @(isSelected ? "border-primary border-2" : "border")"
-                                         @onclick="() => SelectTemplate(template.Template)"
-                                         style="cursor: pointer;">
+                                            @onclick="() => SelectTemplate(template.Template)"
+                                            style="cursor: pointer;">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center mb-2">
                                                 <input type="radio"
-                                                       class="form-check-input me-2"
-                                                       checked="@isSelected"
-                                                       @onchange="() => SelectTemplate(template.Template)" />
+                                                        class="form-check-input me-2"
+                                                        checked="@isSelected"
+                                                        @onchange="() => SelectTemplate(template.Template)" />
                                                 <i class="@template.Icon me-2 @(isSelected ? "text-primary" : "text-muted")"></i>
                                                 <strong>@template.Name</strong>
                                                 @if (template.IsRecommended) {
@@ -97,11 +97,11 @@
                                 Project Name <span class="text-danger">*</span>
                             </label>
                             <input type="text"
-                                   id="project-name"
-                                   class="@Helpers.MissingValue(_request.Name, "form-control")"
-                                   @bind="_request.Name"
-                                   @bind:event="oninput"
-                                   placeholder="MyApp (must be valid C# identifier)" />
+                                    id="project-name"
+                                    class="@Helpers.MissingValue(_request.Name, "form-control")"
+                                    @bind="_request.Name"
+                                    @bind:event="oninput"
+                                    placeholder="MyApp (must be valid C# identifier)" />
                             <div class="form-text">
                                 Must start with a letter and contain only letters and numbers. Used for namespace.
                             </div>
@@ -115,11 +115,11 @@
                                 Display Name
                             </label>
                             <input type="text"
-                                   id="project-display-name"
-                                   class="form-control"
-                                   @bind="_request.DisplayName"
-                                   @bind:event="oninput"
-                                   placeholder="My Application (human-friendly name)" />
+                                    id="project-display-name"
+                                    class="form-control"
+                                    @bind="_request.DisplayName"
+                                    @bind:event="oninput"
+                                    placeholder="My Application (human-friendly name)" />
                         </div>
 
                         <div class="mb-3">
@@ -127,10 +127,10 @@
                                 Description
                             </label>
                             <textarea id="project-description"
-                                      class="form-control"
-                                      rows="2"
-                                      @bind="_request.Description"
-                                      placeholder="Brief description of your application"></textarea>
+                                    class="form-control"
+                                    rows="2"
+                                    @bind="_request.Description"
+                                    placeholder="Brief description of your application"></textarea>
                         </div>
                     </div>
                 </div>
@@ -151,10 +151,10 @@
                                 <div class="col-md-6 col-lg-4">
                                     <div class="form-check">
                                         <input type="checkbox"
-                                               class="form-check-input"
-                                               id="module-@module.Key"
-                                               checked="@isSelected"
-                                               @onchange="() => ToggleModule(module.Key)" />
+                                                class="form-check-input"
+                                                id="module-@module.Key"
+                                                checked="@isSelected"
+                                                @onchange="() => ToggleModule(module.Key)" />
                                         <label class="form-check-label" for="module-@module.Key">
                                             <strong>@module.Key</strong>
                                             <div class="text-muted small">@module.Value</div>
@@ -222,79 +222,6 @@
         { "Tags", "Tagging system" }
     };
 
-    public void Dispose()
-    {
-        Model.OnChange -= OnDataModelUpdated;
-    }
-
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-
-        _templates = ProjectTemplates.GetTemplates();
-        _request.Template = DataObjects.FMProjectTemplate.Starter;
-        _request.IncludedModules = new List<string> { "Tags" };
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (Model.Loaded && Model.LoggedIn) {
-            if (!_loadedData) {
-                _loadedData = true;
-                StateHasChanged();
-            }
-        }
-        await Task.CompletedTask;
-    }
-
-    private void OnDataModelUpdated()
-    {
-        if (Model.View == _pageName) {
-            StateHasChanged();
-        }
-    }
-
-    private void SelectTemplate(DataObjects.FMProjectTemplate template)
-    {
-        _request.Template = template;
-        StateHasChanged();
-    }
-
-    private void ToggleModule(string moduleName)
-    {
-        if (_request.IncludedModules.Contains(moduleName)) {
-            _request.IncludedModules.Remove(moduleName);
-        } else {
-            _request.IncludedModules.Add(moduleName);
-        }
-        StateHasChanged();
-    }
-
-    private string GetFileIcon(string fileName)
-    {
-        if (fileName.EndsWith(".cs")) return "fa-solid fa-code text-success";
-        if (fileName.EndsWith(".razor")) return "fa-solid fa-file-code text-primary";
-        if (fileName.EndsWith(".css")) return "fa-solid fa-palette text-info";
-        return "fa-solid fa-file";
-    }
-
-    private bool ValidateName()
-    {
-        _nameError = "";
-
-        if (String.IsNullOrWhiteSpace(_request.Name)) {
-            _nameError = "Project name is required";
-            return false;
-        }
-
-        if (!System.Text.RegularExpressions.Regex.IsMatch(_request.Name, @"^[A-Za-z][A-Za-z0-9]*$")) {
-            _nameError = "Project name must start with a letter and contain only letters and numbers";
-            return false;
-        }
-
-        return true;
-    }
-
     private async Task CreateProject()
     {
         if (!ValidateName()) {
@@ -326,5 +253,78 @@
 
         _saving = false;
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    private string GetFileIcon(string fileName)
+    {
+        if (fileName.EndsWith(".cs")) return "fa-solid fa-code text-success";
+        if (fileName.EndsWith(".razor")) return "fa-solid fa-file-code text-primary";
+        if (fileName.EndsWith(".css")) return "fa-solid fa-palette text-info";
+        return "fa-solid fa-file";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!_loadedData) {
+                _loadedData = true;
+                StateHasChanged();
+            }
+        }
+        await Task.CompletedTask;
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+
+        _templates = ProjectTemplates.GetTemplates();
+        _request.Template = DataObjects.FMProjectTemplate.Starter;
+        _request.IncludedModules = new List<string> { "Tags" };
+    }
+
+    private void SelectTemplate(DataObjects.FMProjectTemplate template)
+    {
+        _request.Template = template;
+        StateHasChanged();
+    }
+
+    private void ToggleModule(string moduleName)
+    {
+        if (_request.IncludedModules.Contains(moduleName)) {
+            _request.IncludedModules.Remove(moduleName);
+        } else {
+            _request.IncludedModules.Add(moduleName);
+        }
+        StateHasChanged();
+    }
+
+    private bool ValidateName()
+    {
+        _nameError = "";
+
+        if (String.IsNullOrWhiteSpace(_request.Name)) {
+            _nameError = "Project name is required";
+            return false;
+        }
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(_request.Name, @"^[A-Za-z][A-Za-z0-9]*$")) {
+            _nameError = "Project name must start with a letter and contain only letters and numbers";
+            return false;
+        }
+
+        return true;
     }
 }

@@ -334,13 +334,13 @@ public static class AiHandoffReport
 
     private record RuleGroup
     {
-        public string Tool { get; init; } = "";
-        public string RuleId { get; init; } = "";
-        public string Severity { get; set; } = "";
-        public List<RawViolation> Occurrences { get; init; } = new();
-        public int PagesAffected { get; init; }
         public string? FixHint { get; init; }
         public string? HelpUrl { get; init; }
+        public List<RawViolation> Occurrences { get; init; } = new();
+        public int PagesAffected { get; init; }
+        public string RuleId { get; init; } = "";
+        public string Severity { get; set; } = "";
+        public string Tool { get; init; } = "";
     }
 
     private static RawViolation? ParseViolation(JsonElement el, string tool, string pageSlug)

@@ -23,10 +23,10 @@
 <div class="column-selector-wrapper">
     <div class="btn-group" role="group">
         <button type="button" class="btn btn-sm btn-outline-secondary"
-            @onclick="ToggleDropdown"
-            aria-haspopup="true"
-            aria-expanded="@_showDropdown"
-            aria-label="Column visibility settings">
+                @onclick="ToggleDropdown"
+                aria-haspopup="true"
+                aria-expanded="@_showDropdown"
+                aria-label="Column visibility settings">
             <i class="fas fa-columns me-2" aria-hidden="true"></i>Columns
         </button>
     </div>
@@ -40,9 +40,9 @@
                 @foreach (var column in _columns) {
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="col-@column.Id"
-                            @onchange="@((ChangeEventArgs e) => ColumnToggled(column, e))"
-                            checked="@column.Visible"
-                            aria-label="Toggle @column.Name visibility" />
+                                @onchange="@((ChangeEventArgs e) => ColumnToggled(column, e))"
+                                checked="@column.Visible"
+                                aria-label="Toggle @column.Name visibility" />
                         <label class="form-check-label" for="col-@column.Id">
                             @column.Name
                         </label>
@@ -174,9 +174,9 @@
     public Dictionary<string, bool> InitialVisibility { get; set; } = new();
 
     public class ColumnVisibilityChangedEventArgs {
+        public Dictionary<string, bool> AllVisibleColumns { get; set; } = new();
         public string ColumnName { get; set; } = "";
         public bool IsVisible { get; set; } = false;
-        public Dictionary<string, bool> AllVisibleColumns { get; set; } = new();
     }
 
     protected override void OnInitialized()

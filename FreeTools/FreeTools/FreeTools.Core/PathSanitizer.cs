@@ -6,25 +6,6 @@
 public static class PathSanitizer
 {
     /// <summary>
-    /// Convert a route to a safe directory path for output files.
-    /// Example: "/Account/Login" -> "Account\Login" (on Windows)
-    /// </summary>
-    public static string RouteToDirectoryPath(string route)
-    {
-        var safePath = route.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-        return string.IsNullOrEmpty(safePath) ? "root" : safePath;
-    }
-
-    /// <summary>
-    /// Get the full output file path for a route.
-    /// </summary>
-    public static string GetOutputFilePath(string outputDir, string route, string filename)
-    {
-        var safePath = RouteToDirectoryPath(route);
-        return Path.Combine(outputDir, safePath, filename);
-    }
-
-    /// <summary>
     /// Ensure the directory for a file path exists.
     /// </summary>
     public static void EnsureDirectoryExists(string filePath)
@@ -50,5 +31,23 @@ public static class PathSanitizer
             >= KB => $"{bytes / (double)KB:F1} KB",
             _ => $"{bytes} bytes"
         };
+    }
+
+    /// <summary>
+    /// Get the full output file path for a route.
+    /// </summary>
+    public static string GetOutputFilePath(string outputDir, string route, string filename)
+    {
+        var safePath = RouteToDirectoryPath(route);
+        return Path.Combine(outputDir, safePath, filename);
+    }
+    /// <summary>
+    /// Convert a route to a safe directory path for output files.
+    /// Example: "/Account/Login" -> "Account\Login" (on Windows)
+    /// </summary>
+    public static string RouteToDirectoryPath(string route)
+    {
+        var safePath = route.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        return string.IsNullOrEmpty(safePath) ? "root" : safePath;
     }
 }

@@ -18,9 +18,9 @@
 
     Example (API error with retry):
         <ErrorMessage Message="@_apiError"
-                      Title="Save failed"
-                      Details="@_validationErrors"
-                      OnDismissed="@(() => _apiError = null)">
+                Title="Save failed"
+                Details="@_validationErrors"
+                OnDismissed="@(() => _apiError = null)">
             <button class="btn btn-sm btn-outline-danger" @onclick="Retry">Retry</button>
         </ErrorMessage>
 *@
@@ -176,18 +176,16 @@
     protected bool _dismissed = false;
 
     /// <summary>
-    /// The primary error description shown in the message body.
-    /// <para><b>Required.</b> The entire block is hidden when this is empty or whitespace —
-    /// bind directly to a nullable field and the component self-manages visibility.</para>
+    /// Optional render fragment rendered in the footer, separated by a danger-coloured top border.
+    /// Use for retry buttons, support links, or remediation actions.
     /// </summary>
-    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Header line rendered above <see cref="Message"/> in a bold danger colour.
-    /// Default: <c>"Error"</c>. Override with a domain-specific label
-    /// (e.g. <c>"Save failed"</c>, <c>"Validation errors"</c>).
+    /// Reduces internal padding for tight layouts (cards, modals, inline sections).
+    /// Default: <c>false</c>.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public bool Compact { get; set; } = false;
 
     /// <summary>
     /// Supplementary validation messages rendered as a bullet list below <see cref="Message"/>.
@@ -197,17 +195,11 @@
     [Parameter] public List<string> Details { get; set; } = new();
 
     /// <summary>
-    /// When <c>true</c> (default), renders an × button in the top-right corner.
-    /// Clicking it triggers <see cref="OnDismissed"/> and hides the block.
-    /// Set to <c>false</c> when the error cannot be dismissed without corrective action.
+    /// The primary error description shown in the message body.
+    /// <para><b>Required.</b> The entire block is hidden when this is empty or whitespace —
+    /// bind directly to a nullable field and the component self-manages visibility.</para>
     /// </summary>
-    [Parameter] public bool ShowDismiss { get; set; } = true;
-
-    /// <summary>
-    /// Reduces internal padding for tight layouts (cards, modals, inline sections).
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool Compact { get; set; } = false;
+    [Parameter] public string Message { get; set; } = "";
 
     /// <summary>
     /// Invoked after the dismiss button is clicked and the block is hidden.
@@ -217,10 +209,24 @@
     [Parameter] public EventCallback OnDismissed { get; set; }
 
     /// <summary>
-    /// Optional render fragment rendered in the footer, separated by a danger-coloured top border.
-    /// Use for retry buttons, support links, or remediation actions.
+    /// When <c>true</c> (default), renders an × button in the top-right corner.
+    /// Clicking it triggers <see cref="OnDismissed"/> and hides the block.
+    /// Set to <c>false</c> when the error cannot be dismissed without corrective action.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool ShowDismiss { get; set; } = true;
+
+    /// <summary>
+    /// Header line rendered above <see cref="Message"/> in a bold danger colour.
+    /// Default: <c>"Error"</c>. Override with a domain-specific label
+    /// (e.g. <c>"Save failed"</c>, <c>"Validation errors"</c>).
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    protected async Task Dismiss()
+    {
+        _dismissed = true;
+        await OnDismissed.InvokeAsync();
+    }
 
     protected override void OnInitialized()
     {
@@ -242,11 +248,5 @@
             _messageClass += "compact ";
         }
         _messageClass = _messageClass.Trim();
-    }
-
-    protected async Task Dismiss()
-    {
-        _dismissed = true;
-        await OnDismissed.InvokeAsync();
     }
 }

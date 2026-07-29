@@ -6,36 +6,32 @@ namespace FreeBlazorExtended.GitHubRepoBrowser;
 
 public class GitHubRepoBrowserState
 {
-    // ── Credential / navigation inputs ────────────────────────────────────────
-    public string Owner  { get; set; } = string.Empty;
-    public string Repo   { get; set; } = string.Empty;
-    public string Pat    { get; set; } = string.Empty;
     public string Branch { get; set; } = string.Empty;
-
-    // ── Loaded data ────────────────────────────────────────────────────────────
-    public GitHubRepo?                  CurrentRepo { get; set; }
-    public GitHubTreeResponse?          Tree        { get; set; }
     public IReadOnlyList<GitHubBranch>  Branches    { get; set; } = Array.Empty<GitHubBranch>();
-
-    // ── Tree UI state ──────────────────────────────────────────────────────────
-    public Dictionary<string, bool> ExpandedPaths { get; } = new(StringComparer.Ordinal);
-
-    // ── Selected file ──────────────────────────────────────────────────────────
-    public GitHubTreeItem?    SelectedItem    { get; set; }
-    public GitHubFileContent? LoadedFile      { get; set; }
-    public string?            DecodedContent  { get; set; }
-
-    // ── Loading flags ──────────────────────────────────────────────────────────
-    public bool IsLoadingTree { get; set; }
-    public bool IsLoadingFile { get; set; }
-
-    // ── Error ──────────────────────────────────────────────────────────────────
-    public GitHubBrowseError? LastError { get; set; }
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
     /// <summary>Zeros the PAT (call on component dispose to avoid PAT lingering in memory).</summary>
     public void ClearPat() => Pat = string.Empty;
+
+    // ── Loaded data ────────────────────────────────────────────────────────────
+    public GitHubRepo?                  CurrentRepo { get; set; }
+    public string?            DecodedContent  { get; set; }
+
+    // ── Tree UI state ──────────────────────────────────────────────────────────
+    public Dictionary<string, bool> ExpandedPaths { get; } = new(StringComparer.Ordinal);
+    public bool IsLoadingFile { get; set; }
+
+    // ── Loading flags ──────────────────────────────────────────────────────────
+    public bool IsLoadingTree { get; set; }
+
+    // ── Error ──────────────────────────────────────────────────────────────────
+    public GitHubBrowseError? LastError { get; set; }
+    public GitHubFileContent? LoadedFile      { get; set; }
+    // ── Credential / navigation inputs ────────────────────────────────────────
+    public string Owner  { get; set; } = string.Empty;
+    public string Pat    { get; set; } = string.Empty;
+    public string Repo   { get; set; } = string.Empty;
 
     /// <summary>
     /// Clears tree, file viewer, and error state so a fresh browse can begin,
@@ -50,4 +46,8 @@ public class GitHubRepoBrowserState
         LastError      = null;
         ExpandedPaths.Clear();
     }
+
+    // ── Selected file ──────────────────────────────────────────────────────────
+    public GitHubTreeItem?    SelectedItem    { get; set; }
+    public GitHubTreeResponse?          Tree        { get; set; }
 }

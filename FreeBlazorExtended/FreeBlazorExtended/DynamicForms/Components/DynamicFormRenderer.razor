@@ -55,21 +55,21 @@
                             case FormFieldType.Telephone:
                             case FormFieldType.Url:
                                 <input type="@GetInputType(field.FieldType)"
-                                       id="field-@field.FieldId"
-                                       class="form-control"
-                                       placeholder="@field.PlaceholderText"
-                                       value="@GetFieldValue(field.FieldId)"
-                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
-                                       required="@field.IsRequired" />
+                                        id="field-@field.FieldId"
+                                        class="form-control"
+                                        placeholder="@field.PlaceholderText"
+                                        value="@GetFieldValue(field.FieldId)"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                        required="@field.IsRequired" />
                                 break;
 
                             case FormFieldType.Textarea:
                                 <textarea id="field-@field.FieldId"
-                                          class="form-control"
-                                          placeholder="@field.PlaceholderText"
-                                          rows="4"
-                                          required="@field.IsRequired"
-                                          @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))">@GetFieldValue(field.FieldId)</textarea>
+                                        class="form-control"
+                                        placeholder="@field.PlaceholderText"
+                                        rows="4"
+                                        required="@field.IsRequired"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))">@GetFieldValue(field.FieldId)</textarea>
                                 break;
 
                             case FormFieldType.Select:
@@ -90,13 +90,13 @@
                                 {
                                     <div class="form-check">
                                         <input type="radio"
-                                               id="field-@field.FieldId-@key"
-                                               name="field-@field.FieldId"
-                                               class="form-check-input"
-                                               value="@key"
-                                               checked="@(GetFieldValue(field.FieldId) == key)"
-                                               @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
-                                               required="@field.IsRequired" />
+                                                id="field-@field.FieldId-@key"
+                                                name="field-@field.FieldId"
+                                                class="form-check-input"
+                                                value="@key"
+                                                checked="@(GetFieldValue(field.FieldId) == key)"
+                                                @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                                required="@field.IsRequired" />
                                         <label class="form-check-label" for="field-@field.FieldId-@key">
                                             @label
                                         </label>
@@ -107,10 +107,10 @@
                             case FormFieldType.Checkbox:
                                 <div class="form-check">
                                     <input type="checkbox"
-                                           id="field-@field.FieldId"
-                                           class="form-check-input"
-                                           checked="@(GetFieldValue(field.FieldId) == "true")"
-                                           @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))" />
+                                            id="field-@field.FieldId"
+                                            class="form-check-input"
+                                            checked="@(GetFieldValue(field.FieldId) == "true")"
+                                            @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))" />
                                     <label class="form-check-label" for="field-@field.FieldId">
                                         @(field.Label)
                                     </label>
@@ -119,40 +119,40 @@
 
                             case FormFieldType.Date:
                                 <input type="date"
-                                       id="field-@field.FieldId"
-                                       class="form-control"
-                                       value="@GetFieldValue(field.FieldId)"
-                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
-                                       required="@field.IsRequired" />
+                                        id="field-@field.FieldId"
+                                        class="form-control"
+                                        value="@GetFieldValue(field.FieldId)"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                        required="@field.IsRequired" />
                                 break;
 
                             case FormFieldType.DateTime:
                                 <input type="datetime-local"
-                                       id="field-@field.FieldId"
-                                       class="form-control"
-                                       value="@GetFieldValue(field.FieldId)"
-                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
-                                       required="@field.IsRequired" />
+                                        id="field-@field.FieldId"
+                                        class="form-control"
+                                        value="@GetFieldValue(field.FieldId)"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                        required="@field.IsRequired" />
                                 break;
 
                             case FormFieldType.Number:
                                 <input type="number"
-                                       id="field-@field.FieldId"
-                                       class="form-control"
-                                       placeholder="@field.PlaceholderText"
-                                       value="@GetFieldValue(field.FieldId)"
-                                       @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
-                                       required="@field.IsRequired" />
+                                        id="field-@field.FieldId"
+                                        class="form-control"
+                                        placeholder="@field.PlaceholderText"
+                                        value="@GetFieldValue(field.FieldId)"
+                                        @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, e.Value?.ToString()))"
+                                        required="@field.IsRequired" />
                                 break;
 
                             case FormFieldType.Confirmation:
                                 <div class="form-check form-check-lg">
                                     <input type="checkbox"
-                                           id="field-@field.FieldId"
-                                           class="form-check-input"
-                                           checked="@(GetFieldValue(field.FieldId) == "true")"
-                                           @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))"
-                                           required="@field.IsRequired" />
+                                            id="field-@field.FieldId"
+                                            class="form-check-input"
+                                            checked="@(GetFieldValue(field.FieldId) == "true")"
+                                            @onchange="@((ChangeEventArgs e) => UpdateValue(field.FieldId, (bool)e.Value ? "true" : "false"))"
+                                            required="@field.IsRequired" />
                                     <label class="form-check-label fw-bold" for="field-@field.FieldId">
                                         @field.Label
                                     </label>
@@ -235,58 +235,18 @@
     public FormDefinition? FormDef { get; set; }
 
     /// <summary>
+    /// Fired when the user clicks Cancel. Omit to suppress the Cancel button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    /// <summary>
     /// Fired after successful validation when the user submits the form.
     /// The argument is a dictionary mapping each <see cref="FormField.FieldId"/> to the
     /// user-entered string value (or <c>null</c> if the field was left blank).
     /// </summary>
     [Parameter]
     public EventCallback<Dictionary<Guid, string?>> OnSubmit { get; set; }
-
-    /// <summary>
-    /// Fired when the user clicks Cancel. Omit to suppress the Cancel button.
-    /// </summary>
-    [Parameter]
-    public EventCallback OnCancel { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (FormDef != null)
-        {
-            _currentValues.Clear();
-            _errors.Clear();
-            _successMessage = null;
-            _globalError = null;
-
-            // Initialize with default values
-            foreach (var field in FormDef.Fields)
-            {
-                _currentValues[field.FieldId] = field.DefaultValue;
-            }
-
-            // Recalculate visible fields
-            await UpdateVisibleFieldsAsync();
-        }
-    }
-
-    private async Task UpdateVisibleFieldsAsync()
-    {
-        if (FormDef == null) return;
-
-        _visibleFields.Clear();
-        foreach (var field in FormDef.Fields)
-        {
-            var isVisible = await FormService.IsFieldVisible(field, _currentValues);
-            if (isVisible)
-                _visibleFields.Add(field.FieldId);
-        }
-    }
-
-    private async Task UpdateValue(Guid fieldId, string? value)
-    {
-        _currentValues[fieldId] = value;
-        _errors.Remove(fieldId);
-        await UpdateVisibleFieldsAsync();
-    }
 
     private string GetFieldValue(Guid fieldId)
     {
@@ -334,6 +294,46 @@
         finally
         {
             _isSubmitting = false;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (FormDef != null)
+        {
+            _currentValues.Clear();
+            _errors.Clear();
+            _successMessage = null;
+            _globalError = null;
+
+            // Initialize with default values
+            foreach (var field in FormDef.Fields)
+            {
+                _currentValues[field.FieldId] = field.DefaultValue;
+            }
+
+            // Recalculate visible fields
+            await UpdateVisibleFieldsAsync();
+        }
+    }
+
+    private async Task UpdateValue(Guid fieldId, string? value)
+    {
+        _currentValues[fieldId] = value;
+        _errors.Remove(fieldId);
+        await UpdateVisibleFieldsAsync();
+    }
+
+    private async Task UpdateVisibleFieldsAsync()
+    {
+        if (FormDef == null) return;
+
+        _visibleFields.Clear();
+        foreach (var field in FormDef.Fields)
+        {
+            var isVisible = await FormService.IsFieldVisible(field, _currentValues);
+            if (isVisible)
+                _visibleFields.Add(field.FieldId);
         }
     }
 }

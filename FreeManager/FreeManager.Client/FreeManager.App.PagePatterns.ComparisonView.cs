@@ -16,8 +16,7 @@ public static partial class PagePatterns
     /// </summary>
     public static List<(string FileName, string FileType, string Content)> GetComparisonViewFiles(
         string projectName,
-        DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.EntityDefinition? entity = null){
         List<(string, string, string)> files = new();
         string name = entity?.Name ?? projectName;
 
@@ -267,6 +266,197 @@ public static partial class PagePatterns
 ";
 
     // ============================================================
+    // FieldDiff.razor - Field-by-field difference display
+    // ============================================================
+    private static string GetComparisonView_FieldDiff(string name, DataObjects.EntityDefinition? entity) => $@"@* {name}FieldDiff.App.razor *@
+@* Individual field difference row with change highlighting *@
+
+<tr class=""@GetRowClass()"">
+    <td>
+        <strong>@Difference.FieldName</strong>
+    </td>
+    <td class=""text-center"">
+        @switch (Difference.ChangeType)
+        {{
+            case {name}_App_CompareView.DiffChangeType.Added:
+                <span class=""badge bg-success"" title=""Added"">
+                    <i class=""fa-solid fa-plus""></i>
+                </span>
+                break;
+            case {name}_App_CompareView.DiffChangeType.Removed:
+                <span class=""badge bg-danger"" title=""Removed"">
+                    <i class=""fa-solid fa-minus""></i>
+                </span>
+                break;
+            case {name}_App_CompareView.DiffChangeType.Modified:
+                <span class=""badge bg-warning text-dark"" title=""Modified"">
+                    <i class=""fa-solid fa-pen""></i>
+                </span>
+                break;
+            default:
+                <span class=""badge bg-secondary"" title=""Unchanged"">
+                    <i class=""fa-solid fa-equals""></i>
+                </span>
+                break;
+        }}
+    </td>
+    <td>
+        @if (Difference.OldValue == null)
+        {{
+            <span class=""diff-value-null"">(empty)</span>
+        }}
+        else
+        {{
+            <span class=""@(Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Removed || Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Modified ? ""diff-value-old"" : """")"">
+                @FormatValue(Difference.OldValue)
+            </span>
+        }}
+    </td>
+    <td>
+        @if (Difference.NewValue == null)
+        {{
+            <span class=""diff-value-null"">(empty)</span>
+        }}
+        else
+        {{
+            <span class=""@(Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Added || Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Modified ? ""diff-value-new"" : """")"">
+                @FormatValue(Difference.NewValue)
+            </span>
+        }}
+    </td>
+</tr>
+
+@code {{
+    [Parameter] public {name}_App_CompareView.FieldDifference Difference {{ get; set; }} = new();
+
+    private string GetRowClass()
+    {{
+        return Difference.ChangeType switch
+        {{
+            {name}_App_CompareView.DiffChangeType.Added => ""diff-added"",
+            {name}_App_CompareView.DiffChangeType.Removed => ""diff-removed"",
+            {name}_App_CompareView.DiffChangeType.Modified => ""diff-modified"",
+            _ => """"
+        }};
+    }}
+
+    private string FormatValue(object? value)
+    {{
+        if (value == null) return ""(empty)"";
+
+        return value switch
+        {{
+            DateTime dt => dt.ToString(""MMM dd, yyyy HH:mm""),
+            bool b => b ? ""Yes"" : ""No"",
+            IEnumerable<string> list => string.Join("", "", list),
+            _ => value.ToString() ?? """"
+        }};
+    }}
+}}
+";
+
+    // ============================================================
+    // SideBySide.razor - Two-column layout for old vs new
+    // ============================================================
+    private static string GetComparisonView_SideBySide(string name, DataObjects.EntityDefinition? entity) => $@"@* {name}SideBySide.App.razor *@
+@* Side-by-side comparison layout for version differences *@
+
+<div class=""card shadow-sm"">
+    <div class=""card-header"">
+        <div class=""row"">
+            <div class=""col-6"">
+                <h6 class=""mb-0"">
+                    <i class=""fa-solid fa-arrow-left me-1 text-danger""></i>
+                    Version @LeftVersion?.VersionNumber
+                    <span class=""text-muted small"">(@LeftVersion?.CreatedAt.ToString(""MMM dd, yyyy""))</span>
+                </h6>
+            </div>
+            <div class=""col-6"">
+                <h6 class=""mb-0"">
+                    <i class=""fa-solid fa-arrow-right me-1 text-success""></i>
+                    Version @RightVersion?.VersionNumber
+                    @if (RightVersion?.IsCurrent == true) {{ <span class=""badge bg-primary ms-1"">Current</span> }}
+                    <span class=""text-muted small"">(@RightVersion?.CreatedAt.ToString(""MMM dd, yyyy""))</span>
+                </h6>
+            </div>
+        </div>
+    </div>
+    <div class=""card-body p-0"">
+        @if (Differences.Count == 0)
+        {{
+            <div class=""text-center py-4 text-muted"">
+                <i class=""fa-solid fa-equals fa-2x mb-2""></i>
+                <p>No differences found between these versions.</p>
+            </div>
+        }}
+        else
+        {{
+            <div class=""comparison-summary p-3 bg-light border-bottom"">
+                <span class=""badge bg-success me-2"">
+                    <i class=""fa-solid fa-plus me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Added) Added
+                </span>
+                <span class=""badge bg-danger me-2"">
+                    <i class=""fa-solid fa-minus me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Removed) Removed
+                </span>
+                <span class=""badge bg-warning text-dark"">
+                    <i class=""fa-solid fa-pen me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Modified) Modified
+                </span>
+            </div>
+
+            <div class=""table-responsive"">
+                <table class=""table table-hover align-middle mb-0"">
+                    <thead class=""table-light"">
+                        <tr>
+                            <th style=""width: 15%;"">Field</th>
+                            <th style=""width: 5%;"">Change</th>
+                            <th style=""width: 40%;"">Old Value</th>
+                            <th style=""width: 40%;"">New Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var diff in Differences)
+                        {{
+                            <{name}_App_FieldDiff Difference=""diff"" />
+                        }}
+                    </tbody>
+                </table>
+            </div>
+        }}
+    </div>
+</div>
+
+<style>
+    .diff-added {{
+        background-color: rgba(25, 135, 84, 0.1);
+    }}
+    .diff-removed {{
+        background-color: rgba(220, 53, 69, 0.1);
+    }}
+    .diff-modified {{
+        background-color: rgba(255, 193, 7, 0.1);
+    }}
+    .diff-value-old {{
+        text-decoration: line-through;
+        color: #dc3545;
+    }}
+    .diff-value-new {{
+        color: #198754;
+        font-weight: 500;
+    }}
+    .diff-value-null {{
+        font-style: italic;
+        color: #6c757d;
+    }}
+</style>
+
+@code {{
+    [Parameter] public {name}_App_CompareView.{name}Version? LeftVersion {{ get; set; }}
+    [Parameter] public {name}_App_CompareView.{name}Version? RightVersion {{ get; set; }}
+    [Parameter] public List<{name}_App_CompareView.FieldDifference> Differences {{ get; set; }} = new();
+}}
+";
+
+    // ============================================================
     // VersionSelector.razor - Dropdown to select versions to compare
     // ============================================================
     private static string GetComparisonView_VersionSelector(string name, DataObjects.EntityDefinition? entity) => $@"@* {name}VersionSelector.App.razor *@
@@ -379,197 +569,6 @@ public static partial class PagePatterns
             await OnLeftVersionChanged.InvokeAsync(SelectedRightVersion);
         if (temp != null)
             await OnRightVersionChanged.InvokeAsync(temp);
-    }}
-}}
-";
-
-    // ============================================================
-    // SideBySide.razor - Two-column layout for old vs new
-    // ============================================================
-    private static string GetComparisonView_SideBySide(string name, DataObjects.EntityDefinition? entity) => $@"@* {name}SideBySide.App.razor *@
-@* Side-by-side comparison layout for version differences *@
-
-<div class=""card shadow-sm"">
-    <div class=""card-header"">
-        <div class=""row"">
-            <div class=""col-6"">
-                <h6 class=""mb-0"">
-                    <i class=""fa-solid fa-arrow-left me-1 text-danger""></i>
-                    Version @LeftVersion?.VersionNumber
-                    <span class=""text-muted small"">(@LeftVersion?.CreatedAt.ToString(""MMM dd, yyyy""))</span>
-                </h6>
-            </div>
-            <div class=""col-6"">
-                <h6 class=""mb-0"">
-                    <i class=""fa-solid fa-arrow-right me-1 text-success""></i>
-                    Version @RightVersion?.VersionNumber
-                    @if (RightVersion?.IsCurrent == true) {{ <span class=""badge bg-primary ms-1"">Current</span> }}
-                    <span class=""text-muted small"">(@RightVersion?.CreatedAt.ToString(""MMM dd, yyyy""))</span>
-                </h6>
-            </div>
-        </div>
-    </div>
-    <div class=""card-body p-0"">
-        @if (Differences.Count == 0)
-        {{
-            <div class=""text-center py-4 text-muted"">
-                <i class=""fa-solid fa-equals fa-2x mb-2""></i>
-                <p>No differences found between these versions.</p>
-            </div>
-        }}
-        else
-        {{
-            <div class=""comparison-summary p-3 bg-light border-bottom"">
-                <span class=""badge bg-success me-2"">
-                    <i class=""fa-solid fa-plus me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Added) Added
-                </span>
-                <span class=""badge bg-danger me-2"">
-                    <i class=""fa-solid fa-minus me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Removed) Removed
-                </span>
-                <span class=""badge bg-warning text-dark"">
-                    <i class=""fa-solid fa-pen me-1""></i>@Differences.Count(d => d.ChangeType == {name}_App_CompareView.DiffChangeType.Modified) Modified
-                </span>
-            </div>
-
-            <div class=""table-responsive"">
-                <table class=""table table-hover align-middle mb-0"">
-                    <thead class=""table-light"">
-                        <tr>
-                            <th style=""width: 15%;"">Field</th>
-                            <th style=""width: 5%;"">Change</th>
-                            <th style=""width: 40%;"">Old Value</th>
-                            <th style=""width: 40%;"">New Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var diff in Differences)
-                        {{
-                            <{name}_App_FieldDiff Difference=""diff"" />
-                        }}
-                    </tbody>
-                </table>
-            </div>
-        }}
-    </div>
-</div>
-
-<style>
-    .diff-added {{
-        background-color: rgba(25, 135, 84, 0.1);
-    }}
-    .diff-removed {{
-        background-color: rgba(220, 53, 69, 0.1);
-    }}
-    .diff-modified {{
-        background-color: rgba(255, 193, 7, 0.1);
-    }}
-    .diff-value-old {{
-        text-decoration: line-through;
-        color: #dc3545;
-    }}
-    .diff-value-new {{
-        color: #198754;
-        font-weight: 500;
-    }}
-    .diff-value-null {{
-        font-style: italic;
-        color: #6c757d;
-    }}
-</style>
-
-@code {{
-    [Parameter] public {name}_App_CompareView.{name}Version? LeftVersion {{ get; set; }}
-    [Parameter] public {name}_App_CompareView.{name}Version? RightVersion {{ get; set; }}
-    [Parameter] public List<{name}_App_CompareView.FieldDifference> Differences {{ get; set; }} = new();
-}}
-";
-
-    // ============================================================
-    // FieldDiff.razor - Field-by-field difference display
-    // ============================================================
-    private static string GetComparisonView_FieldDiff(string name, DataObjects.EntityDefinition? entity) => $@"@* {name}FieldDiff.App.razor *@
-@* Individual field difference row with change highlighting *@
-
-<tr class=""@GetRowClass()"">
-    <td>
-        <strong>@Difference.FieldName</strong>
-    </td>
-    <td class=""text-center"">
-        @switch (Difference.ChangeType)
-        {{
-            case {name}_App_CompareView.DiffChangeType.Added:
-                <span class=""badge bg-success"" title=""Added"">
-                    <i class=""fa-solid fa-plus""></i>
-                </span>
-                break;
-            case {name}_App_CompareView.DiffChangeType.Removed:
-                <span class=""badge bg-danger"" title=""Removed"">
-                    <i class=""fa-solid fa-minus""></i>
-                </span>
-                break;
-            case {name}_App_CompareView.DiffChangeType.Modified:
-                <span class=""badge bg-warning text-dark"" title=""Modified"">
-                    <i class=""fa-solid fa-pen""></i>
-                </span>
-                break;
-            default:
-                <span class=""badge bg-secondary"" title=""Unchanged"">
-                    <i class=""fa-solid fa-equals""></i>
-                </span>
-                break;
-        }}
-    </td>
-    <td>
-        @if (Difference.OldValue == null)
-        {{
-            <span class=""diff-value-null"">(empty)</span>
-        }}
-        else
-        {{
-            <span class=""@(Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Removed || Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Modified ? ""diff-value-old"" : """")"">
-                @FormatValue(Difference.OldValue)
-            </span>
-        }}
-    </td>
-    <td>
-        @if (Difference.NewValue == null)
-        {{
-            <span class=""diff-value-null"">(empty)</span>
-        }}
-        else
-        {{
-            <span class=""@(Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Added || Difference.ChangeType == {name}_App_CompareView.DiffChangeType.Modified ? ""diff-value-new"" : """")"">
-                @FormatValue(Difference.NewValue)
-            </span>
-        }}
-    </td>
-</tr>
-
-@code {{
-    [Parameter] public {name}_App_CompareView.FieldDifference Difference {{ get; set; }} = new();
-
-    private string GetRowClass()
-    {{
-        return Difference.ChangeType switch
-        {{
-            {name}_App_CompareView.DiffChangeType.Added => ""diff-added"",
-            {name}_App_CompareView.DiffChangeType.Removed => ""diff-removed"",
-            {name}_App_CompareView.DiffChangeType.Modified => ""diff-modified"",
-            _ => """"
-        }};
-    }}
-
-    private string FormatValue(object? value)
-    {{
-        if (value == null) return ""(empty)"";
-
-        return value switch
-        {{
-            DateTime dt => dt.ToString(""MMM dd, yyyy HH:mm""),
-            bool b => b ? ""Yes"" : ""No"",
-            IEnumerable<string> list => string.Join("", "", list),
-            _ => value.ToString() ?? """"
-        }};
     }}
 }}
 ";

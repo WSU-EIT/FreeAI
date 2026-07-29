@@ -27,6 +27,37 @@ public readonly record struct ReorgResult(
 /// </summary>
 public sealed class Reorganizer
 {
+    // Order-independent signature so reordering doesn't flag a difference, but a dropped or
+    // duplicated member does.
+    private static List<string> CollectSignatures(SyntaxNode root)
+    {
+        var list = new List<string>();
+        foreach (var m in root.DescendantNodes().OfType<MemberDeclarationSyntax>()) {
+            var sig = MemberClassifier.KindOf(m) + "|" + MemberClassifier.NameOf(m);
+            if (m is BaseMethodDeclarationSyntax bm) {
+                sig += "|(" + string.Join(",", bm.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?")) + ")";
+            }
+            list.Add(sig);
+        }
+        return list;
+    }
+
+    private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
+    {
+        var a = CollectSignatures(oldRoot);
+        var b = CollectSignatures(newRoot);
+        if (a.Count != b.Count) {
+            return false;
+        }
+        a.Sort(StringComparer.Ordinal);
+        b.Sort(StringComparer.Ordinal);
+        for (int i = 0; i < a.Count; i++) {
+            if (!string.Equals(a[i], b[i], StringComparison.Ordinal)) {
+                return false;
+            }
+        }
+        return true;
+    }
     public static ReorgResult Run(string sourceText, ReorderConfig config, string eol)
     {
         SyntaxTree tree;
@@ -85,38 +116,6 @@ public sealed class Reorganizer
         return new ReorgResult(newText, true, rewriter.TypesReordered, rewriter.TypesSkipped, bracesCollapsed, null);
     }
 
-    private static bool MembersPreserved(SyntaxNode oldRoot, SyntaxNode newRoot)
-    {
-        var a = CollectSignatures(oldRoot);
-        var b = CollectSignatures(newRoot);
-        if (a.Count != b.Count) {
-            return false;
-        }
-        a.Sort(StringComparer.Ordinal);
-        b.Sort(StringComparer.Ordinal);
-        for (int i = 0; i < a.Count; i++) {
-            if (!string.Equals(a[i], b[i], StringComparison.Ordinal)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Order-independent signature so reordering doesn't flag a difference, but a dropped or
-    // duplicated member does.
-    private static List<string> CollectSignatures(SyntaxNode root)
-    {
-        var list = new List<string>();
-        foreach (var m in root.DescendantNodes().OfType<MemberDeclarationSyntax>()) {
-            var sig = MemberClassifier.KindOf(m) + "|" + MemberClassifier.NameOf(m);
-            if (m is BaseMethodDeclarationSyntax bm) {
-                sig += "|(" + string.Join(",", bm.ParameterList.Parameters.Select(p => p.Type?.ToString() ?? "?")) + ")";
-            }
-            list.Add(sig);
-        }
-        return list;
-    }
-
     /// <summary>
     /// Restores the FreeCRM "){" brace on a method/constructor whose parameter list is ALREADY wrapped
     /// across multiple lines: it glues the closing ")" to the body's "{" as "){" — the one thing
@@ -138,23 +137,6 @@ public sealed class Reorganizer
             _maxWidth = config.MaxLineWidth;
             _eol = eol;
         }
-
-        public int SignaturesReformatted { get; private set; }
-
-        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
-            => Apply((MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!);
-
-        public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-            => Apply((ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!);
-
-        public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
-            => Apply((OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!);
-
-        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
-            => Apply((ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!);
-
-        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
-            => Apply((LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!);
 
         private SyntaxNode Apply(SyntaxNode node)
         {
@@ -202,6 +184,15 @@ public sealed class Reorganizer
             return result;
         }
 
+        private static BlockSyntax? BodyOf(SyntaxNode node) => node switch {
+            MethodDeclarationSyntax m => m.Body,
+            ConstructorDeclarationSyntax c => c.Body,
+            OperatorDeclarationSyntax o => o.Body,
+            ConversionOperatorDeclarationSyntax v => v.Body,
+            LocalFunctionStatementSyntax l => l.Body,
+            _ => null,
+        };
+
         // Wide / wrapped signature: keep "(" and the parameter layout exactly as they are (the cleanup
         // owns that) and ONLY glue the closing ")" to the body "{" as "){".
         private static SyntaxNode BuildBraceGlue(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body)
@@ -225,12 +216,6 @@ public sealed class Reorganizer
                 : rewritten);
         }
 
-        private static bool IsComment(SyntaxTrivia t)
-            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
-            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
-
         private SyntaxNode BuildSingleLine(SyntaxNode node, ParameterListSyntax pl, BlockSyntax body, string baseIndent)
         {
             var ps = pl.Parameters.Select(p => p.WithLeadingTrivia().WithTrailingTrivia());
@@ -247,6 +232,42 @@ public sealed class Reorganizer
                 : SyntaxFactory.TriviaList(SyntaxFactory.EndOfLine(_eol), SyntaxFactory.Whitespace(baseIndent));
             return Recombine(node, pl, newPl, braceLeading);
         }
+
+        private static string CollapseWhitespace(string s) => Regex.Replace(s, @"\s+", " ").Trim();
+
+        private static string GetIndent(SyntaxNode node)
+        {
+            SyntaxTriviaList lead = node.GetLeadingTrivia();
+            for (int i = lead.Count - 1; i >= 0; i--) {
+                if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia)) {
+                    return lead[i].ToString();
+                }
+
+                if (lead[i].IsKind(SyntaxKind.EndOfLineTrivia)) {
+                    return string.Empty;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static bool HasInitializer(SyntaxNode node)
+            => node is ConstructorDeclarationSyntax c && c.Initializer is not null;
+
+        private static bool IsComment(SyntaxTrivia t)
+            => t.IsKind(SyntaxKind.SingleLineCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineCommentTrivia)
+            || t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
+            || t.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia);
+
+        private static ParameterListSyntax? ParamsOf(SyntaxNode node) => node switch {
+            MethodDeclarationSyntax m => m.ParameterList,
+            ConstructorDeclarationSyntax c => c.ParameterList,
+            OperatorDeclarationSyntax o => o.ParameterList,
+            ConversionOperatorDeclarationSyntax v => v.ParameterList,
+            LocalFunctionStatementSyntax l => l.ParameterList,
+            _ => null,
+        };
 
         // Swap in the rebuilt parameter list, clear any trailing trivia on the token just before "(",
         // and set the body brace's leading trivia.
@@ -279,44 +300,22 @@ public sealed class Reorganizer
             return SyntaxFactory.SeparatedList<ParameterSyntax>(items);
         }
 
-        private static bool HasInitializer(SyntaxNode node)
-            => node is ConstructorDeclarationSyntax c && c.Initializer is not null;
+        public int SignaturesReformatted { get; private set; }
 
-        private static ParameterListSyntax? ParamsOf(SyntaxNode node) => node switch {
-            MethodDeclarationSyntax m => m.ParameterList,
-            ConstructorDeclarationSyntax c => c.ParameterList,
-            OperatorDeclarationSyntax o => o.ParameterList,
-            ConversionOperatorDeclarationSyntax v => v.ParameterList,
-            LocalFunctionStatementSyntax l => l.ParameterList,
-            _ => null,
-        };
+        public override SyntaxNode? VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+            => Apply((ConstructorDeclarationSyntax)base.VisitConstructorDeclaration(node)!);
 
-        private static BlockSyntax? BodyOf(SyntaxNode node) => node switch {
-            MethodDeclarationSyntax m => m.Body,
-            ConstructorDeclarationSyntax c => c.Body,
-            OperatorDeclarationSyntax o => o.Body,
-            ConversionOperatorDeclarationSyntax v => v.Body,
-            LocalFunctionStatementSyntax l => l.Body,
-            _ => null,
-        };
+        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+            => Apply((ConversionOperatorDeclarationSyntax)base.VisitConversionOperatorDeclaration(node)!);
 
-        private static string GetIndent(SyntaxNode node)
-        {
-            SyntaxTriviaList lead = node.GetLeadingTrivia();
-            for (int i = lead.Count - 1; i >= 0; i--) {
-                if (lead[i].IsKind(SyntaxKind.WhitespaceTrivia)) {
-                    return lead[i].ToString();
-                }
+        public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+            => Apply((LocalFunctionStatementSyntax)base.VisitLocalFunctionStatement(node)!);
 
-                if (lead[i].IsKind(SyntaxKind.EndOfLineTrivia)) {
-                    return string.Empty;
-                }
-            }
+        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
+            => Apply((MethodDeclarationSyntax)base.VisitMethodDeclaration(node)!);
 
-            return string.Empty;
-        }
-
-        private static string CollapseWhitespace(string s) => Regex.Replace(s, @"\s+", " ").Trim();
+        public override SyntaxNode? VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+            => Apply((OperatorDeclarationSyntax)base.VisitOperatorDeclaration(node)!);
     }
 
     private sealed class Rewriter : CSharpSyntaxRewriter

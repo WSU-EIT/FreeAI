@@ -54,8 +54,8 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Signature Pad
                     <InfoTip Title="Signature Pad Component"
-                             Description="This component wraps jSignature, a JavaScript library that creates a drawing surface (HTML canvas). Draw with your mouse or finger. The library captures your strokes and converts them to a compact text format called base30. The bind-Value sends that text back to C# automatically."
-                             Code="@_codeSignaturePad" />
+                            Description="This component wraps jSignature, a JavaScript library that creates a drawing surface (HTML canvas). Draw with your mouse or finger. The library captures your strokes and converts them to a compact text format called base30. The bind-Value sends that text back to C# automatically."
+                            Code="@_codeSignaturePad" />
                 </h6>
                 <div>
                     <button type="button" class="btn btn-sm btn-outline-danger" @onclick="ClearSignature"
@@ -63,16 +63,16 @@
                         <i class="fas fa-eraser me-1"></i> Clear
                     </button>
                     <InfoTip Title="Clear Signature"
-                             Description="This button erases the signature pad and resets the bound value to empty. It is disabled (greyed out) when there is nothing to clear — the disabled attribute checks if the value is empty. This prevents a confusing nothing happened experience."
-                             Code="@_codeClearSig" />
+                            Description="This button erases the signature pad and resets the bound value to empty. It is disabled (greyed out) when there is nothing to clear — the disabled attribute checks if the value is empty. This prevents a confusing nothing happened experience."
+                            Code="@_codeClearSig" />
                 </div>
             </div>
             <div class="card-body">
                 <div role="region" aria-label="Signature drawing pad">
                 <Signature @ref="_signaturePad"
-                    @bind-Value="_signatureValue"
-                    Class="border rounded"
-                    Id="demo-signature" />
+                        @bind-Value="_signatureValue"
+                        Class="border rounded"
+                        Id="demo-signature" />
                 </div>
             </div>
         </div>
@@ -95,8 +95,8 @@
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-white"><h6 class="mb-0">Raw Value (base30)
                         <InfoTip Title="Raw Data Display"
-                                 Description="This shows the actual data that gets saved to the database — a string of characters that encodes your drawing. Base30 is more compact than storing the image pixels. The signature can be reconstructed from this string later. In a real app, this string goes into a database column."
-                                 Code="@_codeRawData" />
+                                Description="This shows the actual data that gets saved to the database — a string of characters that encodes your drawing. Base30 is more compact than storing the image pixels. The signature can be reconstructed from this string later. In a real app, this string goes into a database column."
+                                Code="@_codeRawData" />
                     </h6></div>
                     <div class="card-body">
                         <pre class="border rounded p-2 bg-light small mb-0" style="max-height:120px; overflow:auto;" aria-label="Signature data value">@(string.IsNullOrWhiteSpace(_signatureValue) ? "(draw a signature above)" : _signatureValue)</pre>

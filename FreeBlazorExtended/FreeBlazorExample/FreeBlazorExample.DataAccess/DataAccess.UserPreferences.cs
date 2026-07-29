@@ -5,6 +5,21 @@ namespace FreeBlazorExample;
 public partial class DataAccess
 {
     /// <summary>
+    /// Hard-deletes the UserPreferences row for the given (tenant, user).
+    /// Used by <see cref="UserPreferencesService.ResetUserPreferences"/> so a
+    /// reset really clears state rather than leaving stale audit fields.
+    /// </summary>
+    public async Task DeleteUserPreferencesRow(Guid TenantId, Guid UserId)
+    {
+        var existing = await data.UserPreferences
+            .FirstOrDefaultAsync(p => p.TenantId == TenantId && p.UserId == UserId);
+
+        if (existing != null) {
+            data.UserPreferences.Remove(existing);
+            await data.SaveChangesAsync();
+        }
+    }
+    /// <summary>
     /// Loads the FreeBlazorExtended Feature 104 UserPreferences row for the
     /// given (tenant, user). Returns null if no row exists yet.
     /// AsNoTracking — callers mutate and re-save via <see cref="SaveUserPreferencesRow"/>.
@@ -53,21 +68,5 @@ public partial class DataAccess
 
         await data.SaveChangesAsync();
         return prefs;
-    }
-
-    /// <summary>
-    /// Hard-deletes the UserPreferences row for the given (tenant, user).
-    /// Used by <see cref="UserPreferencesService.ResetUserPreferences"/> so a
-    /// reset really clears state rather than leaving stale audit fields.
-    /// </summary>
-    public async Task DeleteUserPreferencesRow(Guid TenantId, Guid UserId)
-    {
-        var existing = await data.UserPreferences
-            .FirstOrDefaultAsync(p => p.TenantId == TenantId && p.UserId == UserId);
-
-        if (existing != null) {
-            data.UserPreferences.Remove(existing);
-            await data.SaveChangesAsync();
-        }
     }
 }

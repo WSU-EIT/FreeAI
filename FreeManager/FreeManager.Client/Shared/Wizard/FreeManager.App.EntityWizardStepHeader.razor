@@ -65,56 +65,56 @@
 </div>
 
 @code {
-    [Parameter] public int StepNumber { get; set; }
-    [Parameter] public string Title { get; set; } = "";
-    [Parameter] public string Subtitle { get; set; } = "";
-    [Parameter] public string HeaderClass { get; set; } = "bg-primary text-white";
-    [Parameter] public string SubtitleClass { get; set; } = "text-white-50";
-    [Parameter] public string BadgeIcon { get; set; } = "";
+    [Parameter] public string BackButtonClass { get; set; } = "btn-light";
+    [Parameter] public string BackButtonText { get; set; } = "Back";
     [Parameter] public string BadgeClass { get; set; } = "bg-light text-dark";
+    [Parameter] public string BadgeIcon { get; set; } = "";
     
-    // Spinner
-    [Parameter] public bool ShowSpinner { get; set; }
-    [Parameter] public string SpinnerText { get; set; } = "Loading...";
-    [Parameter] public string SpinnerClass { get; set; } = "";
+    // Child content for custom buttons
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string CreateAnotherText { get; set; } = "Create Another";
+    [Parameter] public string HeaderClass { get; set; } = "bg-primary text-white";
     
     // Info text
     [Parameter] public string InfoText { get; set; } = "";
     [Parameter] public string InfoTextClass { get; set; } = "text-white-50";
-    
-    // Button visibility
-    [Parameter] public bool ShowStartOver { get; set; }
-    [Parameter] public bool ShowBack { get; set; }
-    [Parameter] public bool ShowNext { get; set; } = true;
-    [Parameter] public bool ShowSave { get; set; }
-    [Parameter] public bool ShowCreateAnother { get; set; }
+    [Parameter] public bool IsDisabled { get; set; }
+    [Parameter] public string NextButtonClass { get; set; } = "btn-light";
+    [Parameter] public string NextButtonText { get; set; } = "Next";
     
     // Button states
     [Parameter] public bool NextDisabled { get; set; }
-    [Parameter] public bool SaveDisabled { get; set; }
-    [Parameter] public bool SaveSpinner { get; set; }
-    [Parameter] public bool IsDisabled { get; set; }
-    
-    // Button text
-    [Parameter] public string StartOverButtonText { get; set; } = "Start Over";
-    [Parameter] public string BackButtonText { get; set; } = "Back";
-    [Parameter] public string NextButtonText { get; set; } = "Next";
-    [Parameter] public string SaveButtonText { get; set; } = "Save";
-    [Parameter] public string CreateAnotherText { get; set; } = "Create Another";
-    
-    // Button classes
-    [Parameter] public string StartOverButtonClass { get; set; } = "btn-outline-light";
-    [Parameter] public string BackButtonClass { get; set; } = "btn-light";
-    [Parameter] public string NextButtonClass { get; set; } = "btn-light";
-    [Parameter] public string SaveButtonClass { get; set; } = "btn-success";
-    [Parameter] public string SaveButtonIcon { get; set; } = "fa-save";
-    
-    // Callbacks
-    [Parameter] public EventCallback OnStartOver { get; set; }
     [Parameter] public EventCallback OnBack { get; set; }
     [Parameter] public EventCallback OnNext { get; set; }
     [Parameter] public EventCallback OnSave { get; set; }
     
-    // Child content for custom buttons
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    // Callbacks
+    [Parameter] public EventCallback OnStartOver { get; set; }
+    [Parameter] public string SaveButtonClass { get; set; } = "btn-success";
+    [Parameter] public string SaveButtonIcon { get; set; } = "fa-save";
+    [Parameter] public string SaveButtonText { get; set; } = "Save";
+    [Parameter] public bool SaveDisabled { get; set; }
+    [Parameter] public bool SaveSpinner { get; set; }
+    [Parameter] public bool ShowBack { get; set; }
+    [Parameter] public bool ShowCreateAnother { get; set; }
+    [Parameter] public bool ShowNext { get; set; } = true;
+    [Parameter] public bool ShowSave { get; set; }
+    
+    // Spinner
+    [Parameter] public bool ShowSpinner { get; set; }
+    
+    // Button visibility
+    [Parameter] public bool ShowStartOver { get; set; }
+    [Parameter] public string SpinnerClass { get; set; } = "";
+    [Parameter] public string SpinnerText { get; set; } = "Loading...";
+    
+    // Button classes
+    [Parameter] public string StartOverButtonClass { get; set; } = "btn-outline-light";
+    
+    // Button text
+    [Parameter] public string StartOverButtonText { get; set; } = "Start Over";
+    [Parameter] public int StepNumber { get; set; }
+    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public string SubtitleClass { get; set; } = "text-white-50";
+    [Parameter] public string Title { get; set; } = "";
 }

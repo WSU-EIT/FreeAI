@@ -51,13 +51,13 @@ public partial class DataObjects
     /// </summary>
     public class FMProjectTemplateInfo
     {
-        public FMProjectTemplate Template { get; set; }
-        public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
         public int FileCount { get; set; }
+        public string Icon { get; set; } = string.Empty;
         public List<string> IncludedFiles { get; set; } = new();
         public bool IsRecommended { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public FMProjectTemplate Template { get; set; }
     }
 
     // ============================================================
@@ -109,22 +109,22 @@ public partial class DataObjects
     /// </summary>
     public class FMPagePatternInfo
     {
-        public FMPagePattern Pattern { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
-        public string UseCase { get; set; } = string.Empty;
         public string Complexity { get; set; } = "Medium";
-        public List<string> KeyFeatures { get; set; } = new();
+        public string Description { get; set; } = string.Empty;
         public List<string> GeneratedFiles { get; set; } = new();
-        public bool RequiresEntity { get; set; } = true;
-        public int Priority { get; set; } = 5;
+        public string Icon { get; set; } = string.Empty;
 
         /// <summary>
         /// True if this pattern has a working code generator.
         /// False patterns show a "Coming Soon" warning.
         /// </summary>
         public bool IsImplemented { get; set; } = false;
+        public List<string> KeyFeatures { get; set; } = new();
+        public string Name { get; set; } = string.Empty;
+        public FMPagePattern Pattern { get; set; }
+        public int Priority { get; set; } = 5;
+        public bool RequiresEntity { get; set; } = true;
+        public string UseCase { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -284,13 +284,13 @@ public partial class DataObjects
         public static List<FMPagePatternInfo> GetByComplexity(string complexity)
             => All.Where(p => p.Complexity == complexity).ToList();
 
-        /// <summary>Get patterns that require an entity definition.</summary>
-        public static List<FMPagePatternInfo> GetEntityPatterns()
-            => All.Where(p => p.RequiresEntity).ToList();
-
         /// <summary>Get patterns sorted by priority (recommended first).</summary>
         public static List<FMPagePatternInfo> GetByPriority()
             => All.OrderBy(p => p.Priority).ThenBy(p => p.Name).ToList();
+
+        /// <summary>Get patterns that require an entity definition.</summary>
+        public static List<FMPagePatternInfo> GetEntityPatterns()
+            => All.Where(p => p.RequiresEntity).ToList();
 
         /// <summary>Get only implemented patterns.</summary>
         public static List<FMPagePatternInfo> GetImplemented()

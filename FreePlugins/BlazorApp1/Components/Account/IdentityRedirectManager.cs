@@ -15,6 +15,8 @@ namespace BlazorApp1.Components.Account
             MaxAge = TimeSpan.FromSeconds(5),
         };
 
+        private string CurrentPath => navigationManager.ToAbsoluteUri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
+
         public void RedirectTo(string? uri)
         {
             uri ??= "";
@@ -34,14 +36,6 @@ namespace BlazorApp1.Components.Account
             RedirectTo(newUri);
         }
 
-        public void RedirectToWithStatus(string uri, string message, HttpContext context)
-        {
-            context.Response.Cookies.Append(StatusCookieName, message, StatusCookieBuilder.Build(context));
-            RedirectTo(uri);
-        }
-
-        private string CurrentPath => navigationManager.ToAbsoluteUri(navigationManager.Uri).GetLeftPart(UriPartial.Path);
-
         public void RedirectToCurrentPage() => RedirectTo(CurrentPath);
 
         public void RedirectToCurrentPageWithStatus(string message, HttpContext context)
@@ -49,5 +43,11 @@ namespace BlazorApp1.Components.Account
 
         public void RedirectToInvalidUser(UserManager<ApplicationUser> userManager, HttpContext context)
             => RedirectToWithStatus("Account/InvalidUser", $"Error: Unable to load user with ID '{userManager.GetUserId(context.User)}'.", context);
+
+        public void RedirectToWithStatus(string uri, string message, HttpContext context)
+        {
+            context.Response.Cookies.Append(StatusCookieName, message, StatusCookieBuilder.Build(context));
+            RedirectTo(uri);
+        }
     }
 }

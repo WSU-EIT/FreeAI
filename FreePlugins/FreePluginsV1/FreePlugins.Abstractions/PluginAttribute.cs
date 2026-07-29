@@ -8,6 +8,25 @@
 public class PluginAttribute : Attribute
 {
     /// <summary>
+    /// The author of this plugin.
+    /// </summary>
+    public string Author { get; init; } = String.Empty;
+
+    /// <summary>
+    /// Whether this plugin contains sensitive data.
+    /// </summary>
+    public bool ContainsSensitiveData { get; init; } = false;
+
+    /// <summary>
+    /// A description of this plugin.
+    /// </summary>
+    public string Description { get; init; } = String.Empty;
+
+    /// <summary>
+    /// Whether this plugin is enabled by default.
+    /// </summary>
+    public bool Enabled { get; init; } = true;
+    /// <summary>
     /// The unique identifier for this plugin.
     /// </summary>
     public required string Id { get; init; }
@@ -18,39 +37,9 @@ public class PluginAttribute : Attribute
     public required string Name { get; init; }
 
     /// <summary>
-    /// The plugin type (General, Auth, BackgroundProcess, UserUpdate).
-    /// </summary>
-    public required string Type { get; init; }
-
-    /// <summary>
-    /// The version of this plugin.
-    /// </summary>
-    public string Version { get; init; } = "1.0.0";
-
-    /// <summary>
-    /// The author of this plugin.
-    /// </summary>
-    public string Author { get; init; } = String.Empty;
-
-    /// <summary>
-    /// A description of this plugin.
-    /// </summary>
-    public string Description { get; init; } = String.Empty;
-
-    /// <summary>
     /// The sort order for this plugin.
     /// </summary>
     public int SortOrder { get; init; } = 0;
-
-    /// <summary>
-    /// Whether this plugin contains sensitive data.
-    /// </summary>
-    public bool ContainsSensitiveData { get; init; } = false;
-
-    /// <summary>
-    /// Whether this plugin is enabled by default.
-    /// </summary>
-    public bool Enabled { get; init; } = true;
 
     /// <summary>
     /// Converts the attribute to a PluginMetadata object.
@@ -80,6 +69,16 @@ public class PluginAttribute : Attribute
 
         return output;
     }
+
+    /// <summary>
+    /// The plugin type (General, Auth, BackgroundProcess, UserUpdate).
+    /// </summary>
+    public required string Type { get; init; }
+
+    /// <summary>
+    /// The version of this plugin.
+    /// </summary>
+    public string Version { get; init; } = "1.0.0";
 }
 
 /// <summary>

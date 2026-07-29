@@ -12,6 +12,14 @@ namespace FreeManager.Client.Shared.AppComponents;
 /// </summary>
 public partial class ProjectEditor
 {
+    // TODO: Migration pending - CompareVersions(Guid versionA, Guid versionB)
+    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 480
+    //   Purpose: Show diff between two versions
+    //   Uses: Monaco diff editor
+    private void CompareVersions(Guid versionA, Guid versionB)
+    {
+        throw new NotImplementedException();
+    }
     // ============================================================
     // FILE CRUD METHODS
     // ============================================================
@@ -26,31 +34,12 @@ public partial class ProjectEditor
         throw new NotImplementedException();
     }
 
-    // TODO: Migration pending - SaveFile()
-    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 330
-    //   Purpose: Save current file content
-    //   API: POST /api/Data/FM_SaveAppFile
-    //   Creates: New version automatically
-    private async Task SaveFile()
-    {
-        throw new NotImplementedException();
-    }
-
     // TODO: Migration pending - DeleteFile(Guid fileId)
     //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 360
     //   Purpose: Delete file from project
     //   API: DELETE /api/Data/FM_DeleteAppFile
     //   Confirms: User confirmation before delete
     private async Task DeleteFile(Guid fileId)
-    {
-        throw new NotImplementedException();
-    }
-
-    // TODO: Migration pending - RenameFile(Guid fileId, string newName)
-    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 390
-    //   Purpose: Rename file
-    //   Validates: New name is valid path
-    private async Task RenameFile(Guid fileId, string newName)
     {
         throw new NotImplementedException();
     }
@@ -69,6 +58,28 @@ public partial class ProjectEditor
         throw new NotImplementedException();
     }
 
+    // ============================================================
+    // FILE TREE METHODS
+    // ============================================================
+
+    // TODO: Migration pending - RefreshFileList()
+    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 500
+    //   Purpose: Reload file list from server
+    //   API: GET /api/Data/FM_GetAppFiles
+    private async Task RefreshFileList()
+    {
+        throw new NotImplementedException();
+    }
+
+    // TODO: Migration pending - RenameFile(Guid fileId, string newName)
+    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 390
+    //   Purpose: Rename file
+    //   Validates: New name is valid path
+    private async Task RenameFile(Guid fileId, string newName)
+    {
+        throw new NotImplementedException();
+    }
+
     // TODO: Migration pending - RestoreVersion(Guid versionId)
     //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 450
     //   Purpose: Restore file to previous version
@@ -79,24 +90,12 @@ public partial class ProjectEditor
         throw new NotImplementedException();
     }
 
-    // TODO: Migration pending - CompareVersions(Guid versionA, Guid versionB)
-    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 480
-    //   Purpose: Show diff between two versions
-    //   Uses: Monaco diff editor
-    private void CompareVersions(Guid versionA, Guid versionB)
-    {
-        throw new NotImplementedException();
-    }
-
-    // ============================================================
-    // FILE TREE METHODS
-    // ============================================================
-
-    // TODO: Migration pending - RefreshFileList()
-    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 500
-    //   Purpose: Reload file list from server
-    //   API: GET /api/Data/FM_GetAppFiles
-    private async Task RefreshFileList()
+    // TODO: Migration pending - SaveFile()
+    //   Source: CRM.Client/Shared/AppComponents/FMProjectEditor → FreeManager.App.ProjectEditor.App.razor ~line 330
+    //   Purpose: Save current file content
+    //   API: POST /api/Data/FM_SaveAppFile
+    //   Creates: New version automatically
+    private async Task SaveFile()
     {
         throw new NotImplementedException();
     }

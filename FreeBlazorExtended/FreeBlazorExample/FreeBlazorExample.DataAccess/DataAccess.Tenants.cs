@@ -5,16 +5,16 @@ public partial interface IDataAccess
     Task<DataObjects.BooleanResponse> DeleteTenant(Guid TenantId);
     Task<DataObjects.BooleanResponse> DeleteTenantLogo(Guid TenantId);
     DataObjects.Tenant? GetTenant(Guid TenantId, DataObjects.User? CurrentUser = null);
-    Task<DataObjects.Tenant> GetTenantFull(Guid TenantId, DataObjects.User? CurrentUser = null);
     Task<DataObjects.Tenant> GetTenantFromCode(string tenantCode, DataObjects.User? CurrentUser = null);
+    Task<DataObjects.Tenant> GetTenantFull(Guid TenantId, DataObjects.User? CurrentUser = null);
     Guid GetTenantIdFromCode(string tenantCode);
     DataObjects.Language GetTenantLanguage(Guid TenantId, string Culture = "en-US");
     Task<List<DataObjects.TenantList>> GetTenantList();
     Task<DataObjects.FileStorage> GetTenantLogo(Guid TenantId);
     Task<DataObjects.SimpleResponse> GetTenantLogoId(Guid TenantId);
     Task<List<DataObjects.Tenant>> GetTenants();
-    Task<DataObjects.LoginTenantListing> GetTenantsForLogin();
     DataObjects.TenantSettings GetTenantSettings(Guid TenantId);
+    Task<DataObjects.LoginTenantListing> GetTenantsForLogin();
     List<DataObjects.UserListing> GetTenantUsers(Guid TenantId, int MaxRecords = 500, DataObjects.User? CurrentUser = null);
     Task<DataObjects.Tenant> SaveTenant(DataObjects.Tenant tenant, DataObjects.User? CurrentUser = null);
     void SaveTenantSettings(Guid TenantId, DataObjects.TenantSettings settings, DataObjects.User? CurrentUser = null);
@@ -163,6 +163,25 @@ public partial class DataAccess
         return output;
     }
 
+    public async Task<DataObjects.Tenant> GetTenantFromCode(string tenantCode, DataObjects.User? CurrentUser = null)
+    {
+        DataObjects.Tenant output = new DataObjects.Tenant();
+
+        Guid tenantId = Guid.Empty;
+        var rec = await data.Tenants.FirstOrDefaultAsync(x => x.TenantCode != null && x.TenantCode.ToLower() == tenantCode.ToLower());
+        if (rec != null) {
+            tenantId = rec.TenantId;
+        }
+
+        if(tenantId != Guid.Empty) {
+            output = await GetTenantFull(tenantId, CurrentUser);
+        } else {
+            output.ActionResponse.Messages.Add("Invalid Tenant Code '" + tenantCode + "'");
+        }
+
+        return output;
+    }
+
     public async Task<DataObjects.Tenant> GetTenantFull(Guid TenantId, DataObjects.User? CurrentUser = null)
     {
         DataObjects.Tenant output = new DataObjects.Tenant();
@@ -179,25 +198,6 @@ public partial class DataAccess
                 output.udfLabels = await GetUDFLabels(TenantId);
             }
             CacheStore.SetCacheItem(TenantId, "FullTenant", output);
-        }
-
-        return output;
-    }
-
-    public async Task<DataObjects.Tenant> GetTenantFromCode(string tenantCode, DataObjects.User? CurrentUser = null)
-    {
-        DataObjects.Tenant output = new DataObjects.Tenant();
-
-        Guid tenantId = Guid.Empty;
-        var rec = await data.Tenants.FirstOrDefaultAsync(x => x.TenantCode != null && x.TenantCode.ToLower() == tenantCode.ToLower());
-        if (rec != null) {
-            tenantId = rec.TenantId;
-        }
-
-        if(tenantId != Guid.Empty) {
-            output = await GetTenantFull(tenantId, CurrentUser);
-        } else {
-            output.ActionResponse.Messages.Add("Invalid Tenant Code '" + tenantCode + "'");
         }
 
         return output;
@@ -374,77 +374,6 @@ public partial class DataAccess
         return output;
     }
 
-    private List<DataObjects.Tenant> GetTenantsList()
-    {
-        var output = new List<DataObjects.Tenant>();
-
-        var recs = data.Tenants.ToList();
-        if (recs != null && recs.Any()) {
-            foreach (var rec in recs) {
-                if (rec != null) {
-                    var tenant = new DataObjects.Tenant {
-                        ActionResponse = GetNewActionResponse(true),
-                        Added = rec.Added,
-                        AddedBy = LastModifiedDisplayName(rec.AddedBy),
-                        Enabled = rec.Enabled,
-                        LastModified = rec.LastModified,
-                        LastModifiedBy = LastModifiedDisplayName(rec.LastModifiedBy),
-                        Name = rec.Name,
-                        TenantId = rec.TenantId,
-                        TenantCode = rec.TenantCode,
-                    };
-
-                    var settings = GetTenantSettings(tenant.TenantId);
-                    if (settings != null) {
-                        tenant.TenantSettings = settings;
-                    }
-                    output.Add(tenant);
-                }
-            }
-        }
-
-        return output;
-    }
-
-    public async Task<DataObjects.LoginTenantListing> GetTenantsForLogin()
-    {
-        DataObjects.LoginTenantListing output = new DataObjects.LoginTenantListing();
-
-        var recs = await data.Tenants.Where(x => x.Enabled == true && x.TenantId != _guid1).ToListAsync();
-        if (recs != null && recs.Any()) {
-            foreach (var rec in recs) {
-                if (rec != null) {
-                    var tenant = new DataObjects.Tenant {
-                        ActionResponse = GetNewActionResponse(true),
-                        Added = rec.Added,
-                        AddedBy = LastModifiedDisplayName(rec.AddedBy),
-                        Enabled = true,
-                        LastModified = rec.LastModified,
-                        LastModifiedBy = LastModifiedDisplayName(rec.LastModifiedBy),
-                        Name = rec.Name,
-                        TenantId = rec.TenantId,
-                        TenantCode = rec.TenantCode,
-                    };
-
-                    var settings = GetTenantSettings(tenant.TenantId);
-                    if (settings != null) {
-                        tenant.TenantSettings = settings;
-                    }
-
-                    output.Tenants.Add(tenant);
-                    var languages = await GetTenantLanguages(tenant.TenantId);
-                    if(languages != null && languages.Any()) {
-                        foreach(var language in languages) {
-                            output.Languages.Add(language);
-                        }
-                    }
-                }
-            }
-        }
-
-        return output;
-    }
-
     public DataObjects.TenantSettings GetTenantSettings(Guid TenantId)
     {
         var defaultWorkSchedule = new DataObjects.WorkSchedule {
@@ -543,6 +472,77 @@ public partial class DataAccess
         if (loadedSettings && saveSettings) {
             // Only save the settings if they were actually loaded and something was missing that we added.
             SaveTenantSettings(TenantId, output);
+        }
+
+        return output;
+    }
+
+    public async Task<DataObjects.LoginTenantListing> GetTenantsForLogin()
+    {
+        DataObjects.LoginTenantListing output = new DataObjects.LoginTenantListing();
+
+        var recs = await data.Tenants.Where(x => x.Enabled == true && x.TenantId != _guid1).ToListAsync();
+        if (recs != null && recs.Any()) {
+            foreach (var rec in recs) {
+                if (rec != null) {
+                    var tenant = new DataObjects.Tenant {
+                        ActionResponse = GetNewActionResponse(true),
+                        Added = rec.Added,
+                        AddedBy = LastModifiedDisplayName(rec.AddedBy),
+                        Enabled = true,
+                        LastModified = rec.LastModified,
+                        LastModifiedBy = LastModifiedDisplayName(rec.LastModifiedBy),
+                        Name = rec.Name,
+                        TenantId = rec.TenantId,
+                        TenantCode = rec.TenantCode,
+                    };
+
+                    var settings = GetTenantSettings(tenant.TenantId);
+                    if (settings != null) {
+                        tenant.TenantSettings = settings;
+                    }
+
+                    output.Tenants.Add(tenant);
+                    var languages = await GetTenantLanguages(tenant.TenantId);
+                    if(languages != null && languages.Any()) {
+                        foreach(var language in languages) {
+                            output.Languages.Add(language);
+                        }
+                    }
+                }
+            }
+        }
+
+        return output;
+    }
+
+    private List<DataObjects.Tenant> GetTenantsList()
+    {
+        var output = new List<DataObjects.Tenant>();
+
+        var recs = data.Tenants.ToList();
+        if (recs != null && recs.Any()) {
+            foreach (var rec in recs) {
+                if (rec != null) {
+                    var tenant = new DataObjects.Tenant {
+                        ActionResponse = GetNewActionResponse(true),
+                        Added = rec.Added,
+                        AddedBy = LastModifiedDisplayName(rec.AddedBy),
+                        Enabled = rec.Enabled,
+                        LastModified = rec.LastModified,
+                        LastModifiedBy = LastModifiedDisplayName(rec.LastModifiedBy),
+                        Name = rec.Name,
+                        TenantId = rec.TenantId,
+                        TenantCode = rec.TenantCode,
+                    };
+
+                    var settings = GetTenantSettings(tenant.TenantId);
+                    if (settings != null) {
+                        tenant.TenantSettings = settings;
+                    }
+                    output.Add(tenant);
+                }
+            }
         }
 
         return output;

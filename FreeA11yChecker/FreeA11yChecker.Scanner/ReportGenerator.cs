@@ -10,6 +10,21 @@ using FreeA11yChecker.Scanner.Models;
 /// </summary>
 public static class ReportGenerator
 {
+    private static (int Crit, int Seri, int Mod, int Min, int Total) CountBySeverity(List<A11yIssue> issues)
+    {
+        var crit = issues.Count(i => i.Severity == "critical");
+        var seri = issues.Count(i => i.Severity == "serious");
+        var mod = issues.Count(i => i.Severity == "moderate");
+        var min = issues.Count(i => i.Severity == "minor");
+        return (crit, seri, mod, min, issues.Count);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
     // ========================================================================
     // Page-level report
     // ========================================================================
@@ -239,119 +254,12 @@ public static class ReportGenerator
         return sb.ToString();
     }
 
-    // ========================================================================
-    // Site-level report
-    // ========================================================================
-
-    /// <summary>
-    /// Generate a markdown report for all pages within a single site.
-    /// </summary>
-    public static string GenerateSiteReport(SiteScanResult result)
+    private static string GenerateProgressBar(double percentage, int width)
     {
-        var sb = new StringBuilder();
-        var totalCount = result.Pages.Count;
-        var successCount = result.Pages.Count(p => string.IsNullOrEmpty(p.ErrorMessage));
-        var failedCount = totalCount - successCount;
-        var successPct = totalCount > 0 ? (successCount * 100.0 / totalCount) : 0;
-        var totalImages = result.Pages.Sum(p => p.Images.Count);
-        var totalMissingAlt = result.Pages.Sum(p => p.Images.Count(i => i.AltText == null));
-        var altPct = totalImages > 0 ? ((totalImages - totalMissingAlt) * 100.0 / totalImages) : 100;
-        var a11yTotal = result.Pages.Sum(p => p.Summary.TotalViolations);
-        var cleanPages = result.Pages.Count(p => p.Summary.TotalViolations == 0);
-        var a11yCleanPct = totalCount > 0 ? (cleanPages * 100.0 / totalCount) : 100;
-
-        sb.AppendLine($"# Site Report: {result.BaseUrl}");
-        sb.AppendLine();
-        var statusEmoji = failedCount == 0 ? "OK" : "Warning";
-        sb.AppendLine($"> **Status:** {statusEmoji} {successCount}/{totalCount} pages OK  ");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-
-        // Dashboard with progress bars
-        sb.AppendLine("## Dashboard");
-        sb.AppendLine();
-        sb.AppendLine("```");
-        sb.AppendLine($"Success Rate:     {GenerateProgressBar(successPct, 30)} {successPct:F0}%");
-        sb.AppendLine($"Alt Text Cover:   {GenerateProgressBar(altPct, 30)} {altPct:F0}%");
-        sb.AppendLine($"A11y Clean Pages: {GenerateProgressBar(a11yCleanPct, 30)} {a11yCleanPct:F0}%");
-        sb.AppendLine("```");
-        sb.AppendLine();
-
-        // Summary metrics
-        sb.AppendLine("| Metric | Value |");
-        sb.AppendLine("|--------|-------|");
-        sb.AppendLine($"| Pages Scanned | {totalCount} |");
-        sb.AppendLine($"| Pages Passed | {successCount} |");
-        sb.AppendLine($"| Pages Failed | {failedCount} |");
-        sb.AppendLine($"| Total Images | {totalImages} |");
-        sb.AppendLine($"| Images Missing Alt | {totalMissingAlt} |");
-        sb.AppendLine($"| A11y Violations | {a11yTotal} |");
-        if (a11yTotal > 0)
-        {
-            sb.AppendLine($"| Critical | {result.Pages.Sum(p => p.Summary.CriticalCount)} |");
-            sb.AppendLine($"| Serious | {result.Pages.Sum(p => p.Summary.SeriousCount)} |");
-            sb.AppendLine($"| Moderate | {result.Pages.Sum(p => p.Summary.ModerateCount)} |");
-            sb.AppendLine($"| Minor | {result.Pages.Sum(p => p.Summary.MinorCount)} |");
-        }
-        sb.AppendLine();
-
-        // Pages table
-        sb.AppendLine("## Pages");
-        sb.AppendLine();
-        sb.AppendLine("| Status | Page | HTTP | Critical | Serious | Moderate | Minor | A11y |");
-        sb.AppendLine("|:------:|------|:----:|:--------:|:-------:|:--------:|:-----:|:----:|");
-
-        foreach (var page in result.Pages.OrderBy(p => p.Url))
-        {
-            var s = string.IsNullOrEmpty(page.ErrorMessage) ? "OK" : "FAIL";
-            var a = page.Summary;
-            var crit = a.CriticalCount > 0 ? a.CriticalCount.ToString() : "";
-            var seri = a.SeriousCount > 0 ? a.SeriousCount.ToString() : "";
-            var mod = a.ModerateCount > 0 ? a.ModerateCount.ToString() : "";
-            var min = a.MinorCount > 0 ? a.MinorCount.ToString() : "";
-            var total = a.TotalViolations > 0 ? a.TotalViolations.ToString() : "0";
-            sb.AppendLine($"| {s} | {page.Url} | {page.StatusCode} | {crit} | {seri} | {mod} | {min} | {total} |");
-        }
-        sb.AppendLine();
-
-        // SSL certificate info (from first page that has it)
-        var certPage = result.Pages.FirstOrDefault(p => p.Certificate != null);
-        if (certPage?.Certificate != null)
-        {
-            var cert = certPage.Certificate;
-            var daysLeft = (int)(cert.Expiry - DateTime.UtcNow).TotalDays;
-
-            sb.AppendLine("## SSL Certificate");
-            sb.AppendLine();
-            sb.AppendLine("| Field | Value |");
-            sb.AppendLine("|-------|-------|");
-            sb.AppendLine($"| Subject | `{cert.Subject}` |");
-            sb.AppendLine($"| Issuer | `{Truncate(cert.Issuer, 80)}` |");
-            sb.AppendLine($"| Expires | {cert.Expiry:yyyy-MM-dd} ({daysLeft} days) |");
-            sb.AppendLine($"| SANs | {cert.SubjectAlternativeNames.Count} domain(s) |");
-            sb.AppendLine();
-
-            if (cert.SubjectAlternativeNames.Count > 0)
-            {
-                sb.AppendLine("<details>");
-                sb.AppendLine($"<summary><strong>Subject Alternative Names ({cert.SubjectAlternativeNames.Count})</strong></summary>");
-                sb.AppendLine();
-                foreach (var san in cert.SubjectAlternativeNames)
-                {
-                    sb.AppendLine($"- `{san}`");
-                }
-                sb.AppendLine();
-                sb.AppendLine("</details>");
-                sb.AppendLine();
-            }
-        }
-
-        sb.AppendLine("---");
-        sb.AppendLine();
-        sb.AppendLine("*Generated by FreeA11yChecker Scanner v1.0*");
-
-        return sb.ToString();
+        var filled = (int)(percentage * width / 100.0);
+        filled = Math.Clamp(filled, 0, width);
+        var empty = width - filled;
+        return $"[{new string('#', filled)}{new string('.', empty)}]";
     }
 
     // ========================================================================
@@ -508,29 +416,118 @@ public static class ReportGenerator
     }
 
     // ========================================================================
-    // Helpers
+    // Site-level report
     // ========================================================================
 
-    private static string Truncate(string value, int maxLength)
+    /// <summary>
+    /// Generate a markdown report for all pages within a single site.
+    /// </summary>
+    public static string GenerateSiteReport(SiteScanResult result)
     {
-        if (string.IsNullOrEmpty(value)) return value;
-        value = value.Replace("|", "\\|");
-        return value.Length <= maxLength ? value : value[..(maxLength - 3)] + "...";
-    }
+        var sb = new StringBuilder();
+        var totalCount = result.Pages.Count;
+        var successCount = result.Pages.Count(p => string.IsNullOrEmpty(p.ErrorMessage));
+        var failedCount = totalCount - successCount;
+        var successPct = totalCount > 0 ? (successCount * 100.0 / totalCount) : 0;
+        var totalImages = result.Pages.Sum(p => p.Images.Count);
+        var totalMissingAlt = result.Pages.Sum(p => p.Images.Count(i => i.AltText == null));
+        var altPct = totalImages > 0 ? ((totalImages - totalMissingAlt) * 100.0 / totalImages) : 100;
+        var a11yTotal = result.Pages.Sum(p => p.Summary.TotalViolations);
+        var cleanPages = result.Pages.Count(p => p.Summary.TotalViolations == 0);
+        var a11yCleanPct = totalCount > 0 ? (cleanPages * 100.0 / totalCount) : 100;
 
-    private static string GenerateProgressBar(double percentage, int width)
-    {
-        var filled = (int)(percentage * width / 100.0);
-        filled = Math.Clamp(filled, 0, width);
-        var empty = width - filled;
-        return $"[{new string('#', filled)}{new string('.', empty)}]";
-    }
+        sb.AppendLine($"# Site Report: {result.BaseUrl}");
+        sb.AppendLine();
+        var statusEmoji = failedCount == 0 ? "OK" : "Warning";
+        sb.AppendLine($"> **Status:** {statusEmoji} {successCount}/{totalCount} pages OK  ");
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
 
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
-        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+        // Dashboard with progress bars
+        sb.AppendLine("## Dashboard");
+        sb.AppendLine();
+        sb.AppendLine("```");
+        sb.AppendLine($"Success Rate:     {GenerateProgressBar(successPct, 30)} {successPct:F0}%");
+        sb.AppendLine($"Alt Text Cover:   {GenerateProgressBar(altPct, 30)} {altPct:F0}%");
+        sb.AppendLine($"A11y Clean Pages: {GenerateProgressBar(a11yCleanPct, 30)} {a11yCleanPct:F0}%");
+        sb.AppendLine("```");
+        sb.AppendLine();
+
+        // Summary metrics
+        sb.AppendLine("| Metric | Value |");
+        sb.AppendLine("|--------|-------|");
+        sb.AppendLine($"| Pages Scanned | {totalCount} |");
+        sb.AppendLine($"| Pages Passed | {successCount} |");
+        sb.AppendLine($"| Pages Failed | {failedCount} |");
+        sb.AppendLine($"| Total Images | {totalImages} |");
+        sb.AppendLine($"| Images Missing Alt | {totalMissingAlt} |");
+        sb.AppendLine($"| A11y Violations | {a11yTotal} |");
+        if (a11yTotal > 0)
+        {
+            sb.AppendLine($"| Critical | {result.Pages.Sum(p => p.Summary.CriticalCount)} |");
+            sb.AppendLine($"| Serious | {result.Pages.Sum(p => p.Summary.SeriousCount)} |");
+            sb.AppendLine($"| Moderate | {result.Pages.Sum(p => p.Summary.ModerateCount)} |");
+            sb.AppendLine($"| Minor | {result.Pages.Sum(p => p.Summary.MinorCount)} |");
+        }
+        sb.AppendLine();
+
+        // Pages table
+        sb.AppendLine("## Pages");
+        sb.AppendLine();
+        sb.AppendLine("| Status | Page | HTTP | Critical | Serious | Moderate | Minor | A11y |");
+        sb.AppendLine("|:------:|------|:----:|:--------:|:-------:|:--------:|:-----:|:----:|");
+
+        foreach (var page in result.Pages.OrderBy(p => p.Url))
+        {
+            var s = string.IsNullOrEmpty(page.ErrorMessage) ? "OK" : "FAIL";
+            var a = page.Summary;
+            var crit = a.CriticalCount > 0 ? a.CriticalCount.ToString() : "";
+            var seri = a.SeriousCount > 0 ? a.SeriousCount.ToString() : "";
+            var mod = a.ModerateCount > 0 ? a.ModerateCount.ToString() : "";
+            var min = a.MinorCount > 0 ? a.MinorCount.ToString() : "";
+            var total = a.TotalViolations > 0 ? a.TotalViolations.ToString() : "0";
+            sb.AppendLine($"| {s} | {page.Url} | {page.StatusCode} | {crit} | {seri} | {mod} | {min} | {total} |");
+        }
+        sb.AppendLine();
+
+        // SSL certificate info (from first page that has it)
+        var certPage = result.Pages.FirstOrDefault(p => p.Certificate != null);
+        if (certPage?.Certificate != null)
+        {
+            var cert = certPage.Certificate;
+            var daysLeft = (int)(cert.Expiry - DateTime.UtcNow).TotalDays;
+
+            sb.AppendLine("## SSL Certificate");
+            sb.AppendLine();
+            sb.AppendLine("| Field | Value |");
+            sb.AppendLine("|-------|-------|");
+            sb.AppendLine($"| Subject | `{cert.Subject}` |");
+            sb.AppendLine($"| Issuer | `{Truncate(cert.Issuer, 80)}` |");
+            sb.AppendLine($"| Expires | {cert.Expiry:yyyy-MM-dd} ({daysLeft} days) |");
+            sb.AppendLine($"| SANs | {cert.SubjectAlternativeNames.Count} domain(s) |");
+            sb.AppendLine();
+
+            if (cert.SubjectAlternativeNames.Count > 0)
+            {
+                sb.AppendLine("<details>");
+                sb.AppendLine($"<summary><strong>Subject Alternative Names ({cert.SubjectAlternativeNames.Count})</strong></summary>");
+                sb.AppendLine();
+                foreach (var san in cert.SubjectAlternativeNames)
+                {
+                    sb.AppendLine($"- `{san}`");
+                }
+                sb.AppendLine();
+                sb.AppendLine("</details>");
+                sb.AppendLine();
+            }
+        }
+
+        sb.AppendLine("---");
+        sb.AppendLine();
+        sb.AppendLine("*Generated by FreeA11yChecker Scanner v1.0*");
+
+        return sb.ToString();
     }
 
     private static int SeverityRank(string severity) => severity switch
@@ -542,12 +539,14 @@ public static class ReportGenerator
         _ => 4
     };
 
-    private static (int Crit, int Seri, int Mod, int Min, int Total) CountBySeverity(List<A11yIssue> issues)
+    // ========================================================================
+    // Helpers
+    // ========================================================================
+
+    private static string Truncate(string value, int maxLength)
     {
-        var crit = issues.Count(i => i.Severity == "critical");
-        var seri = issues.Count(i => i.Severity == "serious");
-        var mod = issues.Count(i => i.Severity == "moderate");
-        var min = issues.Count(i => i.Severity == "minor");
-        return (crit, seri, mod, min, issues.Count);
+        if (string.IsNullOrEmpty(value)) return value;
+        value = value.Replace("|", "\\|");
+        return value.Length <= maxLength ? value : value[..(maxLength - 3)] + "...";
     }
 }

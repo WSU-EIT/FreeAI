@@ -75,7 +75,7 @@
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                                     <input type="text" class="form-control" placeholder="Search by ID or type..."
-                                           @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
+                                            @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -112,22 +112,22 @@
                                     <div class="col-md-3">
                                         <label class="form-label small text-muted mb-1">Min Total Accesses</label>
                                         <input type="number" class="form-control form-control-sm" placeholder="Min" 
-                                               @bind="_filter.MinTotalAccesses" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                                @bind="_filter.MinTotalAccesses" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small text-muted mb-1">Max Total Accesses</label>
                                         <input type="number" class="form-control form-control-sm" placeholder="Max" 
-                                               @bind="_filter.MaxTotalAccesses" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                                @bind="_filter.MaxTotalAccesses" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small text-muted mb-1">Min Unique Accessors</label>
                                         <input type="number" class="form-control form-control-sm" placeholder="Min" 
-                                               @bind="_filter.MinUniqueAccessors" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                                @bind="_filter.MinUniqueAccessors" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small text-muted mb-1">Max Unique Accessors</label>
                                         <input type="number" class="form-control form-control-sm" placeholder="Max" 
-                                               @bind="_filter.MaxUniqueAccessors" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                                                @bind="_filter.MaxUniqueAccessors" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
                                     </div>
                                 </div>
                                 <div class="row g-2 mt-2">
@@ -219,10 +219,10 @@
                                 <tbody>
                                     @foreach (var item in _result.Records) {
                                         <tr class="@(item.ExternalId == _selectedSubject?.ExternalId ? "table-active" : "") cursor-pointer"
-                                            @onclick="@(() => SelectSubject(item))">
+                                                @onclick="@(() => SelectSubject(item))">
                                             <td>
                                                 <a href="@GetSubjectUrl(item.ExternalId)" @onclick:preventDefault @onclick:stopPropagation
-                                                   @onclick="@(() => SelectSubject(item))">
+                                                        @onclick="@(() => SelectSubject(item))">
                                                     <strong>@item.ExternalId</strong>
                                                 </a>
                                                 <br />
@@ -377,7 +377,7 @@
                                                     </td>
                                                     <td>
                                                         <a href="@GetEventUrl(evt.AccessEventId)" class="btn btn-sm btn-outline-primary" 
-                                                           title="View Event Details">
+                                                                title="View Event Details">
                                                             <i class="fa-solid fa-arrow-right"></i>
                                                         </a>
                                                     </td>

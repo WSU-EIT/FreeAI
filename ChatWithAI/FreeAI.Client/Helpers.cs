@@ -47,37 +47,6 @@ public static partial class Helpers
     private static bool _validatingUrl = false;
 
     /// <summary>
-    /// Initializes the Helpers static class library by providing the required objects to the library.
-    /// </summary>
-    /// <param name="jSRuntime">A reference to the IJSRuntime interface.</param>
-    /// <param name="model">A reference to the BlazorDataModel.</param>
-    /// <param name="httpClient">A reference to the HttpClient.</param>
-    /// <param name="localStorage">A reference to the ILocalStorageService interface.</param>
-    /// <param name="dialogService">A reference to the Radzen DialogService.</param>
-    /// <param name="tooltipService">A reference to the Radzen TooltipService.</param>
-    /// <param name="navigationManager">A reference to the NavigationManager interface.</param>
-    public static void Init(
-        IJSRuntime jSRuntime, 
-        BlazorDataModel model, 
-        HttpClient httpClient, 
-        ILocalStorageService localStorage, 
-        Radzen.DialogService dialogService,
-        Radzen.TooltipService tooltipService,
-        NavigationManager navigationManager
-    )
-    {
-        DialogService = dialogService;
-        Http = httpClient;
-        jsRuntime = jSRuntime;
-        LocalStorage = localStorage;
-        Model = model;
-        Tooltips = tooltipService;
-        NavManager = navigationManager;
-
-        _initialized = true;
-    }
-
-    /// <summary>
     /// Checks if the file type of the given filename is allowed.
     /// </summary>
     /// <param name="filename">The name of the file to check.</param>
@@ -1352,27 +1321,6 @@ public static partial class Helpers
     }
 
     /// <summary>
-    /// Formats a string as a Guid.
-    /// </summary>
-    /// <param name="input">Formats a string in the Guid format.</param>
-    /// <returns>A string formatted in the Guid format.</returns>
-    public static string FormatStringAsGuid(string input)
-    {
-        string output = String.Empty;
-
-        if (!String.IsNullOrEmpty(input)) {
-            string guid = input;
-            if (guid.Length > 32) {
-                guid = input.Substring(0, 32);
-            }
-
-            output = guid.Substring(0, 8) + "-" + guid.Substring(8, 4) + "-" + guid.Substring(12, 4) + "-" + guid.Substring(16, 4) + "-" + guid.Substring(20);
-        }
-
-        return output;
-    }
-
-    /// <summary>
     /// Forces updates to the DataModel that area required for changes to the language.
     /// </summary>
     public static void ForceModelUpdates()
@@ -1582,6 +1530,27 @@ public static partial class Helpers
             } else {
                 output = "<a href=\"mailto:" + value + "\">" + value + "</a>";
             }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Formats a string as a Guid.
+    /// </summary>
+    /// <param name="input">Formats a string in the Guid format.</param>
+    /// <returns>A string formatted in the Guid format.</returns>
+    public static string FormatStringAsGuid(string input)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrEmpty(input)) {
+            string guid = input;
+            if (guid.Length > 32) {
+                guid = input.Substring(0, 32);
+            }
+
+            output = guid.Substring(0, 8) + "-" + guid.Substring(8, 4) + "-" + guid.Substring(12, 4) + "-" + guid.Substring(16, 4) + "-" + guid.Substring(20);
         }
 
         return output;
@@ -1990,8 +1959,7 @@ public static partial class Helpers
         bool SetFocus = false,
         Dictionary<string, string>? UserInputOptions = null,
         string width = "",
-        string height = "")
-    {
+        string height = ""){
         Dictionary<string, object> parameters = new Dictionary<string, object>();
         parameters.Add("OnInputAccepted", OnInputAccepted);
 
@@ -2087,8 +2055,7 @@ public static partial class Helpers
         bool? RequireLowerCase = null,
         bool? RequireNumbers = null,
         bool? RequireSpecialCharacters = null
-    )
-    {
+    ){
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("GeneratePassword");
         }
@@ -2510,6 +2477,24 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the password from a SecureString object.
+    /// </summary>
+    /// <param name="secureString">A SecureString object.</param>
+    /// <returns>The password.</returns>
+    public static string GetPasswordFromSecureString(object? secureString)
+    {
+        string output = String.Empty;
+
+        if (secureString != null && secureString.GetType() == typeof(System.Security.SecureString)) {
+            try {
+                output += new System.Net.NetworkCredential("", (System.Security.SecureString)secureString).Password;
+            } catch { }
+        }
+
+        return output;
+    }
+
+    /// <summary>
     /// Gets a plugin by it's unique Guid Id.
     /// </summary>
     /// <param name="id">The Guid Id of the plugin.</param>
@@ -2545,23 +2530,6 @@ public static partial class Helpers
     }
 
     /// <summary>
-    /// Gets the code namespace from the plugin code.
-    /// </summary>
-    /// <param name="code">The C# code.</param>
-    /// <returns>The code namespace.</returns>
-    public static string GetPluginNamespace(string code)
-    {
-        string output = String.Empty;
-
-        var line = FindFirstLineStartingWith(code, "namespace");
-        if (!String.IsNullOrWhiteSpace(line)) {
-            output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
-        }
-
-        return output;
-    }
-
-    /// <summary>
     /// Gets the code class from the plugin code.
     /// </summary>
     /// <param name="code">The C# code.</param>
@@ -2583,6 +2551,23 @@ public static partial class Helpers
             }
         }
 
+
+        return output;
+    }
+
+    /// <summary>
+    /// Gets the code namespace from the plugin code.
+    /// </summary>
+    /// <param name="code">The C# code.</param>
+    /// <returns>The code namespace.</returns>
+    public static string GetPluginNamespace(string code)
+    {
+        string output = String.Empty;
+
+        var line = FindFirstLineStartingWith(code, "namespace");
+        if (!String.IsNullOrWhiteSpace(line)) {
+            output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
+        }
 
         return output;
     }
@@ -2679,24 +2664,6 @@ public static partial class Helpers
 
         if (output.ToLower() == "undefined" || output.ToLower() == "null") {
             output = String.Empty;
-        }
-
-        return output;
-    }
-
-    /// <summary>
-    /// Gets the password from a SecureString object.
-    /// </summary>
-    /// <param name="secureString">A SecureString object.</param>
-    /// <returns>The password.</returns>
-    public static string GetPasswordFromSecureString(object? secureString)
-    {
-        string output = String.Empty;
-
-        if (secureString != null && secureString.GetType() == typeof(System.Security.SecureString)) {
-            try {
-                output += new System.Net.NetworkCredential("", (System.Security.SecureString)secureString).Password;
-            } catch { }
         }
 
         return output;
@@ -3036,8 +3003,7 @@ public static partial class Helpers
         string width = "",
         string height = "",
         bool setFocusOnLoad = true,
-        string? instructions = "")
-    {
+        string? instructions = ""){
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("EditHTML");
         }
@@ -3262,6 +3228,36 @@ public static partial class Helpers
 
             return icons;
         }
+    }
+
+    /// <summary>
+    /// Initializes the Helpers static class library by providing the required objects to the library.
+    /// </summary>
+    /// <param name="jSRuntime">A reference to the IJSRuntime interface.</param>
+    /// <param name="model">A reference to the BlazorDataModel.</param>
+    /// <param name="httpClient">A reference to the HttpClient.</param>
+    /// <param name="localStorage">A reference to the ILocalStorageService interface.</param>
+    /// <param name="dialogService">A reference to the Radzen DialogService.</param>
+    /// <param name="tooltipService">A reference to the Radzen TooltipService.</param>
+    /// <param name="navigationManager">A reference to the NavigationManager interface.</param>
+    public static void Init(
+        IJSRuntime jSRuntime, 
+        BlazorDataModel model, 
+        HttpClient httpClient, 
+        ILocalStorageService localStorage, 
+        Radzen.DialogService dialogService,
+        Radzen.TooltipService tooltipService,
+        NavigationManager navigationManager
+    ){
+        DialogService = dialogService;
+        Http = httpClient;
+        jsRuntime = jSRuntime;
+        LocalStorage = localStorage;
+        Model = model;
+        Tooltips = tooltipService;
+        NavManager = navigationManager;
+
+        _initialized = true;
     }
 
     /// <summary>
@@ -4073,6 +4069,17 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the current date and time in UTC.
+    /// </summary>
+    public static DateTime Now
+    {
+        get {
+            var output = Convert.ToDateTime(DateTime.UtcNow.ToString("o"));
+            return output;
+        }
+    }
+
+    /// <summary>
     /// Returns only the numbers found in a given string.
     /// </summary>
     /// <param name="input">The string to parse.</param>
@@ -4335,17 +4342,6 @@ public static partial class Helpers
 
         if (onChangeComplete != null) {
             onChangeComplete.DynamicInvoke();
-        }
-    }
-
-    /// <summary>
-    /// Gets the current date and time in UTC.
-    /// </summary>
-    public static DateTime Now
-    {
-        get {
-            var output = Convert.ToDateTime(DateTime.UtcNow.ToString("o"));
-            return output;
         }
     }
 
@@ -5160,8 +5156,7 @@ public static partial class Helpers
         bool ReplaceSpaces = false, 
         List<string>? ReplaceValues = null, 
         bool MarkUndefinedStrings = true,
-        TextCase textCase = TextCase.Normal)
-    {
+        TextCase textCase = TextCase.Normal){
         string output = !String.IsNullOrWhiteSpace(text) ? text : "";
 
         bool foundTag = false;
@@ -5335,8 +5330,7 @@ public static partial class Helpers
     /// <param name="SupportedFileTypes">A list of extensions if you wish to limit the upload types allowed.</param>
     /// <param name="AllowMultipleUploads">Option to indicate if the user can upload only a single file or multiple files.</param>
     public static async Task UploadFile(Delegate OnUploadComplete, string Title = "", 
-        string UploadInstructions = "", List<string>? SupportedFileTypes = null, bool AllowMultipleUploads = false)
-    {
+        string UploadInstructions = "", List<string>? SupportedFileTypes = null, bool AllowMultipleUploads = false){
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("UploadFile");
         }
@@ -5390,6 +5384,16 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the Uri from the NavManager.
+    /// </summary>
+    public static string Uri
+    {
+        get {
+            return NavManager.Uri;
+        }
+    }
+
+    /// <summary>
     /// URL decodes the given input.
     /// </summary>
     /// <param name="url">The input to be decoded.</param>
@@ -5419,16 +5423,6 @@ public static partial class Helpers
         }
 
         return output;
-    }
-
-    /// <summary>
-    /// Gets the Uri from the NavManager.
-    /// </summary>
-    public static string Uri
-    {
-        get {
-            return NavManager.Uri;
-        }
     }
 
     /// <summary>
@@ -5652,26 +5646,6 @@ public static partial class Helpers
     }
 
     /// <summary>
-    /// Shows a file viewer for supported file types, or downloads the file if no viewer is available.
-    /// </summary>
-    /// <param name="file">The FileStorage object for the file.</param>
-    /// <param name="title">An optional title for the dialog.</param>
-    public static async Task ViewOrDownloadFile(DataObjects.FileStorage file, string? title = "")
-    {
-        if (IsImage(file)) {
-            await ViewImage(file, title);
-        } else if (IsPDF(file)) {
-            await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin);
-            //} else if (IsOfficeFile(file)) {
-            //    await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin || Model.User.Purchaser);
-        } else if (IsTextFile(file)) {
-            await ViewTextFile(file, title);
-        } else {
-            await DownloadFile(file.FileId);
-        }
-    }
-
-    /// <summary>
     /// Shows an image in the image viewer.
     /// </summary>
     /// <param name="file">The FileStorage object for the file.</param>
@@ -5696,6 +5670,26 @@ public static partial class Helpers
 
             string content = "<div class=\"mt-2 center\">" + image + "</div>";
             await ModalMessage(content, title, false, "80%");
+        }
+    }
+
+    /// <summary>
+    /// Shows a file viewer for supported file types, or downloads the file if no viewer is available.
+    /// </summary>
+    /// <param name="file">The FileStorage object for the file.</param>
+    /// <param name="title">An optional title for the dialog.</param>
+    public static async Task ViewOrDownloadFile(DataObjects.FileStorage file, string? title = "")
+    {
+        if (IsImage(file)) {
+            await ViewImage(file, title);
+        } else if (IsPDF(file)) {
+            await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin);
+            //} else if (IsOfficeFile(file)) {
+            //    await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin || Model.User.Purchaser);
+        } else if (IsTextFile(file)) {
+            await ViewTextFile(file, title);
+        } else {
+            await DownloadFile(file.FileId);
         }
     }
 

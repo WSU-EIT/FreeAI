@@ -20,15 +20,13 @@
         </AboutSection>
 
         <div class="d-flex flex-wrap gap-1 mb-3">
-            <InfoTip Title="Dynamic Nav Tabs from Data"
-                     Description="@_descNavTabs"
-                     Code="@_codeNavTabs" />
+            <InfoTip Title="Dynamic Nav Tabs from Data" Description="@_descNavTabs" Code="@_codeNavTabs" />
             <InfoTip Title="Pipe-Delimited Filter Storage"
-                     Description="FilterJson stores filters as 'type|priority|assignee' — a simple pipe-delimited string. ApplyView splits it and applies each non-empty segment with Enum.TryParse or string.Contains. This avoids JSON parsing overhead for simple filter presets."
-                     Code="@_codeFilterParse" />
+                    Description="FilterJson stores filters as 'type|priority|assignee' — a simple pipe-delimited string. ApplyView splits it and applies each non-empty segment with Enum.TryParse or string.Contains. This avoids JSON parsing overhead for simple filter presets."
+                    Code="@_codeFilterParse" />
             <InfoTip Title="SaveMany / DeleteMany Pattern"
-                     Description="SaveView() creates a new SavedView object and posts it via SaveSavedViews (SaveMany pattern). DeleteView() posts the RecordId via DeleteSavedViews (DeleteMany). Both follow the standard GetMany/SaveMany/DeleteMany API convention used across the app."
-                     Code="@_codeSaveDelete" />
+                    Description="SaveView() creates a new SavedView object and posts it via SaveSavedViews (SaveMany pattern). DeleteView() posts the RecordId via DeleteSavedViews (DeleteMany). Both follow the standard GetMany/SaveMany/DeleteMany API convention used across the app."
+                    Code="@_codeSaveDelete" />
         </div>
 
         @* Saved view tabs *@

@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A row of N single-character inputs that auto-advance focus on each keystroke, auto-retreat focus on backspace, and fire OnComplete when all digits are filled — modelled on standard OTP entry UX."
-        WhatEli5="Those six little boxes you see when a website texts you a code — each box accepts one digit and jumps to the next one automatically so you don't have to click between them."
-        Who=@(new[]{ "Developers building two-factor authentication flows", "Auth screens requiring PIN entry (ATM-style short numeric codes)", "Any verification step where the user must type a code received out-of-band" })
-        WhenUse=@(new[]{ "Email or SMS verification codes", "Two-factor authentication OTP entry", "Short PIN entry (4–8 digits or alphanumeric)" })
-        WhenNot=@(new[]{ "Long arbitrary strings — a plain text input with paste support is faster for codes longer than ~10 characters", "Cases where the code length is unknown at render time" })
-        Why="A standard text input for a 6-digit SMS code forces the user to click, type, and worry about formatting. Individual advancing boxes exactly match the mental model users already have from banking apps."
-        TechNotes=@(new[]{ "NumberOfInputs parameter controls how many boxes render; each is a maxlength=1 <input>", "Focus advancement: input event handler calls the next sibling's .focus() via ElementReference", "Backspace handler: if current input is empty, move focus to previous input", "AllowAlpha=false restricts input pattern to [0-9] only; AllowAlpha=true accepts [A-Za-z0-9]", "OnComplete fires when the last box receives a character; passes the full concatenated string" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A row of N single-character inputs that auto-advance focus on each keystroke, auto-retreat focus on backspace, and fire OnComplete when all digits are filled — modelled on standard OTP entry UX."
+            WhatEli5="Those six little boxes you see when a website texts you a code — each box accepts one digit and jumps to the next one automatically so you don't have to click between them."
+            Who=@(new[]{ "Developers building two-factor authentication flows", "Auth screens requiring PIN entry (ATM-style short numeric codes)", "Any verification step where the user must type a code received out-of-band" })
+            WhenUse=@(new[]{ "Email or SMS verification codes", "Two-factor authentication OTP entry", "Short PIN entry (4–8 digits or alphanumeric)" })
+            WhenNot=@(new[]{ "Long arbitrary strings — a plain text input with paste support is faster for codes longer than ~10 characters", "Cases where the code length is unknown at render time" })
+            Why="A standard text input for a 6-digit SMS code forces the user to click, type, and worry about formatting. Individual advancing boxes exactly match the mental model users already have from banking apps."
+            TechNotes=@(new[]{ "NumberOfInputs parameter controls how many boxes render; each is a maxlength=1 <input>", "Focus advancement: input event handler calls the next sibling's .focus() via ElementReference", "Backspace handler: if current input is empty, move focus to previous input", "AllowAlpha=false restricts input pattern to [0-9] only; AllowAlpha=true accepts [A-Za-z0-9]", "OnComplete fires when the last box receives a character; passes the full concatenated string" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -111,7 +111,7 @@
                     <label for="twoFaCode" class="form-label">Enter verification code:</label>
                     <ConfirmationCode @bind-Value="@_twoFaCode" Length="6" />
                     <button class="btn btn-primary btn-sm mt-3"
-                        disabled="@(string.IsNullOrEmpty(_twoFaCode) || _twoFaCode.Length < 6)">
+                            disabled="@(string.IsNullOrEmpty(_twoFaCode) || _twoFaCode.Length < 6)">
                         Verify Code
                     </button>
                     @if (!string.IsNullOrEmpty(_twoFaCode) && _twoFaCode.Length == 6) {

@@ -30,6 +30,30 @@ namespace FreeCodeReorganizer.Options
         private const string CatBraceStyle = "Brace style";
         private const string CatSafety = "Safety";
 
+        [Category(CatBraceStyle)]
+        [DisplayName("Collapse wrapped-parameter brace")]
+        [Description("When a parameter list is wrapped across multiple lines, glue the closing ) and the body's opening { together as \"){\" on one line — the FreeCRM author's hand style.")]
+        [DefaultValue(true)]
+        public bool CollapseWrappedParameterBrace { get; set; } = true;
+
+        [Category(CatSorting)]
+        [DisplayName("Group by visibility")]
+        [Description("Group members by accessibility (public first) before sorting alphabetically. Off by default — FreeCRM interleaves public/private in pure alphabetical order.")]
+        [DefaultValue(false)]
+        public bool GroupByVisibility { get; set; } = false;
+
+        [Category(CatSorting)]
+        [DisplayName("Ignore leading underscore in sort")]
+        [Description("When comparing names, ignore a single leading underscore so _connectionString sorts as \"connectionString\".")]
+        [DefaultValue(true)]
+        public bool IgnoreLeadingUnderscoreInSort { get; set; } = true;
+
+        [Category(CatSafety)]
+        [DisplayName("Max fraction reordered")]
+        [Description("If sorting would move more than this fraction (0..1) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 1.0 to always sort.")]
+        [DefaultValue(0.35)]
+        public double MaxFractionReordered { get; set; } = 0.35;
+
         [Category(CatPipeline)]
         [DisplayName("Run editorconfig format first")]
         [Description("Before reorganizing, run the editor's Format Document (which respects this repo's .editorconfig) so standard formatting is applied first. FreeCodeReorganizer then layers only the gaps .editorconfig can't express (member ordering + the \"){\" brace). Turn off for reorganize-only.")]
@@ -43,34 +67,10 @@ namespace FreeCodeReorganizer.Options
         public bool SortAlphabetically { get; set; } = true;
 
         [Category(CatSorting)]
-        [DisplayName("Ignore leading underscore in sort")]
-        [Description("When comparing names, ignore a single leading underscore so _connectionString sorts as \"connectionString\".")]
-        [DefaultValue(true)]
-        public bool IgnoreLeadingUnderscoreInSort { get; set; } = true;
-
-        [Category(CatSorting)]
-        [DisplayName("Group by visibility")]
-        [Description("Group members by accessibility (public first) before sorting alphabetically. Off by default — FreeCRM interleaves public/private in pure alphabetical order.")]
-        [DefaultValue(false)]
-        public bool GroupByVisibility { get; set; } = false;
-
-        [Category(CatSorting)]
         [DisplayName("Static members first")]
         [Description("Within a kind group, place static members before instance members. Off by default to match FreeCRM (purely alphabetical).")]
         [DefaultValue(false)]
         public bool StaticMembersFirst { get; set; } = false;
-
-        [Category(CatBraceStyle)]
-        [DisplayName("Collapse wrapped-parameter brace")]
-        [Description("When a parameter list is wrapped across multiple lines, glue the closing ) and the body's opening { together as \"){\" on one line — the FreeCRM author's hand style.")]
-        [DefaultValue(true)]
-        public bool CollapseWrappedParameterBrace { get; set; } = true;
-
-        [Category(CatSafety)]
-        [DisplayName("Max fraction reordered")]
-        [Description("If sorting would move more than this fraction (0..1) of a type's sortable members, the type is treated as deliberately ordered by purpose and left untouched. Set 1.0 to always sort.")]
-        [DefaultValue(0.35)]
-        public double MaxFractionReordered { get; set; } = 0.35;
 
         /// <summary>
         /// Projects these UI options onto a <see cref="Core.ReorderConfig"/> for the engine.

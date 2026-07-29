@@ -8,13 +8,13 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <KanbanBoard Columns="_columns"
-                         Cards="_cards"
-                         OnCardMoved="HandleMoved"
-                         OnCardClick="HandleClick"
-                         SelectedCardId="@_selectedCard?.Id"
-                         EnableSearch="true"
-                         SearchPlaceholder="Filter by title, assignee, label..."
-                         ReadOnly="false">
+                    Cards="_cards"
+                    OnCardMoved="HandleMoved"
+                    OnCardClick="HandleClick"
+                    SelectedCardId="@_selectedCard?.Id"
+                    EnableSearch="true"
+                    SearchPlaceholder="Filter by title, assignee, label..."
+                    ReadOnly="false">
                 <CardTemplate Context="card">
                     <div class="d-flex flex-column gap-2" style="@($"border-left: 4px solid {PriorityColor(card.Priority)}; padding-left: 0.5rem;")">
                         <div class="d-flex justify-content-between align-items-start">
@@ -47,10 +47,10 @@
         </div>
         <div class="col-lg-4">
             <ShowcaseKanbanCardEditor Cards="_cards"
-                                      Columns="_columns"
-                                      SelectedCard="_selectedCard"
-                                      SelectedCardChanged="HandleSelectionChanged"
-                                      Subtitle="Open any WIP card to adjust assignee, due date, priority, labels, or move it to a new column." />
+                    Columns="_columns"
+                    SelectedCard="_selectedCard"
+                    SelectedCardChanged="HandleSelectionChanged"
+                    Subtitle="Open any WIP card to adjust assignee, due date, priority, labels, or move it to a new column." />
         </div>
     </div>
 </div>
@@ -83,25 +83,6 @@
 
     private KanbanBoard.KanbanCard? _selectedCard;
 
-    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
-    {
-        ApplyMove(_cards, args);
-        StateHasChanged();
-        return Task.CompletedTask;
-    }
-
-    private Task HandleClick(KanbanBoard.KanbanCard card)
-    {
-        _selectedCard = card;
-        return Task.CompletedTask;
-    }
-
-    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
-    {
-        _selectedCard = card;
-        return Task.CompletedTask;
-    }
-
     private static void ApplyMove(List<KanbanBoard.KanbanCard> cards, KanbanBoard.KanbanCardMovedEventArgs args)
     {
         var moving = cards.FirstOrDefault(card => card.Id == args.CardId);
@@ -132,6 +113,25 @@
                 sourceCards[i].SortOrder = i;
             }
         }
+    }
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
+    {
+        ApplyMove(_cards, args);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleSelectionChanged(KanbanBoard.KanbanCard? card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
     }
 
     private static string Initials(string? assignee)

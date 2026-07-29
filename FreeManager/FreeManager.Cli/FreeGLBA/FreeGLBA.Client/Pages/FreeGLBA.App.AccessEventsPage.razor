@@ -26,7 +26,7 @@
                         <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                             <input type="text" class="form-control" placeholder="Search..."
-                                   @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
+                                    @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -121,16 +121,30 @@
     private bool _showDeleteConfirm = false;
     private DataObjects.AccessEvent? _deleteItem = null;
 
+    private void CancelDelete() {
+        _deleteItem = null;
+        _showDeleteConfirm = false;
+    }
+    private void CloseEdit() { _showEdit = false; }
+
+    private void ConfirmDelete(DataObjects.AccessEvent item) {
+        _deleteItem = item;
+        _showDeleteConfirm = true;
+    }
+
+    private void CreateNew() { _editItem = new DataObjects.AccessEvent(); _showEdit = true; }
+
+    private async Task DeleteConfirmed() {
+        if (_deleteItem != null) {
+            await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.DeleteAccessEvent, _deleteItem.AccessEventId);
+            _deleteItem = null;
+            _showDeleteConfirm = false;
+            await LoadData();
+        }
+    }
+
     public void Dispose() { Model.OnChange -= StateHasChanged; }
-
-    protected override void OnInitialized() {
-        Model.View = _pageName;
-        Model.OnChange += StateHasChanged;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (firstRender) await LoadData();
-    }
+    private void Edit(DataObjects.AccessEvent item) { _editItem = item; _showEdit = true; }
 
     private async Task LoadData() {
         _loading = true;
@@ -141,32 +155,18 @@
         StateHasChanged();
     }
 
-    private void CreateNew() { _editItem = new DataObjects.AccessEvent(); _showEdit = true; }
-    private void Edit(DataObjects.AccessEvent item) { _editItem = item; _showEdit = true; }
-    private void CloseEdit() { _showEdit = false; }
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) await LoadData();
+    }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+    }
 
     private async Task SaveItem(DataObjects.AccessEvent item) {
         await Helpers.GetOrPost<DataObjects.AccessEvent>(DataObjects.Endpoints.FreeGLBA.SaveAccessEvent, item);
         _showEdit = false;
         await LoadData();
-    }
-
-    private void ConfirmDelete(DataObjects.AccessEvent item) {
-        _deleteItem = item;
-        _showDeleteConfirm = true;
-    }
-
-    private void CancelDelete() {
-        _deleteItem = null;
-        _showDeleteConfirm = false;
-    }
-
-    private async Task DeleteConfirmed() {
-        if (_deleteItem != null) {
-            await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.DeleteAccessEvent, _deleteItem.AccessEventId);
-            _deleteItem = null;
-            _showDeleteConfirm = false;
-            await LoadData();
-        }
     }
 }

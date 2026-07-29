@@ -18,6 +18,10 @@ public static class RunLogger
     private static TextWriter? _originalErr;
     public static string? CurrentLogPath { get; private set; }
 
+    public static void Flush() {
+        try { _file?.Flush(); } catch { }
+    }
+
     public static void Start(string outputDir)
     {
         if (_file != null) return; // already started
@@ -46,10 +50,6 @@ public static class RunLogger
         }
     }
 
-    public static void Flush() {
-        try { _file?.Flush(); } catch { }
-    }
-
     /// <summary>TextWriter that writes to two underlying writers + prepends a [HH:mm:ss] timestamp on each line.</summary>
     private sealed class TeeWriter : TextWriter
     {
@@ -59,6 +59,12 @@ public static class RunLogger
 
         public TeeWriter(TextWriter a, TextWriter b) { _a = a; _b = b; }
         public override Encoding Encoding => _a.Encoding;
+
+        public override void Flush()
+        {
+            try { _a.Flush(); } catch { }
+            try { _b.Flush(); } catch { }
+        }
 
         public override void Write(char value)
         {
@@ -83,12 +89,6 @@ public static class RunLogger
         {
             Write(value ?? "");
             Write('\n');
-        }
-
-        public override void Flush()
-        {
-            try { _a.Flush(); } catch { }
-            try { _b.Flush(); } catch { }
         }
     }
 }

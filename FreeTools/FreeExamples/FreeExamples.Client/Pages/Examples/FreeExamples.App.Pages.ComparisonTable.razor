@@ -74,7 +74,7 @@
                                 <tr class="@(selected ? "table-primary" : "")" @onclick="@(() => ToggleSelect(item.SampleItemId))">
                                     <td>
                                         <input type="checkbox" class="form-check-input" checked="@selected"
-                                               disabled="@(!selected && _selectedIds.Count >= 4)" />
+                                                disabled="@(!selected && _selectedIds.Count >= 4)" />
                                     </td>
                                     <td class="small fw-semibold">@item.Name</td>
                                     <td class="small">@item.Category</td>
@@ -93,8 +93,8 @@
                         <i class="fa-solid fa-times me-1"></i> Clear
                     </button>
                     <InfoTip Title="Multi-Select"
-                             Description="Click any row to toggle its checkbox. When 4 items are selected, remaining checkboxes disable to enforce the maximum. The 'table-primary' class highlights selected rows with a blue tint. The Compare button enables only when 2+ items are selected."
-                             Code="@_codeMultiSelect" />
+                            Description="Click any row to toggle its checkbox. When 4 items are selected, remaining checkboxes disable to enforce the maximum. The 'table-primary' class highlights selected rows with a blue tint. The Compare button enables only when 2+ items are selected."
+                            Code="@_codeMultiSelect" />
                 </div>
             </div>
         } else {
@@ -104,8 +104,8 @@
                     <i class="fa-solid fa-arrow-left me-1"></i> Back to Selection
                 </button>
                 <InfoTip Title="Comparison Table"
-                         Description="This table is transposed: columns are items, rows are properties. For each property, the code checks if all values are the same. If they differ, the row gets 'table-warning' (yellow tint) to draw your eye. Same values = plain row."
-                         Code="@_codeComparison" />
+                        Description="This table is transposed: columns are items, rows are properties. For each property, the code checks if all values are the same. If they differ, the row gets 'table-warning' (yellow tint) to draw your eye. Same values = plain row."
+                        Code="@_codeComparison" />
             </div>
 
             <div class="table-responsive">
@@ -160,8 +160,8 @@
             </div>
 
             <InfoTip Title="Difference Highlighting"
-                     Description="For each row, we collect all values into a list and check values.Distinct().Count(). If count == 1, all values are the same (plain row). If count > 1, values differ (yellow highlight). This makes it easy to spot differences in a large table at a glance."
-                     Code="@_codeDiffHighlight" />
+                    Description="For each row, we collect all values into a list and check values.Distinct().Count(). If count == 1, all values are the same (plain row). If count > 1, values differ (yellow highlight). This makes it easy to spot differences in a large table at a glance."
+                    Code="@_codeDiffHighlight" />
         }
     }
 }
@@ -288,15 +288,14 @@
 
     private class PropertyRow
     {
-        public string Label { get; set; }
-        public Func<DataObjects.SampleItem, string> GetValue { get; set; }
-        public Func<DataObjects.SampleItem, string>? RenderHtml { get; set; }
-        public Func<DataObjects.SampleItem, List<DataObjects.SampleItem>, bool>? IsBest { get; set; }
-
         public PropertyRow(string label, Func<DataObjects.SampleItem, string> getValue)
         {
             Label = label;
             GetValue = getValue;
         }
+        public Func<DataObjects.SampleItem, string> GetValue { get; set; }
+        public Func<DataObjects.SampleItem, List<DataObjects.SampleItem>, bool>? IsBest { get; set; }
+        public string Label { get; set; }
+        public Func<DataObjects.SampleItem, string>? RenderHtml { get; set; }
     }
 }

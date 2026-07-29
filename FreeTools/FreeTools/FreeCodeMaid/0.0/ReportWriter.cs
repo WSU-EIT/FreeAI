@@ -18,8 +18,7 @@ public static class ReportWriter
         int filesChanged,
         int typesReordered,
         int bracesCollapsed,
-        IReadOnlyList<(string RelativePath, ReorgResult Result)> entries)
-    {
+        IReadOnlyList<(string RelativePath, ReorgResult Result)> entries){
         var sb = new StringBuilder();
         string mode = apply ? "applied" : "dry-run";
 
@@ -73,6 +72,32 @@ public static class ReportWriter
         return sb.ToString();
     }
 
+    /// <summary>
+    /// For a large type, show only moved rows plus one unmoved neighbor above and below each moved
+    /// run, so the reader sees what moved in context without an overwhelming wall of names.
+    /// </summary>
+    private static bool[] ChooseVisibleRows(int rows, bool[] beforeMoved, bool[] afterMoved)
+    {
+        var show = new bool[rows];
+        for (int i = 0; i < rows; i++)
+        {
+            bool moved = (i < beforeMoved.Length && beforeMoved[i]) || (i < afterMoved.Length && afterMoved[i]);
+            if (moved)
+            {
+                show[i] = true;
+                if (i - 1 >= 0)
+                {
+                    show[i - 1] = true;
+                }
+                if (i + 1 < rows)
+                {
+                    show[i + 1] = true;
+                }
+            }
+        }
+        return show;
+    }
+
     private static int CountMoved(IReadOnlyList<string> before, IReadOnlyList<string> after)
     {
         int rows = Math.Max(before.Count, after.Count);
@@ -86,6 +111,16 @@ public static class ReportWriter
         }
         return moved;
     }
+
+    // True when slot i holds a different member name in the before vs after order.
+    private static bool MovedAt(IReadOnlyList<string> before, IReadOnlyList<string> after, int i)
+    {
+        string b = i < before.Count ? before[i] : "";
+        string a = i < after.Count ? after[i] : "";
+        return !string.Equals(b, a, StringComparison.Ordinal);
+    }
+
+    private static string Pad(string s, int width) => s.Length >= width ? s : s + new string(' ', width - s.Length);
 
     /// <summary>
     /// Produces the monospace before/after block. A row is marked with a leading "→ " when the
@@ -156,41 +191,5 @@ public static class ReportWriter
         }
 
         return lines;
-    }
-
-    /// <summary>
-    /// For a large type, show only moved rows plus one unmoved neighbor above and below each moved
-    /// run, so the reader sees what moved in context without an overwhelming wall of names.
-    /// </summary>
-    private static bool[] ChooseVisibleRows(int rows, bool[] beforeMoved, bool[] afterMoved)
-    {
-        var show = new bool[rows];
-        for (int i = 0; i < rows; i++)
-        {
-            bool moved = (i < beforeMoved.Length && beforeMoved[i]) || (i < afterMoved.Length && afterMoved[i]);
-            if (moved)
-            {
-                show[i] = true;
-                if (i - 1 >= 0)
-                {
-                    show[i - 1] = true;
-                }
-                if (i + 1 < rows)
-                {
-                    show[i + 1] = true;
-                }
-            }
-        }
-        return show;
-    }
-
-    private static string Pad(string s, int width) => s.Length >= width ? s : s + new string(' ', width - s.Length);
-
-    // True when slot i holds a different member name in the before vs after order.
-    private static bool MovedAt(IReadOnlyList<string> before, IReadOnlyList<string> after, int i)
-    {
-        string b = i < before.Count ? before[i] : "";
-        string a = i < after.Count ? after[i] : "";
-        return !string.Equals(b, a, StringComparison.Ordinal);
     }
 }

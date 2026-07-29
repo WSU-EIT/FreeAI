@@ -35,10 +35,10 @@
     </div>
 
     <CommandPalette @ref="_palette"
-                    Commands="_commands"
-                    TriggerHotkey="k"
-                    PlaceholderText="Run a command..."
-                    OnCommandInvoked="HandleCommand" />
+            Commands="_commands"
+            TriggerHotkey="k"
+            PlaceholderText="Run a command..."
+            OnCommandInvoked="HandleCommand" />
 </div>
 
 @code {
@@ -56,12 +56,6 @@
     private int _counter;
     private bool _darkAccent;
     private List<string> _actionLog = new() { "No actions yet." };
-
-    private void OpenPalette()
-    {
-        _palette?.Open();
-        StateHasChanged();
-    }
 
     private Task HandleCommand(CommandPalette.CommandItem item)
     {
@@ -83,5 +77,11 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private void OpenPalette()
+    {
+        _palette?.Open();
+        StateHasChanged();
     }
 }

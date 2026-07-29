@@ -7,11 +7,11 @@ public partial class DataObjects
     /// </summary>
     public class GitRepoEntry
     {
+        public string Extension { get; set; } = "";
+        public bool IsDirectory { get; set; }
         public string Name { get; set; } = "";
         public string Path { get; set; } = "";
-        public bool IsDirectory { get; set; }
         public long Size { get; set; }
-        public string Extension { get; set; } = "";
     }
 
     /// <summary>
@@ -19,12 +19,12 @@ public partial class DataObjects
     /// </summary>
     public class GitFileContent
     {
-        public string Path { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string Extension { get; set; } = "";
         public string Content { get; set; } = "";
-        public long Size { get; set; }
+        public string Extension { get; set; } = "";
         public bool IsBinary { get; set; }
+        public string Name { get; set; } = "";
+        public string Path { get; set; } = "";
+        public long Size { get; set; }
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ public partial class DataObjects
     /// </summary>
     public class GitBrowseRequest
     {
-        public string? RepoUrl { get; set; }
         public string? Path { get; set; }
+        public string? RepoUrl { get; set; }
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public partial class DataObjects
     /// </summary>
     public class GitFileRequest
     {
-        public string? RepoUrl { get; set; }
         public string? FilePath { get; set; }
+        public string? RepoUrl { get; set; }
     }
 }

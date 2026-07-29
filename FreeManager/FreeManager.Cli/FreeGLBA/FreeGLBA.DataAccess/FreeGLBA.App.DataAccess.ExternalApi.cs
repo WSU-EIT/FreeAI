@@ -9,17 +9,16 @@ namespace FreeGLBA;
 /// <summary>Glba External API interface extensions.</summary>
 public partial interface IDataAccess
 {
-    /// <summary>Process a single event from external source.</summary>
-    Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(DataObjects.GlbaEventRequest request, Guid sourceSystemId);
-
-    /// <summary>Process a batch of events from external source.</summary>
-    Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId);
-
     /// <summary>Get dashboard statistics.</summary>
     Task<DataObjects.GlbaStats> GetGlbaStatsAsync();
 
     /// <summary>Get recent events for dashboard feed.</summary>
     Task<List<DataObjects.AccessEvent>> GetRecentAccessEventsAsync(int limit = 50);
+
+    /// <summary>Process a batch of events from external source.</summary>
+    Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId);
+    /// <summary>Process a single event from external source.</summary>
+    Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(DataObjects.GlbaEventRequest request, Guid sourceSystemId);
 }
 
 public partial class DataAccess
@@ -28,8 +27,7 @@ public partial class DataAccess
 
     /// <summary>Process a single event from external source.</summary>
     public async Task<DataObjects.GlbaEventResponse> ProcessGlbaEventAsync(
-        DataObjects.GlbaEventRequest request, Guid sourceSystemId)
-    {
+        DataObjects.GlbaEventRequest request, Guid sourceSystemId){
         var response = new DataObjects.GlbaEventResponse
         {
             ReceivedAt = DateTime.UtcNow
@@ -100,8 +98,7 @@ public partial class DataAccess
 
     /// <summary>Process a batch of events from external source.</summary>
     public async Task<DataObjects.GlbaBatchResponse> ProcessGlbaBatchAsync(
-        List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId)
-    {
+        List<DataObjects.GlbaEventRequest> requests, Guid sourceSystemId){
         var response = new DataObjects.GlbaBatchResponse();
 
         for (int i = 0; i < requests.Count; i++)

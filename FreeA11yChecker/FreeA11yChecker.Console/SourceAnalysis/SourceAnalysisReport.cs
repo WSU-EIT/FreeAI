@@ -11,6 +11,50 @@ namespace FreeA11yChecker.Console.SourceAnalysis;
 /// </summary>
 public static class SourceAnalysisReport
 {
+    private static void AddFindings(
+        List<(string File, int Line, string Severity, string Issue, string Snippet, string Source)> dst,
+        string source,
+        List<(string File, int Line, string Severity, string Issue, string Snippet)> src){
+        foreach (var f in src) dst.Add((f.File, f.Line, f.Severity, f.Issue, f.Snippet, source));
+    }
+
+    private static void Card(StringBuilder sb, string label, string value, string color)
+    {
+        sb.Append("<div class=\"col\"><div class=\"card border-").Append(color).Append("\"><div class=\"card-body py-2\"><div class=\"text-muted small\">")
+          .Append(HtmlEnc(label)).Append("</div><div class=\"fs-4 fw-bold text-").Append(color).Append("\">")
+          .Append(HtmlEnc(value)).AppendLine("</div></div></div></div>");
+    }
+
+    /// <summary>
+    /// Heuristic mapping of free-text issue descriptions to the canonical axe/IBM rule
+    /// IDs that QuickFixHints understands. Returns the issue text unchanged if no match —
+    /// QuickFixHints will return null for unrecognized IDs and the table cell becomes "—".
+    /// </summary>
+    private static string GuessRuleId(string issue)
+    {
+        string i = issue.ToLowerInvariant();
+        if (i.Contains("alt")) return "image-alt";
+        if (i.Contains("label")) return "label";
+        if (i.Contains("link")) return "link-name";
+        if (i.Contains("button")) return "button-name";
+        if (i.Contains("contrast")) return "color-contrast";
+        if (i.Contains("lang")) return "html-has-lang";
+        if (i.Contains("main")) return "landmark-one-main";
+        if (i.Contains("heading")) return i.Contains("multiple") || i.Contains("more") ? "page-has-heading-one" : "heading-order";
+        if (i.Contains("h1")) return "page-has-heading-one";
+        if (i.Contains("aria-hidden")) return "aria-hidden-focus";
+        if (i.Contains("aria-required")) return "aria-required-attr";
+        if (i.Contains("aria-labelledby")) return "aria-labelledby";
+        if (i.Contains("tabindex")) return "tabindex";
+        if (i.Contains("table")) return "td-headers-attr";
+        if (i.Contains("scope")) return "scope-attr-valid";
+        if (i.Contains("frame") || i.Contains("iframe")) return "frame-title";
+        if (i.Contains("duplicate")) return "duplicate-id";
+        if (i.Contains("viewport")) return "meta-viewport";
+        return issue;
+    }
+
+    private static string HtmlEnc(string s) => WebUtility.HtmlEncode(s ?? "");
     public static string Run(string sourceRoot, string outputDir)
     {
         Directory.CreateDirectory(outputDir);
@@ -134,50 +178,4 @@ public static class SourceAnalysisReport
         File.WriteAllText(reportPath, sb.ToString());
         return reportPath;
     }
-
-    private static void AddFindings(
-        List<(string File, int Line, string Severity, string Issue, string Snippet, string Source)> dst,
-        string source,
-        List<(string File, int Line, string Severity, string Issue, string Snippet)> src)
-    {
-        foreach (var f in src) dst.Add((f.File, f.Line, f.Severity, f.Issue, f.Snippet, source));
-    }
-
-    /// <summary>
-    /// Heuristic mapping of free-text issue descriptions to the canonical axe/IBM rule
-    /// IDs that QuickFixHints understands. Returns the issue text unchanged if no match —
-    /// QuickFixHints will return null for unrecognized IDs and the table cell becomes "—".
-    /// </summary>
-    private static string GuessRuleId(string issue)
-    {
-        string i = issue.ToLowerInvariant();
-        if (i.Contains("alt")) return "image-alt";
-        if (i.Contains("label")) return "label";
-        if (i.Contains("link")) return "link-name";
-        if (i.Contains("button")) return "button-name";
-        if (i.Contains("contrast")) return "color-contrast";
-        if (i.Contains("lang")) return "html-has-lang";
-        if (i.Contains("main")) return "landmark-one-main";
-        if (i.Contains("heading")) return i.Contains("multiple") || i.Contains("more") ? "page-has-heading-one" : "heading-order";
-        if (i.Contains("h1")) return "page-has-heading-one";
-        if (i.Contains("aria-hidden")) return "aria-hidden-focus";
-        if (i.Contains("aria-required")) return "aria-required-attr";
-        if (i.Contains("aria-labelledby")) return "aria-labelledby";
-        if (i.Contains("tabindex")) return "tabindex";
-        if (i.Contains("table")) return "td-headers-attr";
-        if (i.Contains("scope")) return "scope-attr-valid";
-        if (i.Contains("frame") || i.Contains("iframe")) return "frame-title";
-        if (i.Contains("duplicate")) return "duplicate-id";
-        if (i.Contains("viewport")) return "meta-viewport";
-        return issue;
-    }
-
-    private static void Card(StringBuilder sb, string label, string value, string color)
-    {
-        sb.Append("<div class=\"col\"><div class=\"card border-").Append(color).Append("\"><div class=\"card-body py-2\"><div class=\"text-muted small\">")
-          .Append(HtmlEnc(label)).Append("</div><div class=\"fs-4 fw-bold text-").Append(color).Append("\">")
-          .Append(HtmlEnc(value)).AppendLine("</div></div></div></div>");
-    }
-
-    private static string HtmlEnc(string s) => WebUtility.HtmlEncode(s ?? "");
 }

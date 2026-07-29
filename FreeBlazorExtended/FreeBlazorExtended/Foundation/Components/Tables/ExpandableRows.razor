@@ -51,11 +51,11 @@
                         <tr role="row" class="expandable-row" id="@rowId">
                             <td class="expandable-toggle-col">
                                 <button type="button"
-                                    class="btn btn-sm btn-link expandable-toggle"
-                                    @onclick="@(() => ToggleRow(item))"
-                                    aria-expanded="@IsRowExpanded(item)"
-                                    aria-controls="@(rowId + "-details")"
-                                    aria-label="Toggle details">
+                                        class="btn btn-sm btn-link expandable-toggle"
+                                        @onclick="@(() => ToggleRow(item))"
+                                        aria-expanded="@IsRowExpanded(item)"
+                                        aria-controls="@(rowId + "-details")"
+                                        aria-label="Toggle details">
                                     <i class="@(_expandedRows.Contains(GetItemKey(item)) ? "fas fa-chevron-down" : "fas fa-chevron-right")" aria-hidden="true"></i>
                                 </button>
                             </td>

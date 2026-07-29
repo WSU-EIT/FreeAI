@@ -20,8 +20,23 @@ public class HubFixture : IAsyncLifetime
 
     private WebApplicationFactory<Program>? _factory;
     public HttpClient Client { get; private set; } = null!;
-    public string ServerUrl { get; private set; } = "";
-    public IServiceProvider Services => _factory!.Services;
+
+    /// <summary>
+    /// Create an HttpClient with an agent's Bearer token set.
+    /// </summary>
+    public HttpClient CreateAuthenticatedClient(string token)
+    {
+        var client = _factory!.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return client;
+    }
+
+    public Task DisposeAsync()
+    {
+        Client?.Dispose();
+        _factory?.Dispose();
+        return Task.CompletedTask;
+    }
 
     public Task InitializeAsync()
     {
@@ -62,21 +77,6 @@ public class HubFixture : IAsyncLifetime
 
         return Task.CompletedTask;
     }
-
-    public Task DisposeAsync()
-    {
-        Client?.Dispose();
-        _factory?.Dispose();
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Create an HttpClient with an agent's Bearer token set.
-    /// </summary>
-    public HttpClient CreateAuthenticatedClient(string token)
-    {
-        var client = _factory!.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return client;
-    }
+    public string ServerUrl { get; private set; } = "";
+    public IServiceProvider Services => _factory!.Services;
 }

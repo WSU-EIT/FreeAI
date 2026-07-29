@@ -29,41 +29,41 @@ record NetworkEntry(string Url, string Method, int Status, long DurationMs, long
 
 class PageCapture
 {
-    public required PageInfo Page        { get; init; }
-    public required string   Slug        { get; init; }
-    public required string   OutputDir   { get; init; }
+    public string AboutText  { get; set; } = "";
 
-    // Relative paths used in the markdown (relative to the report file location)
-    public string? FullPngRel  { get; set; }
-    public string? ThumbRel    { get; set; }
-    public string? GifRel      { get; set; }
+    // Console capture
+    public List<string> ConsoleErrors   { get; } = [];
+    public List<string> ConsoleInfo     { get; } = [];
+    public List<string> ConsoleWarnings { get; } = [];
 
     // Deduplication — non-null means this page's screenshot is identical to another
     public string? DuplicateOf { get; set; }  // slug of the canonical page
 
-    // HTTP / timing
-    public int  StatusCode    { get; set; }
-    public long NavigationMs  { get; set; }
-    public long TotalLoadMs   { get; set; }
-
-    // Content extracted from the live DOM
-    public string PageTitle  { get; set; } = "";
-    public string H1Text     { get; set; } = "";
-    public string AboutText  { get; set; } = "";
-
-    // Network traffic
-    public List<NetworkEntry> NetworkRequests { get; } = [];
-
-    // Console capture
-    public List<string> ConsoleErrors   { get; } = [];
-    public List<string> ConsoleWarnings { get; } = [];
-    public List<string> ConsoleInfo     { get; } = [];
-
     // Error state
     public string? ErrorMessage { get; set; }
 
+    // Relative paths used in the markdown (relative to the report file location)
+    public string? FullPngRel  { get; set; }
+    public string? GifRel      { get; set; }
+    public string H1Text     { get; set; } = "";
+
     public bool IsSuccess   => StatusCode >= 200 && StatusCode < 400;
+    public long NavigationMs  { get; set; }
+
+    // Network traffic
+    public List<NetworkEntry> NetworkRequests { get; } = [];
+    public required string   OutputDir   { get; init; }
+    public required PageInfo Page        { get; init; }
+
+    // Content extracted from the live DOM
+    public string PageTitle  { get; set; } = "";
+    public required string   Slug        { get; init; }
+
+    // HTTP / timing
+    public int  StatusCode    { get; set; }
+    public string? ThumbRel    { get; set; }
     public long TotalBytes  => NetworkRequests.Sum(r => r.Bytes);
+    public long TotalLoadMs   { get; set; }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -84,6 +84,165 @@ internal class Program
 
     // ── Page manifest (mirrors ShowcaseExampleManifest.cs exactly) ────────────
     static readonly List<PageInfo> AllPages = BuildPageList();
+
+    static void AppendPageCell(StringBuilder sb, PageCapture cap)
+    {
+        var statusIcon  = cap.IsSuccess ? "✅" : (cap.ErrorMessage != null ? "💥" : "❌");
+        var errBadge    = cap.ConsoleErrors.Count > 0 ? $"🔴 {cap.ConsoleErrors.Count}" : "✅ 0";
+        var warnBadge   = cap.ConsoleWarnings.Count > 0 ? $"⚠️ {cap.ConsoleWarnings.Count}" : "✅ 0";
+
+        // The GIF is the gallery thumbnail (shows the loading boot sequence).
+        // If we couldn't generate a GIF, fall back to the static thumb.
+        var galleryImg  = cap.GifRel ?? cap.ThumbRel ?? cap.FullPngRel;
+        var fullTarget  = cap.FullPngRel ?? galleryImg;
+
+        sb.AppendLine("<td align=\"center\" valign=\"top\" width=\"33%\">");
+
+        // ── Animated thumbnail linking to full screenshot ─────────────────────
+        if (galleryImg != null)
+        {
+            sb.AppendLine($"<a href=\"{fullTarget}\">");
+            sb.AppendLine($"<img src=\"{galleryImg}\" width=\"340\"" +
+                          $" alt=\"{EscHtml(cap.Page.Title)}\" />");
+            sb.AppendLine("</a>");
+        }
+
+        sb.AppendLine("<br/>");
+
+        // Page title links to full screenshot
+        if (fullTarget != null)
+            sb.AppendLine($"<a href=\"{fullTarget}\"><strong>{EscHtml(cap.Page.Title)}</strong></a>");
+        else
+            sb.AppendLine($"<strong>{EscHtml(cap.Page.Title)}</strong>");
+
+        sb.AppendLine($"<br/><code>{cap.Page.Route}</code><br/>");
+
+        // Status line
+        sb.AppendLine(
+            $"{statusIcon} {cap.StatusCode} &nbsp;" +
+            $"⏱ {cap.TotalLoadMs:N0}ms &nbsp;" +
+            $"📦 {FormatBytes(cap.TotalBytes)} &nbsp;" +
+            $"🖥 {errBadge} err");
+
+        // Deduplication notice
+        if (cap.DuplicateOf != null)
+            sb.AppendLine($"<br/><sub>🔁 identical screenshot → <code>{cap.DuplicateOf}</code></sub>");
+
+        sb.AppendLine();
+
+        // ── Expandable details section ────────────────────────────────────────
+        sb.AppendLine("<details>");
+        sb.AppendLine("<summary>📋 Details</summary>");
+        sb.AppendLine();
+
+        // Error message
+        if (cap.ErrorMessage != null)
+        {
+            sb.AppendLine($"> ❌ **Error:** `{cap.ErrorMessage}`");
+            sb.AppendLine();
+        }
+
+        // About section content (extracted live from DOM)
+        if (!string.IsNullOrWhiteSpace(cap.AboutText))
+        {
+            sb.AppendLine("**ℹ️ About This Component**");
+            sb.AppendLine();
+            sb.AppendLine(cap.AboutText);
+        }
+        else if (!string.IsNullOrWhiteSpace(cap.H1Text))
+        {
+            sb.AppendLine($"**{EscHtml(cap.H1Text)}**");
+            sb.AppendLine();
+        }
+
+        // Metrics table
+        sb.AppendLine("**📊 Metrics**");
+        sb.AppendLine();
+        sb.AppendLine("| Metric | Value |");
+        sb.AppendLine("|--------|-------|");
+        sb.AppendLine($"| HTTP Status | {cap.StatusCode} |");
+        sb.AppendLine($"| Navigation | {cap.NavigationMs:N0} ms |");
+        sb.AppendLine($"| Full Load (incl. settle) | {cap.TotalLoadMs:N0} ms |");
+        sb.AppendLine($"| Network Requests | {cap.NetworkRequests.Count:N0} |");
+        sb.AppendLine($"| Data Transferred | {FormatBytes(cap.TotalBytes)} |");
+        sb.AppendLine($"| JS Errors | {cap.ConsoleErrors.Count} |");
+        sb.AppendLine($"| JS Warnings | {cap.ConsoleWarnings.Count} |");
+        sb.AppendLine();
+
+        // JS Errors (expandable)
+        if (cap.ConsoleErrors.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>🔴 JS Errors ({cap.ConsoleErrors.Count})</summary>");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            foreach (var err in cap.ConsoleErrors.Take(20))
+                sb.AppendLine(err.Length > 200 ? err[..200] + "…" : err);
+            if (cap.ConsoleErrors.Count > 20)
+                sb.AppendLine($"… and {cap.ConsoleErrors.Count - 20} more");
+            sb.AppendLine("```");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // JS Warnings (expandable)
+        if (cap.ConsoleWarnings.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>⚠️ Warnings ({cap.ConsoleWarnings.Count})</summary>");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            foreach (var w in cap.ConsoleWarnings.Take(15))
+                sb.AppendLine(w.Length > 150 ? w[..150] + "…" : w);
+            sb.AppendLine("```");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // Network log (top 15 by bytes, expandable)
+        if (cap.NetworkRequests.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>🌐 Network ({cap.NetworkRequests.Count} requests, {FormatBytes(cap.TotalBytes)})</summary>");
+            sb.AppendLine();
+            sb.AppendLine("| Method | Status | Duration | Bytes | URL |");
+            sb.AppendLine("|--------|:------:|:--------:|------:|-----|");
+            foreach (var req in cap.NetworkRequests.OrderByDescending(r => r.Bytes).Take(15))
+            {
+                var shortUrl = req.Url.Length > 65 ? "…" + req.Url[^62..] : req.Url;
+                sb.AppendLine(
+                    $"| {req.Method} | {req.Status} | {req.DurationMs}ms | {FormatBytes(req.Bytes)} | `{shortUrl}` |");
+            }
+            if (cap.NetworkRequests.Count > 15)
+                sb.AppendLine($"| … | … | … | … | *{cap.NetworkRequests.Count - 15} more* |");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        // Console info (debug/log — expandable, collapsed by default)
+        if (cap.ConsoleInfo.Count > 0)
+        {
+            sb.AppendLine("<details>");
+            sb.AppendLine($"<summary>🖥 Console Info ({cap.ConsoleInfo.Count} messages)</summary>");
+            sb.AppendLine();
+            sb.AppendLine("```");
+            foreach (var msg in cap.ConsoleInfo.Take(20))
+                sb.AppendLine(msg.Length > 150 ? msg[..150] + "…" : msg);
+            if (cap.ConsoleInfo.Count > 20)
+                sb.AppendLine($"… and {cap.ConsoleInfo.Count - 20} more");
+            sb.AppendLine("```");
+            sb.AppendLine();
+            sb.AppendLine("</details>");
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("</details>");   // end page details
+        sb.AppendLine();
+        sb.AppendLine("</td>");
+    }
 
     static List<PageInfo> BuildPageList()
     {
@@ -158,142 +317,110 @@ internal class Program
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  ENTRY POINT
+    //  REPORT GENERATION
     // ─────────────────────────────────────────────────────────────────────────
 
-    static async Task<int> Main(string[] args)
+    static string BuildReport(List<PageCapture> captures)
     {
-        PrintBanner();
+        var sb  = new StringBuilder();
+        var now = DateTimeOffset.Now;
+        var tzAbbr = GetTimezoneAbbr();
+        var successCount  = captures.Count(c => c.IsSuccess);
+        var totalErrors   = captures.Sum(c => c.ConsoleErrors.Count);
+        var totalBytes    = captures.Sum(c => c.TotalBytes);
+        var totalRequests = captures.Sum(c => c.NetworkRequests.Count);
+        var dupCount      = captures.Count(c => c.DuplicateOf != null);
+        var categories    = captures.Select(c => c.Page.Category).Distinct().ToList();
 
-        // ── 1. Locate solution ────────────────────────────────────────────────
-        var solutionDir = FindSolutionDir(AppContext.BaseDirectory);
-        if (solutionDir == null)
+        // ── Header ────────────────────────────────────────────────────────────
+        sb.AppendLine("# FreeBlazorExtended — Full Showcase Report");
+        sb.AppendLine();
+        sb.AppendLine($"> **Generated:** {now:yyyy-MM-dd HH:mm} {tzAbbr}  ");
+        sb.AppendLine($"> **App:** {BaseUrl}  ");
+        sb.AppendLine($"> **Pages Captured:** {successCount} / {captures.Count}  ");
+        sb.AppendLine($"> **Total JS Errors:** {totalErrors}  ");
+        sb.AppendLine($"> **Total Network Requests:** {totalRequests:N0}  ");
+        sb.AppendLine($"> **Total Data Transferred:** {FormatBytes(totalBytes)}  ");
+        if (dupCount > 0)
+            sb.AppendLine($"> **Deduplicated Screenshots:** {dupCount} pages shared an identical screenshot (saved as references)  ");
+        sb.AppendLine();
+        sb.AppendLine("> 🎬 **Gallery thumbnails** are animated GIFs showing the Blazor WASM boot sequence.  ");
+        sb.AppendLine("> Click a thumbnail to open the **full-page screenshot**.  ");
+        sb.AppendLine("> Expand **📋 Details** for about-section text, JS console output, and network traffic.");
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
+
+        // ── Table of Contents ─────────────────────────────────────────────────
+        sb.AppendLine("## 📑 Table of Contents");
+        sb.AppendLine();
+        foreach (var cat in categories)
         {
-            Console.Error.WriteLine("ERROR: Cannot locate FreeBlazorExample solution folder.");
-            Console.Error.WriteLine("       Run from within the AllOfDanielsProjects tree.");
-            return 1;
+            var anchor = cat.ToLowerInvariant().Replace(' ', '-').Replace("─", "").Trim('-');
+            sb.AppendLine($"- [{cat}](#{anchor})");
         }
+        sb.AppendLine();
+        sb.AppendLine("---");
+        sb.AppendLine();
 
-        var appProject  = Path.Combine(solutionDir, "FreeBlazorExample", "FreeBlazorExample.csproj");
-        var runLabel    = DateTime.Now.ToString("yyyy-MM-dd-HHmm");
-        var outputRoot  = Path.Combine(solutionDir, "runs", $"showcase-{runLabel}");
-        var screensDir  = Path.Combine(outputRoot, "screenshots");
-        var reportPath  = Path.Combine(outputRoot, "SHOWCASE_REPORT.md");
-
-        Directory.CreateDirectory(outputRoot);
-        Directory.CreateDirectory(screensDir);
-
-        PrintConfig("Solution",   solutionDir);
-        PrintConfig("App Project", appProject);
-        PrintConfig("Output",      outputRoot);
-        PrintConfig("Pages",       AllPages.Count.ToString());
-        PrintConfig("Est. Time",   $"~{AllPages.Count * 15 / 60} minutes");
-        Console.WriteLine();
-
-        // ── 2. Start web app if not running ──────────────────────────────────
-        Console.WriteLine("[1/6] Checking web app on http://localhost:5201 ...");
-        Process? webProcess = null;
-        if (await IsAppRespondingAsync())
+        // ── Gallery by category ───────────────────────────────────────────────
+        foreach (var cat in categories)
         {
-            Console.WriteLine("      ✅ Already running.");
-        }
-        else
-        {
-            Console.WriteLine($"      Starting: dotnet run --project {Path.GetFileName(appProject)}");
-            webProcess = StartWebApp(appProject);
-            Console.Write("      Waiting ");
-            if (!await WaitForReadyAsync(90))
+            var catCaps = captures.Where(c => c.Page.Category == cat).ToList();
+            var catOk   = catCaps.Count(c => c.IsSuccess);
+            var catErrs = catCaps.Sum(c => c.ConsoleErrors.Count);
+            var catBytes = catCaps.Sum(c => c.TotalBytes);
+
+            sb.AppendLine($"## {cat}");
+            sb.AppendLine();
+            sb.AppendLine($"> {catCaps.Count} pages &nbsp;|&nbsp; " +
+                          $"✅ {catOk} ok &nbsp;|&nbsp; " +
+                          $"🔴 {catErrs} JS errors &nbsp;|&nbsp; " +
+                          $"📦 {FormatBytes(catBytes)} transferred");
+            sb.AppendLine();
+
+            sb.AppendLine("<table>");
+
+            for (int i = 0; i < catCaps.Count; i += 3)
             {
-                Console.Error.WriteLine("\n      ❌ App did not respond within 90 seconds.");
-                webProcess?.Kill(entireProcessTree: true);
-                return 1;
-            }
-            Console.WriteLine("  ✅ Ready.");
-        }
+                sb.AppendLine("<tr>");
 
-        // ── 3. Install Playwright browsers ───────────────────────────────────
-        Console.WriteLine("[2/6] Ensuring Playwright / Chromium installed...");
-        Microsoft.Playwright.Program.Main(["install", "chromium"]);
-        Console.WriteLine("      ✅ Chromium ready.");
+                for (int j = 0; j < 3; j++)
+                {
+                    int idx = i + j;
+                    if (idx < catCaps.Count)
+                        AppendPageCell(sb, catCaps[idx]);
+                    else
+                        sb.AppendLine("<td></td>");
+                }
 
-        // ── 4. Capture all pages (single shared context for WASM cache hits) ──
-        Console.WriteLine($"[3/6] Launching Chromium and logging in...");
-
-        var captures = new List<PageCapture>();
-        // Dedup: SHA256(full screenshot bytes) → first slug that produced that image
-        var screenshotHashes = new ConcurrentDictionary<string, string>();
-        using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(
-            new BrowserTypeLaunchOptions { Headless = true });
-
-        // Single context → WASM cached after first page + auth session shared across all 64 pages
-        await using var context = await browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            ViewportSize = new ViewportSize { Width = ViewportW, Height = ViewportH }
-        });
-
-        // Log in once — session (LocalStorage token) is preserved for all subsequent pages
-        await LoginAsync(context);
-
-        Console.WriteLine($"[4/6] Capturing {AllPages.Count} pages (1440×900, headless Chromium)...");
-        Console.WriteLine();
-
-        for (int i = 0; i < AllPages.Count; i++)
-        {
-            var page = AllPages[i];
-            var slug = Slugify(page.Route);
-            var pageOutDir = Path.Combine(screensDir, slug);
-            Directory.CreateDirectory(pageOutDir);
-
-            var capture = new PageCapture
-            {
-                Page      = page,
-                Slug      = slug,
-                OutputDir = pageOutDir
-            };
-
-            Console.Write($"  [{i + 1,2}/{AllPages.Count}] {TruncatePad(page.Title, 44)}");
-
-            try
-            {
-                await CapturePageAsync(context, capture, screenshotHashes);
-
-                var icon    = capture.IsSuccess ? "✅" : "❌";
-                var errBadge = capture.ConsoleErrors.Count > 0
-                    ? $"🔴 {capture.ConsoleErrors.Count}err" : "✅ 0err";
-                Console.WriteLine(
-                    $" {icon} {capture.StatusCode} {capture.TotalLoadMs,5}ms " +
-                    $"{FormatBytes(capture.TotalBytes),8} {errBadge}");
-                if (capture.ConsoleErrors.Count > 0)
-                    foreach (var e in capture.ConsoleErrors.Take(5))
-                        Console.WriteLine($"         ⚠ {(e.Length > 120 ? e[..120] + "…" : e)}");
-            }
-            catch (Exception ex)
-            {
-                capture.ErrorMessage = ex.Message;
-                Console.WriteLine($" 💥 {ex.Message[..Math.Min(55, ex.Message.Length)]}");
+                sb.AppendLine("</tr>");
             }
 
-            captures.Add(capture);
+            sb.AppendLine("</table>");
+            sb.AppendLine();
+            sb.AppendLine("---");
+            sb.AppendLine();
         }
 
-        // ── 5. Generate report ────────────────────────────────────────────────
-        Console.WriteLine();
-        Console.WriteLine("[5/6] Generating SHOWCASE_REPORT.md ...");
-        var report = BuildReport(captures);
-        await File.WriteAllTextAsync(reportPath, report, Encoding.UTF8);
-        Console.WriteLine($"      ✅ {reportPath}");
+        // ── Footer ────────────────────────────────────────────────────────────
+        sb.AppendLine("## 🔧 Tool Info");
+        sb.AppendLine();
+        sb.AppendLine("Generated by **FreeBlazorExample.ShowcaseTool** — Microsoft.Playwright + Magick.NET");
+        sb.AppendLine();
+        sb.AppendLine("| Setting | Value |");
+        sb.AppendLine("|---------|-------|");
+        sb.AppendLine($"| App URL | {BaseUrl} |");
+        sb.AppendLine("| Browser | Chromium (headless) |");
+        sb.AppendLine($"| Viewport | {ViewportW}×{ViewportH} |");
+        sb.AppendLine($"| GIF frames | {GifFrameCount} × {GifIntervalMs / 1000}s intervals |");
+        sb.AppendLine($"| GIF width | {GifWidthPx}px |");
+        sb.AppendLine($"| Thumb width | {ThumbWidthPx}px |");
+        sb.AppendLine($"| Blazor settle delay | {SettleDelayMs}ms after NetworkIdle |");
+        sb.AppendLine($"| About sections | Auto-expanded before final screenshot |");
+        sb.AppendLine();
 
-        // ── 6. Cleanup ────────────────────────────────────────────────────────
-        Console.WriteLine("[6/6] Cleanup...");
-        if (webProcess != null)
-        {
-            Console.WriteLine("      Stopping web app process...");
-            try { webProcess.Kill(entireProcessTree: true); } catch { }
-        }
-
-        PrintFooter(captures, reportPath);
-        return 0;
+        return sb.ToString();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -301,8 +428,7 @@ internal class Program
     // ─────────────────────────────────────────────────────────────────────────
 
     static async Task CapturePageAsync(IBrowserContext context, PageCapture cap,
-        ConcurrentDictionary<string, string> screenshotHashes)
-    {
+        ConcurrentDictionary<string, string> screenshotHashes){
         var url      = BaseUrl + cap.Page.Route;
         var relBase  = $"screenshots/{cap.Slug}";
         var framesDir = Path.Combine(cap.OutputDir, "frames");
@@ -558,270 +684,67 @@ internal class Program
         }
     }
 
+    static string EscHtml(string s) =>
+        s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
+
     // ─────────────────────────────────────────────────────────────────────────
-    //  REPORT GENERATION
+    //  UTILITY HELPERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    static string BuildReport(List<PageCapture> captures)
+    /// <summary>
+    /// Walk up from startPath until we find the folder that contains
+    /// FreeBlazorExample/FreeBlazorExample.csproj — that's our solution root.
+    /// </summary>
+    static string? FindSolutionDir(string startPath)
     {
-        var sb  = new StringBuilder();
-        var now = DateTimeOffset.Now;
-        var tzAbbr = GetTimezoneAbbr();
-        var successCount  = captures.Count(c => c.IsSuccess);
-        var totalErrors   = captures.Sum(c => c.ConsoleErrors.Count);
-        var totalBytes    = captures.Sum(c => c.TotalBytes);
-        var totalRequests = captures.Sum(c => c.NetworkRequests.Count);
-        var dupCount      = captures.Count(c => c.DuplicateOf != null);
-        var categories    = captures.Select(c => c.Page.Category).Distinct().ToList();
-
-        // ── Header ────────────────────────────────────────────────────────────
-        sb.AppendLine("# FreeBlazorExtended — Full Showcase Report");
-        sb.AppendLine();
-        sb.AppendLine($"> **Generated:** {now:yyyy-MM-dd HH:mm} {tzAbbr}  ");
-        sb.AppendLine($"> **App:** {BaseUrl}  ");
-        sb.AppendLine($"> **Pages Captured:** {successCount} / {captures.Count}  ");
-        sb.AppendLine($"> **Total JS Errors:** {totalErrors}  ");
-        sb.AppendLine($"> **Total Network Requests:** {totalRequests:N0}  ");
-        sb.AppendLine($"> **Total Data Transferred:** {FormatBytes(totalBytes)}  ");
-        if (dupCount > 0)
-            sb.AppendLine($"> **Deduplicated Screenshots:** {dupCount} pages shared an identical screenshot (saved as references)  ");
-        sb.AppendLine();
-        sb.AppendLine("> 🎬 **Gallery thumbnails** are animated GIFs showing the Blazor WASM boot sequence.  ");
-        sb.AppendLine("> Click a thumbnail to open the **full-page screenshot**.  ");
-        sb.AppendLine("> Expand **📋 Details** for about-section text, JS console output, and network traffic.");
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-
-        // ── Table of Contents ─────────────────────────────────────────────────
-        sb.AppendLine("## 📑 Table of Contents");
-        sb.AppendLine();
-        foreach (var cat in categories)
+        var dir = new DirectoryInfo(startPath);
+        while (dir != null)
         {
-            var anchor = cat.ToLowerInvariant().Replace(' ', '-').Replace("─", "").Trim('-');
-            sb.AppendLine($"- [{cat}](#{anchor})");
+            var probe = Path.Combine(dir.FullName, "FreeBlazorExample", "FreeBlazorExample.csproj");
+            if (File.Exists(probe)) return dir.FullName;
+            dir = dir.Parent;
         }
-        sb.AppendLine();
-        sb.AppendLine("---");
-        sb.AppendLine();
-
-        // ── Gallery by category ───────────────────────────────────────────────
-        foreach (var cat in categories)
-        {
-            var catCaps = captures.Where(c => c.Page.Category == cat).ToList();
-            var catOk   = catCaps.Count(c => c.IsSuccess);
-            var catErrs = catCaps.Sum(c => c.ConsoleErrors.Count);
-            var catBytes = catCaps.Sum(c => c.TotalBytes);
-
-            sb.AppendLine($"## {cat}");
-            sb.AppendLine();
-            sb.AppendLine($"> {catCaps.Count} pages &nbsp;|&nbsp; " +
-                          $"✅ {catOk} ok &nbsp;|&nbsp; " +
-                          $"🔴 {catErrs} JS errors &nbsp;|&nbsp; " +
-                          $"📦 {FormatBytes(catBytes)} transferred");
-            sb.AppendLine();
-
-            sb.AppendLine("<table>");
-
-            for (int i = 0; i < catCaps.Count; i += 3)
-            {
-                sb.AppendLine("<tr>");
-
-                for (int j = 0; j < 3; j++)
-                {
-                    int idx = i + j;
-                    if (idx < catCaps.Count)
-                        AppendPageCell(sb, catCaps[idx]);
-                    else
-                        sb.AppendLine("<td></td>");
-                }
-
-                sb.AppendLine("</tr>");
-            }
-
-            sb.AppendLine("</table>");
-            sb.AppendLine();
-            sb.AppendLine("---");
-            sb.AppendLine();
-        }
-
-        // ── Footer ────────────────────────────────────────────────────────────
-        sb.AppendLine("## 🔧 Tool Info");
-        sb.AppendLine();
-        sb.AppendLine("Generated by **FreeBlazorExample.ShowcaseTool** — Microsoft.Playwright + Magick.NET");
-        sb.AppendLine();
-        sb.AppendLine("| Setting | Value |");
-        sb.AppendLine("|---------|-------|");
-        sb.AppendLine($"| App URL | {BaseUrl} |");
-        sb.AppendLine("| Browser | Chromium (headless) |");
-        sb.AppendLine($"| Viewport | {ViewportW}×{ViewportH} |");
-        sb.AppendLine($"| GIF frames | {GifFrameCount} × {GifIntervalMs / 1000}s intervals |");
-        sb.AppendLine($"| GIF width | {GifWidthPx}px |");
-        sb.AppendLine($"| Thumb width | {ThumbWidthPx}px |");
-        sb.AppendLine($"| Blazor settle delay | {SettleDelayMs}ms after NetworkIdle |");
-        sb.AppendLine($"| About sections | Auto-expanded before final screenshot |");
-        sb.AppendLine();
-
-        return sb.ToString();
+        return null;
     }
 
-    static void AppendPageCell(StringBuilder sb, PageCapture cap)
+    static string FormatBytes(long bytes) =>
+        bytes switch
+        {
+            < 1024             => $"{bytes} B",
+            < 1024 * 1024      => $"{bytes / 1024.0:F1} KB",
+            _                  => $"{bytes / (1024.0 * 1024):F1} MB"
+        };
+
+    /// <summary>
+    /// Returns the local timezone abbreviation, e.g. "PST", "PDT", "EST", "CDT".
+    /// Builds the abbreviation from the initials of the OS timezone name words
+    /// ("Pacific Daylight Time" → "PDT", "Eastern Standard Time" → "EST").
+    /// </summary>
+    static string GetTimezoneAbbr()
     {
-        var statusIcon  = cap.IsSuccess ? "✅" : (cap.ErrorMessage != null ? "💥" : "❌");
-        var errBadge    = cap.ConsoleErrors.Count > 0 ? $"🔴 {cap.ConsoleErrors.Count}" : "✅ 0";
-        var warnBadge   = cap.ConsoleWarnings.Count > 0 ? $"⚠️ {cap.ConsoleWarnings.Count}" : "✅ 0";
+        var tz   = TimeZoneInfo.Local;
+        var now  = DateTime.Now;
+        var name = tz.IsDaylightSavingTime(now) ? tz.DaylightName : tz.StandardName;
+        // Build abbreviation from first letter of each word
+        var abbr = string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                     .Select(w => w[0]));
+        // Append UTC offset for disambiguation (e.g. PST UTC-8)
+        var offset    = TimeZoneInfo.Local.GetUtcOffset(now);
+        var sign      = offset >= TimeSpan.Zero ? "+" : "-";
+        var offsetStr = $"UTC{sign}{Math.Abs(offset.Hours)}";
+        if (offset.Minutes != 0) offsetStr += $":{Math.Abs(offset.Minutes):D2}";
+        return $"{abbr} ({offsetStr})";
+    }
 
-        // The GIF is the gallery thumbnail (shows the loading boot sequence).
-        // If we couldn't generate a GIF, fall back to the static thumb.
-        var galleryImg  = cap.GifRel ?? cap.ThumbRel ?? cap.FullPngRel;
-        var fullTarget  = cap.FullPngRel ?? galleryImg;
+    // ─────────────────────────────────────────────────────────────────────────
+    //  WEB APP HELPERS
+    // ─────────────────────────────────────────────────────────────────────────
 
-        sb.AppendLine("<td align=\"center\" valign=\"top\" width=\"33%\">");
-
-        // ── Animated thumbnail linking to full screenshot ─────────────────────
-        if (galleryImg != null)
-        {
-            sb.AppendLine($"<a href=\"{fullTarget}\">");
-            sb.AppendLine($"<img src=\"{galleryImg}\" width=\"340\"" +
-                          $" alt=\"{EscHtml(cap.Page.Title)}\" />");
-            sb.AppendLine("</a>");
-        }
-
-        sb.AppendLine("<br/>");
-
-        // Page title links to full screenshot
-        if (fullTarget != null)
-            sb.AppendLine($"<a href=\"{fullTarget}\"><strong>{EscHtml(cap.Page.Title)}</strong></a>");
-        else
-            sb.AppendLine($"<strong>{EscHtml(cap.Page.Title)}</strong>");
-
-        sb.AppendLine($"<br/><code>{cap.Page.Route}</code><br/>");
-
-        // Status line
-        sb.AppendLine(
-            $"{statusIcon} {cap.StatusCode} &nbsp;" +
-            $"⏱ {cap.TotalLoadMs:N0}ms &nbsp;" +
-            $"📦 {FormatBytes(cap.TotalBytes)} &nbsp;" +
-            $"🖥 {errBadge} err");
-
-        // Deduplication notice
-        if (cap.DuplicateOf != null)
-            sb.AppendLine($"<br/><sub>🔁 identical screenshot → <code>{cap.DuplicateOf}</code></sub>");
-
-        sb.AppendLine();
-
-        // ── Expandable details section ────────────────────────────────────────
-        sb.AppendLine("<details>");
-        sb.AppendLine("<summary>📋 Details</summary>");
-        sb.AppendLine();
-
-        // Error message
-        if (cap.ErrorMessage != null)
-        {
-            sb.AppendLine($"> ❌ **Error:** `{cap.ErrorMessage}`");
-            sb.AppendLine();
-        }
-
-        // About section content (extracted live from DOM)
-        if (!string.IsNullOrWhiteSpace(cap.AboutText))
-        {
-            sb.AppendLine("**ℹ️ About This Component**");
-            sb.AppendLine();
-            sb.AppendLine(cap.AboutText);
-        }
-        else if (!string.IsNullOrWhiteSpace(cap.H1Text))
-        {
-            sb.AppendLine($"**{EscHtml(cap.H1Text)}**");
-            sb.AppendLine();
-        }
-
-        // Metrics table
-        sb.AppendLine("**📊 Metrics**");
-        sb.AppendLine();
-        sb.AppendLine("| Metric | Value |");
-        sb.AppendLine("|--------|-------|");
-        sb.AppendLine($"| HTTP Status | {cap.StatusCode} |");
-        sb.AppendLine($"| Navigation | {cap.NavigationMs:N0} ms |");
-        sb.AppendLine($"| Full Load (incl. settle) | {cap.TotalLoadMs:N0} ms |");
-        sb.AppendLine($"| Network Requests | {cap.NetworkRequests.Count:N0} |");
-        sb.AppendLine($"| Data Transferred | {FormatBytes(cap.TotalBytes)} |");
-        sb.AppendLine($"| JS Errors | {cap.ConsoleErrors.Count} |");
-        sb.AppendLine($"| JS Warnings | {cap.ConsoleWarnings.Count} |");
-        sb.AppendLine();
-
-        // JS Errors (expandable)
-        if (cap.ConsoleErrors.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>🔴 JS Errors ({cap.ConsoleErrors.Count})</summary>");
-            sb.AppendLine();
-            sb.AppendLine("```");
-            foreach (var err in cap.ConsoleErrors.Take(20))
-                sb.AppendLine(err.Length > 200 ? err[..200] + "…" : err);
-            if (cap.ConsoleErrors.Count > 20)
-                sb.AppendLine($"… and {cap.ConsoleErrors.Count - 20} more");
-            sb.AppendLine("```");
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // JS Warnings (expandable)
-        if (cap.ConsoleWarnings.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>⚠️ Warnings ({cap.ConsoleWarnings.Count})</summary>");
-            sb.AppendLine();
-            sb.AppendLine("```");
-            foreach (var w in cap.ConsoleWarnings.Take(15))
-                sb.AppendLine(w.Length > 150 ? w[..150] + "…" : w);
-            sb.AppendLine("```");
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // Network log (top 15 by bytes, expandable)
-        if (cap.NetworkRequests.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>🌐 Network ({cap.NetworkRequests.Count} requests, {FormatBytes(cap.TotalBytes)})</summary>");
-            sb.AppendLine();
-            sb.AppendLine("| Method | Status | Duration | Bytes | URL |");
-            sb.AppendLine("|--------|:------:|:--------:|------:|-----|");
-            foreach (var req in cap.NetworkRequests.OrderByDescending(r => r.Bytes).Take(15))
-            {
-                var shortUrl = req.Url.Length > 65 ? "…" + req.Url[^62..] : req.Url;
-                sb.AppendLine(
-                    $"| {req.Method} | {req.Status} | {req.DurationMs}ms | {FormatBytes(req.Bytes)} | `{shortUrl}` |");
-            }
-            if (cap.NetworkRequests.Count > 15)
-                sb.AppendLine($"| … | … | … | … | *{cap.NetworkRequests.Count - 15} more* |");
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        // Console info (debug/log — expandable, collapsed by default)
-        if (cap.ConsoleInfo.Count > 0)
-        {
-            sb.AppendLine("<details>");
-            sb.AppendLine($"<summary>🖥 Console Info ({cap.ConsoleInfo.Count} messages)</summary>");
-            sb.AppendLine();
-            sb.AppendLine("```");
-            foreach (var msg in cap.ConsoleInfo.Take(20))
-                sb.AppendLine(msg.Length > 150 ? msg[..150] + "…" : msg);
-            if (cap.ConsoleInfo.Count > 20)
-                sb.AppendLine($"… and {cap.ConsoleInfo.Count - 20} more");
-            sb.AppendLine("```");
-            sb.AppendLine();
-            sb.AppendLine("</details>");
-            sb.AppendLine();
-        }
-
-        sb.AppendLine("</details>");   // end page details
-        sb.AppendLine();
-        sb.AppendLine("</td>");
+    static async Task<bool> IsAppRespondingAsync()
+    {
+        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+        try { await client.GetAsync(BaseUrl); return true; }
+        catch { return false; }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -909,101 +832,143 @@ internal class Program
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  WEB APP HELPERS
+    //  ENTRY POINT
     // ─────────────────────────────────────────────────────────────────────────
 
-    static async Task<bool> IsAppRespondingAsync()
+    static async Task<int> Main(string[] args)
     {
-        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
-        try { await client.GetAsync(BaseUrl); return true; }
-        catch { return false; }
-    }
+        PrintBanner();
 
-    static Process StartWebApp(string appProjectPath)
-    {
-        var proc = new Process
+        // ── 1. Locate solution ────────────────────────────────────────────────
+        var solutionDir = FindSolutionDir(AppContext.BaseDirectory);
+        if (solutionDir == null)
         {
-            StartInfo = new ProcessStartInfo
+            Console.Error.WriteLine("ERROR: Cannot locate FreeBlazorExample solution folder.");
+            Console.Error.WriteLine("       Run from within the AllOfDanielsProjects tree.");
+            return 1;
+        }
+
+        var appProject  = Path.Combine(solutionDir, "FreeBlazorExample", "FreeBlazorExample.csproj");
+        var runLabel    = DateTime.Now.ToString("yyyy-MM-dd-HHmm");
+        var outputRoot  = Path.Combine(solutionDir, "runs", $"showcase-{runLabel}");
+        var screensDir  = Path.Combine(outputRoot, "screenshots");
+        var reportPath  = Path.Combine(outputRoot, "SHOWCASE_REPORT.md");
+
+        Directory.CreateDirectory(outputRoot);
+        Directory.CreateDirectory(screensDir);
+
+        PrintConfig("Solution",   solutionDir);
+        PrintConfig("App Project", appProject);
+        PrintConfig("Output",      outputRoot);
+        PrintConfig("Pages",       AllPages.Count.ToString());
+        PrintConfig("Est. Time",   $"~{AllPages.Count * 15 / 60} minutes");
+        Console.WriteLine();
+
+        // ── 2. Start web app if not running ──────────────────────────────────
+        Console.WriteLine("[1/6] Checking web app on http://localhost:5201 ...");
+        Process? webProcess = null;
+        if (await IsAppRespondingAsync())
+        {
+            Console.WriteLine("      ✅ Already running.");
+        }
+        else
+        {
+            Console.WriteLine($"      Starting: dotnet run --project {Path.GetFileName(appProject)}");
+            webProcess = StartWebApp(appProject);
+            Console.Write("      Waiting ");
+            if (!await WaitForReadyAsync(90))
             {
-                FileName  = "dotnet",
-                Arguments = $"run --project \"{appProjectPath}\" --launch-profile http",
-                UseShellExecute  = false,
-                CreateNoWindow   = true,
+                Console.Error.WriteLine("\n      ❌ App did not respond within 90 seconds.");
+                webProcess?.Kill(entireProcessTree: true);
+                return 1;
             }
-        };
-        proc.Start();
-        return proc;
-    }
-
-    static async Task<bool> WaitForReadyAsync(int timeoutSeconds)
-    {
-        using var client  = new HttpClient { Timeout = TimeSpan.FromSeconds(4) };
-        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
-        while (DateTime.UtcNow < deadline)
-        {
-            try { await client.GetAsync(BaseUrl); return true; }
-            catch { Console.Write("."); await Task.Delay(2500); }
+            Console.WriteLine("  ✅ Ready.");
         }
-        return false;
-    }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  UTILITY HELPERS
-    // ─────────────────────────────────────────────────────────────────────────
+        // ── 3. Install Playwright browsers ───────────────────────────────────
+        Console.WriteLine("[2/6] Ensuring Playwright / Chromium installed...");
+        Microsoft.Playwright.Program.Main(["install", "chromium"]);
+        Console.WriteLine("      ✅ Chromium ready.");
 
-    /// <summary>
-    /// Walk up from startPath until we find the folder that contains
-    /// FreeBlazorExample/FreeBlazorExample.csproj — that's our solution root.
-    /// </summary>
-    static string? FindSolutionDir(string startPath)
-    {
-        var dir = new DirectoryInfo(startPath);
-        while (dir != null)
+        // ── 4. Capture all pages (single shared context for WASM cache hits) ──
+        Console.WriteLine($"[3/6] Launching Chromium and logging in...");
+
+        var captures = new List<PageCapture>();
+        // Dedup: SHA256(full screenshot bytes) → first slug that produced that image
+        var screenshotHashes = new ConcurrentDictionary<string, string>();
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(
+            new BrowserTypeLaunchOptions { Headless = true });
+
+        // Single context → WASM cached after first page + auth session shared across all 64 pages
+        await using var context = await browser.NewContextAsync(new BrowserNewContextOptions
         {
-            var probe = Path.Combine(dir.FullName, "FreeBlazorExample", "FreeBlazorExample.csproj");
-            if (File.Exists(probe)) return dir.FullName;
-            dir = dir.Parent;
+            ViewportSize = new ViewportSize { Width = ViewportW, Height = ViewportH }
+        });
+
+        // Log in once — session (LocalStorage token) is preserved for all subsequent pages
+        await LoginAsync(context);
+
+        Console.WriteLine($"[4/6] Capturing {AllPages.Count} pages (1440×900, headless Chromium)...");
+        Console.WriteLine();
+
+        for (int i = 0; i < AllPages.Count; i++)
+        {
+            var page = AllPages[i];
+            var slug = Slugify(page.Route);
+            var pageOutDir = Path.Combine(screensDir, slug);
+            Directory.CreateDirectory(pageOutDir);
+
+            var capture = new PageCapture
+            {
+                Page      = page,
+                Slug      = slug,
+                OutputDir = pageOutDir
+            };
+
+            Console.Write($"  [{i + 1,2}/{AllPages.Count}] {TruncatePad(page.Title, 44)}");
+
+            try
+            {
+                await CapturePageAsync(context, capture, screenshotHashes);
+
+                var icon    = capture.IsSuccess ? "✅" : "❌";
+                var errBadge = capture.ConsoleErrors.Count > 0
+                    ? $"🔴 {capture.ConsoleErrors.Count}err" : "✅ 0err";
+                Console.WriteLine(
+                    $" {icon} {capture.StatusCode} {capture.TotalLoadMs,5}ms " +
+                    $"{FormatBytes(capture.TotalBytes),8} {errBadge}");
+                if (capture.ConsoleErrors.Count > 0)
+                    foreach (var e in capture.ConsoleErrors.Take(5))
+                        Console.WriteLine($"         ⚠ {(e.Length > 120 ? e[..120] + "…" : e)}");
+            }
+            catch (Exception ex)
+            {
+                capture.ErrorMessage = ex.Message;
+                Console.WriteLine($" 💥 {ex.Message[..Math.Min(55, ex.Message.Length)]}");
+            }
+
+            captures.Add(capture);
         }
-        return null;
-    }
 
-    /// <summary>
-    /// Returns the local timezone abbreviation, e.g. "PST", "PDT", "EST", "CDT".
-    /// Builds the abbreviation from the initials of the OS timezone name words
-    /// ("Pacific Daylight Time" → "PDT", "Eastern Standard Time" → "EST").
-    /// </summary>
-    static string GetTimezoneAbbr()
-    {
-        var tz   = TimeZoneInfo.Local;
-        var now  = DateTime.Now;
-        var name = tz.IsDaylightSavingTime(now) ? tz.DaylightName : tz.StandardName;
-        // Build abbreviation from first letter of each word
-        var abbr = string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(w => w[0]));
-        // Append UTC offset for disambiguation (e.g. PST UTC-8)
-        var offset    = TimeZoneInfo.Local.GetUtcOffset(now);
-        var sign      = offset >= TimeSpan.Zero ? "+" : "-";
-        var offsetStr = $"UTC{sign}{Math.Abs(offset.Hours)}";
-        if (offset.Minutes != 0) offsetStr += $":{Math.Abs(offset.Minutes):D2}";
-        return $"{abbr} ({offsetStr})";
-    }
+        // ── 5. Generate report ────────────────────────────────────────────────
+        Console.WriteLine();
+        Console.WriteLine("[5/6] Generating SHOWCASE_REPORT.md ...");
+        var report = BuildReport(captures);
+        await File.WriteAllTextAsync(reportPath, report, Encoding.UTF8);
+        Console.WriteLine($"      ✅ {reportPath}");
 
-    static string Slugify(string route) =>
-        route.TrimStart('/').Replace('/', '-').Replace(' ', '-').ToLowerInvariant();
-
-    static string FormatBytes(long bytes) =>
-        bytes switch
+        // ── 6. Cleanup ────────────────────────────────────────────────────────
+        Console.WriteLine("[6/6] Cleanup...");
+        if (webProcess != null)
         {
-            < 1024             => $"{bytes} B",
-            < 1024 * 1024      => $"{bytes / 1024.0:F1} KB",
-            _                  => $"{bytes / (1024.0 * 1024):F1} MB"
-        };
+            Console.WriteLine("      Stopping web app process...");
+            try { webProcess.Kill(entireProcessTree: true); } catch { }
+        }
 
-    static string EscHtml(string s) =>
-        s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
-
-    static string TruncatePad(string s, int width) =>
-        s.Length > width ? s[..(width - 1)] + "…" : s.PadRight(width);
+        PrintFooter(captures, reportPath);
+        return 0;
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  CONSOLE OUTPUT
@@ -1036,5 +1001,39 @@ internal class Program
         Console.WriteLine($"  Data:     {bytes} transferred in browser");
         Console.WriteLine($"  Report:   {reportPath}");
         Console.WriteLine("=================================================================");
+    }
+
+    static string Slugify(string route) =>
+        route.TrimStart('/').Replace('/', '-').Replace(' ', '-').ToLowerInvariant();
+
+    static Process StartWebApp(string appProjectPath)
+    {
+        var proc = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName  = "dotnet",
+                Arguments = $"run --project \"{appProjectPath}\" --launch-profile http",
+                UseShellExecute  = false,
+                CreateNoWindow   = true,
+            }
+        };
+        proc.Start();
+        return proc;
+    }
+
+    static string TruncatePad(string s, int width) =>
+        s.Length > width ? s[..(width - 1)] + "…" : s.PadRight(width);
+
+    static async Task<bool> WaitForReadyAsync(int timeoutSeconds)
+    {
+        using var client  = new HttpClient { Timeout = TimeSpan.FromSeconds(4) };
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+        while (DateTime.UtcNow < deadline)
+        {
+            try { await client.GetAsync(BaseUrl); return true; }
+            catch { Console.Write("."); await Task.Delay(2500); }
+        }
+        return false;
     }
 }

@@ -38,18 +38,17 @@ public partial class DataObjects
     /// </summary>
     public class PropertyTypeInfo
     {
-        public string Type { get; set; } = string.Empty;
+        /// <summary>Common default value for this type</summary>
+        public string? CommonDefault { get; set; }
         public string DisplayName { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
-
-        /// <summary>Short label for visual tile picker</summary>
-        public string TileLabel { get; set; } = string.Empty;
 
         /// <summary>Background color class for tile</summary>
         public string TileColorClass { get; set; } = "bg-secondary";
 
-        /// <summary>Common default value for this type</summary>
-        public string? CommonDefault { get; set; }
+        /// <summary>Short label for visual tile picker</summary>
+        public string TileLabel { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -127,13 +126,13 @@ public partial class DataObjects
     /// </summary>
     public class PropertySnippet
     {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
+        public string Category { get; set; } = "General";
         public string Description { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
-        public string Category { get; set; } = "General";
-        public List<PropertyDefinition> Properties { get; set; } = new();
+        public string Id { get; set; } = string.Empty;
         public bool IsBuiltIn { get; set; } = true;
+        public string Name { get; set; } = string.Empty;
+        public List<PropertyDefinition> Properties { get; set; } = new();
     }
 
     /// <summary>
@@ -266,13 +265,13 @@ public partial class DataObjects
     /// </summary>
     public class SmartNameSuggestion
     {
-        public string SuggestedType { get; set; } = "string";
-        public string? SuggestedDefault { get; set; }
-        public bool SuggestSystemField { get; set; }
-        public bool SuggestRequired { get; set; } = true;
-        public int? SuggestMaxLength { get; set; }
-        public string Reason { get; set; } = string.Empty;
         public float Confidence { get; set; } = 0.5f;
+        public string Reason { get; set; } = string.Empty;
+        public string? SuggestedDefault { get; set; }
+        public string SuggestedType { get; set; } = "string";
+        public int? SuggestMaxLength { get; set; }
+        public bool SuggestRequired { get; set; } = true;
+        public bool SuggestSystemField { get; set; }
     }
 
     /// <summary>

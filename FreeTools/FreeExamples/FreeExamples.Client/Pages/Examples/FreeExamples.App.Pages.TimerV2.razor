@@ -12,14 +12,14 @@
         </AboutSection>
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Session Timeout Warning"
-                     Description="Web applications show a warning before session expires. A modal or alert appears at the warning threshold (e.g., 2 min left). The user can 'Extend Session' or let it expire. This is the banking/healthcare session timeout pattern."
-                     Code="@_codeTimeoutWarning" />
+                    Description="Web applications show a warning before session expires. A modal or alert appears at the warning threshold (e.g., 2 min left). The user can 'Extend Session' or let it expire. This is the banking/healthcare session timeout pattern."
+                    Code="@_codeTimeoutWarning" />
             <InfoTip Title="Activity Detection"
-                     Description="The timer resets on user activity (mouse movement, keypress). JavaScript interop detects activity and calls a Blazor method to reset the countdown. This prevents timeout during active use while catching idle sessions."
-                     Code="@_codeActivityDetect" />
+                    Description="The timer resets on user activity (mouse movement, keypress). JavaScript interop detects activity and calls a Blazor method to reset the countdown. This prevents timeout during active use while catching idle sessions."
+                    Code="@_codeActivityDetect" />
             <InfoTip Title="Countdown Progress Bar"
-                     Description="A progress bar shows remaining session time visually. It starts at 100% (green) and decreases. At 25%, it turns yellow (bg-warning). At 10%, it turns red (bg-danger). This gives users urgency without reading numbers."
-                     Code="@_codeCountdownBar" />
+                    Description="A progress bar shows remaining session time visually. It starts at 100% (green) and decreases. At 25%, it turns yellow (bg-warning). At 10%, it turns red (bg-danger). This gives users urgency without reading numbers."
+                    Code="@_codeCountdownBar" />
         </div>
         <div class="text-center py-4"><button class="btn btn-lg btn-warning" @onclick="TriggerTimeout"><i class="fa-solid fa-clock me-1"></i> Simulate Session Timeout</button></div>
         @if (_showWarning) {

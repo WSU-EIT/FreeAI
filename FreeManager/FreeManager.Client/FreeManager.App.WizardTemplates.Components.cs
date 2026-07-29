@@ -12,6 +12,40 @@ namespace FreeManager;
 public static partial class WizardTemplates
 {
     /// <summary>
+    /// Generate the Complete component.
+    /// </summary>
+    public static string GenerateCompleteComponent(DataObjects.SetupWizardDefinition wizard)
+    {
+        var sb = new StringBuilder();
+        var name = wizard.Name;
+
+        sb.AppendLine($"@* {name}Complete.razor - Wizard completion screen *@");
+        sb.AppendLine();
+        sb.AppendLine("<div class=\"wizard-complete text-center py-5\">");
+        sb.AppendLine("    <div class=\"mb-4\"><i class=\"fa-solid fa-circle-check fa-5x text-success\"></i></div>");
+        sb.AppendLine("    <h3 class=\"mb-3\">Setup Complete!</h3>");
+        sb.AppendLine($"    <p class=\"text-muted mb-4\">{wizard.Description}</p>");
+        sb.AppendLine();
+        sb.AppendLine("    @if (State.SkippedSteps.Any()) {");
+        sb.AppendLine("        <div class=\"alert alert-warning mb-4\">");
+        sb.AppendLine("            <i class=\"fa-solid fa-exclamation-triangle me-2\"></i>You skipped @State.SkippedSteps.Count step(s).");
+        sb.AppendLine("        </div>");
+        sb.AppendLine("    }");
+        sb.AppendLine();
+        sb.AppendLine("    <div class=\"d-flex justify-content-center gap-2\">");
+        sb.AppendLine("        <button class=\"btn btn-outline-secondary\" @onclick=\"OnStartOver\"><i class=\"fa-solid fa-rotate-left me-1\"></i>Start Over</button>");
+        sb.AppendLine("        <a href=\"/\" class=\"btn btn-primary\"><i class=\"fa-solid fa-home me-1\"></i>Go to Dashboard</a>");
+        sb.AppendLine("    </div>");
+        sb.AppendLine("</div>");
+        sb.AppendLine();
+        sb.AppendLine("@code {");
+        sb.AppendLine($"    [Parameter] public DataObjects.{name}State State {{ get; set; }} = new();");
+        sb.AppendLine("    [Parameter] public EventCallback OnStartOver { get; set; }");
+        sb.AppendLine("}");
+
+        return sb.ToString();
+    }
+    /// <summary>
     /// Generate the main Container component with stepper.
     /// </summary>
     public static string GenerateContainer(DataObjects.SetupWizardDefinition wizard)
@@ -184,41 +218,6 @@ public static partial class WizardTemplates
         sb.AppendLine();
         sb.AppendLine($"    private int StepNumber => {stepNum};");
         sb.AppendLine("    private bool IsValid => true; // Add validation logic");
-        sb.AppendLine("}");
-
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// Generate the Complete component.
-    /// </summary>
-    public static string GenerateCompleteComponent(DataObjects.SetupWizardDefinition wizard)
-    {
-        var sb = new StringBuilder();
-        var name = wizard.Name;
-
-        sb.AppendLine($"@* {name}Complete.razor - Wizard completion screen *@");
-        sb.AppendLine();
-        sb.AppendLine("<div class=\"wizard-complete text-center py-5\">");
-        sb.AppendLine("    <div class=\"mb-4\"><i class=\"fa-solid fa-circle-check fa-5x text-success\"></i></div>");
-        sb.AppendLine("    <h3 class=\"mb-3\">Setup Complete!</h3>");
-        sb.AppendLine($"    <p class=\"text-muted mb-4\">{wizard.Description}</p>");
-        sb.AppendLine();
-        sb.AppendLine("    @if (State.SkippedSteps.Any()) {");
-        sb.AppendLine("        <div class=\"alert alert-warning mb-4\">");
-        sb.AppendLine("            <i class=\"fa-solid fa-exclamation-triangle me-2\"></i>You skipped @State.SkippedSteps.Count step(s).");
-        sb.AppendLine("        </div>");
-        sb.AppendLine("    }");
-        sb.AppendLine();
-        sb.AppendLine("    <div class=\"d-flex justify-content-center gap-2\">");
-        sb.AppendLine("        <button class=\"btn btn-outline-secondary\" @onclick=\"OnStartOver\"><i class=\"fa-solid fa-rotate-left me-1\"></i>Start Over</button>");
-        sb.AppendLine("        <a href=\"/\" class=\"btn btn-primary\"><i class=\"fa-solid fa-home me-1\"></i>Go to Dashboard</a>");
-        sb.AppendLine("    </div>");
-        sb.AppendLine("</div>");
-        sb.AppendLine();
-        sb.AppendLine("@code {");
-        sb.AppendLine($"    [Parameter] public DataObjects.{name}State State {{ get; set; }} = new();");
-        sb.AppendLine("    [Parameter] public EventCallback OnStartOver { get; set; }");
         sb.AppendLine("}");
 
         return sb.ToString();

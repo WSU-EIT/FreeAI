@@ -15,22 +15,13 @@ public class ManagementE2ETests : IAsyncLifetime
     // private IPage _page = null!;
     private static readonly string _hubUrl = "https://localhost:7271";
 
-    public async Task InitializeAsync()
-    {
-        await Task.CompletedTask;
-    }
-
     public async Task DisposeAsync()
     {
         await Task.CompletedTask;
     }
 
-    [Fact(Skip = "Requires Playwright package and running hub instance")]
-    public async Task Management_PageLoads()
+    public async Task InitializeAsync()
     {
-        // await _page.GotoAsync($"{_hubUrl}/AgentManagement");
-        // var heading = await _page.WaitForSelectorAsync("text=Agent Management", new() { Timeout = 10000 });
-        // Assert.NotNull(heading);
         await Task.CompletedTask;
     }
 
@@ -59,6 +50,15 @@ public class ManagementE2ETests : IAsyncLifetime
         // Assert.True(keyText?.Length > 20);
         // var instructions = await _page.QuerySelectorAsync("text=appsettings.json");
         // Assert.NotNull(instructions);
+        await Task.CompletedTask;
+    }
+
+    [Fact(Skip = "Requires Playwright package and running hub instance")]
+    public async Task Management_PageLoads()
+    {
+        // await _page.GotoAsync($"{_hubUrl}/AgentManagement");
+        // var heading = await _page.WaitForSelectorAsync("text=Agent Management", new() { Timeout = 10000 });
+        // Assert.NotNull(heading);
         await Task.CompletedTask;
     }
 

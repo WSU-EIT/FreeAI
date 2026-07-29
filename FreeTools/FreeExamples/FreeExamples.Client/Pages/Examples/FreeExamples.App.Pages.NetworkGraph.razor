@@ -64,27 +64,27 @@
             </button>
         </div>
         <InfoTip Title="Physics Solvers"
-                 Description="The graph uses physics simulation to arrange nodes. Repulsion makes every node push away from every other node (like magnets repelling). Barnes-Hut is a faster algorithm that approximates the same effect for large graphs. Switching between them shows different layout results."
-                 Code="@_codeSolvers" />
+                Description="The graph uses physics simulation to arrange nodes. Repulsion makes every node push away from every other node (like magnets repelling). Barnes-Hut is a faster algorithm that approximates the same effect for large graphs. Switching between them shows different layout results."
+                Code="@_codeSolvers" />
 
         <div class="mb-2 text-muted small" aria-live="polite">@_nodes.Count nodes, @_relationships.Count edges
             <InfoTip Title="Node and Edge Counts"
-                     Description="Nodes are the circles in the graph — each represents a category or item. Edges are the lines connecting them — each represents a relationship. The count updates when data loads. In a real app (like DependencyManager), nodes would be servers, apps, or databases."
-                     Code="@_codeNodeEdge" />
+                    Description="Nodes are the circles in the graph — each represents a category or item. Edges are the lines connecting them — each represents a relationship. The count updates when data loads. In a real app (like DependencyManager), nodes would be servers, apps, or databases."
+                    Code="@_codeNodeEdge" />
         </div>
 
         @if (_nodes.Any()) {
             <InfoTip Title="Network Chart Component"
-                     Description="This component wraps the vis.js JavaScript library. C# builds arrays of nodes and edges (connections), passes them to JavaScript, and vis.js draws the interactive diagram. You can drag nodes, zoom in/out, and click elements. When you click, JavaScript calls back into C# via DotNetObjectReference."
-                     Code="@_codeNetworkChart" />
+                    Description="This component wraps the vis.js JavaScript library. C# builds arrays of nodes and edges (connections), passes them to JavaScript, and vis.js draws the interactive diagram. You can drag nodes, zoom in/out, and click elements. When you click, JavaScript calls back into C# via DotNetObjectReference."
+                    Code="@_codeNetworkChart" />
             <div role="region" aria-label="Interactive network graph visualization">
             <NetworkChart @ref="_chart"
-                Nodes="_nodes"
-                Relationships="_relationships"
-                NetworkSolver="@_solver"
-                OnElementSelected="@((string id) => OnNodeSelected(id))"
-                OnRelationshipSelected="@((string id) => OnEdgeSelected(id))"
-                OnLoadFailed="@(() => OnChartLoadFailed())" />
+                    Nodes="_nodes"
+                    Relationships="_relationships"
+                    NetworkSolver="@_solver"
+                    OnElementSelected="@((string id) => OnNodeSelected(id))"
+                    OnRelationshipSelected="@((string id) => OnEdgeSelected(id))"
+                    OnLoadFailed="@(() => OnChartLoadFailed())" />
             </div>
         }
     }

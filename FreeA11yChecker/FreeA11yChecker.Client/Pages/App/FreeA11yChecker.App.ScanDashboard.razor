@@ -203,7 +203,7 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div class="d-flex gap-2 flex-wrap align-items-center">
                     <input type="text" class="form-control form-control-sm" style="width:200px;" placeholder="Search site name or URL..."
-                           @bind="_searchText" @bind:event="oninput" />
+                            @bind="_searchText" @bind:event="oninput" />
                     <select class="form-select form-select-sm" style="width:140px;" @bind="_statusFilter">
                         <option value="all">All Statuses</option>
                         <option value="scanning">Scanning</option>
@@ -243,7 +243,7 @@
                                             </div>
                                             <div class="progress mb-1" style="height: 6px;">
                                                 <div class="progress-bar bg-info" role="progressbar"
-                                                     style="width: @(pct)%" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        style="width: @(pct)%" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
                                             </div>
                                             <small class="text-muted">@p.CurrentPage / @p.TotalPages pages</small>
                                         } else {
@@ -342,7 +342,7 @@
     }
 }
 @code {
-    [Parameter] public string? TenantCode { get; set; }
+    private const int RenderThrottleMs = 300;
 
     private bool _loadedData = false;
     private bool _loading = true;
@@ -360,66 +360,13 @@
     private Dictionary<Guid, DataObjects.ScanProgress> _scanProgress = new();
     private System.Threading.Timer? _renderTimer;
     private bool _renderPending = false;
-    private const int RenderThrottleMs = 300;
+    [Parameter] public string? TenantCode { get; set; }
 
     public void Dispose()
     {
         _renderTimer?.Dispose();
         Model.OnChange -= OnDataModelUpdated;
         Model.OnSignalRUpdate -= SignalRUpdate;
-    }
-
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-        Model.OnSignalRUpdate += SignalRUpdate;
-        Model.View = _pageName;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender) {
-            Model.TenantCodeFromUrl = TenantCode;
-        }
-
-        if (Model.Loaded) {
-            if (!_loadedData) {
-                _loadedData = true;
-                await LoadData();
-            }
-        }
-    }
-
-    private void OnDataModelUpdated()
-    {
-        if (Model.View == _pageName) {
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadData()
-    {
-        _loading = true;
-
-        var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
-        if (result != null) {
-            _sites = result;
-
-            // Load scan history for each site to compute trend arrows and severity bars
-            foreach (var site in _sites.Where(x => x.LastScanAt.HasValue)) {
-                var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
-                    new { SiteId = site.SiteId, Count = 2 });
-                if (history != null && history.Any()) {
-                    _latestScans[site.SiteId] = history[0]; // most recent
-                    if (history.Count > 1) {
-                        _previousScans[site.SiteId] = history[1]; // second most recent
-                    }
-                }
-            }
-        }
-
-        _loading = false;
-        StateHasChanged();
     }
 
     private string GetCardBorder(DataObjects.Site site)
@@ -483,26 +430,34 @@
         return results;
     }
 
-    private int GetStatusOrder(DataObjects.Site site)
+    private string GetSeverityBar(DataObjects.Site site)
     {
-        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
-            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) return -1; // Scanning at top
-        if (site.LastCriticalCount > 0) return 0; // Critical
-        if (site.LastViolationCount > 0) return 1;
-        if (site.LastScanAt.HasValue
-            && !String.IsNullOrWhiteSpace(site.LastScanStatus)
-            && !String.Equals(site.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)) return 2; // Clean
-        return 3; // Not scanned
+        if (!_latestScans.ContainsKey(site.SiteId) || _latestScans[site.SiteId] == null) {
+            return "";
+        }
+        var scan = _latestScans[site.SiteId]!;
+        int total = scan.CriticalCount + scan.SeriousCount + scan.ModerateCount + scan.MinorCount;
+        if (total == 0) return "";
+
+        int critPct = (int)(100.0 * scan.CriticalCount / total);
+        int serPct = (int)(100.0 * scan.SeriousCount / total);
+        int modPct = (int)(100.0 * scan.ModerateCount / total);
+        int minPct = 100 - critPct - serPct - modPct;
+
+        return $"<div class=\"progress mb-1\" style=\"height:6px;\">" +
+            (critPct > 0 ? $"<div class=\"progress-bar bg-danger\" style=\"width:{critPct}%\" title=\"{scan.CriticalCount} Critical\"></div>" : "") +
+            (serPct > 0 ? $"<div class=\"progress-bar bg-warning\" style=\"width:{serPct}%\" title=\"{scan.SeriousCount} Serious\"></div>" : "") +
+            (modPct > 0 ? $"<div class=\"progress-bar bg-info\" style=\"width:{modPct}%\" title=\"{scan.ModerateCount} Moderate\"></div>" : "") +
+            (minPct > 0 ? $"<div class=\"progress-bar bg-secondary\" style=\"width:{minPct}%\" title=\"{scan.MinorCount} Minor\"></div>" : "") +
+            "</div>";
     }
 
-    private void ToggleSort(string column)
+    private string GetSiteDetailUrl(DataObjects.Site site)
     {
-        if (_sortColumn == column) {
-            _sortAscending = !_sortAscending;
-        } else {
-            _sortColumn = column;
-            _sortAscending = column == "name"; // Default ascending for name, descending for others
+        if (site.LastScanRunId.HasValue) {
+            return Helpers.BuildUrl("Compliance/" + site.SiteId + "/" + site.LastScanRunId);
         }
+        return Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId);
     }
 
     private string GetSortIcon(string column)
@@ -533,6 +488,18 @@
         return "<span class=\"badge bg-success\">Clean</span>";
     }
 
+    private int GetStatusOrder(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) return -1; // Scanning at top
+        if (site.LastCriticalCount > 0) return 0; // Critical
+        if (site.LastViolationCount > 0) return 1;
+        if (site.LastScanAt.HasValue
+            && !String.IsNullOrWhiteSpace(site.LastScanStatus)
+            && !String.Equals(site.LastScanStatus, "None", StringComparison.OrdinalIgnoreCase)) return 2; // Clean
+        return 3; // Not scanned
+    }
+
     private string GetTrendArrow(DataObjects.Site site)
     {
         if (!_previousScans.ContainsKey(site.SiteId) || _previousScans[site.SiteId] == null) {
@@ -550,34 +517,68 @@
         return "<span class=\"text-muted\">&mdash; No Change</span>";
     }
 
-    private string GetSiteDetailUrl(DataObjects.Site site)
+    private async Task LoadData()
     {
-        if (site.LastScanRunId.HasValue) {
-            return Helpers.BuildUrl("Compliance/" + site.SiteId + "/" + site.LastScanRunId);
+        _loading = true;
+
+        var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
+        if (result != null) {
+            _sites = result;
+
+            // Load scan history for each site to compute trend arrows and severity bars
+            foreach (var site in _sites.Where(x => x.LastScanAt.HasValue)) {
+                var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
+                    new { SiteId = site.SiteId, Count = 2 });
+                if (history != null && history.Any()) {
+                    _latestScans[site.SiteId] = history[0]; // most recent
+                    if (history.Count > 1) {
+                        _previousScans[site.SiteId] = history[1]; // second most recent
+                    }
+                }
+            }
         }
-        return Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId);
+
+        _loading = false;
+        StateHasChanged();
     }
 
-    private string GetSeverityBar(DataObjects.Site site)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_latestScans.ContainsKey(site.SiteId) || _latestScans[site.SiteId] == null) {
-            return "";
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
         }
-        var scan = _latestScans[site.SiteId]!;
-        int total = scan.CriticalCount + scan.SeriousCount + scan.ModerateCount + scan.MinorCount;
-        if (total == 0) return "";
 
-        int critPct = (int)(100.0 * scan.CriticalCount / total);
-        int serPct = (int)(100.0 * scan.SeriousCount / total);
-        int modPct = (int)(100.0 * scan.ModerateCount / total);
-        int minPct = 100 - critPct - serPct - modPct;
+        if (Model.Loaded) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
 
-        return $"<div class=\"progress mb-1\" style=\"height:6px;\">" +
-            (critPct > 0 ? $"<div class=\"progress-bar bg-danger\" style=\"width:{critPct}%\" title=\"{scan.CriticalCount} Critical\"></div>" : "") +
-            (serPct > 0 ? $"<div class=\"progress-bar bg-warning\" style=\"width:{serPct}%\" title=\"{scan.SeriousCount} Serious\"></div>" : "") +
-            (modPct > 0 ? $"<div class=\"progress-bar bg-info\" style=\"width:{modPct}%\" title=\"{scan.ModerateCount} Moderate\"></div>" : "") +
-            (minPct > 0 ? $"<div class=\"progress-bar bg-secondary\" style=\"width:{minPct}%\" title=\"{scan.MinorCount} Minor\"></div>" : "") +
-            "</div>";
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    private void RequestThrottledRender()
+    {
+        if (_renderPending) return;
+        _renderPending = true;
+        _renderTimer?.Dispose();
+        _renderTimer = new System.Threading.Timer(_ => {
+            _renderPending = false;
+            InvokeAsync(StateHasChanged);
+        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
     }
 
     private void SignalRUpdate(DataObjects.SignalRUpdate update)
@@ -626,14 +627,13 @@
         }
     }
 
-    private void RequestThrottledRender()
+    private void ToggleSort(string column)
     {
-        if (_renderPending) return;
-        _renderPending = true;
-        _renderTimer?.Dispose();
-        _renderTimer = new System.Threading.Timer(_ => {
-            _renderPending = false;
-            InvokeAsync(StateHasChanged);
-        }, null, RenderThrottleMs, System.Threading.Timeout.Infinite);
+        if (_sortColumn == column) {
+            _sortAscending = !_sortAscending;
+        } else {
+            _sortColumn = column;
+            _sortAscending = column == "name"; // Default ascending for name, descending for others
+        }
     }
 }

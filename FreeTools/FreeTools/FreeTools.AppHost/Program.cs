@@ -42,6 +42,96 @@ static class AppHostRunner
     private const int ToolStartupDelayMs = 2000;        // Delay between tool launches
     private const int HttpToolDelayMs = 3000;           // Extra delay for HTTP-dependent tools
 
+    // =============================================================================
+    // Helper Functions
+    // =============================================================================
+    
+    private static void BackupLatestFolder(string latestDir, string projectRunsDir, string timestamp, int keepBackups)
+    {
+        if (!Directory.Exists(latestDir)) return;
+
+        try
+        {
+            // Move 'latest' to timestamped backup
+            var backupDir = Path.Combine(projectRunsDir, timestamp);
+            if (Directory.Exists(backupDir))
+            {
+                Directory.Delete(backupDir, recursive: true);
+            }
+            Directory.Move(latestDir, backupDir);
+            Console.WriteLine($"  [Backup] Moved previous latest to {timestamp}");
+
+            // Cleanup old backups beyond keepBackups count
+            var backupDirs = Directory.GetDirectories(projectRunsDir)
+                .Where(d => !Path.GetFileName(d).Equals("latest", StringComparison.OrdinalIgnoreCase))
+                .Select(d => new DirectoryInfo(d))
+                .OrderByDescending(d => d.Name)
+                .ToList();
+
+            if (backupDirs.Count > keepBackups)
+            {
+                foreach (var dir in backupDirs.Skip(keepBackups))
+                {
+                    try
+                    {
+                        Directory.Delete(dir.FullName, recursive: true);
+                        Console.WriteLine($"  [Cleanup] Deleted old backup: {dir.Name}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"  [Cleanup] Failed to delete {dir.Name}: {ex.Message}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [Backup] Failed: {ex.Message}");
+        }
+    }
+
+    private static string? GetGitBranch(string repoPath)
+    {
+        try
+        {
+            var headPath = Path.Combine(repoPath, ".git", "HEAD");
+            if (File.Exists(headPath))
+            {
+                var headContent = File.ReadAllText(headPath).Trim();
+                if (headContent.StartsWith("ref: refs/heads/"))
+                {
+                    return headContent.Substring("ref: refs/heads/".Length);
+                }
+                // Detached HEAD - return short hash
+                return headContent.Length > 7 ? headContent[..7] : headContent;
+            }
+        }
+        catch
+        {
+            // Ignore errors
+        }
+        return null;
+    }
+
+    public static string GetToolsRoot()
+    {
+        // Try environment variable first
+        var envRoot = Environment.GetEnvironmentVariable("FREETOOLS_ROOT");
+        if (!string.IsNullOrEmpty(envRoot) && Directory.Exists(envRoot))
+            return envRoot;
+
+        // Walk up from base directory
+        var dir = AppContext.BaseDirectory;
+        while (dir != null)
+        {
+            if (Directory.Exists(Path.Combine(dir, "FreeTools.Core"))) return dir;
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+
+        // Last resort: relative path from typical bin location
+        return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+    }
+
     public static void Run(string[] hostArgs, bool skipCleanup, int keepBackups, string target)
     {
         var builder = DistributedApplication.CreateBuilder(hostArgs);
@@ -245,96 +335,6 @@ static class AppHostRunner
         builder.Build().Run();
     }
 
-    // =============================================================================
-    // Helper Functions
-    // =============================================================================
-    
-    private static void BackupLatestFolder(string latestDir, string projectRunsDir, string timestamp, int keepBackups)
-    {
-        if (!Directory.Exists(latestDir)) return;
-
-        try
-        {
-            // Move 'latest' to timestamped backup
-            var backupDir = Path.Combine(projectRunsDir, timestamp);
-            if (Directory.Exists(backupDir))
-            {
-                Directory.Delete(backupDir, recursive: true);
-            }
-            Directory.Move(latestDir, backupDir);
-            Console.WriteLine($"  [Backup] Moved previous latest to {timestamp}");
-
-            // Cleanup old backups beyond keepBackups count
-            var backupDirs = Directory.GetDirectories(projectRunsDir)
-                .Where(d => !Path.GetFileName(d).Equals("latest", StringComparison.OrdinalIgnoreCase))
-                .Select(d => new DirectoryInfo(d))
-                .OrderByDescending(d => d.Name)
-                .ToList();
-
-            if (backupDirs.Count > keepBackups)
-            {
-                foreach (var dir in backupDirs.Skip(keepBackups))
-                {
-                    try
-                    {
-                        Directory.Delete(dir.FullName, recursive: true);
-                        Console.WriteLine($"  [Cleanup] Deleted old backup: {dir.Name}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"  [Cleanup] Failed to delete {dir.Name}: {ex.Message}");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"  [Backup] Failed: {ex.Message}");
-        }
-    }
-
-    public static string GetToolsRoot()
-    {
-        // Try environment variable first
-        var envRoot = Environment.GetEnvironmentVariable("FREETOOLS_ROOT");
-        if (!string.IsNullOrEmpty(envRoot) && Directory.Exists(envRoot))
-            return envRoot;
-
-        // Walk up from base directory
-        var dir = AppContext.BaseDirectory;
-        while (dir != null)
-        {
-            if (Directory.Exists(Path.Combine(dir, "FreeTools.Core"))) return dir;
-            dir = Directory.GetParent(dir)?.FullName;
-        }
-
-        // Last resort: relative path from typical bin location
-        return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
-    }
-
-    private static string? GetGitBranch(string repoPath)
-    {
-        try
-        {
-            var headPath = Path.Combine(repoPath, ".git", "HEAD");
-            if (File.Exists(headPath))
-            {
-                var headContent = File.ReadAllText(headPath).Trim();
-                if (headContent.StartsWith("ref: refs/heads/"))
-                {
-                    return headContent.Substring("ref: refs/heads/".Length);
-                }
-                // Detached HEAD - return short hash
-                return headContent.Length > 7 ? headContent[..7] : headContent;
-            }
-        }
-        catch
-        {
-            // Ignore errors
-        }
-        return null;
-    }
-
     private static string SanitizeFolderName(string name)
     {
         // Replace invalid characters with underscores
@@ -354,11 +354,11 @@ static class AppHostRunner
 // =============================================================================
 record ProjectConfig(string Name, string ProjectRoot, string Branch, string ToolsRoot)
 {
-    // Output folder: Docs/runs/{ProjectName}/{Branch}/latest
-    public string ProjectRunsDir { get; } = Path.Combine(ToolsRoot, "Docs", "runs", Name, Branch);
+    public string InventoryCsv => Path.Combine(LatestDir, "workspace-inventory.csv");
     public string LatestDir => Path.Combine(ProjectRunsDir, "latest");
     public string PagesCsv => Path.Combine(LatestDir, "pages.csv");
-    public string InventoryCsv => Path.Combine(LatestDir, "workspace-inventory.csv");
-    public string SnapshotsDir => Path.Combine(LatestDir, "snapshots");
+    // Output folder: Docs/runs/{ProjectName}/{Branch}/latest
+    public string ProjectRunsDir { get; } = Path.Combine(ToolsRoot, "Docs", "runs", Name, Branch);
     public string ReportPath => Path.Combine(LatestDir, $"{Name}-Report.md");
+    public string SnapshotsDir => Path.Combine(LatestDir, "snapshots");
 }

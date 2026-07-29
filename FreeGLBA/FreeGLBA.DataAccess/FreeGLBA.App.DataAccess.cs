@@ -880,8 +880,7 @@ public partial class DataAccess
     /// Period dates should already be in UTC.
     /// </summary>
     private async Task<(int TotalEvents, int UniqueUsers, int UniqueSubjects)> CalculateReportStatisticsAsync(
-        DateTime periodStartUtc, DateTime periodEndUtc)
-    {
+        DateTime periodStartUtc, DateTime periodEndUtc){
         var events = await data.AccessEvents
             .Where(x => x.AccessedAt >= periodStartUtc && x.AccessedAt <= periodEndUtc)
             .ToListAsync();

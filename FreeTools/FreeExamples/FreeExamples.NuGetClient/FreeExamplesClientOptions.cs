@@ -7,21 +7,15 @@ namespace FreeExamples.Client;
 public class FreeExamplesClientOptions
 {
     /// <summary>
-    /// Gets or sets the base URL of the FreeExamples server.
-    /// Example: "https://localhost:7271"
-    /// </summary>
-    public string Endpoint { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the API key for authentication.
     /// Generated from the FreeExamples API Key Demo page.
     /// </summary>
     public string ApiKey { get; set; } = string.Empty;
-
     /// <summary>
-    /// Gets or sets the HTTP request timeout. Default is 30 seconds.
+    /// Gets or sets the base URL of the FreeExamples server.
+    /// Example: "https://localhost:7271"
     /// </summary>
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
+    public string Endpoint { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the number of retry attempts for transient failures. Default is 3.
@@ -33,6 +27,11 @@ public class FreeExamplesClientOptions
     /// When false, methods return error responses instead of throwing.
     /// </summary>
     public bool ThrowOnError { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the HTTP request timeout. Default is 30 seconds.
+    /// </summary>
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// Validates the configuration options.

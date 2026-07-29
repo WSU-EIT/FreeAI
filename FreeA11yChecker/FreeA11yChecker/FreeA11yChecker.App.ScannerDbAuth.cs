@@ -11,8 +11,7 @@ namespace FreeA11yChecker;
 public static class ScannerDbAuth
 {
     public static async Task<bool> AuthenticateAsync(IBrowserContext Context, DataObjects.Site Site,
-        DataObjects.SiteCredential Credential, IDataAccess Da, IConfigurationHelper Config)
-    {
+        DataObjects.SiteCredential Credential, IDataAccess Da, IConfigurationHelper Config){
         try {
             string plainPassword = Da.DecryptString(Credential.PasswordEncrypted, Config.ScanEncryptionKey);
             if (String.IsNullOrEmpty(plainPassword)) {

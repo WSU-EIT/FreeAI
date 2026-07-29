@@ -8,42 +8,16 @@
 public class ScanConfig
 {
     /// <summary>
-    /// Milliseconds to wait after NetworkIdle for JS-heavy pages to finish rendering.
+    /// Enable autocomplete attribute audit: check input elements for
+    /// appropriate autocomplete values per WCAG 1.3.5.
     /// </summary>
-    public int SettleDelayMs { get; set; } = 5000;
+    public bool EnableAutocompleteAudit { get; set; } = false;
 
     /// <summary>
-    /// Maximum time in milliseconds to wait for page navigation. 60s matches the
-    /// gold-standard pattern in Examples/FreeTools/BrowserSnapshot — Blazor WASM
-    /// cold boot + heavy marketing-site analytics can both push past 30s.
+    /// Enable fixed/sticky element detection: find positioned elements
+    /// that could obscure focused content (WCAG 2.4.11).
     /// </summary>
-    public int TimeoutMs { get; set; } = 60000;
-
-    /// <summary>
-    /// Maximum number of pages to scan concurrently within a site.
-    /// </summary>
-    public int MaxConcurrency { get; set; } = 3;
-
-    /// <summary>
-    /// Whether to run the browser in headless mode.
-    /// </summary>
-    public bool Headless { get; set; } = true;
-
-    /// <summary>
-    /// Root output directory for scan results. Each site gets a subdirectory.
-    /// </summary>
-    public string OutputDir { get; set; } = "runs/latest";
-
-    /// <summary>
-    /// WCAG conformance level to test against (e.g., "wcag21aa", "wcag2a").
-    /// Passed to axe-core's runOnly configuration.
-    /// </summary>
-    public string WcagLevel { get; set; } = "wcag21aa";
-
-    /// <summary>
-    /// Sites to scan, keyed by base URL. Each value contains page paths and credentials.
-    /// </summary>
-    public Dictionary<string, SiteConfig> Sites { get; set; } = new Dictionary<string, SiteConfig>();
+    public bool EnableFixedElementCheck { get; set; } = false;
 
     // ================================================================
     // Phase 3 — Expensive / Complex Checks (opt-in)
@@ -56,10 +30,11 @@ public class ScanConfig
     public bool EnableKeyboardNav { get; set; } = false;
 
     /// <summary>
-    /// Enable text spacing override test: inject WCAG 1.4.12 spacing CSS
-    /// and detect content clipping or overflow.
+    /// Enable mobile viewport scanning: re-scan at phone (375×667),
+    /// tablet (768×1024), and desktop (1920×1080) viewports.
+    /// WARNING: Triples scan time per page.
     /// </summary>
-    public bool EnableTextSpacingTest { get; set; } = false;
+    public bool EnableMobileViewports { get; set; } = false;
 
     /// <summary>
     /// Enable reading level analysis: extract visible text content and
@@ -68,29 +43,53 @@ public class ScanConfig
     public bool EnableReadingLevel { get; set; } = false;
 
     /// <summary>
-    /// Enable autocomplete attribute audit: check input elements for
-    /// appropriate autocomplete values per WCAG 1.3.5.
+    /// Enable text spacing override test: inject WCAG 1.4.12 spacing CSS
+    /// and detect content clipping or overflow.
     /// </summary>
-    public bool EnableAutocompleteAudit { get; set; } = false;
+    public bool EnableTextSpacingTest { get; set; } = false;
 
     /// <summary>
-    /// Enable fixed/sticky element detection: find positioned elements
-    /// that could obscure focused content (WCAG 2.4.11).
+    /// Whether to run the browser in headless mode.
     /// </summary>
-    public bool EnableFixedElementCheck { get; set; } = false;
-
-    /// <summary>
-    /// Enable mobile viewport scanning: re-scan at phone (375×667),
-    /// tablet (768×1024), and desktop (1920×1080) viewports.
-    /// WARNING: Triples scan time per page.
-    /// </summary>
-    public bool EnableMobileViewports { get; set; } = false;
+    public bool Headless { get; set; } = true;
 
     /// <summary>
     /// Maximum number of Tab presses during keyboard navigation simulation.
     /// Prevents infinite loops on pages with many interactive elements.
     /// </summary>
     public int KeyboardNavMaxTabs { get; set; } = 150;
+
+    /// <summary>
+    /// Maximum number of pages to scan concurrently within a site.
+    /// </summary>
+    public int MaxConcurrency { get; set; } = 3;
+
+    /// <summary>
+    /// Root output directory for scan results. Each site gets a subdirectory.
+    /// </summary>
+    public string OutputDir { get; set; } = "runs/latest";
+    /// <summary>
+    /// Milliseconds to wait after NetworkIdle for JS-heavy pages to finish rendering.
+    /// </summary>
+    public int SettleDelayMs { get; set; } = 5000;
+
+    /// <summary>
+    /// Sites to scan, keyed by base URL. Each value contains page paths and credentials.
+    /// </summary>
+    public Dictionary<string, SiteConfig> Sites { get; set; } = new Dictionary<string, SiteConfig>();
+
+    /// <summary>
+    /// Maximum time in milliseconds to wait for page navigation. 60s matches the
+    /// gold-standard pattern in Examples/FreeTools/BrowserSnapshot — Blazor WASM
+    /// cold boot + heavy marketing-site analytics can both push past 30s.
+    /// </summary>
+    public int TimeoutMs { get; set; } = 60000;
+
+    /// <summary>
+    /// WCAG conformance level to test against (e.g., "wcag21aa", "wcag2a").
+    /// Passed to axe-core's runOnly configuration.
+    /// </summary>
+    public string WcagLevel { get; set; } = "wcag21aa";
 }
 
 /// <summary>
@@ -106,14 +105,14 @@ public class SiteConfig
     public string BaseUrl { get; set; } = string.Empty;
 
     /// <summary>
-    /// Page paths to scan, relative to the base URL (e.g., "/", "/about", "/contact").
-    /// </summary>
-    public List<PageConfig> Pages { get; set; } = new List<PageConfig>();
-
-    /// <summary>
     /// Optional credentials for scanning pages that require authentication.
     /// </summary>
     public CredentialConfig? Credentials { get; set; }
+
+    /// <summary>
+    /// Page paths to scan, relative to the base URL (e.g., "/", "/about", "/contact").
+    /// </summary>
+    public List<PageConfig> Pages { get; set; } = new List<PageConfig>();
 }
 
 /// <summary>
@@ -140,27 +139,19 @@ public class PageConfig
 public class CredentialConfig
 {
     /// <summary>
-    /// Username or email address for login.
-    /// </summary>
-    public string Username { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Password for login. In the web app this comes from encrypted storage;
-    /// in the console CLI it comes from appsettings.json or command line.
-    /// </summary>
-    public string Password { get; set; } = string.Empty;
-
-    /// <summary>
     /// Authentication type: "FreeCRM" for known FreeA11yChecker-style login pages,
     /// "Generic" for auto-detected login forms. Defaults to "Generic".
     /// </summary>
     public string AuthType { get; set; } = "Generic";
 
     /// <summary>
-    /// Tenant code for multi-tenant applications. Used to build the login URL
-    /// as BaseUrl/{TenantCode}/Login.
+    /// Site base URL — populated by the scanner engine from <see cref="SiteConfig.BaseUrl"/>
+    /// before invoking auth. Required for apps deployed under a virtual sub-path
+    /// (e.g. "https://flex.em.wsu.edu/Touchpoints"), where Page.Url's authority alone
+    /// would lose the "/Touchpoints" prefix and produce wrong login URLs.
+    /// Not part of the user-facing JSON config.
     /// </summary>
-    public string TenantCode { get; set; } = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Optional custom login URL. Overrides the default login URL detection.
@@ -168,10 +159,10 @@ public class CredentialConfig
     public string LoginUrl { get; set; } = string.Empty;
 
     /// <summary>
-    /// Optional custom CSS selector for the username field.
-    /// If empty, the selector cascade is used.
+    /// Password for login. In the web app this comes from encrypted storage;
+    /// in the console CLI it comes from appsettings.json or command line.
     /// </summary>
-    public string UsernameSelector { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
     /// <summary>
     /// Optional custom CSS selector for the password field.
@@ -186,11 +177,18 @@ public class CredentialConfig
     public string SubmitSelector { get; set; } = string.Empty;
 
     /// <summary>
-    /// Site base URL — populated by the scanner engine from <see cref="SiteConfig.BaseUrl"/>
-    /// before invoking auth. Required for apps deployed under a virtual sub-path
-    /// (e.g. "https://flex.em.wsu.edu/Touchpoints"), where Page.Url's authority alone
-    /// would lose the "/Touchpoints" prefix and produce wrong login URLs.
-    /// Not part of the user-facing JSON config.
+    /// Tenant code for multi-tenant applications. Used to build the login URL
+    /// as BaseUrl/{TenantCode}/Login.
     /// </summary>
-    public string BaseUrl { get; set; } = string.Empty;
+    public string TenantCode { get; set; } = string.Empty;
+    /// <summary>
+    /// Username or email address for login.
+    /// </summary>
+    public string Username { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional custom CSS selector for the username field.
+    /// If empty, the selector cascade is used.
+    /// </summary>
+    public string UsernameSelector { get; set; } = string.Empty;
 }

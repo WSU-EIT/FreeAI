@@ -21,6 +21,12 @@ public class ApiKeyMiddleware
         _next = Next;
     }
 
+    private static string HashToken(string Plaintext)
+    {
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(Plaintext));
+        return Convert.ToBase64String(bytes);
+    }
+
     public async Task InvokeAsync(HttpContext Context)
     {
         string path = Context.Request.Path.Value ?? "";
@@ -108,12 +114,6 @@ public class ApiKeyMiddleware
         Context.User = new ClaimsPrincipal(identity);
 
         await _next(Context);
-    }
-
-    private static string HashToken(string Plaintext)
-    {
-        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(Plaintext));
-        return Convert.ToBase64String(bytes);
     }
 
     private static async Task WriteUnauthorized(HttpContext Context, string Error, string Message)

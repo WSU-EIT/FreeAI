@@ -15,9 +15,22 @@ public sealed class GitHubAdapter : IGitRepoAdapter
 {
     private readonly HttpClient _http;
 
-    public GitPlatform Platform => GitPlatform.GitHub;  // Also handles GitHubEnterprise
-
     public GitHubAdapter(HttpClient http) => _http = http;
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
+    {
+        if (resp.IsSuccessStatusCode) return;
+        var status = (int)resp.StatusCode;
+        var body   = await resp.Content.ReadAsStringAsync(ct);
+        var code   = status switch
+        {
+            401 or 403 => GitErrorCode.Unauthorized,
+            404        => GitErrorCode.NotFound,
+            429        => GitErrorCode.RateLimited,
+            _          => GitErrorCode.NetworkError
+        };
+        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
+    }
 
     // -------------------------------------------------------------------------
     // Public interface
@@ -48,30 +61,8 @@ public sealed class GitHubAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<List<GitTreeNode>> GetTreeAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
-    {
-        var safePath = path?.Trim('/') ?? "";
-        var url = string.IsNullOrEmpty(safePath)
-            ? $"{ctx.BaseApiUrl}/repos/{ctx.Owner}/{ctx.Repo}/contents?ref={Uri.EscapeDataString(branch)}"
-            : $"{ctx.BaseApiUrl}/repos/{ctx.Owner}/{ctx.Repo}/contents/{safePath}?ref={Uri.EscapeDataString(branch)}";
-
-        using var resp = await SendAsync(ctx, url, ct);
-        await EnsureSuccessAsync(resp, "GitHub", ct);
-        using var doc  = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
-
-        var result = new List<GitTreeNode>();
-        if (doc.RootElement.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var item in doc.RootElement.EnumerateArray())
-                result.Add(MapToNode(item));
-        }
-        return result;
-    }
-
     public async Task<GitFileContent> GetFileContentAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
-    {
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
         var safePath = path.Trim('/');
         var url      = $"{ctx.BaseApiUrl}/repos/{ctx.Owner}/{ctx.Repo}/contents/{safePath}?ref={Uri.EscapeDataString(branch)}";
 
@@ -107,18 +98,47 @@ public sealed class GitHubAdapter : IGitRepoAdapter
         return new GitFileContent(path, null, true, size, mimeHint);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private Task<HttpResponseMessage> SendAsync(GitRepoContext ctx, string url, CancellationToken ct)
+    private static string? GetMimeHint(string path)
     {
-        var req = new HttpRequestMessage(HttpMethod.Get, url);
-        req.Headers.Accept.ParseAdd("application/vnd.github+json");
-        req.Headers.TryAddWithoutValidation("X-GitHub-Api-Version", "2022-11-28");
-        if (!string.IsNullOrWhiteSpace(ctx.Credentials.Token))
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ctx.Credentials.Token);
-        return _http.SendAsync(req, ct);
+        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".png"  => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif"  => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf"  => "application/pdf",
+            ".zip"  => "application/zip",
+            _       => null
+        };
+    }
+
+    public async Task<List<GitTreeNode>> GetTreeAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
+        var safePath = path?.Trim('/') ?? "";
+        var url = string.IsNullOrEmpty(safePath)
+            ? $"{ctx.BaseApiUrl}/repos/{ctx.Owner}/{ctx.Repo}/contents?ref={Uri.EscapeDataString(branch)}"
+            : $"{ctx.BaseApiUrl}/repos/{ctx.Owner}/{ctx.Repo}/contents/{safePath}?ref={Uri.EscapeDataString(branch)}";
+
+        using var resp = await SendAsync(ctx, url, ct);
+        await EnsureSuccessAsync(resp, "GitHub", ct);
+        using var doc  = await JsonDocument.ParseAsync(await resp.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
+
+        var result = new List<GitTreeNode>();
+        if (doc.RootElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in doc.RootElement.EnumerateArray())
+                result.Add(MapToNode(item));
+        }
+        return result;
+    }
+
+    private static bool IsBinaryContent(byte[] bytes)
+    {
+        var check = Math.Min(bytes.Length, 8000);
+        for (var i = 0; i < check; i++)
+            if (bytes[i] == 0) return true;
+        return false;
     }
 
     private static GitTreeNode MapToNode(JsonElement item)
@@ -141,41 +161,19 @@ public sealed class GitHubAdapter : IGitRepoAdapter
         };
     }
 
-    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
-    {
-        if (resp.IsSuccessStatusCode) return;
-        var status = (int)resp.StatusCode;
-        var body   = await resp.Content.ReadAsStringAsync(ct);
-        var code   = status switch
-        {
-            401 or 403 => GitErrorCode.Unauthorized,
-            404        => GitErrorCode.NotFound,
-            429        => GitErrorCode.RateLimited,
-            _          => GitErrorCode.NetworkError
-        };
-        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
-    }
+    public GitPlatform Platform => GitPlatform.GitHub;  // Also handles GitHubEnterprise
 
-    private static bool IsBinaryContent(byte[] bytes)
-    {
-        var check = Math.Min(bytes.Length, 8000);
-        for (var i = 0; i < check; i++)
-            if (bytes[i] == 0) return true;
-        return false;
-    }
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
 
-    private static string? GetMimeHint(string path)
+    private Task<HttpResponseMessage> SendAsync(GitRepoContext ctx, string url, CancellationToken ct)
     {
-        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-        return ext switch
-        {
-            ".png"  => "image/png",
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".gif"  => "image/gif",
-            ".webp" => "image/webp",
-            ".pdf"  => "application/pdf",
-            ".zip"  => "application/zip",
-            _       => null
-        };
+        var req = new HttpRequestMessage(HttpMethod.Get, url);
+        req.Headers.Accept.ParseAdd("application/vnd.github+json");
+        req.Headers.TryAddWithoutValidation("X-GitHub-Api-Version", "2022-11-28");
+        if (!string.IsNullOrWhiteSpace(ctx.Credentials.Token))
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ctx.Credentials.Token);
+        return _http.SendAsync(req, ct);
     }
 }

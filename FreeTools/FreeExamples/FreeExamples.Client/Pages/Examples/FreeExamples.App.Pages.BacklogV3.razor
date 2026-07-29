@@ -20,15 +20,13 @@
         </AboutSection>
 
         <div class="d-flex flex-wrap gap-1 mb-3">
-            <InfoTip Title="Switch-Expression Grouping"
-                     Description="@_descGroupSwitch"
-                     Code="@_codeGroupSwitch" />
+            <InfoTip Title="Switch-Expression Grouping" Description="@_descGroupSwitch" Code="@_codeGroupSwitch" />
             <InfoTip Title="Label Multi-Group with SelectMany"
-                     Description="The 'label' grouping uses SelectMany to split comma-separated labels into individual entries, so a ticket with 'bug,ui' appears in both the 'bug' and 'ui' groups. DefaultIfEmpty('Unlabeled') handles tickets with no labels."
-                     Code="@_codeLabelGroup" />
+                    Description="The 'label' grouping uses SelectMany to split comma-separated labels into individual entries, so a ticket with 'bug,ui' appears in both the 'bug' and 'ui' groups. DefaultIfEmpty('Unlabeled') handles tickets with no labels."
+                    Code="@_codeLabelGroup" />
             <InfoTip Title="Unassigned/Unestimated Highlighting"
-                     Description="The assignee column conditionally applies text-warning fw-semibold when AssignedTo is null or empty. The points column shows a yellow '?' for unestimated tickets. These visual cues help identify items that need attention before sprint planning."
-                     Code="@_codeHighlight" />
+                    Description="The assignee column conditionally applies text-warning fw-semibold when AssignedTo is null or empty. The points column shows a yellow '?' for unestimated tickets. These visual cues help identify items that need attention before sprint planning."
+                    Code="@_codeHighlight" />
         </div>
 
         @* Group-by selector *@

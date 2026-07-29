@@ -12,7 +12,7 @@ namespace FreeBlazorExtended.UserPreferences;
 /// </summary>
 public interface IUserPreferencesStore
 {
+    Task DeleteAsync(Guid TenantId, Guid UserId);
     Task<UserPreferences?> GetAsync(Guid TenantId, Guid UserId);
     Task SaveAsync(UserPreferences prefs);
-    Task DeleteAsync(Guid TenantId, Guid UserId);
 }

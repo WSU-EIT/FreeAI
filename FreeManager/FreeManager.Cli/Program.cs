@@ -19,6 +19,120 @@ namespace FreeManager.Cli;
 
 internal class Program
 {
+    /// <summary>
+    /// Create an application from command line arguments.
+    /// </summary>
+    private static async Task CreateApplication(string name, string templateName, string output)
+    {
+        // Validate name
+        if (!Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$"))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("ERROR: Application name must start with a letter and contain only letters and numbers.");
+            Console.ResetColor();
+            return;
+        }
+
+        // Parse template
+        if (!Enum.TryParse<CliApplicationTemplate>(templateName, true, out var template))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"ERROR: Unknown template '{templateName}'.");
+            Console.WriteLine("Valid options: FreeBase, FreeTracker, FreeAudit");
+            Console.ResetColor();
+            return;
+        }
+
+        // Determine output path
+        var outputPath = string.IsNullOrEmpty(output)
+            ? Path.Combine(Environment.CurrentDirectory, name)
+            : output;
+
+        await MenuService.GenerateApplication(template, name, outputPath);
+    }
+
+    /// <summary>
+    /// Create a project from command line arguments.
+    /// </summary>
+    private static async Task CreateProject(string name, string templateName, string output)
+    {
+        // Validate name
+        if (!Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$"))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("ERROR: Project name must start with a letter and contain only letters and numbers.");
+            Console.ResetColor();
+            return;
+        }
+
+        // Parse template
+        if (!Enum.TryParse<CliProjectTemplate>(templateName, true, out var template))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"ERROR: Unknown template '{templateName}'.");
+            Console.WriteLine("Valid options: Empty, Skeleton, Starter, FullCrud");
+            Console.ResetColor();
+            return;
+        }
+
+        // Determine output path
+        var outputPath = string.IsNullOrEmpty(output)
+            ? Path.Combine(Environment.CurrentDirectory, name)
+            : output;
+
+        await MenuService.GenerateProject(template, name, outputPath);
+    }
+
+    /// <summary>
+    /// List available templates (command line output).
+    /// </summary>
+    private static void ListTemplates()
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("FreeManager CLI - Available Templates");
+        Console.WriteLine("══════════════════════════════════════");
+        Console.ResetColor();
+        Console.WriteLine();
+
+        // Simple Project Templates
+        Console.WriteLine("SIMPLE PROJECT TEMPLATES (use with 'new' command):");
+        Console.WriteLine("┌──────────────┬───────┬─────────────────────────────────────────────────┐");
+        Console.WriteLine("│ Template     │ Files │ Description                                     │");
+        Console.WriteLine("├──────────────┼───────┼─────────────────────────────────────────────────┤");
+
+        var templates = CliProjectTemplates.GetTemplates();
+        foreach (var t in templates)
+        {
+            var name = t.IsRecommended ? $"{t.Name} *" : t.Name;
+            Console.WriteLine($"│ {name.PadRight(12)} │ {t.FileCount,5} │ {t.Description.PadRight(47)} │");
+        }
+        Console.WriteLine("└──────────────┴───────┴─────────────────────────────────────────────────┘");
+        Console.WriteLine("(* = Recommended)");
+        Console.WriteLine();
+
+        // Application Templates
+        Console.WriteLine("APPLICATION TEMPLATES (use with 'app' command):");
+        Console.WriteLine("┌──────────────┬──────────────┬──────────┬─────────────────────────────────┐");
+        Console.WriteLine("│ Template     │ Difficulty   │ Entities │ Description                     │");
+        Console.WriteLine("├──────────────┼──────────────┼──────────┼─────────────────────────────────┤");
+
+        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
+        foreach (var t in appTemplates)
+        {
+            var desc = t.Description.Length > 31 ? t.Description[..28] + "..." : t.Description;
+            Console.WriteLine($"│ {t.Name.PadRight(12)} │ {t.Difficulty.PadRight(12)} │ {t.EntityCount,8} │ {desc.PadRight(31)} │");
+        }
+        Console.WriteLine("└──────────────┴──────────────┴──────────┴─────────────────────────────────┘");
+        Console.WriteLine();
+
+        Console.WriteLine("Examples:");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("  FreeManager.exe new Tasks                    # Starter project");
+        Console.WriteLine("  FreeManager.exe new Inventory -t FullCrud    # FullCrud project");
+        Console.WriteLine("  FreeManager.exe app FreeGLBA -t FreeAudit    # FreeAudit application");
+        Console.ResetColor();
+    }
     static async Task<int> Main(string[] args)
     {
         // If no arguments, show interactive menu
@@ -94,121 +208,6 @@ internal class Program
         rootCommand.AddCommand(helpCommand);
 
         return await rootCommand.InvokeAsync(args);
-    }
-
-    /// <summary>
-    /// Create a project from command line arguments.
-    /// </summary>
-    private static async Task CreateProject(string name, string templateName, string output)
-    {
-        // Validate name
-        if (!Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$"))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("ERROR: Project name must start with a letter and contain only letters and numbers.");
-            Console.ResetColor();
-            return;
-        }
-
-        // Parse template
-        if (!Enum.TryParse<CliProjectTemplate>(templateName, true, out var template))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"ERROR: Unknown template '{templateName}'.");
-            Console.WriteLine("Valid options: Empty, Skeleton, Starter, FullCrud");
-            Console.ResetColor();
-            return;
-        }
-
-        // Determine output path
-        var outputPath = string.IsNullOrEmpty(output)
-            ? Path.Combine(Environment.CurrentDirectory, name)
-            : output;
-
-        await MenuService.GenerateProject(template, name, outputPath);
-    }
-
-    /// <summary>
-    /// Create an application from command line arguments.
-    /// </summary>
-    private static async Task CreateApplication(string name, string templateName, string output)
-    {
-        // Validate name
-        if (!Regex.IsMatch(name, @"^[A-Za-z][A-Za-z0-9]*$"))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("ERROR: Application name must start with a letter and contain only letters and numbers.");
-            Console.ResetColor();
-            return;
-        }
-
-        // Parse template
-        if (!Enum.TryParse<CliApplicationTemplate>(templateName, true, out var template))
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"ERROR: Unknown template '{templateName}'.");
-            Console.WriteLine("Valid options: FreeBase, FreeTracker, FreeAudit");
-            Console.ResetColor();
-            return;
-        }
-
-        // Determine output path
-        var outputPath = string.IsNullOrEmpty(output)
-            ? Path.Combine(Environment.CurrentDirectory, name)
-            : output;
-
-        await MenuService.GenerateApplication(template, name, outputPath);
-    }
-
-    /// <summary>
-    /// List available templates (command line output).
-    /// </summary>
-    private static void ListTemplates()
-    {
-        Console.WriteLine();
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine("FreeManager CLI - Available Templates");
-        Console.WriteLine("══════════════════════════════════════");
-        Console.ResetColor();
-        Console.WriteLine();
-
-        // Simple Project Templates
-        Console.WriteLine("SIMPLE PROJECT TEMPLATES (use with 'new' command):");
-        Console.WriteLine("┌──────────────┬───────┬─────────────────────────────────────────────────┐");
-        Console.WriteLine("│ Template     │ Files │ Description                                     │");
-        Console.WriteLine("├──────────────┼───────┼─────────────────────────────────────────────────┤");
-
-        var templates = CliProjectTemplates.GetTemplates();
-        foreach (var t in templates)
-        {
-            var name = t.IsRecommended ? $"{t.Name} *" : t.Name;
-            Console.WriteLine($"│ {name.PadRight(12)} │ {t.FileCount,5} │ {t.Description.PadRight(47)} │");
-        }
-        Console.WriteLine("└──────────────┴───────┴─────────────────────────────────────────────────┘");
-        Console.WriteLine("(* = Recommended)");
-        Console.WriteLine();
-
-        // Application Templates
-        Console.WriteLine("APPLICATION TEMPLATES (use with 'app' command):");
-        Console.WriteLine("┌──────────────┬──────────────┬──────────┬─────────────────────────────────┐");
-        Console.WriteLine("│ Template     │ Difficulty   │ Entities │ Description                     │");
-        Console.WriteLine("├──────────────┼──────────────┼──────────┼─────────────────────────────────┤");
-
-        var appTemplates = CliProjectTemplates.GetApplicationTemplates();
-        foreach (var t in appTemplates)
-        {
-            var desc = t.Description.Length > 31 ? t.Description[..28] + "..." : t.Description;
-            Console.WriteLine($"│ {t.Name.PadRight(12)} │ {t.Difficulty.PadRight(12)} │ {t.EntityCount,8} │ {desc.PadRight(31)} │");
-        }
-        Console.WriteLine("└──────────────┴──────────────┴──────────┴─────────────────────────────────┘");
-        Console.WriteLine();
-
-        Console.WriteLine("Examples:");
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("  FreeManager.exe new Tasks                    # Starter project");
-        Console.WriteLine("  FreeManager.exe new Inventory -t FullCrud    # FullCrud project");
-        Console.WriteLine("  FreeManager.exe app FreeGLBA -t FreeAudit    # FreeAudit application");
-        Console.ResetColor();
     }
 
     /// <summary>

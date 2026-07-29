@@ -18,6 +18,32 @@ public class HeartbeatTests : IClassFixture<HubFixture>
     }
 
     [Fact]
+    public async Task SaveHeartbeat_WithoutToken_Returns401()
+    {
+        var heartbeat = new
+        {
+            HeartbeatId = Guid.Empty,
+            AgentId = Guid.NewGuid(),
+            Timestamp = DateTime.UtcNow,
+            CpuPercent = 50.0,
+            MemoryPercent = 50.0,
+            MemoryUsedGB = 8.0,
+            MemoryTotalGB = 16.0,
+            DiskMetricsJson = "[]",
+            CustomDataJson = "",
+            AgentName = "NO-AUTH-PC",
+        };
+
+        // The SaveHeartbeat endpoint requires [Authorize], so this should fail
+        var response = await _fixture.Client.PostAsJsonAsync("/api/Data/SaveHeartbeat", heartbeat);
+        // Expect either 401 or redirect to login
+        Assert.True(
+            response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+            response.StatusCode == System.Net.HttpStatusCode.Redirect,
+            $"Expected 401 or redirect, got {response.StatusCode}");
+    }
+
+    [Fact]
     public async Task SaveHeartbeat_WithValidToken_ReturnsSuccess()
     {
         // First, register an agent to get a token
@@ -61,31 +87,5 @@ public class HeartbeatTests : IClassFixture<HubFixture>
         var hbResult = await hbResponse.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(hbResult.GetProperty("result").GetBoolean(),
             "SaveHeartbeat should return result=true");
-    }
-
-    [Fact]
-    public async Task SaveHeartbeat_WithoutToken_Returns401()
-    {
-        var heartbeat = new
-        {
-            HeartbeatId = Guid.Empty,
-            AgentId = Guid.NewGuid(),
-            Timestamp = DateTime.UtcNow,
-            CpuPercent = 50.0,
-            MemoryPercent = 50.0,
-            MemoryUsedGB = 8.0,
-            MemoryTotalGB = 16.0,
-            DiskMetricsJson = "[]",
-            CustomDataJson = "",
-            AgentName = "NO-AUTH-PC",
-        };
-
-        // The SaveHeartbeat endpoint requires [Authorize], so this should fail
-        var response = await _fixture.Client.PostAsJsonAsync("/api/Data/SaveHeartbeat", heartbeat);
-        // Expect either 401 or redirect to login
-        Assert.True(
-            response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
-            response.StatusCode == System.Net.HttpStatusCode.Redirect,
-            $"Expected 401 or redirect, got {response.StatusCode}");
     }
 }

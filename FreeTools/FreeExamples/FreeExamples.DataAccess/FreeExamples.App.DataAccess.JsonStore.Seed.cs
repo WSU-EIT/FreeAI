@@ -2,84 +2,6 @@
 
 public partial class DataAccess
 {
-    // ── Seed: Projects ──
-    private void SeedProjects()
-    {
-        var projects = new List<DataObjects.Project> {
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Name = "Website Redesign", ProjectKey = "WEB", LeadName = "Alice Chen", LeadEmail = "achen@example.edu", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, StartDate = DateTime.UtcNow.AddDays(-60), TargetEndDate = DateTime.UtcNow.AddDays(30), Color = "#0d6efd", SortOrder = 1, NextTicketNumber = 13 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000002"), Name = "Frontend", ProjectKey = "FE", LeadName = "Bob Martinez", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Color = "#198754", SortOrder = 1, NextTicketNumber = 8 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000003"), Name = "Backend API", ProjectKey = "API", LeadName = "Carol Davis", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Color = "#6f42c1", SortOrder = 2, NextTicketNumber = 6 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000004"), Name = "Navigation", ProjectKey = "NAV", LeadName = "Bob Martinez", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000002"), Color = "#20c997", SortOrder = 1, NextTicketNumber = 4 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000005"), Name = "HR Portal", ProjectKey = "HR", LeadName = "Diana Lopez", LeadEmail = "dlopez@example.edu", Department = "Human Resources", Status = DataObjects.ProjectStatus.Planning, StartDate = DateTime.UtcNow.AddDays(15), TargetEndDate = DateTime.UtcNow.AddDays(120), Color = "#dc3545", SortOrder = 2, NextTicketNumber = 5 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000006"), Name = "Campus Safety App", ProjectKey = "SAF", LeadName = "Ed Thompson", Department = "Campus Safety", Status = DataObjects.ProjectStatus.Completed, StartDate = DateTime.UtcNow.AddDays(-120), TargetEndDate = DateTime.UtcNow.AddDays(-10), Color = "#ffc107", SortOrder = 3, NextTicketNumber = 9 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000007"), Name = "Data Migration", ProjectKey = "MIG", LeadName = "Fran Nguyen", Department = "IT", Status = DataObjects.ProjectStatus.OnHold, Color = "#6c757d", SortOrder = 4, NextTicketNumber = 3 },
-            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000008"), Name = "Student Portal", ProjectKey = "STU", LeadName = "Grace Kim", LeadEmail = "gkim@example.edu", Department = "Student Services", Status = DataObjects.ProjectStatus.Active, StartDate = DateTime.UtcNow.AddDays(-30), TargetEndDate = DateTime.UtcNow.AddDays(90), Color = "#0dcaf0", SortOrder = 5, NextTicketNumber = 7 },
-        };
-        SaveJsonRecords<DataObjects.Project>(projects, null);
-    }
-
-    // ── Seed: Tickets ──
-    private void SeedTickets()
-    {
-        var webId = Guid.Parse("a0000001-0000-0000-0000-000000000001");
-        var feId = Guid.Parse("a0000001-0000-0000-0000-000000000002");
-        var apiId = Guid.Parse("a0000001-0000-0000-0000-000000000003");
-        var hrId = Guid.Parse("a0000001-0000-0000-0000-000000000005");
-        var stuId = Guid.Parse("a0000001-0000-0000-0000-000000000008");
-        var sprint1 = Guid.Parse("b0000001-0000-0000-0000-000000000001");
-        var sprint2 = Guid.Parse("b0000001-0000-0000-0000-000000000002");
-
-        var tickets = new List<DataObjects.Ticket> {
-            // Website Redesign tickets
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000001"), ProjectId = webId, TicketNumber = "WEB-1", Title = "Design new homepage layout", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Alice Chen", StoryPoints = 8, SprintId = sprint1, Labels = "design,frontend", CompletedDate = DateTime.UtcNow.AddDays(-20), SortOrder = 1,
-                Comments = [ new() { CommentId = Guid.NewGuid(), AuthorName = "Alice Chen", Body = "Great work on the hero section!", CreatedDate = DateTime.UtcNow.AddDays(-21) } ] },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000002"), ProjectId = webId, TicketNumber = "WEB-2", Title = "Implement responsive navigation", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Alice Chen", StoryPoints = 5, SprintId = sprint2, Labels = "frontend,nav", StartedDate = DateTime.UtcNow.AddDays(-5), SortOrder = 2 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000003"), ProjectId = webId, TicketNumber = "WEB-3", Title = "Fix broken image links on About page", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.ToDo, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", SprintId = sprint2, SortOrder = 3 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000004"), ProjectId = webId, TicketNumber = "WEB-4", Title = "Add dark mode support", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Low, ReporterName = "Bob Martinez", StoryPoints = 13, Labels = "enhancement,frontend", SortOrder = 4 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000005"), ProjectId = webId, TicketNumber = "WEB-5", Title = "Performance audit and optimization", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Carol Davis", StoryPoints = 8, Labels = "performance", SortOrder = 5 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000006"), ProjectId = webId, TicketNumber = "WEB-6", Title = "Website Redesign Epic", Type = DataObjects.TicketType.Epic, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.High, AssignedTo = "Alice Chen", ReporterName = "Alice Chen", StoryPoints = 21, SortOrder = 0 },
-
-            // Frontend tickets
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000007"), ProjectId = feId, TicketNumber = "FE-1", Title = "Create reusable card component", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.Medium, AssignedTo = "Bob Martinez", ReporterName = "Bob Martinez", StoryPoints = 3, SprintId = sprint1, CompletedDate = DateTime.UtcNow.AddDays(-18), SortOrder = 1 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000008"), ProjectId = feId, TicketNumber = "FE-2", Title = "Form validation not showing errors", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.InReview, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Diana Lopez", StoryPoints = 3, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-3), SortOrder = 2 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000009"), ProjectId = feId, TicketNumber = "FE-3", Title = "Accessibility audit for all forms", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Grace Kim", StoryPoints = 5, Labels = "accessibility", SortOrder = 3 },
-
-            // Backend API tickets
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000010"), ProjectId = apiId, TicketNumber = "API-1", Title = "Design REST API schema", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Carol Davis", ReporterName = "Alice Chen", StoryPoints = 8, SprintId = sprint1, CompletedDate = DateTime.UtcNow.AddDays(-15), SortOrder = 1 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000011"), ProjectId = apiId, TicketNumber = "API-2", Title = "Implement authentication middleware", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Testing, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Carol Davis", ReporterName = "Carol Davis", StoryPoints = 8, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-7), SortOrder = 2 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000012"), ProjectId = apiId, TicketNumber = "API-3", Title = "Rate limiting returns wrong HTTP status", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.ToDo, Priority = DataObjects.TicketPriority.High, ReporterName = "Ed Thompson", SprintId = sprint2, StoryPoints = 2, SortOrder = 3 },
-
-            // HR Portal tickets
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000013"), ProjectId = hrId, TicketNumber = "HR-1", Title = "Employee directory page", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.High, ReporterName = "Diana Lopez", StoryPoints = 8, SortOrder = 1 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000014"), ProjectId = hrId, TicketNumber = "HR-2", Title = "PTO request form", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", StoryPoints = 5, SortOrder = 2 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000015"), ProjectId = hrId, TicketNumber = "HR-3", Title = "Benefits enrollment wizard", Type = DataObjects.TicketType.Epic, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", StoryPoints = 21, SortOrder = 3 },
-
-            // Student Portal tickets
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000016"), ProjectId = stuId, TicketNumber = "STU-1", Title = "Course registration flow", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Grace Kim", ReporterName = "Grace Kim", StoryPoints = 13, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-4), SortOrder = 1 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000017"), ProjectId = stuId, TicketNumber = "STU-2", Title = "Transcript download crashes on Safari", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.High, ReporterName = "Fran Nguyen", Labels = "browser,safari", SortOrder = 2 },
-            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000018"), ProjectId = stuId, TicketNumber = "STU-3", Title = "Add GPA calculator widget", Type = DataObjects.TicketType.Improvement, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Low, ReporterName = "Grace Kim", StoryPoints = 5, SortOrder = 3 },
-        };
-        SaveJsonRecords<DataObjects.Ticket>(tickets, null);
-    }
-
-    // ── Seed: Sprints ──
-    private void SeedSprints()
-    {
-        var webId = Guid.Parse("a0000001-0000-0000-0000-000000000001");
-        var stuId = Guid.Parse("a0000001-0000-0000-0000-000000000008");
-
-        var sprints = new List<DataObjects.Sprint> {
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000001"), ProjectId = webId, Name = "Sprint 1 — Foundation", Goal = "Core layout and API schema done", StartDate = DateTime.UtcNow.AddDays(-28), EndDate = DateTime.UtcNow.AddDays(-14), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 21 },
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000002"), ProjectId = webId, Name = "Sprint 2 — Navigation & Auth", Goal = "Responsive nav and auth middleware", StartDate = DateTime.UtcNow.AddDays(-14), EndDate = DateTime.UtcNow.AddDays(0), Status = DataObjects.SprintStatus.Active, CapacityPoints = 26 },
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000003"), ProjectId = webId, Name = "Sprint 3 — Polish", Goal = "Bug fixes and performance", StartDate = DateTime.UtcNow.AddDays(1), EndDate = DateTime.UtcNow.AddDays(15), Status = DataObjects.SprintStatus.Planning, CapacityPoints = 21 },
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000004"), ProjectId = stuId, Name = "STU Sprint 1", Goal = "Course registration MVP", StartDate = DateTime.UtcNow.AddDays(-14), EndDate = DateTime.UtcNow.AddDays(0), Status = DataObjects.SprintStatus.Active, CapacityPoints = 18 },
-            // Historical sprints for velocity charts
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000005"), ProjectId = webId, Name = "Sprint 0 — Setup", Goal = "Project setup and tooling", StartDate = DateTime.UtcNow.AddDays(-56), EndDate = DateTime.UtcNow.AddDays(-42), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 13 },
-            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000006"), ProjectId = webId, Name = "Sprint -1 — Discovery", Goal = "Requirements gathering", StartDate = DateTime.UtcNow.AddDays(-70), EndDate = DateTime.UtcNow.AddDays(-56), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 8 },
-        };
-        SaveJsonRecords<DataObjects.Sprint>(sprints, null);
-    }
-
     // ── Seed: Board Configs ──
     private void SeedBoardConfigs()
     {
@@ -89,56 +11,6 @@ public partial class DataAccess
             new() { RecordId = Guid.NewGuid(), ProjectId = webId, BoardName = "Sprint Board", BoardType = DataObjects.BoardType.Sprint, ColumnConfig = "[\"ToDo\",\"InProgress\",\"InReview\",\"Testing\",\"Done\"]", SwimlaneField = "assignee", CreatedBy = "Alice Chen" },
         };
         SaveJsonRecords<DataObjects.BoardConfig>(configs, null);
-    }
-
-    // ── Seed: Work Orders ──
-    private void SeedWorkOrders()
-    {
-        var rng = new Random(100);
-        var buildings = new[] { "Science Hall", "Library", "Student Union", "Engineering Bldg", "Admin Tower" };
-        var floors = new[] { "1st Floor", "2nd Floor", "3rd Floor", "Basement" };
-        var rooms = new[] { "101", "205", "310", "B12", "118", "220", "315" };
-        var techs = new[] { "Mike Johnson", "Sarah Wilson", "Tom Brown", null };
-        var teams = new[] { "Plumbing Crew", "Electrical Crew", "HVAC Team", "General Maintenance" };
-        var requesters = new[] { ("Jane Faculty", "jfaculty@example.edu"), ("Mark Staff", "mstaff@example.edu"), ("Lisa Admin", "ladmin@example.edu"), ("Prof. Garcia", "garcia@example.edu"), ("Dean Roberts", "droberts@example.edu") };
-
-        var orders = new List<DataObjects.WorkOrder>();
-        var titles = new[] {
-            "Leaking faucet in restroom", "Flickering lights in hallway", "AC not working — room too hot",
-            "Broken door lock", "Clogged drain in lab sink", "Power outlet sparking", "Heating vent blocked",
-            "Window won't close properly", "Elevator stuck on 2nd floor", "Parking lot light out",
-            "Graffiti on exterior wall", "Water stain on ceiling tile", "Thermostat reads wrong temp",
-            "Emergency exit sign burnt out", "Toilet running continuously", "Carpet stain near entrance",
-            "Mouse spotted in break room", "Squeaky door hinge", "Broken blinds in classroom"
-        };
-        var categories = new[] { DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Grounds, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other };
-        var statuses = new[] { DataObjects.WorkOrderStatus.Submitted, DataObjects.WorkOrderStatus.Assigned, DataObjects.WorkOrderStatus.InProgress, DataObjects.WorkOrderStatus.Completed, DataObjects.WorkOrderStatus.Closed };
-
-        for (int i = 0; i < titles.Length; i++) {
-            var req = requesters[rng.Next(requesters.Length)];
-            var status = statuses[rng.Next(statuses.Length)];
-            var tech = status >= DataObjects.WorkOrderStatus.Assigned ? techs[rng.Next(techs.Length)] : null;
-            orders.Add(new DataObjects.WorkOrder {
-                RecordId = Guid.NewGuid(),
-                Title = titles[i],
-                Description = $"Reported issue: {titles[i]}. Please address as soon as possible.",
-                Building = buildings[rng.Next(buildings.Length)],
-                Floor = floors[rng.Next(floors.Length)],
-                RoomNumber = rooms[rng.Next(rooms.Length)],
-                Category = categories[i],
-                Urgency = (DataObjects.WorkOrderUrgency)rng.Next(4),
-                Status = status,
-                AssignedTo = tech,
-                AssignedTeam = tech != null ? teams[rng.Next(teams.Length)] : null,
-                RequestedBy = req.Item1,
-                RequestedByEmail = req.Item2,
-                RequestedDate = DateTime.UtcNow.AddDays(-rng.Next(1, 45)),
-                CompletedDate = status >= DataObjects.WorkOrderStatus.Completed ? DateTime.UtcNow.AddDays(-rng.Next(0, 5)) : null,
-                EstimatedHours = Math.Round((decimal)(rng.NextDouble() * 4 + 0.5), 1),
-                ActualHours = status >= DataObjects.WorkOrderStatus.Completed ? Math.Round((decimal)(rng.NextDouble() * 5 + 0.5), 1) : null,
-            });
-        }
-        SaveJsonRecords<DataObjects.WorkOrder>(orders, null);
     }
 
     // ── Seed: Budget Requests ──
@@ -302,5 +174,132 @@ public partial class DataAccess
             new() { RecordId = Guid.NewGuid(), EmployeeName = "Aisha Rahman", EmployeeEmail = "arahman@example.edu", EmployeeTitle = "Student Worker", Department = "Library", HireDate = DateTime.UtcNow, StartDate = DateTime.UtcNow.AddDays(7), SupervisorName = "Lisa Admin", EmploymentType = DataObjects.EmploymentType.StudentWorker, Status = DataObjects.OnboardingStatus.Pending, ChecklistItems = cl6 },
         };
         SaveJsonRecords<DataObjects.Onboarding>(onboardings, null);
+    }
+    // ── Seed: Projects ──
+    private void SeedProjects()
+    {
+        var projects = new List<DataObjects.Project> {
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Name = "Website Redesign", ProjectKey = "WEB", LeadName = "Alice Chen", LeadEmail = "achen@example.edu", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, StartDate = DateTime.UtcNow.AddDays(-60), TargetEndDate = DateTime.UtcNow.AddDays(30), Color = "#0d6efd", SortOrder = 1, NextTicketNumber = 13 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000002"), Name = "Frontend", ProjectKey = "FE", LeadName = "Bob Martinez", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Color = "#198754", SortOrder = 1, NextTicketNumber = 8 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000003"), Name = "Backend API", ProjectKey = "API", LeadName = "Carol Davis", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000001"), Color = "#6f42c1", SortOrder = 2, NextTicketNumber = 6 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000004"), Name = "Navigation", ProjectKey = "NAV", LeadName = "Bob Martinez", Department = "Engineering", Status = DataObjects.ProjectStatus.Active, ParentProjectId = Guid.Parse("a0000001-0000-0000-0000-000000000002"), Color = "#20c997", SortOrder = 1, NextTicketNumber = 4 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000005"), Name = "HR Portal", ProjectKey = "HR", LeadName = "Diana Lopez", LeadEmail = "dlopez@example.edu", Department = "Human Resources", Status = DataObjects.ProjectStatus.Planning, StartDate = DateTime.UtcNow.AddDays(15), TargetEndDate = DateTime.UtcNow.AddDays(120), Color = "#dc3545", SortOrder = 2, NextTicketNumber = 5 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000006"), Name = "Campus Safety App", ProjectKey = "SAF", LeadName = "Ed Thompson", Department = "Campus Safety", Status = DataObjects.ProjectStatus.Completed, StartDate = DateTime.UtcNow.AddDays(-120), TargetEndDate = DateTime.UtcNow.AddDays(-10), Color = "#ffc107", SortOrder = 3, NextTicketNumber = 9 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000007"), Name = "Data Migration", ProjectKey = "MIG", LeadName = "Fran Nguyen", Department = "IT", Status = DataObjects.ProjectStatus.OnHold, Color = "#6c757d", SortOrder = 4, NextTicketNumber = 3 },
+            new() { RecordId = Guid.Parse("a0000001-0000-0000-0000-000000000008"), Name = "Student Portal", ProjectKey = "STU", LeadName = "Grace Kim", LeadEmail = "gkim@example.edu", Department = "Student Services", Status = DataObjects.ProjectStatus.Active, StartDate = DateTime.UtcNow.AddDays(-30), TargetEndDate = DateTime.UtcNow.AddDays(90), Color = "#0dcaf0", SortOrder = 5, NextTicketNumber = 7 },
+        };
+        SaveJsonRecords<DataObjects.Project>(projects, null);
+    }
+
+    // ── Seed: Sprints ──
+    private void SeedSprints()
+    {
+        var webId = Guid.Parse("a0000001-0000-0000-0000-000000000001");
+        var stuId = Guid.Parse("a0000001-0000-0000-0000-000000000008");
+
+        var sprints = new List<DataObjects.Sprint> {
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000001"), ProjectId = webId, Name = "Sprint 1 — Foundation", Goal = "Core layout and API schema done", StartDate = DateTime.UtcNow.AddDays(-28), EndDate = DateTime.UtcNow.AddDays(-14), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 21 },
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000002"), ProjectId = webId, Name = "Sprint 2 — Navigation & Auth", Goal = "Responsive nav and auth middleware", StartDate = DateTime.UtcNow.AddDays(-14), EndDate = DateTime.UtcNow.AddDays(0), Status = DataObjects.SprintStatus.Active, CapacityPoints = 26 },
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000003"), ProjectId = webId, Name = "Sprint 3 — Polish", Goal = "Bug fixes and performance", StartDate = DateTime.UtcNow.AddDays(1), EndDate = DateTime.UtcNow.AddDays(15), Status = DataObjects.SprintStatus.Planning, CapacityPoints = 21 },
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000004"), ProjectId = stuId, Name = "STU Sprint 1", Goal = "Course registration MVP", StartDate = DateTime.UtcNow.AddDays(-14), EndDate = DateTime.UtcNow.AddDays(0), Status = DataObjects.SprintStatus.Active, CapacityPoints = 18 },
+            // Historical sprints for velocity charts
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000005"), ProjectId = webId, Name = "Sprint 0 — Setup", Goal = "Project setup and tooling", StartDate = DateTime.UtcNow.AddDays(-56), EndDate = DateTime.UtcNow.AddDays(-42), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 13 },
+            new() { RecordId = Guid.Parse("b0000001-0000-0000-0000-000000000006"), ProjectId = webId, Name = "Sprint -1 — Discovery", Goal = "Requirements gathering", StartDate = DateTime.UtcNow.AddDays(-70), EndDate = DateTime.UtcNow.AddDays(-56), Status = DataObjects.SprintStatus.Completed, CapacityPoints = 8 },
+        };
+        SaveJsonRecords<DataObjects.Sprint>(sprints, null);
+    }
+
+    // ── Seed: Tickets ──
+    private void SeedTickets()
+    {
+        var webId = Guid.Parse("a0000001-0000-0000-0000-000000000001");
+        var feId = Guid.Parse("a0000001-0000-0000-0000-000000000002");
+        var apiId = Guid.Parse("a0000001-0000-0000-0000-000000000003");
+        var hrId = Guid.Parse("a0000001-0000-0000-0000-000000000005");
+        var stuId = Guid.Parse("a0000001-0000-0000-0000-000000000008");
+        var sprint1 = Guid.Parse("b0000001-0000-0000-0000-000000000001");
+        var sprint2 = Guid.Parse("b0000001-0000-0000-0000-000000000002");
+
+        var tickets = new List<DataObjects.Ticket> {
+            // Website Redesign tickets
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000001"), ProjectId = webId, TicketNumber = "WEB-1", Title = "Design new homepage layout", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Alice Chen", StoryPoints = 8, SprintId = sprint1, Labels = "design,frontend", CompletedDate = DateTime.UtcNow.AddDays(-20), SortOrder = 1,
+                Comments = [ new() { CommentId = Guid.NewGuid(), AuthorName = "Alice Chen", Body = "Great work on the hero section!", CreatedDate = DateTime.UtcNow.AddDays(-21) } ] },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000002"), ProjectId = webId, TicketNumber = "WEB-2", Title = "Implement responsive navigation", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Alice Chen", StoryPoints = 5, SprintId = sprint2, Labels = "frontend,nav", StartedDate = DateTime.UtcNow.AddDays(-5), SortOrder = 2 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000003"), ProjectId = webId, TicketNumber = "WEB-3", Title = "Fix broken image links on About page", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.ToDo, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", SprintId = sprint2, SortOrder = 3 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000004"), ProjectId = webId, TicketNumber = "WEB-4", Title = "Add dark mode support", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Low, ReporterName = "Bob Martinez", StoryPoints = 13, Labels = "enhancement,frontend", SortOrder = 4 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000005"), ProjectId = webId, TicketNumber = "WEB-5", Title = "Performance audit and optimization", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Carol Davis", StoryPoints = 8, Labels = "performance", SortOrder = 5 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000006"), ProjectId = webId, TicketNumber = "WEB-6", Title = "Website Redesign Epic", Type = DataObjects.TicketType.Epic, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.High, AssignedTo = "Alice Chen", ReporterName = "Alice Chen", StoryPoints = 21, SortOrder = 0 },
+
+            // Frontend tickets
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000007"), ProjectId = feId, TicketNumber = "FE-1", Title = "Create reusable card component", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.Medium, AssignedTo = "Bob Martinez", ReporterName = "Bob Martinez", StoryPoints = 3, SprintId = sprint1, CompletedDate = DateTime.UtcNow.AddDays(-18), SortOrder = 1 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000008"), ProjectId = feId, TicketNumber = "FE-2", Title = "Form validation not showing errors", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.InReview, Priority = DataObjects.TicketPriority.High, AssignedTo = "Bob Martinez", ReporterName = "Diana Lopez", StoryPoints = 3, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-3), SortOrder = 2 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000009"), ProjectId = feId, TicketNumber = "FE-3", Title = "Accessibility audit for all forms", Type = DataObjects.TicketType.Task, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Grace Kim", StoryPoints = 5, Labels = "accessibility", SortOrder = 3 },
+
+            // Backend API tickets
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000010"), ProjectId = apiId, TicketNumber = "API-1", Title = "Design REST API schema", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Done, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Carol Davis", ReporterName = "Alice Chen", StoryPoints = 8, SprintId = sprint1, CompletedDate = DateTime.UtcNow.AddDays(-15), SortOrder = 1 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000011"), ProjectId = apiId, TicketNumber = "API-2", Title = "Implement authentication middleware", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Testing, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Carol Davis", ReporterName = "Carol Davis", StoryPoints = 8, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-7), SortOrder = 2 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000012"), ProjectId = apiId, TicketNumber = "API-3", Title = "Rate limiting returns wrong HTTP status", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.ToDo, Priority = DataObjects.TicketPriority.High, ReporterName = "Ed Thompson", SprintId = sprint2, StoryPoints = 2, SortOrder = 3 },
+
+            // HR Portal tickets
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000013"), ProjectId = hrId, TicketNumber = "HR-1", Title = "Employee directory page", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.High, ReporterName = "Diana Lopez", StoryPoints = 8, SortOrder = 1 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000014"), ProjectId = hrId, TicketNumber = "HR-2", Title = "PTO request form", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", StoryPoints = 5, SortOrder = 2 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000015"), ProjectId = hrId, TicketNumber = "HR-3", Title = "Benefits enrollment wizard", Type = DataObjects.TicketType.Epic, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Medium, ReporterName = "Diana Lopez", StoryPoints = 21, SortOrder = 3 },
+
+            // Student Portal tickets
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000016"), ProjectId = stuId, TicketNumber = "STU-1", Title = "Course registration flow", Type = DataObjects.TicketType.Story, Status = DataObjects.TicketStatus.InProgress, Priority = DataObjects.TicketPriority.Critical, AssignedTo = "Grace Kim", ReporterName = "Grace Kim", StoryPoints = 13, SprintId = sprint2, StartedDate = DateTime.UtcNow.AddDays(-4), SortOrder = 1 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000017"), ProjectId = stuId, TicketNumber = "STU-2", Title = "Transcript download crashes on Safari", Type = DataObjects.TicketType.Bug, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.High, ReporterName = "Fran Nguyen", Labels = "browser,safari", SortOrder = 2 },
+            new() { RecordId = Guid.Parse("c0000001-0000-0000-0000-000000000018"), ProjectId = stuId, TicketNumber = "STU-3", Title = "Add GPA calculator widget", Type = DataObjects.TicketType.Improvement, Status = DataObjects.TicketStatus.Backlog, Priority = DataObjects.TicketPriority.Low, ReporterName = "Grace Kim", StoryPoints = 5, SortOrder = 3 },
+        };
+        SaveJsonRecords<DataObjects.Ticket>(tickets, null);
+    }
+
+    // ── Seed: Work Orders ──
+    private void SeedWorkOrders()
+    {
+        var rng = new Random(100);
+        var buildings = new[] { "Science Hall", "Library", "Student Union", "Engineering Bldg", "Admin Tower" };
+        var floors = new[] { "1st Floor", "2nd Floor", "3rd Floor", "Basement" };
+        var rooms = new[] { "101", "205", "310", "B12", "118", "220", "315" };
+        var techs = new[] { "Mike Johnson", "Sarah Wilson", "Tom Brown", null };
+        var teams = new[] { "Plumbing Crew", "Electrical Crew", "HVAC Team", "General Maintenance" };
+        var requesters = new[] { ("Jane Faculty", "jfaculty@example.edu"), ("Mark Staff", "mstaff@example.edu"), ("Lisa Admin", "ladmin@example.edu"), ("Prof. Garcia", "garcia@example.edu"), ("Dean Roberts", "droberts@example.edu") };
+
+        var orders = new List<DataObjects.WorkOrder>();
+        var titles = new[] {
+            "Leaking faucet in restroom", "Flickering lights in hallway", "AC not working — room too hot",
+            "Broken door lock", "Clogged drain in lab sink", "Power outlet sparking", "Heating vent blocked",
+            "Window won't close properly", "Elevator stuck on 2nd floor", "Parking lot light out",
+            "Graffiti on exterior wall", "Water stain on ceiling tile", "Thermostat reads wrong temp",
+            "Emergency exit sign burnt out", "Toilet running continuously", "Carpet stain near entrance",
+            "Mouse spotted in break room", "Squeaky door hinge", "Broken blinds in classroom"
+        };
+        var categories = new[] { DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Grounds, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.HVAC, DataObjects.WorkOrderCategory.Electrical, DataObjects.WorkOrderCategory.Plumbing, DataObjects.WorkOrderCategory.Custodial, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other, DataObjects.WorkOrderCategory.Other };
+        var statuses = new[] { DataObjects.WorkOrderStatus.Submitted, DataObjects.WorkOrderStatus.Assigned, DataObjects.WorkOrderStatus.InProgress, DataObjects.WorkOrderStatus.Completed, DataObjects.WorkOrderStatus.Closed };
+
+        for (int i = 0; i < titles.Length; i++) {
+            var req = requesters[rng.Next(requesters.Length)];
+            var status = statuses[rng.Next(statuses.Length)];
+            var tech = status >= DataObjects.WorkOrderStatus.Assigned ? techs[rng.Next(techs.Length)] : null;
+            orders.Add(new DataObjects.WorkOrder {
+                RecordId = Guid.NewGuid(),
+                Title = titles[i],
+                Description = $"Reported issue: {titles[i]}. Please address as soon as possible.",
+                Building = buildings[rng.Next(buildings.Length)],
+                Floor = floors[rng.Next(floors.Length)],
+                RoomNumber = rooms[rng.Next(rooms.Length)],
+                Category = categories[i],
+                Urgency = (DataObjects.WorkOrderUrgency)rng.Next(4),
+                Status = status,
+                AssignedTo = tech,
+                AssignedTeam = tech != null ? teams[rng.Next(teams.Length)] : null,
+                RequestedBy = req.Item1,
+                RequestedByEmail = req.Item2,
+                RequestedDate = DateTime.UtcNow.AddDays(-rng.Next(1, 45)),
+                CompletedDate = status >= DataObjects.WorkOrderStatus.Completed ? DateTime.UtcNow.AddDays(-rng.Next(0, 5)) : null,
+                EstimatedHours = Math.Round((decimal)(rng.NextDouble() * 4 + 0.5), 1),
+                ActualHours = status >= DataObjects.WorkOrderStatus.Completed ? Math.Round((decimal)(rng.NextDouble() * 5 + 0.5), 1) : null,
+            });
+        }
+        SaveJsonRecords<DataObjects.WorkOrder>(orders, null);
     }
 }

@@ -10,15 +10,14 @@ namespace FreeServicesHub.Agent.Installer;
 /// </summary>
 public sealed class InstallerConfig
 {
-    public ServiceSettings Service { get; set; } = new();
-    public PublishSettings Publish { get; set; } = new();
-    public SecuritySettings Security { get; set; } = new();
-
     /// <summary>
     /// When true, skips all interactive prompts. Required for CI/CD pipelines.
     /// Set via --NonInteractive or --NonInteractive=true on the command line.
     /// </summary>
     public bool NonInteractive { get; set; }
+    public PublishSettings Publish { get; set; } = new();
+    public SecuritySettings Security { get; set; } = new();
+    public ServiceSettings Service { get; set; } = new();
 }
 
 /// <summary>
@@ -26,11 +25,11 @@ public sealed class InstallerConfig
 /// </summary>
 public sealed class ServiceSettings
 {
-    public string Name { get; set; } = "FreeServicesHubAgent";
-    public string DisplayName { get; set; } = "FreeServicesHub Agent";
     public string Description { get; set; } = "Agent that connects to FreeServicesHub and reports system status.";
+    public string DisplayName { get; set; } = "FreeServicesHub Agent";
     public string ExePath { get; set; } = @"C:\FreeServicesHubAgent\FreeServicesHub.Agent.exe";
     public string InstallPath { get; set; } = @"C:\FreeServicesHubAgent";
+    public string Name { get; set; } = "FreeServicesHubAgent";
 }
 
 /// <summary>
@@ -38,8 +37,8 @@ public sealed class ServiceSettings
 /// </summary>
 public sealed class PublishSettings
 {
-    public string ProjectPath { get; set; } = "../FreeServicesHub.Agent";
     public string OutputPath { get; set; } = "";
+    public string ProjectPath { get; set; } = "../FreeServicesHub.Agent";
     public string Runtime { get; set; } = "win-x64";
     public bool SelfContained { get; set; } = true;
     public bool SingleFile { get; set; } = true;

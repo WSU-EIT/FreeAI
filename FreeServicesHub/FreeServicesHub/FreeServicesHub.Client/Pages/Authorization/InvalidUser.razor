@@ -16,9 +16,13 @@
     </button>
 }
 @code {
+    protected string _pageName = "invaliduser";
     [Parameter] public string? TenantCode { get; set; }
 
-    protected string _pageName = "invaliduser";
+    protected void Back()
+    {
+        Helpers.NavigateToLogin();
+    }
 
     public void Dispose() {
         Model.OnChange -= OnDataModelUpdated;
@@ -31,12 +35,6 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-        Model.View = _pageName;
-    }
-
     protected void OnDataModelUpdated()
     {
         if (Model.View == _pageName) {
@@ -44,8 +42,9 @@
         }
     }
 
-    protected void Back()
+    protected override void OnInitialized()
     {
-        Helpers.NavigateToLogin();
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
     }
 }

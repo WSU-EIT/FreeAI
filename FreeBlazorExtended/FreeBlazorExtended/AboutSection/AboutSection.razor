@@ -15,8 +15,7 @@
         StartExpanded — when true, renders the panel open on first load (default false)
 
     Example:
-        <AboutSection Title="What are Source Systems?"
-                      Subtitle="Applications that send access data">
+        <AboutSection Title="What are Source Systems?" Subtitle="Applications that send access data">
             <div class="row"><div class="col-md-4">...</div></div>
         </AboutSection>
 *@
@@ -42,14 +41,13 @@
 </div>
 
 @code {
-    /// <summary>Heading text displayed in the card header. Default: <c>"About This Page"</c>.</summary>
-    [Parameter] public string Title { get; set; } = "About This Page";
+    private bool _expanded;
 
     /// <summary>
-    /// Optional secondary descriptor shown after an em-dash in the header.
-    /// Example: <c>"Applications that send access data"</c>.
+    /// Body content rendered inside the card when the panel is expanded.
+    /// <para><b>Required</b> for the component to display anything useful.</para>
     /// </summary>
-    [Parameter] public string Subtitle { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Font Awesome CSS class for the icon rendered to the left of the title.
@@ -64,12 +62,12 @@
     [Parameter] public bool StartExpanded { get; set; } = false;
 
     /// <summary>
-    /// Body content rendered inside the card when the panel is expanded.
-    /// <para><b>Required</b> for the component to display anything useful.</para>
+    /// Optional secondary descriptor shown after an em-dash in the header.
+    /// Example: <c>"Applications that send access data"</c>.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    private bool _expanded;
+    [Parameter] public string Subtitle { get; set; } = "";
+    /// <summary>Heading text displayed in the card header. Default: <c>"About This Page"</c>.</summary>
+    [Parameter] public string Title { get; set; } = "About This Page";
 
     protected override void OnInitialized()
     {

@@ -9,14 +9,14 @@
     </div>
 
     <ShowcaseAbout Kind="component"
-        WhatTechnical="A type-aware date/time input that infers whether to render a date, time, or combined datetime picker from the TValue generic type parameter — supporting DateTime?, DateOnly?, and TimeOnly? — and handles UTC↔local conversion automatically."
-        WhatEli5="A date or time box that figures out what kind of value you need (just a date? just a time? both?) and shows the right calendar or clock without you having to configure it."
-        Who=@(new[]{ "Developers binding form fields to DateTime, DateOnly, or TimeOnly model properties", "Form builders that need consistent date entry across the app without copy-pasting format strings", "Any page collecting appointment times, birth dates, or event timestamps" })
-        WhenUse=@(new[]{ "Any form field bound to a date or time C# type", "Scheduling inputs where MinDate/MaxDate constraints need to be enforced", "Forms where the server stores UTC but the UI should show local time" })
-        WhenNot=@(new[]{ "Inline calendar month views (use the Calendar feature for that)", "Date range pickers — this is a single-value input" })
-        Why="Native browser date inputs use different formats on different browsers and OSes, and don't understand C# nullable types. This wraps them into a consistent, strongly-typed Blazor component."
-        TechNotes=@(new[]{ "Generic TValue parameter; the component determines input type = 'date', 'time', or 'datetime-local' at render time", "UTC conversion: if ConvertToLocal=true, incoming UTC values are shifted to local before display and shifted back on change", "Format parameter overrides the default display format string", "Min/MaxDate enforced via the native min/max HTML attributes on the underlying input" })
-        QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
+            WhatTechnical="A type-aware date/time input that infers whether to render a date, time, or combined datetime picker from the TValue generic type parameter — supporting DateTime?, DateOnly?, and TimeOnly? — and handles UTC↔local conversion automatically."
+            WhatEli5="A date or time box that figures out what kind of value you need (just a date? just a time? both?) and shows the right calendar or clock without you having to configure it."
+            Who=@(new[]{ "Developers binding form fields to DateTime, DateOnly, or TimeOnly model properties", "Form builders that need consistent date entry across the app without copy-pasting format strings", "Any page collecting appointment times, birth dates, or event timestamps" })
+            WhenUse=@(new[]{ "Any form field bound to a date or time C# type", "Scheduling inputs where MinDate/MaxDate constraints need to be enforced", "Forms where the server stores UTC but the UI should show local time" })
+            WhenNot=@(new[]{ "Inline calendar month views (use the Calendar feature for that)", "Date range pickers — this is a single-value input" })
+            Why="Native browser date inputs use different formats on different browsers and OSes, and don't understand C# nullable types. This wraps them into a consistent, strongly-typed Blazor component."
+            TechNotes=@(new[]{ "Generic TValue parameter; the component determines input type = 'date', 'time', or 'datetime-local' at render time", "UTC conversion: if ConvertToLocal=true, incoming UTC values are shifted to local before display and shifted back on change", "Format parameter overrides the default display format string", "Min/MaxDate enforced via the native min/max HTML attributes on the underlying input" })
+            QuickFacts=@(new Dictionary<string, string> { ["Layer"] = "UI only", ["Persisted"] = "No", ["Real-time"] = "No", ["Auth required"] = "No", ["Namespace"] = "FreeBlazor" }) />
 
     <div class="row mb-5">
         <div class="col-lg-6">
@@ -28,8 +28,8 @@
                     <p class="text-muted small mb-3">Select a date using the date picker.</p>
                     <label for="dateInput" class="form-label">Select Date:</label>
                     <DateTimePicker TValue="DateOnly?"
-                        Value="@_selectedDate"
-                        OnUpdate="@((DateOnly? v) => { _selectedDate = v; StateHasChanged(); })" />
+                            Value="@_selectedDate"
+                            OnUpdate="@((DateOnly? v) => { _selectedDate = v; StateHasChanged(); })" />
                     @if (_selectedDate.HasValue) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected Date:</strong> @_selectedDate?.ToString("MMMM dd, yyyy")
@@ -48,8 +48,8 @@
                     <p class="text-muted small mb-3">Select a time using the time picker.</p>
                     <label for="timeInput" class="form-label">Select Time:</label>
                     <DateTimePicker TValue="TimeOnly?"
-                        Value="@_selectedTime"
-                        OnUpdate="@((TimeOnly? v) => { _selectedTime = v; StateHasChanged(); })" />
+                            Value="@_selectedTime"
+                            OnUpdate="@((TimeOnly? v) => { _selectedTime = v; StateHasChanged(); })" />
                     @if (_selectedTime.HasValue) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected Time:</strong> @_selectedTime?.ToString("hh:mm:ss tt")
@@ -70,8 +70,8 @@
                     <p class="text-muted small mb-3">Select both date and time together.</p>
                     <label for="dateTimeInput" class="form-label">Select Date and Time:</label>
                     <DateTimePicker TValue="DateTime?"
-                        Value="@_selectedDateTime"
-                        OnUpdate="@((DateTime? v) => { _selectedDateTime = v; StateHasChanged(); })" />
+                            Value="@_selectedDateTime"
+                            OnUpdate="@((DateTime? v) => { _selectedDateTime = v; StateHasChanged(); })" />
                     @if (_selectedDateTime.HasValue) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected DateTime:</strong> @_selectedDateTime?.ToString("MMMM dd, yyyy hh:mm:ss tt")
@@ -90,10 +90,10 @@
                     <p class="text-muted small mb-3">Date picker restricted to a specific range.</p>
                     <label for="restrictedDateInput" class="form-label">Select Date (30 days window):</label>
                     <DateTimePicker TValue="DateOnly?"
-                        Value="@_restrictedDate"
-                        OnUpdate="@((DateOnly? v) => { _restrictedDate = v; StateHasChanged(); })"
-                        Min="@DateOnly.FromDateTime(DateTime.Now.AddDays(-30))"
-                        Max="@DateOnly.FromDateTime(DateTime.Now.AddDays(30))" />
+                            Value="@_restrictedDate"
+                            OnUpdate="@((DateOnly? v) => { _restrictedDate = v; StateHasChanged(); })"
+                            Min="@DateOnly.FromDateTime(DateTime.Now.AddDays(-30))"
+                            Max="@DateOnly.FromDateTime(DateTime.Now.AddDays(30))" />
                     @if (_restrictedDate.HasValue) {
                         <div class="alert alert-info mt-3 mb-0" role="alert">
                             <strong>Selected Date:</strong> @_restrictedDate?.ToString("MMMM dd, yyyy")

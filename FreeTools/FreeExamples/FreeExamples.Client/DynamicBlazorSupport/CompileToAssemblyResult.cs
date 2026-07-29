@@ -6,12 +6,11 @@
 
     public class CompileToAssemblyResult
     {
-        public bool Compiled => AssemblyBytes != null && AssemblyBytes.Length > 0;
-        public Compilation? Compilation { get; set; }
-        public IEnumerable<CompilationDiagnostic> Diagnostics { get; set; } = [];
-        public byte[]? AssemblyBytes { get; set; }
-
         private Assembly? _Assembly = null;
+        public byte[]? AssemblyBytes { get; set; }
+        public Compilation? Compilation { get; set; }
+        public bool Compiled => AssemblyBytes != null && AssemblyBytes.Length > 0;
+        public IEnumerable<CompilationDiagnostic> Diagnostics { get; set; } = [];
         
         public Assembly? LoadAssembly()
         {

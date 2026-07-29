@@ -169,7 +169,7 @@ internal class Program
 
             if (storageState == null)
             {
-                Console.WriteLine("  ?? Login failed — skipping authenticated pass.");
+                Console.WriteLine("  ?? Login failed ï¿½ skipping authenticated pass.");
                 Console.WriteLine("     Authenticated screenshots will not be available.");
             }
             else
@@ -308,12 +308,12 @@ internal class Program
             // ensures the app resolves the correct tenant).
             if (hadTenantCode)
             {
-                // This is a tenant-code route — always add/overwrite
+                // This is a tenant-code route ï¿½ always add/overwrite
                 routeMap[route] = new RouteInfo { Route = route, RequiresAuth = requiresAuth };
             }
             else if (!routeMap.ContainsKey(route))
             {
-                // Bare route — only add if no tenant-code version exists yet.
+                // Bare route ï¿½ only add if no tenant-code version exists yet.
                 // Also check if a tenant-prefixed version is already in the map.
                 var tenantPrefixed = $"/{tenantCode}{route}";
                 if (!routeMap.ContainsKey(tenantPrefixed))
@@ -354,8 +354,7 @@ internal class Program
         string outputDir,
         int? viewportWidth,
         int? viewportHeight,
-        int settleDelay)
-    {
+        int settleDelay){
         var result = new ScreenshotResult
         {
             Index = index,
@@ -407,7 +406,7 @@ internal class Program
 
                 await page.WaitForTimeoutAsync(settleDelay);
 
-                // Simple screenshot — no auth flow, just capture what we see
+                // Simple screenshot ï¿½ no auth flow, just capture what we see
                 var screenshotPath = PathSanitizer.GetOutputFilePath(outputDir, routeInfo.Route, "default.png");
                 PathSanitizer.EnsureDirectoryExists(screenshotPath);
                 await page.ScreenshotAsync(new PageScreenshotOptions { Path = screenshotPath, FullPage = true });
@@ -463,8 +462,7 @@ internal class Program
         string username,
         string password,
         string outputDir,
-        string tenantCode)
-    {
+        string tenantCode){
         var contextOptions = new BrowserNewContextOptions
         {
             IgnoreHTTPSErrors = true
@@ -483,7 +481,7 @@ internal class Program
         {
             var page = await context.NewPageAsync();
 
-            // Capture browser console messages — critical for diagnosing WASM boot failures
+            // Capture browser console messages ï¿½ critical for diagnosing WASM boot failures
             List<string> consoleErrors = [];
             page.Console += (_, msg) =>
             {
@@ -491,7 +489,7 @@ internal class Program
                     consoleErrors.Add($"[{msg.Type}] {msg.Text}");
             };
 
-            // Use tenant code in login URL — FreeCRM apps need this to resolve the tenant
+            // Use tenant code in login URL ï¿½ FreeCRM apps need this to resolve the tenant
             var loginRoute = string.IsNullOrWhiteSpace(tenantCode) ? "/Login" : $"/{tenantCode}/Login";
             var loginUrl = RouteParser.BuildUrl(baseUrl, loginRoute);
 
@@ -509,7 +507,7 @@ internal class Program
             Console.WriteLine("  Waiting for Blazor WASM to initialize...");
             try
             {
-                // Wait for the login-page div (wraps all login content) — up to 30s for WASM cold start
+                // Wait for the login-page div (wraps all login content) ï¿½ up to 30s for WASM cold start
                 await page.WaitForSelectorAsync(".login-page", new PageWaitForSelectorOptions { Timeout = 30000 });
                 Console.WriteLine("  ? Login page rendered");
             }
@@ -542,7 +540,7 @@ internal class Program
                 var hasFrameworkJs = html.Contains("_framework/blazor.web.js", StringComparison.OrdinalIgnoreCase);
                 Console.WriteLine($"  HTML size: {html.Length} chars, has blazor markers: {hasBlazorMarker}, has _framework/blazor.web.js: {hasFrameworkJs}");
 
-                // Show any browser console errors — this reveals WASM boot failures
+                // Show any browser console errors ï¿½ this reveals WASM boot failures
                 if (consoleErrors.Count > 0)
                 {
                     Console.WriteLine($"  Browser console ({consoleErrors.Count} errors/warnings):");
@@ -576,7 +574,7 @@ internal class Program
                     State = WaitForSelectorState.Hidden,
                     Timeout = 15000
                 });
-                Console.WriteLine("  ? Login page disappeared — login successful");
+                Console.WriteLine("  ? Login page disappeared ï¿½ login successful");
             }
             catch (TimeoutException)
             {
@@ -593,13 +591,13 @@ internal class Program
             var stillOnLogin = await HasLoginFormAsync(page);
             if (stillOnLogin)
             {
-                Console.WriteLine("  ? Still on login page after submit — credentials may be wrong");
+                Console.WriteLine("  ? Still on login page after submit ï¿½ credentials may be wrong");
                 return null;
             }
 
             // Save storage state (cookies + localStorage) for reuse
             var storageState = await context.StorageStateAsync();
-            Console.WriteLine("  ? Login successful — session saved for Pass 2");
+            Console.WriteLine("  ? Login successful ï¿½ session saved for Pass 2");
             return storageState;
         }
         catch (Exception ex)
@@ -627,8 +625,7 @@ internal class Program
         int? viewportWidth,
         int? viewportHeight,
         int settleDelay,
-        string storageState)
-    {
+        string storageState){
         var result = new ScreenshotResult
         {
             Index = index,
@@ -683,7 +680,7 @@ internal class Program
             }
             catch
             {
-                // Non-critical — continue with authenticated capture
+                // Non-critical ï¿½ continue with authenticated capture
             }
         }
 
@@ -889,7 +886,7 @@ internal class Program
                 }
                 catch (TimeoutException)
                 {
-                    // Form might use different IDs — fall back to a fixed wait
+                    // Form might use different IDs ï¿½ fall back to a fixed wait
                     await page.WaitForTimeoutAsync(3000);
                 }
                 return;
@@ -1060,13 +1057,12 @@ internal class Program
         ref int nextIndexToWrite,
         object writeLock,
         bool flush = false,
-        Action<ScreenshotResult>? writeAction = null)
-    {
+        Action<ScreenshotResult>? writeAction = null){
         writeAction ??= WritePublicResult;
 
         lock (writeLock)
         {
-            // Print results in order without removing them — they're needed for
+            // Print results in order without removing them ï¿½ they're needed for
             // summary counts and metadata writing after both passes complete.
             while (results.ContainsKey(nextIndexToWrite))
             {
@@ -1155,75 +1151,68 @@ internal class Program
 // Route information including auth requirement
 internal class RouteInfo
 {
-    public string Route { get; set; } = "";
     public bool RequiresAuth { get; set; }
+    public string Route { get; set; } = "";
 }
 
 // Result tracking for ordered output
 internal class ScreenshotResult
 {
-    public int Index { get; set; }
-    public int Number { get; set; }
-    public int TotalCount { get; set; }
-    public string Route { get; set; } = "";
-    public string Url { get; set; } = "";
-    public int StatusCode { get; set; }
-    public bool IsSuccess { get; set; }
-    public bool IsHttpError { get; set; }
-    public bool IsError { get; set; }
-    public string? ErrorMessage { get; set; }
-    public string? ScreenshotPath { get; set; }
-    public long FileSize { get; set; }
-    
-    // Retry and suspicious detection
-    public bool RetryAttempted { get; set; }
-    public bool IsSuspiciouslySmall { get; set; }
-    
-    // Console error capture
-    public List<string> ConsoleErrors { get; set; } = [];
-    public DateTime CapturedAt { get; set; }
-    
-    // Auth flow fields
-    public bool RequiresAuth { get; set; }
     public bool AuthFlowCompleted { get; set; }
+    public string? AuthFlowNote { get; set; }   // Note if auth flow didn't complete
     public string? AuthStep1Path { get; set; }  // Initial page screenshot
     public string? AuthStep2Path { get; set; }  // Form filled screenshot
     public string? AuthStep3Path { get; set; }  // After submit screenshot
-    public string? AuthFlowNote { get; set; }   // Note if auth flow didn't complete
+    public DateTime CapturedAt { get; set; }
+    
+    // Console error capture
+    public List<string> ConsoleErrors { get; set; } = [];
+    public string? ErrorMessage { get; set; }
+    public long FileSize { get; set; }
+    public int Index { get; set; }
+    public bool IsError { get; set; }
+    public bool IsHttpError { get; set; }
+    public bool IsSuccess { get; set; }
+    public bool IsSuspiciouslySmall { get; set; }
+    public long LoggedInFileSize { get; set; }
+    public bool LoggedInIsSuspiciouslySmall { get; set; }
 
     // Two-pass: logged-in capture data (merged from Pass 2)
     public string? LoggedInScreenshotPath { get; set; }
-    public long LoggedInFileSize { get; set; }
-    public bool LoggedInIsSuspiciouslySmall { get; set; }
     public int LoggedInStatusCode { get; set; }
 
     // Per-page login redirect screenshot (captured for auth pages)
     public string? LoginRedirectPath { get; set; }
+    public int Number { get; set; }
+    
+    // Auth flow fields
+    public bool RequiresAuth { get; set; }
+    
+    // Retry and suspicious detection
+    public bool RetryAttempted { get; set; }
+    public string Route { get; set; } = "";
+    public string? ScreenshotPath { get; set; }
+    public int StatusCode { get; set; }
+    public int TotalCount { get; set; }
+    public string Url { get; set; } = "";
 }
 
 // Metadata for reporter to consume
 internal class ScreenshotMetadata
 {
-    public string Route { get; set; } = "";
-    public string Url { get; set; } = "";
-    public int StatusCode { get; set; }
-    public long FileSize { get; set; }
-    public bool IsSuspiciouslySmall { get; set; }
-    public bool RetryAttempted { get; set; }
-    public List<string> ConsoleErrors { get; set; } = [];
-    public DateTime CapturedAt { get; set; }
-    public bool IsSuccess { get; set; }
-    public bool IsHttpError { get; set; }
-    public bool IsError { get; set; }
-    public string? ErrorMessage { get; set; }
-    
-    // Auth flow fields
-    public bool RequiresAuth { get; set; }
     public bool AuthFlowCompleted { get; set; }
+    public string? AuthFlowNote { get; set; }
     public string? AuthStep1Path { get; set; }
     public string? AuthStep2Path { get; set; }
     public string? AuthStep3Path { get; set; }
-    public string? AuthFlowNote { get; set; }
+    public DateTime CapturedAt { get; set; }
+    public List<string> ConsoleErrors { get; set; } = [];
+    public string? ErrorMessage { get; set; }
+    public long FileSize { get; set; }
+    public bool IsError { get; set; }
+    public bool IsHttpError { get; set; }
+    public bool IsSuccess { get; set; }
+    public bool IsSuspiciouslySmall { get; set; }
 
     // Two-pass fields
     public long LoggedInFileSize { get; set; }
@@ -1232,4 +1221,11 @@ internal class ScreenshotMetadata
 
     // Per-page login redirect screenshot
     public string? LoginRedirectPath { get; set; }
+    
+    // Auth flow fields
+    public bool RequiresAuth { get; set; }
+    public bool RetryAttempted { get; set; }
+    public string Route { get; set; } = "";
+    public int StatusCode { get; set; }
+    public string Url { get; set; } = "";
 }

@@ -34,42 +34,6 @@ public sealed class BackgroundServiceLogSink : ILoggerProvider
         _serviceProvider = serviceProvider;
     }
 
-    /// <summary>
-    /// Returns up to <paramref name="count"/> most recent log entries (newest first).
-    /// </summary>
-    public List<DataObjects.BackgroundServiceLogEntry> GetRecentEntries(int count = 200)
-    {
-        return _entries.Reverse().Take(count).ToList();
-    }
-
-    /// <summary>
-    /// Returns descriptors for every monitored background service.
-    /// </summary>
-    public List<DataObjects.BackgroundServiceInfo> GetServiceInfos()
-    {
-        return MonitoredServices.Select(kv => new DataObjects.BackgroundServiceInfo
-        {
-            ServiceName = kv.Value,
-            Description = kv.Key,
-            Status = "Running",
-            LastActivity = _lastActivity.TryGetValue(kv.Key, out var ts) ? ts : null,
-        }).ToList();
-    }
-
-    // ── ILoggerProvider ──────────────────────────────────────────────────────
-
-    public ILogger CreateLogger(string categoryName)
-    {
-        if (MonitoredServices.TryGetValue(categoryName, out var displayName))
-        {
-            return new SinkLogger(this, categoryName, displayName);
-        }
-
-        return NullLogger.Instance;
-    }
-
-    public void Dispose() { }
-
     // ── Internal plumbing ────────────────────────────────────────────────────
 
     private void AddEntry(DataObjects.BackgroundServiceLogEntry entry)
@@ -111,6 +75,42 @@ public sealed class BackgroundServiceLogSink : ILoggerProvider
         }
     }
 
+    // ── ILoggerProvider ──────────────────────────────────────────────────────
+
+    public ILogger CreateLogger(string categoryName)
+    {
+        if (MonitoredServices.TryGetValue(categoryName, out var displayName))
+        {
+            return new SinkLogger(this, categoryName, displayName);
+        }
+
+        return NullLogger.Instance;
+    }
+
+    public void Dispose() { }
+
+    /// <summary>
+    /// Returns up to <paramref name="count"/> most recent log entries (newest first).
+    /// </summary>
+    public List<DataObjects.BackgroundServiceLogEntry> GetRecentEntries(int count = 200)
+    {
+        return _entries.Reverse().Take(count).ToList();
+    }
+
+    /// <summary>
+    /// Returns descriptors for every monitored background service.
+    /// </summary>
+    public List<DataObjects.BackgroundServiceInfo> GetServiceInfos()
+    {
+        return MonitoredServices.Select(kv => new DataObjects.BackgroundServiceInfo
+        {
+            ServiceName = kv.Value,
+            Description = kv.Key,
+            Status = "Running",
+            LastActivity = _lastActivity.TryGetValue(kv.Key, out var ts) ? ts : null,
+        }).ToList();
+    }
+
     // ── Nested logger that writes into the ring buffer ───────────────────────
 
     private sealed class SinkLogger(BackgroundServiceLogSink sink, string category, string displayName) : ILogger
@@ -120,8 +120,7 @@ public sealed class BackgroundServiceLogSink : ILoggerProvider
         public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Information;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
-            Exception? exception, Func<TState, Exception?, string> formatter)
-        {
+            Exception? exception, Func<TState, Exception?, string> formatter){
             if (!IsEnabled(logLevel)) return;
 
             var message = formatter(state, exception);

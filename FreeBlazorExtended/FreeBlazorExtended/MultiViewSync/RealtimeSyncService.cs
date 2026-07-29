@@ -13,18 +13,31 @@ public partial class RealtimeSyncService
     private static readonly ConcurrentDictionary<Guid, PresentationSession> _sessions = new();
     private static readonly ConcurrentDictionary<string, List<string>> _clientConnections = new(); // SessionId -> list of connectionIds
 
-    public Task<List<PresentationSession>> GetPresentationSessions(Guid TenantId)
+    public async Task<PresentationSession> AddSessionItem(Guid SessionId, string ItemType, string TitleOrPayload, string? UserId = null)
     {
-        var sessions = _sessions.Values
-            .Where(s => s.TenantId == TenantId && !s.Deleted)
-            .ToList();
-        return Task.FromResult(sessions);
+        if (!_sessions.TryGetValue(SessionId, out var session))
+            throw new InvalidOperationException("Session not found");
+
+        if (session.Items == null)
+            session.Items = new();
+
+        var item = new SessionItem
+        {
+            ItemId = Guid.NewGuid(),
+            Order = session.Items.Count,
+            Type = ItemType,
+            TitleOrPayload = TitleOrPayload
+        };
+
+        session.Items.Add(item);
+
+        return await SaveSession(session, UserId);
     }
 
-    public Task<PresentationSession?> GetPresentationSession(Guid SessionId)
+    public void ClearAllSessions()
     {
-        _sessions.TryGetValue(SessionId, out var session);
-        return Task.FromResult(session?.Deleted == false ? session : null);
+        _sessions.Clear();
+        _clientConnections.Clear();
     }
 
     public Task<PresentationSession> CreateSession(Guid TenantId, string name, string? UserId = null)
@@ -42,6 +55,63 @@ public partial class RealtimeSyncService
         _clientConnections[session.SessionId.ToString()] = new();
 
         return Task.FromResult(session);
+    }
+
+    public Task DeleteSession(Guid SessionId)
+    {
+        if (_sessions.TryGetValue(SessionId, out var session)) {
+            session.Deleted = true;
+            session.LastModified = DateTime.UtcNow;
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task<int> GetActiveClientCount(string SessionId)
+    {
+        if (_clientConnections.TryGetValue(SessionId, out var connections))
+            return Task.FromResult(connections.Count);
+
+        return Task.FromResult(0);
+    }
+
+    public Task<PresentationSession?> GetPresentationSession(Guid SessionId)
+    {
+        _sessions.TryGetValue(SessionId, out var session);
+        return Task.FromResult(session?.Deleted == false ? session : null);
+    }
+
+    public Task<List<PresentationSession>> GetPresentationSessions(Guid TenantId)
+    {
+        var sessions = _sessions.Values
+            .Where(s => s.TenantId == TenantId && !s.Deleted)
+            .ToList();
+        return Task.FromResult(sessions);
+    }
+
+    public Task RegisterClient(string SessionId, string ConnectionId)
+    {
+        if (!_clientConnections.ContainsKey(SessionId))
+            _clientConnections[SessionId] = new();
+
+        var connections = _clientConnections[SessionId];
+        if (!connections.Contains(ConnectionId))
+            connections.Add(ConnectionId);
+
+        return Task.CompletedTask;
+    }
+
+    public async Task<PresentationSession> RemoveSessionItem(Guid SessionId, Guid ItemId, string? UserId = null)
+    {
+        if (!_sessions.TryGetValue(SessionId, out var session))
+            throw new InvalidOperationException("Session not found");
+
+        if (session.Items != null) {
+            var item = session.Items.FirstOrDefault(i => i.ItemId == ItemId);
+            if (item != null)
+                session.Items.Remove(item);
+        }
+
+        return await SaveSession(session, UserId);
     }
 
     public Task<PresentationSession> SaveSession(PresentationSession session, string? UserId = null)
@@ -95,82 +165,12 @@ public partial class RealtimeSyncService
         await SaveSession(session, UserId);
     }
 
-    public async Task<PresentationSession> AddSessionItem(Guid SessionId, string ItemType, string TitleOrPayload, string? UserId = null)
-    {
-        if (!_sessions.TryGetValue(SessionId, out var session))
-            throw new InvalidOperationException("Session not found");
-
-        if (session.Items == null)
-            session.Items = new();
-
-        var item = new SessionItem
-        {
-            ItemId = Guid.NewGuid(),
-            Order = session.Items.Count,
-            Type = ItemType,
-            TitleOrPayload = TitleOrPayload
-        };
-
-        session.Items.Add(item);
-
-        return await SaveSession(session, UserId);
-    }
-
-    public async Task<PresentationSession> RemoveSessionItem(Guid SessionId, Guid ItemId, string? UserId = null)
-    {
-        if (!_sessions.TryGetValue(SessionId, out var session))
-            throw new InvalidOperationException("Session not found");
-
-        if (session.Items != null) {
-            var item = session.Items.FirstOrDefault(i => i.ItemId == ItemId);
-            if (item != null)
-                session.Items.Remove(item);
-        }
-
-        return await SaveSession(session, UserId);
-    }
-
-    public Task RegisterClient(string SessionId, string ConnectionId)
-    {
-        if (!_clientConnections.ContainsKey(SessionId))
-            _clientConnections[SessionId] = new();
-
-        var connections = _clientConnections[SessionId];
-        if (!connections.Contains(ConnectionId))
-            connections.Add(ConnectionId);
-
-        return Task.CompletedTask;
-    }
-
     public Task UnregisterClient(string SessionId, string ConnectionId)
     {
         if (_clientConnections.TryGetValue(SessionId, out var connections))
             connections.Remove(ConnectionId);
 
         return Task.CompletedTask;
-    }
-
-    public Task<int> GetActiveClientCount(string SessionId)
-    {
-        if (_clientConnections.TryGetValue(SessionId, out var connections))
-            return Task.FromResult(connections.Count);
-
-        return Task.FromResult(0);
-    }
-
-    public Task DeleteSession(Guid SessionId)
-    {
-        if (_sessions.TryGetValue(SessionId, out var session)) {
-            session.Deleted = true;
-            session.LastModified = DateTime.UtcNow;
-        }
-        return Task.CompletedTask;
-    }
-
-    public void ClearAllSessions()
-    {
-        _sessions.Clear();
-        _clientConnections.Clear();
     }
 }
 

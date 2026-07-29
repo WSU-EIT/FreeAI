@@ -20,13 +20,11 @@
 
     Example (inline confirmation after save):
         <SuccessMessage Message="@_saveConfirmation"
-                        AutoDismissMs="4000"
-                        OnDismissed="@(() => _saveConfirmation = null)" />
+                AutoDismissMs="4000"
+                OnDismissed="@(() => _saveConfirmation = null)" />
 
     Example (toast after background operation):
-        <SuccessMessage Message="Export complete."
-                        IsToast="true"
-                        AutoDismissMs="5000">
+        <SuccessMessage Message="Export complete." IsToast="true" AutoDismissMs="5000">
             <a href="@_downloadUrl" class="btn btn-sm btn-outline-success">Download</a>
         </SuccessMessage>
 *@
@@ -207,18 +205,25 @@
     protected bool _dismissed = false;
 
     /// <summary>
-    /// The confirmation message shown in the block body.
-    /// <para><b>Required.</b> The entire block is hidden when this is empty or whitespace —
-    /// bind directly to a nullable field and the component self-manages visibility.</para>
+    /// Delay in milliseconds before the block automatically hides itself and invokes
+    /// <see cref="OnDismissed"/>. Set to <c>0</c> (default) to keep the block visible
+    /// until the user manually dismisses it. Pair with <see cref="IsToast"/> for
+    /// auto-expiring floating notifications (e.g. <c>AutoDismissMs="4000"</c>).
     /// </summary>
-    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public int AutoDismissMs { get; set; } = 0;
 
     /// <summary>
-    /// Header line rendered above <see cref="Message"/> in a bold success colour.
-    /// Default: <c>"Success"</c>. Customise to match the completed action
-    /// (e.g. <c>"Changes saved"</c>, <c>"Export complete"</c>).
+    /// Optional render fragment displayed in the card footer for follow-up actions such as
+    /// "View result", "Download", or "Undo". Separated from the body by a success-coloured
+    /// top border.
     /// </summary>
-    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Reduces internal padding for tight layouts (cards, modals, inline sections).
+    /// Default: <c>false</c>.
+    /// </summary>
+    [Parameter] public bool Compact { get; set; } = false;
 
     /// <summary>
     /// Supplementary bullet points displayed below <see cref="Message"/>
@@ -228,32 +233,18 @@
     [Parameter] public List<string> Details { get; set; } = new();
 
     /// <summary>
-    /// When <c>true</c> (default), renders an × dismiss button. Clicking it invokes
-    /// <see cref="OnDismissed"/> and hides the block. Set to <c>false</c> to suppress
-    /// the button when <see cref="AutoDismissMs"/> already handles cleanup.
-    /// </summary>
-    [Parameter] public bool ShowDismiss { get; set; } = true;
-
-    /// <summary>
-    /// Delay in milliseconds before the block automatically hides itself and invokes
-    /// <see cref="OnDismissed"/>. Set to <c>0</c> (default) to keep the block visible
-    /// until the user manually dismisses it. Pair with <see cref="IsToast"/> for
-    /// auto-expiring floating notifications (e.g. <c>AutoDismissMs="4000"</c>).
-    /// </summary>
-    [Parameter] public int AutoDismissMs { get; set; } = 0;
-
-    /// <summary>
-    /// Reduces internal padding for tight layouts (cards, modals, inline sections).
-    /// Default: <c>false</c>.
-    /// </summary>
-    [Parameter] public bool Compact { get; set; } = false;
-
-    /// <summary>
     /// When <c>true</c>, positions the block as a fixed bottom-right toast with a slide-in
     /// animation and a drop shadow. Combine with <see cref="AutoDismissMs"/> for a
     /// non-blocking, self-expiring notification. Default: <c>false</c>.
     /// </summary>
     [Parameter] public bool IsToast { get; set; } = false;
+
+    /// <summary>
+    /// The confirmation message shown in the block body.
+    /// <para><b>Required.</b> The entire block is hidden when this is empty or whitespace —
+    /// bind directly to a nullable field and the component self-manages visibility.</para>
+    /// </summary>
+    [Parameter] public string Message { get; set; } = "";
 
     /// <summary>
     /// Invoked after the block is hidden — either by the dismiss button or by
@@ -263,11 +254,24 @@
     [Parameter] public EventCallback OnDismissed { get; set; }
 
     /// <summary>
-    /// Optional render fragment displayed in the card footer for follow-up actions such as
-    /// "View result", "Download", or "Undo". Separated from the body by a success-coloured
-    /// top border.
+    /// When <c>true</c> (default), renders an × dismiss button. Clicking it invokes
+    /// <see cref="OnDismissed"/> and hides the block. Set to <c>false</c> to suppress
+    /// the button when <see cref="AutoDismissMs"/> already handles cleanup.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool ShowDismiss { get; set; } = true;
+
+    /// <summary>
+    /// Header line rendered above <see cref="Message"/> in a bold success colour.
+    /// Default: <c>"Success"</c>. Customise to match the completed action
+    /// (e.g. <c>"Changes saved"</c>, <c>"Export complete"</c>).
+    /// </summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    protected async Task Dismiss()
+    {
+        _dismissed = true;
+        await OnDismissed.InvokeAsync();
+    }
 
     protected override void OnInitialized()
     {
@@ -297,11 +301,5 @@
             _messageClass += "toast ";
         }
         _messageClass = _messageClass.Trim();
-    }
-
-    protected async Task Dismiss()
-    {
-        _dismissed = true;
-        await OnDismissed.InvokeAsync();
     }
 }

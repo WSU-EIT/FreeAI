@@ -22,8 +22,8 @@ public static partial class Helpers
     {
         return true;
     }
-
     // {{ModuleItemStart:Tags}}
+
     public static List<DataObjects.Tag> AvailableTagListApp(DataObjects.TagModule? Module, List<Guid> ExcludeTags)
     {
         var output = new List<DataObjects.Tag>();
@@ -44,15 +44,6 @@ public static partial class Helpers
         return output;
     }
     // {{ModuleItemEnd:Tags}}
-
-    private static List<string> GetDeletedRecordTypesApp()
-    {
-        var output = new List<string>();
-
-        // Add any app-specific deleted record types here.
-
-        return output;
-    }
 
     /// <summary>
     /// Gets the deleted records for a specific app type.
@@ -97,32 +88,13 @@ public static partial class Helpers
         return output;
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsApp {
-        get {
-            var output = new List<DataObjects.MenuItem>();
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
 
-            // New Template Selection - main entry point
-            output.Add(new DataObjects.MenuItem {
-                Title = "New Project",
-                Icon = "Templates",
-                PageNames = new List<string> { "templates", "templates/setup" },
-                SortOrder = 100,
-                url = BuildUrl("Templates"),
-                AppAdminOnly = false,
-            });
+        // Add any app-specific deleted record types here.
 
-            // My Projects - view saved projects
-            output.Add(new DataObjects.MenuItem {
-                Title = "My Projects",
-                Icon = "Builder",
-                PageNames = new List<string> { "appbuilder", "appbuilder/new", "appbuilder/edit" },
-                SortOrder = 200,
-                url = BuildUrl("AppBuilder"),
-                AppAdminOnly = false,
-            });
-
-            return output;
-        }
+        return output;
     }
 
     public static List<DataObjects.MenuItem> MenuItemsAdminApp {
@@ -171,6 +143,34 @@ public static partial class Helpers
                     AppAdminOnly = false,
                 });
             }
+
+            return output;
+        }
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsApp {
+        get {
+            var output = new List<DataObjects.MenuItem>();
+
+            // New Template Selection - main entry point
+            output.Add(new DataObjects.MenuItem {
+                Title = "New Project",
+                Icon = "Templates",
+                PageNames = new List<string> { "templates", "templates/setup" },
+                SortOrder = 100,
+                url = BuildUrl("Templates"),
+                AppAdminOnly = false,
+            });
+
+            // My Projects - view saved projects
+            output.Add(new DataObjects.MenuItem {
+                Title = "My Projects",
+                Icon = "Builder",
+                PageNames = new List<string> { "appbuilder", "appbuilder/new", "appbuilder/edit" },
+                SortOrder = 200,
+                url = BuildUrl("AppBuilder"),
+                AppAdminOnly = false,
+            });
 
             return output;
         }

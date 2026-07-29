@@ -16,6 +16,18 @@ public class InMemoryUserPreferencesStore : IUserPreferencesStore
 {
     private static readonly ConcurrentDictionary<(Guid TenantId, Guid UserId), UserPreferences> _preferences = new();
 
+    /// <summary>Test/teardown helper — clears every cached row across tenants.</summary>
+    public static void ClearAll()
+    {
+        _preferences.Clear();
+    }
+
+    public Task DeleteAsync(Guid TenantId, Guid UserId)
+    {
+        _preferences.TryRemove((TenantId, UserId), out _);
+        return Task.CompletedTask;
+    }
+
     public Task<UserPreferences?> GetAsync(Guid TenantId, Guid UserId)
     {
         _preferences.TryGetValue((TenantId, UserId), out var prefs);
@@ -26,17 +38,5 @@ public class InMemoryUserPreferencesStore : IUserPreferencesStore
     {
         _preferences[(prefs.TenantId, prefs.UserId)] = prefs;
         return Task.CompletedTask;
-    }
-
-    public Task DeleteAsync(Guid TenantId, Guid UserId)
-    {
-        _preferences.TryRemove((TenantId, UserId), out _);
-        return Task.CompletedTask;
-    }
-
-    /// <summary>Test/teardown helper — clears every cached row across tenants.</summary>
-    public static void ClearAll()
-    {
-        _preferences.Clear();
     }
 }

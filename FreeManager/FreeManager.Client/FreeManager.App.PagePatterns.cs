@@ -8,8 +8,7 @@ namespace FreeManager.Client;
 public static partial class PagePatterns
 {
     public static List<(string FileName, string FileType, string Content)> GetPatternFiles(
-        DataObjects.FMPagePattern pattern, string projectName, DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.FMPagePattern pattern, string projectName, DataObjects.EntityDefinition? entity = null){
         return pattern switch
         {
             DataObjects.FMPagePattern.QuickStartWizard => GetQuickStartWizardFiles(projectName, entity),

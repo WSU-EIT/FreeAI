@@ -74,8 +74,7 @@ public class AgentMonitoringService
         double memoryPercent,
         double memoryUsedMb,
         Dictionary<string, (double usedGb, double totalGb)>? diskMetrics = null,
-        Dictionary<string, object>? customMetrics = null)
-    {
+        Dictionary<string, object>? customMetrics = null){
         var agent = await GetAgent(agentId);
         if (agent == null)
             throw new InvalidOperationException("Agent not found");
@@ -141,8 +140,7 @@ public class AgentMonitoringService
         string metricName,
         string condition,
         double threshold,
-        string? userId = null)
-    {
+        string? userId = null){
         var rule = new AlertRule
         {
             AlertRuleId = Guid.NewGuid(),
@@ -1015,51 +1013,49 @@ public static class DataObjects
 {
     public class User
     {
-        public Guid UserId { get; set; }
+        public bool Admin { get; set; }
+        public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public bool Admin { get; set; }
+        public Guid UserId { get; set; }
     }
 }
 
 public class Agent
 {
-    public Guid AgentId { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string MachineName { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public AgentStatus Status { get; set; } = AgentStatus.Online;
-    public DateTime? LastHeartbeatUtc { get; set; }
-    public DateTime RegisteredUtc { get; set; } = DateTime.UtcNow;
-    public string? TagsJson { get; set; } // JSON array of tags like ["env:prod", "role:worker"]
-
     // Audit
     public DateTime Added { get; set; } = DateTime.UtcNow;
     public string? AddedBy { get; set; }
+    public Guid AgentId { get; set; } = Guid.NewGuid();
+    public bool Deleted { get; set; }
+    public string? Description { get; set; }
+    public DateTime? LastHeartbeatUtc { get; set; }
     public DateTime LastModified { get; set; } = DateTime.UtcNow;
     public string? LastModifiedBy { get; set; }
-    public bool Deleted { get; set; }
+    public string MachineName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public DateTime RegisteredUtc { get; set; } = DateTime.UtcNow;
+    public AgentStatus Status { get; set; } = AgentStatus.Online;
+    public string? TagsJson { get; set; } // JSON array of tags like ["env:prod", "role:worker"]
+    public Guid TenantId { get; set; }
 }
 
 // AgentStatus and AgentHeartbeat moved to FreeBlazorExtended.Models
 
 public class AlertRule
 {
-    public Guid AlertRuleId { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string MetricName { get; set; } = string.Empty; // cpu, memory, disk, custom
-    public string Condition { get; set; } = "gt"; // gt, lt, gte, lte, eq
-    public double Threshold { get; set; }
-    public bool IsActive { get; set; } = true;
-
     // Audit
     public DateTime Added { get; set; } = DateTime.UtcNow;
     public string? AddedBy { get; set; }
+    public Guid AlertRuleId { get; set; } = Guid.NewGuid();
+    public string Condition { get; set; } = "gt"; // gt, lt, gte, lte, eq
+    public bool Deleted { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
     public DateTime LastModified { get; set; } = DateTime.UtcNow;
     public string? LastModifiedBy { get; set; }
-    public bool Deleted { get; set; }
+    public string MetricName { get; set; } = string.Empty; // cpu, memory, disk, custom
+    public string Name { get; set; } = string.Empty;
+    public Guid TenantId { get; set; }
+    public double Threshold { get; set; }
 }

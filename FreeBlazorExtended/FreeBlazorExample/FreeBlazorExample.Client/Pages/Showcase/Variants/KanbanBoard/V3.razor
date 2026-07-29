@@ -13,12 +13,12 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <KanbanBoard Columns="_columns"
-                         Cards="_cards"
-                         OnCardMoved="HandleMoved"
-                         OnCardClick="HandleClick"
-                         SelectedCardId="@_selectedCard?.Id"
-                         EnableSearch="true"
-                         ReadOnly="@_readOnly" />
+                    Cards="_cards"
+                    OnCardMoved="HandleMoved"
+                    OnCardClick="HandleClick"
+                    SelectedCardId="@_selectedCard?.Id"
+                    EnableSearch="true"
+                    ReadOnly="@_readOnly" />
 
             <div class="card shadow-sm mt-3">
                 <div class="card-body">
@@ -34,10 +34,10 @@
 
         <div class="col-lg-4">
             <ShowcaseKanbanCardEditor Cards="_cards"
-                                      Columns="_columns"
-                                      SelectedCard="_selectedCard"
-                                      SelectedCardChanged="HandleSelectionChanged"
-                                      Subtitle="Inspect the selected card, update its content, or add a new item while the move log keeps tracking drag/drop changes." />
+                    Columns="_columns"
+                    SelectedCard="_selectedCard"
+                    SelectedCardChanged="HandleSelectionChanged"
+                    Subtitle="Inspect the selected card, update its content, or add a new item while the move log keeps tracking drag/drop changes." />
         </div>
     </div>
 </div>
@@ -63,6 +63,12 @@
     private bool _readOnly;
     private KanbanBoard.KanbanCard? _selectedCard;
     private List<string> _moveLog = new() { "No card moves yet." };
+
+    private Task HandleClick(KanbanBoard.KanbanCard card)
+    {
+        _selectedCard = card;
+        return Task.CompletedTask;
+    }
 
     private Task HandleMoved(KanbanBoard.KanbanCardMovedEventArgs args)
     {
@@ -105,12 +111,6 @@
         }
 
         StateHasChanged();
-        return Task.CompletedTask;
-    }
-
-    private Task HandleClick(KanbanBoard.KanbanCard card)
-    {
-        _selectedCard = card;
         return Task.CompletedTask;
     }
 

@@ -39,16 +39,13 @@ public static class CompiledPluginRegistry
     }
 
     /// <summary>
-    /// Registers a compiled plugin.
+    /// Clears all registered plugins (mainly for testing).
     /// </summary>
-    internal static void Register(CompiledPluginEntry entry)
+    public static void Clear()
     {
         lock (_lock)
         {
-            if (!_plugins.Any(p => p.Metadata.Id == entry.Metadata.Id))
-            {
-                _plugins.Add(entry);
-            }
+            _plugins.Clear();
         }
     }
 
@@ -86,13 +83,16 @@ public static class CompiledPluginRegistry
     }
 
     /// <summary>
-    /// Clears all registered plugins (mainly for testing).
+    /// Registers a compiled plugin.
     /// </summary>
-    public static void Clear()
+    internal static void Register(CompiledPluginEntry entry)
     {
         lock (_lock)
         {
-            _plugins.Clear();
+            if (!_plugins.Any(p => p.Metadata.Id == entry.Metadata.Id))
+            {
+                _plugins.Add(entry);
+            }
         }
     }
 }

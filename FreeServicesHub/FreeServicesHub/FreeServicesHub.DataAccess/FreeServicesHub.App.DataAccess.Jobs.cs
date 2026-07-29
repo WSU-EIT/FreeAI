@@ -2,14 +2,62 @@ namespace FreeServicesHub;
 
 public partial interface IDataAccess
 {
+    Task<DataObjects.BooleanResponse> DeleteHubJobs(List<Guid>? Ids, DataObjects.User? CurrentUser = null);
     Task<List<DataObjects.HubJob>> GetHubJobs(List<Guid>? Ids, Guid TenantId, DataObjects.User? CurrentUser = null);
     Task<List<DataObjects.HubJob>> GetJobsForAgent(Guid AgentId, Guid TenantId);
     Task<List<DataObjects.HubJob>> SaveHubJobs(List<DataObjects.HubJob> Items, DataObjects.User? CurrentUser = null);
-    Task<DataObjects.BooleanResponse> DeleteHubJobs(List<Guid>? Ids, DataObjects.User? CurrentUser = null);
 }
 
 public partial class DataAccess
 {
+    public async Task<DataObjects.BooleanResponse> DeleteHubJobs(List<Guid>? Ids, DataObjects.User? CurrentUser = null)
+    {
+        DataObjects.BooleanResponse output = new();
+
+        if (Ids == null || !Ids.Any()) {
+            output.Messages.Add("No Job Ids provided for deletion.");
+            return output;
+        }
+
+        DateTime now = DateTime.UtcNow;
+
+        try {
+            List<EFModels.EFModels.HubJob> recs = await data.HubJobs.Where(x => Ids.Contains(x.HubJobId)).ToListAsync();
+
+            if (!recs.Any()) {
+                output.Messages.Add("No matching Job records found.");
+                return output;
+            }
+
+            foreach (EFModels.EFModels.HubJob rec in recs) {
+                rec.Deleted = true;
+                rec.DeletedAt = now;
+                rec.LastModified = now;
+
+                if (CurrentUser != null) {
+                    rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
+                }
+            }
+
+            await data.SaveChangesAsync();
+            output.Result = true;
+
+            foreach (EFModels.EFModels.HubJob rec in recs) {
+                await SignalRUpdate(new DataObjects.SignalRUpdate {
+                    TenantId = rec.TenantId,
+                    ItemId = rec.HubJobId,
+                    UpdateType = DataObjects.SignalRUpdateType.JobUpdated,
+                    Message = "Deleted",
+                    UserId = CurrentUserId(CurrentUser),
+                });
+            }
+        } catch (Exception ex) {
+            output.Messages.Add("Error Deleting Jobs");
+            output.Messages.AddRange(RecurseException(ex));
+        }
+
+        return output;
+    }
     public async Task<List<DataObjects.HubJob>> GetHubJobs(List<Guid>? Ids, Guid TenantId, DataObjects.User? CurrentUser = null)
     {
         List<DataObjects.HubJob> output = new();
@@ -94,18 +142,6 @@ public partial class DataAccess
                 Deleted = rec.Deleted,
                 DeletedAt = rec.DeletedAt,
             });
-        }
-
-        return output;
-    }
-
-    public async Task<List<DataObjects.HubJob>> SaveHubJobs(List<DataObjects.HubJob> Items, DataObjects.User? CurrentUser = null)
-    {
-        List<DataObjects.HubJob> output = new();
-
-        foreach (DataObjects.HubJob item in Items) {
-            DataObjects.HubJob saved = await SaveHubJob(item, CurrentUser);
-            output.Add(saved);
         }
 
         return output;
@@ -206,50 +242,13 @@ public partial class DataAccess
         return output;
     }
 
-    public async Task<DataObjects.BooleanResponse> DeleteHubJobs(List<Guid>? Ids, DataObjects.User? CurrentUser = null)
+    public async Task<List<DataObjects.HubJob>> SaveHubJobs(List<DataObjects.HubJob> Items, DataObjects.User? CurrentUser = null)
     {
-        DataObjects.BooleanResponse output = new();
+        List<DataObjects.HubJob> output = new();
 
-        if (Ids == null || !Ids.Any()) {
-            output.Messages.Add("No Job Ids provided for deletion.");
-            return output;
-        }
-
-        DateTime now = DateTime.UtcNow;
-
-        try {
-            List<EFModels.EFModels.HubJob> recs = await data.HubJobs.Where(x => Ids.Contains(x.HubJobId)).ToListAsync();
-
-            if (!recs.Any()) {
-                output.Messages.Add("No matching Job records found.");
-                return output;
-            }
-
-            foreach (EFModels.EFModels.HubJob rec in recs) {
-                rec.Deleted = true;
-                rec.DeletedAt = now;
-                rec.LastModified = now;
-
-                if (CurrentUser != null) {
-                    rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
-                }
-            }
-
-            await data.SaveChangesAsync();
-            output.Result = true;
-
-            foreach (EFModels.EFModels.HubJob rec in recs) {
-                await SignalRUpdate(new DataObjects.SignalRUpdate {
-                    TenantId = rec.TenantId,
-                    ItemId = rec.HubJobId,
-                    UpdateType = DataObjects.SignalRUpdateType.JobUpdated,
-                    Message = "Deleted",
-                    UserId = CurrentUserId(CurrentUser),
-                });
-            }
-        } catch (Exception ex) {
-            output.Messages.Add("Error Deleting Jobs");
-            output.Messages.AddRange(RecurseException(ex));
+        foreach (DataObjects.HubJob item in Items) {
+            DataObjects.HubJob saved = await SaveHubJob(item, CurrentUser);
+            output.Add(saved);
         }
 
         return output;

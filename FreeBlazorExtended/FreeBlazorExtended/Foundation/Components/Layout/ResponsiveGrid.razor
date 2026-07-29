@@ -22,8 +22,7 @@
         ChildContent — manual cell content (used when Items is not provided)
 
     Example (card grid from a data list):
-        <ResponsiveGrid Items="@(_products.Cast<object>().ToList())"
-                        Columns="3" Gap="lg">
+        <ResponsiveGrid Items="@(_products.Cast<object>().ToList())" Columns="3" Gap="lg">
             <ItemTemplate Context="item">
                 @{ var p = (Product)item; }
                 <ProductCard Product="p" />
@@ -175,6 +174,12 @@
     protected string _gapClass = "";
 
     /// <summary>
+    /// Pre-built grid cells rendered directly when <see cref="Items"/> is not used.
+    /// Each direct child element becomes a cell; the grid applies column placement automatically.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
     /// Number of fixed columns, or an auto-fit variant.
     /// Accepted values:
     /// <list type="bullet">
@@ -188,17 +193,18 @@
     [Parameter] public string Columns { get; set; } = "auto-fit";
 
     /// <summary>
+    /// Placeholder text rendered in a full-width empty-state cell when
+    /// <see cref="Items"/> is empty and no <see cref="ChildContent"/> is supplied.
+    /// Optional — omit to render an empty grid silently.
+    /// </summary>
+    [Parameter] public string EmptyMessage { get; set; } = "";
+
+    /// <summary>
     /// Spacing between grid cells.
     /// Accepted values: <c>"sm"</c> (0.5 rem), <c>"md"</c> (1 rem, default),
     /// <c>"lg"</c> (2 rem), <c>"xl"</c> (3 rem).
     /// </summary>
     [Parameter] public string Gap { get; set; } = "md";
-
-    /// <summary>
-    /// Minimum cell width used when <see cref="Columns"/> is an auto-fit variant.
-    /// Ignored for fixed column counts. Default: <c>"250px"</c>.
-    /// </summary>
-    [Parameter] public string MinItemWidth { get; set; } = "250px";
 
     /// <summary>
     /// The data objects to render. Each item is passed to <see cref="ItemTemplate"/>.
@@ -216,17 +222,10 @@
     [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
 
     /// <summary>
-    /// Placeholder text rendered in a full-width empty-state cell when
-    /// <see cref="Items"/> is empty and no <see cref="ChildContent"/> is supplied.
-    /// Optional — omit to render an empty grid silently.
+    /// Minimum cell width used when <see cref="Columns"/> is an auto-fit variant.
+    /// Ignored for fixed column counts. Default: <c>"250px"</c>.
     /// </summary>
-    [Parameter] public string EmptyMessage { get; set; } = "";
-
-    /// <summary>
-    /// Pre-built grid cells rendered directly when <see cref="Items"/> is not used.
-    /// Each direct child element becomes a cell; the grid applies column placement automatically.
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string MinItemWidth { get; set; } = "250px";
 
     protected override void OnInitialized()
     {

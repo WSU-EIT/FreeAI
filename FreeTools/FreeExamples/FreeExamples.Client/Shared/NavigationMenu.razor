@@ -18,7 +18,7 @@
                     }
                 </a>
                 <button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse" id="navBarToggler">
@@ -220,10 +220,9 @@
 }
 
 @code {
+    protected NavigationMenu_App navigationMenuApp = new NavigationMenu_App();
     [Parameter]
     public bool Loading { get; set; }
-
-    protected NavigationMenu_App navigationMenuApp = new NavigationMenu_App();
 
     public void Dispose() {
         Model.OnChange -= StateHasChanged;

@@ -64,8 +64,8 @@
                 <i class="fa-solid fa-arrows-rotate me-1"></i> Reset
             </button>
             <InfoTip Title="Multi-Item Board"
-                     Description="The Pipeline Tracker shows ONE item moving through stages. This board shows MANY items across stages simultaneously. Each column is a stage, each card is an item. Click 'Advance' on a card to move it to the next column."
-                     Code="@_codeBoard" />
+                    Description="The Pipeline Tracker shows ONE item moving through stages. This board shows MANY items across stages simultaneously. Each column is a stage, each card is an item. Click 'Advance' on a card to move it to the next column."
+                    Code="@_codeBoard" />
         </div>
 
         @* ── Swimlane Board ── *@
@@ -104,7 +104,7 @@
                                         @* Assignee avatar *@
                                         <div class="d-flex align-items-center gap-1">
                                             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                                 style="width:20px; height:20px; font-size:0.5rem; font-weight:600;">
+                                                    style="width:20px; height:20px; font-size:0.5rem; font-weight:600;">
                                                 @card.AssigneeInitials
                                             </div>
                                             <span class="text-muted" style="font-size:0.6rem;">@card.Assignee</span>
@@ -157,11 +157,11 @@
 
         <div class="d-flex flex-wrap gap-1">
             <InfoTip Title="Column Layout"
-                     Description="Each column is a flex-shrink-0 div with a fixed width of 220px. The parent is d-flex with overflow-auto, creating a horizontal scrollable board. Cards within each column are filtered by their CurrentStage index matching the column index."
-                     Code="@_codeColumns" />
+                    Description="Each column is a flex-shrink-0 div with a fixed width of 220px. The parent is d-flex with overflow-auto, creating a horizontal scrollable board. Cards within each column are filtered by their CurrentStage index matching the column index."
+                    Code="@_codeColumns" />
             <InfoTip Title="Card Advance"
-                     Description="Each card has a small arrow button that increments its CurrentStage by 1, moving it to the next column. The last column shows a green check instead of an arrow. This is the minimal version of Kanban drag-and-drop."
-                     Code="@_codeAdvance" />
+                    Description="Each card has a small arrow button that increments its CurrentStage by 1, moving it to the next column. The last column shows a green check instead of an arrow. This is the minimal version of Kanban drag-and-drop."
+                    Code="@_codeAdvance" />
         </div>
     }
 }
@@ -336,12 +336,12 @@
 
     private class BoardItem
     {
-        public int Id { get; set; }
-        public string Title { get; set; } = "";
-        public string Description { get; set; } = "";
         public string Assignee { get; set; } = "";
         public string AssigneeInitials { get; set; } = "";
         public int CurrentStage { get; set; }
+        public string Description { get; set; } = "";
+        public int Id { get; set; }
         public string Priority { get; set; } = "P3";
+        public string Title { get; set; } = "";
     }
 }

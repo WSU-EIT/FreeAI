@@ -11,11 +11,10 @@
 }
 
 @code {
-    [Parameter] public bool Button { get; set; }
-    [Parameter] public Plugins.Plugin Plugin { get; set; } = null!;
-    [Parameter] public Dictionary<string, object>? Parameters { get; set; }
-
     protected string _compileMessage = "Blazor plugins disabled";
+    [Parameter] public bool Button { get; set; }
+    [Parameter] public Dictionary<string, object>? Parameters { get; set; }
+    [Parameter] public Plugins.Plugin Plugin { get; set; } = null!;
 
     public void Dispose()
     {

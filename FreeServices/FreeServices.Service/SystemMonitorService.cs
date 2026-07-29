@@ -14,8 +14,8 @@ namespace FreeServices.Service;
 internal sealed class ServiceOptions
 {
     public int IntervalSeconds { get; set; } = 10;
-    public bool LogToFile { get; set; } = true;
     public string LogFilePath { get; set; } = "service-output.log";
+    public bool LogToFile { get; set; } = true;
 }
 
 /// <summary>
@@ -23,22 +23,22 @@ internal sealed class ServiceOptions
 /// </summary>
 internal sealed record SystemSnapshot
 {
-    public string MachineName { get; init; } = "";
-    public string OsDescription { get; init; } = "";
     public string Architecture { get; init; } = "";
+    public double CpuUsagePercent { get; init; }
     public string DotNetVersion { get; init; } = "";
+    public List<DriveSnapshot> Drives { get; init; } = [];
+    public long FreeMemoryMb { get; init; }
+    public string MachineName { get; init; } = "";
+    public double MemoryUsagePercent { get; init; }
+    public string OsDescription { get; init; } = "";
+    public int ProcessId { get; init; }
     public int ProcessorCount { get; init; }
     public string ProcessorName { get; init; } = "";
-    public double CpuUsagePercent { get; init; }
-    public long TotalMemoryMb { get; init; }
-    public long FreeMemoryMb { get; init; }
-    public long UsedMemoryMb { get; init; }
-    public double MemoryUsagePercent { get; init; }
-    public List<DriveSnapshot> Drives { get; init; } = [];
-    public int ProcessId { get; init; }
-    public long WorkingSetMb { get; init; }
-    public int ThreadCount { get; init; }
     public TimeSpan ServiceUptime { get; init; }
+    public int ThreadCount { get; init; }
+    public long TotalMemoryMb { get; init; }
+    public long UsedMemoryMb { get; init; }
+    public long WorkingSetMb { get; init; }
 }
 
 /// <summary>
@@ -46,10 +46,10 @@ internal sealed record SystemSnapshot
 /// </summary>
 internal sealed record DriveSnapshot
 {
-    public string Name { get; init; } = "";
     public string DriveFormat { get; init; } = "";
-    public double TotalGb { get; init; }
     public double FreeGb { get; init; }
+    public string Name { get; init; } = "";
+    public double TotalGb { get; init; }
     public double UsedPercent { get; init; }
 }
 

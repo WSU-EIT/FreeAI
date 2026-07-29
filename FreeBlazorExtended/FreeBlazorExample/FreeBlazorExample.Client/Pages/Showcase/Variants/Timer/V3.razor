@@ -17,10 +17,10 @@
                 <div class="card-body">
                     <h2 class="h5">Work Timer</h2>
                     <Timer @ref="_workTimer"
-                           Duration="@_workDuration"
-                           OnElapsed="StartBreak"
-                           OnTick="HandleWorkTick"
-                           ShowControls="false" />
+                            Duration="@_workDuration"
+                            OnElapsed="StartBreak"
+                            OnTick="HandleWorkTick"
+                            ShowControls="false" />
                 </div>
             </div>
         </div>
@@ -30,10 +30,10 @@
                 <div class="card-body">
                     <h2 class="h5">Break Timer</h2>
                     <Timer @ref="_breakTimer"
-                           Duration="@_breakDuration"
-                           OnElapsed="HandleBreakElapsed"
-                           ShowControls="false"
-                           Class="border border-success rounded p-2" />
+                            Duration="@_breakDuration"
+                            OnElapsed="HandleBreakElapsed"
+                            ShowControls="false"
+                            Class="border border-success rounded p-2" />
                 </div>
             </div>
         </div>
@@ -61,15 +61,26 @@
     private string _cycleStatus = "Idle";
     private List<string> _eventLog = new() { "Cycle not started." };
 
-    private void StartCycle()
+    private void AddLog(string message)
     {
-        _tickCount = 0;
-        _cycleStatus = "Work timer running";
-        _eventLog.Clear();
-        AddLog("Started work timer.");
-        _breakTimer?.Reset();
-        _workTimer?.Reset();
-        _workTimer?.Start();
+        _eventLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — {message}");
+        if (_eventLog.Count > 8) {
+            _eventLog = _eventLog.Take(8).ToList();
+        }
+    }
+
+    private Task HandleBreakElapsed()
+    {
+        _cycleStatus = "Cycle complete";
+        AddLog("Break timer elapsed. Cycle complete.");
+        return Task.CompletedTask;
+    }
+
+    private Task HandleWorkTick(TimeSpan remaining)
+    {
+        _tickCount++;
+        _cycleStatus = $"Work remaining: {remaining:mm\\:ss}";
+        return Task.CompletedTask;
     }
 
     private void ResetAll()
@@ -82,13 +93,6 @@
         AddLog("Reset both timers.");
     }
 
-    private Task HandleWorkTick(TimeSpan remaining)
-    {
-        _tickCount++;
-        _cycleStatus = $"Work remaining: {remaining:mm\\:ss}";
-        return Task.CompletedTask;
-    }
-
     private Task StartBreak()
     {
         _cycleStatus = "Break timer running";
@@ -97,18 +101,14 @@
         return Task.CompletedTask;
     }
 
-    private Task HandleBreakElapsed()
+    private void StartCycle()
     {
-        _cycleStatus = "Cycle complete";
-        AddLog("Break timer elapsed. Cycle complete.");
-        return Task.CompletedTask;
-    }
-
-    private void AddLog(string message)
-    {
-        _eventLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — {message}");
-        if (_eventLog.Count > 8) {
-            _eventLog = _eventLog.Take(8).ToList();
-        }
+        _tickCount = 0;
+        _cycleStatus = "Work timer running";
+        _eventLog.Clear();
+        AddLog("Started work timer.");
+        _breakTimer?.Reset();
+        _workTimer?.Reset();
+        _workTimer?.Start();
     }
 }

@@ -82,9 +82,9 @@
                                     <div class="d-flex align-items-center gap-2">
                                         @* Pulsing health dot *@
                                         <span class="d-inline-block rounded-circle bg-@statusColor @(statusColor == "success" ? "health-pulse" : "")"
-                                              style="width: 10px; height: 10px; flex-shrink: 0;"
-                                              title="@healthLabel"
-                                              aria-label="Health: @healthLabel"></span>
+                                                style="width: 10px; height: 10px; flex-shrink: 0;"
+                                                title="@healthLabel"
+                                                aria-label="Health: @healthLabel"></span>
                                         <h6 class="card-title mb-0">
                                             @svc.ServiceName
                                         </h6>
@@ -187,8 +187,8 @@
                             @if (isExpanded) {
                                 <div id="@cardId" class="border-top">
                                     <div class="bg-dark text-light font-monospace p-2"
-                                         style="max-height: 250px; overflow-y: auto; font-size: 0.78rem; line-height: 1.45;"
-                                         role="log" aria-live="polite" aria-label="@svc.ServiceName log feed">
+                                            style="max-height: 250px; overflow-y: auto; font-size: 0.78rem; line-height: 1.45;"
+                                            role="log" aria-live="polite" aria-label="@svc.ServiceName log feed">
                                         @if (svcLogs.Any()) {
                                             @foreach (var entry in svcLogs.TakeLast(50)) {
                                                 var levelClass = entry.LogLevel switch {
@@ -257,8 +257,8 @@
             <div class="ms-2">
                 <label for="logSearchFilter" class="visually-hidden">Search logs</label>
                 <input type="search" id="logSearchFilter" class="form-control form-control-sm"
-                       placeholder="Search messages…" @bind="_logSearchText" @bind:event="oninput"
-                       style="min-width:180px;" />
+                        placeholder="Search messages…" @bind="_logSearchText" @bind:event="oninput"
+                        style="min-width:180px;" />
             </div>
             <div class="ms-auto small text-muted align-self-center" aria-live="polite">
                 @FilteredLogs.Count entries
@@ -290,8 +290,8 @@
             </div>
             <div class="card-body p-0">
                 <div class="bg-dark text-light font-monospace p-3"
-                     style="max-height: 600px; overflow-y: auto; font-size: 0.82rem; line-height: 1.5;"
-                     id="logConsole" role="log" aria-live="polite" aria-label="Service log output">
+                        style="max-height: 600px; overflow-y: auto; font-size: 0.82rem; line-height: 1.5;"
+                        id="logConsole" role="log" aria-live="polite" aria-label="Service log output">
                     @if (PagedLogs.Any()) {
                         @foreach (var entry in PagedLogs) {
                             var levelClass = entry.LogLevel switch {

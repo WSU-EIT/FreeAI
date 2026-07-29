@@ -9,41 +9,10 @@ namespace FreeCodeReorganizer.Core;
 /// </summary>
 public sealed class ReorderConfig
 {
-    // ---- Sorting behavior -------------------------------------------------
-
-    /// <summary>
-    /// Master switch for the REORDER half of the engine: when false, members are never moved — only the
-    /// formatting/cleanup half (the "){" house style, double-tab Razor attributes) is applied. The Clean
-    /// Up commands run with this off; per-file "exclude from reorganize" rules turn it off for matched
-    /// files (e.g. EF models whose member order mirrors the database) while still allowing cleanup.
-    /// </summary>
-    public bool ReorderMembers { get; set; } = true;
-
-    /// <summary>Sort members alphabetically within each kind group.</summary>
-    public bool SortAlphabetically { get; set; } = true;
-
-    /// <summary>
-    /// Ignore a single leading underscore when comparing names. Reproduces the FreeCRM field
-    /// convention where <c>_connectionString</c> sorts as "connectionString" and the non-underscore
-    /// DI field <c>data</c> slots in alphabetically by its bare name.
-    /// </summary>
-    public bool IgnoreLeadingUnderscoreInSort { get; set; } = true;
-
-    /// <summary>Group members by accessibility (public first) before sorting alphabetically.
-    /// Off by default: FreeCRM interleaves public/private methods in pure alphabetical order.</summary>
-    public bool GroupByVisibility { get; set; } = false;
-
-    /// <summary>Within a kind group, place static members before instance members.
-    /// Off by default to match FreeCRM (purely alphabetical).</summary>
-    public bool StaticMembersFirst { get; set; } = false;
-
-    /// <summary>
-    /// If sorting would move more than this fraction (0..1) of a type's sortable members, the type is
-    /// treated as deliberately ordered BY PURPOSE and left completely untouched. This keeps the tool
-    /// from flattening hand-curated orderings (controllers, nested DTOs, plugin examples) while still
-    /// tidying types that are already mostly alphabetical. Set to 1.0 to always sort.
-    /// </summary>
-    public double MaxFractionReordered { get; set; } = 0.35;
+    /// <summary>A shallow copy — used to derive a per-file effective config (toggling the reorder /
+    /// formatting switches) without disturbing the shared base config. The list references are shared;
+    /// callers only flip the boolean switches, never mutate the lists.</summary>
+    public ReorderConfig Clone() => (ReorderConfig)MemberwiseClone();
 
     // ---- Brace / wrapping style -------------------------------------------
 
@@ -66,6 +35,49 @@ public sealed class ReorderConfig
     public bool CollapseWrappedParameterBrace { get; set; } = true;
 
     /// <summary>
+    /// Kinds whose members keep their original relative order (never alphabetized). By default only
+    /// properties, indexers and methods are sorted; everything else is preserved as the author wrote
+    /// it. Crucially this includes <b>Field</b> and <b>Const</b>: the author groups fields by purpose
+    /// (services, then state) rather than alphabetically, so we must not reorder them.
+    /// </summary>
+    public List<string> DoNotSortKinds { get; set; } =
+    [
+        "Const", "Field", "Constructor", "Destructor", "Delegate", "Event",
+        "Operator", "ConversionOperator", "Enum", "Interface", "Struct", "Class", "Record"
+    ];
+
+    /// <summary>
+    /// Path patterns that the cleanup/formatting half skips entirely — no <c>dotnet format</c> and no
+    /// house-style formatting. Same matching rules as <see cref="ExcludeReorganizeGlobs"/>.
+    /// </summary>
+    public List<string> ExcludeCleanupGlobs { get; set; } = [];
+
+    /// <summary>
+    /// Path patterns whose members are NEVER reordered (but are still eligible for cleanup/formatting).
+    /// A plain word matches any path containing it (e.g. <c>CRM.EFModels</c> excludes that whole project);
+    /// patterns with <c>*</c> / <c>**</c> / <c>?</c> are globs. See <see cref="PathExclusion"/>.
+    /// </summary>
+    public List<string> ExcludeReorganizeGlobs { get; set; } = [];
+
+    /// <summary>
+    /// Selects the cleanup level used by <see cref="CleanupRunner"/>: false = whitespace only (fast,
+    /// no project restore); true = full <c>dotnet format</c> (also usings + code-style + analyzers, needs
+    /// a project/solution and a build). Default false.
+    /// </summary>
+    public bool FullCleanup { get; set; } = false;
+
+    /// <summary>Group members by accessibility (public first) before sorting alphabetically.
+    /// Off by default: FreeCRM interleaves public/private methods in pure alphabetical order.</summary>
+    public bool GroupByVisibility { get; set; } = false;
+
+    /// <summary>
+    /// Ignore a single leading underscore when comparing names. Reproduces the FreeCRM field
+    /// convention where <c>_connectionString</c> sorts as "connectionString" and the non-underscore
+    /// DI field <c>data</c> slots in alphabetically by its bare name.
+    /// </summary>
+    public bool IgnoreLeadingUnderscoreInSort { get; set; } = true;
+
+    /// <summary>
     /// Re-indent the wrapped attributes of a Razor/Blazor element so every continuation attribute sits
     /// at the element's indent PLUS two levels ("double tab"). The first attribute stays on the tag line;
     /// the rest line up at base+2, which keeps them visually deeper than the element's child body (base+1):
@@ -79,31 +91,6 @@ public sealed class ReorderConfig
     /// tag would fit on one line within <see cref="MaxLineWidth"/>, it is collapsed to a single line.
     /// </summary>
     public bool IndentWrappedRazorAttributes { get; set; } = true;
-
-    /// <summary>
-    /// The line width (in characters) at or below which an ALREADY-wrapped parameter list or Razor start
-    /// tag is collapsed back onto a single line instead of being kept in the multi-line house style.
-    /// Anything whose single-line form is wider than this stays wrapped. Never causes a single-line
-    /// declaration to be wrapped — the reorganizer does not force-wrap. Default 120.
-    /// </summary>
-    public int MaxLineWidth { get; set; } = 120;
-
-    // ---- .editorconfig cleanup (dotnet format) ----------------------------
-
-    /// <summary>
-    /// When true, the Reorganize commands first run the <c>.editorconfig</c> cleanup (see
-    /// <see cref="CleanupRunner"/>) over the same target, then apply the member reorder + house style on
-    /// top. Off by default so reorganizing stays fast and never triggers a build unexpectedly; the
-    /// standalone Clean Up commands run the cleanup regardless of this flag.
-    /// </summary>
-    public bool RunCleanupBeforeReorganize { get; set; } = false;
-
-    /// <summary>
-    /// Selects the cleanup level used by <see cref="CleanupRunner"/>: false = whitespace only (fast,
-    /// no project restore); true = full <c>dotnet format</c> (also usings + code-style + analyzers, needs
-    /// a project/solution and a build). Default false.
-    /// </summary>
-    public bool FullCleanup { get; set; } = false;
 
     // ---- Ordering tables --------------------------------------------------
 
@@ -125,48 +112,21 @@ public sealed class ReorderConfig
         "Enum,Interface,Struct,Class,Record"
     ];
 
-    /// <summary>Accessibility order, used only when <see cref="GroupByVisibility"/> is true.</summary>
-    public List<string> VisibilityOrder { get; set; } =
-    [
-        "public", "internal", "protected internal", "protected", "private protected", "private"
-    ];
+    /// <summary>
+    /// If sorting would move more than this fraction (0..1) of a type's sortable members, the type is
+    /// treated as deliberately ordered BY PURPOSE and left completely untouched. This keeps the tool
+    /// from flattening hand-curated orderings (controllers, nested DTOs, plugin examples) while still
+    /// tidying types that are already mostly alphabetical. Set to 1.0 to always sort.
+    /// </summary>
+    public double MaxFractionReordered { get; set; } = 0.35;
 
     /// <summary>
-    /// Kinds whose members keep their original relative order (never alphabetized). By default only
-    /// properties, indexers and methods are sorted; everything else is preserved as the author wrote
-    /// it. Crucially this includes <b>Field</b> and <b>Const</b>: the author groups fields by purpose
-    /// (services, then state) rather than alphabetically, so we must not reorder them.
+    /// The line width (in characters) at or below which an ALREADY-wrapped parameter list or Razor start
+    /// tag is collapsed back onto a single line instead of being kept in the multi-line house style.
+    /// Anything whose single-line form is wider than this stays wrapped. Never causes a single-line
+    /// declaration to be wrapped — the reorganizer does not force-wrap. Default 120.
     /// </summary>
-    public List<string> DoNotSortKinds { get; set; } =
-    [
-        "Const", "Field", "Constructor", "Destructor", "Delegate", "Event",
-        "Operator", "ConversionOperator", "Enum", "Interface", "Struct", "Class", "Record"
-    ];
-
-    // ---- Safety / scope ---------------------------------------------------
-
-    /// <summary>Skip any type that contains <c>#if</c> / <c>#pragma</c> (and, when
-    /// <see cref="RespectRegions"/> is off, <c>#region</c>) directives between its members — reordering
-    /// across those would scramble them.</summary>
-    public bool SkipTypesWithDirectives { get; set; } = true;
-
-    /// <summary>
-    /// Respect <c>#region</c> / <c>#endregion</c> boundaries. When true (the default), a type whose only
-    /// directives are regions is left completely untouched so the regions — and the members inside them —
-    /// keep their exact layout. When false, region directives are ignored and members may be reordered
-    /// across them (a re-parse safety net still aborts anything that would unbalance the region pairing).
-    /// </summary>
-    public bool RespectRegions { get; set; } = true;
-
-    /// <summary>
-    /// Skip any type that contains paired template markers like FreeCRM's
-    /// <c>// {{ModuleItemStart:X}}</c> / <c>// {{ModuleItemEnd:X}}</c> comments. Those markers PIN
-    /// members to fixed positions — the template/plugin system splices code in and out by them — so
-    /// reordering across them would break the Start/End pairing. Any type that has even one such marker
-    /// is left entirely byte-for-byte alone. This is a safety rail, on by default; it is NOT a style
-    /// choice and shouldn't normally be turned off.
-    /// </summary>
-    public bool SkipTypesWithModuleMarkers { get; set; } = true;
+    public int MaxLineWidth { get; set; } = 120;
 
     /// <summary>The comment substrings that identify a "pinned" template region (see
     /// <see cref="SkipTypesWithModuleMarkers"/>). A type whose comments contain ANY of these is skipped.</summary>
@@ -175,6 +135,15 @@ public sealed class ReorderConfig
         "{{ModuleItemStart",
         "{{ModuleItemEnd"
     ];
+    // ---- Sorting behavior -------------------------------------------------
+
+    /// <summary>
+    /// Master switch for the REORDER half of the engine: when false, members are never moved — only the
+    /// formatting/cleanup half (the "){" house style, double-tab Razor attributes) is applied. The Clean
+    /// Up commands run with this off; per-file "exclude from reorganize" rules turn it off for matched
+    /// files (e.g. EF models whose member order mirrors the database) while still allowing cleanup.
+    /// </summary>
+    public bool ReorderMembers { get; set; } = true;
 
     // ---- Per-path exclusions ----------------------------------------------
 
@@ -188,20 +157,50 @@ public sealed class ReorderConfig
     public bool RespectGeneratedCode { get; set; } = true;
 
     /// <summary>
-    /// Path patterns whose members are NEVER reordered (but are still eligible for cleanup/formatting).
-    /// A plain word matches any path containing it (e.g. <c>CRM.EFModels</c> excludes that whole project);
-    /// patterns with <c>*</c> / <c>**</c> / <c>?</c> are globs. See <see cref="PathExclusion"/>.
+    /// Respect <c>#region</c> / <c>#endregion</c> boundaries. When true (the default), a type whose only
+    /// directives are regions is left completely untouched so the regions — and the members inside them —
+    /// keep their exact layout. When false, region directives are ignored and members may be reordered
+    /// across them (a re-parse safety net still aborts anything that would unbalance the region pairing).
     /// </summary>
-    public List<string> ExcludeReorganizeGlobs { get; set; } = [];
+    public bool RespectRegions { get; set; } = true;
+
+    // ---- .editorconfig cleanup (dotnet format) ----------------------------
 
     /// <summary>
-    /// Path patterns that the cleanup/formatting half skips entirely — no <c>dotnet format</c> and no
-    /// house-style formatting. Same matching rules as <see cref="ExcludeReorganizeGlobs"/>.
+    /// When true, the Reorganize commands first run the <c>.editorconfig</c> cleanup (see
+    /// <see cref="CleanupRunner"/>) over the same target, then apply the member reorder + house style on
+    /// top. Off by default so reorganizing stays fast and never triggers a build unexpectedly; the
+    /// standalone Clean Up commands run the cleanup regardless of this flag.
     /// </summary>
-    public List<string> ExcludeCleanupGlobs { get; set; } = [];
+    public bool RunCleanupBeforeReorganize { get; set; } = false;
 
-    /// <summary>A shallow copy — used to derive a per-file effective config (toggling the reorder /
-    /// formatting switches) without disturbing the shared base config. The list references are shared;
-    /// callers only flip the boolean switches, never mutate the lists.</summary>
-    public ReorderConfig Clone() => (ReorderConfig)MemberwiseClone();
+    // ---- Safety / scope ---------------------------------------------------
+
+    /// <summary>Skip any type that contains <c>#if</c> / <c>#pragma</c> (and, when
+    /// <see cref="RespectRegions"/> is off, <c>#region</c>) directives between its members — reordering
+    /// across those would scramble them.</summary>
+    public bool SkipTypesWithDirectives { get; set; } = true;
+
+    /// <summary>
+    /// Skip any type that contains paired template markers like FreeCRM's
+    /// <c>// {{ModuleItemStart:X}}</c> / <c>// {{ModuleItemEnd:X}}</c> comments. Those markers PIN
+    /// members to fixed positions — the template/plugin system splices code in and out by them — so
+    /// reordering across them would break the Start/End pairing. Any type that has even one such marker
+    /// is left entirely byte-for-byte alone. This is a safety rail, on by default; it is NOT a style
+    /// choice and shouldn't normally be turned off.
+    /// </summary>
+    public bool SkipTypesWithModuleMarkers { get; set; } = true;
+
+    /// <summary>Sort members alphabetically within each kind group.</summary>
+    public bool SortAlphabetically { get; set; } = true;
+
+    /// <summary>Within a kind group, place static members before instance members.
+    /// Off by default to match FreeCRM (purely alphabetical).</summary>
+    public bool StaticMembersFirst { get; set; } = false;
+
+    /// <summary>Accessibility order, used only when <see cref="GroupByVisibility"/> is true.</summary>
+    public List<string> VisibilityOrder { get; set; } =
+    [
+        "public", "internal", "protected internal", "protected", "private protected", "private"
+    ];
 }

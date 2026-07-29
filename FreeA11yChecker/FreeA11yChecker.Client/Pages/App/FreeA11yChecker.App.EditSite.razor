@@ -44,9 +44,9 @@
                 }
                 @if (!_isNew) {
                     <DeleteConfirmation OnConfirmed="Delete"
-                                        CancelText="@Helpers.ConfirmButtonTextCancel"
-                                        DeleteText="@Helpers.ConfirmButtonTextDelete"
-                                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                            CancelText="@Helpers.ConfirmButtonTextCancel"
+                            DeleteText="@Helpers.ConfirmButtonTextDelete"
+                            ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
                 }
             </div>
         </div>
@@ -105,7 +105,7 @@
                     <Language Tag="Name" Required="true" />
                 </label>
                 <input type="text" id="edit-site-Name" @bind="_site.Name" @bind:event="oninput"
-                       class="@Helpers.MissingValue(_site.Name, "form-control")" />
+                        class="@Helpers.MissingValue(_site.Name, "form-control")" />
             </div>
 
             <div class="mb-2">
@@ -113,8 +113,8 @@
                     <Language Tag="BaseUrl" Required="true" />
                 </label>
                 <input type="text" id="edit-site-BaseUrl" @bind="_site.BaseUrl" @bind:event="oninput"
-                       class="@Helpers.MissingValue(_site.BaseUrl, "form-control")"
-                       placeholder="https://example.com" />
+                        class="@Helpers.MissingValue(_site.BaseUrl, "form-control")"
+                        placeholder="https://example.com" />
             </div>
 
             <div class="mb-2">
@@ -122,7 +122,7 @@
                     <Language Tag="ScanScheduleCron" />
                 </label>
                 <input type="text" id="edit-site-ScanScheduleCron" @bind="_site.ScanScheduleCron" @bind:event="oninput"
-                       class="form-control" placeholder="0 2 * * 0" />
+                        class="form-control" placeholder="0 2 * * 0" />
                 <small class="text-muted"><Language Tag="CronFormatHelp" /></small>
             </div>
 
@@ -131,7 +131,7 @@
                     <Language Tag="MaxConcurrency" />
                 </label>
                 <input type="number" id="edit-site-MaxConcurrency" @bind="_site.MaxConcurrency"
-                       class="form-control" min="1" max="20" />
+                        class="form-control" min="1" max="20" />
             </div>
 
             @if (!_isNew && _site.LastScanAt.HasValue) {
@@ -186,8 +186,8 @@
                                 @foreach (var link in _discoverResult.InternalLinks.OrderBy(x => x.Path)) {
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" id="@("disc-" + link.Path.GetHashCode())"
-                                               checked="@_selectedDiscoveredPaths.Contains(link.Path)"
-                                               @onchange="@(e => ToggleDiscoveredPath(link.Path, (bool)(e.Value ?? false)))" />
+                                                checked="@_selectedDiscoveredPaths.Contains(link.Path)"
+                                                @onchange="@(e => ToggleDiscoveredPath(link.Path, (bool)(e.Value ?? false)))" />
                                         <label class="form-check-label" for="@("disc-" + link.Path.GetHashCode())">
                                             <code>@link.Path</code>
                                             @if (!String.IsNullOrEmpty(link.Text)) {
@@ -215,8 +215,8 @@
                                 @foreach (var link in _discoverResult.ExternalLinks.OrderBy(x => x.Url)) {
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" id="@("disc-ext-" + link.Url.GetHashCode())"
-                                               checked="@_selectedDiscoveredExternalUrls.Contains(link.Url)"
-                                               @onchange="@(e => ToggleDiscoveredExternalUrl(link.Url, (bool)(e.Value ?? false)))" />
+                                                checked="@_selectedDiscoveredExternalUrls.Contains(link.Url)"
+                                                @onchange="@(e => ToggleDiscoveredExternalUrl(link.Url, (bool)(e.Value ?? false)))" />
                                         <label class="form-check-label" for="@("disc-ext-" + link.Url.GetHashCode())">
                                             <i class="fas fa-external-link-alt me-1"></i> <code>@link.Url</code>
                                             @if (!String.IsNullOrEmpty(link.Text)) {
@@ -263,9 +263,9 @@
                                 </td>
                                 <td>
                                     <DeleteConfirmation ButtonSize="xs" OnConfirmed="@(() => DeletePage(page.SitePageId))"
-                                                        CancelText="@Helpers.ConfirmButtonTextCancel"
-                                                        DeleteText="@Helpers.ConfirmButtonTextDelete"
-                                                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                                            CancelText="@Helpers.ConfirmButtonTextCancel"
+                                            DeleteText="@Helpers.ConfirmButtonTextDelete"
+                                            ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
                                 </td>
                             </tr>
                         }
@@ -321,9 +321,9 @@
                                 </td>
                                 <td>
                                     <DeleteConfirmation ButtonSize="xs" OnConfirmed="@(() => DeleteCredential(cred.SiteCredentialId))"
-                                                        CancelText="@Helpers.ConfirmButtonTextCancel"
-                                                        DeleteText="@Helpers.ConfirmButtonTextDelete"
-                                                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                                            CancelText="@Helpers.ConfirmButtonTextCancel"
+                                            DeleteText="@Helpers.ConfirmButtonTextDelete"
+                                            ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
                                 </td>
                             </tr>
                         }

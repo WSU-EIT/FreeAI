@@ -11,16 +11,11 @@ public class CodeSnippetService
     private readonly ConcurrentDictionary<Guid, DataObjects.CodeSnippet> _snippets = new();
 
     /// <summary>
-    /// SaveMany pattern: save a snippet (insert or update).
+    /// DeleteMany pattern: delete by IDs.
     /// </summary>
-    public DataObjects.CodeSnippet SaveSnippet(DataObjects.CodeSnippet snippet)
+    public bool DeleteSnippet(Guid id)
     {
-        if (snippet.SnippetId == Guid.Empty) {
-            snippet.SnippetId = Guid.NewGuid();
-        }
-        snippet.LastSaved = DateTime.UtcNow;
-        _snippets[snippet.SnippetId] = snippet;
-        return snippet;
+        return _snippets.TryRemove(id, out _);
     }
 
     /// <summary>
@@ -35,10 +30,15 @@ public class CodeSnippetService
     }
 
     /// <summary>
-    /// DeleteMany pattern: delete by IDs.
+    /// SaveMany pattern: save a snippet (insert or update).
     /// </summary>
-    public bool DeleteSnippet(Guid id)
+    public DataObjects.CodeSnippet SaveSnippet(DataObjects.CodeSnippet snippet)
     {
-        return _snippets.TryRemove(id, out _);
+        if (snippet.SnippetId == Guid.Empty) {
+            snippet.SnippetId = Guid.NewGuid();
+        }
+        snippet.LastSaved = DateTime.UtcNow;
+        _snippets[snippet.SnippetId] = snippet;
+        return snippet;
     }
 }

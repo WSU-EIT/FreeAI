@@ -34,32 +34,9 @@ public sealed class GitRepoBrowserService
     /// <summary>The resolved context for the currently connected repository (null before first Resolve).</summary>
     public GitRepoContext? CurrentContext => _currentContext;
 
-    /// <summary>
-    /// Parses <paramref name="repoUrl"/>, selects the matching adapter, and caches the context.
-    /// Returns the resolved <see cref="GitRepoContext"/> (no network calls made here).
-    /// </summary>
-    public GitRepoContext Resolve(
-        string repoUrl,
-        GitCredentials credentials,
-        GitPlatform? platformOverride = null)
-    {
-        var (platform, owner, repo, baseApiUrl) = GitPlatformDetector.Detect(repoUrl, platformOverride);
-        _currentContext = new GitRepoContext(repoUrl, owner, repo, platform, credentials, baseApiUrl);
-        _currentAdapter = SelectAdapter(platform);
-        return _currentContext;
-    }
-
     /// <summary>Returns all branches for the current repository.</summary>
     public Task<List<GitBranch>> GetBranchesAsync(CancellationToken ct = default) =>
         RequireAdapter().GetBranchesAsync(RequireContext(), ct);
-
-    /// <summary>
-    /// Lists the immediate children of <paramref name="path"/> on <paramref name="branch"/>.
-    /// Pass an empty string for the repository root.
-    /// </summary>
-    public Task<List<GitTreeNode>> GetTreeAsync(
-        string path, string branch, CancellationToken ct = default) =>
-        RequireAdapter().GetTreeAsync(RequireContext(), path, branch, ct);
 
     /// <summary>
     /// Fetches and decodes a single file.
@@ -70,8 +47,7 @@ public sealed class GitRepoBrowserService
         string path,
         string branch,
         long maxFileSizeBytes = 512 * 1024,
-        CancellationToken ct = default)
-    {
+        CancellationToken ct = default){
         var content = await RequireAdapter().GetFileContentAsync(RequireContext(), path, branch, ct);
 
         // Secondary guard — adapter may not have had Content-Length up front
@@ -80,6 +56,34 @@ public sealed class GitRepoBrowserService
                 $"File '{path}' ({content.Size.Value / 1024} KB) exceeds the {maxFileSizeBytes / 1024} KB limit.");
 
         return content;
+    }
+
+    /// <summary>
+    /// Lists the immediate children of <paramref name="path"/> on <paramref name="branch"/>.
+    /// Pass an empty string for the repository root.
+    /// </summary>
+    public Task<List<GitTreeNode>> GetTreeAsync(
+        string path, string branch, CancellationToken ct = default) =>
+        RequireAdapter().GetTreeAsync(RequireContext(), path, branch, ct);
+
+    private IGitRepoAdapter RequireAdapter() =>
+        _currentAdapter ?? throw new InvalidOperationException(
+            "Call Resolve() before making API requests.");
+
+    private GitRepoContext RequireContext() =>
+        _currentContext ?? throw new InvalidOperationException(
+            "Call Resolve() before making API requests.");
+
+    /// <summary>
+    /// Parses <paramref name="repoUrl"/>, selects the matching adapter, and caches the context.
+    /// Returns the resolved <see cref="GitRepoContext"/> (no network calls made here).
+    /// </summary>
+    public GitRepoContext Resolve(string repoUrl, GitCredentials credentials, GitPlatform? platformOverride = null)
+    {
+        var (platform, owner, repo, baseApiUrl) = GitPlatformDetector.Detect(repoUrl, platformOverride);
+        _currentContext = new GitRepoContext(repoUrl, owner, repo, platform, credentials, baseApiUrl);
+        _currentAdapter = SelectAdapter(platform);
+        return _currentContext;
     }
 
     // -------------------------------------------------------------------------
@@ -95,12 +99,4 @@ public sealed class GitRepoBrowserService
         GitPlatform.AzureDevOps => _azureDevOps,
         _ => throw new InvalidOperationException($"No adapter is registered for platform '{platform}'.")
     };
-
-    private GitRepoContext RequireContext() =>
-        _currentContext ?? throw new InvalidOperationException(
-            "Call Resolve() before making API requests.");
-
-    private IGitRepoAdapter RequireAdapter() =>
-        _currentAdapter ?? throw new InvalidOperationException(
-            "Call Resolve() before making API requests.");
 }

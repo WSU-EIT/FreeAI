@@ -33,31 +33,6 @@ namespace FreePlugins.TenantRestrictedPlugin;
 public class TenantSpecificPlugin : ICompiledGeneralPlugin
 {
     /// <summary>
-    /// Static property required by ICompiledPlugin interface.
-    /// </summary>
-    public static Type PluginType => typeof(TenantSpecificPlugin);
-
-    /// <summary>
-    /// Plugin properties for compatibility with the existing plugin system.
-    /// </summary>
-    public Dictionary<string, object> Properties() => new() {
-        { "Id", Guid.Parse("8507d6b9-deb4-45d6-bd6c-a8267c4a1693") },
-        { "Author", "WSU EIT" },
-        { "ContainsSensitiveData", false },
-        { "Description", "A tenant-restricted plugin example." },
-        { "Name", "Tenant-Restricted Example (Compiled)" },
-        { "SortOrder", 1 },
-        { "Type", PluginTypes.General },
-        { "Version", "1.0.0" },
-        { "Enabled", true },
-        // This restricts the plugin to specific tenants only.
-        // Users in other tenants will not see or be able to execute this plugin.
-        { "LimitToTenants", new List<Guid> {
-            Guid.Parse("00000000-0000-0000-0000-000000000002")
-        }},
-    };
-
-    /// <summary>
     /// Execute the tenant-restricted plugin.
     /// </summary>
     /// <remarks>
@@ -96,6 +71,30 @@ public class TenantSpecificPlugin : ICompiledGeneralPlugin
 
         return PluginResult.Success(messages, output);
     }
+    /// <summary>
+    /// Static property required by ICompiledPlugin interface.
+    /// </summary>
+    public static Type PluginType => typeof(TenantSpecificPlugin);
+
+    /// <summary>
+    /// Plugin properties for compatibility with the existing plugin system.
+    /// </summary>
+    public Dictionary<string, object> Properties() => new() {
+        { "Id", Guid.Parse("8507d6b9-deb4-45d6-bd6c-a8267c4a1693") },
+        { "Author", "WSU EIT" },
+        { "ContainsSensitiveData", false },
+        { "Description", "A tenant-restricted plugin example." },
+        { "Name", "Tenant-Restricted Example (Compiled)" },
+        { "SortOrder", 1 },
+        { "Type", PluginTypes.General },
+        { "Version", "1.0.0" },
+        { "Enabled", true },
+        // This restricts the plugin to specific tenants only.
+        // Users in other tenants will not see or be able to execute this plugin.
+        { "LimitToTenants", new List<Guid> {
+            Guid.Parse("00000000-0000-0000-0000-000000000002")
+        }},
+    };
 }
 
 /// <summary>
@@ -113,26 +112,6 @@ public class TenantSpecificPlugin : ICompiledGeneralPlugin
 )]
 public class MultiTenantPlugin : ICompiledGeneralPlugin
 {
-    public static Type PluginType => typeof(MultiTenantPlugin);
-
-    public Dictionary<string, object> Properties() => new() {
-        { "Id", Guid.Parse("8507d6b9-deb4-45d6-bd6c-a8267c4a1694") },
-        { "Author", "WSU EIT" },
-        { "ContainsSensitiveData", false },
-        { "Description", "Restricted to multiple tenants." },
-        { "Name", "Multi-Tenant Restricted Example" },
-        { "SortOrder", 2 },
-        { "Type", PluginTypes.General },
-        { "Version", "1.0.0" },
-        { "Enabled", true },
-        // Restricted to multiple specific tenants
-        { "LimitToTenants", new List<Guid> {
-            Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Guid.Parse("00000000-0000-0000-0000-000000000002"),
-            Guid.Parse("00000000-0000-0000-0000-000000000003"),
-        }},
-    };
-
     /// <summary>
     /// Execute the multi-tenant plugin.
     /// </summary>
@@ -156,4 +135,23 @@ public class MultiTenantPlugin : ICompiledGeneralPlugin
 
         return PluginResult.Success(messages);
     }
+    public static Type PluginType => typeof(MultiTenantPlugin);
+
+    public Dictionary<string, object> Properties() => new() {
+        { "Id", Guid.Parse("8507d6b9-deb4-45d6-bd6c-a8267c4a1694") },
+        { "Author", "WSU EIT" },
+        { "ContainsSensitiveData", false },
+        { "Description", "Restricted to multiple tenants." },
+        { "Name", "Multi-Tenant Restricted Example" },
+        { "SortOrder", 2 },
+        { "Type", PluginTypes.General },
+        { "Version", "1.0.0" },
+        { "Enabled", true },
+        // Restricted to multiple specific tenants
+        { "LimitToTenants", new List<Guid> {
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Guid.Parse("00000000-0000-0000-0000-000000000003"),
+        }},
+    };
 }

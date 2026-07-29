@@ -34,6 +34,13 @@
         Model.OnChange -= OnDataModelUpdated;
     }
 
+    protected async Task GetTenantCodes()
+    {
+        if (!Model.TenantList.Any()) {
+            await Helpers.LoadTenantList();
+        }
+    }
+
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (_loading) {
@@ -57,12 +64,6 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
-        Model.OnChange += OnDataModelUpdated;
-        Model.View = _pageName;
-    }
-
     protected void OnDataModelUpdated()
     {
         if (Model.View == _pageName) {
@@ -70,10 +71,9 @@
         }
     }
 
-    protected async Task GetTenantCodes()
+    protected override void OnInitialized()
     {
-        if (!Model.TenantList.Any()) {
-            await Helpers.LoadTenantList();
-        }
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
     }
 }

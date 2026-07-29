@@ -29,28 +29,25 @@ namespace FreePlugins.AuthExamplePlugin;
 public class CustomAuthPlugin : ICompiledAuthPlugin
 {
     /// <summary>
-    /// Static property required by ICompiledPlugin interface.
+    /// Builds the prompts for username and password.
     /// </summary>
-    public static Type PluginType => typeof(CustomAuthPlugin);
-
-    /// <summary>
-    /// Plugin properties for compatibility with the existing plugin system.
-    /// </summary>
-    public Dictionary<string, object> Properties() => new() {
-        { "Id", Guid.Parse("a5a8354d-f5c6-435e-90e6-2bf86f0b4d36") },
-        { "Author", "WSU EIT" },
-        { "ContainsSensitiveData", true },
-        { "Description", "Custom authentication with username/password prompts." },
-        { "Name", "Custom Auth Example (Compiled)" },
-        { "Prompts", BuildPrompts() },
-        { "Type", PluginTypes.Auth },
-        { "Version", "1.0.0" },
-        { "Enabled", true },
-        { "LimitToTenants", new List<Guid> { Guid.Parse("00000000-0000-0000-0000-000000000001") } },
-        { "ButtonText", "Custom Auth Login" },
-        { "ButtonClass", "btn btn-primary" },
-        { "ButtonIcon", "<i class=\"icon fa-solid fa-sign-in-alt\"></i>" },
-    };
+    private static List<PluginPrompt> BuildPrompts() =>
+    [
+        new PluginPrompt {
+            Name = "Username",
+            Description = "Enter your username",
+            PromptType = PluginPromptType.Text,
+            Required = true,
+            SortOrder = 0,
+        },
+        new PluginPrompt {
+            Name = "Password",
+            Description = "Enter your password",
+            PromptType = PluginPromptType.Password,
+            Required = true,
+            SortOrder = 1,
+        },
+    ];
 
     /// <summary>
     /// Handle user login with username/password credentials.
@@ -141,25 +138,27 @@ public class CustomAuthPlugin : ICompiledAuthPlugin
 
         return PluginResult.Success(messages);
     }
+    /// <summary>
+    /// Static property required by ICompiledPlugin interface.
+    /// </summary>
+    public static Type PluginType => typeof(CustomAuthPlugin);
 
     /// <summary>
-    /// Builds the prompts for username and password.
+    /// Plugin properties for compatibility with the existing plugin system.
     /// </summary>
-    private static List<PluginPrompt> BuildPrompts() =>
-    [
-        new PluginPrompt {
-            Name = "Username",
-            Description = "Enter your username",
-            PromptType = PluginPromptType.Text,
-            Required = true,
-            SortOrder = 0,
-        },
-        new PluginPrompt {
-            Name = "Password",
-            Description = "Enter your password",
-            PromptType = PluginPromptType.Password,
-            Required = true,
-            SortOrder = 1,
-        },
-    ];
+    public Dictionary<string, object> Properties() => new() {
+        { "Id", Guid.Parse("a5a8354d-f5c6-435e-90e6-2bf86f0b4d36") },
+        { "Author", "WSU EIT" },
+        { "ContainsSensitiveData", true },
+        { "Description", "Custom authentication with username/password prompts." },
+        { "Name", "Custom Auth Example (Compiled)" },
+        { "Prompts", BuildPrompts() },
+        { "Type", PluginTypes.Auth },
+        { "Version", "1.0.0" },
+        { "Enabled", true },
+        { "LimitToTenants", new List<Guid> { Guid.Parse("00000000-0000-0000-0000-000000000001") } },
+        { "ButtonText", "Custom Auth Login" },
+        { "ButtonClass", "btn btn-primary" },
+        { "ButtonIcon", "<i class=\"icon fa-solid fa-sign-in-alt\"></i>" },
+    };
 }

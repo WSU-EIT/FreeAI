@@ -14,9 +14,29 @@ public sealed class GitLabAdapter : IGitRepoAdapter
 {
     private readonly HttpClient _http;
 
-    public GitPlatform Platform => GitPlatform.GitLab;
-
     public GitLabAdapter(HttpClient http) => _http = http;
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private static string EncodedPath(GitRepoContext ctx) =>
+        Uri.EscapeDataString($"{ctx.Owner}/{ctx.Repo}");
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
+    {
+        if (resp.IsSuccessStatusCode) return;
+        var status = (int)resp.StatusCode;
+        var body   = await resp.Content.ReadAsStringAsync(ct);
+        var code   = status switch
+        {
+            401 or 403 => GitErrorCode.Unauthorized,
+            404        => GitErrorCode.NotFound,
+            429        => GitErrorCode.RateLimited,
+            _          => GitErrorCode.NetworkError
+        };
+        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
+    }
 
     // -------------------------------------------------------------------------
     // Public interface
@@ -50,9 +70,45 @@ public sealed class GitLabAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<List<GitTreeNode>> GetTreeAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
+    public async Task<GitFileContent> GetFileContentAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
+        var encoded     = EncodedPath(ctx);
+        var encodedFile = Uri.EscapeDataString(path.TrimStart('/'));
+        var url         = $"{ctx.BaseApiUrl}/projects/{encoded}/repository/files/{encodedFile}/raw?ref={Uri.EscapeDataString(branch)}";
+
+        using var resp = await SendAsync(ctx, url, ct);
+        await EnsureSuccessAsync(resp, "GitLab", ct);
+
+        long? size = resp.Content.Headers.ContentLength;
+        if (size > 500 * 1024)
+            throw new GitRepoException(GitErrorCode.FileTooLarge,
+                $"File '{path}' is {size / 1024} KB which exceeds the 500 KB display limit.");
+
+        var bytes    = await resp.Content.ReadAsByteArrayAsync(ct);
+        var mimeHint = GetMimeHint(path);
+
+        if (IsBinaryContent(bytes))
+            return new GitFileContent(path, null, true, size ?? bytes.Length, mimeHint);
+
+        return new GitFileContent(path, System.Text.Encoding.UTF8.GetString(bytes), false, size ?? bytes.Length, null);
+    }
+
+    private static string? GetMimeHint(string path)
     {
+        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".png"  => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif"  => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf"  => "application/pdf",
+            _       => null
+        };
+    }
+
+    public async Task<List<GitTreeNode>> GetTreeAsync(
+        GitRepoContext ctx, string path, string branch, CancellationToken ct = default){
         var encoded  = EncodedPath(ctx);
         var safePath = path?.Trim('/') ?? "";
         var url      = $"{ctx.BaseApiUrl}/projects/{encoded}/repository/tree" +
@@ -77,60 +133,6 @@ public sealed class GitLabAdapter : IGitRepoAdapter
         return result;
     }
 
-    public async Task<GitFileContent> GetFileContentAsync(
-        GitRepoContext ctx, string path, string branch, CancellationToken ct = default)
-    {
-        var encoded     = EncodedPath(ctx);
-        var encodedFile = Uri.EscapeDataString(path.TrimStart('/'));
-        var url         = $"{ctx.BaseApiUrl}/projects/{encoded}/repository/files/{encodedFile}/raw?ref={Uri.EscapeDataString(branch)}";
-
-        using var resp = await SendAsync(ctx, url, ct);
-        await EnsureSuccessAsync(resp, "GitLab", ct);
-
-        long? size = resp.Content.Headers.ContentLength;
-        if (size > 500 * 1024)
-            throw new GitRepoException(GitErrorCode.FileTooLarge,
-                $"File '{path}' is {size / 1024} KB which exceeds the 500 KB display limit.");
-
-        var bytes    = await resp.Content.ReadAsByteArrayAsync(ct);
-        var mimeHint = GetMimeHint(path);
-
-        if (IsBinaryContent(bytes))
-            return new GitFileContent(path, null, true, size ?? bytes.Length, mimeHint);
-
-        return new GitFileContent(path, System.Text.Encoding.UTF8.GetString(bytes), false, size ?? bytes.Length, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private static string EncodedPath(GitRepoContext ctx) =>
-        Uri.EscapeDataString($"{ctx.Owner}/{ctx.Repo}");
-
-    private Task<HttpResponseMessage> SendAsync(GitRepoContext ctx, string url, CancellationToken ct)
-    {
-        var req = new HttpRequestMessage(HttpMethod.Get, url);
-        if (!string.IsNullOrWhiteSpace(ctx.Credentials.Token))
-            req.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", ctx.Credentials.Token);
-        return _http.SendAsync(req, ct);
-    }
-
-    private static async Task EnsureSuccessAsync(HttpResponseMessage resp, string platform, CancellationToken ct)
-    {
-        if (resp.IsSuccessStatusCode) return;
-        var status = (int)resp.StatusCode;
-        var body   = await resp.Content.ReadAsStringAsync(ct);
-        var code   = status switch
-        {
-            401 or 403 => GitErrorCode.Unauthorized,
-            404        => GitErrorCode.NotFound,
-            429        => GitErrorCode.RateLimited,
-            _          => GitErrorCode.NetworkError
-        };
-        throw new GitRepoException(code, $"{platform} API returned HTTP {status}.", status, body);
-    }
-
     private static bool IsBinaryContent(byte[] bytes)
     {
         var check = Math.Min(bytes.Length, 8000);
@@ -139,17 +141,13 @@ public sealed class GitLabAdapter : IGitRepoAdapter
         return false;
     }
 
-    private static string? GetMimeHint(string path)
+    public GitPlatform Platform => GitPlatform.GitLab;
+
+    private Task<HttpResponseMessage> SendAsync(GitRepoContext ctx, string url, CancellationToken ct)
     {
-        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-        return ext switch
-        {
-            ".png"  => "image/png",
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".gif"  => "image/gif",
-            ".webp" => "image/webp",
-            ".pdf"  => "application/pdf",
-            _       => null
-        };
+        var req = new HttpRequestMessage(HttpMethod.Get, url);
+        if (!string.IsNullOrWhiteSpace(ctx.Credentials.Token))
+            req.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", ctx.Credentials.Token);
+        return _http.SendAsync(req, ct);
     }
 }

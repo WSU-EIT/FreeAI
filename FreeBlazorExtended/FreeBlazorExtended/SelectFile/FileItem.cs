@@ -15,23 +15,16 @@ namespace FreeBlazorExtended.SelectFile;
 /// </summary>
 public class FileItem
 {
+    /// <summary>Size in bytes; used for the friendly tooltip.</summary>
+    public long Bytes { get; set; }
+
+    /// <summary>File extension including the leading dot (e.g. <c>".png"</c>).</summary>
+    public string Extension { get; set; } = "";
     /// <summary>Stable identifier for the file.</summary>
     public Guid FileId { get; set; }
 
     /// <summary>Display name (e.g. <c>"diagram.png"</c>).</summary>
     public string FileName { get; set; } = "";
-
-    /// <summary>File extension including the leading dot (e.g. <c>".png"</c>).</summary>
-    public string Extension { get; set; } = "";
-
-    /// <summary>Size in bytes; used for the friendly tooltip.</summary>
-    public long Bytes { get; set; }
-
-    /// <summary>
-    /// Optional inline image bytes. When set on an image-extension file,
-    /// the component renders a <c>data:</c> URL — no network round-trip.
-    /// </summary>
-    public byte[]? Value { get; set; }
 
     /// <summary>
     /// Optional URL the host has already resolved (CDN, signed URL, etc.).
@@ -44,4 +37,10 @@ public class FileItem
     /// (e.g. <c>"fa-solid fa-file-pdf"</c>). Falls back to <c>fa-solid fa-file</c>.
     /// </summary>
     public string? ThumbnailIcon { get; set; }
+
+    /// <summary>
+    /// Optional inline image bytes. When set on an image-extension file,
+    /// the component renders a <c>data:</c> URL — no network round-trip.
+    /// </summary>
+    public byte[]? Value { get; set; }
 }

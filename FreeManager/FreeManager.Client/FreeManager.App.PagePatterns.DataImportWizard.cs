@@ -20,8 +20,7 @@ public static partial class PagePatterns
     /// </summary>
     public static List<(string FileName, string FileType, string Content)> GetDataImportWizardFiles(
         string projectName,
-        DataObjects.EntityDefinition? entity = null)
-    {
+        DataObjects.EntityDefinition? entity = null){
         List<(string, string, string)> files = new();
         string entityName = entity?.Name ?? "Item";
         string pluralName = entity?.PluralName ?? "Items";
@@ -339,6 +338,330 @@ public static partial class PagePatterns
 ";
 
     // ============================================================
+    // MAPPING STEP - Column Mapping Interface
+    // ============================================================
+
+    private static string GetDataImportWizard_MappingStep(string name, string entityName) => $@"@* {name} - MappingStep.razor *@
+@* Column Mapping Interface *@
+
+<div class=""py-3"">
+    <div class=""d-flex justify-content-between align-items-center mb-4"">
+        <h5 class=""mb-0"">
+            <i class=""fa-solid fa-arrows-left-right me-2""></i>Map CSV Columns to {entityName} Fields
+        </h5>
+        <div>
+            <button class=""btn btn-outline-secondary me-2"" @onclick=""AutoMap"">
+                <i class=""fa-solid fa-magic me-1""></i>Auto-Map
+            </button>
+            <button class=""btn btn-outline-secondary"" @onclick=""ClearMappings"">
+                <i class=""fa-solid fa-eraser me-1""></i>Clear All
+            </button>
+        </div>
+    </div>
+
+    <div class=""card"">
+        <div class=""table-responsive"">
+            <table class=""table table-hover mb-0"">
+                <thead class=""table-light"">
+                    <tr>
+                        <th style=""width: 40%;"">CSV Column</th>
+                        <th style=""width: 20%;"" class=""text-center"">
+                            <i class=""fa-solid fa-arrow-right""></i>
+                        </th>
+                        <th style=""width: 40%;"">{entityName} Field</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var column in CsvColumns) {{
+                        <tr>
+                            <td>
+                                <div class=""d-flex align-items-center"">
+                                    <i class=""fa-solid fa-table-columns text-muted me-2""></i>
+                                    <span class=""fw-medium"">@column</span>
+                                </div>
+                            </td>
+                            <td class=""text-center"">
+                                @if (_localMappings.ContainsKey(column) && !string.IsNullOrEmpty(_localMappings[column])) {{
+                                    <i class=""fa-solid fa-link text-success""></i>
+                                }} else {{
+                                    <i class=""fa-solid fa-minus text-muted""></i>
+                                }}
+                            </td>
+                            <td>
+                                <select class=""form-select form-select-sm""
+                                        value=""@(_localMappings.GetValueOrDefault(column) ?? """")""
+                                        @onchange=""e => UpdateMapping(column, e.Value?.ToString())"">
+                                    <option value="""">(Skip this column)</option>
+                                    @foreach (var prop in EntityProperties) {{
+                                        <option value=""@prop"" disabled=""@IsPropertyMapped(prop, column)"">
+                                            @prop @(IsPropertyMapped(prop, column) ? ""(already mapped)"" : """")
+                                        </option>
+                                    }}
+                                </select>
+                            </td>
+                        </tr>
+                    }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class=""mt-3"">
+        <div class=""row"">
+            <div class=""col-md-6"">
+                <div class=""card bg-light"">
+                    <div class=""card-body py-2"">
+                        <div class=""d-flex justify-content-between"">
+                            <span class=""text-muted"">Mapped columns:</span>
+                            <strong class=""text-success"">@MappedCount / @CsvColumns.Count</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class=""col-md-6"">
+                <div class=""card bg-light"">
+                    <div class=""card-body py-2"">
+                        <div class=""d-flex justify-content-between"">
+                            <span class=""text-muted"">Skipped columns:</span>
+                            <strong class=""text-warning"">@(CsvColumns.Count - MappedCount)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class=""d-flex justify-content-between mt-4"">
+        <button class=""btn btn-outline-secondary"" @onclick=""OnBack"">
+            <i class=""fa-solid fa-arrow-left me-1""></i>Back
+        </button>
+        <button class=""btn btn-primary"" @onclick=""ProceedToValidation"" disabled=""@(MappedCount == 0)"">
+            Continue to Validation<i class=""fa-solid fa-arrow-right ms-1""></i>
+        </button>
+    </div>
+</div>
+
+@code {{
+    [Parameter] public List<string> CsvColumns {{ get; set; }} = new();
+    [Parameter] public List<string> EntityProperties {{ get; set; }} = new();
+    [Parameter] public Dictionary<string, string> ColumnMappings {{ get; set; }} = new();
+    [Parameter] public EventCallback<Dictionary<string, string>> OnMappingsChanged {{ get; set; }}
+    [Parameter] public EventCallback OnBack {{ get; set; }}
+
+    private Dictionary<string, string> _localMappings = new();
+
+    private int MappedCount => _localMappings.Count(m => !string.IsNullOrEmpty(m.Value));
+
+    protected override void OnParametersSet()
+    {{
+        _localMappings = new Dictionary<string, string>(ColumnMappings);
+        foreach (var col in CsvColumns)
+        {{
+            if (!_localMappings.ContainsKey(col))
+            {{
+                _localMappings[col] = string.Empty;
+            }}
+        }}
+    }}
+
+    private void UpdateMapping(string column, string? property)
+    {{
+        _localMappings[column] = property ?? string.Empty;
+    }}
+
+    private bool IsPropertyMapped(string property, string currentColumn)
+    {{
+        return _localMappings.Any(m => m.Value == property && m.Key != currentColumn);
+    }}
+
+    private void AutoMap()
+    {{
+        foreach (var col in CsvColumns)
+        {{
+            var match = EntityProperties.FirstOrDefault(p =>
+                p.Equals(col, StringComparison.OrdinalIgnoreCase) ||
+                p.Replace("" "", """").Equals(col.Replace("" "", """"), StringComparison.OrdinalIgnoreCase) ||
+                p.Replace(""_"", """").Equals(col.Replace(""_"", """"), StringComparison.OrdinalIgnoreCase));
+
+            if (match != null && !IsPropertyMapped(match, col))
+            {{
+                _localMappings[col] = match;
+            }}
+        }}
+    }}
+
+    private void ClearMappings()
+    {{
+        foreach (var col in CsvColumns)
+        {{
+            _localMappings[col] = string.Empty;
+        }}
+    }}
+
+    private async Task ProceedToValidation()
+    {{
+        var mappings = _localMappings.Where(m => !string.IsNullOrEmpty(m.Value))
+                                      .ToDictionary(m => m.Key, m => m.Value);
+        await OnMappingsChanged.InvokeAsync(mappings);
+    }}
+}}
+";
+
+    // ============================================================
+    // PROGRESS STEP - Import Progress Tracking
+    // ============================================================
+
+    private static string GetDataImportWizard_ProgressStep(string name, string entityName) => $@"@* {name} - ProgressStep.razor *@
+@* Import Progress Tracking Step *@
+
+<div class=""py-3"">
+    <div class=""text-center mb-4"">
+        @if (IsComplete) {{
+            @if (FailedRows.Count == 0) {{
+                <div class=""mb-3"">
+                    <i class=""fa-solid fa-check-circle fa-4x text-success""></i>
+                </div>
+                <h4 class=""text-success"">Import Complete!</h4>
+                <p class=""text-muted"">Successfully imported @ProcessedRows {entityName.ToLower()} records.</p>
+            }} else {{
+                <div class=""mb-3"">
+                    <i class=""fa-solid fa-exclamation-circle fa-4x text-warning""></i>
+                </div>
+                <h4 class=""text-warning"">Import Completed with Errors</h4>
+                <p class=""text-muted"">Imported @(ProcessedRows - FailedRows.Count) of @TotalRows records. @FailedRows.Count row(s) failed.</p>
+            }}
+        }} else {{
+            <div class=""mb-3"">
+                <i class=""fa-solid fa-cog fa-spin fa-4x text-primary""></i>
+            </div>
+            <h4>Importing Data...</h4>
+            <p class=""text-muted"">Please wait while your data is being imported.</p>
+        }}
+    </div>
+
+    <div class=""card mb-4"">
+        <div class=""card-body"">
+            <div class=""d-flex justify-content-between mb-2"">
+                <span>Progress</span>
+                <span class=""fw-bold"">@ProcessedRows / @TotalRows rows</span>
+            </div>
+            <div class=""progress"" style=""height: 25px;"">
+                <div class=""progress-bar @(IsComplete && FailedRows.Count == 0 ? ""bg-success"" : IsComplete ? ""bg-warning"" : """")""
+                     role=""progressbar""
+                     style=""width: @Progress%;""
+                     aria-valuenow=""@Progress""
+                     aria-valuemin=""0""
+                     aria-valuemax=""100"">
+                    @Progress%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (IsComplete) {{
+        <div class=""row mb-4"">
+            <div class=""col-md-4"">
+                <div class=""card text-center border-success"">
+                    <div class=""card-body"">
+                        <i class=""fa-solid fa-check text-success fa-2x mb-2""></i>
+                        <h3 class=""text-success mb-0"">@(ProcessedRows - FailedRows.Count)</h3>
+                        <small class=""text-muted"">Successful</small>
+                    </div>
+                </div>
+            </div>
+            <div class=""col-md-4"">
+                <div class=""card text-center border-danger"">
+                    <div class=""card-body"">
+                        <i class=""fa-solid fa-times text-danger fa-2x mb-2""></i>
+                        <h3 class=""text-danger mb-0"">@FailedRows.Count</h3>
+                        <small class=""text-muted"">Failed</small>
+                    </div>
+                </div>
+            </div>
+            <div class=""col-md-4"">
+                <div class=""card text-center"">
+                    <div class=""card-body"">
+                        <i class=""fa-solid fa-clock text-muted fa-2x mb-2""></i>
+                        <h3 class=""mb-0"">@TotalRows</h3>
+                        <small class=""text-muted"">Total Processed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }}
+
+    @if (FailedRows.Count > 0) {{
+        <div class=""card border-danger mb-4"">
+            <div class=""card-header bg-danger text-white"">
+                <i class=""fa-solid fa-exclamation-triangle me-2""></i>Failed Rows
+            </div>
+            <div class=""table-responsive"" style=""max-height: 300px; overflow-y: auto;"">
+                <table class=""table table-sm mb-0"">
+                    <thead class=""table-light sticky-top"">
+                        <tr>
+                            <th>Row</th>
+                            <th>Error</th>
+                            <th>Data Preview</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var failed in FailedRows) {{
+                            <tr>
+                                <td>@failed.RowNumber</td>
+                                <td class=""text-danger"">@failed.ErrorMessage</td>
+                                <td><code>@string.Join("", "", failed.Data.Take(3).Select(d => $""{{d.Key}}: {{d.Value}}""))</code></td>
+                            </tr>
+                        }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }}
+
+    @if (IsComplete) {{
+        <div class=""d-flex justify-content-between"">
+            <button class=""btn btn-outline-danger"" @onclick=""OnRollback"" disabled=""@(ProcessedRows == FailedRows.Count)"">
+                <i class=""fa-solid fa-rotate-left me-1""></i>Rollback Import
+            </button>
+            <div>
+                @if (FailedRows.Count > 0) {{
+                    <button class=""btn btn-outline-secondary me-2"" @onclick=""DownloadFailedRows"">
+                        <i class=""fa-solid fa-download me-1""></i>Download Failed Rows
+                    </button>
+                }}
+                <button class=""btn btn-primary"" @onclick=""OnClose"">
+                    <i class=""fa-solid fa-check me-1""></i>Done
+                </button>
+            </div>
+        </div>
+    }}
+</div>
+
+@code {{
+    [Parameter] public int Progress {{ get; set; }}
+    [Parameter] public int TotalRows {{ get; set; }}
+    [Parameter] public int ProcessedRows {{ get; set; }}
+    [Parameter] public List<ImportFailedRow> FailedRows {{ get; set; }} = new();
+    [Parameter] public bool IsComplete {{ get; set; }}
+    [Parameter] public EventCallback OnRollback {{ get; set; }}
+    [Parameter] public EventCallback OnClose {{ get; set; }}
+
+    private void DownloadFailedRows()
+    {{
+        // TODO: Implement CSV export of failed rows
+        // This would create a CSV with the failed row data for user review
+    }}
+
+    public class ImportFailedRow
+    {{
+        public int RowNumber {{ get; set; }}
+        public Dictionary<string, object?> Data {{ get; set; }} = new();
+        public string ErrorMessage {{ get; set; }} = string.Empty;
+    }}
+}}
+";
+
+    // ============================================================
     // UPLOAD STEP - Drag & Drop File Upload
     // ============================================================
 
@@ -531,176 +854,6 @@ public static partial class PagePatterns
 ";
 
     // ============================================================
-    // MAPPING STEP - Column Mapping Interface
-    // ============================================================
-
-    private static string GetDataImportWizard_MappingStep(string name, string entityName) => $@"@* {name} - MappingStep.razor *@
-@* Column Mapping Interface *@
-
-<div class=""py-3"">
-    <div class=""d-flex justify-content-between align-items-center mb-4"">
-        <h5 class=""mb-0"">
-            <i class=""fa-solid fa-arrows-left-right me-2""></i>Map CSV Columns to {entityName} Fields
-        </h5>
-        <div>
-            <button class=""btn btn-outline-secondary me-2"" @onclick=""AutoMap"">
-                <i class=""fa-solid fa-magic me-1""></i>Auto-Map
-            </button>
-            <button class=""btn btn-outline-secondary"" @onclick=""ClearMappings"">
-                <i class=""fa-solid fa-eraser me-1""></i>Clear All
-            </button>
-        </div>
-    </div>
-
-    <div class=""card"">
-        <div class=""table-responsive"">
-            <table class=""table table-hover mb-0"">
-                <thead class=""table-light"">
-                    <tr>
-                        <th style=""width: 40%;"">CSV Column</th>
-                        <th style=""width: 20%;"" class=""text-center"">
-                            <i class=""fa-solid fa-arrow-right""></i>
-                        </th>
-                        <th style=""width: 40%;"">{entityName} Field</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var column in CsvColumns) {{
-                        <tr>
-                            <td>
-                                <div class=""d-flex align-items-center"">
-                                    <i class=""fa-solid fa-table-columns text-muted me-2""></i>
-                                    <span class=""fw-medium"">@column</span>
-                                </div>
-                            </td>
-                            <td class=""text-center"">
-                                @if (_localMappings.ContainsKey(column) && !string.IsNullOrEmpty(_localMappings[column])) {{
-                                    <i class=""fa-solid fa-link text-success""></i>
-                                }} else {{
-                                    <i class=""fa-solid fa-minus text-muted""></i>
-                                }}
-                            </td>
-                            <td>
-                                <select class=""form-select form-select-sm""
-                                        value=""@(_localMappings.GetValueOrDefault(column) ?? """")""
-                                        @onchange=""e => UpdateMapping(column, e.Value?.ToString())"">
-                                    <option value="""">(Skip this column)</option>
-                                    @foreach (var prop in EntityProperties) {{
-                                        <option value=""@prop"" disabled=""@IsPropertyMapped(prop, column)"">
-                                            @prop @(IsPropertyMapped(prop, column) ? ""(already mapped)"" : """")
-                                        </option>
-                                    }}
-                                </select>
-                            </td>
-                        </tr>
-                    }}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class=""mt-3"">
-        <div class=""row"">
-            <div class=""col-md-6"">
-                <div class=""card bg-light"">
-                    <div class=""card-body py-2"">
-                        <div class=""d-flex justify-content-between"">
-                            <span class=""text-muted"">Mapped columns:</span>
-                            <strong class=""text-success"">@MappedCount / @CsvColumns.Count</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class=""col-md-6"">
-                <div class=""card bg-light"">
-                    <div class=""card-body py-2"">
-                        <div class=""d-flex justify-content-between"">
-                            <span class=""text-muted"">Skipped columns:</span>
-                            <strong class=""text-warning"">@(CsvColumns.Count - MappedCount)</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class=""d-flex justify-content-between mt-4"">
-        <button class=""btn btn-outline-secondary"" @onclick=""OnBack"">
-            <i class=""fa-solid fa-arrow-left me-1""></i>Back
-        </button>
-        <button class=""btn btn-primary"" @onclick=""ProceedToValidation"" disabled=""@(MappedCount == 0)"">
-            Continue to Validation<i class=""fa-solid fa-arrow-right ms-1""></i>
-        </button>
-    </div>
-</div>
-
-@code {{
-    [Parameter] public List<string> CsvColumns {{ get; set; }} = new();
-    [Parameter] public List<string> EntityProperties {{ get; set; }} = new();
-    [Parameter] public Dictionary<string, string> ColumnMappings {{ get; set; }} = new();
-    [Parameter] public EventCallback<Dictionary<string, string>> OnMappingsChanged {{ get; set; }}
-    [Parameter] public EventCallback OnBack {{ get; set; }}
-
-    private Dictionary<string, string> _localMappings = new();
-
-    private int MappedCount => _localMappings.Count(m => !string.IsNullOrEmpty(m.Value));
-
-    protected override void OnParametersSet()
-    {{
-        _localMappings = new Dictionary<string, string>(ColumnMappings);
-        foreach (var col in CsvColumns)
-        {{
-            if (!_localMappings.ContainsKey(col))
-            {{
-                _localMappings[col] = string.Empty;
-            }}
-        }}
-    }}
-
-    private void UpdateMapping(string column, string? property)
-    {{
-        _localMappings[column] = property ?? string.Empty;
-    }}
-
-    private bool IsPropertyMapped(string property, string currentColumn)
-    {{
-        return _localMappings.Any(m => m.Value == property && m.Key != currentColumn);
-    }}
-
-    private void AutoMap()
-    {{
-        foreach (var col in CsvColumns)
-        {{
-            var match = EntityProperties.FirstOrDefault(p =>
-                p.Equals(col, StringComparison.OrdinalIgnoreCase) ||
-                p.Replace("" "", """").Equals(col.Replace("" "", """"), StringComparison.OrdinalIgnoreCase) ||
-                p.Replace(""_"", """").Equals(col.Replace(""_"", """"), StringComparison.OrdinalIgnoreCase));
-
-            if (match != null && !IsPropertyMapped(match, col))
-            {{
-                _localMappings[col] = match;
-            }}
-        }}
-    }}
-
-    private void ClearMappings()
-    {{
-        foreach (var col in CsvColumns)
-        {{
-            _localMappings[col] = string.Empty;
-        }}
-    }}
-
-    private async Task ProceedToValidation()
-    {{
-        var mappings = _localMappings.Where(m => !string.IsNullOrEmpty(m.Value))
-                                      .ToDictionary(m => m.Key, m => m.Value);
-        await OnMappingsChanged.InvokeAsync(mappings);
-    }}
-}}
-";
-
-    // ============================================================
     // VALIDATE STEP - Validation Preview
     // ============================================================
 
@@ -850,160 +1003,6 @@ public static partial class PagePatterns
         public string ColumnName {{ get; set; }} = string.Empty;
         public string? Value {{ get; set; }}
         public string Message {{ get; set; }} = string.Empty;
-    }}
-}}
-";
-
-    // ============================================================
-    // PROGRESS STEP - Import Progress Tracking
-    // ============================================================
-
-    private static string GetDataImportWizard_ProgressStep(string name, string entityName) => $@"@* {name} - ProgressStep.razor *@
-@* Import Progress Tracking Step *@
-
-<div class=""py-3"">
-    <div class=""text-center mb-4"">
-        @if (IsComplete) {{
-            @if (FailedRows.Count == 0) {{
-                <div class=""mb-3"">
-                    <i class=""fa-solid fa-check-circle fa-4x text-success""></i>
-                </div>
-                <h4 class=""text-success"">Import Complete!</h4>
-                <p class=""text-muted"">Successfully imported @ProcessedRows {entityName.ToLower()} records.</p>
-            }} else {{
-                <div class=""mb-3"">
-                    <i class=""fa-solid fa-exclamation-circle fa-4x text-warning""></i>
-                </div>
-                <h4 class=""text-warning"">Import Completed with Errors</h4>
-                <p class=""text-muted"">Imported @(ProcessedRows - FailedRows.Count) of @TotalRows records. @FailedRows.Count row(s) failed.</p>
-            }}
-        }} else {{
-            <div class=""mb-3"">
-                <i class=""fa-solid fa-cog fa-spin fa-4x text-primary""></i>
-            </div>
-            <h4>Importing Data...</h4>
-            <p class=""text-muted"">Please wait while your data is being imported.</p>
-        }}
-    </div>
-
-    <div class=""card mb-4"">
-        <div class=""card-body"">
-            <div class=""d-flex justify-content-between mb-2"">
-                <span>Progress</span>
-                <span class=""fw-bold"">@ProcessedRows / @TotalRows rows</span>
-            </div>
-            <div class=""progress"" style=""height: 25px;"">
-                <div class=""progress-bar @(IsComplete && FailedRows.Count == 0 ? ""bg-success"" : IsComplete ? ""bg-warning"" : """")""
-                     role=""progressbar""
-                     style=""width: @Progress%;""
-                     aria-valuenow=""@Progress""
-                     aria-valuemin=""0""
-                     aria-valuemax=""100"">
-                    @Progress%
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (IsComplete) {{
-        <div class=""row mb-4"">
-            <div class=""col-md-4"">
-                <div class=""card text-center border-success"">
-                    <div class=""card-body"">
-                        <i class=""fa-solid fa-check text-success fa-2x mb-2""></i>
-                        <h3 class=""text-success mb-0"">@(ProcessedRows - FailedRows.Count)</h3>
-                        <small class=""text-muted"">Successful</small>
-                    </div>
-                </div>
-            </div>
-            <div class=""col-md-4"">
-                <div class=""card text-center border-danger"">
-                    <div class=""card-body"">
-                        <i class=""fa-solid fa-times text-danger fa-2x mb-2""></i>
-                        <h3 class=""text-danger mb-0"">@FailedRows.Count</h3>
-                        <small class=""text-muted"">Failed</small>
-                    </div>
-                </div>
-            </div>
-            <div class=""col-md-4"">
-                <div class=""card text-center"">
-                    <div class=""card-body"">
-                        <i class=""fa-solid fa-clock text-muted fa-2x mb-2""></i>
-                        <h3 class=""mb-0"">@TotalRows</h3>
-                        <small class=""text-muted"">Total Processed</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }}
-
-    @if (FailedRows.Count > 0) {{
-        <div class=""card border-danger mb-4"">
-            <div class=""card-header bg-danger text-white"">
-                <i class=""fa-solid fa-exclamation-triangle me-2""></i>Failed Rows
-            </div>
-            <div class=""table-responsive"" style=""max-height: 300px; overflow-y: auto;"">
-                <table class=""table table-sm mb-0"">
-                    <thead class=""table-light sticky-top"">
-                        <tr>
-                            <th>Row</th>
-                            <th>Error</th>
-                            <th>Data Preview</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var failed in FailedRows) {{
-                            <tr>
-                                <td>@failed.RowNumber</td>
-                                <td class=""text-danger"">@failed.ErrorMessage</td>
-                                <td><code>@string.Join("", "", failed.Data.Take(3).Select(d => $""{{d.Key}}: {{d.Value}}""))</code></td>
-                            </tr>
-                        }}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    }}
-
-    @if (IsComplete) {{
-        <div class=""d-flex justify-content-between"">
-            <button class=""btn btn-outline-danger"" @onclick=""OnRollback"" disabled=""@(ProcessedRows == FailedRows.Count)"">
-                <i class=""fa-solid fa-rotate-left me-1""></i>Rollback Import
-            </button>
-            <div>
-                @if (FailedRows.Count > 0) {{
-                    <button class=""btn btn-outline-secondary me-2"" @onclick=""DownloadFailedRows"">
-                        <i class=""fa-solid fa-download me-1""></i>Download Failed Rows
-                    </button>
-                }}
-                <button class=""btn btn-primary"" @onclick=""OnClose"">
-                    <i class=""fa-solid fa-check me-1""></i>Done
-                </button>
-            </div>
-        </div>
-    }}
-</div>
-
-@code {{
-    [Parameter] public int Progress {{ get; set; }}
-    [Parameter] public int TotalRows {{ get; set; }}
-    [Parameter] public int ProcessedRows {{ get; set; }}
-    [Parameter] public List<ImportFailedRow> FailedRows {{ get; set; }} = new();
-    [Parameter] public bool IsComplete {{ get; set; }}
-    [Parameter] public EventCallback OnRollback {{ get; set; }}
-    [Parameter] public EventCallback OnClose {{ get; set; }}
-
-    private void DownloadFailedRows()
-    {{
-        // TODO: Implement CSV export of failed rows
-        // This would create a CSV with the failed row data for user review
-    }}
-
-    public class ImportFailedRow
-    {{
-        public int RowNumber {{ get; set; }}
-        public Dictionary<string, object?> Data {{ get; set; }} = new();
-        public string ErrorMessage {{ get; set; }} = string.Empty;
     }}
 }}
 ";

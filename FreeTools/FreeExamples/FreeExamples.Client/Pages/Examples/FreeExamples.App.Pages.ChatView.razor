@@ -104,7 +104,7 @@
                             @if (!isMe) {
                                 @* Avatar for others (left side) *@
                                 <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0 me-2 align-self-end"
-                                     style="width:28px; height:28px; font-size:0.65rem; font-weight:600;">
+                                        style="width:28px; height:28px; font-size:0.65rem; font-weight:600;">
                                     @comment.AuthorInitials
                                 </div>
                             }
@@ -114,12 +114,12 @@
                                     <div class="small fw-semibold text-muted mb-1">@comment.AuthorName</div>
                                 }
                                 <div class="rounded-3 px-3 py-2 @(isMe ? "bg-primary text-white" : "bg-white border")"
-                                     style="@(isMe ? "border-bottom-right-radius:0.25rem !important;" : "border-bottom-left-radius:0.25rem !important;")">
+                                        style="@(isMe ? "border-bottom-right-radius:0.25rem !important;" : "border-bottom-left-radius:0.25rem !important;")">
                                     <div class="small">@comment.Text</div>
                                 </div>
                                 <div class="@(isMe ? "text-end" : "") mt-1">
                                     <span class="text-muted" style="font-size:0.65rem;"
-                                          title="@comment.Created.ToLocalTime().ToString("f")">
+                                            title="@comment.Created.ToLocalTime().ToString("f")">
                                         @comment.Created.ToLocalTime().ToString("h:mm tt")
                                         @if (comment.Edited.HasValue) {
                                             <span class="fst-italic"> (edited)</span>
@@ -131,7 +131,7 @@
                             @if (isMe) {
                                 @* Avatar for me (right side) *@
                                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0 ms-2 align-self-end"
-                                     style="width:28px; height:28px; font-size:0.65rem; font-weight:600;">
+                                        style="width:28px; height:28px; font-size:0.65rem; font-weight:600;">
                                     @_currentUserInitials
                                 </div>
                             }
@@ -157,8 +157,8 @@
             <div class="card-footer bg-white py-2">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Type a message..."
-                           @bind="_newCommentText" @bind:event="oninput"
-                           @onkeydown="HandleKeydown" />
+                            @bind="_newCommentText" @bind:event="oninput"
+                            @onkeydown="HandleKeydown" />
                     <button class="btn btn-primary" @onclick="SendMessage"
                             disabled="@(string.IsNullOrWhiteSpace(_newCommentText) || _saving)">
                         <i class="fa-solid fa-paper-plane"></i>
@@ -170,14 +170,14 @@
 
         <div class="d-flex flex-wrap gap-1">
             <InfoTip Title="Same API, Different Layout"
-                     Description="This page calls GetComments, SaveComment, and DeleteComment — the exact same endpoints as the Comment Thread page. The only difference is the Razor markup. Your messages get 'bg-primary text-white' and justify-content-end. Others get 'bg-white border' and justify-content-start."
-                     Code="@_codeBubble" />
+                    Description="This page calls GetComments, SaveComment, and DeleteComment — the exact same endpoints as the Comment Thread page. The only difference is the Razor markup. Your messages get 'bg-primary text-white' and justify-content-end. Others get 'bg-white border' and justify-content-start."
+                    Code="@_codeBubble" />
             <InfoTip Title="Day Separators"
-                     Description="As we loop through comments, we track the last date label. When it changes (e.g., from 'Yesterday' to 'Today'), we insert a horizontal rule with a badge in the middle. This groups messages by day without duplicating date headers."
-                     Code="@_codeDaySep" />
+                    Description="As we loop through comments, we track the last date label. When it changes (e.g., from 'Yesterday' to 'Today'), we insert a horizontal rule with a badge in the middle. This groups messages by day without duplicating date headers."
+                    Code="@_codeDaySep" />
             <InfoTip Title="Typing Indicator"
-                     Description="While the Save API call is in progress, we show three animated dots (spinner-grow) at the bottom of the chat. Each dot has a different animation-delay to create the wave effect. This is the same indicator Slack and iMessage show."
-                     Code="@_codeTyping" />
+                    Description="While the Save API call is in progress, we show three animated dots (spinner-grow) at the bottom of the chat. Each dot has a different animation-delay to create the wave effect. This is the same indicator Slack and iMessage show."
+                    Code="@_codeTyping" />
         </div>
     }
 }

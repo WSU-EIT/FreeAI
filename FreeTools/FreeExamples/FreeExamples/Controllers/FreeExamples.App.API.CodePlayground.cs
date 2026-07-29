@@ -15,32 +15,6 @@ public partial class DataController
     private static readonly JsonSerializerOptions _prettyJson = new() { WriteIndented = true };
 
     /// <summary>
-    /// GetMany: null/empty → all snippets, list of IDs → filtered.
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/GetCodeSnippets")]
-    public ActionResult<List<DataObjects.CodeSnippet>> GetCodeSnippets(
-        List<Guid>? ids,
-        [FromServices] CodeSnippetService snippetService)
-    {
-        return Ok(snippetService.GetSnippets(ids));
-    }
-
-    /// <summary>
-    /// Save a single snippet (insert or update).
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [Route("~/api/Data/SaveCodeSnippet")]
-    public ActionResult<DataObjects.CodeSnippet> SaveCodeSnippet(
-        [FromBody] DataObjects.CodeSnippet snippet,
-        [FromServices] CodeSnippetService snippetService)
-    {
-        return Ok(snippetService.SaveSnippet(snippet));
-    }
-
-    /// <summary>
     /// Delete a snippet by ID.
     /// </summary>
     [HttpPost]
@@ -48,8 +22,7 @@ public partial class DataController
     [Route("~/api/Data/DeleteCodeSnippet")]
     public ActionResult<DataObjects.BooleanResponse> DeleteCodeSnippet(
         [FromBody] Guid id,
-        [FromServices] CodeSnippetService snippetService)
-    {
+        [FromServices] CodeSnippetService snippetService){
         return Ok(new DataObjects.BooleanResponse { Result = snippetService.DeleteSnippet(id) });
     }
 
@@ -61,8 +34,7 @@ public partial class DataController
     [Authorize]
     [Route("~/api/Data/ExecuteCodePlayground")]
     public ActionResult<DataObjects.CodePlaygroundResponse> ExecuteCodePlayground(
-        [FromBody] DataObjects.CodePlaygroundRequest request)
-    {
+        [FromBody] DataObjects.CodePlaygroundRequest request){
         var sw = System.Diagnostics.Stopwatch.StartNew();
         var response = new DataObjects.CodePlaygroundResponse();
 
@@ -101,5 +73,29 @@ public partial class DataController
         sw.Stop();
         response.DurationMs = sw.ElapsedMilliseconds;
         return Ok(response);
+    }
+
+    /// <summary>
+    /// GetMany: null/empty → all snippets, list of IDs → filtered.
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/GetCodeSnippets")]
+    public ActionResult<List<DataObjects.CodeSnippet>> GetCodeSnippets(
+        List<Guid>? ids,
+        [FromServices] CodeSnippetService snippetService){
+        return Ok(snippetService.GetSnippets(ids));
+    }
+
+    /// <summary>
+    /// Save a single snippet (insert or update).
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [Route("~/api/Data/SaveCodeSnippet")]
+    public ActionResult<DataObjects.CodeSnippet> SaveCodeSnippet(
+        [FromBody] DataObjects.CodeSnippet snippet,
+        [FromServices] CodeSnippetService snippetService){
+        return Ok(snippetService.SaveSnippet(snippet));
     }
 }

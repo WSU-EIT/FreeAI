@@ -13,8 +13,7 @@
             <li><h6 class="dropdown-header">Built-in Templates</h6></li>
             @foreach (var template in DataObjects.BuiltInEntityTemplates.All) {
                 <li>
-                    <button class="dropdown-item d-flex align-items-start" 
-                            @onclick="() => LoadTemplate(template)">
+                    <button class="dropdown-item d-flex align-items-start" @onclick="() => LoadTemplate(template)">
                         <i class="fa-solid @template.Icon text-primary me-2 mt-1"></i>
                         <div>
                             <div class="fw-semibold">@template.Name</div>
@@ -49,8 +48,7 @@
     </div>
 
     @* Save Template Button *@
-    <button class="btn btn-outline-secondary" @onclick="OpenSaveModal"
-            disabled="@(!CanSave)">
+    <button class="btn btn-outline-secondary" @onclick="OpenSaveModal" disabled="@(!CanSave)">
         <i class="fa-solid fa-save me-1"></i>
         Save As Template
     </button>
@@ -82,12 +80,12 @@
                     <div class="mb-3">
                         <label class="form-label">Template Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" @bind="_newTemplateName" 
-                               placeholder="My Custom Template" />
+                                placeholder="My Custom Template" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" rows="2" @bind="_newTemplateDescription"
-                                  placeholder="Brief description (optional)"></textarea>
+                                placeholder="Brief description (optional)"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Icon</label>

@@ -13,8 +13,7 @@ namespace Try.Core
             string physicalPath,
             string relativePhysicalPath,
             string fileKind,
-            byte[] content)
-        {
+            byte[] content){
             BasePath = basePath;
             FilePath = filePath;
             PhysicalPath = physicalPath;
@@ -27,7 +26,7 @@ namespace Try.Core
 
         public override string BasePath { get; }
 
-        public override string RelativePhysicalPath { get; }
+        public override bool Exists => true;
 
         public override string FileKind { get; }
 
@@ -35,8 +34,8 @@ namespace Try.Core
 
         public override string PhysicalPath { get; }
 
-        public override bool Exists => true;
-
         public override Stream Read() => new MemoryStream(this._content);
+
+        public override string RelativePhysicalPath { get; }
     }
 }

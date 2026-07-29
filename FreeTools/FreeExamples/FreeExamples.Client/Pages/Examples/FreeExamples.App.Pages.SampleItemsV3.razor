@@ -21,14 +21,14 @@
 
         <div class="d-flex flex-wrap gap-1 mb-3">
             <InfoTip Title="Accordion Group Pattern"
-                     Description="Items are grouped with LINQ GroupBy on the Category field. Each group gets a card with a clickable header. The chevron icon rotates between fa-chevron-right (collapsed) and fa-chevron-down (expanded). A badge shows the item count per group."
-                     Code="@_codeAccordion" />
+                    Description="Items are grouped with LINQ GroupBy on the Category field. Each group gets a card with a clickable header. The chevron icon rotates between fa-chevron-right (collapsed) and fa-chevron-down (expanded). A badge shows the item count per group."
+                    Code="@_codeAccordion" />
             <InfoTip Title="Expand/Collapse All"
-                     Description="Two buttons control all groups at once. ExpandAll adds all group keys to a HashSet. CollapseAll clears it. Each card checks if its key is in _expandedGroups to show/hide the body. This is faster than Bootstrap's data-bs-toggle approach for dynamic data."
-                     Code="@_codeExpandCollapse" />
+                    Description="Two buttons control all groups at once. ExpandAll adds all group keys to a HashSet. CollapseAll clears it. Each card checks if its key is in _expandedGroups to show/hide the body. This is faster than Bootstrap's data-bs-toggle approach for dynamic data."
+                    Code="@_codeExpandCollapse" />
             <InfoTip Title="Table Inside Card"
-                     Description="Each expanded group shows a table-sm table-hover inside the card-body with p-0 (no padding) so the table fills edge-to-edge. The thead uses table-light for a subtle header. This nested card+table pattern is used in DependencyManager for grouped dependencies."
-                     Code="@_codeNestedTable" />
+                    Description="Each expanded group shows a table-sm table-hover inside the card-body with p-0 (no padding) so the table fills edge-to-edge. The thead uses table-light for a subtle header. This nested card+table pattern is used in DependencyManager for grouped dependencies."
+                    Code="@_codeNestedTable" />
         </div>
 
         <div class="d-flex gap-2 mb-3">
@@ -41,7 +41,7 @@
             bool expanded = _expandedGroups.Contains(group.Key);
             <div class="card shadow-sm border-0 mb-2">
                 <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center" role="button"
-                     @onclick="@(() => ToggleGroup(group.Key))">
+                        @onclick="@(() => ToggleGroup(group.Key))">
                     <span class="fw-semibold">
                         <i class="fa-solid @(expanded ? "fa-chevron-down" : "fa-chevron-right") me-1 small text-muted"></i>
                         @group.Key
