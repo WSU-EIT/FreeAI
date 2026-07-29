@@ -106,6 +106,20 @@ public class GlbaBatchResponse
 }
 ```
 
+#### AccessEventBulkResult
+Response for the internal bulk insert (`api/Data/SaveAccessEvents`). Unlike `GlbaBatchResponse`,
+this path performs no de-duplication — it is intended for seeding and internal high-volume writes,
+not for external ingestion:
+```csharp
+public class AccessEventBulkResult
+{
+    public int Saved { get; set; }             // events written
+    public int SubjectsAffected { get; set; }  // distinct data subjects created or updated
+    public bool Success { get; set; }
+    public string Message { get; set; }        // populated when Success is false
+}
+```
+
 ### Core Framework DTOs
 
 | Class | Purpose |
@@ -139,6 +153,7 @@ public static class Endpoints
         public const string GetAccessEvents = "api/Data/GetAccessEvents";
         public const string GetAccessEvent = "api/Data/GetAccessEvent";
         public const string SaveAccessEvent = "api/Data/SaveAccessEvent";
+        public const string SaveAccessEvents = "api/Data/SaveAccessEvents";  // bulk, max 1000
         public const string DeleteAccessEvent = "api/Data/DeleteAccessEvent";
 
         // DataSubject Endpoints

@@ -49,9 +49,20 @@ var inputFile = CliArgs.GetPositional(args, 0, "input.txt");
 
 // Environment variable helpers
 var baseUrl = CliArgs.GetEnvOrArg("BASE_URL", args, 0, "https://localhost:5001");
-var maxThreads = CliArgs.GetEnvOrArgInt("MAX_THREADS", args, 1, 100);
+var maxThreads = CliArgs.GetEnvOrArgInt("MAX_THREADS", args, 1, 10);
 var verbose = CliArgs.GetEnvBool("VERBOSE");
 ```
+
+> **`HasFlag` and `GetOption` mutate the list you pass them.** Both remove the entry they matched, so
+> the argument is consumed. This is deliberate — it lets a tool strip known flags and treat whatever
+> remains as positional — but it means calling `HasFlag` twice for the same flag returns `true` then
+> `false`, and it means you must pass a copy if you need the original arguments intact.
+>
+> `GetPositional`, `GetEnvOrArg`, `GetEnvOrArgInt`, and `GetEnvBool` are all non-destructive.
+
+**Resolution order** for the `GetEnvOrArg*` helpers: environment variable first, then the positional
+argument at the given index, then the supplied default. This is what lets every tool run either
+standalone with arguments or under AppHost with environment variables, without a code change.
 
 ### ConsoleOutput
 
