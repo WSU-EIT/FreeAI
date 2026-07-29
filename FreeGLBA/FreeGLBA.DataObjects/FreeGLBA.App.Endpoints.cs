@@ -47,6 +47,9 @@ public partial class DataObjects
             /// <summary>Create or update AccessEvent</summary>
             public const string SaveAccessEvent = "api/Data/SaveAccessEvent";
 
+            /// <summary>Create many AccessEvents in one request (max 1000)</summary>
+            public const string SaveAccessEvents = "api/Data/SaveAccessEvents";
+
             /// <summary>Delete AccessEvent by ID</summary>
             public const string DeleteAccessEvent = "api/Data/DeleteAccessEvent";
 

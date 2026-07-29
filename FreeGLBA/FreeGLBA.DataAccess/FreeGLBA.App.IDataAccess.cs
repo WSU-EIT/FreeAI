@@ -20,6 +20,13 @@ public partial interface IDataAccess
     Task<DataObjects.AccessEvent?> GetAccessEventAsync(Guid id);
     Task<List<DataObjects.AccessEventLookup>> GetAccessEventLookupsAsync();
     Task<DataObjects.AccessEvent?> SaveAccessEventAsync(DataObjects.AccessEvent dto);
+
+    /// <summary>
+    /// Saves many new AccessEvents in a single round trip, then updates
+    /// SourceSystem and DataSubject statistics in aggregate.
+    /// </summary>
+    Task<DataObjects.AccessEventBulkResult> SaveAccessEventsAsync(List<DataObjects.AccessEvent> items);
+
     Task<bool> DeleteAccessEventAsync(Guid id);
 
     // DataSubject methods

@@ -11,9 +11,19 @@
 @if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
     <div class="container-fluid">
         <div class="@Model.StickyMenuClass">
-            <h1 class="page-title mb-0">
-                <i class="fa-solid fa-list-check me-2"></i>Access Events
-            </h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0">
+                    <i class="fa-solid fa-list-check me-2"></i>Access Events
+                </h1>
+                <div class="btn-group">
+                    <button class="btn btn-primary" @onclick="CreateNew">
+                        <i class="fa-solid fa-plus me-1"></i>New Access Event
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="ShowBulkGenerate" disabled="@(_sourceSystems.Count == 0)">
+                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Generate Test Events
+                    </button>
+                </div>
+            </div>
         </div>
 
         @* About Access Events - Collapsible Help *@
@@ -240,6 +250,21 @@
                         <i class="fa-solid fa-inbox fa-4x mb-3 opacity-50"></i>
                         <h4>No access events found</h4>
                         <p>Events will appear here when external systems send data.</p>
+                        @if (_sourceSystems.Count == 0) {
+                            <p class="small">
+                                <i class="fa-solid fa-triangle-exclamation me-1 text-warning"></i>
+                                Create a source system first before adding events.
+                            </p>
+                        } else {
+                            <div class="mt-3">
+                                <button class="btn btn-primary me-2" @onclick="CreateNew">
+                                    <i class="fa-solid fa-plus me-1"></i>Create First Access Event
+                                </button>
+                                <button class="btn btn-outline-secondary" @onclick="ShowBulkGenerate">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Generate Test Events
+                                </button>
+                            </div>
+                        }
                     </div>
                 } else {
                     <div class="card shadow-sm">
@@ -545,6 +570,104 @@
             }
         </div>
     </div>
+
+    @if (_showEdit) {
+        <FreeGLBA_App_EditAccessEvent Item="_editItem" OnSave="SaveItem" OnCancel="CloseEdit" />
+    }
+
+    @* Bulk Test Event Generation Modal *@
+    @if (_showBulkGenerate) {
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Test Events
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CancelBulkGenerate" disabled="@_generating"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (_generating) {
+                            <div class="text-center py-3">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x mb-3"></i>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         style="width:@(_bulkCount == 0 ? 0 : (_generatedSoFar * 100 / _bulkCount))%"></div>
+                                </div>
+                                <p class="mb-0">Generated @_generatedSoFar of @_bulkCount events...</p>
+                            </div>
+                        } else {
+                            <div class="alert alert-info small">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                Creates randomized access events spread over the selected time range, using your
+                                existing source systems. Useful for demos and for populating the dashboard.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Number of events</label>
+                                <select class="form-select" @bind="_bulkCount">
+                                    <option value="10">10 events</option>
+                                    <option value="25">25 events</option>
+                                    <option value="50">50 events</option>
+                                    <option value="100">100 events</option>
+                                    <option value="250">250 events</option>
+                                    <option value="500">500 events</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Spread events over</label>
+                                <select class="form-select" @bind="_bulkDaysBack">
+                                    <option value="1">Today only</option>
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30">Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                </select>
+                                <div class="form-text">
+                                    Spreading across days populates the Today / This Week / This Month dashboard tiles.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Distinct people accessed (data subjects)</label>
+                                <select class="form-select" @bind="_bulkSubjectPool">
+                                    <option value="5">5 subjects</option>
+                                    <option value="15">15 subjects</option>
+                                    <option value="40">40 subjects</option>
+                                    <option value="100">100 subjects</option>
+                                </select>
+                                <div class="form-text">
+                                    A smaller pool means repeat access to the same people, which looks more realistic.
+                                </div>
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="bulk-include-bulk-events"
+                                       @bind="_bulkIncludeBulkEvents" />
+                                <label class="form-check-label" for="bulk-include-bulk-events">
+                                    Include some bulk exports (multi-subject events)
+                                </label>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(_bulkError)) {
+                            <div class="alert alert-danger mt-3 mb-0 small">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i>@_bulkError
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CancelBulkGenerate" disabled="@_generating">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" @onclick="RunBulkGenerate" disabled="@_generating">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 <style>
@@ -568,6 +691,20 @@ private string _sourceSystemFilter = "";
 private string _sortOption = "AccessedAt-desc";
 private bool _helpExpanded = false;
     
+// Create / edit dialog
+private bool _showEdit = false;
+private DataObjects.AccessEvent _editItem = new();
+
+// Bulk test event generation
+private bool _showBulkGenerate = false;
+private bool _generating = false;
+private int _bulkCount = 25;
+private int _bulkDaysBack = 7;
+private int _bulkSubjectPool = 15;
+private bool _bulkIncludeBulkEvents = true;
+private int _generatedSoFar = 0;
+private string _bulkError = "";
+
 // Detail panel
 private DataObjects.AccessEvent? _selectedEvent = null;
     
@@ -617,8 +754,11 @@ protected override async Task OnParametersSetAsync()
     }
 
     private async Task LoadSourceSystems() {
-        _sourceSystems = await Helpers.GetOrPost<List<DataObjects.SourceSystem>>(
-            DataObjects.Endpoints.FreeGLBA.GetSourceSystems, null) ?? new();
+        // GetSourceSystems takes a SourceSystemFilter and returns a SourceSystemFilterResult.
+        var result = await Helpers.GetOrPost<DataObjects.SourceSystemFilterResult>(
+            DataObjects.Endpoints.FreeGLBA.GetSourceSystems,
+            new DataObjects.SourceSystemFilter { PageSize = 1000 }) ?? new();
+        _sourceSystems = result.Records;
         StateHasChanged();
     }
 
@@ -824,5 +964,172 @@ protected override async Task OnParametersSetAsync()
             .Skip((_subjectsPage - 1) * _subjectsPageSize)
             .Take(_subjectsPageSize)
             .Select((id, idx) => (id, idx));
+    }
+
+    // ============================================================
+    // CREATE / EDIT
+    // ============================================================
+
+    private void CreateNew() { _editItem = new DataObjects.AccessEvent(); _showEdit = true; }
+    private void CloseEdit() { _showEdit = false; }
+
+    private async Task SaveItem(DataObjects.AccessEvent item)
+    {
+        await Helpers.GetOrPost<DataObjects.AccessEvent>(DataObjects.Endpoints.FreeGLBA.SaveAccessEvent, item);
+        _showEdit = false;
+        await LoadData();
+    }
+
+    // ============================================================
+    // BULK TEST EVENT GENERATION
+    // ============================================================
+
+    private static readonly string[] _genFirstNames = { "James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen" };
+    private static readonly string[] _genLastNames = { "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin" };
+    private static readonly string[] _genDepartments = { "Financial Aid", "Bursar", "Registrar", "Admissions", "Student Accounts", "Academic Advising", "IT Services", "Business Office", "Enrollment Services", "Records" };
+    private static readonly string[] _genAccessTypes = { "View", "View", "View", "Query", "Export", "Print", "Download", "API Access" };
+    private static readonly string[] _genDataCategories = { "Financial Aid", "Financial Records", "Tax Info", "Payment History", "Account Balance", "Loan Info", "Scholarship Data", "FAFSA Data", "Direct Deposit", "1098-T" };
+    private static readonly string[] _genSubjectTypes = { "Student", "Student", "Student", "Student", "Employee", "Applicant" };
+    private static readonly string[] _genPurposes = { "Enrollment verification", "Aid disbursement review", "Account inquiry", "Payment processing", "Audit request", "Student inquiry", "Compliance check", "Report generation", "Data verification", "Annual review" };
+    private static readonly Random _genRandom = new();
+
+    private void ShowBulkGenerate()
+    {
+        _bulkError = "";
+        _generatedSoFar = 0;
+        _showBulkGenerate = true;
+    }
+
+    private void CancelBulkGenerate()
+    {
+        if (_generating) return;
+        _showBulkGenerate = false;
+        _bulkError = "";
+    }
+
+    private async Task RunBulkGenerate()
+    {
+        if (_sourceSystems.Count == 0) {
+            _bulkError = "No source systems available. Create a source system first.";
+            return;
+        }
+
+        _generating = true;
+        _bulkError = "";
+        _generatedSoFar = 0;
+        StateHasChanged();
+        await Task.Yield();
+
+        try {
+            // Build a fixed pool of subjects so the same people are accessed repeatedly.
+            var subjectPool = Enumerable.Range(0, Math.Max(1, _bulkSubjectPool))
+                .Select(_ => $"S{_genRandom.Next(10000000, 99999999)}")
+                .Distinct()
+                .ToList();
+
+            // Build a pool of staff accessors, smaller than the event count so
+            // the Accessors page shows meaningful per-user totals.
+            var accessorCount = Math.Max(3, Math.Min(12, _bulkCount / 4));
+            var accessorPool = Enumerable.Range(0, accessorCount)
+                .Select(_ => {
+                    var first = _genFirstNames[_genRandom.Next(_genFirstNames.Length)];
+                    var last = _genLastNames[_genRandom.Next(_genLastNames.Length)];
+                    return new {
+                        UserId = $"E{_genRandom.Next(100000, 999999)}",
+                        UserName = $"{first} {last}",
+                        UserEmail = $"{first.ToLower()}.{last.ToLower()}@university.edu",
+                        Department = _genDepartments[_genRandom.Next(_genDepartments.Length)]
+                    };
+                })
+                .ToList();
+
+            var pending = new List<DataObjects.AccessEvent>(_bulkCount);
+
+            for (int i = 0; i < _bulkCount; i++) {
+                var source = _sourceSystems[_genRandom.Next(_sourceSystems.Count)];
+                var accessor = accessorPool[_genRandom.Next(accessorPool.Count)];
+
+                // Spread the timestamp across the selected window, weighted to business hours.
+                var daysAgo = _genRandom.Next(0, Math.Max(1, _bulkDaysBack));
+                var accessedAt = DateTime.UtcNow.Date
+                    .AddDays(-daysAgo)
+                    .AddHours(_genRandom.Next(7, 19))
+                    .AddMinutes(_genRandom.Next(0, 60))
+                    .AddSeconds(_genRandom.Next(0, 60));
+
+                // Never place an event in the future (matters for "today" bucket).
+                if (accessedAt > DateTime.UtcNow) {
+                    accessedAt = DateTime.UtcNow.AddMinutes(-_genRandom.Next(1, 120));
+                }
+
+                var evt = new DataObjects.AccessEvent {
+                    SourceSystemId = source.SourceSystemId,
+                    SourceEventId = $"EVT-{accessedAt:yyyyMMdd}-{_genRandom.Next(100000, 999999)}",
+                    AccessedAt = accessedAt,
+                    ReceivedAt = accessedAt,
+                    UserId = accessor.UserId,
+                    UserName = accessor.UserName,
+                    UserEmail = accessor.UserEmail,
+                    UserDepartment = accessor.Department,
+                    SubjectType = _genSubjectTypes[_genRandom.Next(_genSubjectTypes.Length)],
+                    DataCategory = _genDataCategories[_genRandom.Next(_genDataCategories.Length)],
+                    Purpose = _genPurposes[_genRandom.Next(_genPurposes.Length)],
+                    IpAddress = $"10.{_genRandom.Next(0, 256)}.{_genRandom.Next(0, 256)}.{_genRandom.Next(1, 255)}",
+                    AdditionalData = "{}",
+                    AgreementText = "",
+                };
+
+                // Roughly 1 in 8 events is a bulk export covering several subjects.
+                var makeBulk = _bulkIncludeBulkEvents && subjectPool.Count >= 2 && _genRandom.Next(0, 8) == 0;
+
+                if (makeBulk) {
+                    var take = Math.Min(_genRandom.Next(2, 11), subjectPool.Count);
+                    var ids = subjectPool.OrderBy(_ => _genRandom.Next()).Take(take).ToList();
+                    evt.SubjectId = "BULK";
+                    evt.SubjectIds = System.Text.Json.JsonSerializer.Serialize(ids);
+                    evt.SubjectCount = ids.Count;
+                    evt.AccessType = _genRandom.Next(0, 2) == 0 ? "Export" : "Download";
+                } else {
+                    evt.SubjectId = subjectPool[_genRandom.Next(subjectPool.Count)];
+                    evt.SubjectIds = "";
+                    evt.SubjectCount = 1;
+                    evt.AccessType = _genAccessTypes[_genRandom.Next(_genAccessTypes.Length)];
+                }
+
+                pending.Add(evt);
+            }
+
+            // Post in chunks so the server stays within its 1000-per-request limit
+            // and the progress bar advances on large runs.
+            const int chunkSize = 100;
+            for (int offset = 0; offset < pending.Count; offset += chunkSize) {
+                var chunk = pending.Skip(offset).Take(chunkSize).ToList();
+
+                var result = await Helpers.GetOrPost<DataObjects.AccessEventBulkResult>(
+                    DataObjects.Endpoints.FreeGLBA.SaveAccessEvents, chunk);
+
+                if (result == null) {
+                    _bulkError = $"Save failed after {_generatedSoFar} events (no response from server).";
+                    return;
+                }
+
+                if (!result.Success) {
+                    _bulkError = $"Save failed after {_generatedSoFar} events: {result.Message}";
+                    return;
+                }
+
+                _generatedSoFar += result.Saved;
+                StateHasChanged();
+                await Task.Yield();
+            }
+
+            _showBulkGenerate = false;
+            await LoadData();
+        } catch (Exception ex) {
+            _bulkError = $"Generation failed after {_generatedSoFar} events: {ex.Message}";
+        } finally {
+            _generating = false;
+            StateHasChanged();
+        }
     }
 }

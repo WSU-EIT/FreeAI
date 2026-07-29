@@ -393,6 +393,161 @@ public partial class DataAccess
         return dto;
     }
 
+    /// <summary>
+    /// Saves many new AccessEvents in a single round trip, then updates
+    /// SourceSystem and DataSubject statistics in aggregate.
+    /// Intended for seeding/demo data and high-volume internal inserts.
+    /// </summary>
+    public async Task<DataObjects.AccessEventBulkResult> SaveAccessEventsAsync(List<DataObjects.AccessEvent> items)
+    {
+        var output = new DataObjects.AccessEventBulkResult();
+
+        if (items == null || items.Count == 0) {
+            output.Success = true;
+            return output;
+        }
+
+        try {
+            var now = DateTime.UtcNow;
+
+            // Tracks how many times each subject was touched, and its type,
+            // so subject statistics can be applied in one pass at the end.
+            var subjectHits = new Dictionary<string, int>();
+            var subjectTypes = new Dictionary<string, string>();
+
+            void NoteSubject(string? subjectId, string? subjectType)
+            {
+                if (string.IsNullOrWhiteSpace(subjectId) || subjectId == "BULK" || subjectId == "SYSTEM") return;
+                subjectHits[subjectId] = subjectHits.TryGetValue(subjectId, out var c) ? c + 1 : 1;
+                if (!string.IsNullOrWhiteSpace(subjectType) && !subjectTypes.ContainsKey(subjectId)) {
+                    subjectTypes[subjectId] = subjectType;
+                }
+            }
+
+            var records = new List<EFModels.EFModels.AccessEventItem>(items.Count);
+            var sourceSystemIds = new HashSet<Guid>();
+
+            foreach (var dto in items) {
+                var accessedAt = dto.AccessedAt == default
+                    ? now
+                    : (dto.AccessedAt.Kind == DateTimeKind.Utc
+                        ? dto.AccessedAt
+                        : DateTime.SpecifyKind(dto.AccessedAt, DateTimeKind.Utc));
+
+                var record = new EFModels.EFModels.AccessEventItem {
+                    AccessEventId = Guid.NewGuid(),
+                    SourceSystemId = dto.SourceSystemId,
+                    SourceEventId = dto.SourceEventId ?? string.Empty,
+                    AccessedAt = accessedAt,
+                    ReceivedAt = now,
+                    UserId = dto.UserId ?? string.Empty,
+                    UserName = dto.UserName ?? string.Empty,
+                    UserEmail = dto.UserEmail ?? string.Empty,
+                    UserDepartment = dto.UserDepartment ?? string.Empty,
+                    SubjectId = dto.SubjectId ?? string.Empty,
+                    SubjectType = dto.SubjectType ?? string.Empty,
+                    SubjectIds = dto.SubjectIds ?? string.Empty,
+                    SubjectCount = dto.SubjectCount > 0 ? dto.SubjectCount : 1,
+                    DataCategory = dto.DataCategory ?? string.Empty,
+                    AccessType = dto.AccessType ?? string.Empty,
+                    Purpose = dto.Purpose ?? string.Empty,
+                    IpAddress = dto.IpAddress ?? string.Empty,
+                    AdditionalData = string.IsNullOrWhiteSpace(dto.AdditionalData) ? "{}" : dto.AdditionalData,
+                    AgreementText = dto.AgreementText ?? string.Empty,
+                    AgreementAcknowledgedAt = dto.AgreementAcknowledgedAt.HasValue
+                        ? (dto.AgreementAcknowledgedAt.Value.Kind == DateTimeKind.Utc
+                            ? dto.AgreementAcknowledgedAt.Value
+                            : DateTime.SpecifyKind(dto.AgreementAcknowledgedAt.Value, DateTimeKind.Utc))
+                        : null,
+                };
+
+                records.Add(record);
+
+                if (dto.SourceSystemId != Guid.Empty) {
+                    sourceSystemIds.Add(dto.SourceSystemId);
+                }
+
+                // Record subject hits for bulk (JSON list) or single-subject events.
+                if (!string.IsNullOrEmpty(dto.SubjectIds)) {
+                    try {
+                        var ids = System.Text.Json.JsonSerializer.Deserialize<List<string>>(dto.SubjectIds);
+                        if (ids != null && ids.Count > 0) {
+                            foreach (var id in ids) {
+                                NoteSubject(id, dto.SubjectType);
+                            }
+                        } else {
+                            NoteSubject(dto.SubjectId, dto.SubjectType);
+                        }
+                    } catch {
+                        NoteSubject(dto.SubjectId, dto.SubjectType);
+                    }
+                } else {
+                    NoteSubject(dto.SubjectId, dto.SubjectType);
+                }
+            }
+
+            // Single insert for all events.
+            data.AccessEvents.AddRange(records);
+            await data.SaveChangesAsync();
+            output.Saved = records.Count;
+
+            // Update LastEventReceivedAt once per source system.
+            if (sourceSystemIds.Count > 0) {
+                var sources = await data.SourceSystems
+                    .Where(x => sourceSystemIds.Contains(x.SourceSystemId))
+                    .ToListAsync();
+                foreach (var source in sources) {
+                    source.LastEventReceivedAt = now;
+                }
+            }
+
+            // Apply subject statistics in one pass rather than per event.
+            if (subjectHits.Count > 0) {
+                var ids = subjectHits.Keys.ToList();
+                var existing = await data.DataSubjects
+                    .Where(x => ids.Contains(x.ExternalId))
+                    .ToDictionaryAsync(x => x.ExternalId);
+
+                foreach (var kvp in subjectHits) {
+                    var externalId = kvp.Key;
+                    var hits = kvp.Value;
+                    subjectTypes.TryGetValue(externalId, out var type);
+
+                    if (existing.TryGetValue(externalId, out var subject)) {
+                        subject.LastAccessedAt = now;
+                        subject.TotalAccessCount += hits;
+                        if (!string.IsNullOrEmpty(type) && string.IsNullOrEmpty(subject.SubjectType)) {
+                            subject.SubjectType = type;
+                        }
+                    } else {
+                        data.DataSubjects.Add(new EFModels.EFModels.DataSubjectItem {
+                            DataSubjectId = Guid.NewGuid(),
+                            ExternalId = externalId,
+                            SubjectType = string.IsNullOrEmpty(type) ? "Student" : type,
+                            FirstAccessedAt = now,
+                            LastAccessedAt = now,
+                            TotalAccessCount = hits,
+                            UniqueAccessorCount = 1,
+                        });
+                    }
+                }
+
+                output.SubjectsAffected = subjectHits.Count;
+            }
+
+            await data.SaveChangesAsync();
+            output.Success = true;
+        } catch (Exception ex) {
+            output.Success = false;
+            output.Message = ex.Message;
+            if (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message)) {
+                output.Message += " " + ex.InnerException.Message;
+            }
+        }
+
+        return output;
+    }
+
     public async Task<bool> DeleteAccessEventAsync(Guid id)
     {
         var item = await data.AccessEvents.FindAsync(id);
