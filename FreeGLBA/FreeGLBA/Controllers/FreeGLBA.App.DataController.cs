@@ -81,6 +81,26 @@ public partial class DataController
         return Ok(result);
     }
 
+    /// <summary>
+    /// Saves many AccessEvents in a single request. Maximum 1000 per call.
+    /// </summary>
+    [HttpPost("api/Data/SaveAccessEvents")]
+    public async Task<ActionResult<DataObjects.AccessEventBulkResult>> SaveAccessEvents([FromBody] List<DataObjects.AccessEvent> items)
+    {
+        if (items == null || items.Count == 0) {
+            return Ok(new DataObjects.AccessEventBulkResult { Success = true });
+        }
+
+        if (items.Count > 1000) {
+            return BadRequest(new DataObjects.AccessEventBulkResult {
+                Success = false,
+                Message = "Maximum 1000 events per request."
+            });
+        }
+
+        return Ok(await da.SaveAccessEventsAsync(items));
+    }
+
     [HttpPost("api/Data/DeleteAccessEvent")]
     public async Task<ActionResult<bool>> DeleteAccessEvent([FromBody] Guid id)
     {

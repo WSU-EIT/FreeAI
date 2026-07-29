@@ -121,6 +121,22 @@ public partial class DataObjects
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
     }
 
+    /// <summary>Result of a bulk AccessEvent insert.</summary>
+    public class AccessEventBulkResult
+    {
+        /// <summary>Number of events written.</summary>
+        public int Saved { get; set; }
+
+        /// <summary>Number of distinct data subjects created or updated.</summary>
+        public int SubjectsAffected { get; set; }
+
+        /// <summary>True when the whole batch was written successfully.</summary>
+        public bool Success { get; set; }
+
+        /// <summary>Populated when Success is false.</summary>
+        public string Message { get; set; } = string.Empty;
+    }
+
 
     /// <summary>DataSubject data transfer object.</summary>
     public class DataSubject
