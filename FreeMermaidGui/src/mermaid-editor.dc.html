@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input, textarea, select { font-family: inherit; font-size: inherit; }
+    pre, textarea { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+    a { color: #4B4D57; }
+    a:hover { color: #26272B; }
+  </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
+    window.mermaid = mermaid;
+    window.dispatchEvent(new Event('mermaid-ready'));
+  </script>
+</helmet>
+<div style="display:flex;flex-direction:column;height:100vh;width:100%;font-family:Inter, system-ui, sans-serif;background:#fff;color:#26272B;font-size:13px;overflow:hidden;">
+  <div style="height:50px;flex-shrink:0;border-bottom:1px solid #E4E4E7;display:flex;align-items:center;gap:8px;padding:0 12px;">
+    <span style="font-weight:600;white-space:nowrap;">Mermaid Editor</span>
+    <select value="{{ typeValue }}" onChange="{{ onTypeChange }}" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:0 6px;background:#fff;color:#26272B;max-width:170px;">
+      <sc-for list="{{ typeOptions }}" as="opt" hint-placeholder-count="10">
+        <option value="{{ opt.k }}">{{ opt.label }}</option>
+      </sc-for>
+    </select>
+    <input value="{{ docTitle }}" onChange="{{ onTitleChange }}" placeholder="Title" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:0 8px;width:120px;outline:none;color:#26272B;"/>
+    <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ true }}">
+      <select value="{{ docDirection }}" onChange="{{ onDirectionChange }}" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:0 6px;background:#fff;color:#26272B;">
+        <option value="TD">TD</option>
+        <option value="BT">BT</option>
+        <option value="LR">LR</option>
+        <option value="RL">RL</option>
+      </select>
+    </sc-if>
+    <div style="width:1px;height:22px;background:#E4E4E7;"></div>
+    <button onClick="{{ undo }}" style="{{ ghostBtn }}">Undo</button>
+    <button onClick="{{ redo }}" style="{{ ghostBtn }}">Redo</button>
+    <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:5px;">
+        <div style="width:1px;height:22px;background:#E4E4E7;"></div>
+        <button onClick="{{ zoomOut }}" style="{{ ghostBtn }}">−</button>
+        <span style="min-width:34px;text-align:center;color:#6B6D76;">{{ zoomLabel }}</span>
+        <button onClick="{{ zoomIn }}" style="{{ ghostBtn }}">+</button>
+        <button onClick="{{ toggleSnap }}" style="{{ snapStyle }}">Snap</button>
+        <button onClick="{{ autoLayout }}" style="{{ ghostBtn }}">Organise</button>
+        <button onClick="{{ groupSelection }}" style="{{ ghostBtn }}">Group</button>
+      </div>
+    </sc-if>
+    <div style="flex:1;"></div>
+    <div style="display:flex;gap:3px;background:#F1F1F3;border-radius:7px;padding:3px;">
+      <button onClick="{{ showEditorTab }}" style="{{ editorTabStyle }}">Edit</button>
+      <button onClick="{{ showRenderedTab }}" style="{{ renderedTabStyle }}">Rendered</button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex:1;min-height:0;">
+    <sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+      <div style="width:58px;flex-shrink:0;background:#F7F7F8;border-right:1px solid #E4E4E7;display:flex;flex-direction:column;align-items:center;padding:9px 0;gap:4px;overflow-y:auto;">
+        <sc-for list="{{ shapeTools }}" as="tool" hint-placeholder-count="9">
+          <div title="{{ tool.label }}" onClick="{{ tool.onClick }}" style="{{ tool.btnStyle }}">
+            <div style="{{ tool.iconStyle }}"></div>
+          </div>
+        </sc-for>
+        <div style="width:26px;height:1px;background:#E4E4E7;margin:3px 0;"></div>
+        <div title="Duplicate" onClick="{{ duplicateSelection }}" style="width:40px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#6B6D76;">Dup</div>
+        <div title="Delete" onClick="{{ deleteSelection }}" style="width:40px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#B0525C;">Del</div>
+      </div>
+    </sc-if>
+
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;">
+      <sc-if value="{{ isCanvasView }}" hint-placeholder-val="{{ true }}">
+        <div data-canvas-bg="true" onMouseDown="{{ onCanvasMouseDown }}" onDoubleClick="{{ onCanvasDoubleClick }}" style="flex:1;position:relative;overflow:auto;background-color:#FAFAFA;background-image:radial-gradient(circle, #E3E4E8 1px, transparent 1px);background-size:24px 24px;cursor:{{ canvasCursor }};">
+          <div ref="{{ worldRefCb }}" data-canvas-bg="true" style="{{ worldStyle }}">
+            <sc-for list="{{ groupNodes }}" as="sg" hint-placeholder-count="1">
+              <div data-node-id="{{ sg.id }}" style="{{ sg.style }}" onMouseDown="{{ sg.onMouseDown }}" onDoubleClick="{{ sg.onDoubleClick }}">
+                <sc-if value="{{ sg.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ sg.inputValue }}" onChange="{{ sg.onInputChange }}" onBlur="{{ sg.onInputBlur }}" onKeyDown="{{ sg.onInputKeyDown }}" ref="{{ sg.inputRef }}" style="position:absolute;top:6px;left:11px;font-size:12px;font-weight:600;border:none;outline:none;background:transparent;color:#5B5F6B;width:70%;"/>
+                </sc-if>
+                <sc-if value="{{ sg.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:absolute;top:6px;left:11px;font-size:12px;font-weight:600;color:#5B5F6B;">{{ sg.label }}</div>
+                </sc-if>
+                <div onMouseDown="{{ sg.resizeDown }}" style="position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:3px;background:#fff;border:2px solid #A9ACB5;cursor:nwse-resize;"></div>
+              </div>
+            </sc-for>
+            <svg style="{{ svgStyle }}">
+              <defs>
+                <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#8A8D97"></path></marker>
+                <marker id="arS" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#5B5F6B"></path></marker>
+                <marker id="arB" markerWidth="9" markerHeight="9" refX="1" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M9,0 L9,6 L0,3 z" fill="#8A8D97"></path></marker>
+              </defs>
+              <sc-for list="{{ edgeShapes }}" as="edge" hint-placeholder-count="3">
+                <path d="{{ edge.d }}" stroke="{{ edge.stroke }}" stroke-width="{{ edge.width }}" stroke-dasharray="{{ edge.dash }}" marker-end="{{ edge.markerEnd }}" marker-start="{{ edge.markerStart }}" fill="none" style="pointer-events:stroke;cursor:pointer;" onMouseDown="{{ edge.onMouseDown }}"></path>
+              </sc-for>
+              <sc-if value="{{ hasTempLine }}" hint-placeholder-val="{{ false }}">
+                <path d="{{ tempLinePath }}" stroke="#5B5F6B" stroke-width="2" stroke-dasharray="4,4" fill="none"></path>
+              </sc-if>
+            </svg>
+            <sc-for list="{{ plainNodes }}" as="node" hint-placeholder-count="4">
+              <div data-node-id="{{ node.id }}" style="{{ node.style }}" onMouseDown="{{ node.onMouseDown }}" onDoubleClick="{{ node.onDoubleClick }}">
+                <sc-if value="{{ node.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ node.inputValue }}" onChange="{{ node.onInputChange }}" onBlur="{{ node.onInputBlur }}" onKeyDown="{{ node.onInputKeyDown }}" ref="{{ node.inputRef }}" style="width:86%;text-align:center;font-size:13px;border:none;outline:none;background:transparent;color:inherit;"/>
+                </sc-if>
+                <sc-if value="{{ node.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;max-width:100%;overflow:hidden;">
+                    <div>{{ node.label }}</div>
+                    <sc-if value="{{ node.hasFields }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6B6D76;white-space:pre;text-align:left;">{{ node.fieldsText }}</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+                <div onMouseDown="{{ node.handleDownN }}" style="position:absolute;top:-5px;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid #8A8D97;opacity:0.4;cursor:crosshair;" style-hover="opacity:1;background:#5B5F6B;border-color:#5B5F6B;"></div>
+                <div onMouseDown="{{ node.handleDownS }}" style="position:absolute;bottom:-5px;left:50%;transform:translate(-50%,50%);width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid #8A8D97;opacity:0.4;cursor:crosshair;" style-hover="opacity:1;background:#5B5F6B;border-color:#5B5F6B;"></div>
+                <div onMouseDown="{{ node.handleDownE }}" style="position:absolute;right:-5px;top:50%;transform:translate(50%,-50%);width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid #8A8D97;opacity:0.4;cursor:crosshair;" style-hover="opacity:1;background:#5B5F6B;border-color:#5B5F6B;"></div>
+                <div onMouseDown="{{ node.handleDownW }}" style="position:absolute;left:-5px;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid #8A8D97;opacity:0.4;cursor:crosshair;" style-hover="opacity:1;background:#5B5F6B;border-color:#5B5F6B;"></div>
+              </div>
+            </sc-for>
+            <sc-for list="{{ edgeLabels }}" as="edge" hint-placeholder-count="3">
+              <div style="{{ edge.midStyle }}">
+                <sc-if value="{{ edge.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ edge.inputValue }}" onChange="{{ edge.onInputChange }}" onBlur="{{ edge.onInputBlur }}" onKeyDown="{{ edge.onInputKeyDown }}" ref="{{ edge.inputRef }}" style="width:80px;font-size:12px;text-align:center;border:1px solid #5B5F6B;border-radius:4px;padding:2px 4px;outline:none;"/>
+                </sc-if>
+                <sc-if value="{{ edge.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ edge.onLabelClick }}" style="{{ edge.labelStyle }}">{{ edge.labelText }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="height:28px;flex-shrink:0;border-top:1px solid #E4E4E7;display:flex;align-items:center;padding:0 12px;color:#8A8D97;font-size:11px;gap:12px;">
+          <span>{{ statusText }}</span>
+          <span>Pick a shape then click canvas · drag dots to connect · double-click to rename · shift-click multi-select</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRowsView }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+          <div style="flex:1;overflow:auto;padding:14px;min-height:0;">
+            <div style="display:flex;gap:6px;margin-bottom:8px;color:#8A8D97;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">
+              <sc-for list="{{ rowsColumns }}" as="col" hint-placeholder-count="3">
+                <div style="{{ col.style }}">{{ col.label }}</div>
+              </sc-for>
+              <div style="width:78px;"></div>
+            </div>
+            <sc-for list="{{ rowsList }}" as="row" hint-placeholder-count="4">
+              <div style="display:flex;gap:6px;margin-bottom:5px;align-items:center;">
+                <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="3">
+                  <input value="{{ cell.value }}" onChange="{{ cell.onChange }}" placeholder="{{ cell.placeholder }}" style="{{ cell.style }}"/>
+                </sc-for>
+                <button onClick="{{ row.onUp }}" style="width:22px;height:29px;border:1px solid #E4E4E7;background:#fff;border-radius:5px;cursor:pointer;color:#6B6D76;">↑</button>
+                <button onClick="{{ row.onDown }}" style="width:22px;height:29px;border:1px solid #E4E4E7;background:#fff;border-radius:5px;cursor:pointer;color:#6B6D76;">↓</button>
+                <button onClick="{{ row.onDelete }}" style="width:22px;height:29px;border:1px solid #E4E4E7;background:#fff;border-radius:5px;cursor:pointer;color:#B0525C;">×</button>
+              </div>
+            </sc-for>
+            <button onClick="{{ addRow }}" style="margin-top:8px;padding:6px 12px;border-radius:6px;border:1px dashed #C7C9D1;background:#fff;color:#4B4D57;cursor:pointer;">+ Add row</button>
+          </div>
+          <div style="height:42%;flex-shrink:0;border-top:1px solid #E4E4E7;overflow:auto;background:#FAFAFA;padding:12px;">
+            <div ref="{{ previewRefCb }}" style="min-height:100%;display:flex;align-items:center;justify-content:center;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSourceView }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+          <div style="padding:12px;border-bottom:1px solid #E4E4E7;">
+            <textarea value="{{ sourceText }}" onChange="{{ onSourceChange }}" spellcheck="false" style="width:100%;height:190px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;border:1px solid #D8D9DE;border-radius:6px;padding:10px;outline:none;resize:vertical;color:#26272B;"></textarea>
+            <div style="margin-top:6px;color:#8A8D97;font-size:11px;">Source-edited type. The preview renders live below.</div>
+          </div>
+          <div style="flex:1;overflow:auto;background:#FAFAFA;padding:12px;min-height:0;">
+            <div ref="{{ previewRefCb }}" style="min-height:100%;display:flex;align-items:center;justify-content:center;"></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRenderedView }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow:auto;background:#FAFAFA;padding:18px;min-height:0;">
+          <div ref="{{ previewRefCb }}" style="min-height:100%;display:flex;align-items:center;justify-content:center;"></div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="width:330px;flex-shrink:0;border-left:1px solid #E4E4E7;display:flex;flex-direction:column;background:#fff;min-height:0;">
+      <div style="max-height:52%;overflow:auto;border-bottom:1px solid #E4E4E7;padding:12px 14px;">
+        <div style="font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#8A8D97;margin-bottom:9px;">{{ inspectorTitle }}</div>
+        <sc-for list="{{ inspectorFields }}" as="f" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:3px;margin-bottom:9px;">
+            <span style="font-size:11px;color:#6B6D76;">{{ f.label }}</span>
+            <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}">
+              <input value="{{ f.value }}" onChange="{{ f.onChange }}" placeholder="{{ f.placeholder }}" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:0 8px;outline:none;color:#26272B;"/>
+            </sc-if>
+            <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+              <select value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:0 6px;background:#fff;color:#26272B;">
+                <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4">
+                  <option value="{{ o.k }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-if>
+            <sc-if value="{{ f.isColor }}" hint-placeholder-val="{{ false }}">
+              <input type="color" value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:29px;border:1px solid #D8D9DE;border-radius:6px;padding:2px;background:#fff;"/>
+            </sc-if>
+            <sc-if value="{{ f.isArea }}" hint-placeholder-val="{{ false }}">
+              <textarea value="{{ f.value }}" onChange="{{ f.onChange }}" spellcheck="false" placeholder="{{ f.placeholder }}" style="border:1px solid #D8D9DE;border-radius:6px;padding:7px 8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;height:84px;outline:none;resize:vertical;color:#26272B;"></textarea>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ clearStyling }}" style="font-size:11.5px;padding:6px 10px;border:1px solid #E4E4E7;border-radius:6px;background:#fff;color:#6B6D76;cursor:pointer;">Clear styling</button>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;">
+        <span style="font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#8A8D97;">Mermaid source</span>
+        <div style="display:flex;gap:5px;">
+          <button onClick="{{ copyCode }}" style="{{ smallBtn }}">Copy</button>
+          <button onClick="{{ toggleCodeEdit }}" style="{{ smallBtn }}">{{ codeEditLabel }}</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;padding:0 14px 12px;min-height:0;">
+        <sc-if value="{{ isCodeView }}" hint-placeholder-val="{{ true }}">
+          <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:#26272B;">{{ mermaidCode }}</pre>
+        </sc-if>
+        <sc-if value="{{ isCodeEdit }}" hint-placeholder-val="{{ false }}">
+          <textarea value="{{ codeDraft }}" onChange="{{ onCodeDraftChange }}" spellcheck="false" style="width:100%;height:210px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;border:1px solid #D8D9DE;border-radius:6px;padding:10px;outline:none;resize:vertical;color:#26272B;"></textarea>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button onClick="{{ applyCodeDraft }}" style="flex:1;padding:7px 0;border-radius:6px;border:none;background:#5B5F6B;color:#fff;cursor:pointer;font-weight:600;">Apply to editor</button>
+          </div>
+          <div style="margin-top:6px;color:#8A8D97;font-size:11px;">{{ applyHint }}</div>
+        </sc-if>
+      </div>
+      <div style="padding:10px 14px;border-top:1px solid #E4E4E7;display:flex;flex-wrap:wrap;gap:6px;">
+        <button onClick="{{ exportPNG }}" style="{{ smallBtn }}">PNG</button>
+        <button onClick="{{ exportSVG }}" style="{{ smallBtn }}">SVG</button>
+        <button onClick="{{ exportMmd }}" style="{{ smallBtn }}">.mmd</button>
+        <button onClick="{{ triggerImport }}" style="{{ smallBtn }}">Import</button>
+        <input type="file" accept=".mmd,.txt,.md" ref="{{ fileRefCb }}" onChange="{{ onImportFile }}" style="display:none;"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  SHAPES = {
+    rect: { label: 'Process', css: { borderRadius: '6px' }, syn: (i, l) => `${i}["${l}"]` },
+    rounded: { label: 'Rounded', css: { borderRadius: '14px' }, syn: (i, l) => `${i}("${l}")` },
+    stadium: { label: 'Start / end', css: { borderRadius: '999px' }, syn: (i, l) => `${i}(["${l}"])` },
+    subroutine: { label: 'Subroutine', css: { borderRadius: '4px', extraShadow: 'inset 5px 0 0 -1px #D8D9DE, inset -5px 0 0 -1px #D8D9DE' }, syn: (i, l) => `${i}[["${l}"]]` },
+    cylinder: { label: 'Database', css: { borderRadius: '50% / 18px' }, syn: (i, l) => `${i}[("${l}")]` },
+    circle: { label: 'Circle', css: { borderRadius: '50%' }, syn: (i, l) => `${i}(("${l}"))` },
+    doublecircle: { label: 'Double circle', css: { borderRadius: '50%', extraShadow: 'inset 0 0 0 3px #fff, inset 0 0 0 4px #D8D9DE' }, syn: (i, l) => `${i}((("${l}")))` },
+    diamond: { label: 'Decision', css: { clipPath: 'polygon(50% 0,100% 50%,50% 100%,0 50%)' }, syn: (i, l) => `${i}{"${l}"}` },
+    hexagon: { label: 'Hexagon', css: { clipPath: 'polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%)' }, syn: (i, l) => `${i}{{"${l}"}}` },
+    parallelogram: { label: 'Input', css: { clipPath: 'polygon(18% 0,100% 0,82% 100%,0 100%)' }, syn: (i, l) => `${i}[/"${l}"/]` },
+    parallelogramAlt: { label: 'Output', css: { clipPath: 'polygon(0 0,82% 0,100% 100%,18% 100%)' }, syn: (i, l) => `${i}[\\"${l}"\\]` },
+    trapezoid: { label: 'Manual operation', css: { clipPath: 'polygon(18% 0,82% 0,100% 100%,0 100%)' }, syn: (i, l) => `${i}[/"${l}"\\]` },
+    trapezoidAlt: { label: 'Manual input', css: { clipPath: 'polygon(0 0,100% 0,82% 100%,18% 100%)' }, syn: (i, l) => `${i}[\\"${l}"/]` },
+    asymmetric: { label: 'Flag', css: { clipPath: 'polygon(0 0,88% 0,100% 50%,88% 100%,0 100%)' }, syn: (i, l) => `${i}>"${l}"]` },
+    group: { label: 'Subgraph / group', group: true },
+    state: { label: 'State', css: { borderRadius: '10px' } },
+    start: { label: 'Start [*]', css: { borderRadius: '50%', solid: true }, small: [34, 34] },
+    end: { label: 'End [*]', css: { borderRadius: '50%', extraShadow: 'inset 0 0 0 3px #fff, inset 0 0 0 5px #26272B' }, small: [34, 34] },
+    choice: { label: 'Choice', css: { clipPath: 'polygon(50% 0,100% 50%,50% 100%,0 50%)' }, small: [56, 56] },
+    fork: { label: 'Fork / join', css: { solid: true, borderRadius: '2px' }, small: [110, 12] },
+    klass: { label: 'Class', css: { borderRadius: '4px' }, fields: true },
+    entity: { label: 'Entity', css: { borderRadius: '4px' }, fields: true },
+    mmNode: { label: 'Square', css: { borderRadius: '3px' }, syn: (i, l) => `${i}[${l}]` },
+    mmRound: { label: 'Rounded', css: { borderRadius: '16px' }, syn: (i, l) => `${i}(${l})` },
+    mmCircle: { label: 'Circle', css: { borderRadius: '50%' }, syn: (i, l) => `${i}((${l}))` },
+    mmBang: { label: 'Bang', css: { clipPath: 'polygon(0 12%,12% 0,50% 10%,88% 0,100% 12%,92% 50%,100% 88%,88% 100%,50% 90%,12% 100%,0 88%,8% 50%)' }, syn: (i, l) => `${i}))${l}((` },
+    mmCloud: { label: 'Cloud', css: { borderRadius: '48% 52% 46% 54% / 60% 46% 54% 40%' }, syn: (i, l) => `${i})${l}(` },
+    mmHex: { label: 'Hexagon', css: { clipPath: 'polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%)' }, syn: (i, l) => `${i}{{${l}}}` },
+    requirement: { label: 'Requirement', css: { borderRadius: '4px' } },
+    functionalRequirement: { label: 'Functional req.', css: { borderRadius: '4px' } },
+    interfaceRequirement: { label: 'Interface req.', css: { borderRadius: '4px' } },
+    performanceRequirement: { label: 'Performance req.', css: { borderRadius: '4px' } },
+    physicalRequirement: { label: 'Physical req.', css: { borderRadius: '4px' } },
+    designConstraint: { label: 'Design constraint', css: { borderRadius: '4px' } },
+    element: { label: 'Element', css: { borderRadius: '14px' } },
+    person: { label: 'Person', css: { borderRadius: '18px 18px 6px 6px' } },
+    personExt: { label: 'Person (ext)', css: { borderRadius: '18px 18px 6px 6px' } },
+    system: { label: 'System', css: { borderRadius: '6px' } },
+    systemExt: { label: 'System (ext)', css: { borderRadius: '6px' } },
+    container: { label: 'Container', css: { borderRadius: '6px' } },
+    componentC4: { label: 'Component', css: { borderRadius: '6px' } },
+    dbC4: { label: 'Database', css: { borderRadius: '50% / 18px' } },
+    queueC4: { label: 'Queue', css: { borderRadius: '999px' } },
+    service: { label: 'Service', css: { borderRadius: '6px' } },
+    junction: { label: 'Junction', css: { borderRadius: '50%', solid: true }, small: [26, 26] },
+    block: { label: 'Block', css: { borderRadius: '4px' } },
+    space: { label: 'Space', css: { borderRadius: '4px', dashed: true } },
+  };
+
+  TYPES = [
+    { k: 'flowchart', label: 'Flowchart', kind: 'graph', shapes: ['rect', 'rounded', 'stadium', 'subroutine', 'cylinder', 'circle', 'doublecircle', 'diamond', 'hexagon', 'parallelogram', 'parallelogramAlt', 'trapezoid', 'trapezoidAlt', 'asymmetric', 'group'], links: ['arrow', 'open', 'dotted', 'thick', 'bidir', 'invisible', 'circleEnd', 'crossEnd'] },
+    { k: 'stateDiagram-v2', label: 'State diagram', kind: 'graph', shapes: ['state', 'start', 'end', 'choice', 'fork', 'group'], links: ['arrow'] },
+    { k: 'classDiagram', label: 'Class diagram', kind: 'graph', shapes: ['klass', 'group'], links: ['inherit', 'compose', 'aggregate', 'associate', 'depend', 'realize', 'link'] },
+    { k: 'erDiagram', label: 'ER diagram', kind: 'graph', shapes: ['entity'], links: ['oneOne', 'oneMany', 'manyOne', 'manyMany', 'zeroMany', 'optOne'] },
+    { k: 'mindmap', label: 'Mindmap', kind: 'graph', shapes: ['mmNode', 'mmRound', 'mmCircle', 'mmBang', 'mmCloud', 'mmHex'], links: ['arrow'] },
+    { k: 'requirementDiagram', label: 'Requirement diagram', kind: 'graph', shapes: ['requirement', 'functionalRequirement', 'interfaceRequirement', 'performanceRequirement', 'physicalRequirement', 'designConstraint', 'element'], links: ['satisfies', 'contains', 'copies', 'derives', 'verifies', 'refines', 'traces'] },
+    { k: 'C4Context', label: 'C4 context', kind: 'graph', shapes: ['person', 'personExt', 'system', 'systemExt', 'container', 'componentC4', 'dbC4', 'queueC4', 'group'], links: ['arrow'] },
+    { k: 'architecture-beta', label: 'Architecture', kind: 'graph', shapes: ['service', 'junction', 'group'], links: ['arrow', 'open'] },
+    { k: 'block-beta', label: 'Block diagram', kind: 'graph', shapes: ['block', 'space'], links: ['arrow', 'open'] },
+    { k: 'sequenceDiagram', label: 'Sequence diagram', kind: 'rows', columns: [{ k: 'from', label: 'From', w: 110 }, { k: 'arrow', label: 'Arrow', w: 70 }, { k: 'to', label: 'To', w: 110 }, { k: 'text', label: 'Message', w: 200 }] },
+    { k: 'gantt', label: 'Gantt', kind: 'rows', columns: [{ k: 'section', label: 'Section', w: 130 }, { k: 'task', label: 'Task', w: 160 }, { k: 'id', label: 'Id', w: 80 }, { k: 'start', label: 'Start / after', w: 120 }, { k: 'dur', label: 'Duration', w: 90 }] },
+    { k: 'pie', label: 'Pie chart', kind: 'rows', columns: [{ k: 'label', label: 'Label', w: 200 }, { k: 'value', label: 'Value', w: 90 }] },
+    { k: 'xychart-beta', label: 'XY chart', kind: 'rows', columns: [{ k: 'x', label: 'X label', w: 140 }, { k: 'bar', label: 'Bar value', w: 100 }, { k: 'line', label: 'Line value', w: 100 }] },
+    { k: 'quadrantChart', label: 'Quadrant chart', kind: 'rows', columns: [{ k: 'label', label: 'Point', w: 180 }, { k: 'x', label: 'X (0-1)', w: 90 }, { k: 'y', label: 'Y (0-1)', w: 90 }] },
+    { k: 'sankey-beta', label: 'Sankey', kind: 'rows', columns: [{ k: 'source', label: 'Source', w: 150 }, { k: 'target', label: 'Target', w: 150 }, { k: 'value', label: 'Value', w: 90 }] },
+    { k: 'radar-beta', label: 'Radar', kind: 'rows', columns: [{ k: 'axis', label: 'Axis', w: 170 }, { k: 'value', label: 'Value', w: 90 }] },
+    { k: 'timeline', label: 'Timeline', kind: 'rows', columns: [{ k: 'section', label: 'Section', w: 130 }, { k: 'period', label: 'Period', w: 130 }, { k: 'event', label: 'Event', w: 200 }] },
+    { k: 'journey', label: 'User journey', kind: 'rows', columns: [{ k: 'section', label: 'Section', w: 130 }, { k: 'task', label: 'Task', w: 160 }, { k: 'score', label: 'Score 1-5', w: 90 }, { k: 'actors', label: 'Actors', w: 130 }] },
+    { k: 'kanban', label: 'Kanban', kind: 'rows', columns: [{ k: 'column', label: 'Column', w: 140 }, { k: 'card', label: 'Card', w: 220 }, { k: 'meta', label: 'Assigned', w: 120 }] },
+    { k: 'gitGraph', label: 'Git graph', kind: 'rows', columns: [{ k: 'cmd', label: 'Command', w: 130 }, { k: 'arg', label: 'Name / id', w: 150 }, { k: 'tag', label: 'Tag', w: 110 }] },
+    { k: 'treemap-beta', label: 'Treemap', kind: 'rows', columns: [{ k: 'parent', label: 'Group', w: 150 }, { k: 'name', label: 'Leaf', w: 170 }, { k: 'value', label: 'Value', w: 90 }] },
+    { k: 'packet-beta', label: 'Packet', kind: 'rows', columns: [{ k: 'range', label: 'Bits (e.g. 0-15)', w: 140 }, { k: 'label', label: 'Field', w: 200 }] },
+    { k: 'zenuml', label: 'ZenUML', kind: 'source' },
+    { k: 'venn-beta', label: 'Venn', kind: 'source' },
+    { k: 'ishikawa-beta', label: 'Ishikawa / fishbone', kind: 'source' },
+    { k: 'railroad-beta', label: 'Railroad', kind: 'source' },
+    { k: 'cynefin-beta', label: 'Cynefin', kind: 'source' },
+    { k: 'treeview-beta', label: 'TreeView', kind: 'source' },
+    { k: 'custom', label: 'Other / paste source', kind: 'source' },
+  ];
+
+  LINKS = {
+    arrow: { label: 'Arrow -->', mm: '-->', dash: '', width: 1.6, end: true },
+    open: { label: 'Open ---', mm: '---', dash: '', width: 1.6 },
+    dotted: { label: 'Dotted -.->', mm: '-.->', dash: '5,4', width: 1.6, end: true },
+    thick: { label: 'Thick ==>', mm: '==>', dash: '', width: 3.4, end: true },
+    bidir: { label: 'Bidirectional', mm: '<-->', dash: '', width: 1.6, end: true, start: true },
+    invisible: { label: 'Invisible ~~~', mm: '~~~', dash: '2,6', width: 1, faint: true },
+    circleEnd: { label: 'Circle end --o', mm: '--o', dash: '', width: 1.6 },
+    crossEnd: { label: 'Cross end --x', mm: '--x', dash: '', width: 1.6 },
+    inherit: { label: 'Inheritance <|--', mm: '<|--', dash: '', width: 1.6, end: true },
+    compose: { label: 'Composition *--', mm: '*--', dash: '', width: 1.6, end: true },
+    aggregate: { label: 'Aggregation o--', mm: 'o--', dash: '', width: 1.6, end: true },
+    associate: { label: 'Association -->', mm: '-->', dash: '', width: 1.6, end: true },
+    depend: { label: 'Dependency ..>', mm: '..>', dash: '5,4', width: 1.6, end: true },
+    realize: { label: 'Realization ..|>', mm: '..|>', dash: '5,4', width: 1.6, end: true },
+    link: { label: 'Link --', mm: '--', dash: '', width: 1.6 },
+    oneOne: { label: 'one to one', mm: '||--||', dash: '', width: 1.6 },
+    oneMany: { label: 'one to many', mm: '||--o{', dash: '', width: 1.6 },
+    manyOne: { label: 'many to one', mm: '}o--||', dash: '', width: 1.6 },
+    manyMany: { label: 'many to many', mm: '}o--o{', dash: '', width: 1.6 },
+    zeroMany: { label: 'zero to many', mm: '|o--o{', dash: '', width: 1.6 },
+    optOne: { label: 'optional (non-identifying)', mm: '||..o{', dash: '5,4', width: 1.6 },
+    satisfies: { label: 'satisfies', mm: 'satisfies', dash: '', width: 1.6, end: true },
+    contains: { label: 'contains', mm: 'contains', dash: '', width: 1.6, end: true },
+    copies: { label: 'copies', mm: 'copies', dash: '', width: 1.6, end: true },
+    derives: { label: 'derives', mm: 'derives', dash: '', width: 1.6, end: true },
+    verifies: { label: 'verifies', mm: 'verifies', dash: '', width: 1.6, end: true },
+    refines: { label: 'refines', mm: 'refines', dash: '', width: 1.6, end: true },
+    traces: { label: 'traces', mm: 'traces', dash: '', width: 1.6, end: true },
+  };
+
+  state = {
+    type: 'flowchart',
+    docs: {},
+    past: [], future: [],
+    selKind: null, selIds: [],
+    placingShape: null,
+    dragIds: null, dragOffsets: null, resizeId: null,
+    connectFrom: null, tempLine: null,
+    editingNodeId: null, editText: '',
+    editingEdgeId: null, editEdgeText: '',
+    codeMode: 'view', codeDraft: '', viewTab: 'editor',
+    zoom: 1, snap: false, nextId: 1,
+    status: 'Ready', applyHint: '',
+  };
+
+  componentDidMount() {
+    this._onMove = (e) => this.globalMove(e);
+    this._onUp = (e) => this.globalUp(e);
+    this._onKey = (e) => this.keyDown(e);
+    this._onReady = () => this.schedulePreview();
+    window.addEventListener('mousemove', this._onMove);
+    window.addEventListener('mouseup', this._onUp);
+    window.addEventListener('keydown', this._onKey);
+    window.addEventListener('mermaid-ready', this._onReady);
+    this.schedulePreview();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this._onMove);
+    window.removeEventListener('mouseup', this._onUp);
+    window.removeEventListener('keydown', this._onKey);
+    window.removeEventListener('mermaid-ready', this._onReady);
+    clearTimeout(this._pvTimer);
+  }
+  componentDidUpdate() { this.schedulePreview(); }
+
+  /* ---------- documents ---------- */
+  typeDef(t) { return this.TYPES.find(x => x.k === (t || this.state.type)) || this.TYPES[0]; }
+
+  defaultDoc(t) {
+    const def = this.typeDef(t);
+    if (def.kind === 'graph') {
+      const g = { kind: 'graph', title: '', direction: 'TD', nodes: [], edges: [] };
+      if (t === 'flowchart') {
+        g.nodes = [
+          { id: 'A', shape: 'stadium', label: 'Start', x: 90, y: 90, w: 120, h: 54 },
+          { id: 'B', shape: 'diamond', label: 'Valid?', x: 300, y: 60, w: 150, h: 110 },
+          { id: 'C', shape: 'rect', label: 'Process', x: 560, y: 90, w: 140, h: 54 },
+          { id: 'D', shape: 'stadium', label: 'End', x: 560, y: 250, w: 120, h: 54 },
+        ];
+        g.edges = [
+          { id: 'e1', from: 'A', to: 'B', label: '', link: 'arrow' },
+          { id: 'e2', from: 'B', to: 'C', label: 'Yes', link: 'arrow' },
+          { id: 'e3', from: 'B', to: 'D', label: 'No', link: 'dotted' },
+        ];
+      } else if (t === 'stateDiagram-v2') {
+        g.nodes = [
+          { id: 'S0', shape: 'start', label: '', x: 120, y: 100, w: 34, h: 34 },
+          { id: 'Idle', shape: 'state', label: 'Idle', x: 250, y: 88, w: 130, h: 56 },
+          { id: 'Busy', shape: 'state', label: 'Busy', x: 470, y: 88, w: 130, h: 56 },
+          { id: 'S1', shape: 'end', label: '', x: 690, y: 100, w: 34, h: 34 },
+        ];
+        g.edges = [
+          { id: 'e1', from: 'S0', to: 'Idle', label: '', link: 'arrow' },
+          { id: 'e2', from: 'Idle', to: 'Busy', label: 'start', link: 'arrow' },
+          { id: 'e3', from: 'Busy', to: 'S1', label: 'done', link: 'arrow' },
+        ];
+      } else if (t === 'classDiagram') {
+        g.nodes = [
+          { id: 'Animal', shape: 'klass', label: 'Animal', fields: '+String name\n+int age\n+speak()', x: 120, y: 90, w: 190, h: 120 },
+          { id: 'Dog', shape: 'klass', label: 'Dog', fields: '+bark()', x: 420, y: 90, w: 170, h: 90 },
+        ];
+        g.edges = [{ id: 'e1', from: 'Animal', to: 'Dog', label: '', link: 'inherit' }];
+      } else if (t === 'erDiagram') {
+        g.nodes = [
+          { id: 'CUSTOMER', shape: 'entity', label: 'CUSTOMER', fields: 'string name\nstring email PK', x: 110, y: 90, w: 210, h: 110 },
+          { id: 'ORDER', shape: 'entity', label: 'ORDER', fields: 'int id PK\nstring status', x: 440, y: 90, w: 190, h: 110 },
+        ];
+        g.edges = [{ id: 'e1', from: 'CUSTOMER', to: 'ORDER', label: 'places', link: 'oneMany' }];
+      } else if (t === 'mindmap') {
+        g.nodes = [
+          { id: 'root', shape: 'mmCircle', label: 'Topic', x: 300, y: 200, w: 120, h: 120 },
+          { id: 'b1', shape: 'mmRound', label: 'Branch one', x: 540, y: 130, w: 150, h: 56 },
+          { id: 'b2', shape: 'mmRound', label: 'Branch two', x: 540, y: 270, w: 150, h: 56 },
+        ];
+        g.edges = [
+          { id: 'e1', from: 'root', to: 'b1', label: '', link: 'arrow' },
+          { id: 'e2', from: 'root', to: 'b2', label: '', link: 'arrow' },
+        ];
+      } else if (t === 'requirementDiagram') {
+        g.nodes = [
+          { id: 'req1', shape: 'functionalRequirement', label: 'Login', fields: 'text: The system shall authenticate users\nrisk: medium\nverifymethod: test', x: 110, y: 90, w: 220, h: 90 },
+          { id: 'elem1', shape: 'element', label: 'Auth service', fields: 'type: module\ndocref: docs/auth.md', x: 450, y: 90, w: 200, h: 80 },
+        ];
+        g.edges = [{ id: 'e1', from: 'elem1', to: 'req1', label: '', link: 'satisfies' }];
+      } else if (t === 'C4Context') {
+        g.nodes = [
+          { id: 'user', shape: 'person', label: 'Student', fields: 'A university student', x: 120, y: 100, w: 160, h: 80 },
+          { id: 'portal', shape: 'system', label: 'Course portal', fields: 'Lets students enrol', x: 400, y: 100, w: 190, h: 80 },
+        ];
+        g.edges = [{ id: 'e1', from: 'user', to: 'portal', label: 'Enrols using', link: 'arrow' }];
+      } else if (t === 'architecture-beta') {
+        g.nodes = [
+          { id: 'web', shape: 'service', label: 'Web', icon: 'internet', x: 120, y: 120, w: 130, h: 56 },
+          { id: 'api', shape: 'service', label: 'API', icon: 'server', x: 340, y: 120, w: 130, h: 56 },
+          { id: 'db', shape: 'service', label: 'Database', icon: 'database', x: 560, y: 120, w: 140, h: 56 },
+        ];
+        g.edges = [
+          { id: 'e1', from: 'web', to: 'api', label: '', link: 'arrow' },
+          { id: 'e2', from: 'api', to: 'db', label: '', link: 'arrow' },
+        ];
+      } else if (t === 'block-beta') {
+        g.nodes = [
+          { id: 'b1', shape: 'block', label: 'Input', x: 110, y: 110, w: 140, h: 56 },
+          { id: 'b2', shape: 'block', label: 'Transform', x: 300, y: 110, w: 150, h: 56 },
+          { id: 'b3', shape: 'block', label: 'Output', x: 500, y: 110, w: 140, h: 56 },
+        ];
+        g.edges = [
+          { id: 'e1', from: 'b1', to: 'b2', label: '', link: 'arrow' },
+          { id: 'e2', from: 'b2', to: 'b3', label: '', link: 'arrow' },
+        ];
+      }
+      return g;
+    }
+    if (def.kind === 'rows') return { kind: 'rows', title: '', opts: this.defaultOpts(t), rows: this.defaultRows(t) };
+    return { kind: 'source', title: '', source: this.defaultSource(t) };
+  }
+
+  defaultOpts(t) {
+    if (t === 'sequenceDiagram') return { autonumber: 'no' };
+    if (t === 'xychart-beta') return { yLabel: 'Value' };
+    if (t === 'quadrantChart') return { xAxis: 'Low reach --> High reach', yAxis: 'Low effort --> High effort', q1: 'Do now', q2: 'Plan', q3: 'Skip', q4: 'Delegate' };
+    if (t === 'radar-beta') return { series: 'Team A' };
+    if (t === 'gantt') return { dateFormat: 'YYYY-MM-DD' };
+    if (t === 'pie') return { showData: 'yes' };
+    return {};
+  }
+
+  defaultRows(t) {
+    const r = (o) => ({ id: 'r' + Math.random().toString(36).slice(2, 8), ...o });
+    switch (t) {
+      case 'sequenceDiagram': return [
+        r({ from: 'Student', arrow: '->>', to: 'Portal', text: 'Request enrolment' }),
+        r({ from: 'Portal', arrow: '->>', to: 'Registry', text: 'Check eligibility' }),
+        r({ from: 'Registry', arrow: '-->>', to: 'Portal', text: 'Eligible' }),
+        r({ from: 'Portal', arrow: '-->>', to: 'Student', text: 'Enrolled' }),
+      ];
+      case 'gantt': return [
+        r({ section: 'Design', task: 'Wireframes', id: 'a1', start: '2026-09-01', dur: '10d' }),
+        r({ section: 'Design', task: 'Review', id: 'a2', start: 'after a1', dur: '5d' }),
+        r({ section: 'Build', task: 'Implementation', id: 'b1', start: 'after a2', dur: '20d' }),
+      ];
+      case 'pie': return [r({ label: 'Undergraduate', value: '62' }), r({ label: 'Graduate', value: '28' }), r({ label: 'Other', value: '10' })];
+      case 'xychart-beta': return [
+        r({ x: 'Jan', bar: '32', line: '28' }), r({ x: 'Feb', bar: '41', line: '35' }), r({ x: 'Mar', bar: '38', line: '39' }),
+      ];
+      case 'quadrantChart': return [r({ label: 'Portal refresh', x: '0.7', y: '0.6' }), r({ label: 'Legacy migration', x: '0.3', y: '0.8' })];
+      case 'sankey-beta': return [r({ source: 'Tuition', target: 'Teaching', value: '55' }), r({ source: 'Tuition', target: 'Research', value: '25' }), r({ source: 'Grants', target: 'Research', value: '40' })];
+      case 'radar-beta': return [r({ axis: 'Teaching', value: '4' }), r({ axis: 'Research', value: '5' }), r({ axis: 'Service', value: '3' })];
+      case 'timeline': return [
+        r({ section: 'Term 1', period: '2026-09', event: 'Orientation' }),
+        r({ section: 'Term 1', period: '2026-10', event: 'Midterms' }),
+        r({ section: 'Term 2', period: '2027-01', event: 'Registration opens' }),
+      ];
+      case 'journey': return [
+        r({ section: 'Enrolment', task: 'Find course', score: '4', actors: 'Student' }),
+        r({ section: 'Enrolment', task: 'Pay fees', score: '2', actors: 'Student, Bursar' }),
+      ];
+      case 'kanban': return [r({ column: 'Todo', card: 'Draft syllabus', meta: 'ADM' }), r({ column: 'Doing', card: 'Book rooms', meta: '' }), r({ column: 'Done', card: 'Approve budget', meta: '' })];
+      case 'gitGraph': return [
+        r({ cmd: 'commit', arg: 'init', tag: '' }), r({ cmd: 'branch', arg: 'develop', tag: '' }),
+        r({ cmd: 'checkout', arg: 'develop', tag: '' }), r({ cmd: 'commit', arg: 'feature', tag: '' }),
+        r({ cmd: 'checkout', arg: 'main', tag: '' }), r({ cmd: 'merge', arg: 'develop', tag: 'v1.0' }),
+      ];
+      case 'treemap-beta': return [r({ parent: 'Budget', name: 'Teaching', value: '55' }), r({ parent: 'Budget', name: 'Research', value: '30' }), r({ parent: 'Budget', name: 'Facilities', value: '15' })];
+      case 'packet-beta': return [r({ range: '0-15', label: 'Source Port' }), r({ range: '16-31', label: 'Destination Port' }), r({ range: '32-63', label: 'Sequence Number' })];
+      default: return [r({})];
+    }
+  }
+
+  defaultSource(t) {
+    switch (t) {
+      case 'zenuml': return 'zenuml\n    title Enrolment\n    Student->Portal.enrol() {\n      Registry.check()\n      return confirmation\n    }';
+      case 'venn-beta': return '%% Venn syntax (beta) — adjust to your Mermaid version\nvenn-beta\n    title Overlap\n    sets A, B\n    A: 12\n    B: 9\n    A,B: 4';
+      case 'ishikawa-beta': return '%% Ishikawa / fishbone (beta) — adjust to your Mermaid version\nishikawa-beta\n    Late enrolment\n        People\n            Understaffed desk\n        Process\n            Manual approvals';
+      case 'railroad-beta': return '%% Railroad (beta) — adjust to your Mermaid version\nrailroad-beta\n    course ::= "DEPT" number ( "H" | "L" )?';
+      case 'cynefin-beta': return '%% Cynefin (beta) — adjust to your Mermaid version\ncynefin-beta\n    title Decisions\n    obvious: Room booking\n    complicated: Timetabling\n    complex: Curriculum reform\n    chaotic: Outage response';
+      case 'treeview-beta': return '%% TreeView (beta) — adjust to your Mermaid version\ntreeview-beta\n    root\n        src\n            index.js\n        docs\n            readme.md';
+      default: return 'flowchart LR\n    A["Paste any Mermaid source here"] --> B["It renders live below"]';
+    }
+  }
+
+  doc() {
+    const d = this.state.docs[this.state.type];
+    return d || this.defaultDoc(this.state.type);
+  }
+  ensureDoc() {
+    if (!this.state.docs[this.state.type]) {
+      const d = this.defaultDoc(this.state.type);
+      this.setState(s => ({ docs: { ...s.docs, [s.type]: d } }));
+      return d;
+    }
+    return this.state.docs[this.state.type];
+  }
+  snapshot() { return JSON.stringify({ type: this.state.type, docs: this.state.docs }); }
+  mutate(fn, opts) {
+    const before = this.snapshot();
+    this.setState(s => {
+      const cur = s.docs[s.type] || this.defaultDoc(s.type);
+      const next = fn({ ...cur });
+      const past = (opts && opts.noHistory) ? s.past : [...s.past, before].slice(-60);
+      return { docs: { ...s.docs, [s.type]: next }, past, future: (opts && opts.noHistory) ? s.future : [] };
+    });
+  }
+  undo() {
+    const { past } = this.state;
+    if (!past.length) return;
+    const prev = JSON.parse(past[past.length - 1]);
+    const cur = this.snapshot();
+    this.setState(s => ({ docs: prev.docs, type: prev.type, past: s.past.slice(0, -1), future: [...s.future, cur], selKind: null, selIds: [] }));
+  }
+  redo() {
+    const { future } = this.state;
+    if (!future.length) return;
+    const nxt = JSON.parse(future[future.length - 1]);
+    const cur = this.snapshot();
+    this.setState(s => ({ docs: nxt.docs, type: nxt.type, future: s.future.slice(0, -1), past: [...s.past, cur], selKind: null, selIds: [] }));
+  }
+
+  /* ---------- geometry ---------- */
+  sizeFor(shape, label, fields) {
+    const def = this.SHAPES[shape] || this.SHAPES.rect;
+    if (def.small) return { w: def.small[0], h: def.small[1] };
+    const lines = (fields || '').split('\n').filter(Boolean);
+    const longest = Math.max((label || '').length, ...lines.map(l => l.length + 2), 6);
+    if (shape === 'diamond' || shape === 'choice') { const s = Math.max(130, (label || '').length * 11 + 90); return { w: s, h: Math.max(96, s * 0.72) }; }
+    if (shape === 'circle' || shape === 'doublecircle' || shape === 'mmCircle') { const s = Math.max(96, (label || '').length * 10 + 58); return { w: s, h: s }; }
+    const w = Math.max(130, longest * 8 + 46);
+    const h = 54 + (lines.length ? lines.length * 15 + 8 : 0);
+    return { w, h };
+  }
+  anchor(n, side) {
+    const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+    if (side === 'n') return { x: cx, y: n.y };
+    if (side === 's') return { x: cx, y: n.y + n.h };
+    if (side === 'e') return { x: n.x + n.w, y: cy };
+    if (side === 'w') return { x: n.x, y: cy };
+    return { x: cx, y: cy };
+  }
+  edgeGeom(src, tgt) {
+    const dx = (tgt.x + tgt.w / 2) - (src.x + src.w / 2);
+    const dy = (tgt.y + tgt.h / 2) - (src.y + src.h / 2);
+    let p1, p2, s1, s2;
+    if (Math.abs(dx) > Math.abs(dy)) { s1 = dx > 0 ? 'e' : 'w'; s2 = dx > 0 ? 'w' : 'e'; }
+    else { s1 = dy > 0 ? 's' : 'n'; s2 = dy > 0 ? 'n' : 's'; }
+    p1 = this.anchor(src, s1); p2 = this.anchor(tgt, s2);
+    return { p1, p2, s1, s2, mid: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 } };
+  }
+  containerOf(node, groups) {
+    let best = null;
+    const cx = node.x + node.w / 2, cy = node.y + node.h / 2;
+    groups.forEach(g => {
+      if (g.id === node.id) return;
+      if (cx >= g.x && cx <= g.x + g.w && cy >= g.y && cy <= g.y + g.h) {
+        if (!best || (g.w * g.h) < (best.w * best.h)) best = g;
+      }
+    });
+    return best ? best.id : null;
+  }
+
+  /* ---------- canvas interaction ---------- */
+  worldPoint(e) {
+    if (!this.worldRef) return { x: 0, y: 0 };
+    const r = this.worldRef.getBoundingClientRect();
+    const z = this.state.zoom;
+    return { x: (e.clientX - r.left) / z, y: (e.clientY - r.top) / z };
+  }
+  snapVal(v) { return this.state.snap ? Math.round(v / 8) * 8 : Math.round(v); }
+
+  globalMove(e) {
+    const { dragIds, dragOffsets, connectFrom, resizeId } = this.state;
+    if (!dragIds && !connectFrom && !resizeId) return;
+    const p = this.worldPoint(e);
+    if (resizeId) {
+      this.mutate(d => ({
+        ...d, nodes: d.nodes.map(n => n.id === resizeId ? { ...n, w: Math.max(120, this.snapVal(p.x - n.x)), h: Math.max(80, this.snapVal(p.y - n.y)) } : n)
+      }), { noHistory: true });
+      return;
+    }
+    if (dragIds) {
+      this.mutate(d => ({
+        ...d, nodes: d.nodes.map(n => {
+          const off = dragOffsets[n.id];
+          if (!off) return n;
+          return { ...n, x: this.snapVal(p.x - off.x), y: this.snapVal(p.y - off.y) };
+        })
+      }), { noHistory: true });
+      return;
+    }
+    if (connectFrom) this.setState({ tempLine: { x1: connectFrom.x, y1: connectFrom.y, x2: p.x, y2: p.y } });
+  }
+
+  globalUp(e) {
+    const { dragIds, connectFrom, resizeId } = this.state;
+    if (dragIds || resizeId) { this.setState({ dragIds: null, dragOffsets: null, resizeId: null }); return; }
+    if (!connectFrom) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const nodeEl = el && el.closest && el.closest('[data-node-id]');
+    if (nodeEl) {
+      const to = nodeEl.getAttribute('data-node-id');
+      if (to !== connectFrom.nodeId) {
+        const link = (this.typeDef().links || ['arrow'])[0];
+        const id = 'e' + Date.now().toString(36).slice(-5);
+        this.mutate(d => ({ ...d, edges: [...d.edges, { id, from: connectFrom.nodeId, to, label: '', link }] }));
+        this.setState({ connectFrom: null, tempLine: null, selKind: 'edge', selIds: [id], status: 'Connected' });
+        return;
+      }
+    }
+    if (el && el.closest && el.closest('[data-canvas-bg]')) this.setState({ connectFrom: null, tempLine: null });
+  }
+
+  keyDown(e) {
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    const meta = e.metaKey || e.ctrlKey;
+    if (meta && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); return; }
+    if (meta && e.key.toLowerCase() === 'd') { e.preventDefault(); this.duplicateSelection(); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); this.deleteSelection(); return; }
+    if (e.key === 'Escape') { this.setState({ connectFrom: null, tempLine: null, placingShape: null, selKind: null, selIds: [] }); return; }
+    if (e.key.startsWith('Arrow') && this.state.selKind === 'node' && this.state.selIds.length) {
+      e.preventDefault();
+      const step = e.shiftKey ? 24 : 8;
+      const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+      const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+      const ids = this.state.selIds;
+      this.mutate(d => ({ ...d, nodes: d.nodes.map(n => ids.includes(n.id) ? { ...n, x: n.x + dx, y: n.y + dy } : n) }));
+    }
+  }
+
+  onCanvasMouseDown(e) {
+    const p = this.worldPoint(e);
+    if (this.state.placingShape) { this.placeNode(this.state.placingShape, p.x, p.y); return; }
+    if (this.state.connectFrom) { this.setState({ connectFrom: null, tempLine: null }); return; }
+    this.setState({ selKind: null, selIds: [] });
+  }
+  onCanvasDoubleClick(e) {
+    if (this.state.placingShape) return;
+    const p = this.worldPoint(e);
+    const shapes = this.typeDef().shapes || ['rect'];
+    this.placeNode(shapes[0], p.x, p.y);
+  }
+
+  freshId(shape) {
+    const doc = this.doc();
+    const used = new Set(doc.nodes ? doc.nodes.map(n => n.id) : []);
+    const base = (this.SHAPES[shape] && this.SHAPES[shape].group) ? 'G' : 'N';
+    let i = 1;
+    while (used.has(base + i)) i++;
+    return base + i;
+  }
+  placeNode(shape, x, y) {
+    const def = this.SHAPES[shape] || {};
+    const label = def.group ? 'Group' : def.fields ? 'Name' : 'Step';
+    const fields = def.fields ? (this.state.type === 'erDiagram' ? 'string field' : '+field') : '';
+    const size = def.group ? { w: 300, h: 200 } : this.sizeFor(shape, label, fields);
+    const id = this.freshId(shape);
+    const node = { id, shape, label, fields, x: this.snapVal(x - size.w / 2), y: this.snapVal(y - size.h / 2), w: size.w, h: size.h };
+    this.mutate(d => ({ ...d, nodes: [...d.nodes, node] }));
+    this.setState({ placingShape: null, selKind: 'node', selIds: [id], editingNodeId: def.group || def.fields ? id : id, editText: label, status: 'Added ' + (this.SHAPES[shape] ? this.SHAPES[shape].label : shape) });
+  }
+
+  onNodeMouseDown(id, e) {
+    e.stopPropagation();
+    if (e.button !== 0) return;
+    const doc = this.doc();
+    const p = this.worldPoint(e);
+    let ids;
+    if (e.shiftKey && this.state.selKind === 'node') {
+      ids = this.state.selIds.includes(id) ? this.state.selIds.filter(x => x !== id) : [...this.state.selIds, id];
+    } else {
+      ids = this.state.selKind === 'node' && this.state.selIds.includes(id) ? this.state.selIds : [id];
+    }
+    const offsets = {};
+    const groups = doc.nodes.filter(n => (this.SHAPES[n.shape] || {}).group);
+    const expand = new Set(ids);
+    ids.forEach(nid => {
+      const g = doc.nodes.find(n => n.id === nid);
+      if (g && (this.SHAPES[g.shape] || {}).group) {
+        doc.nodes.forEach(n => { if (n.id !== g.id && this.containerOf(n, groups) === g.id) expand.add(n.id); });
+      }
+    });
+    expand.forEach(nid => {
+      const n = doc.nodes.find(x => x.id === nid);
+      if (n) offsets[nid] = { x: p.x - n.x, y: p.y - n.y };
+    });
+    this.setState({ selKind: 'node', selIds: ids, dragIds: [...expand], dragOffsets: offsets });
+  }
+  onGroupResizeDown(id, e) { e.stopPropagation(); this.setState({ resizeId: id, selKind: 'node', selIds: [id] }); }
+  onNodeDoubleClick(id, e) {
+    e.stopPropagation();
+    const n = this.doc().nodes.find(x => x.id === id);
+    if (n) this.setState({ editingNodeId: id, editText: n.label, selKind: 'node', selIds: [id] });
+  }
+  commitLabel() {
+    const { editingNodeId, editText } = this.state;
+    if (!editingNodeId) return;
+    this.mutate(d => ({
+      ...d, nodes: d.nodes.map(n => {
+        if (n.id !== editingNodeId) return n;
+        const isGroup = (this.SHAPES[n.shape] || {}).group;
+        const size = isGroup ? { w: n.w, h: n.h } : this.sizeFor(n.shape, editText, n.fields);
+        return { ...n, label: editText, w: Math.max(n.w, size.w), h: isGroup ? n.h : size.h };
+      })
+    }));
+    this.setState({ editingNodeId: null });
+  }
+  onHandleDown(id, side, e) {
+    e.stopPropagation(); e.preventDefault();
+    const n = this.doc().nodes.find(x => x.id === id);
+    if (!n) return;
+    const p = this.anchor(n, side);
+    this.setState({ connectFrom: { nodeId: id, x: p.x, y: p.y }, tempLine: { x1: p.x, y1: p.y, x2: p.x, y2: p.y }, selKind: null, selIds: [] });
+  }
+  onEdgeDown(id, e) { e.stopPropagation(); this.setState({ selKind: 'edge', selIds: [id] }); }
+  onEdgeLabelClick(id, e) {
+    e.stopPropagation();
+    const ed = this.doc().edges.find(x => x.id === id);
+    this.setState({ editingEdgeId: id, editEdgeText: (ed && ed.label) || '', selKind: 'edge', selIds: [id] });
+  }
+  commitEdgeLabel() {
+    const { editingEdgeId, editEdgeText } = this.state;
+    if (!editingEdgeId) return;
+    this.mutate(d => ({ ...d, edges: d.edges.map(ed => ed.id === editingEdgeId ? { ...ed, label: editEdgeText } : ed) }));
+    this.setState({ editingEdgeId: null });
+  }
+  deleteSelection() {
+    const { selKind, selIds } = this.state;
+    if (!selKind || !selIds.length) return;
+    if (selKind === 'node') {
+      this.mutate(d => ({ ...d, nodes: d.nodes.filter(n => !selIds.includes(n.id)), edges: d.edges.filter(e => !selIds.includes(e.from) && !selIds.includes(e.to)) }));
+    } else {
+      this.mutate(d => ({ ...d, edges: d.edges.filter(e => !selIds.includes(e.id)) }));
+    }
+    this.setState({ selKind: null, selIds: [], status: 'Deleted' });
+  }
+  duplicateSelection() {
+    const { selKind, selIds } = this.state;
+    if (selKind !== 'node' || !selIds.length) return;
+    const doc = this.doc();
+    const map = {}; const copies = [];
+    let counter = 1;
+    const used = new Set(doc.nodes.map(n => n.id));
+    selIds.forEach(id => {
+      const n = doc.nodes.find(x => x.id === id);
+      if (!n) return;
+      let nid = n.id + '_' + counter++;
+      while (used.has(nid)) nid = n.id + '_' + counter++;
+      used.add(nid); map[id] = nid;
+      copies.push({ ...n, id: nid, x: n.x + 32, y: n.y + 32 });
+    });
+    const newEdges = doc.edges.filter(e => map[e.from] && map[e.to]).map((e, i) => ({ ...e, id: e.id + '_c' + i, from: map[e.from], to: map[e.to] }));
+    this.mutate(d => ({ ...d, nodes: [...d.nodes, ...copies], edges: [...d.edges, ...newEdges] }));
+    this.setState({ selIds: copies.map(c => c.id), status: 'Duplicated' });
+  }
+  groupSelection() {
+    const doc = this.doc();
+    const sel = doc.nodes.filter(n => this.state.selKind === 'node' && this.state.selIds.includes(n.id));
+    if (!(this.typeDef().shapes || []).includes('group')) { this.setState({ status: 'This diagram type has no groups' }); return; }
+    const pad = 34;
+    const box = sel.length
+      ? { x: Math.min(...sel.map(n => n.x)) - pad, y: Math.min(...sel.map(n => n.y)) - pad - 12, w: 0, h: 0 }
+      : { x: 120, y: 120, w: 300, h: 200 };
+    if (sel.length) {
+      box.w = Math.max(...sel.map(n => n.x + n.w)) + pad - box.x;
+      box.h = Math.max(...sel.map(n => n.y + n.h)) + pad - box.y;
+    }
+    const id = this.freshId('group');
+    this.mutate(d => ({ ...d, nodes: [{ id, shape: 'group', label: 'Group', ...box }, ...d.nodes] }));
+    this.setState({ selKind: 'node', selIds: [id], status: 'Grouped' });
+  }
+  autoLayout() {
+    const doc = this.doc();
+    const groups = doc.nodes.filter(n => (this.SHAPES[n.shape] || {}).group);
+    const plain = doc.nodes.filter(n => !(this.SHAPES[n.shape] || {}).group);
+    const level = {}; plain.forEach(n => level[n.id] = 0);
+    for (let i = 0; i < plain.length + 2; i++) {
+      let changed = false;
+      doc.edges.forEach(e => {
+        if (level[e.from] === undefined || level[e.to] === undefined) return;
+        if (level[e.to] < level[e.from] + 1) { level[e.to] = level[e.from] + 1; changed = true; }
+      });
+      if (!changed) break;
+    }
+    const horiz = doc.direction === 'LR' || doc.direction === 'RL';
+    const byLevel = {};
+    plain.forEach(n => { const l = level[n.id] || 0; (byLevel[l] = byLevel[l] || []).push(n); });
+    const positioned = {};
+    Object.keys(byLevel).sort((a, b) => a - b).forEach(l => {
+      byLevel[l].forEach((n, i) => {
+        positioned[n.id] = horiz
+          ? { x: 90 + Number(l) * 260, y: 90 + i * 150 }
+          : { x: 90 + i * 250, y: 90 + Number(l) * 170 };
+      });
+    });
+    this.mutate(d => ({
+      ...d,
+      nodes: d.nodes.map(n => positioned[n.id] ? { ...n, ...positioned[n.id] } : n)
+    }));
+    this.setState({ status: 'Organised ' + Object.keys(positioned).length + ' nodes' });
+    if (groups.length) this.setState({ status: 'Organised nodes — reposition groups by hand' });
+  }
+
+  /* ---------- serialisation ---------- */
+  esc(s) { return (s || '').replace(/"/g, "'").replace(/\n/g, ' '); }
+  frontmatter(doc) { return doc.title ? ['---', 'title: ' + doc.title, '---'] : []; }
+
+  serialize() {
+    const t = this.state.type, doc = this.doc(), def = this.typeDef();
+    if (def.kind === 'source') return doc.source || '';
+    if (def.kind === 'rows') return this.serializeRows(t, doc);
+    switch (t) {
+      case 'flowchart': return this.serFlowchart(doc);
+      case 'stateDiagram-v2': return this.serState(doc);
+      case 'classDiagram': return this.serClass(doc);
+      case 'erDiagram': return this.serEr(doc);
+      case 'mindmap': return this.serMindmap(doc);
+      case 'requirementDiagram': return this.serRequirement(doc);
+      case 'C4Context': return this.serC4(doc);
+      case 'architecture-beta': return this.serArchitecture(doc);
+      case 'block-beta': return this.serBlock(doc);
+      default: return this.serFlowchart(doc);
+    }
+  }
+
+  groupTree(doc) {
+    const groups = doc.nodes.filter(n => (this.SHAPES[n.shape] || {}).group);
+    const parent = {};
+    doc.nodes.forEach(n => { parent[n.id] = this.containerOf(n, groups); });
+    const childrenOf = (gid) => doc.nodes.filter(n => parent[n.id] === gid && n.id !== gid);
+    return { groups, parent, childrenOf };
+  }
+
+  serFlowchart(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('flowchart ' + (doc.direction || 'TD'));
+    const { childrenOf } = this.groupTree(doc);
+    const emit = (list, indent) => {
+      list.forEach(n => {
+        const sh = this.SHAPES[n.shape] || this.SHAPES.rect;
+        if (sh.group) {
+          lines.push(`${indent}subgraph ${n.id}["${this.esc(n.label)}"]`);
+          if (n.direction) lines.push(`${indent}    direction ${n.direction}`);
+          emit(childrenOf(n.id), indent + '    ');
+          lines.push(`${indent}end`);
+        } else {
+          lines.push(indent + (sh.syn ? sh.syn(n.id, this.esc(n.label)) : `${n.id}["${this.esc(n.label)}"]`));
+        }
+      });
+    };
+    emit(childrenOf(null), '    ');
+    doc.edges.forEach(e => {
+      const link = this.LINKS[e.link] || this.LINKS.arrow;
+      const mm = link.mm;
+      lines.push(e.label && e.link !== 'invisible' ? `    ${e.from} ${mm}|${this.esc(e.label)}| ${e.to}` : `    ${e.from} ${mm} ${e.to}`);
+    });
+    doc.nodes.forEach(n => {
+      const bits = [];
+      if (n.fill) bits.push('fill:' + n.fill);
+      if (n.stroke) bits.push('stroke:' + n.stroke);
+      if (n.color) bits.push('color:' + n.color);
+      if (bits.length) lines.push(`    style ${n.id} ${bits.join(',')}`);
+      if (n.cls) lines.push(`    class ${n.id} ${n.cls}`);
+      if (n.url) lines.push(`    click ${n.id} "${n.url}" _blank`);
+    });
+    return lines.join('\n');
+  }
+
+  serState(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('stateDiagram-v2');
+    const dir = (doc.direction === 'TD' ? 'TB' : doc.direction) || 'TB';
+    lines.push('    direction ' + dir);
+    const ref = (id) => {
+      const n = doc.nodes.find(x => x.id === id);
+      if (!n) return id;
+      return (n.shape === 'start' || n.shape === 'end') ? '[*]' : n.id;
+    };
+    const { childrenOf } = this.groupTree(doc);
+    const emit = (list, indent) => {
+      list.forEach(n => {
+        const sh = this.SHAPES[n.shape] || {};
+        if (sh.group) {
+          lines.push(`${indent}state ${n.id} {`);
+          emit(childrenOf(n.id), indent + '    ');
+          lines.push(`${indent}}`);
+        } else if (n.shape === 'choice') lines.push(`${indent}state ${n.id} <<choice>>`);
+        else if (n.shape === 'fork') lines.push(`${indent}state ${n.id} <<fork>>`);
+        else if (n.shape === 'state') lines.push(`${indent}${n.id} : ${this.esc(n.label) || n.id}`);
+      });
+    };
+    emit(childrenOf(null), '    ');
+    doc.edges.forEach(e => {
+      lines.push(`    ${ref(e.from)} --> ${ref(e.to)}${e.label ? ' : ' + this.esc(e.label) : ''}`);
+    });
+    doc.nodes.forEach(n => {
+      const bits = [];
+      if (n.fill) bits.push('fill:' + n.fill);
+      if (n.stroke) bits.push('stroke:' + n.stroke);
+      if (bits.length && n.shape === 'state') lines.push(`    classDef s_${n.id} ${bits.join(',')}`) && lines.push(`    class ${n.id} s_${n.id}`);
+    });
+    return lines.join('\n');
+  }
+
+  serClass(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('classDiagram');
+    lines.push('    direction ' + ((doc.direction === 'TD' ? 'TB' : doc.direction) || 'TB'));
+    const { childrenOf } = this.groupTree(doc);
+    const emitClass = (n, indent) => {
+      const head = n.label && n.label !== n.id ? `class ${n.id}["${this.esc(n.label)}"]` : `class ${n.id}`;
+      const fields = (n.fields || '').split('\n').map(l => l.trim()).filter(Boolean);
+      if (!fields.length) { lines.push(indent + head); return; }
+      lines.push(`${indent}${head} {`);
+      fields.forEach(f => lines.push(`${indent}    ${f}`));
+      lines.push(`${indent}}`);
+    };
+    childrenOf(null).forEach(n => {
+      if ((this.SHAPES[n.shape] || {}).group) {
+        lines.push(`    namespace ${n.id.replace(/\W/g, '')} {`);
+        childrenOf(n.id).forEach(c => emitClass(c, '        '));
+        lines.push('    }');
+      } else emitClass(n, '    ');
+    });
+    doc.edges.forEach(e => {
+      const link = this.LINKS[e.link] || this.LINKS.associate;
+      lines.push(`    ${e.from} ${link.mm} ${e.to}${e.label ? ' : ' + this.esc(e.label) : ''}`);
+    });
+    doc.nodes.forEach(n => {
+      const bits = [];
+      if (n.fill) bits.push('fill:' + n.fill);
+      if (n.stroke) bits.push('stroke:' + n.stroke);
+      if (n.color) bits.push('color:' + n.color);
+      if (bits.length) lines.push(`    style ${n.id} ${bits.join(',')}`);
+    });
+    return lines.join('\n');
+  }
+
+  serEr(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('erDiagram');
+    doc.nodes.filter(n => !(this.SHAPES[n.shape] || {}).group).forEach(n => {
+      const fields = (n.fields || '').split('\n').map(l => l.trim()).filter(Boolean);
+      if (!fields.length) { lines.push(`    ${n.id}`); return; }
+      lines.push(`    ${n.id} {`);
+      fields.forEach(f => lines.push('        ' + f));
+      lines.push('    }');
+    });
+    doc.edges.forEach(e => {
+      const link = this.LINKS[e.link] || this.LINKS.oneMany;
+      lines.push(`    ${e.from} ${link.mm} ${e.to} : "${this.esc(e.label) || 'relates'}"`);
+    });
+    return lines.join('\n');
+  }
+
+  serMindmap(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('mindmap');
+    const incoming = {};
+    doc.edges.forEach(e => { incoming[e.to] = (incoming[e.to] || 0) + 1; });
+    const roots = doc.nodes.filter(n => !incoming[n.id]);
+    const seen = new Set();
+    const walk = (n, depth) => {
+      if (!n || seen.has(n.id)) return;
+      seen.add(n.id);
+      const sh = this.SHAPES[n.shape] || this.SHAPES.mmNode;
+      const text = (n.label || n.id).replace(/[\[\]\(\)\{\}]/g, '');
+      lines.push('    '.repeat(depth + 1) + (sh.syn ? sh.syn(n.id, text) : `${n.id}[${text}]`));
+      doc.edges.filter(e => e.from === n.id).forEach(e => walk(doc.nodes.find(x => x.id === e.to), depth + 1));
+    };
+    (roots.length ? roots : doc.nodes.slice(0, 1)).forEach(r => walk(r, 0));
+    doc.nodes.forEach(n => { if (!seen.has(n.id)) walk(n, 0); });
+    return lines.join('\n');
+  }
+
+  serRequirement(doc) {
+    const lines = this.frontmatter(doc);
+    lines.push('requirementDiagram');
+    doc.nodes.forEach(n => {
+      const props = {};
+      (n.fields || '').split('\n').map(l => l.trim()).filter(Boolean).forEach(l => {
+        const i = l.indexOf(':');
+        if (i > 0) props[l.slice(0, i).trim()] = l.slice(i + 1).trim();
+      });
+      if (n.shape === 'element') {
+        lines.push(`    element ${n.id} {`);
+        lines.push(`        type: ${props.type || 'module'}`);
+        if (props.docref) lines.push(`        docref: ${props.docref}`);
+        lines.push('    }');
+      } else {
+        lines.push(`    ${n.shape} ${n.id} {`);
+        lines.push(`        id: ${props.id || n.id}`);
+        lines.push(`        text: ${props.text || this.esc(n.label)}`);
+        lines.push(`        risk: ${props.risk || 'medium'}`);
+        lines.push(`        verifymethod: ${props.verifymethod || 'test'}`);
+        lines.push('    }');
+      }
+    });
+    doc.edges.forEach(e => {
+      const rel = (this.LINKS[e.link] || this.LINKS.satisfies).mm;
+      lines.push(`    ${e.from} - ${rel} -> ${e.to}`);
+    });
+    return lines.join('\n');
+  }
+
+  serC4(doc) {
+    const lines = ['C4Context'];
+    if (doc.title) lines.push(`    title ${doc.title}`);
+    const fn = { person: 'Person', personExt: 'Person_Ext', system: 'System', systemExt: 'System_Ext', container: 'Container', componentC4: 'Component', dbC4: 'SystemDb', queueC4: 'SystemQueue' };
+    const { childrenOf } = this.groupTree(doc);
+    const emit = (list, indent) => {
+      list.forEach(n => {
+        if ((this.SHAPES[n.shape] || {}).group) {
+          lines.push(`${indent}Enterprise_Boundary(${n.id}, "${this.esc(n.label)}") {`);
+          emit(childrenOf(n.id), indent + '    ');
+          lines.push(`${indent}}`);
+        } else {
+          const f = fn[n.shape] || 'System';
+          const desc = this.esc(n.fields || '');
+          lines.push(`${indent}${f}(${n.id}, "${this.esc(n.label)}"${desc ? `, "${desc}"` : ''})`);
+        }
+      });
+    };
+    emit(childrenOf(null), '    ');
+    doc.edges.forEach(e => lines.push(`    Rel(${e.from}, ${e.to}, "${this.esc(e.label) || 'uses'}")`));
+    return lines.join('\n');
+  }
+
+  serArchitecture(doc) {
+    const lines = ['architecture-beta'];
+    const { childrenOf, parent } = this.groupTree(doc);
+    doc.nodes.filter(n => (this.SHAPES[n.shape] || {}).group).forEach(g => {
+      lines.push(`    group ${g.id}(cloud)[${this.esc(g.label).replace(/[\[\]]/g, '')}]`);
+    });
+    doc.nodes.filter(n => !(this.SHAPES[n.shape] || {}).group).forEach(n => {
+      const inG = parent[n.id] ? ` in ${parent[n.id]}` : '';
+      if (n.shape === 'junction') lines.push(`    junction ${n.id}${inG}`);
+      else lines.push(`    service ${n.id}(${n.icon || 'server'})[${this.esc(n.label).replace(/[\[\]]/g, '')}]${inG}`);
+    });
+    const sideMap = { n: 'T', s: 'B', e: 'R', w: 'L' };
+    doc.edges.forEach(e => {
+      const src = doc.nodes.find(n => n.id === e.from), tgt = doc.nodes.find(n => n.id === e.to);
+      if (!src || !tgt) return;
+      const g = this.edgeGeom(src, tgt);
+      const arrow = (this.LINKS[e.link] || this.LINKS.arrow).end ? '-->' : '--';
+      lines.push(`    ${e.from}:${sideMap[g.s1]} ${arrow} ${sideMap[g.s2]}:${e.to}`);
+    });
+    return lines.join('\n');
+  }
+
+  serBlock(doc) {
+    const lines = ['block-beta'];
+    const plain = doc.nodes.filter(n => !(this.SHAPES[n.shape] || {}).group).slice().sort((a, b) => (a.y - b.y) || (a.x - b.x));
+    const cols = Math.max(1, Math.min(6, new Set(plain.map(n => Math.round(n.x / 200))).size));
+    lines.push(`    columns ${cols}`);
+    plain.forEach(n => {
+      if (n.shape === 'space') lines.push('    space');
+      else lines.push(`    ${n.id}["${this.esc(n.label)}"]`);
+    });
+    doc.edges.forEach(e => {
+      const arrow = (this.LINKS[e.link] || this.LINKS.arrow).end ? '-->' : '---';
+      lines.push(`    ${e.from} ${arrow} ${e.to}`);
+    });
+    doc.nodes.forEach(n => {
+      const bits = [];
+      if (n.fill) bits.push('fill:' + n.fill);
+      if (n.stroke) bits.push('stroke:' + n.stroke);
+      if (bits.length) lines.push(`    style ${n.id} ${bits.join(',')}`);
+    });
+    return lines.join('\n');
+  }
+
+  serializeRows(t, doc) {
+    const rows = doc.rows || [], o = doc.opts || {}, title = doc.title;
+    const L = [];
+    const secWalk = (getSec, emit) => {
+      let cur = null;
+      rows.forEach(r => {
+        const s = (getSec(r) || '').trim();
+        if (s && s !== cur) { cur = s; L.push('    section ' + s); }
+        emit(r, cur ? '        ' : '    ');
+      });
+    };
+    switch (t) {
+      case 'sequenceDiagram': {
+        L.push('sequenceDiagram');
+        if (o.autonumber === 'yes') L.push('    autonumber');
+        const seen = [];
+        rows.forEach(r => { [r.from, r.to].forEach(p => { if (p && !seen.includes(p)) seen.push(p); }); });
+        seen.forEach(p => L.push(`    participant ${p}`));
+        rows.forEach(r => { if (r.from && r.to) L.push(`    ${r.from}${r.arrow || '->>'}${r.to}: ${r.text || ''}`); });
+        return (title ? `---\ntitle: ${title}\n---\n` : '') + L.join('\n');
+      }
+      case 'gantt': {
+        L.push('gantt');
+        L.push('    dateFormat ' + (o.dateFormat || 'YYYY-MM-DD'));
+        if (title) L.push('    title ' + title);
+        secWalk(r => r.section, (r, ind) => { if (r.task) L.push(`${ind}${r.task} :${r.id ? r.id + ', ' : ''}${r.start || ''}${r.dur ? ', ' + r.dur : ''}`); });
+        return L.join('\n');
+      }
+      case 'pie': {
+        L.push('pie' + (o.showData === 'yes' ? ' showData' : '') + (title ? ' title ' + title : ''));
+        rows.forEach(r => { if (r.label) L.push(`    "${r.label}" : ${r.value || 0}`); });
+        return L.join('\n');
+      }
+      case 'xychart-beta': {
+        L.push('xychart-beta');
+        if (title) L.push(`    title "${title}"`);
+        L.push(`    x-axis [${rows.map(r => r.x || '').filter(Boolean).join(', ')}]`);
+        const nums = rows.map(r => Number(r.bar) || 0).concat(rows.map(r => Number(r.line) || 0));
+        L.push(`    y-axis "${o.yLabel || 'Value'}" 0 --> ${Math.max(10, Math.ceil(Math.max(...nums, 10) * 1.15))}`);
+        if (rows.some(r => r.bar)) L.push(`    bar [${rows.map(r => Number(r.bar) || 0).join(', ')}]`);
+        if (rows.some(r => r.line)) L.push(`    line [${rows.map(r => Number(r.line) || 0).join(', ')}]`);
+        return L.join('\n');
+      }
+      case 'quadrantChart': {
+        L.push('quadrantChart');
+        if (title) L.push('    title ' + title);
+        L.push('    x-axis ' + (o.xAxis || 'Low --> High'));
+        L.push('    y-axis ' + (o.yAxis || 'Low --> High'));
+        ['q1', 'q2', 'q3', 'q4'].forEach((q, i) => { if (o[q]) L.push(`    quadrant-${i + 1} ${o[q]}`); });
+        rows.forEach(r => { if (r.label) L.push(`    ${r.label}: [${r.x || 0.5}, ${r.y || 0.5}]`); });
+        return L.join('\n');
+      }
+      case 'sankey-beta': {
+        L.push('sankey-beta');
+        L.push('');
+        rows.forEach(r => { if (r.source && r.target) L.push(`${r.source},${r.target},${r.value || 0}`); });
+        return L.join('\n');
+      }
+      case 'radar-beta': {
+        L.push('radar-beta');
+        if (title) L.push('    title ' + title);
+        const axes = rows.filter(r => r.axis);
+        L.push('    axis ' + axes.map((r, i) => `a${i}["${r.axis}"]`).join(', '));
+        L.push(`    curve c1["${o.series || 'Series'}"]{${axes.map(r => Number(r.value) || 0).join(', ')}}`);
+        return L.join('\n');
+      }
+      case 'timeline': {
+        L.push('timeline');
+        if (title) L.push('    title ' + title);
+        secWalk(r => r.section, (r, ind) => { if (r.period || r.event) L.push(`${ind}${r.period || ''} : ${r.event || ''}`); });
+        return L.join('\n');
+      }
+      case 'journey': {
+        L.push('journey');
+        if (title) L.push('    title ' + title);
+        secWalk(r => r.section, (r, ind) => { if (r.task) L.push(`${ind}${r.task}: ${r.score || 3}: ${r.actors || ''}`); });
+        return L.join('\n');
+      }
+      case 'kanban': {
+        L.push('kanban');
+        let cur = null; let n = 0;
+        rows.forEach(r => {
+          const col = (r.column || 'Column').trim();
+          if (col !== cur) { cur = col; L.push('    ' + col); }
+          if (r.card) L.push(`        k${n++}[${r.card}]${r.meta ? `@{ assigned: "${r.meta}" }` : ''}`);
+        });
+        return L.join('\n');
+      }
+      case 'gitGraph': {
+        L.push('gitGraph');
+        rows.forEach(r => {
+          const cmd = (r.cmd || 'commit').trim();
+          if (cmd === 'commit') L.push(`    commit${r.arg ? ` id: "${r.arg}"` : ''}${r.tag ? ` tag: "${r.tag}"` : ''}`);
+          else if (cmd === 'branch') L.push(`    branch ${r.arg || 'develop'}`);
+          else if (cmd === 'checkout' || cmd === 'switch') L.push(`    checkout ${r.arg || 'main'}`);
+          else if (cmd === 'merge') L.push(`    merge ${r.arg || 'develop'}${r.tag ? ` tag: "${r.tag}"` : ''}`);
+          else if (cmd === 'cherry-pick') L.push(`    cherry-pick id: "${r.arg || ''}"`);
+        });
+        return L.join('\n');
+      }
+      case 'treemap-beta': {
+        L.push('treemap-beta');
+        if (title) L.push(`    title ${title}`);
+        let cur = null;
+        rows.forEach(r => {
+          const p = (r.parent || '').trim();
+          if (p && p !== cur) { cur = p; L.push(`    "${p}"`); }
+          if (r.name) L.push(`${p ? '        ' : '    '}"${r.name}": ${r.value || 0}`);
+        });
+        return L.join('\n');
+      }
+      case 'packet-beta': {
+        L.push('packet-beta');
+        if (title) L.push('title ' + title);
+        rows.forEach(r => { if (r.range) L.push(`${r.range}: "${r.label || ''}"`); });
+        return L.join('\n');
+      }
+      default: return '';
+    }
+  }
+
+  /* ---------- flowchart parser (code -> canvas) ---------- */
+  parseFlowchart(text) {
+    const raw = text.split('\n');
+    const nodes = new Map(); const edges = []; const styles = {}; const clicks = {}; const classes = {};
+    let direction = 'TD'; let title = '';
+    const stack = [];
+    const shapePats = [
+      [/^(\w[\w-]*)\(\(\((.*?)\)\)\)$/, 'doublecircle'], [/^(\w[\w-]*)\(\((.*?)\)\)$/, 'circle'],
+      [/^(\w[\w-]*)\[\[(.*?)\]\]$/, 'subroutine'], [/^(\w[\w-]*)\[\((.*?)\)\]$/, 'cylinder'],
+      [/^(\w[\w-]*)\(\[(.*?)\]\)$/, 'stadium'], [/^(\w[\w-]*)\{\{(.*?)\}\}$/, 'hexagon'],
+      [/^(\w[\w-]*)\[\/(.*?)\/\]$/, 'parallelogram'], [/^(\w[\w-]*)\[\\(.*?)\\\]$/, 'parallelogramAlt'],
+      [/^(\w[\w-]*)\[\/(.*?)\\\]$/, 'trapezoid'], [/^(\w[\w-]*)\[\\(.*?)\/\]$/, 'trapezoidAlt'],
+      [/^(\w[\w-]*)>(.*?)\]$/, 'asymmetric'], [/^(\w[\w-]*)\{(.*?)\}$/, 'diamond'],
+      [/^(\w[\w-]*)\[(.*?)\]$/, 'rect'], [/^(\w[\w-]*)\((.*?)\)$/, 'rounded'],
+    ];
+    const linkPat = /(<-->|-->|---|-\.->|-\.-|==>|===|~~~|--o|--x)/;
+    const clean = (s) => (s || '').trim().replace(/^"|"$/g, '');
+    const ensure = (id, shape, label) => {
+      if (!nodes.has(id)) nodes.set(id, { id, shape: shape || 'rect', label: label !== undefined ? label : id, parent: stack[stack.length - 1] || null });
+      else if (shape) { const n = nodes.get(id); n.shape = shape; if (label !== undefined) n.label = label; }
+      return nodes.get(id);
+    };
+    raw.forEach(lineRaw => {
+      const line = lineRaw.trim();
+      if (!line || line.startsWith('%%')) return;
+      let m;
+      if ((m = line.match(/^title:\s*(.+)$/))) { title = m[1].trim(); return; }
+      if (/^(flowchart|graph)\b/i.test(line)) { const d = line.split(/\s+/)[1]; if (d) direction = d.toUpperCase(); return; }
+      if (/^---$/.test(line)) return;
+      if ((m = line.match(/^subgraph\s+(\w[\w-]*)\s*(?:\[\s*"?(.*?)"?\s*\])?/i))) {
+        const g = ensure(m[1], 'group', m[2] || m[1]);
+        g.shape = 'group'; g.parent = stack[stack.length - 1] || null;
+        stack.push(m[1]); return;
+      }
+      if (/^end$/i.test(line)) { stack.pop(); return; }
+      if ((m = line.match(/^direction\s+(\w+)$/i))) {
+        const g = stack[stack.length - 1];
+        if (g && nodes.has(g)) nodes.get(g).direction = m[1].toUpperCase(); else direction = m[1].toUpperCase();
+        return;
+      }
+      if ((m = line.match(/^style\s+(\w[\w-]*)\s+(.+)$/i))) {
+        styles[m[1]] = {};
+        m[2].split(',').forEach(p => { const [k, v] = p.split(':').map(x => (x || '').trim()); if (k && v) styles[m[1]][k] = v; });
+        return;
+      }
+      if ((m = line.match(/^class\s+(\w[\w-]*)\s+(\w[\w-]*)$/i))) { classes[m[1]] = m[2]; return; }
+      if ((m = line.match(/^click\s+(\w[\w-]*)\s+"(.*?)"/i))) { clicks[m[1]] = m[2]; return; }
+      if (linkPat.test(line)) {
+        const lm = line.match(new RegExp('^(.*?)\\s*' + linkPat.source + '\\s*(?:\\|(.*?)\\|\\s*)?(.*)$'));
+        if (lm) {
+          const leftTok = lm[1].trim(), mm = lm[2], label = lm[3] ? clean(lm[3]) : '', rightTok = lm[4].trim();
+          const parseTok = (tok) => {
+            for (const [re, shape] of shapePats) {
+              const t = tok.match(re);
+              if (t) return ensure(t[1], shape, clean(t[2]));
+            }
+            const idm = tok.match(/^(\w[\w-]*)$/);
+            return idm ? ensure(idm[1]) : null;
+          };
+          const a = parseTok(leftTok), b = parseTok(rightTok);
+          if (a && b) {
+            const linkKey = Object.keys(this.LINKS).find(k => this.LINKS[k].mm === mm) || 'arrow';
+            edges.push({ id: 'e' + (edges.length + 1), from: a.id, to: b.id, label, link: linkKey });
+            return;
+          }
+        }
+      }
+      for (const [re, shape] of shapePats) {
+        const t = line.match(re);
+        if (t) { ensure(t[1], shape, clean(t[2])); return; }
+      }
+      const idOnly = line.match(/^(\w[\w-]*)$/);
+      if (idOnly) ensure(idOnly[1]);
+    });
+    // layout
+    const list = [...nodes.values()];
+    const plain = list.filter(n => n.shape !== 'group');
+    const level = {}; plain.forEach(n => level[n.id] = 0);
+    for (let i = 0; i < plain.length + 2; i++) {
+      let changed = false;
+      edges.forEach(e => {
+        if (level[e.from] === undefined || level[e.to] === undefined) return;
+        if (level[e.to] < level[e.from] + 1) { level[e.to] = level[e.from] + 1; changed = true; }
+      });
+      if (!changed) break;
+    }
+    const horiz = direction === 'LR' || direction === 'RL';
+    const byLevel = {};
+    plain.forEach(n => { const l = level[n.id] || 0; (byLevel[l] = byLevel[l] || []).push(n); });
+    const out = [];
+    Object.keys(byLevel).sort((a, b) => a - b).forEach(l => {
+      byLevel[l].forEach((n, i) => {
+        const size = this.sizeFor(n.shape, n.label, n.fields);
+        const pos = horiz ? { x: 90 + Number(l) * 270, y: 90 + i * 150 } : { x: 90 + i * 250, y: 90 + Number(l) * 170 };
+        const st = styles[n.id] || {};
+        out.push({ ...n, ...pos, ...size, fill: st.fill, stroke: st.stroke, color: st.color, cls: classes[n.id], url: clicks[n.id] });
+      });
+    });
+    // groups sized around members
+    list.filter(n => n.shape === 'group').forEach(g => {
+      const members = out.filter(n => n.parent === g.id);
+      if (!members.length) { out.unshift({ ...g, x: 60, y: 60, w: 300, h: 200 }); return; }
+      const pad = 34;
+      const x = Math.min(...members.map(m => m.x)) - pad, y = Math.min(...members.map(m => m.y)) - pad - 14;
+      const w = Math.max(...members.map(m => m.x + m.w)) + pad - x, h = Math.max(...members.map(m => m.y + m.h)) + pad - y;
+      out.unshift({ ...g, x, y, w, h });
+    });
+    return { kind: 'graph', title, direction, nodes: out, edges };
+  }
+
+  applyCodeDraft() {
+    const text = this.state.codeDraft || '';
+    const t = this.state.type;
+    if (t === 'flowchart') {
+      try {
+        const parsed = this.parseFlowchart(text);
+        if (!parsed.nodes.length) throw new Error('no nodes');
+        this.mutate(() => parsed);
+        this.setState({ codeMode: 'view', selKind: null, selIds: [], status: 'Applied code to canvas', applyHint: '' });
+      } catch (err) {
+        this.setState({ status: 'Could not parse that flowchart source', applyHint: 'Parse failed — check the syntax.' });
+      }
+      return;
+    }
+    const detected = this.detectType(text);
+    if (detected && detected !== t) {
+      this.setState(s => ({ type: detected, docs: { ...s.docs, [detected]: { kind: 'source', title: '', source: text } }, codeMode: 'view', status: 'Switched to ' + detected + ' (source mode)' }));
+      return;
+    }
+    this.mutate(() => ({ kind: 'source', title: this.doc().title || '', source: text }));
+    this.setState({ codeMode: 'view', status: 'Now editing this type as source' });
+  }
+
+  detectType(text) {
+    const first = (text || '').split('\n').map(l => l.trim()).find(l => l && !l.startsWith('%%') && l !== '---' && !/^title:/.test(l));
+    if (!first) return null;
+    const word = first.split(/[\s;]/)[0];
+    const hit = this.TYPES.find(t => t.k.toLowerCase() === word.toLowerCase());
+    if (hit) return hit.k;
+    if (/^graph$/i.test(word)) return 'flowchart';
+    if (/^stateDiagram/i.test(word)) return 'stateDiagram-v2';
+    return null;
+  }
+
+  /* ---------- preview + export ---------- */
+  schedulePreview() {
+    const code = this.serialize();
+    if (code === this._lastCode && this.previewRef === this._lastRef) return;
+    this._lastCode = code; this._lastRef = this.previewRef;
+    clearTimeout(this._pvTimer);
+    this._pvTimer = setTimeout(() => this.renderPreview(code), 260);
+  }
+  async renderPreview(code) {
+    const host = this.previewRef;
+    if (!host || !window.mermaid) return;
+    try {
+      this._rid = (this._rid || 0) + 1;
+      const { svg } = await window.mermaid.render('mmd' + this._rid, code);
+      if (this.previewRef) this.previewRef.innerHTML = svg;
+      this._lastSvg = svg;
+    } catch (err) {
+      if (this.previewRef) this.previewRef.innerHTML = '<div style="font-family:Inter,sans-serif;font-size:12.5px;color:#B0525C;max-width:520px;white-space:pre-wrap;">Mermaid could not render this source:\n' + String(err && err.message || err).replace(/</g, '&lt;') + '</div>';
+    }
+  }
+  async currentSvg() {
+    const code = this.serialize();
+    if (!window.mermaid) return null;
+    try { const { svg } = await window.mermaid.render('exp' + Date.now(), code); return svg; } catch (e) { return null; }
+  }
+  download(name, blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  async exportSVG() {
+    const svg = await this.currentSvg();
+    if (!svg) { this.setState({ status: 'Nothing to export — fix render errors first' }); return; }
+    this.download('diagram.svg', new Blob([svg], { type: 'image/svg+xml' }));
+  }
+  async exportPNG() {
+    const svg = await this.currentSvg();
+    if (!svg) { this.setState({ status: 'Nothing to export — fix render errors first' }); return; }
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const w = img.width || 1200, h = img.height || 800;
+      const c = document.createElement('canvas');
+      c.width = w * scale; c.height = h * scale;
+      const ctx = c.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      c.toBlob(b => this.download('diagram.png', b));
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  }
+  exportMmd() { this.download('diagram.mmd', new Blob([this.serialize()], { type: 'text/plain' })); }
+  copyCode() { if (navigator.clipboard) navigator.clipboard.writeText(this.serialize()); this.setState({ status: 'Source copied' }); }
+  triggerImport() { if (this.fileRef) this.fileRef.click(); }
+  onImportFile(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || '');
+      const detected = this.detectType(text) || 'custom';
+      if (detected === 'flowchart') {
+        const parsed = this.parseFlowchart(text);
+        this.setState(s => ({ type: 'flowchart', docs: { ...s.docs, flowchart: parsed }, status: 'Imported flowchart', codeMode: 'view' }));
+      } else {
+        this.setState(s => ({ type: detected, docs: { ...s.docs, [detected]: { kind: 'source', title: '', source: text } }, status: 'Imported as ' + detected, codeMode: 'view' }));
+      }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  }
+
+  /* ---------- rows helpers ---------- */
+  setRow(id, key, value) {
+    this.mutate(d => ({ ...d, rows: d.rows.map(r => r.id === id ? { ...r, [key]: value } : r) }));
+  }
+  addRow() {
+    const cols = this.typeDef().columns || [];
+    const blank = { id: 'r' + Math.random().toString(36).slice(2, 8) };
+    const last = (this.doc().rows || []).slice(-1)[0] || {};
+    cols.forEach(c => { blank[c.k] = c.k === 'section' || c.k === 'column' || c.k === 'parent' ? (last[c.k] || '') : ''; });
+    this.mutate(d => ({ ...d, rows: [...d.rows, blank] }));
+  }
+  moveRow(id, dir) {
+    this.mutate(d => {
+      const rows = [...d.rows];
+      const i = rows.findIndex(r => r.id === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= rows.length) return d;
+      [rows[i], rows[j]] = [rows[j], rows[i]];
+      return { ...d, rows };
+    });
+  }
+  deleteRow(id) { this.mutate(d => ({ ...d, rows: d.rows.filter(r => r.id !== id) })); }
+
+  /* ---------- node / edge editing ---------- */
+  patchNode(id, patch) {
+    this.mutate(d => ({
+      ...d, nodes: d.nodes.map(n => {
+        if (n.id !== id) return n;
+        const next = { ...n, ...patch };
+        if (patch.label !== undefined || patch.fields !== undefined || patch.shape !== undefined) {
+          if (!(this.SHAPES[next.shape] || {}).group) Object.assign(next, this.sizeFor(next.shape, next.label, next.fields));
+        }
+        return next;
+      })
+    }));
+  }
+  renameNode(oldId, newIdRaw) {
+    const newId = (newIdRaw || '').trim().replace(/\s+/g, '_');
+    if (!newId || newId === oldId) return;
+    const doc = this.doc();
+    if (doc.nodes.some(n => n.id === newId)) { this.setState({ status: 'Id already used' }); return; }
+    this.mutate(d => ({
+      ...d,
+      nodes: d.nodes.map(n => n.id === oldId ? { ...n, id: newId } : n),
+      edges: d.edges.map(e => ({ ...e, from: e.from === oldId ? newId : e.from, to: e.to === oldId ? newId : e.to })),
+    }));
+    this.setState({ selIds: [newId] });
+  }
+  patchEdge(id, patch) { this.mutate(d => ({ ...d, edges: d.edges.map(e => e.id === id ? { ...e, ...patch } : e) })); }
+  clearStyling() {
+    const { selKind, selIds } = this.state;
+    if (selKind === 'node') this.mutate(d => ({ ...d, nodes: d.nodes.map(n => selIds.includes(n.id) ? { ...n, fill: undefined, stroke: undefined, color: undefined, cls: undefined } : n) }));
+  }
+
+  /* ---------- view models ---------- */
+  nodeStyle(n, selected) {
+    const sh = this.SHAPES[n.shape] || this.SHAPES.rect;
+    const css = sh.css || {};
+    const st = {
+      position: 'absolute', left: n.x + 'px', top: n.y + 'px', width: n.w + 'px', height: n.h + 'px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '6px 12px',
+      fontSize: '13px', color: n.color || '#26272B', background: n.fill || (css.solid ? '#26272B' : '#FFFFFF'),
+      border: css.dashed ? '1px dashed #C7C9D1' : '1px solid ' + (n.stroke || '#D8D9DE'),
+      boxSizing: 'border-box', cursor: 'grab', userSelect: 'none', zIndex: selected ? 6 : 3,
+      boxShadow: [selected ? '0 0 0 2px #5B5F6B' : '0 1px 3px rgba(0,0,0,0.08)', css.extraShadow].filter(Boolean).join(', '),
+    };
+    if (css.borderRadius) st.borderRadius = css.borderRadius;
+    if (css.clipPath) st.clipPath = css.clipPath;
+    return st;
+  }
+  groupStyle(n, selected) {
+    return {
+      position: 'absolute', left: n.x + 'px', top: n.y + 'px', width: n.w + 'px', height: n.h + 'px',
+      border: '2px dashed ' + (selected ? '#5B5F6B' : '#C7C9D1'), borderRadius: '10px',
+      background: n.fill || 'rgba(91,95,107,0.03)', zIndex: 1, cursor: 'grab', boxSizing: 'border-box',
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const def = this.typeDef();
+    const doc = this.doc();
+    if (!s.docs[s.type]) setTimeout(() => this.ensureDoc(), 0);
+    const isGraph = def.kind === 'graph';
+    const isRows = def.kind === 'rows';
+    const isSource = def.kind === 'source';
+    const rendered = s.viewTab === 'rendered';
+    const selSet = new Set(s.selIds);
+    const ghostBtn = { height: '27px', padding: '0 9px', border: '1px solid #E4E4E7', background: '#fff', borderRadius: '6px', cursor: 'pointer', color: '#4B4D57' };
+    const smallBtn = { height: '27px', padding: '0 10px', border: '1px solid #D8D9DE', background: '#fff', borderRadius: '6px', cursor: 'pointer', color: '#4B4D57', fontSize: '12px' };
+    const tab = (on) => ({ padding: '5px 11px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontSize: '12.5px', background: on ? '#fff' : 'transparent', color: on ? '#26272B' : '#8A8D97', fontWeight: on ? 600 : 500, boxShadow: on ? '0 1px 2px rgba(0,0,0,0.08)' : 'none' });
+
+    const allNodes = doc.nodes || [];
+    const groups = allNodes.filter(n => (this.SHAPES[n.shape] || {}).group);
+    const groupNodes = groups.map(n => ({
+      ...n,
+      style: this.groupStyle(n, selSet.has(n.id) && s.selKind === 'node'),
+      onMouseDown: (e) => this.onNodeMouseDown(n.id, e),
+      onDoubleClick: (e) => this.onNodeDoubleClick(n.id, e),
+      resizeDown: (e) => this.onGroupResizeDown(n.id, e),
+      isEditing: s.editingNodeId === n.id, isNotEditing: s.editingNodeId !== n.id,
+      inputValue: s.editText,
+      onInputChange: (e) => this.setState({ editText: e.target.value }),
+      onInputBlur: () => this.commitLabel(),
+      onInputKeyDown: (e) => { if (e.key === 'Enter') this.commitLabel(); if (e.key === 'Escape') this.setState({ editingNodeId: null }); },
+      inputRef: (el) => { if (el) { el.focus(); el.select(); } },
+    }));
+    const plainNodes = allNodes.filter(n => !(this.SHAPES[n.shape] || {}).group).map(n => ({
+      ...n,
+      style: this.nodeStyle(n, selSet.has(n.id) && s.selKind === 'node'),
+      hasFields: !!(n.fields && (this.SHAPES[n.shape] || {}).fields),
+      fieldsText: n.fields || '',
+      onMouseDown: (e) => this.onNodeMouseDown(n.id, e),
+      onDoubleClick: (e) => this.onNodeDoubleClick(n.id, e),
+      isEditing: s.editingNodeId === n.id, isNotEditing: s.editingNodeId !== n.id,
+      inputValue: s.editText,
+      onInputChange: (e) => this.setState({ editText: e.target.value }),
+      onInputBlur: () => this.commitLabel(),
+      onInputKeyDown: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.commitLabel(); } if (e.key === 'Escape') this.setState({ editingNodeId: null }); },
+      inputRef: (el) => { if (el) { el.focus(); el.select(); } },
+      handleDownN: (e) => this.onHandleDown(n.id, 'n', e),
+      handleDownS: (e) => this.onHandleDown(n.id, 's', e),
+      handleDownE: (e) => this.onHandleDown(n.id, 'e', e),
+      handleDownW: (e) => this.onHandleDown(n.id, 'w', e),
+    }));
+    const edgeVms = (doc.edges || []).map(e => {
+      const src = allNodes.find(n => n.id === e.from), tgt = allNodes.find(n => n.id === e.to);
+      const link = this.LINKS[e.link] || this.LINKS.arrow;
+      const on = s.selKind === 'edge' && selSet.has(e.id);
+      let d = 'M0 0', mid = { x: 0, y: 0 };
+      if (src && tgt) { const g = this.edgeGeom(src, tgt); d = `M ${g.p1.x} ${g.p1.y} L ${g.p2.x} ${g.p2.y}`; mid = g.mid; }
+      return {
+        ...e, d, stroke: on ? '#5B5F6B' : (link.faint ? '#C7C9D1' : '#8A8D97'),
+        width: on ? link.width + 1 : link.width, dash: link.dash || '',
+        markerEnd: link.end ? (on ? 'url(#arS)' : 'url(#ar)') : '',
+        markerStart: link.start ? 'url(#arB)' : '',
+        onMouseDown: (ev) => this.onEdgeDown(e.id, ev),
+        midStyle: { position: 'absolute', left: mid.x + 'px', top: mid.y + 'px', transform: 'translate(-50%,-50%)', zIndex: 4 },
+        labelText: e.label || '+',
+        labelStyle: { background: '#fff', border: '1px solid ' + (on ? '#5B5F6B' : '#E4E4E7'), borderRadius: '4px', padding: '2px 6px', fontSize: '12px', color: e.label ? '#4B4D57' : '#B4B6BE', cursor: 'pointer', whiteSpace: 'nowrap' },
+        onLabelClick: (ev) => this.onEdgeLabelClick(e.id, ev),
+        isEditing: s.editingEdgeId === e.id, isNotEditing: s.editingEdgeId !== e.id,
+        inputValue: s.editEdgeText,
+        onInputChange: (ev) => this.setState({ editEdgeText: ev.target.value }),
+        onInputBlur: () => this.commitEdgeLabel(),
+        onInputKeyDown: (ev) => { if (ev.key === 'Enter') this.commitEdgeLabel(); if (ev.key === 'Escape') this.setState({ editingEdgeId: null }); },
+        inputRef: (el) => { if (el) { el.focus(); el.select(); } },
+      };
+    });
+
+    const shapeTools = (def.shapes || []).map(k => {
+      const sh = this.SHAPES[k] || {};
+      const css = sh.css || {};
+      const icon = { width: '20px', height: sh.small && sh.small[1] < 20 ? '6px' : '14px', border: '2px solid #4B4D57', background: css.solid ? '#4B4D57' : 'transparent' };
+      if (css.borderRadius) icon.borderRadius = css.borderRadius === '50%' ? '50%' : css.borderRadius;
+      if (css.clipPath) { icon.clipPath = css.clipPath; icon.background = '#4B4D57'; icon.border = 'none'; icon.height = '16px'; }
+      if (sh.group) { icon.border = '2px dashed #4B4D57'; icon.height = '16px'; }
+      if (k === 'circle' || k === 'doublecircle' || k === 'mmCircle') { icon.width = '16px'; icon.height = '16px'; }
+      return {
+        k, label: sh.label || k,
+        btnStyle: { width: '42px', height: '32px', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: s.placingShape === k ? '#EDEEF1' : 'transparent', border: s.placingShape === k ? '1px solid #C7C9D1' : '1px solid transparent' },
+        iconStyle: icon,
+        onClick: () => this.setState(st => ({ placingShape: st.placingShape === k ? null : k, status: st.placingShape === k ? 'Ready' : 'Click the canvas to place ' + (sh.label || k) })),
+      };
+    });
+
+    // rows view
+    const columns = def.columns || [];
+    const rowsColumns = columns.map(c => ({ label: c.label, style: { width: c.w + 'px', flexShrink: 0 } }));
+    const rowsList = (doc.rows || []).map(r => ({
+      id: r.id,
+      cells: columns.map(c => ({
+        value: r[c.k] || '', placeholder: c.label,
+        style: { width: c.w + 'px', flexShrink: 0, height: '29px', border: '1px solid #D8D9DE', borderRadius: '6px', padding: '0 8px', outline: 'none', color: '#26272B' },
+        onChange: (e) => this.setRow(r.id, c.k, e.target.value),
+      })),
+      onUp: () => this.moveRow(r.id, -1), onDown: () => this.moveRow(r.id, 1), onDelete: () => this.deleteRow(r.id),
+    }));
+
+    // inspector
+    const F = (label, value, onChange, kind, extra) => ({
+      label, value: value === undefined || value === null ? '' : value, onChange,
+      isText: kind === undefined || kind === 'text', isSelect: kind === 'select', isColor: kind === 'color', isArea: kind === 'area',
+      options: (extra && extra.options) || [], placeholder: (extra && extra.placeholder) || '',
+    });
+    let inspectorFields = []; let inspectorTitle = 'Diagram settings';
+    const selNode = s.selKind === 'node' && s.selIds.length === 1 ? allNodes.find(n => n.id === s.selIds[0]) : null;
+    const selEdge = s.selKind === 'edge' && s.selIds.length === 1 ? (doc.edges || []).find(e => e.id === s.selIds[0]) : null;
+    if (selNode) {
+      const sh = this.SHAPES[selNode.shape] || {};
+      inspectorTitle = sh.group ? 'Group' : 'Node';
+      inspectorFields = [
+        F('Label', selNode.label, (e) => this.patchNode(selNode.id, { label: e.target.value })),
+        F('Id', selNode.id, (e) => this.renameNode(selNode.id, e.target.value)),
+        F('Shape', selNode.shape, (e) => this.patchNode(selNode.id, { shape: e.target.value }), 'select', { options: (def.shapes || []).map(k => ({ k, label: (this.SHAPES[k] || {}).label || k })) }),
+      ];
+      if (sh.fields || s.type === 'requirementDiagram' || s.type === 'C4Context') {
+        inspectorFields.push(F(s.type === 'erDiagram' ? 'Attributes (type name PK)' : s.type === 'classDiagram' ? 'Members (+name: type)' : s.type === 'requirementDiagram' ? 'Properties (key: value)' : 'Description', selNode.fields, (e) => this.patchNode(selNode.id, { fields: e.target.value }), 'area', { placeholder: 'one per line' }));
+      }
+      if (s.type === 'architecture-beta' && selNode.shape === 'service') inspectorFields.push(F('Icon', selNode.icon || 'server', (e) => this.patchNode(selNode.id, { icon: e.target.value }), 'text', { placeholder: 'server, database, cloud, internet, disk' }));
+      if (sh.group) inspectorFields.push(F('Inner direction', selNode.direction || '', (e) => this.patchNode(selNode.id, { direction: e.target.value }), 'select', { options: [{ k: '', label: 'inherit' }, { k: 'TB', label: 'TB' }, { k: 'BT', label: 'BT' }, { k: 'LR', label: 'LR' }, { k: 'RL', label: 'RL' }] }));
+      inspectorFields.push(F('Fill', selNode.fill || '#ffffff', (e) => this.patchNode(selNode.id, { fill: e.target.value }), 'color'));
+      inspectorFields.push(F('Stroke', selNode.stroke || '#d8d9de', (e) => this.patchNode(selNode.id, { stroke: e.target.value }), 'color'));
+      inspectorFields.push(F('Text colour', selNode.color || '#26272b', (e) => this.patchNode(selNode.id, { color: e.target.value }), 'color'));
+      if (s.type === 'flowchart') {
+        inspectorFields.push(F('classDef name', selNode.cls, (e) => this.patchNode(selNode.id, { cls: e.target.value }), 'text', { placeholder: 'e.g. warning' }));
+        inspectorFields.push(F('Click URL', selNode.url, (e) => this.patchNode(selNode.id, { url: e.target.value }), 'text', { placeholder: 'https://…' }));
+      }
+    } else if (selEdge) {
+      inspectorTitle = 'Connection';
+      inspectorFields = [
+        F('Label', selEdge.label, (e) => this.patchEdge(selEdge.id, { label: e.target.value })),
+        F('Type', selEdge.link, (e) => this.patchEdge(selEdge.id, { link: e.target.value }), 'select', { options: (def.links || ['arrow']).map(k => ({ k, label: (this.LINKS[k] || {}).label || k })) }),
+        F('From', selEdge.from, (e) => this.patchEdge(selEdge.id, { from: e.target.value }), 'select', { options: allNodes.map(n => ({ k: n.id, label: n.id + ' — ' + (n.label || '') })) }),
+        F('To', selEdge.to, (e) => this.patchEdge(selEdge.id, { to: e.target.value }), 'select', { options: allNodes.map(n => ({ k: n.id, label: n.id + ' — ' + (n.label || '') })) }),
+      ];
+    } else if (isRows) {
+      const o = doc.opts || {};
+      const setOpt = (k) => (e) => this.mutate(d => ({ ...d, opts: { ...(d.opts || {}), [k]: e.target.value } }));
+      inspectorTitle = 'Diagram settings';
+      if (s.type === 'sequenceDiagram') inspectorFields = [F('Autonumber', o.autonumber || 'no', setOpt('autonumber'), 'select', { options: [{ k: 'no', label: 'off' }, { k: 'yes', label: 'on' }] })];
+      else if (s.type === 'xychart-beta') inspectorFields = [F('Y axis label', o.yLabel, setOpt('yLabel'))];
+      else if (s.type === 'quadrantChart') inspectorFields = [F('X axis', o.xAxis, setOpt('xAxis')), F('Y axis', o.yAxis, setOpt('yAxis')), F('Quadrant 1', o.q1, setOpt('q1')), F('Quadrant 2', o.q2, setOpt('q2')), F('Quadrant 3', o.q3, setOpt('q3')), F('Quadrant 4', o.q4, setOpt('q4'))];
+      else if (s.type === 'radar-beta') inspectorFields = [F('Series name', o.series, setOpt('series'))];
+      else if (s.type === 'gantt') inspectorFields = [F('Date format', o.dateFormat, setOpt('dateFormat'))];
+      else if (s.type === 'pie') inspectorFields = [F('Show data', o.showData || 'yes', setOpt('showData'), 'select', { options: [{ k: 'yes', label: 'yes' }, { k: 'no', label: 'no' }] })];
+      else inspectorFields = [F('Title', doc.title, (e) => this.mutate(d => ({ ...d, title: e.target.value })))];
+    } else {
+      inspectorTitle = isGraph ? 'Nothing selected' : 'Diagram settings';
+      inspectorFields = [F('Title', doc.title, (e) => this.mutate(d => ({ ...d, title: e.target.value })))];
+    }
+
+    const code = this.serialize();
+    const counts = isGraph ? `${allNodes.length} nodes · ${(doc.edges || []).length} connections` : isRows ? `${(doc.rows || []).length} rows` : 'source mode';
+
+    return {
+      ghostBtn, smallBtn,
+      typeValue: s.type,
+      typeOptions: this.TYPES.map(t => ({ k: t.k, label: t.label })),
+      onTypeChange: (e) => {
+        const t = e.target.value;
+        this.setState(st => ({
+          type: t, docs: st.docs[t] ? st.docs : { ...st.docs, [t]: this.defaultDoc(t) },
+          past: [...st.past, this.snapshot()].slice(-60), future: [],
+          selKind: null, selIds: [], placingShape: null, editingNodeId: null, editingEdgeId: null, codeMode: 'view',
+          status: 'Switched to ' + (this.typeDef(t).label),
+        }));
+      },
+      docTitle: doc.title || '',
+      onTitleChange: (e) => this.mutate(d => ({ ...d, title: e.target.value })),
+      docDirection: doc.direction || 'TD',
+      onDirectionChange: (e) => this.mutate(d => ({ ...d, direction: e.target.value })),
+      isGraph,
+      showRail: isGraph && !rendered,
+      isCanvasView: isGraph && !rendered,
+      isRowsView: isRows && !rendered,
+      isSourceView: isSource && !rendered,
+      isRenderedView: rendered,
+      showEditorTab: () => this.setState({ viewTab: 'editor' }),
+      showRenderedTab: () => this.setState({ viewTab: 'rendered' }),
+      editorTabStyle: tab(!rendered), renderedTabStyle: tab(rendered),
+      undo: () => this.undo(), redo: () => this.redo(),
+      zoomIn: () => this.setState(st => ({ zoom: Math.min(2, Math.round((st.zoom + 0.1) * 10) / 10) })),
+      zoomOut: () => this.setState(st => ({ zoom: Math.max(0.4, Math.round((st.zoom - 0.1) * 10) / 10) })),
+      zoomLabel: Math.round(s.zoom * 100) + '%',
+      toggleSnap: () => this.setState(st => ({ snap: !st.snap })),
+      snapStyle: { ...ghostBtn, background: s.snap ? '#EDEEF1' : '#fff', color: s.snap ? '#26272B' : '#4B4D57' },
+      autoLayout: () => this.autoLayout(),
+      groupSelection: () => this.groupSelection(),
+      duplicateSelection: () => this.duplicateSelection(),
+      deleteSelection: () => this.deleteSelection(),
+      shapeTools,
+      worldRefCb: (el) => { this.worldRef = el; },
+      worldStyle: { position: 'relative', width: 2600 * s.zoom + 'px', height: 1800 * s.zoom + 'px', transform: 'scale(' + s.zoom + ')', transformOrigin: '0 0' },
+      svgStyle: { position: 'absolute', top: 0, left: 0, width: '2600px', height: '1800px', pointerEvents: 'none', zIndex: 2 },
+      canvasCursor: s.placingShape ? 'crosshair' : 'default',
+      onCanvasMouseDown: (e) => this.onCanvasMouseDown(e),
+      onCanvasDoubleClick: (e) => this.onCanvasDoubleClick(e),
+      groupNodes, plainNodes,
+      edgeShapes: edgeVms, edgeLabels: edgeVms,
+      tempLinePath: s.tempLine ? `M ${s.tempLine.x1} ${s.tempLine.y1} L ${s.tempLine.x2} ${s.tempLine.y2}` : null,
+      hasTempLine: !!s.tempLine,
+      statusText: s.status + ' · ' + counts,
+      rowsColumns, rowsList, addRow: () => this.addRow(),
+      sourceText: doc.source || '',
+      onSourceChange: (e) => this.mutate(d => ({ ...d, source: e.target.value })),
+      previewRefCb: (el) => { this.previewRef = el; if (el) this.schedulePreview(); },
+      inspectorTitle, inspectorFields,
+      hasSelection: !!(selNode),
+      clearStyling: () => this.clearStyling(),
+      mermaidCode: code,
+      isCodeView: s.codeMode === 'view', isCodeEdit: s.codeMode === 'edit',
+      codeEditLabel: s.codeMode === 'edit' ? 'Cancel' : 'Edit',
+      toggleCodeEdit: () => this.setState(st => ({ codeMode: st.codeMode === 'edit' ? 'view' : 'edit', codeDraft: this.serialize(), applyHint: st.type === 'flowchart' ? 'Flowchart source round-trips onto the canvas.' : 'Applying source for this type switches it to source editing.' })),
+      codeDraft: s.codeDraft,
+      onCodeDraftChange: (e) => this.setState({ codeDraft: e.target.value }),
+      applyCodeDraft: () => this.applyCodeDraft(),
+      applyHint: s.applyHint || (s.type === 'flowchart' ? 'Parsed back onto the canvas, including shapes, links, subgraphs and styles.' : 'This type will switch to source editing.'),
+      copyCode: () => this.copyCode(),
+      exportPNG: () => this.exportPNG(), exportSVG: () => this.exportSVG(), exportMmd: () => this.exportMmd(),
+      triggerImport: () => this.triggerImport(),
+      fileRefCb: (el) => { this.fileRef = el; },
+      onImportFile: (e) => this.onImportFile(e),
+    };
+  }
+}
+</script>
+</body>
+</html>
