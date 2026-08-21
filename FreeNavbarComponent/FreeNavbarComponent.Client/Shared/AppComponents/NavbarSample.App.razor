@@ -1,0 +1,202 @@
+@implements IDisposable
+@inject BlazorDataModel Model
+
+@*
+    Sample page for the NavbarMenu component, reproducing the browse-catalog.html
+    design: a five-level nested catalog menu with a search filter.
+
+    The tree below is the same data as the original static markup, expressed as a
+    NavbarMenuItem list. Everything the design did with hand-written nesting the
+    component now does recursively, so the depth here is data, not markup.
+*@
+
+@if (Model.Loaded && Model.View == _pageName && (Model.LoggedIn || !RequireLogin)) {
+
+    if (_loading) {
+        <LoadingMessage />
+    } else {
+        <h1 class="page-title">Navbar Component Sample</h1>
+
+        <p class="text-secondary">
+            A five-level nested catalog menu built from Bootstrap classes only.
+            Bootstrap's collapse data API opens each branch, so the menu itself
+            needs no JavaScript; the component's JS module only supplies the
+            search filter. Try searching for <code>12Z</code> to see a deep hit
+            keep its ancestors visible.
+        </p>
+
+        @* The sample navbar is rendered inside the page rather than pinned to the
+           top of the window, so it does not compete with the application's own
+           navigation. sticky-top is therefore neutralised with position-relative. *@
+        @* No overflow clipping on this wrapper: the dropdown panel escapes the
+           navbar's bounds, so overflow-hidden here would cut the menu off. *@
+        <div class="border rounded mb-4">
+            <NavbarMenu @ref="_menu"
+                        BrandText="Tidewater"
+                        BrandColor="#a60f2d"
+                        ContainerCssClass="container-fluid"
+                        NavbarCssClass="position-relative"
+                        MenuText="Browse catalog"
+                        MenuHeader="Product catalog"
+                        Items="_catalog"
+                        LeadingItems="_leading"
+                        TrailingItems="_trailing"
+                        OnItemClicked="ItemClicked"
+                        OnFilter="FilterChanged" />
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">Last item clicked</div>
+                    <div class="card-body">
+                        @if (String.IsNullOrWhiteSpace(_lastClicked)) {
+                            <span class="text-secondary">Nothing clicked yet.</span>
+                        } else {
+                            <span>@_lastClicked</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">Last filter</div>
+                    <div class="card-body">
+                        @if (String.IsNullOrWhiteSpace(_lastQuery)) {
+                            <span class="text-secondary">No search entered.</span>
+                        } else {
+                            <span>@_lastMatches matching for &quot;@_lastQuery&quot;</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ResetMenu">
+                Reset menu
+            </button>
+        </div>
+    }
+}
+
+@code {
+    /// <summary>
+    /// This is a sample page, so it is viewable without logging in.
+    /// </summary>
+    public bool RequireLogin { get; set; } = false;
+
+    protected bool _loadedData = false;
+    protected bool _loading = true;
+    protected string _pageName = "navbarsample";
+
+    protected NavbarMenu? _menu;
+    protected string _lastClicked = String.Empty;
+    protected int _lastMatches = 0;
+    protected string _lastQuery = String.Empty;
+
+    protected List<NavbarMenu.NavbarMenuItem> _leading = new() {
+        new() { Text = "Overview", Active = true }
+    };
+
+    protected List<NavbarMenu.NavbarMenuItem> _trailing = new() {
+        new() { Text = "Alerts", Disabled = true }
+    };
+
+    protected List<NavbarMenu.NavbarMenuItem> _catalog = new() {
+        new() {
+            Text = "Observations",
+            Children = new() {
+                new() {
+                    Text = "Surface",
+                    Children = new() {
+                        new() {
+                            Text = "Land stations",
+                            Children = new() {
+                                new() {
+                                    Text = "METAR",
+                                    Children = new() {
+                                        new() { Text = "12Z cycle", Tag = "metar-12z" },
+                                        new() { Text = "18Z cycle", Tag = "metar-18z" }
+                                    }
+                                },
+                                new() { Text = "Mesonet", Tag = "mesonet" }
+                            }
+                        },
+                        new() { Text = "Marine buoys", Tag = "buoys" }
+                    }
+                },
+                new() { Text = "Upper air", Tag = "upper-air" }
+            }
+        },
+        new() {
+            Text = "Water",
+            Children = new() {
+                new() { Text = "Tide predictions", Tag = "tides" },
+                new() { Text = "Stream gauges", Tag = "gauges" }
+            }
+        }
+    };
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected void FilterChanged(NavbarMenu.NavbarFilterResult result)
+    {
+        _lastMatches = result.Matches;
+        _lastQuery = result.Query;
+        StateHasChanged();
+    }
+
+    protected void ItemClicked(NavbarMenu.NavbarMenuItem item)
+    {
+        // Items in this sample carry a Tag instead of a Url, so nothing navigates
+        // away and the click is reported back on the page instead.
+        _lastClicked = item.Text
+            + (item.Tag != null ? " (" + item.Tag.ToString() + ")" : "");
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && (Model.LoggedIn || !RequireLogin)) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    protected async Task LoadData()
+    {
+        // No data to load for this sample.
+        await Task.CompletedTask;
+        _loading = false;
+        StateHasChanged();
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected async Task ResetMenu()
+    {
+        if (_menu != null) {
+            await _menu.Reset();
+        }
+
+        _lastQuery = String.Empty;
+        _lastMatches = 0;
+    }
+}

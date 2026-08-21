@@ -1,0 +1,459 @@
+@using System.ComponentModel
+@implements IDisposable
+@inject Microsoft.JSInterop.IJSRuntime jsRuntime
+
+@*
+    A multi-level nested navbar menu built entirely from Bootstrap classes.
+
+    Bootstrap has no multi-level dropdown, so the submenus are nested .accordion
+    blocks inside one ordinary .dropdown-menu. Bootstrap's collapse data API opens
+    each branch, writes aria-expanded back to the button and rotates the chevron,
+    so the menu itself needs no JavaScript at all. The companion .js module only
+    supplies the optional search filter.
+
+    Two attributes carry the whole design:
+      data-bs-auto-close="outside"  keeps the panel open while you drill in
+      data-bs-theme="light"         stops the navbar dark scheme cascading in
+
+    bootstrap.bundle.min.js is already loaded globally by App.razor, so unlike the
+    Highcharts component there are no external resources to load here.
+*@
+
+<nav class="navbar navbar-expand sticky-top shadow-sm @NavbarCssClass"
+     data-bs-theme="@NavbarTheme"
+     style="@(!String.IsNullOrWhiteSpace(BrandColor) ? "background: " + BrandColor : "")">
+    <div class="@ContainerCssClass">
+        @if (!String.IsNullOrWhiteSpace(BrandText)) {
+            <a class="navbar-brand fw-bold" href="@(!String.IsNullOrWhiteSpace(BrandUrl) ? BrandUrl : "#")">@BrandText</a>
+        }
+
+        <ul class="navbar-nav me-auto">
+            @if (LeadingItems != null) {
+                @foreach (var item in LeadingItems) {
+                    <li class="nav-item">
+                        <a class="nav-link @(item.Active ? "active" : "") @(item.Disabled ? "disabled" : "")"
+                           @attributes="LinkAttributes(item)"
+                           href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
+                           @onclick="@(() => LeafClicked(item))"
+                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+                    </li>
+                }
+            }
+
+            @if (Items != null && Items.Any()) {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                       data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                       aria-expanded="false">@MenuText</a>
+
+                    <div class="dropdown-menu p-0 shadow overflow-auto @MenuCssClass"
+                         style="@MenuStyle" data-bs-theme="light">
+
+                        @if (!String.IsNullOrWhiteSpace(MenuHeader)) {
+                            <h6 class="dropdown-header">@MenuHeader</h6>
+                        }
+
+                        @if (ShowSearch) {
+                            <div class="p-2 border-bottom">
+                                <label class="visually-hidden" for="@_searchId">@SearchLabel</label>
+                                <input type="search" class="form-control form-control-sm" id="@_searchId"
+                                       placeholder="@SearchPlaceholder" aria-controls="@_treeId" autocomplete="off" />
+                            </div>
+                        }
+
+                        <div class="accordion accordion-flush" id="@_treeId">
+                            @foreach (var item in Items) {
+                                @RenderBranch(item, 1)
+                            }
+                        </div>
+
+                        @if (ShowFooterCount) {
+                            <hr class="dropdown-divider" />
+                            <span class="dropdown-item-text small text-secondary" role="status"
+                                  aria-live="polite" id="@_countId">@FooterText()</span>
+                        }
+                    </div>
+                </li>
+            }
+
+            @if (TrailingItems != null) {
+                @foreach (var item in TrailingItems) {
+                    <li class="nav-item">
+                        <a class="nav-link @(item.Active ? "active" : "") @(item.Disabled ? "disabled" : "")"
+                           @attributes="LinkAttributes(item)"
+                           href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
+                           @onclick="@(() => LeafClicked(item))"
+                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+                    </li>
+                }
+            }
+        </ul>
+
+        @ChildContent
+    </div>
+</nav>
+
+@code {
+    // A branch renders as an .accordion-item; a leaf renders as a plain .dropdown-item.
+    // The heading level tracks the nesting depth (h2..h6) so the menu keeps a sane
+    // document outline no matter how deep the tree goes, matching the source design.
+    private RenderFragment RenderBranch(NavbarMenuItem item, int depth) => __builder =>
+    {
+        if (item.HasChildren) {
+            string bodyId = ElementIdFor(item);
+            string heading = "h" + Math.Min(depth + 1, 6);
+
+            <div class="accordion-item">
+                @((MarkupString)$"<{heading} class=\"accordion-header\">")
+                    <button class="accordion-button collapsed py-2" type="button"
+                            data-bs-toggle="collapse" data-bs-target="@("#" + bodyId)"
+                            aria-expanded="false" aria-controls="@bodyId">@item.Text</button>
+                @((MarkupString)$"</{heading}>")
+
+                <div class="accordion-collapse collapse" id="@bodyId">
+                    <div class="accordion-body p-0 ps-3">
+                        @* Nested branches come first, then this level's own leaves,
+                           so deeper structure stays above the plain links. *@
+                        @if (item.Children!.Any(x => x.HasChildren)) {
+                            <div class="accordion accordion-flush">
+                                @foreach (var child in item.Children!.Where(x => x.HasChildren)) {
+                                    @RenderBranch(child, depth + 1)
+                                }
+                            </div>
+                        }
+
+                        @foreach (var child in item.Children!.Where(x => !x.HasChildren)) {
+                            @RenderBranch(child, depth + 1)
+                        }
+                    </div>
+                </div>
+            </div>
+        } else {
+            <a class="dropdown-item @(item.Disabled ? "disabled" : "")"
+               @attributes="LinkAttributes(item)"
+               href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
+               @onclick="@(() => LeafClicked(item))"
+               @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+        }
+    };
+
+    /// <summary>
+    /// The brand colour applied to the navbar background. Bootstrap has no
+    /// arbitrary background utility, so this is emitted as an inline style.
+    /// </summary>
+    [Parameter] public string? BrandColor { get; set; }
+
+    [Parameter] public string? BrandText { get; set; }
+    [Parameter] public string? BrandUrl { get; set; }
+
+    /// <summary>
+    /// Rendered at the end of the navbar container, for anything the parent page
+    /// wants to place alongside the menu.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string ContainerCssClass { get; set; } = "container";
+
+    /// <summary>
+    /// Optional stable prefix for generated element ids. Supply this when more than
+    /// one menu is on the page and you need predictable ids; otherwise a unique
+    /// prefix is generated per instance.
+    /// </summary>
+    [Parameter] public string? ElementId { get; set; }
+
+    /// <summary>
+    /// The nested menu tree. Any depth is supported.
+    /// </summary>
+    [Parameter] public List<NavbarMenuItem>? Items { get; set; }
+
+    /// <summary>
+    /// Plain nav links rendered before the dropdown.
+    /// </summary>
+    [Parameter] public List<NavbarMenuItem>? LeadingItems { get; set; }
+
+    [Parameter] public string? MenuCssClass { get; set; }
+    [Parameter] public string? MenuHeader { get; set; }
+
+    /// <summary>
+    /// Inline style for the dropdown panel. The panel is .overflow-auto, so a
+    /// max-height here is what makes a long tree scroll.
+    /// </summary>
+    [Parameter] public string MenuStyle { get; set; } = "max-height: 70vh; min-width: 20rem;";
+
+    [Parameter] public string MenuText { get; set; } = "Browse catalog";
+    [Parameter] public string? NavbarCssClass { get; set; }
+    [Parameter] public string NavbarTheme { get; set; } = "dark";
+
+    /// <summary>
+    /// Raised when the search filter runs, with the query and the number of
+    /// matching leaves.
+    /// </summary>
+    [Parameter] public EventCallback<NavbarFilterResult> OnFilter { get; set; }
+
+    /// <summary>
+    /// Raised when a leaf item is clicked. Items with a Url navigate normally and
+    /// this still fires; items without one only raise the event.
+    /// </summary>
+    [Parameter] public EventCallback<NavbarMenuItem> OnItemClicked { get; set; }
+
+    [Parameter] public string SearchLabel { get; set; } = "Search the catalog";
+    [Parameter] public string SearchPlaceholder { get; set; } = "Search the catalog";
+
+    /// <summary>
+    /// Shows the live-region count line beneath the tree.
+    /// </summary>
+    [Parameter] public bool ShowFooterCount { get; set; } = true;
+
+    [Parameter] public bool ShowSearch { get; set; } = true;
+
+    /// <summary>
+    /// Plain nav links rendered after the dropdown.
+    /// </summary>
+    [Parameter] public List<NavbarMenuItem>? TrailingItems { get; set; }
+
+    protected string _countId = String.Empty;
+    protected bool _disposed = false;
+    protected string _idPrefix = String.Empty;
+    protected int _leafCount = 0;
+    protected int _levelCount = 0;
+    protected string _renderedSignature = String.Empty;
+    protected string _searchId = String.Empty;
+    protected string _treeId = String.Empty;
+
+    protected DotNetObjectReference<NavbarMenu>? dotNetHelper;
+    protected IJSObjectReference? jsModule;
+
+    // Ids are assigned per item so the collapse targets stay stable across renders.
+    protected Dictionary<NavbarMenuItem, string> _elementIds = new();
+    protected int _idCounter = 0;
+
+    public void Dispose()
+    {
+        _disposed = true;
+        dotNetHelper?.Dispose();
+    }
+
+    protected string ElementIdFor(NavbarMenuItem item)
+    {
+        if (!_elementIds.TryGetValue(item, out var id)) {
+            _idCounter++;
+            id = _idPrefix + "-b" + _idCounter.ToString();
+            _elementIds.Add(item, id);
+        }
+
+        return id;
+    }
+
+    protected string FooterText()
+    {
+        string products = _leafCount == 1 ? "product" : "products";
+        string levels = _levelCount == 1 ? "level" : "levels";
+        return $"{_leafCount} {products} across {_levelCount} {levels}";
+    }
+
+    protected Dictionary<string, object> LinkAttributes(NavbarMenuItem item)
+    {
+        var output = new Dictionary<string, object>();
+
+        if (item.Disabled) {
+            output.Add("aria-disabled", "true");
+        }
+
+        if (item.Active) {
+            output.Add("aria-current", "page");
+        }
+
+        if (!String.IsNullOrWhiteSpace(item.Target)) {
+            output.Add("target", item.Target);
+        }
+
+        return output;
+    }
+
+    protected async Task LeafClicked(NavbarMenuItem item)
+    {
+        if (item.Disabled) {
+            return;
+        }
+
+        if (OnItemClicked.HasDelegate) {
+            await OnItemClicked.InvokeAsync(item);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _idPrefix = !String.IsNullOrWhiteSpace(ElementId)
+            ? ElementId
+            : "navmenu-" + Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8);
+
+        _searchId = _idPrefix + "-search";
+        _treeId = _idPrefix + "-tree";
+        _countId = _idPrefix + "-count";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // A page that redirects while this component is still loading (a login
+        // redirect, for example) disposes it mid-await. Every await below is a
+        // point where that can happen, so the disposed flag is re-checked after
+        // each one before the JS interop objects are touched again.
+        if (firstRender) {
+            dotNetHelper = DotNetObjectReference.Create(this);
+
+            IJSObjectReference module;
+
+            try {
+                module = await jsRuntime.InvokeAsync<IJSObjectReference>("import",
+                    "./Shared/NavbarMenu.razor.js?v=" + Guid.NewGuid().ToString().Replace("-", ""));
+            } catch (JSDisconnectedException) {
+                return;
+            } catch (ObjectDisposedException) {
+                return;
+            } catch (TaskCanceledException) {
+                return;
+            }
+
+            if (_disposed) {
+                // Nothing will use the module now, so release it rather than leak it.
+                try {
+                    await module.DisposeAsync();
+                } catch { }
+                return;
+            }
+
+            jsModule = module;
+
+            if (!await SafeInvoke("SetDotNetHelper", dotNetHelper)) {
+                return;
+            }
+        }
+
+        // Re-wire whenever the tree changes, so the filter always matches what is
+        // on screen. Bootstrap itself needs no re-initialisation: the collapse and
+        // dropdown behaviour is driven by data attributes on the rendered markup.
+        if (jsModule != null && ShowSearch && _renderedSignature != CurrentSignature()) {
+            _renderedSignature = CurrentSignature();
+            await SafeInvoke("InitializeFilter", _searchId, _treeId,
+                ShowFooterCount ? _countId : null, _levelCount);
+        }
+    }
+
+    /// <summary>
+    /// Invokes a JS module method, tolerating the component being torn down or the
+    /// circuit going away mid-call. Returns false when the call did not complete.
+    /// </summary>
+    protected async Task<bool> SafeInvoke(string identifier, params object?[] args)
+    {
+        if (_disposed || jsModule == null) {
+            return false;
+        }
+
+        try {
+            await jsModule.InvokeVoidAsync(identifier, args);
+            return true;
+        } catch (JSDisconnectedException) {
+        } catch (ObjectDisposedException) {
+        } catch (TaskCanceledException) {
+        }
+
+        return false;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _leafCount = CountLeaves(Items);
+        _levelCount = MaxDepth(Items);
+    }
+
+    [JSInvokable]
+    public async Task OnFilterChanged(string query, int matches)
+    {
+        if (OnFilter.HasDelegate) {
+            await OnFilter.InvokeAsync(new NavbarFilterResult {
+                Matches = matches,
+                Query = query
+            });
+        }
+    }
+
+    /// <summary>
+    /// Clears the search box and collapses every branch.
+    /// </summary>
+    public async Task Reset()
+    {
+        await SafeInvoke("ResetMenu", _searchId, _treeId,
+            ShowFooterCount ? _countId : null, _levelCount);
+    }
+
+    protected int CountLeaves(List<NavbarMenuItem>? items)
+    {
+        if (items == null) {
+            return 0;
+        }
+
+        int output = 0;
+
+        foreach (var item in items) {
+            if (item.HasChildren) {
+                output += CountLeaves(item.Children);
+            } else {
+                output++;
+            }
+        }
+
+        return output;
+    }
+
+    protected int MaxDepth(List<NavbarMenuItem>? items)
+    {
+        if (items == null || !items.Any()) {
+            return 0;
+        }
+
+        int output = 0;
+
+        foreach (var item in items) {
+            int depth = item.HasChildren ? 1 + MaxDepth(item.Children) : 1;
+            if (depth > output) {
+                output = depth;
+            }
+        }
+
+        return output;
+    }
+
+    // A cheap change token: the filter only needs re-wiring when the rendered tree
+    // actually differs, not on every state change from the parent page.
+    protected string CurrentSignature()
+    {
+        return _leafCount.ToString() + ":" + _levelCount.ToString() + ":" + _idCounter.ToString();
+    }
+
+    public class NavbarFilterResult
+    {
+        public int Matches { get; set; }
+        public string Query { get; set; } = String.Empty;
+    }
+
+    public class NavbarMenuItem
+    {
+        public bool Active { get; set; }
+        public List<NavbarMenuItem>? Children { get; set; }
+        public bool Disabled { get; set; }
+
+        /// <summary>
+        /// Arbitrary value carried through to OnItemClicked, for the parent page to
+        /// identify which item was chosen without matching on the display text.
+        /// </summary>
+        public object? Tag { get; set; }
+
+        public string? Target { get; set; }
+        public string Text { get; set; } = String.Empty;
+        public string? Url { get; set; }
+
+        public bool HasChildren {
+            get { return Children != null && Children.Any(); }
+        }
+    }
+}

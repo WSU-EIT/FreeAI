@@ -1,0 +1,24 @@
+﻿@implements IDisposable
+@using Humanizer
+@inject BlazorDataModel Model
+
+@{
+    // This component is used to display application-specific actions in the offcanvas popout menu.
+    switch (Helpers.StringLower(Model.QuickAction)) {
+        case "myaction":
+            // Create your custom action here.
+            break;
+    }
+}
+
+@code {
+    public void Dispose()
+    {
+        Model.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += StateHasChanged;
+    }
+}

@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreeNavbarComponent.Client/FreeNavbarComponent.Client.csproj" />
+  <Project Path="FreeNavbarComponent.DataAccess/FreeNavbarComponent.DataAccess.csproj" Id="C260A2CE-8F53-4E99-915E-6CC78DE2D305" />
+  <Project Path="FreeNavbarComponent.DataObjects/FreeNavbarComponent.DataObjects.csproj" Id="569A0258-A456-4F3B-8AEC-F0784D8599E4" />
+  <Project Path="FreeNavbarComponent.EFModels/FreeNavbarComponent.EFModels.csproj" Id="16454D2C-2669-4516-8B89-7BD3FA3042C8" />
+  <Project Path="FreeNavbarComponent.Plugins/FreeNavbarComponent.Plugins.csproj" Id="FF0DEEB8-75F9-43B7-AF5B-A04D21A56112" />
+  <Project Path="FreeNavbarComponent/FreeNavbarComponent.csproj" />
+</Solution>
