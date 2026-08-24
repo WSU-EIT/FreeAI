@@ -5,6 +5,21 @@
     <NavigationMenu_App Loading="Loading" />
 } else {
     <header>
+        <style>
+            /* Nested menu support. In the expanded navbar the dropdown panel is
+               anchored to its toggle, so a deep tree needs its own scroll and a
+               sensible width; in the collapsed (hamburger) view Bootstrap makes
+               dropdowns static flow content and the page scrolls instead, so no
+               constraints are wanted there. 992px matches navbar-expand-lg. */
+            @@media (min-width: 992px) {
+                header .nav-nested-menu {
+                    max-height: 70vh;
+                    overflow: auto;
+                    min-width: 20rem;
+                    max-width: min(92vw, 40rem);
+                }
+            }
+        </style>
         <nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" href="@(Helpers.BuildUrl())">
@@ -32,14 +47,23 @@
                                 }
 
                                 if (item.Children != null && item.Children.Any()) {
-                                    string currentUrl = Helpers.CurrentUrl.ToLower();
-                                    // At this point only a single level of child items are supports.
-                                    // So, any children added to child objects are ignored.
-                                    // There is no built-in support in Bootstrap for nested submenus.
-                                    // Once a good accessible solution is found that support will be added.
+                                    // Nested child items are fully supported. Bootstrap has no
+                                    // multi-level dropdown of its own, so deeper levels render as
+                                    // nested .accordion blocks inside the one .dropdown-menu,
+                                    // driven entirely by Bootstrap's collapse data API (which
+                                    // keeps writing aria-expanded, so it stays accessible).
+                                    // Children without children render exactly as before.
+                                    bool nested = item.Children.Any(x => x.Children != null && x.Children.Any());
+
+                                    // auto-close="outside" keeps the panel open while drilling
+                                    // into a branch; Bootstrap still closes it when a leaf
+                                    // .dropdown-item is clicked or the user clicks away. Only
+                                    // applied when depth exists, so flat menus keep the exact
+                                    // behavior they had.
                                     <li class="nav-item dropdown">
                                         <a class="@itemClass dropdown-toggle"
                                            data-bs-toggle="dropdown"
+                                           data-bs-auto-close="@(nested ? "outside" : "true")"
                                            href="#"
                                            role="button"
                                            aria-expanded="false">
@@ -50,45 +74,12 @@
                                                 @((MarkupString)item.Title)
                                             </span>
                                         </a>
-                                        <ul class="dropdown-menu">
-                                            @foreach (var child in item.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title)) {
-                                                if (child.OnClick != null) {
-                                                    string href = !String.IsNullOrWhiteSpace(child.AriaLabel) ? child.AriaLabel :
-                                                        !String.IsNullOrWhiteSpace(child.Title) ? child.Title : Guid.NewGuid().ToString();
-                                                    <li>
-                                                        <a class="dropdown-item"
-                                                           href="javascript:void('@href.Replace("'", "")');"
-                                                           title="@child.TooltipTitle"
-                                                           aria-label="@child.AriaLabel"
-                                                           @onclick="@(() => child.OnClick.DynamicInvoke())">
-                                                            @if (!String.IsNullOrWhiteSpace(child.Icon)) {
-                                                                <Icon Name="@child.Icon" />
-                                                            }
-                                                            <span class="icon-text">
-                                                                @((MarkupString)child.Title)
-                                                            </span>
-                                                        </a>
-                                                    </li>
-                                                } else {
-                                                    string dropDownItemClass = "dropdown-item";
-                                                    if (child.url.ToLower() == currentUrl) {
-                                                        dropDownItemClass += " active";
-                                                    }
-
-                                                    <li>
-                                                        <a class="@dropDownItemClass"
-                                                           href="@child.url"
-                                                           title="@child.TooltipTitle"
-                                                           aria-label="@child.AriaLabel">
-                                                            @if (!String.IsNullOrWhiteSpace(child.Icon)) {
-                                                                <Icon Name="@child.Icon" />
-                                                            }
-                                                            <span class="icon-text">
-                                                                @((MarkupString)child.Title)
-                                                            </span>
-                                                        </a>
-                                                    </li>
-                                                }
+                                        <ul class="dropdown-menu @(nested ? "nav-nested-menu p-0" : "")">
+                                            @{
+                                                var orderedChildren = item.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+                                            }
+                                            @for (int childIndex = 0; childIndex < orderedChildren.Count; childIndex++) {
+                                                @RenderMenuChild(orderedChildren[childIndex], 1, NavElementId(item.Title) + "-" + childIndex.ToString())
                                             }
                                         </ul>
                                     </li>
@@ -276,5 +267,100 @@
     protected override void OnInitialized()
     {
         Model.OnChange += StateHasChanged;
+    }
+
+    // Renders one child menu item at any depth. A child with its own children
+    // becomes a Bootstrap accordion branch (the collapse data API opens it and
+    // maintains aria-expanded); a child without children renders as the same
+    // .dropdown-item link this menu has always produced. The path parameter keeps
+    // collapse ids deterministic across re-renders, which matters because
+    // Helpers.MenuItems rebuilds new item instances on every access.
+    protected RenderFragment RenderMenuChild(DataObjects.MenuItem child, int depth, string path) => __builder =>
+    {
+        if (child.Children != null && child.Children.Any()) {
+            string bodyId = "appnav-" + path;
+            string heading = "h" + Math.Min(depth + 1, 6).ToString();
+
+            <li>
+                <div class="accordion accordion-flush">
+                    <div class="accordion-item">
+                        @((MarkupString)$"<{heading} class=\"accordion-header\">")
+                            <button class="accordion-button collapsed py-2" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="@("#" + bodyId)"
+                                    aria-expanded="false" aria-controls="@bodyId">
+                                @if (!String.IsNullOrWhiteSpace(child.Icon)) {
+                                    <Icon Name="@child.Icon" />
+                                }
+                                <span class="icon-text">
+                                    @((MarkupString)child.Title)
+                                </span>
+                            </button>
+                        @((MarkupString)$"</{heading}>")
+
+                        <div class="accordion-collapse collapse" id="@bodyId">
+                            <div class="accordion-body p-0 ps-3">
+                                <ul class="list-unstyled mb-0">
+                                    @{
+                                        var orderedGrandchildren = child.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+                                    }
+                                    @for (int i = 0; i < orderedGrandchildren.Count; i++) {
+                                        @RenderMenuChild(orderedGrandchildren[i], depth + 1, path + "-" + i.ToString())
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        } else if (child.OnClick != null) {
+            string href = !String.IsNullOrWhiteSpace(child.AriaLabel) ? child.AriaLabel :
+                !String.IsNullOrWhiteSpace(child.Title) ? child.Title : Guid.NewGuid().ToString();
+            <li>
+                <a class="dropdown-item"
+                   href="javascript:void('@href.Replace("'", "")');"
+                   title="@child.TooltipTitle"
+                   aria-label="@child.AriaLabel"
+                   @onclick="@(async () => { child.OnClick.DynamicInvoke(); await Helpers.HideMenus(); })">
+                    @if (!String.IsNullOrWhiteSpace(child.Icon)) {
+                        <Icon Name="@child.Icon" />
+                    }
+                    <span class="icon-text">
+                        @((MarkupString)child.Title)
+                    </span>
+                </a>
+            </li>
+        } else {
+            string dropDownItemClass = "dropdown-item";
+            if (child.url.ToLower() == Helpers.CurrentUrl.ToLower()) {
+                dropDownItemClass += " active";
+            }
+
+            @* Blazor navigation does not reload the page, and the nested panel is
+               auto-close="outside", so the panel is closed explicitly on click.
+               The href still performs the actual navigation. *@
+            <li>
+                <a class="@dropDownItemClass"
+                   href="@child.url"
+                   title="@child.TooltipTitle"
+                   aria-label="@child.AriaLabel"
+                   @onclick="@(async () => await Helpers.HideMenus())">
+                    @if (!String.IsNullOrWhiteSpace(child.Icon)) {
+                        <Icon Name="@child.Icon" />
+                    }
+                    <span class="icon-text">
+                        @((MarkupString)child.Title)
+                    </span>
+                </a>
+            </li>
+        }
+    };
+
+    /// <summary>
+    /// Reduces a menu title to a safe, deterministic id fragment.
+    /// </summary>
+    protected string NavElementId(string title)
+    {
+        var chars = title.Where(Char.IsLetterOrDigit).Take(24).ToArray();
+        return chars.Length > 0 ? new string(chars).ToLower() : "item";
     }
 }

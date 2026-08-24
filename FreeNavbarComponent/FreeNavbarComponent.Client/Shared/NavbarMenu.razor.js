@@ -146,3 +146,62 @@ export function ResetMenu(searchId, treeId, countId, levelCount) {
     }
     ApplyFilter("", treeId, countId, levelCount);
 }
+
+/// <summary>
+/// Keeps the dropdown panel on screen automatically. Bootstrap positions navbar
+/// dropdowns statically (Popper never runs), so a panel anchored near a screen
+/// edge can hang off it. On each open this measures the painted panel and flips
+/// its alignment (.dropdown-menu-end) whichever way leaves it fully visible.
+/// Safe to call again after a re-render; the previous listener is replaced.
+/// </summary>
+export function InitializeEdgeGuard(navId, enabled) {
+    var nav = document.getElementById(navId);
+    if (!nav) {
+        return;
+    }
+
+    if (nav._edgeGuardHandler) {
+        nav.removeEventListener("shown.bs.dropdown", nav._edgeGuardHandler);
+        nav._edgeGuardHandler = null;
+    }
+
+    if (!enabled) {
+        return;
+    }
+
+    var handler = function (e) {
+        var host = e.target && e.target.closest ? e.target.closest(".dropdown") : null;
+        var menu = host ? host.querySelector(".dropdown-menu") : null;
+        if (!menu) {
+            return;
+        }
+
+        var vw = window.innerWidth;
+        var r = menu.getBoundingClientRect();
+
+        // Full-width phone mode positions the panel with CSS insets; nothing to do.
+        if (r.width >= vw - 32) {
+            return;
+        }
+
+        if (r.right > vw && !menu.classList.contains("dropdown-menu-end")) {
+            // Hanging off the right: anchor to the toggle's right instead.
+            menu.classList.add("dropdown-menu-end");
+            menu._edgeGuardApplied = true;
+
+            // If the flip pushed it off the left instead, prefer the original side.
+            if (menu.getBoundingClientRect().left < 0) {
+                menu.classList.remove("dropdown-menu-end");
+                menu._edgeGuardApplied = false;
+            }
+        } else if (menu._edgeGuardApplied && r.left < 0) {
+            // A guard-applied flip is now overflowing left (window grew or the
+            // toggle moved): return to the default anchoring.
+            menu.classList.remove("dropdown-menu-end");
+            menu._edgeGuardApplied = false;
+        }
+    };
+
+    nav.addEventListener("shown.bs.dropdown", handler);
+    nav._edgeGuardHandler = handler;
+}

@@ -295,6 +295,20 @@
             if (bsOffcanvasQuickActionMenu != undefined && bsOffcanvasQuickActionMenu != null && bsOffcanvasQuickActionMenu._isShown) {
                 bsOffcanvasQuickActionMenu.hide();
             }
+
+            // Also close any open navbar dropdown. Nested navigation menus keep
+            // their panel open while drilling (data-bs-auto-close="outside"), so
+            // Blazor navigation from a menu item would otherwise leave the panel
+            // hanging open.
+            document.querySelectorAll(".dropdown-menu.show").forEach(function (menu) {
+                let toggle = menu.parentElement != null ? menu.parentElement.querySelector("[data-bs-toggle='dropdown']") : null;
+                if (toggle != null) {
+                    let dropdown = bootstrap.Dropdown.getInstance(toggle);
+                    if (dropdown != null) {
+                        dropdown.hide();
+                    }
+                }
+            });
         }
 
         function InsertAtCursor(field, value) {

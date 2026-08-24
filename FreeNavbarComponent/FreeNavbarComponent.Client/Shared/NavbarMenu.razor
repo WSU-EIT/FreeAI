@@ -1,4 +1,4 @@
-@using System.ComponentModel
+﻿@using System.ComponentModel
 @implements IDisposable
 @inject Microsoft.JSInterop.IJSRuntime jsRuntime
 
@@ -19,15 +19,53 @@
     Highcharts component there are no external resources to load here.
 *@
 
-<nav class="navbar navbar-expand sticky-top shadow-sm @NavbarCssClass"
-     data-bs-theme="@NavbarTheme"
+<style>
+    /* Phone-width handling. The desktop panel anchors to its toggle, but on a
+       narrow screen the toggle sits mid-viewport and the panel's min-width would
+       push it off the edge. Bootstrap's own answer (the collapsed hamburger mode)
+       makes dropdowns static and full width; since this navbar never collapses,
+       the same effect is recreated here: the .nav-item stops being the positioning
+       context, so the panel positions against the navbar itself and spans the
+       viewport with a small inset. !important is required because the width
+       limits it overrides arrive via the MenuStyle inline style. */
+    @@media (max-width: 575.98px) {
+        .free-navbar-menu .navbar-nav {
+            flex-wrap: wrap;
+        }
+
+        .free-navbar-menu .nav-item.dropdown {
+            position: static;
+        }
+
+        .free-navbar-menu .dropdown-menu {
+            left: 0.5rem;
+            right: 0.5rem;
+            width: auto;
+            min-width: 0 !important;
+            max-width: none !important;
+            /* dvh tracks the real visible height around mobile browser chrome;
+               the offset leaves room for the navbar row above the panel. */
+            max-height: min(70vh, calc(100dvh - 7rem)) !important;
+        }
+    }
+</style>
+
+@* sticky-top brings z-index:1020 and a stacking context per navbar, which is
+   right for a page's single pinned navbar but wrong for an in-page instance:
+   two stacked instances would paint the later navbar over the earlier one's
+   open panel. Sticky="false" drops it for embedded use. *@
+<nav id="@_navId" class="navbar navbar-expand @(Sticky ? "sticky-top" : "") shadow-sm free-navbar-menu @Class"
+     data-bs-theme="@Theme"
      style="@(!String.IsNullOrWhiteSpace(BrandColor) ? "background: " + BrandColor : "")">
-    <div class="@ContainerCssClass">
+    <div class="@ContainerClass">
         @if (!String.IsNullOrWhiteSpace(BrandText)) {
             <a class="navbar-brand fw-bold" href="@(!String.IsNullOrWhiteSpace(BrandUrl) ? BrandUrl : "#")">@BrandText</a>
         }
 
-        <ul class="navbar-nav me-auto">
+        @* me-auto pushes the links left; ms-auto pushes them to the right edge.
+           AlignEnd implies right-side links; AlignLinksEnd places them there
+           without pinning the panel, letting AutoAlign handle the panel side. *@
+        <ul class="navbar-nav @(AlignEnd || AlignLinksEnd ? "ms-auto" : "me-auto")">
             @if (LeadingItems != null) {
                 @foreach (var item in LeadingItems) {
                     <li class="nav-item">
@@ -35,18 +73,23 @@
                            @attributes="LinkAttributes(item)"
                            href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
                            @onclick="@(() => LeafClicked(item))"
-                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@ItemIcon(item)@item.Text</a>
                     </li>
                 }
             }
 
-            @if (Items != null && Items.Any()) {
+            @if (Value != null && Value.Any()) {
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button"
                        data-bs-toggle="dropdown" data-bs-auto-close="outside"
                        aria-expanded="false">@MenuText</a>
 
-                    <div class="dropdown-menu p-0 shadow overflow-auto @MenuCssClass"
+                    @* Bootstrap positions navbar dropdowns statically, so Popper's
+                       collision detection never runs and a left-anchored panel can
+                       hang off the right edge of the window. .dropdown-menu-end
+                       anchors it to the toggle's right instead, which is what keeps
+                       a menu near the edge on screen. *@
+                    <div class="dropdown-menu p-0 shadow overflow-auto @(AlignEnd ? "dropdown-menu-end" : "") @MenuClass"
                          style="@MenuStyle" data-bs-theme="light">
 
                         @if (!String.IsNullOrWhiteSpace(MenuHeader)) {
@@ -57,12 +100,12 @@
                             <div class="p-2 border-bottom">
                                 <label class="visually-hidden" for="@_searchId">@SearchLabel</label>
                                 <input type="search" class="form-control form-control-sm" id="@_searchId"
-                                       placeholder="@SearchPlaceholder" aria-controls="@_treeId" autocomplete="off" />
+                                       placeholder="@SearchPlaceholderText" aria-controls="@_treeId" autocomplete="off" />
                             </div>
                         }
 
                         <div class="accordion accordion-flush" id="@_treeId">
-                            @foreach (var item in Items) {
+                            @foreach (var item in Value) {
                                 @RenderBranch(item, 1)
                             }
                         </div>
@@ -83,7 +126,7 @@
                            @attributes="LinkAttributes(item)"
                            href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
                            @onclick="@(() => LeafClicked(item))"
-                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+                           @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@ItemIcon(item)@item.Text</a>
                     </li>
                 }
             }
@@ -107,7 +150,7 @@
                 @((MarkupString)$"<{heading} class=\"accordion-header\">")
                     <button class="accordion-button collapsed py-2" type="button"
                             data-bs-toggle="collapse" data-bs-target="@("#" + bodyId)"
-                            aria-expanded="false" aria-controls="@bodyId">@item.Text</button>
+                            aria-expanded="false" aria-controls="@bodyId">@ItemIcon(item)@item.Text</button>
                 @((MarkupString)$"</{heading}>")
 
                 <div class="accordion-collapse collapse" id="@bodyId">
@@ -133,9 +176,34 @@
                @attributes="LinkAttributes(item)"
                href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
                @onclick="@(() => LeafClicked(item))"
-               @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@item.Text</a>
+               @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@ItemIcon(item)@item.Text</a>
         }
     };
+
+    /// <summary>
+    /// Right-aligns the dropdown panel to its toggle (Bootstrap's
+    /// .dropdown-menu-end). Set this when the menu sits near the right edge of the
+    /// window: Bootstrap positions navbar dropdowns statically, so Popper's
+    /// collision detection never runs and a left-anchored panel would hang off the
+    /// edge and force the page to scroll sideways. With AutoAlign on (the
+    /// default), setting this manually is rarely needed.
+    /// </summary>
+    [Parameter] public bool AlignEnd { get; set; }
+
+    /// <summary>
+    /// Places the nav links at the right edge of the navbar without pinning the
+    /// panel's alignment, leaving AutoAlign to pick the panel side. AlignEnd
+    /// implies this.
+    /// </summary>
+    [Parameter] public bool AlignLinksEnd { get; set; }
+
+    /// <summary>
+    /// Automatically keeps the panel on screen. On each open the painted panel is
+    /// measured, and its alignment flips to whichever side has enough room, so a
+    /// menu near either screen edge never renders off-screen. On by default;
+    /// ignored when AlignEnd is set explicitly.
+    /// </summary>
+    [Parameter] public bool AutoAlign { get; set; } = true;
 
     /// <summary>
     /// The brand colour applied to the navbar background. Bootstrap has no
@@ -143,7 +211,14 @@
     /// </summary>
     [Parameter] public string? BrandColor { get; set; }
 
+    /// <summary>
+    /// The brand label at the left of the navbar. Omit to hide it.
+    /// </summary>
     [Parameter] public string? BrandText { get; set; }
+
+    /// <summary>
+    /// Where the brand label links to. Defaults to "#".
+    /// </summary>
     [Parameter] public string? BrandUrl { get; set; }
 
     /// <summary>
@@ -152,70 +227,128 @@
     /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter] public string ContainerCssClass { get; set; } = "container";
+    /// <summary>
+    /// Extra CSS classes for the navbar element.
+    /// </summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// The class applied to the navbar's inner container. Use "container-fluid"
+    /// for a full-width bar.
+    /// </summary>
+    [Parameter] public string ContainerClass { get; set; } = "container";
 
     /// <summary>
     /// Optional stable prefix for generated element ids. Supply this when more than
     /// one menu is on the page and you need predictable ids; otherwise a unique
     /// prefix is generated per instance.
     /// </summary>
-    [Parameter] public string? ElementId { get; set; }
-
-    /// <summary>
-    /// The nested menu tree. Any depth is supported.
-    /// </summary>
-    [Parameter] public List<NavbarMenuItem>? Items { get; set; }
+    [Parameter] public string Id { get; set; } = String.Empty;
 
     /// <summary>
     /// Plain nav links rendered before the dropdown.
     /// </summary>
     [Parameter] public List<NavbarMenuItem>? LeadingItems { get; set; }
 
-    [Parameter] public string? MenuCssClass { get; set; }
+    /// <summary>
+    /// Extra CSS classes for the dropdown panel.
+    /// </summary>
+    [Parameter] public string? MenuClass { get; set; }
+
+    /// <summary>
+    /// An optional heading shown at the top of the dropdown panel.
+    /// </summary>
     [Parameter] public string? MenuHeader { get; set; }
 
     /// <summary>
-    /// Inline style for the dropdown panel. The panel is .overflow-auto, so a
-    /// max-height here is what makes a long tree scroll.
+    /// Inline style for the dropdown panel. The panel is .overflow-auto, so the
+    /// max-height is what makes a long tree scroll rather than run off the bottom
+    /// of the window, and the max-width stops a deeply indented tree growing the
+    /// panel wider than the viewport.
     /// </summary>
-    [Parameter] public string MenuStyle { get; set; } = "max-height: 70vh; min-width: 20rem;";
+    [Parameter] public string MenuStyle { get; set; }
+        = "max-height: 70vh; min-width: 20rem; max-width: min(92vw, 40rem);";
 
-    [Parameter] public string MenuText { get; set; } = "Browse catalog";
-    [Parameter] public string? NavbarCssClass { get; set; }
-    [Parameter] public string NavbarTheme { get; set; } = "dark";
+    /// <summary>
+    /// The label on the dropdown toggle.
+    /// </summary>
+    [Parameter] public string MenuText { get; set; } = "Menu";
 
     /// <summary>
     /// Raised when the search filter runs, with the query and the number of
-    /// matching leaves.
+    /// matching leaves. Receives a NavbarFilterResult.
     /// </summary>
-    [Parameter] public EventCallback<NavbarFilterResult> OnFilter { get; set; }
+    [Parameter] public Delegate? OnFilter { get; set; }
 
     /// <summary>
-    /// Raised when a leaf item is clicked. Items with a Url navigate normally and
-    /// this still fires; items without one only raise the event.
+    /// Raised when a leaf item is clicked. Receives the NavbarMenuItem.
+    /// Items with a Url navigate normally and this still fires; items without one
+    /// only raise the event.
     /// </summary>
-    [Parameter] public EventCallback<NavbarMenuItem> OnItemClicked { get; set; }
+    [Parameter] public Delegate? OnItemClicked { get; set; }
 
-    [Parameter] public string SearchLabel { get; set; } = "Search the catalog";
-    [Parameter] public string SearchPlaceholder { get; set; } = "Search the catalog";
+    /// <summary>
+    /// Raised when the menu tree changes. Receives the List of NavbarMenuItem.
+    /// </summary>
+    [Parameter] public Delegate? OnValueChanged { get; set; }
+
+    /// <summary>
+    /// The text for the search box's visually hidden label.
+    /// </summary>
+    [Parameter] public string SearchLabel { get; set; } = "Search";
+
+    /// <summary>
+    /// Placeholder text shown in the search box.
+    /// </summary>
+    [Parameter] public string SearchPlaceholderText { get; set; } = "Search";
 
     /// <summary>
     /// Shows the live-region count line beneath the tree.
     /// </summary>
     [Parameter] public bool ShowFooterCount { get; set; } = true;
 
+    /// <summary>
+    /// Shows the search box. Set false to drop it and its JS wiring.
+    /// </summary>
     [Parameter] public bool ShowSearch { get; set; } = true;
+
+    /// <summary>
+    /// Pins the navbar to the top of the viewport while the page scrolls
+    /// (Bootstrap's sticky-top). On by default. Set false when the navbar is
+    /// embedded in page content — especially with more than one instance on a
+    /// page, where sticky-top's per-navbar stacking context would paint a later
+    /// navbar over an earlier one's open panel.
+    /// </summary>
+    [Parameter] public bool Sticky { get; set; } = true;
+
+    /// <summary>
+    /// The Bootstrap colour scheme for the navbar itself ("dark" or "light").
+    /// The dropdown panel is always pinned to "light" so the navbar's scheme does
+    /// not cascade into the menu.
+    /// </summary>
+    [Parameter] public string Theme { get; set; } = "dark";
 
     /// <summary>
     /// Plain nav links rendered after the dropdown.
     /// </summary>
     [Parameter] public List<NavbarMenuItem>? TrailingItems { get; set; }
 
+    /// <summary>
+    /// The nested menu tree. Any depth is supported.
+    /// </summary>
+    [Parameter] public List<NavbarMenuItem> Value { get; set; } = new List<NavbarMenuItem>();
+
+    /// <summary>
+    /// Supports two-way binding with @bind-Value.
+    /// </summary>
+    [Parameter] public EventCallback<List<NavbarMenuItem>> ValueChanged { get; set; }
+
     protected string _countId = String.Empty;
     protected bool _disposed = false;
     protected string _idPrefix = String.Empty;
     protected int _leafCount = 0;
     protected int _levelCount = 0;
+    protected string _navId = String.Empty;
     protected string _renderedSignature = String.Empty;
     protected string _searchId = String.Empty;
     protected string _treeId = String.Empty;
@@ -226,6 +359,7 @@
     // Ids are assigned per item so the collapse targets stay stable across renders.
     protected Dictionary<NavbarMenuItem, string> _elementIds = new();
     protected int _idCounter = 0;
+    protected List<NavbarMenuItem>? _lastValue;
 
     public void Dispose()
     {
@@ -270,23 +404,22 @@
         return output;
     }
 
-    protected async Task LeafClicked(NavbarMenuItem item)
+    protected void LeafClicked(NavbarMenuItem item)
     {
         if (item.Disabled) {
             return;
         }
 
-        if (OnItemClicked.HasDelegate) {
-            await OnItemClicked.InvokeAsync(item);
-        }
+        OnItemClicked?.DynamicInvoke(item);
     }
 
     protected override void OnInitialized()
     {
-        _idPrefix = !String.IsNullOrWhiteSpace(ElementId)
-            ? ElementId
+        _idPrefix = !String.IsNullOrWhiteSpace(Id)
+            ? Id
             : "navmenu-" + Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8);
 
+        _navId = _idPrefix + "-nav";
         _searchId = _idPrefix + "-search";
         _treeId = _idPrefix + "-tree";
         _countId = _idPrefix + "-count";
@@ -327,6 +460,10 @@
             if (!await SafeInvoke("SetDotNetHelper", dotNetHelper)) {
                 return;
             }
+
+            // Auto edge detection is skipped when the caller pinned the alignment
+            // explicitly with AlignEnd.
+            await SafeInvoke("InitializeEdgeGuard", _navId, AutoAlign && !AlignEnd);
         }
 
         // Re-wire whenever the tree changes, so the filter always matches what is
@@ -362,19 +499,25 @@
 
     protected override void OnParametersSet()
     {
-        _leafCount = CountLeaves(Items);
-        _levelCount = MaxDepth(Items);
+        // A page that rebuilds its tree each render supplies new item instances
+        // every time; without eviction the id dictionary would grow one entry per
+        // item per render for the life of the component.
+        if (!ReferenceEquals(_lastValue, Value)) {
+            _lastValue = Value;
+            _elementIds.Clear();
+        }
+
+        _leafCount = CountLeaves(Value);
+        _levelCount = MaxDepth(Value);
     }
 
     [JSInvokable]
-    public async Task OnFilterChanged(string query, int matches)
+    public void OnFilterChanged(string query, int matches)
     {
-        if (OnFilter.HasDelegate) {
-            await OnFilter.InvokeAsync(new NavbarFilterResult {
-                Matches = matches,
-                Query = query
-            });
-        }
+        OnFilter?.DynamicInvoke(new NavbarFilterResult {
+            Matches = matches,
+            Query = query
+        });
     }
 
     /// <summary>
@@ -430,30 +573,27 @@
         return _leafCount.ToString() + ":" + _levelCount.ToString() + ":" + _idCounter.ToString();
     }
 
-    public class NavbarFilterResult
+    // NavbarMenuItem lives in its own file at namespace level so pages can write
+    // new NavbarMenuItem { ... } without a component prefix.
+
+    /// <summary>
+    /// Renders an item's optional icon: a CSS class name becomes an <i> element,
+    /// anything containing markup is emitted as-is.
+    /// </summary>
+    protected MarkupString ItemIcon(NavbarMenuItem item)
     {
-        public int Matches { get; set; }
-        public string Query { get; set; } = String.Empty;
-    }
-
-    public class NavbarMenuItem
-    {
-        public bool Active { get; set; }
-        public List<NavbarMenuItem>? Children { get; set; }
-        public bool Disabled { get; set; }
-
-        /// <summary>
-        /// Arbitrary value carried through to OnItemClicked, for the parent page to
-        /// identify which item was chosen without matching on the display text.
-        /// </summary>
-        public object? Tag { get; set; }
-
-        public string? Target { get; set; }
-        public string Text { get; set; } = String.Empty;
-        public string? Url { get; set; }
-
-        public bool HasChildren {
-            get { return Children != null && Children.Any(); }
+        if (String.IsNullOrWhiteSpace(item.Icon)) {
+            return (MarkupString)String.Empty;
         }
+
+        string icon = item.Icon.Trim();
+
+        if (!icon.StartsWith("<")) {
+            icon = "<i class=\"" + icon + "\"></i>";
+        }
+
+        return (MarkupString)(icon + " ");
     }
 }
+
+

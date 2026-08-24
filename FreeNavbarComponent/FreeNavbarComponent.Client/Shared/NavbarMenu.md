@@ -1,7 +1,8 @@
-# NavbarMenu
+﻿# NavbarMenu
 
-A multi-level nested navbar menu component built entirely from Bootstrap classes,
-modelled on the same Blazor/JS-module pattern as `Highcharts.razor`.
+A multi-level nested navbar menu built entirely from Bootstrap classes. Follows the
+FreeBlazor component conventions: flat parameters, `Value`/`ValueChanged`,
+`Delegate?` callbacks, `Id` and `Class`.
 
 Bootstrap has no multi-level dropdown, so submenus are nested `.accordion` blocks
 inside one ordinary `.dropdown-menu`. Bootstrap's collapse data API opens each
@@ -12,69 +13,85 @@ supplies the optional search filter.
 `bootstrap.bundle.min.js` is already loaded globally by `App.razor`, so unlike the
 Highcharts component there are no external resources to load.
 
-## Usage
+## Simplest usage
+
+Pass a list of items. That is the whole requirement.
+
+```razor
+<NavbarMenu Value="_menu" MenuText="Products" />
+
+@code {
+    protected List<NavbarMenuItem> _menu = new() {
+        new("Fruit", new NavbarMenuItem("Apples", "/apples"),
+                     new NavbarMenuItem("Pears", "/pears")),
+        new("Vegetables", new NavbarMenuItem("Carrots", "/carrots"))
+    };
+}
+```
+
+The constructors keep nesting readable: `new(text, url)` makes a link,
+`new(text, ...children)` makes a branch. Static helpers read the same way if you
+prefer them â€” `NavbarMenuItem.Link("Apples", "/apples")` and
+`NavbarMenuItem.Branch("Fruit", child1, child2)`.
+
+Object-initialiser style also works when you need the extra properties:
+
+```razor
+protected List<NavbarMenuItem> _menu = new() {
+    new() {
+        Text = "Fruit",
+        Icon = "bi bi-basket",
+        Children = new() {
+            new() { Text = "Apples", Url = "/apples" },
+            new() { Text = "Pears", Tag = 42 }
+        }
+    }
+};
+```
+
+## Fuller example
 
 ```razor
 <NavbarMenu BrandText="Tidewater"
             BrandColor="#a60f2d"
             MenuText="Browse catalog"
             MenuHeader="Product catalog"
-            Items="_catalog"
+            Value="_catalog"
             LeadingItems="_leading"
             TrailingItems="_trailing"
             OnItemClicked="ItemClicked"
             OnFilter="FilterChanged" />
 
 @code {
-    protected List<NavbarMenu.NavbarMenuItem> _leading = new() {
+    protected List<NavbarMenuItem> _leading = new() {
         new() { Text = "Overview", Url = "/", Active = true }
     };
 
-    protected List<NavbarMenu.NavbarMenuItem> _trailing = new() {
+    protected List<NavbarMenuItem> _trailing = new() {
         new() { Text = "Alerts", Disabled = true }
     };
 
-    protected List<NavbarMenu.NavbarMenuItem> _catalog = new() {
-        new() {
-            Text = "Observations",
-            Children = new() {
-                new() {
-                    Text = "Surface",
-                    Children = new() {
-                        new() {
-                            Text = "Land stations",
-                            Children = new() {
-                                new() {
-                                    Text = "METAR",
-                                    Children = new() {
-                                        new() { Text = "12Z cycle", Url = "/catalog/metar/12z" },
-                                        new() { Text = "18Z cycle", Url = "/catalog/metar/18z" }
-                                    }
-                                },
-                                new() { Text = "Mesonet", Url = "/catalog/mesonet" }
-                            }
-                        },
-                        new() { Text = "Marine buoys", Url = "/catalog/buoys" }
-                    }
-                },
-                new() { Text = "Upper air", Url = "/catalog/upper-air" }
-            }
-        },
-        new() {
-            Text = "Water",
-            Children = new() {
-                new() { Text = "Tide predictions", Url = "/catalog/tides" },
-                new() { Text = "Stream gauges", Url = "/catalog/gauges" }
-            }
-        }
+    protected List<NavbarMenuItem> _catalog = new() {
+        new("Observations",
+            new NavbarMenuItem("Surface",
+                new NavbarMenuItem("Land stations",
+                    new NavbarMenuItem("METAR",
+                        new NavbarMenuItem("12Z cycle", "/catalog/metar/12z"),
+                        new NavbarMenuItem("18Z cycle", "/catalog/metar/18z")),
+                    new NavbarMenuItem("Mesonet", "/catalog/mesonet")),
+                new NavbarMenuItem("Marine buoys", "/catalog/buoys")),
+            new NavbarMenuItem("Upper air", "/catalog/upper-air")),
+        new("Water",
+            new NavbarMenuItem("Tide predictions", "/catalog/tides"),
+            new NavbarMenuItem("Stream gauges", "/catalog/gauges"))
     };
 
-    protected void ItemClicked(NavbarMenu.NavbarMenuItem item)
+    protected void ItemClicked(NavbarMenuItem item)
     {
         Console.WriteLine("Clicked " + item.Text);
     }
 
-    protected void FilterChanged(NavbarMenu.NavbarFilterResult result)
+    protected void FilterChanged(NavbarFilterResult result)
     {
         Console.WriteLine(result.Matches + " match \"" + result.Query + "\"");
     }
@@ -85,28 +102,78 @@ Highcharts component there are no external resources to load.
 
 | Parameter | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `BrandColor` | `string?` | – | Navbar background. Emitted as an inline style; Bootstrap has no arbitrary background utility. |
-| `BrandText` / `BrandUrl` | `string?` | – | Brand link. Omit `BrandText` to hide it. |
-| `ChildContent` | `RenderFragment?` | – | Rendered at the end of the navbar container. |
-| `ContainerCssClass` | `string` | `container` | Use `container-fluid` for a full-width bar. |
-| `ElementId` | `string?` | generated | Stable id prefix. Supply when you need predictable ids. |
-| `Items` | `List<NavbarMenuItem>?` | – | The nested tree. Any depth. |
-| `LeadingItems` / `TrailingItems` | `List<NavbarMenuItem>?` | – | Plain nav links before/after the dropdown. |
-| `MenuCssClass` / `MenuStyle` | `string?` / `string` | `max-height: 70vh; min-width: 20rem;` | The panel is `.overflow-auto`, so the max-height is what makes a long tree scroll. |
-| `MenuHeader` | `string?` | – | Optional `.dropdown-header`. |
-| `MenuText` | `string` | `Browse catalog` | The dropdown toggle label. |
-| `NavbarCssClass` / `NavbarTheme` | `string?` / `string` | `dark` | The panel is pinned to `light` so the dark scheme does not cascade in. |
-| `OnFilter` | `EventCallback<NavbarFilterResult>` | – | Raised when the filter runs. |
-| `OnItemClicked` | `EventCallback<NavbarMenuItem>` | – | Raised when a leaf is clicked. |
-| `SearchLabel` / `SearchPlaceholder` | `string` | `Search the catalog` | The label is visually hidden but read by screen readers. |
-| `ShowFooterCount` | `bool` | `true` | The `aria-live` count line beneath the tree. |
+| `Value` | `List<NavbarMenuItem>` | empty | The nested menu tree. Any depth. |
+| `ValueChanged` | `EventCallback<List<NavbarMenuItem>>` | â€“ | Supports `@bind-Value`. |
+| `OnValueChanged` | `Delegate?` | â€“ | Raised when the tree changes. |
+| `OnItemClicked` | `Delegate?` | â€“ | Receives the clicked `NavbarMenuItem`. |
+| `OnFilter` | `Delegate?` | â€“ | Receives a `NavbarFilterResult`. |
+| `MenuText` | `string` | `Menu` | The dropdown toggle label. |
+| `MenuHeader` | `string?` | â€“ | Optional `.dropdown-header`. |
+| `AutoAlign` | `bool` | `true` | Measures the panel on each open and flips its alignment to whichever side has room, so a menu near either screen edge never renders off-screen. Ignored when `AlignEnd` is set. |
+| `AlignEnd` | `bool` | `false` | Pins the panel right-aligned to its toggle, bypassing auto detection for fixed layouts. |
+| `AlignLinksEnd` | `bool` | `false` | Places the nav links at the navbar's right edge without pinning the panel; AutoAlign picks the panel side. Implied by `AlignEnd`. |
+| `MenuClass` / `MenuStyle` | `string?` / `string` | `max-height: 70vh; min-width: 20rem; max-width: min(92vw, 40rem);` | The panel is `.overflow-auto`, so max-height makes a long tree scroll and max-width stops deep indentation widening it past the viewport. |
+| `BrandText` / `BrandUrl` | `string?` | â€“ | Brand link. Omit `BrandText` to hide it. |
+| `BrandColor` | `string?` | â€“ | Navbar background; emitted inline, as Bootstrap has no arbitrary background utility. |
+| `LeadingItems` / `TrailingItems` | `List<NavbarMenuItem>?` | â€“ | Plain nav links before/after the dropdown. |
 | `ShowSearch` | `bool` | `true` | Set false to drop the search box and its JS wiring. |
+| `SearchLabel` / `SearchPlaceholderText` | `string` | `Search` | The label is visually hidden but read by screen readers. |
+| `ShowFooterCount` | `bool` | `true` | The `aria-live` count line beneath the tree. |
+| `Class` | `string?` | â€“ | Extra classes for the navbar element. |
+| `ContainerClass` | `string` | `container` | Use `container-fluid` for a full-width bar. |
+| `Sticky` | `bool` | `true` | Pins the navbar to the viewport top (Bootstrap `sticky-top`). Set false for navbars embedded in page content, especially multiple on one page — sticky's per-navbar stacking context would paint a later navbar over an earlier one's open panel. |
+| `Theme` | `string` | `dark` | Navbar colour scheme. The panel is pinned to `light` so it does not cascade in. |
+| `Id` | `string` | generated | Stable id prefix. Supply when you need predictable ids. |
+| `ChildContent` | `RenderFragment?` | â€“ | Rendered at the end of the navbar container. |
 
 ### NavbarMenuItem
 
-`Text`, `Url`, `Target`, `Active`, `Disabled`, `Children`, and `Tag` — an arbitrary
-value carried through to `OnItemClicked` so the parent can identify an item without
-matching on display text. An item is a branch when it has children, otherwise a leaf.
+`Text`, `Url`, `Icon`, `Target`, `Active`, `Disabled`, `Children`, and `Tag` â€” an
+arbitrary value carried through to `OnItemClicked` so the parent can identify an
+item without matching on display text. An item is a branch when it has children,
+otherwise a leaf.
+
+`Icon` accepts a CSS class (`"bi bi-folder"`, `"fa-solid fa-folder"`) or raw
+markup; a class name is wrapped in an `<i>` element automatically.
+
+## Methods
+
+`Reset()` clears the search box and collapses every branch.
+
+## Fitting on screen
+
+**Vertically it is automatic.** The panel is `max-height: 70vh` and
+`.overflow-auto`, so a long tree scrolls inside the panel instead of running off
+the bottom of the window.
+
+**Horizontally it is automatic too.** Bootstrap positions navbar dropdowns
+*statically*, which means Popper's collision detection never runs â€” left to
+Bootstrap, a left-anchored menu near the right edge hangs off the window and
+forces the page to scroll sideways (measured at a 1000px viewport: 182px
+off-screen; `data-bs-display="dynamic"` measurably does nothing inside a navbar).
+The component compensates itself: `AutoAlign` (on by default) measures the
+painted panel each time it opens and applies `.dropdown-menu-end` when the
+default anchoring would overflow, preferring whichever side has enough room.
+
+To pin the alignment instead of detecting it, set `AlignEnd="true"`:
+
+```razor
+<NavbarMenu Value="_menu" AlignEnd="true" />
+```
+
+Width is capped at `min(92vw, 40rem)` by default, so a deeply indented tree cannot
+grow the panel wider than the viewport. Each nesting level adds ~16px of indent
+(`ps-3`), so at 20 levels you are ~320px in; widen the panel via `MenuStyle` if
+your labels need the room.
+
+**Phones are handled automatically.** Below 576px the component switches to
+Bootstrap's mega-menu pattern: the nav links wrap instead of overflowing, and the
+panel stops anchoring to its toggle and spans the viewport with a small inset,
+height-capped to `min(70vh, 100dvh - 7rem)`. No parameter needed â€” `AlignEnd`
+becomes irrelevant at these widths because the panel is full-width either way.
+Verified by touch-driven Playwright runs at 390px, 360px, and 320px (27/27).
+Note this navbar uses `navbar-expand` â€” it never collapses into a hamburger; on
+phones it wraps and goes full-width instead.
 
 ## Behaviour notes
 
@@ -115,6 +182,12 @@ matching on display text. An item is a branch when it has children, otherwise a 
 - Within a branch, nested branches render above that level's own leaves.
 - Heading levels track depth (`h2`..`h6`, capped) so the menu keeps a sane
   document outline at any depth.
-- `Reset()` clears the search box and collapses every branch.
 - Searching expands every surviving branch; a deep hit keeps its ancestors alive.
   Clearing the box restores the full tree, collapsed.
+
+## Verification
+
+See [docs/evidence](../../docs/evidence/) â€” 17/17 Playwright assertions against the
+running app, with screenshots and an animated GIF.
+
+

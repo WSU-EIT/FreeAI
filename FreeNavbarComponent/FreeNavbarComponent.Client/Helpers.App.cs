@@ -1,4 +1,4 @@
-namespace FreeNavbarComponent.Client;
+﻿namespace FreeNavbarComponent.Client;
 
 public static partial class Helpers
 {
@@ -133,6 +133,54 @@ public static partial class Helpers
             //        AppAdminOnly = false,
             //    });
             //}
+
+            // The NavbarMenu component sample. Viewable without logging in, so it
+            // is added unconditionally rather than behind a Model.User check.
+            // Its children also demonstrate NavigationMenu's nested rendering:
+            // children of children render as accordion branches inside the
+            // dropdown, at any depth.
+            output.Add(new DataObjects.MenuItem {
+                Title = "Navbar Sample",
+                Icon = "Home",
+                PageNames = new List<string> { "navbarsample" },
+                SortOrder = 1000,
+                url = Helpers.BuildUrl("NavbarSample"),
+                AppAdminOnly = false,
+                Children = new List<DataObjects.MenuItem> {
+                    new DataObjects.MenuItem {
+                        Title = "Component Sample Page",
+                        SortOrder = 1,
+                        url = Helpers.BuildUrl("NavbarSample"),
+                    },
+                    new DataObjects.MenuItem {
+                        Title = "Nested Demo",
+                        SortOrder = 2,
+                        Children = new List<DataObjects.MenuItem> {
+                            new DataObjects.MenuItem {
+                                Title = "Level Three",
+                                SortOrder = 1,
+                                Children = new List<DataObjects.MenuItem> {
+                                    new DataObjects.MenuItem {
+                                        Title = "Deep Link A",
+                                        SortOrder = 1,
+                                        url = Helpers.BuildUrl("NavbarSample") + "?link=deep-a",
+                                    },
+                                    new DataObjects.MenuItem {
+                                        Title = "Deep Link B",
+                                        SortOrder = 2,
+                                        url = Helpers.BuildUrl("NavbarSample") + "?link=deep-b",
+                                    },
+                                },
+                            },
+                            new DataObjects.MenuItem {
+                                Title = "Level Two Link",
+                                SortOrder = 2,
+                                url = Helpers.BuildUrl("NavbarSample") + "?link=level-two",
+                            },
+                        },
+                    },
+                },
+            });
 
             return output;
         }
