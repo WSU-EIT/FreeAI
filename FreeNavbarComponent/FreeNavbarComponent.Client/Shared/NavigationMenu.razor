@@ -1,5 +1,6 @@
 ﻿@implements IDisposable
 @inject BlazorDataModel Model
+@inject Microsoft.JSInterop.IJSRuntime jsRuntime
 
 @if (navigationMenuApp.Enabled) {
     <NavigationMenu_App Loading="Loading" />
@@ -91,7 +92,7 @@
                 border-top-right-radius: var(--bs-dropdown-inner-border-radius, calc(.375rem - 1px));
             }
         </style>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3" aria-label="@Helpers.Text("AppTitle")">
+        <nav id="app-navigation-menu" class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3" aria-label="@Helpers.Text("AppTitle")">
             <div class="container-fluid">
                 <a class="navbar-brand" href="@(Helpers.BuildUrl())">
                     @{
@@ -148,7 +149,7 @@
                                                 @((MarkupString)item.Title)
                                             </span>
                                         </a>
-                                        <ul class="dropdown-menu @(nested ? "nav-nested-menu" : "")">
+                                        <ul class="dropdown-menu @(nested ? "nav-nested-menu" : "")" role="list">
                                             @{
                                                 var orderedChildren = item.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
                                                 string menuKey = NavElementId(item.Title);
@@ -217,7 +218,7 @@
                                     <a class="@(Helpers.AdminView ? "nav-link dropdown-toggle active" : "nav-link dropdown-toggle")" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="@(adminNested ? "outside" : "true")" aria-expanded="false">
                                         <Language Tag="Admin" IncludeIcon="true" />
                                     </a>
-                                    <ul class="dropdown-menu @(adminNested ? "nav-nested-menu" : "")" aria-labelledby="navbarDropdown">
+                                    <ul class="dropdown-menu @(adminNested ? "nav-nested-menu" : "")" role="list" aria-labelledby="navbarDropdown">
                                         @{
                                             var orderedAdmin = Helpers.MenuItemsAdmin.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
                                             string adminFilter = adminNested ? GetMenuFilter("admin") : String.Empty;
@@ -247,11 +248,19 @@
                             </li>
                         }
                     </ul>
-                    <form class="d-flex">
+                    @* A div, not a form: this group is navigation icons, and a
+                       form with no submit control fails WCAG 3.2.2 (H32) because
+                       a keyboard user has no way to submit it. Nothing here ever
+                       posted anything. *@
+                    <div class="d-flex">
                         <ul class="navbar-nav me-auto">
                             @if (Model.HaveDeletedRecords) {
                                 <li class="nav-item">
-                                    <a class="nav-link deleted-records" role="button" href="@(Helpers.BuildUrl("Settings/DeletedRecords"))" title="@Helpers.Text("PendingDeletedRecords")">
+                                    @* Icon-only control, so it needs a name of its
+                                       own: title alone is not reliably exposed as an
+                                       accessible name. *@
+                                    <a class="nav-link deleted-records" role="button" href="@(Helpers.BuildUrl("Settings/DeletedRecords"))"
+                                       title="@Helpers.Text("PendingDeletedRecords")" aria-label="@Helpers.Text("PendingDeletedRecords")">
                                         <Icon Name="DeletedRecords" />
                                     </a>
                                 </li>
@@ -259,7 +268,10 @@
 
                             @if (String.IsNullOrWhiteSpace(Model.Tenant.TenantSettings.Theme)) {
                                 <li class="nav-item dropdown" title="@Helpers.Text("Theme")">
-                                    <a class="nav-link dropdown-toggle" href="javascript:void('@Helpers.Text("Theme").Replace("'", "")');" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="@Helpers.Text("SelectTheme")">
+                                    @* aria-label as well as title: the toggle's only
+                                       content is an icon, and a title attribute is not
+                                       a dependable accessible name for role="button". *@
+                                    <a class="nav-link dropdown-toggle" href="javascript:void('@Helpers.Text("Theme").Replace("'", "")');" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="@Helpers.Text("SelectTheme")" aria-label="@Helpers.Text("SelectTheme")">
                                         @switch (Model.User.UserPreferences.Theme) {
                                             case "dark":
                                                 <Icon Name="ThemeDark" />
@@ -316,7 +328,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </form>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -337,6 +349,33 @@
     {
         Model.OnChange += StateHasChanged;
     }
+
+    // Arrow-key movement through the nested menus. The tab order is unchanged;
+    // this only adds the shortcuts a keyboard user expects from a menu, and it
+    // is the only JavaScript this component uses - expanding and collapsing is
+    // still Bootstrap's collapse data API, and the search is still C#.
+    //
+    // The listener is delegated from the navbar element, so it keeps working as
+    // Blazor re-renders the tree underneath it and only needs wiring once.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _keyboardReady) {
+            return;
+        }
+
+        _keyboardReady = true;
+
+        try {
+            var module = await jsRuntime.InvokeAsync<IJSObjectReference>("import",
+                "./Shared/NavigationMenu.razor.js?v=" + Guid.NewGuid().ToString().Replace("-", ""));
+            await module.InvokeVoidAsync("InitializeKeyboard", "app-navigation-menu");
+        } catch (JSDisconnectedException) {
+        } catch (ObjectDisposedException) {
+        } catch (TaskCanceledException) {
+        }
+    }
+
+    protected bool _keyboardReady = false;
 
     // Renders one child menu item at any depth. A child with its own children
     // becomes a Bootstrap accordion branch (the collapse data API opens it and
@@ -382,7 +421,7 @@
 
                         <div class="accordion-collapse collapse @(filtering ? "show" : "")" id="@bodyId">
                             <div class="accordion-body p-0 ps-3">
-                                <ul class="list-unstyled mb-0">
+                                <ul class="list-unstyled mb-0" role="list">
                                     @{
                                         var orderedGrandchildren = child.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
                                     }

@@ -110,6 +110,13 @@
         height: 1rem;
         background-size: 1rem;
     }
+
+    /* The search filter hides a leaf by putting .d-none on the link itself, so
+       the list item wrapping it has to go too or a filtered result set is spaced
+       out by the rows it removed. */
+    .free-navbar-menu .dropdown-menu li:has(> .dropdown-item.d-none) {
+        display: none;
+    }
 </style>
 
 @* sticky-top brings z-index:1020 and a stacking context per navbar, which is
@@ -172,11 +179,19 @@
                             </div>
                         }
 
-                        <div class="accordion accordion-flush" id="@_treeId">
+                        @* A real list, not a stack of divs: it is what tells a
+                           screen reader "list, 4 items" on the way in and gives
+                           each row its position within the group. aria-setsize
+                           and aria-posinset cannot do that job here - they are
+                           not allowed on button or link roles, and browsers
+                           discard them - so native list markup is the mechanism.
+                           role="list" is spelled out because list-style: none
+                           makes WebKit drop list semantics otherwise. *@
+                        <ul class="accordion accordion-flush list-unstyled mb-0" role="list" id="@_treeId">
                             @foreach (var item in Value) {
                                 @RenderBranch(item, 1)
                             }
-                        </div>
+                        </ul>
 
                         @if (ShowFooterCount) {
                             <hr class="dropdown-divider" />
@@ -209,7 +224,9 @@
 </nav>
 
 @code {
-    // A branch renders as an .accordion-item; a leaf renders as a plain .dropdown-item.
+    // Every row is a list item: a branch is an .accordion-item, a leaf wraps a
+    // plain .dropdown-item. Each level is one list containing both, so the group
+    // a row belongs to - and how big it is - is exposed to assistive tech.
     // The heading level tracks the nesting depth (h2..h6) so the menu keeps a sane
     // document outline no matter how deep the tree goes, matching the source design.
     private RenderFragment RenderBranch(NavbarMenuItem item, int depth) => __builder =>
@@ -221,7 +238,7 @@
                open tag cannot wrap Blazor content (the HTML parser closes it
                immediately, orphaning the button beside an empty heading), and a
                div with aria-level carries the same semantics at any depth. *@
-            <div class="accordion-item">
+            <li class="accordion-item">
                 <div role="heading" aria-level="@Math.Min(depth + 1, 6)" class="accordion-header">
                     <button class="accordion-button collapsed" type="button"
                             data-bs-toggle="collapse" data-bs-target="@("#" + bodyId)"
@@ -230,28 +247,31 @@
 
                 <div class="accordion-collapse collapse" id="@bodyId">
                     <div class="accordion-body p-0 ps-3">
-                        @* Nested branches come first, then this level's own leaves,
-                           so deeper structure stays above the plain links. *@
-                        @if (item.Children!.Any(x => x.HasChildren)) {
-                            <div class="accordion accordion-flush">
-                                @foreach (var child in item.Children!.Where(x => x.HasChildren)) {
-                                    @RenderBranch(child, depth + 1)
-                                }
-                            </div>
-                        }
+                        @* One list per level, holding this level's branches and
+                           leaves together, so the announced group size is the
+                           number of choices actually on offer here. Nested
+                           branches come first so deeper structure stays above
+                           the plain links. *@
+                        <ul class="accordion accordion-flush list-unstyled mb-0" role="list">
+                            @foreach (var child in item.Children!.Where(x => x.HasChildren)) {
+                                @RenderBranch(child, depth + 1)
+                            }
 
-                        @foreach (var child in item.Children!.Where(x => !x.HasChildren)) {
-                            @RenderBranch(child, depth + 1)
-                        }
+                            @foreach (var child in item.Children!.Where(x => !x.HasChildren)) {
+                                @RenderBranch(child, depth + 1)
+                            }
+                        </ul>
                     </div>
                 </div>
-            </div>
+            </li>
         } else {
-            <a class="dropdown-item @(item.Disabled ? "disabled" : "")"
-               @attributes="LinkAttributes(item)"
-               href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
-               @onclick="@(() => LeafClicked(item))"
-               @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@ItemIcon(item)@item.Text</a>
+            <li>
+                <a class="dropdown-item @(item.Disabled ? "disabled" : "")"
+                   @attributes="LinkAttributes(item)"
+                   href="@(!String.IsNullOrWhiteSpace(item.Url) ? item.Url : "#")"
+                   @onclick="@(() => LeafClicked(item))"
+                   @onclick:preventDefault="@(String.IsNullOrWhiteSpace(item.Url))">@ItemIcon(item)@item.Text</a>
+            </li>
         }
     };
 
@@ -569,6 +589,10 @@
             // Auto edge detection is skipped when the caller pinned the alignment
             // explicitly with AlignEnd.
             await SafeInvoke("InitializeEdgeGuard", _navId, AutoAlign && !AlignEnd);
+
+            // Arrow-key movement through the tree. Tab order is unchanged; this
+            // only adds the shortcuts a keyboard user expects from a menu.
+            await SafeInvoke("InitializeKeyboard", _navId);
         }
 
         // Re-wire whenever the tree changes, so the filter always matches what is

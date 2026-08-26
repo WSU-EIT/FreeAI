@@ -32,6 +32,36 @@
 } else {
     bool useAppLayoutMinimal = AppLayout.Enabled && !AppLayout.OverrideCompleteLayout;
     <div id="page-area" class="@PageAreaClass">
+        @* Skip link, first focusable thing on the page and visible only while
+           focused. The navigation menu is a deep tree, so without this a
+           keyboard user has to walk every row of it before reaching the page
+           content on every single page (WCAG 2.4.1). Positioned off-screen
+           rather than display:none so it stays reachable by Tab. *@
+        <style>
+            .skip-to-main {
+                position: absolute;
+                left: -9999px;
+                top: 0;
+                z-index: 2000;
+                padding: .5rem 1rem;
+                background-color: var(--bs-body-bg, #fff);
+                color: var(--bs-body-color, #212529);
+                border: var(--bs-border-width, 1px) solid var(--bs-border-color, #dee2e6);
+                border-radius: 0 0 var(--bs-border-radius, .375rem) 0;
+                text-decoration: underline;
+            }
+
+            .skip-to-main:focus {
+                left: 0;
+            }
+        </style>
+        @* The href alone is not enough here: Blazor intercepts same-document
+           anchors, so the browser's native "focus the fragment target" never
+           runs and the link would scroll without moving focus. Focusing the
+           main landmark directly is what makes the link actually work. *@
+        <a class="skip-to-main" href="#main-content"
+           @onclick="SkipToMainContent" @onclick:preventDefault="true">Skip to main content</a>
+
         <OffcanvasPopoutMenu />
 
         @if (!Loading) {
@@ -66,8 +96,11 @@
         }
 
         @* main, not div: gives the page a main landmark so assistive tech can
-           jump to content and every element sits inside a landmark. *@
-        <main class="@(useAppLayoutMinimal ? "" : "container-fluid page-view")">
+           jump to content and every element sits inside a landmark. The id is
+           the skip link's target, and tabindex="-1" is what lets focus actually
+           land here when that link is followed - without it the browser scrolls
+           but leaves focus in the navigation. *@
+        <main id="main-content" tabindex="-1" @ref="_mainContent" class="@(useAppLayoutMinimal ? "" : "container-fluid page-view")">
             @if (Model.AppSettings.MaintenanceMode && (Model.User.AppAdmin || BypassMaintenanceMode)) {
                 <div class="alert alert-danger">
                     <h1 class="page-title">
@@ -126,7 +159,22 @@
 
 @code {
     protected double _iterations = 0;
+    protected ElementReference _mainContent;
     protected bool _precompiledBlazorPlugins = false;
+
+    /// <summary>
+    /// Moves keyboard focus to the main landmark, for the skip link. Focusing
+    /// the element is done here rather than left to the browser's fragment
+    /// handling, which Blazor's same-document navigation interception bypasses.
+    /// </summary>
+    protected async Task SkipToMainContent()
+    {
+        try {
+            await _mainContent.FocusAsync();
+        } catch (JSDisconnectedException) {
+        } catch (ObjectDisposedException) {
+        }
+    }
 
     protected bool DeletedRecordCountsLoaded = false;
     protected DotNetObjectReference<MainLayout>? dotNetHelper;

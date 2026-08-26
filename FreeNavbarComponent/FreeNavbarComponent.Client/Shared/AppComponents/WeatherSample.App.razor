@@ -80,11 +80,14 @@
 
             case "tides":
                 <table class="table table-striped w-auto">
+                    <caption class="visually-hidden">
+                        NOAA tide predictions for @city.Name, @city.State (station @city.TideStation)
+                    </caption>
                     <thead>
                         <tr>
-                            <th>Time (station local)</th>
-                            <th>Tide</th>
-                            <th class="text-end">Height (ft, MLLW)</th>
+                            <th scope="col">Time (station local)</th>
+                            <th scope="col">Tide</th>
+                            <th scope="col" class="text-end">Height (ft, MLLW)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,10 +118,16 @@
                         <div class="card h-100">
                             <div class="card-header">Sun</div>
                             <div class="card-body">
+                                @* Each row is a labelled value, so the label is a
+                                   row header rather than a plain cell: that is what
+                                   makes this a data table instead of a layout one,
+                                   and what lets a screen reader read "Sunrise" with
+                                   the time instead of two unrelated cells. *@
                                 <table class="table table-sm mb-0">
+                                    <caption class="visually-hidden">Sun times for @city.Name, @city.State</caption>
                                     <tbody>
                                         @foreach (var row in _sunEvents) {
-                                            <tr><td>@row.Label</td><td class="text-end">@row.Time</td></tr>
+                                            <tr><th scope="row" class="fw-normal">@row.Label</th><td class="text-end">@row.Time</td></tr>
                                         }
                                     </tbody>
                                 </table>
@@ -152,18 +161,28 @@
                     </div>
                 </div>
 
+                @* Column headers and a per-row header, so each time is announced
+                   with the place it belongs to rather than as a bare value. *@
                 <table class="table table-sm w-auto">
+                    <caption class="visually-hidden">Current local time in every sample city</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Place</th>
+                            <th scope="col" class="text-end">Local time</th>
+                            <th scope="col">Time zone</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         @foreach (var c in WeatherSampleData.Cities) {
                             var rowNow = CityNow(c);
                             <tr class="@(c.Key == city.Key ? "table-active" : "")">
-                                <td>@c.Name, @c.State</td>
+                                <th scope="row" class="fw-normal">@c.Name, @c.State</th>
                                 <td class="font-monospace text-end">@rowNow.ToString("h:mm:ss tt")</td>
                                 <td class="text-secondary small">@c.TimeZoneGroup</td>
                             </tr>
                         }
                         <tr>
-                            <td>UTC</td>
+                            <th scope="row" class="fw-normal">UTC</th>
                             <td class="font-monospace text-end">@DateTime.UtcNow.ToString("h:mm:ss tt")</td>
                             <td class="text-secondary small">Coordinated Universal Time</td>
                         </tr>
