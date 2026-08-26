@@ -37,6 +37,7 @@
                         BrandColor="#a60f2d"
                         ContainerClass="container-fluid"
                         Sticky="false"
+                        Class="navbar-basic-sample"
                         MenuText="Browse catalog"
                         MenuHeader="Product catalog"
                         Value="_catalog"
@@ -80,20 +81,40 @@
                 Reset menu
             </button>
         </div>
-        @* Same tree with the links at the right edge (AlignLinksEnd). No panel
-           alignment is set; AutoAlign measures on open and flips the panel to
-           the side with room, so it never hangs off the screen. *@
-        <h2 class="h5 mt-5">Right edge</h2>
-        <div class="border rounded mb-4">
-            <NavbarMenu BrandText="Tidewater"
-                        BrandColor="#a60f2d"
-                        ContainerClass="container-fluid"
-                        Sticky="false"
-                        Class="navbar-autoedge-sample"
-                        MenuText="Browse catalog"
-                        MenuHeader="Product catalog"
-                        AlignLinksEnd="true"
-                        Value="_catalog" />
+        @* The same tree in every corner of a full-height area: the four
+           combinations of horizontal edge (AlignLinksEnd) and vertical
+           direction (DropUp). No panel side is hardcoded anywhere; AutoAlign
+           measures on open and flips a right-edge panel to hang left, and
+           DropUp opens the bottom navbars upward, so no combination can run
+           off any edge of the screen. *@
+        <h2 class="h5 mt-5">Four corners</h2>
+        <p class="text-secondary">
+            Top-left and bottom-left panels open toward the right; the right-edge menus
+            flip their panel to hang left (<code>AutoAlign</code>, on by default); the
+            bottom navbars open upward (<code>DropUp</code>). Every panel stays on screen.
+        </p>
+        <div id="corner-demo" class="border rounded mb-4 d-flex flex-column justify-content-between" style="min-height: 70vh;">
+            <div class="d-flex justify-content-between">
+                @* BrandEnd puts the label after the menu, so the toggle itself
+                   hugs the screen edge - the point of this demo. *@
+                <NavbarMenu BrandText="Top left" BrandColor="#a60f2d" Sticky="false"
+                            Class="corner-tl" BrandEnd="true" MenuText="Browse catalog"
+                            Value="_catalog" />
+                <NavbarMenu BrandText="Top right" BrandColor="#a60f2d" Sticky="false"
+                            Class="corner-tr navbar-autoedge-sample" AlignLinksEnd="true"
+                            MenuText="Browse catalog" Value="_catalog" />
+            </div>
+            <div class="text-center text-secondary small">
+                every panel opens toward the available space
+            </div>
+            <div class="d-flex justify-content-between">
+                <NavbarMenu BrandText="Bottom left" BrandColor="#a60f2d" Sticky="false"
+                            Class="corner-bl" BrandEnd="true" DropUp="true" MenuText="Browse catalog"
+                            Value="_catalog" />
+                <NavbarMenu BrandText="Bottom right" BrandColor="#a60f2d" Sticky="false"
+                            Class="corner-br navbar-edge-sample" DropUp="true" AlignLinksEnd="true"
+                            MenuText="Browse catalog" Value="_catalog" />
+            </div>
         </div>
     }
 }

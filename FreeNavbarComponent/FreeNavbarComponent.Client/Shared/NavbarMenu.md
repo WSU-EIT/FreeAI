@@ -112,8 +112,10 @@ protected List<NavbarMenuItem> _menu = new() {
 | `AutoAlign` | `bool` | `true` | Measures the panel on each open and flips its alignment to whichever side has room, so a menu near either screen edge never renders off-screen. Ignored when `AlignEnd` is set. |
 | `AlignEnd` | `bool` | `false` | Pins the panel right-aligned to its toggle, bypassing auto detection for fixed layouts. |
 | `AlignLinksEnd` | `bool` | `false` | Places the nav links at the navbar's right edge without pinning the panel; AutoAlign picks the panel side. Implied by `AlignEnd`. |
+| `DropUp` | `bool` | `false` | Opens the panel upward (Bootstrap `dropup`) and flips the toggle's caret. Use for a navbar at the bottom of the screen or page, where a downward panel would run off the bottom edge. Combines with `AlignLinksEnd`/`AutoAlign` for the bottom-right corner. |
 | `MenuClass` / `MenuStyle` | `string?` / `string` | `max-height: 70vh; min-width: 20rem; max-width: min(92vw, 40rem);` | The panel is `.overflow-auto`, so max-height makes a long tree scroll and max-width stops deep indentation widening it past the viewport. |
 | `BrandText` / `BrandUrl` | `string?` | â€“ | Brand link. Omit `BrandText` to hide it. |
+| `BrandEnd` | `bool` | `false` | Renders the brand after the nav links, so the menu toggle sits at the navbar's leading edge (used by the sample's left-corner demos). |
 | `BrandColor` | `string?` | â€“ | Navbar background; emitted inline, as Bootstrap has no arbitrary background utility. |
 | `LeadingItems` / `TrailingItems` | `List<NavbarMenuItem>?` | â€“ | Plain nav links before/after the dropdown. |
 | `ShowSearch` | `bool` | `true` | Set false to drop the search box and its JS wiring. |
@@ -122,7 +124,8 @@ protected List<NavbarMenuItem> _menu = new() {
 | `Class` | `string?` | â€“ | Extra classes for the navbar element. |
 | `ContainerClass` | `string` | `container` | Use `container-fluid` for a full-width bar. |
 | `Sticky` | `bool` | `true` | Pins the navbar to the viewport top (Bootstrap `sticky-top`). Set false for navbars embedded in page content, especially multiple on one page — sticky's per-navbar stacking context would paint a later navbar over an earlier one's open panel. |
-| `Theme` | `string` | `dark` | Navbar colour scheme. The panel is pinned to `light` so it does not cascade in. |
+| `Theme` | `string` | `dark` | Navbar colour scheme. The panel is pinned to `light` so it does not cascade in. Dark navbars raise Bootstrap's 55%-white link colour to 90% so links meet WCAG AA contrast on brand backgrounds. |
+| `AriaLabel` | `string?` | BrandText, then MenuText | Accessible name for the `<nav>` landmark so screen readers can tell multiple navbars apart. |
 | `Id` | `string` | generated | Stable id prefix. Supply when you need predictable ids. |
 | `ChildContent` | `RenderFragment?` | â€“ | Rendered at the end of the navbar container. |
 
@@ -160,6 +163,13 @@ To pin the alignment instead of detecting it, set `AlignEnd="true"`:
 ```razor
 <NavbarMenu Value="_menu" AlignEnd="true" />
 ```
+
+**Bottom navbars open upward.** Set `DropUp="true"` for a navbar at the bottom
+of the screen so the panel opens above the toggle instead of running off the
+bottom edge. All four corners are exercised on the sample page's "Four corners"
+demo and asserted on-screen by the Playwright suite: top-left (default),
+top-right (`AlignLinksEnd`, AutoAlign flips the panel left), bottom-left
+(`DropUp`), and bottom-right (`DropUp` + `AlignLinksEnd`).
 
 Width is capped at `min(92vw, 40rem)` by default, so a deeply indented tree cannot
 grow the panel wider than the viewport. Each nesting level adds ~16px of indent

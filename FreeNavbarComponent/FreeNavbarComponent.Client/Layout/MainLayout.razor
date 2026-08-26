@@ -65,7 +65,9 @@
             <div class="loading-progress-text"></div>
         }
 
-        <div class="@(useAppLayoutMinimal ? "" : "container-fluid page-view")">
+        @* main, not div: gives the page a main landmark so assistive tech can
+           jump to content and every element sits inside a landmark. *@
+        <main class="@(useAppLayoutMinimal ? "" : "container-fluid page-view")">
             @if (Model.AppSettings.MaintenanceMode && (Model.User.AppAdmin || BypassMaintenanceMode)) {
                 <div class="alert alert-danger">
                     <h1 class="page-title">
@@ -108,7 +110,7 @@
                     <div class="pb-3">@Body</div>
                 }
             }
-        </div>
+        </main>
     </div>
 }
 

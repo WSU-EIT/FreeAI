@@ -18,8 +18,9 @@ public static partial class Helpers
 
         // Do any checks for custom page names in your app that should allow anonymous access.
         switch (StringLower(pagename)) {
-            case "this":
-            case "orthis":
+            case "weathersample":
+                // The Live Data sample page, viewable without logging in like
+                // the NavbarSample page.
                 output = true;
                 break;
         }
@@ -134,50 +135,31 @@ public static partial class Helpers
             //    });
             //}
 
-            // The NavbarMenu component sample. Viewable without logging in, so it
-            // is added unconditionally rather than behind a Model.User check.
-            // Its children also demonstrate NavigationMenu's nested rendering:
-            // children of children render as accordion branches inside the
-            // dropdown, at any depth.
+            // The sample menu. Viewable without logging in, so it is added
+            // unconditionally rather than behind a Model.User check. Its
+            // children demonstrate NavigationMenu's nested rendering: children
+            // of children render as accordion branches inside the dropdown, at
+            // any depth, with a search box for filtering the tree. The Live
+            // Data branch is a real five-level tree (menu > branch > timezone >
+            // city > data set) whose leaves open the WeatherSample page, which
+            // fetches from free official US-government APIs in C#.
             output.Add(new DataObjects.MenuItem {
-                Title = "Navbar Sample",
+                Title = "Samples",
                 Icon = "Home",
-                PageNames = new List<string> { "navbarsample" },
+                PageNames = new List<string> { "navbarsample", "weathersample" },
                 SortOrder = 1000,
                 url = Helpers.BuildUrl("NavbarSample"),
                 AppAdminOnly = false,
                 Children = new List<DataObjects.MenuItem> {
                     new DataObjects.MenuItem {
-                        Title = "Component Sample Page",
+                        Title = "Navbar Component",
                         SortOrder = 1,
                         url = Helpers.BuildUrl("NavbarSample"),
                     },
                     new DataObjects.MenuItem {
-                        Title = "Nested Demo",
+                        Title = "Live Data",
                         SortOrder = 2,
-                        Children = new List<DataObjects.MenuItem> {
-                            new DataObjects.MenuItem {
-                                Title = "Level Three",
-                                SortOrder = 1,
-                                Children = new List<DataObjects.MenuItem> {
-                                    new DataObjects.MenuItem {
-                                        Title = "Deep Link A",
-                                        SortOrder = 1,
-                                        url = Helpers.BuildUrl("NavbarSample") + "?link=deep-a",
-                                    },
-                                    new DataObjects.MenuItem {
-                                        Title = "Deep Link B",
-                                        SortOrder = 2,
-                                        url = Helpers.BuildUrl("NavbarSample") + "?link=deep-b",
-                                    },
-                                },
-                            },
-                            new DataObjects.MenuItem {
-                                Title = "Level Two Link",
-                                SortOrder = 2,
-                                url = Helpers.BuildUrl("NavbarSample") + "?link=level-two",
-                            },
-                        },
+                        Children = WeatherSampleData.BuildMenuItems(),
                     },
                 },
             });

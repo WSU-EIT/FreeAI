@@ -1,0 +1,644 @@
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject NavigationManager NavManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+
+@*
+    Live-data sample page behind the nested Samples menu. Every view is fetched
+    with C# HttpClient calls straight from WebAssembly to free, official,
+    US-government-hosted APIs (NWS, NOAA CO-OPS, USNO) - no JavaScript, no API
+    key, no server proxy; all three serve "Access-Control-Allow-Origin: *".
+
+    The nav menu links here with ?city=<key>&view=<key>; the same route is
+    reused for every leaf, so the page listens to LocationChanged and reloads
+    when the query string changes.
+*@
+
+@if (Model.Loaded && Model.View == _pageName && (Model.LoggedIn || !RequireLogin)) {
+
+    var city = WeatherSampleData.FindCity(_cityKey);
+
+    <h1 class="page-title">
+        Live Data
+        @if (city != null) {
+            <span class="text-secondary"> / @city.Name, @city.State / @ViewTitle(_viewKey)</span>
+        }
+    </h1>
+
+    @if (city == null) {
+        <p class="text-secondary">
+            Pick a city and data set from the <strong>Samples &gt; Live Data</strong> menu above
+            (try the menu's search box), or use a link below. Everything on this page is fetched
+            in C# from free, official, US-government APIs:
+            <a href="https://api.weather.gov" target="_blank" rel="noopener">api.weather.gov</a> (forecasts),
+            <a href="https://api.tidesandcurrents.noaa.gov" target="_blank" rel="noopener">api.tidesandcurrents.noaa.gov</a> (tides and water temperature), and
+            <a href="https://aa.usno.navy.mil" target="_blank" rel="noopener">aa.usno.navy.mil</a> (sun and moon).
+        </p>
+
+        <div class="row g-3">
+            @foreach (var group in WeatherSampleData.TimeZoneGroups) {
+                <div class="col-md-6 col-xl-3">
+                    <div class="card h-100">
+                        <div class="card-header">@group</div>
+                        <div class="card-body">
+                            @foreach (var c in WeatherSampleData.Cities.Where(x => x.TimeZoneGroup == group)) {
+                                <div class="mb-2">
+                                    <strong>@c.Name, @c.State</strong><br />
+                                    @foreach (var view in WeatherSampleData.ViewsFor(c)) {
+                                        <a class="me-2 small" href="@PageUrl(c.Key, view.Key)">@view.Title</a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    } else if (_loading) {
+        <LoadingMessage />
+    } else if (!String.IsNullOrWhiteSpace(_error)) {
+        <div class="alert alert-danger">
+            <strong>The request failed:</strong> @_error
+        </div>
+    } else {
+        @switch (_viewKey) {
+            case "forecast":
+                <div class="list-group mb-3">
+                    @foreach (var period in _forecastPeriods) {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="me-3">
+                                <strong>@period.Name</strong>
+                                <div class="small text-secondary">@period.ShortForecast</div>
+                                <div class="small">Wind @period.WindSpeed @period.WindDirection</div>
+                            </div>
+                            <span class="fs-4 text-nowrap">@period.Temperature&deg;@period.TemperatureUnit</span>
+                        </div>
+                    }
+                </div>
+                break;
+
+            case "tides":
+                <table class="table table-striped w-auto">
+                    <thead>
+                        <tr>
+                            <th>Time (station local)</th>
+                            <th>Tide</th>
+                            <th class="text-end">Height (ft, MLLW)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tide in _tides) {
+                            <tr>
+                                <td>@FormatStationTime(tide.Time)</td>
+                                <td>@(tide.Type == "H" ? "High" : "Low")</td>
+                                <td class="text-end">@tide.Height</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                break;
+
+            case "watertemp":
+                <div class="card w-auto d-inline-block mb-3">
+                    <div class="card-body text-center">
+                        <div class="display-4">@_waterTempValue&deg;F</div>
+                        <div class="text-secondary">water temperature at @_waterTempStation</div>
+                        <div class="small text-secondary">observed @FormatStationTime(_waterTempTime)</div>
+                    </div>
+                </div>
+                break;
+
+            case "sun":
+                <div class="row g-3 mb-3">
+                    <div class="col-md-auto">
+                        <div class="card h-100">
+                            <div class="card-header">Sun</div>
+                            <div class="card-body">
+                                <table class="table table-sm mb-0">
+                                    <tbody>
+                                        @foreach (var row in _sunEvents) {
+                                            <tr><td>@row.Label</td><td class="text-end">@row.Time</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="card h-100">
+                            <div class="card-header">Moon</div>
+                            <div class="card-body">
+                                <div>@_moonPhase</div>
+                                @if (!String.IsNullOrWhiteSpace(_moonIllumination)) {
+                                    <div class="text-secondary small">@_moonIllumination illuminated</div>
+                                }
+                                @if (!String.IsNullOrWhiteSpace(_moonNextPhase)) {
+                                    <div class="text-secondary small">@_moonNextPhase</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+
+            case "time":
+                var localNow = CityNow(city);
+                <div class="card w-auto d-inline-block mb-3">
+                    <div class="card-body text-center">
+                        <div class="display-4 font-monospace">@localNow.ToString("h:mm:ss tt")</div>
+                        <div>@localNow.ToString("dddd, MMMM d, yyyy")</div>
+                        <div class="text-secondary small">@city.TimeZoneId (UTC@(localNow.ToString("zzz")))</div>
+                    </div>
+                </div>
+
+                <table class="table table-sm w-auto">
+                    <tbody>
+                        @foreach (var c in WeatherSampleData.Cities) {
+                            var rowNow = CityNow(c);
+                            <tr class="@(c.Key == city.Key ? "table-active" : "")">
+                                <td>@c.Name, @c.State</td>
+                                <td class="font-monospace text-end">@rowNow.ToString("h:mm:ss tt")</td>
+                                <td class="text-secondary small">@c.TimeZoneGroup</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>UTC</td>
+                            <td class="font-monospace text-end">@DateTime.UtcNow.ToString("h:mm:ss tt")</td>
+                            <td class="text-secondary small">Coordinated Universal Time</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p class="text-secondary small">
+                    time.gov has no public REST API &mdash; NIST distributes official time over
+                    NTP, which a browser cannot speak &mdash; so this clock converts your device
+                    clock with the IANA time zone database that ships with .NET. No JavaScript:
+                    a C# timer re-renders each second.
+                </p>
+                break;
+        }
+
+        @if (_endpoints.Any()) {
+            <div class="card mt-2">
+                <div class="card-body py-2">
+                    <div class="small text-secondary mb-1">
+                        Fetched in C# at @_fetchedAt.ToString("h:mm:ss tt") from:
+                        <button type="button" class="btn btn-outline-secondary btn-sm ms-2" @onclick="Refresh">Refresh</button>
+                    </div>
+                    @foreach (var endpoint in _endpoints) {
+                        <div class="small"><code>@endpoint</code></div>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+
+@code {
+    /// <summary>
+    /// This is a sample page, so it is viewable without logging in.
+    /// </summary>
+    public bool RequireLogin { get; set; } = false;
+
+    protected bool _loadedData = false;
+    protected bool _loading = false;
+    protected string _pageName = "weathersample";
+
+    protected string _cityKey = String.Empty;
+    protected string _viewKey = String.Empty;
+    protected string _error = String.Empty;
+    protected DateTime _fetchedAt = DateTime.Now;
+    protected List<string> _endpoints = new List<string>();
+
+    protected List<ForecastPeriod> _forecastPeriods = new List<ForecastPeriod>();
+    protected List<TidePrediction> _tides = new List<TidePrediction>();
+    protected string _waterTempValue = String.Empty;
+    protected string _waterTempTime = String.Empty;
+    protected string _waterTempStation = String.Empty;
+    protected List<(string Label, string Time)> _sunEvents = new List<(string Label, string Time)>();
+    protected string _moonPhase = String.Empty;
+    protected string _moonIllumination = String.Empty;
+    protected string _moonNextPhase = String.Empty;
+
+    protected System.Threading.Timer? _clockTimer;
+
+    // The forecast URL for a city comes from a first call to /points/{lat},{lon},
+    // so it is cached for the life of the app to keep each visit to one call.
+    protected static Dictionary<string, string> _forecastUrlCache = new Dictionary<string, string>();
+
+    protected static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions {
+        PropertyNameCaseInsensitive = true,
+    };
+
+    // The app's injected HttpClient carries default headers (TenantId) for the
+    // FreeCRM API, which trigger a CORS preflight the government APIs reject.
+    // External calls use this clean client instead; in WebAssembly it still
+    // goes through the browser's fetch.
+    protected static HttpClient _externalHttp = new HttpClient();
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        NavManager.LocationChanged -= OnLocationChanged;
+        StopClock();
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        NavManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Model.Loaded && (Model.LoggedIn || !RequireLogin)) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadFromUrl();
+            }
+        }
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    protected void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        // Menu clicks reuse this route with a different query string, which does
+        // not remount the component, so query changes are handled here.
+        if (NavManager.Uri.Contains("/WeatherSample", StringComparison.OrdinalIgnoreCase)) {
+            InvokeAsync(async () => await LoadFromUrl());
+        }
+    }
+
+    protected string PageUrl(string cityKey, string viewKey)
+    {
+        return Helpers.BuildUrl("WeatherSample") + "?city=" + cityKey + "&view=" + viewKey;
+    }
+
+    protected string ViewTitle(string viewKey)
+    {
+        var city = WeatherSampleData.FindCity(_cityKey);
+        if (city != null) {
+            var match = WeatherSampleData.ViewsFor(city).FirstOrDefault(x => x.Key == viewKey);
+            if (!String.IsNullOrWhiteSpace(match.Title)) {
+                return match.Title;
+            }
+        }
+
+        return viewKey;
+    }
+
+    protected async Task Refresh()
+    {
+        await LoadFromUrl();
+    }
+
+    protected async Task LoadFromUrl()
+    {
+        var query = ParseQuery();
+        _cityKey = query.TryGetValue("city", out var c) ? c.ToLower() : String.Empty;
+        _viewKey = query.TryGetValue("view", out var v) ? v.ToLower() : String.Empty;
+
+        _error = String.Empty;
+        _endpoints = new List<string>();
+        StopClock();
+
+        var city = WeatherSampleData.FindCity(_cityKey);
+        if (city == null) {
+            StateHasChanged();
+            return;
+        }
+
+        if (_viewKey == "time") {
+            // No API to call (see the note in the view); just tick the clock.
+            StartClock();
+            StateHasChanged();
+            return;
+        }
+
+        _loading = true;
+        StateHasChanged();
+
+        try {
+            switch (_viewKey) {
+                case "forecast":
+                    await LoadForecast(city);
+                    break;
+
+                case "tides":
+                    await LoadTides(city);
+                    break;
+
+                case "watertemp":
+                    await LoadWaterTemp(city);
+                    break;
+
+                case "sun":
+                    await LoadSunAndMoon(city);
+                    break;
+
+                default:
+                    _error = "Unknown view '" + _viewKey + "'.";
+                    break;
+            }
+
+            _fetchedAt = DateTime.Now;
+        } catch (Exception ex) {
+            _error = ex.Message;
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    protected Dictionary<string, string> ParseQuery()
+    {
+        var output = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var query = new Uri(NavManager.Uri).Query.TrimStart('?');
+        foreach (var pair in query.Split('&', StringSplitOptions.RemoveEmptyEntries)) {
+            int index = pair.IndexOf('=');
+            if (index > 0) {
+                output[Uri.UnescapeDataString(pair.Substring(0, index))] =
+                    Uri.UnescapeDataString(pair.Substring(index + 1).Replace("+", " "));
+            }
+        }
+
+        return output;
+    }
+
+    protected async Task<T> GetJson<T>(string url)
+    {
+        _endpoints.Add(url);
+
+        var response = await _externalHttp.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        var output = JsonSerializer.Deserialize<T>(json, _jsonOptions);
+        if (output == null) {
+            throw new Exception("Empty response from " + url);
+        }
+
+        return output;
+    }
+
+    // -- NWS forecast: /points/{lat},{lon} resolves the office grid, whose
+    //    properties.forecast URL then returns the period forecast. ------------
+
+    protected async Task LoadForecast(WeatherSampleData.City city)
+    {
+        if (!_forecastUrlCache.TryGetValue(city.Key, out var forecastUrl)) {
+            var pointsUrl = "https://api.weather.gov/points/"
+                + city.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + ","
+                + city.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            var points = await GetJson<NwsPointsResponse>(pointsUrl);
+            forecastUrl = points.Properties?.Forecast ?? String.Empty;
+            if (String.IsNullOrWhiteSpace(forecastUrl)) {
+                throw new Exception("The NWS points response did not include a forecast URL.");
+            }
+
+            _forecastUrlCache[city.Key] = forecastUrl;
+        }
+
+        var forecast = await GetJson<NwsForecastResponse>(forecastUrl);
+        _forecastPeriods = (forecast.Properties?.Periods ?? new List<ForecastPeriod>()).Take(8).ToList();
+    }
+
+    // -- NOAA CO-OPS: high/low tide predictions for today at the station. -----
+
+    protected async Task LoadTides(WeatherSampleData.City city)
+    {
+        var url = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+            + "?date=today&station=" + city.TideStation
+            + "&product=predictions&datum=MLLW&time_zone=lst_ldt&interval=hilo&units=english&format=json";
+
+        var tides = await GetJson<TidePredictionsResponse>(url);
+        _tides = tides.Predictions ?? new List<TidePrediction>();
+    }
+
+    // -- NOAA CO-OPS: latest observed water temperature at the station. -------
+
+    protected async Task LoadWaterTemp(WeatherSampleData.City city)
+    {
+        var url = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+            + "?date=latest&station=" + city.TideStation
+            + "&product=water_temperature&time_zone=lst_ldt&units=english&format=json";
+
+        var waterTemp = await GetJson<WaterTempResponse>(url);
+        var reading = waterTemp.Data?.FirstOrDefault();
+        if (reading == null) {
+            throw new Exception("Station " + city.TideStation + " returned no water temperature data.");
+        }
+
+        _waterTempValue = reading.Value;
+        _waterTempTime = reading.Time;
+        _waterTempStation = waterTemp.Metadata?.Name ?? city.TideStation;
+    }
+
+    // -- USNO: sunrise/sunset/twilight and moon data for the city's local day.
+    //    The API takes a fixed utc offset, so the city's current offset
+    //    (DST-aware via TimeZoneInfo) is passed along with its local date. ----
+
+    protected async Task LoadSunAndMoon(WeatherSampleData.City city)
+    {
+        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(city.TimeZoneId);
+        var cityNow = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, timeZone);
+
+        var url = "https://aa.usno.navy.mil/api/rstt/oneday"
+            + "?date=" + cityNow.ToString("yyyy-MM-dd")
+            + "&coords=" + city.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            + "," + city.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            + "&tz=" + cityNow.Offset.TotalHours.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        var usno = await GetJson<UsnoResponse>(url);
+        var data = usno.Properties?.Data;
+
+        _sunEvents = new List<(string Label, string Time)>();
+        foreach (var entry in data?.SunData ?? new List<UsnoPhenomenon>()) {
+            var label = entry.Phen switch {
+                "Begin Civil Twilight" => "First light",
+                "Rise" => "Sunrise",
+                "Upper Transit" => "Solar noon",
+                "Set" => "Sunset",
+                "End Civil Twilight" => "Last light",
+                _ => entry.Phen ?? String.Empty,
+            };
+            _sunEvents.Add((label, FormatUsnoTime(entry.Time)));
+        }
+
+        _moonPhase = data?.CurPhase ?? String.Empty;
+        _moonIllumination = data?.FracIllum ?? String.Empty;
+
+        if (data?.ClosestPhase != null) {
+            var phase = data.ClosestPhase;
+            _moonNextPhase = phase.Phase + " on " + phase.Month + "/" + phase.Day + "/" + phase.Year;
+        } else {
+            _moonNextPhase = String.Empty;
+        }
+    }
+
+    // -- The time view: no JavaScript and no API; a C# timer re-renders every
+    //    second and TimeZoneInfo (IANA ids work in WebAssembly) converts the
+    //    device clock into each city's zone. --------------------------------
+
+    protected void StartClock()
+    {
+        if (_clockTimer == null) {
+            _clockTimer = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, 0, 1000);
+        }
+    }
+
+    protected void StopClock()
+    {
+        if (_clockTimer != null) {
+            _clockTimer.Dispose();
+            _clockTimer = null;
+        }
+    }
+
+    protected DateTimeOffset CityNow(WeatherSampleData.City city)
+    {
+        return TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(city.TimeZoneId));
+    }
+
+    protected string FormatStationTime(string stationTime)
+    {
+        // CO-OPS lst_ldt times look like "2026-08-25 03:05" in station-local time.
+        if (DateTime.TryParse(stationTime, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out var parsed)) {
+            return parsed.ToString("ddd h:mm tt");
+        }
+
+        return stationTime;
+    }
+
+    protected string FormatUsnoTime(string? usnoTime)
+    {
+        // USNO times are 24-hour "HH:mm" strings in the requested offset.
+        if (TimeSpan.TryParse(usnoTime, out var parsed)) {
+            return DateTime.Today.Add(parsed).ToString("h:mm tt");
+        }
+
+        return usnoTime ?? String.Empty;
+    }
+
+    // -- Response shapes, limited to the fields the page renders. -------------
+
+    public class NwsPointsResponse
+    {
+        public NwsPointsProperties? Properties { get; set; }
+    }
+
+    public class NwsPointsProperties
+    {
+        public string? Forecast { get; set; }
+    }
+
+    public class NwsForecastResponse
+    {
+        public NwsForecastProperties? Properties { get; set; }
+    }
+
+    public class NwsForecastProperties
+    {
+        public List<ForecastPeriod>? Periods { get; set; }
+    }
+
+    public class ForecastPeriod
+    {
+        public string? Name { get; set; }
+        public int Temperature { get; set; }
+        public string? TemperatureUnit { get; set; }
+        public string? WindSpeed { get; set; }
+        public string? WindDirection { get; set; }
+        public string? ShortForecast { get; set; }
+    }
+
+    public class TidePredictionsResponse
+    {
+        public List<TidePrediction>? Predictions { get; set; }
+    }
+
+    public class TidePrediction
+    {
+        [JsonPropertyName("t")]
+        public string Time { get; set; } = String.Empty;
+
+        [JsonPropertyName("v")]
+        public string Height { get; set; } = String.Empty;
+
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = String.Empty;
+    }
+
+    public class WaterTempResponse
+    {
+        public CoOpsMetadata? Metadata { get; set; }
+        public List<WaterTempReading>? Data { get; set; }
+    }
+
+    public class CoOpsMetadata
+    {
+        public string? Name { get; set; }
+    }
+
+    public class WaterTempReading
+    {
+        [JsonPropertyName("t")]
+        public string Time { get; set; } = String.Empty;
+
+        [JsonPropertyName("v")]
+        public string Value { get; set; } = String.Empty;
+    }
+
+    public class UsnoResponse
+    {
+        public UsnoProperties? Properties { get; set; }
+    }
+
+    public class UsnoProperties
+    {
+        public UsnoData? Data { get; set; }
+    }
+
+    public class UsnoData
+    {
+        [JsonPropertyName("sundata")]
+        public List<UsnoPhenomenon>? SunData { get; set; }
+
+        [JsonPropertyName("moondata")]
+        public List<UsnoPhenomenon>? MoonData { get; set; }
+
+        [JsonPropertyName("curphase")]
+        public string? CurPhase { get; set; }
+
+        [JsonPropertyName("fracillum")]
+        public string? FracIllum { get; set; }
+
+        [JsonPropertyName("closestphase")]
+        public UsnoClosestPhase? ClosestPhase { get; set; }
+    }
+
+    public class UsnoPhenomenon
+    {
+        public string? Phen { get; set; }
+        public string? Time { get; set; }
+    }
+
+    public class UsnoClosestPhase
+    {
+        public string? Phase { get; set; }
+        public int Month { get; set; }
+        public int Day { get; set; }
+        public int Year { get; set; }
+        public string? Time { get; set; }
+    }
+}

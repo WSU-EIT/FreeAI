@@ -170,7 +170,7 @@ export function InitializeEdgeGuard(navId, enabled) {
     }
 
     var handler = function (e) {
-        var host = e.target && e.target.closest ? e.target.closest(".dropdown") : null;
+        var host = e.target && e.target.closest ? e.target.closest(".dropdown, .dropup") : null;
         var menu = host ? host.querySelector(".dropdown-menu") : null;
         if (!menu) {
             return;

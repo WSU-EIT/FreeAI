@@ -1,4 +1,4 @@
-@implements IDisposable
+﻿@implements IDisposable
 @inject BlazorDataModel Model
 
 @if (navigationMenuApp.Enabled) {
@@ -19,8 +19,79 @@
                     max-width: min(92vw, 40rem);
                 }
             }
+
+            /* Branch rows dress as dropdown items, not accordions: same padding,
+               colors, and hover as .dropdown-item, driven by Bootstrap's own
+               dropdown CSS variables so themes and dark mode match the stock
+               items automatically. Only the chevron marks a row as expandable. */
+            header .nav-nested-menu .accordion,
+            header .nav-nested-menu .accordion-item {
+                background-color: transparent;
+                border: 0;
+            }
+
+            header .nav-nested-menu .accordion-button {
+                padding: var(--bs-dropdown-item-padding-y, .25rem) var(--bs-dropdown-item-padding-x, 1rem);
+                font-size: inherit;
+                font-weight: 400;
+                color: var(--bs-dropdown-link-color);
+                background-color: transparent;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            header .nav-nested-menu .accordion-button:hover {
+                color: var(--bs-dropdown-link-hover-color);
+                background-color: var(--bs-dropdown-link-hover-bg);
+            }
+
+            /* Drop the accordion's mouse-click glow, but keep a visible ring
+               for keyboard focus (WCAG 2.4.7): :focus-visible only fires for
+               keyboard/AT focus, so pointer users see the plain hover style. */
+            header .nav-nested-menu .accordion-button:focus:not(:focus-visible) {
+                box-shadow: none;
+            }
+
+            header .nav-nested-menu .accordion-button:focus-visible {
+                outline: 2px solid var(--bs-focus-ring-color, rgba(13, 110, 253, .5));
+                outline-offset: -2px;
+                box-shadow: none;
+            }
+
+            header .nav-nested-menu .accordion-button:not(.collapsed) {
+                color: var(--bs-dropdown-link-color);
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            header .nav-nested-menu .accordion-button::after {
+                width: 1rem;
+                height: 1rem;
+                background-size: 1rem;
+            }
+
+            /* The search row pins to the top of the scrolling panel and paints
+               over rows scrolling beneath it, using the dropdown's own
+               background variable so themes match. Because it stretches over
+               the panel's top padding, it is the topmost painted element, so
+               it takes the dropdown's inner border radius (Bootstrap's own
+               token for the first element inside a rounded dropdown) to keep
+               the panel's top corners round in views without overflow
+               clipping, like the collapsed hamburger menu. */
+            header .nav-nested-menu .nav-menu-search {
+                position: sticky;
+                top: calc(-1 * var(--bs-dropdown-padding-y, .5rem));
+                z-index: 1;
+                margin-top: calc(-1 * var(--bs-dropdown-padding-y, .5rem));
+                padding: .5rem 1rem;
+                background-color: var(--bs-dropdown-bg, var(--bs-body-bg));
+                border-bottom: var(--bs-dropdown-border-width, 1px) solid var(--bs-dropdown-border-color, rgba(0, 0, 0, .175));
+                border-top-left-radius: var(--bs-dropdown-inner-border-radius, calc(.375rem - 1px));
+                border-top-right-radius: var(--bs-dropdown-inner-border-radius, calc(.375rem - 1px));
+            }
         </style>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3">
+        <nav class="navbar fixed-top navbar-expand-lg navbar-expand-md border-bottom box-shadow mb-3" aria-label="@Helpers.Text("AppTitle")">
             <div class="container-fluid">
                 <a class="navbar-brand" href="@(Helpers.BuildUrl())">
                     @{
@@ -28,7 +99,10 @@
                         @((MarkupString)headerTitle)
                     }
                 </a>
-                <button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navbarSupportedContent"
+                @* aria-controls must reference the real collapse panel id; the
+                   stock markup pointed at a nonexistent "navbarSupportedContent",
+                   so assistive tech could not associate button and panel. *@
+                <button id="menu-bar-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navBarToggler" aria-controls="navBarToggler"
                 aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -74,12 +148,28 @@
                                                 @((MarkupString)item.Title)
                                             </span>
                                         </a>
-                                        <ul class="dropdown-menu @(nested ? "nav-nested-menu p-0" : "")">
+                                        <ul class="dropdown-menu @(nested ? "nav-nested-menu" : "")">
                                             @{
                                                 var orderedChildren = item.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+                                                string menuKey = NavElementId(item.Title);
+                                                string menuFilter = nested ? GetMenuFilter(menuKey) : String.Empty;
+                                            }
+                                            @if (nested) {
+                                                @* Nested trees get deep, so the panel is searchable. The
+                                                   filter runs in C#: typing re-renders the tree with only
+                                                   matching branches, expanded. No JavaScript involved. *@
+                                                <li class="nav-menu-search">
+                                                    <input type="search" class="form-control form-control-sm"
+                                                           placeholder="@SearchPlaceholder" aria-label="@SearchPlaceholder"
+                                                           value="@GetMenuFilter(menuKey)"
+                                                           @oninput="@(e => SetMenuFilter(menuKey, e.Value))" />
+                                                </li>
+                                                @if (!String.IsNullOrWhiteSpace(menuFilter) && !orderedChildren.Any(x => MenuTreeMatches(x, menuFilter))) {
+                                                    <li><span class="dropdown-item-text text-secondary">No matches</span></li>
+                                                }
                                             }
                                             @for (int childIndex = 0; childIndex < orderedChildren.Count; childIndex++) {
-                                                @RenderMenuChild(orderedChildren[childIndex], 1, NavElementId(item.Title) + "-" + childIndex.ToString())
+                                                @RenderMenuChild(orderedChildren[childIndex], 1, NavElementId(item.Title) + "-" + childIndex.ToString(), menuFilter)
                                             }
                                         </ul>
                                     </li>
@@ -119,53 +209,32 @@
                             }
 
                             @if (Helpers.MenuItemsAdmin.Any()) {
+                                @* Admin renders through the same recursive renderer as the
+                                   main menus, so admin entries can nest to any depth too. *@
+                                bool adminNested = Helpers.MenuItemsAdmin.Any(x => x.Children != null && x.Children.Any());
+
                                 <li class="nav-item dropdown">
-                                    <a class="@(Helpers.AdminView ? "nav-link dropdown-toggle active" : "nav-link dropdown-toggle")" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <a class="@(Helpers.AdminView ? "nav-link dropdown-toggle active" : "nav-link dropdown-toggle")" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="@(adminNested ? "outside" : "true")" aria-expanded="false">
                                         <Language Tag="Admin" IncludeIcon="true" />
                                     </a>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        @foreach (var item in Helpers.MenuItemsAdmin) {
-                                            var itemClass = "dropdown-item";
-
-                                            if (item.PageNames.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)) {
-                                                itemClass += " active";
-                                            }
-
-                                            if (item.AppAdminOnly) {
-                                                itemClass += " app-admin-only";
-                                            }
-
-                                            <li>
-                                                @if (item.OnClick != null) {
-                                                    string href = !String.IsNullOrWhiteSpace(item.AriaLabel) ? item.AriaLabel :
-                                                        !String.IsNullOrWhiteSpace(item.Title) ? item.Title : Guid.NewGuid().ToString();
-
-                                                    <a class="@itemClass"
-                                                            title="@item.TooltipTitle"
-                                                            aria-label="@item.AriaLabel"
-                                                            href="javascript:void('@href.Replace("'", "")');"
-                                                            @onclick="@(() => item.OnClick.DynamicInvoke())">
-                                                        @if (!String.IsNullOrWhiteSpace(item.Icon)) {
-                                                            <Icon Name="@item.Icon" />
-                                                        }
-                                                        <span class="icon-text">
-                                                            @((MarkupString)item.Title)
-                                                        </span>
-                                                    </a>
-                                                } else {
-                                                    <a class="@itemClass"
-                                                            title="@item.TooltipTitle"
-                                                            aria-label="@item.AriaLabel"
-                                                            href="@item.url">
-                                                        @if (!String.IsNullOrWhiteSpace(item.Icon)) {
-                                                            <Icon Name="@item.Icon" />
-                                                        }
-                                                        <span class="icon-text">
-                                                            @((MarkupString)item.Title)
-                                                        </span>
-                                                    </a>
-                                                }
+                                    <ul class="dropdown-menu @(adminNested ? "nav-nested-menu" : "")" aria-labelledby="navbarDropdown">
+                                        @{
+                                            var orderedAdmin = Helpers.MenuItemsAdmin.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+                                            string adminFilter = adminNested ? GetMenuFilter("admin") : String.Empty;
+                                        }
+                                        @if (adminNested) {
+                                            <li class="nav-menu-search">
+                                                <input type="search" class="form-control form-control-sm"
+                                                       placeholder="@SearchPlaceholder" aria-label="@SearchPlaceholder"
+                                                       value="@GetMenuFilter("admin")"
+                                                       @oninput="@(e => SetMenuFilter("admin", e.Value))" />
                                             </li>
+                                            @if (!String.IsNullOrWhiteSpace(adminFilter) && !orderedAdmin.Any(x => MenuTreeMatches(x, adminFilter))) {
+                                                <li><span class="dropdown-item-text text-secondary">No matches</span></li>
+                                            }
+                                        }
+                                        @for (int adminIndex = 0; adminIndex < orderedAdmin.Count; adminIndex++) {
+                                            @RenderMenuChild(orderedAdmin[adminIndex], 1, "admin-" + adminIndex.ToString(), adminFilter)
                                         }
                                     </ul>
                                 </li>
@@ -275,19 +344,33 @@
     // .dropdown-item link this menu has always produced. The path parameter keeps
     // collapse ids deterministic across re-renders, which matters because
     // Helpers.MenuItems rebuilds new item instances on every access.
-    protected RenderFragment RenderMenuChild(DataObjects.MenuItem child, int depth, string path) => __builder =>
+    //
+    // When a filter is active the tree is pruned in C#: an item renders when its
+    // own title matches, when any descendant matches (the branch renders open so
+    // the hit is visible), or when an ancestor matched (forceShow reveals the
+    // whole subtree under a matching branch).
+    protected RenderFragment RenderMenuChild(DataObjects.MenuItem child, int depth, string path, string filter = "", bool forceShow = false) => __builder =>
     {
+        bool filtering = !String.IsNullOrWhiteSpace(filter);
+        if (filtering && !forceShow && !MenuTreeMatches(child, filter)) {
+            return;
+        }
+
         if (child.Children != null && child.Children.Any()) {
             string bodyId = "appnav-" + path;
-            string heading = "h" + Math.Min(depth + 1, 6).ToString();
+            bool childForceShow = forceShow || (filtering && MenuTitleMatches(child, filter));
 
+            @* role=heading with aria-level instead of an <hN> tag: a MarkupString
+               open tag cannot wrap Blazor content (the HTML parser closes it
+               immediately, orphaning the button beside an empty heading), and a
+               div with aria-level carries the same semantics at any depth. *@
             <li>
                 <div class="accordion accordion-flush">
                     <div class="accordion-item">
-                        @((MarkupString)$"<{heading} class=\"accordion-header\">")
-                            <button class="accordion-button collapsed py-2" type="button"
+                        <div role="heading" aria-level="@Math.Min(depth + 1, 6)" class="accordion-header">
+                            <button class="accordion-button @(filtering ? "" : "collapsed") @(child.AppAdminOnly ? "app-admin-only" : "")" type="button"
                                     data-bs-toggle="collapse" data-bs-target="@("#" + bodyId)"
-                                    aria-expanded="false" aria-controls="@bodyId">
+                                    aria-expanded="@(filtering ? "true" : "false")" aria-controls="@bodyId">
                                 @if (!String.IsNullOrWhiteSpace(child.Icon)) {
                                     <Icon Name="@child.Icon" />
                                 }
@@ -295,16 +378,16 @@
                                     @((MarkupString)child.Title)
                                 </span>
                             </button>
-                        @((MarkupString)$"</{heading}>")
+                        </div>
 
-                        <div class="accordion-collapse collapse" id="@bodyId">
+                        <div class="accordion-collapse collapse @(filtering ? "show" : "")" id="@bodyId">
                             <div class="accordion-body p-0 ps-3">
                                 <ul class="list-unstyled mb-0">
                                     @{
                                         var orderedGrandchildren = child.Children.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
                                     }
                                     @for (int i = 0; i < orderedGrandchildren.Count; i++) {
-                                        @RenderMenuChild(orderedGrandchildren[i], depth + 1, path + "-" + i.ToString())
+                                        @RenderMenuChild(orderedGrandchildren[i], depth + 1, path + "-" + i.ToString(), filter, childForceShow)
                                     }
                                 </ul>
                             </div>
@@ -316,11 +399,11 @@
             string href = !String.IsNullOrWhiteSpace(child.AriaLabel) ? child.AriaLabel :
                 !String.IsNullOrWhiteSpace(child.Title) ? child.Title : Guid.NewGuid().ToString();
             <li>
-                <a class="dropdown-item"
+                <a class="dropdown-item @(child.AppAdminOnly ? "app-admin-only" : "")"
                    href="javascript:void('@href.Replace("'", "")');"
                    title="@child.TooltipTitle"
                    aria-label="@child.AriaLabel"
-                   @onclick="@(async () => { child.OnClick.DynamicInvoke(); await Helpers.HideMenus(); })">
+                   @onclick="@(async () => { child.OnClick.DynamicInvoke(); _menuFilters.Clear(); await Helpers.HideMenus(); })">
                     @if (!String.IsNullOrWhiteSpace(child.Icon)) {
                         <Icon Name="@child.Icon" />
                     }
@@ -330,9 +413,16 @@
                 </a>
             </li>
         } else {
+            // Active when the item's page is the current view (the admin menu
+            // convention) or its url is the current url (the general one).
             string dropDownItemClass = "dropdown-item";
-            if (child.url.ToLower() == Helpers.CurrentUrl.ToLower()) {
+            if (child.PageNames.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)
+                || child.url.ToLower() == Helpers.CurrentUrl.ToLower()) {
                 dropDownItemClass += " active";
+            }
+
+            if (child.AppAdminOnly) {
+                dropDownItemClass += " app-admin-only";
             }
 
             @* Blazor navigation does not reload the page, and the nested panel is
@@ -343,7 +433,7 @@
                    href="@child.url"
                    title="@child.TooltipTitle"
                    aria-label="@child.AriaLabel"
-                   @onclick="@(async () => await Helpers.HideMenus())">
+                   @onclick="@(async () => { _menuFilters.Clear(); await Helpers.HideMenus(); })">
                     @if (!String.IsNullOrWhiteSpace(child.Icon)) {
                         <Icon Name="@child.Icon" />
                     }
@@ -355,6 +445,39 @@
         }
     };
 
+    // Per-dropdown search text, keyed by the dropdown's NavElementId (or "admin").
+    // Cleared when a leaf is clicked so the next open shows the full tree.
+    protected Dictionary<string, string> _menuFilters = new Dictionary<string, string>();
+
+    protected string GetMenuFilter(string key)
+    {
+        return _menuFilters.TryGetValue(key, out var value) ? value.Trim() : String.Empty;
+    }
+
+    protected void SetMenuFilter(string key, object? value)
+    {
+        _menuFilters[key] = value?.ToString() ?? String.Empty;
+    }
+
+    protected string SearchPlaceholder {
+        get {
+            string output = Helpers.Text("Search");
+            return String.IsNullOrWhiteSpace(output) ? "Search" : output;
+        }
+    }
+
+    protected bool MenuTitleMatches(DataObjects.MenuItem item, string filter)
+    {
+        return !String.IsNullOrWhiteSpace(item.Title)
+            && item.Title.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) >= 0;
+    }
+
+    protected bool MenuTreeMatches(DataObjects.MenuItem item, string filter)
+    {
+        return MenuTitleMatches(item, filter)
+            || (item.Children != null && item.Children.Any(x => MenuTreeMatches(x, filter)));
+    }
+
     /// <summary>
     /// Reduces a menu title to a safe, deterministic id fragment.
     /// </summary>
@@ -364,3 +487,4 @@
         return chars.Length > 0 ? new string(chars).ToLower() : "item";
     }
 }
+
