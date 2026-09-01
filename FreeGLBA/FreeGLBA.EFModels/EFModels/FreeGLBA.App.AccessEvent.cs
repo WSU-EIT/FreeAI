@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FreeGLBA.EFModels.EFModels;
@@ -7,6 +8,10 @@ namespace FreeGLBA.EFModels.EFModels;
 /// AccessEvent entity - stored in [AccessEvents] table.
 /// </summary>
 [Table("AccessEvents")]
+[Index(nameof(AccessedAt))]
+[Index(nameof(UserId))]
+[Index(nameof(SubjectId))]
+[Index(nameof(SourceSystemId), nameof(SourceEventId))]
 public partial class AccessEventItem
 {
     public DateTime AccessedAt { get; set; }
@@ -29,16 +34,59 @@ public partial class AccessEventItem
     /// </summary>
     public string AgreementText { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Position of this event in its source system's tamper-evident hash chain.
+    /// 0 for events recorded before integrity chaining existed.
+    /// </summary>
+    public long ChainSequence { get; set; }
+
     [MaxLength(100)]
     public string DataCategory { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Snapshot: department of the data owner at the time of access.
+    /// </summary>
+    [MaxLength(200)]
+    public string DataOwnerDepartment { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Snapshot: email of the data owner at the time of access.
+    /// </summary>
+    [MaxLength(200)]
+    public string DataOwnerEmail { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Snapshot: name of the data owner (point of contact for the data this event
+    /// is about) at the time of access. Captured at ingest — either supplied by the
+    /// source system on the event, or copied from the source system's current data
+    /// owner. Immutable record of "who owned the data then"; the source system holds
+    /// the live "who owns it now".
+    /// </summary>
+    [MaxLength(200)]
+    public string DataOwnerName { get; set; } = string.Empty;
+
     [MaxLength(50)]
     public string IpAddress { get; set; } = string.Empty;
+
+    /// <summary>
+    /// RowHash of the previous event in this source system's chain
+    /// (empty for the first chained event).
+    /// </summary>
+    [MaxLength(100)]
+    public string PrevRowHash { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string Purpose { get; set; } = string.Empty;
 
     public DateTime ReceivedAt { get; set; }
+
+    /// <summary>
+    /// SHA-256 over this event's immutable audit fields plus PrevRowHash and
+    /// ChainSequence, computed once at ingest. Any later modification of the row,
+    /// a broken link, or a sequence gap (deletion) is detectable by verification.
+    /// </summary>
+    [MaxLength(100)]
+    public string RowHash { get; set; } = string.Empty;
 
     [MaxLength(200)]
     public string SourceEventId { get; set; } = string.Empty;

@@ -23,7 +23,8 @@ public partial class DataAccess
 
         if (!string.IsNullOrWhiteSpace(filter.Search))
         {
-            query = query.Where(x => x.Name.Contains(filter.Search) || x.DisplayName.Contains(filter.Search) || x.ContactEmail.Contains(filter.Search));
+            query = query.Where(x => x.Name.Contains(filter.Search) || x.DisplayName.Contains(filter.Search) || x.ContactEmail.Contains(filter.Search)
+                || x.DataOwnerName.Contains(filter.Search) || x.DataOwnerEmail.Contains(filter.Search) || x.DataOwnerDepartment.Contains(filter.Search));
         }
 
         // Apply advanced filters
@@ -39,6 +40,7 @@ public partial class DataAccess
             "Name" => filter.SortDescending ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name),
             "DisplayName" => filter.SortDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName),
             "ContactEmail" => filter.SortDescending ? query.OrderByDescending(x => x.ContactEmail) : query.OrderBy(x => x.ContactEmail),
+            "DataOwnerName" => filter.SortDescending ? query.OrderByDescending(x => x.DataOwnerName) : query.OrderBy(x => x.DataOwnerName),
             "IsActive" => filter.SortDescending ? query.OrderByDescending(x => x.IsActive) : query.OrderBy(x => x.IsActive),
             "LastEventReceivedAt" => filter.SortDescending ? query.OrderByDescending(x => x.LastEventReceivedAt) : query.OrderBy(x => x.LastEventReceivedAt),
             _ => query.OrderByDescending(x => x.SourceSystemId)
@@ -62,6 +64,11 @@ public partial class DataAccess
             DisplayName = x.DisplayName,
             ApiKey = x.ApiKey,
             ContactEmail = x.ContactEmail,
+            DataOwnerName = x.DataOwnerName,
+            DataOwnerEmail = x.DataOwnerEmail,
+            DataOwnerDepartment = x.DataOwnerDepartment,
+            DataOwnerPhone = x.DataOwnerPhone,
+            DataOwnerAssignedAt = x.DataOwnerAssignedAt,
             IsActive = x.IsActive,
             LastEventReceivedAt = x.LastEventReceivedAt,
             EventCount = eventCounts.GetValueOrDefault(x.SourceSystemId, 0),
@@ -98,13 +105,18 @@ public partial class DataAccess
             DisplayName = item.DisplayName,
             ApiKey = item.ApiKey,
             ContactEmail = item.ContactEmail,
+            DataOwnerName = item.DataOwnerName,
+            DataOwnerEmail = item.DataOwnerEmail,
+            DataOwnerDepartment = item.DataOwnerDepartment,
+            DataOwnerPhone = item.DataOwnerPhone,
+            DataOwnerAssignedAt = item.DataOwnerAssignedAt,
             IsActive = item.IsActive,
             LastEventReceivedAt = item.LastEventReceivedAt,
             EventCount = eventCount,
         };
     }
 
-    public async Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto)
+    public async Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto, string? savedBy = null)
     {
         EFModels.EFModels.SourceSystemItem item;
         var isNew = dto.SourceSystemId == default;
@@ -125,6 +137,54 @@ public partial class DataAccess
         item.ContactEmail = dto.ContactEmail;
         item.IsActive = dto.IsActive;
 
+        // Data owner (point of contact for the data this system holds).
+        // When the owner changes, close the open ownership-history row and start a new
+        // one, so "who owned the data at time T" can always be answered.
+        var newOwnerName = (dto.DataOwnerName ?? string.Empty).Trim();
+        var newOwnerEmail = (dto.DataOwnerEmail ?? string.Empty).Trim();
+        var newOwnerDepartment = (dto.DataOwnerDepartment ?? string.Empty).Trim();
+        var newOwnerPhone = (dto.DataOwnerPhone ?? string.Empty).Trim();
+
+        var ownerChanged =
+            !string.Equals(item.DataOwnerName, newOwnerName, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(item.DataOwnerEmail, newOwnerEmail, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(item.DataOwnerDepartment, newOwnerDepartment, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(item.DataOwnerPhone, newOwnerPhone, StringComparison.OrdinalIgnoreCase);
+
+        if (ownerChanged) {
+            var now = DateTime.UtcNow;
+            var hasNewOwner = newOwnerName != string.Empty || newOwnerEmail != string.Empty
+                || newOwnerDepartment != string.Empty || newOwnerPhone != string.Empty;
+
+            if (!isNew) {
+                var openHistory = await data.DataOwnerships
+                    .Where(x => x.SourceSystemId == item.SourceSystemId && x.EndedAt == null)
+                    .ToListAsync();
+                foreach (var history in openHistory) {
+                    history.EndedAt = now;
+                }
+            }
+
+            if (hasNewOwner) {
+                data.DataOwnerships.Add(new EFModels.EFModels.DataOwnershipItem {
+                    DataOwnershipId = Guid.NewGuid(),
+                    SourceSystemId = item.SourceSystemId,
+                    OwnerName = newOwnerName,
+                    OwnerEmail = newOwnerEmail,
+                    OwnerDepartment = newOwnerDepartment,
+                    OwnerPhone = newOwnerPhone,
+                    AssignedAt = now,
+                    AssignedBy = (savedBy ?? string.Empty).Trim(),
+                });
+            }
+
+            item.DataOwnerName = newOwnerName;
+            item.DataOwnerEmail = newOwnerEmail;
+            item.DataOwnerDepartment = newOwnerDepartment;
+            item.DataOwnerPhone = newOwnerPhone;
+            item.DataOwnerAssignedAt = hasNewOwner ? now : null;
+        }
+
         // Generate API key if new or if regeneration requested
         if (isNew || dto.ApiKey == "REGENERATE") {
             newPlaintextKey = GenerateApiKey();
@@ -132,17 +192,51 @@ public partial class DataAccess
         }
 
         await data.SaveChangesAsync();
-        
+
         // Get event count via query for return value
         var eventCount = await data.AccessEvents.CountAsync(x => x.SourceSystemId == item.SourceSystemId);
-        
+
         // Return the updated DTO with the generated values
         dto.SourceSystemId = item.SourceSystemId;
         dto.ApiKey = item.ApiKey; // This is the hash (for display masking)
         dto.NewApiKey = newPlaintextKey; // This is the plaintext key (show ONCE to user)
         dto.EventCount = eventCount;
         dto.LastEventReceivedAt = item.LastEventReceivedAt;
+        dto.DataOwnerName = item.DataOwnerName;
+        dto.DataOwnerEmail = item.DataOwnerEmail;
+        dto.DataOwnerDepartment = item.DataOwnerDepartment;
+        dto.DataOwnerPhone = item.DataOwnerPhone;
+        dto.DataOwnerAssignedAt = item.DataOwnerAssignedAt;
+
+        await NotifyGlbaChangeAsync(DataObjects.SignalRUpdateType.GlbaSourceSystem, item.SourceSystemId, isNew ? "New" : "Updated");
+
         return dto;
+    }
+
+    /// <summary>
+    /// Gets the data-ownership history for a source system, current owner first,
+    /// then previous owners in reverse chronological order.
+    /// </summary>
+    public async Task<List<DataObjects.DataOwnership>> GetDataOwnershipHistoryAsync(Guid sourceSystemId)
+    {
+        return await data.DataOwnerships
+            .AsNoTracking()
+            .Where(x => x.SourceSystemId == sourceSystemId)
+            .OrderByDescending(x => x.EndedAt == null)
+            .ThenByDescending(x => x.AssignedAt)
+            .Select(x => new DataObjects.DataOwnership {
+                DataOwnershipId = x.DataOwnershipId,
+                SourceSystemId = x.SourceSystemId,
+                OwnerName = x.OwnerName,
+                OwnerEmail = x.OwnerEmail,
+                OwnerDepartment = x.OwnerDepartment,
+                OwnerPhone = x.OwnerPhone,
+                AssignedAt = x.AssignedAt,
+                EndedAt = x.EndedAt,
+                AssignedBy = x.AssignedBy,
+                Notes = x.Notes,
+            })
+            .ToListAsync();
     }
 
     /// <summary>
@@ -160,6 +254,18 @@ public partial class DataAccess
     {
         var item = await data.SourceSystems.FindAsync(id);
         if (item == null) return false;
+
+        // Access events are the audit trail and must never be deleted as a side effect.
+        // The AccessEvents FK cascades, so deleting a source system with events would
+        // silently destroy them - refuse instead. Deactivate the system to retire it.
+        var hasEvents = await data.AccessEvents.AnyAsync(x => x.SourceSystemId == id);
+        if (hasEvents) return false;
+
+        var ownershipHistory = await data.DataOwnerships.Where(x => x.SourceSystemId == id).ToListAsync();
+        if (ownershipHistory.Count > 0) {
+            data.DataOwnerships.RemoveRange(ownershipHistory);
+        }
+
         data.SourceSystems.Remove(item);
         await data.SaveChangesAsync();
         return true;
@@ -235,37 +341,46 @@ public partial class DataAccess
 
         var items = await query.Skip(filter.Skip).Take(filter.PageSize).ToListAsync();
 
-        // Get source system names separately to avoid join issues
+        // Get source system names and current owners separately to avoid join issues
         var sourceSystemIds = items.Select(x => x.SourceSystemId).Distinct().ToList();
-        var sourceSystemNames = await data.SourceSystems
+        var sourceSystems = await data.SourceSystems
             .Where(x => sourceSystemIds.Contains(x.SourceSystemId))
-            .ToDictionaryAsync(x => x.SourceSystemId, x => x.Name);
+            .ToDictionaryAsync(x => x.SourceSystemId);
 
         return new DataObjects.AccessEventFilterResult
         {
-            Records = items.Select(x => new DataObjects.AccessEvent
-            {
-                AccessEventId = x.AccessEventId,
-                SourceSystemId = x.SourceSystemId,
-                SourceEventId = x.SourceEventId,
-                AccessedAt = x.AccessedAt,
-                ReceivedAt = x.ReceivedAt,
-                UserId = x.UserId,
-                UserName = x.UserName,
-                UserEmail = x.UserEmail,
-                UserDepartment = x.UserDepartment,
-                SubjectId = x.SubjectId,
-                SubjectType = x.SubjectType,
-                SubjectIds = x.SubjectIds,
-                SubjectCount = x.SubjectCount,
-                DataCategory = x.DataCategory,
-                AccessType = x.AccessType,
-                Purpose = x.Purpose,
-                IpAddress = x.IpAddress,
-                AdditionalData = x.AdditionalData,
-                AgreementText = x.AgreementText,
-                AgreementAcknowledgedAt = x.AgreementAcknowledgedAt,
-                SourceSystemName = sourceSystemNames.GetValueOrDefault(x.SourceSystemId, string.Empty),
+            Records = items.Select(x => {
+                sourceSystems.TryGetValue(x.SourceSystemId, out var source);
+                return new DataObjects.AccessEvent
+                {
+                    AccessEventId = x.AccessEventId,
+                    SourceSystemId = x.SourceSystemId,
+                    SourceEventId = x.SourceEventId,
+                    AccessedAt = x.AccessedAt,
+                    ReceivedAt = x.ReceivedAt,
+                    UserId = x.UserId,
+                    UserName = x.UserName,
+                    UserEmail = x.UserEmail,
+                    UserDepartment = x.UserDepartment,
+                    SubjectId = x.SubjectId,
+                    SubjectType = x.SubjectType,
+                    SubjectIds = x.SubjectIds,
+                    SubjectCount = x.SubjectCount,
+                    DataCategory = x.DataCategory,
+                    AccessType = x.AccessType,
+                    Purpose = x.Purpose,
+                    IpAddress = x.IpAddress,
+                    AdditionalData = x.AdditionalData,
+                    AgreementText = x.AgreementText,
+                    AgreementAcknowledgedAt = x.AgreementAcknowledgedAt,
+                    DataOwnerName = x.DataOwnerName,
+                    DataOwnerEmail = x.DataOwnerEmail,
+                    DataOwnerDepartment = x.DataOwnerDepartment,
+                    SourceSystemName = source?.Name ?? string.Empty,
+                    CurrentDataOwnerName = source?.DataOwnerName ?? string.Empty,
+                    CurrentDataOwnerEmail = source?.DataOwnerEmail ?? string.Empty,
+                    CurrentDataOwnerDepartment = source?.DataOwnerDepartment ?? string.Empty,
+                };
             }).ToList(),
             TotalRecords = total,
             Page = filter.Page,
@@ -280,11 +395,10 @@ public partial class DataAccess
             .FirstOrDefaultAsync(x => x.AccessEventId == id);
         if (item == null) return null;
 
-        // Get source system name separately
-        string sourceSystemName = string.Empty;
+        // Get source system name and current owner separately
+        EFModels.EFModels.SourceSystemItem? sourceSystem = null;
         if (item.SourceSystemId != default) {
-            var sourceSystem = await data.SourceSystems.FirstOrDefaultAsync(x => x.SourceSystemId == item.SourceSystemId);
-            sourceSystemName = sourceSystem?.Name ?? string.Empty;
+            sourceSystem = await data.SourceSystems.FirstOrDefaultAsync(x => x.SourceSystemId == item.SourceSystemId);
         }
 
         return new DataObjects.AccessEvent
@@ -309,7 +423,13 @@ public partial class DataAccess
             AdditionalData = item.AdditionalData,
             AgreementText = item.AgreementText,
             AgreementAcknowledgedAt = item.AgreementAcknowledgedAt,
-            SourceSystemName = sourceSystemName,
+            DataOwnerName = item.DataOwnerName,
+            DataOwnerEmail = item.DataOwnerEmail,
+            DataOwnerDepartment = item.DataOwnerDepartment,
+            SourceSystemName = sourceSystem?.Name ?? string.Empty,
+            CurrentDataOwnerName = sourceSystem?.DataOwnerName ?? string.Empty,
+            CurrentDataOwnerEmail = sourceSystem?.DataOwnerEmail ?? string.Empty,
+            CurrentDataOwnerDepartment = sourceSystem?.DataOwnerDepartment ?? string.Empty,
         };
     }
 
@@ -350,20 +470,58 @@ public partial class DataAccess
         item.AgreementText = dto.AgreementText ?? string.Empty;
         // Ensure AgreementAcknowledgedAt is stored as UTC
         item.AgreementAcknowledgedAt = dto.AgreementAcknowledgedAt.HasValue
-            ? (dto.AgreementAcknowledgedAt.Value.Kind == DateTimeKind.Utc 
-                ? dto.AgreementAcknowledgedAt.Value 
+            ? (dto.AgreementAcknowledgedAt.Value.Kind == DateTimeKind.Utc
+                ? dto.AgreementAcknowledgedAt.Value
                 : DateTime.SpecifyKind(dto.AgreementAcknowledgedAt.Value, DateTimeKind.Utc))
             : null;
 
-        await data.SaveChangesAsync();
+        // Snapshot the data owner at the time of access. Caller-supplied values win;
+        // otherwise capture the source system's current data owner on new events.
+        item.DataOwnerName = (dto.DataOwnerName ?? string.Empty).Trim();
+        item.DataOwnerEmail = (dto.DataOwnerEmail ?? string.Empty).Trim();
+        item.DataOwnerDepartment = (dto.DataOwnerDepartment ?? string.Empty).Trim();
+
+        var ownerSnapshotEmpty = item.DataOwnerName == string.Empty
+            && item.DataOwnerEmail == string.Empty
+            && item.DataOwnerDepartment == string.Empty;
+
+        if (isNew && ownerSnapshotEmpty && dto.SourceSystemId != Guid.Empty) {
+            var snapshotSource = await data.SourceSystems.FindAsync(dto.SourceSystemId);
+            if (snapshotSource != null) {
+                item.DataOwnerName = snapshotSource.DataOwnerName;
+                item.DataOwnerEmail = snapshotSource.DataOwnerEmail;
+                item.DataOwnerDepartment = snapshotSource.DataOwnerDepartment;
+            }
+        }
+
+        if (isNew) {
+            // New audit records join the tamper-evident chain. Edits of existing
+            // records deliberately do NOT rehash - verification flags them.
+            await _chainLock.WaitAsync();
+            try {
+                await AssignChainPositionAsync(item);
+                await data.SaveChangesAsync();
+            } finally {
+                _chainLock.Release();
+            }
+        } else {
+            await data.SaveChangesAsync();
+        }
 
         // Update LastEventReceivedAt on source system (works with all providers including InMemory)
+        string alertSourceName = string.Empty;
         if (isNew && dto.SourceSystemId != Guid.Empty) {
             var sourceSystem = await data.SourceSystems.FindAsync(dto.SourceSystemId);
             if (sourceSystem != null) {
                 sourceSystem.LastEventReceivedAt = DateTime.UtcNow;
+                alertSourceName = sourceSystem.Name;
                 await data.SaveChangesAsync();
             }
+        }
+
+        if (isNew) {
+            // Webhook alerts (large bulk access, after-hours) - best-effort, detached.
+            await QueueEventAlertsAsync(new[] { (item, alertSourceName) });
         }
 
         // Update DataSubject stats - handle both single and bulk access
@@ -386,10 +544,17 @@ public partial class DataAccess
             }
         }
         
+        if (isNew) {
+            await NotifyGlbaChangeAsync(DataObjects.SignalRUpdateType.GlbaAccessEvent, item.AccessEventId, "New");
+        }
+
         // Return updated DTO
         dto.AccessEventId = item.AccessEventId;
         dto.ReceivedAt = item.ReceivedAt;
         dto.SubjectCount = item.SubjectCount;
+        dto.DataOwnerName = item.DataOwnerName;
+        dto.DataOwnerEmail = item.DataOwnerEmail;
+        dto.DataOwnerDepartment = item.DataOwnerDepartment;
         return dto;
     }
 
@@ -410,22 +575,38 @@ public partial class DataAccess
         try {
             var now = DateTime.UtcNow;
 
-            // Tracks how many times each subject was touched, and its type,
-            // so subject statistics can be applied in one pass at the end.
+            // Tracks how many times each subject was touched, its type, and the
+            // earliest/latest access times, so subject statistics can be applied
+            // in one pass at the end.
             var subjectHits = new Dictionary<string, int>();
             var subjectTypes = new Dictionary<string, string>();
+            var subjectFirstAccess = new Dictionary<string, DateTime>();
+            var subjectLastAccess = new Dictionary<string, DateTime>();
 
-            void NoteSubject(string? subjectId, string? subjectType)
+            void NoteSubject(string? subjectId, string? subjectType, DateTime accessedAt)
             {
                 if (string.IsNullOrWhiteSpace(subjectId) || subjectId == "BULK" || subjectId == "SYSTEM") return;
                 subjectHits[subjectId] = subjectHits.TryGetValue(subjectId, out var c) ? c + 1 : 1;
                 if (!string.IsNullOrWhiteSpace(subjectType) && !subjectTypes.ContainsKey(subjectId)) {
                     subjectTypes[subjectId] = subjectType;
                 }
+                if (!subjectFirstAccess.TryGetValue(subjectId, out var first) || accessedAt < first) {
+                    subjectFirstAccess[subjectId] = accessedAt;
+                }
+                if (!subjectLastAccess.TryGetValue(subjectId, out var last) || accessedAt > last) {
+                    subjectLastAccess[subjectId] = accessedAt;
+                }
             }
 
             var records = new List<EFModels.EFModels.AccessEventItem>(items.Count);
             var sourceSystemIds = new HashSet<Guid>();
+
+            // Prefetch the source systems for the batch so each event can snapshot
+            // the data owner at the time of access.
+            var batchSourceIds = items.Select(x => x.SourceSystemId).Where(x => x != Guid.Empty).Distinct().ToList();
+            var batchSources = batchSourceIds.Count > 0
+                ? await data.SourceSystems.Where(x => batchSourceIds.Contains(x.SourceSystemId)).ToDictionaryAsync(x => x.SourceSystemId)
+                : new Dictionary<Guid, EFModels.EFModels.SourceSystemItem>();
 
             foreach (var dto in items) {
                 var accessedAt = dto.AccessedAt == default
@@ -433,6 +614,18 @@ public partial class DataAccess
                     : (dto.AccessedAt.Kind == DateTimeKind.Utc
                         ? dto.AccessedAt
                         : DateTime.SpecifyKind(dto.AccessedAt, DateTimeKind.Utc));
+
+                // Snapshot the data owner at the time of access. Caller-supplied
+                // values win; otherwise capture the source system's current owner.
+                var ownerName = (dto.DataOwnerName ?? string.Empty).Trim();
+                var ownerEmail = (dto.DataOwnerEmail ?? string.Empty).Trim();
+                var ownerDepartment = (dto.DataOwnerDepartment ?? string.Empty).Trim();
+                if (ownerName == string.Empty && ownerEmail == string.Empty && ownerDepartment == string.Empty
+                    && batchSources.TryGetValue(dto.SourceSystemId, out var ownerSource)) {
+                    ownerName = ownerSource.DataOwnerName;
+                    ownerEmail = ownerSource.DataOwnerEmail;
+                    ownerDepartment = ownerSource.DataOwnerDepartment;
+                }
 
                 var record = new EFModels.EFModels.AccessEventItem {
                     AccessEventId = Guid.NewGuid(),
@@ -459,6 +652,9 @@ public partial class DataAccess
                             ? dto.AgreementAcknowledgedAt.Value
                             : DateTime.SpecifyKind(dto.AgreementAcknowledgedAt.Value, DateTimeKind.Utc))
                         : null,
+                    DataOwnerName = ownerName,
+                    DataOwnerEmail = ownerEmail,
+                    DataOwnerDepartment = ownerDepartment,
                 };
 
                 records.Add(record);
@@ -473,23 +669,40 @@ public partial class DataAccess
                         var ids = System.Text.Json.JsonSerializer.Deserialize<List<string>>(dto.SubjectIds);
                         if (ids != null && ids.Count > 0) {
                             foreach (var id in ids) {
-                                NoteSubject(id, dto.SubjectType);
+                                NoteSubject(id, dto.SubjectType, accessedAt);
                             }
                         } else {
-                            NoteSubject(dto.SubjectId, dto.SubjectType);
+                            NoteSubject(dto.SubjectId, dto.SubjectType, accessedAt);
                         }
                     } catch {
-                        NoteSubject(dto.SubjectId, dto.SubjectType);
+                        NoteSubject(dto.SubjectId, dto.SubjectType, accessedAt);
                     }
                 } else {
-                    NoteSubject(dto.SubjectId, dto.SubjectType);
+                    NoteSubject(dto.SubjectId, dto.SubjectType, accessedAt);
                 }
             }
 
-            // Single insert for all events.
-            data.AccessEvents.AddRange(records);
-            await data.SaveChangesAsync();
+            // Single insert for all events, chained under one lock so the whole
+            // batch gets consecutive tamper-evident sequence numbers per source.
+            await _chainLock.WaitAsync();
+            try {
+                var chainTails = new Dictionary<Guid, EFModels.EFModels.AccessEventItem>();
+                foreach (var record in records) {
+                    chainTails.TryGetValue(record.SourceSystemId, out var pendingTail);
+                    await AssignChainPositionAsync(record, pendingTail);
+                    chainTails[record.SourceSystemId] = record;
+                }
+
+                data.AccessEvents.AddRange(records);
+                await data.SaveChangesAsync();
+            } finally {
+                _chainLock.Release();
+            }
             output.Saved = records.Count;
+
+            // Webhook alerts (large bulk access, after-hours) - best-effort, detached.
+            await QueueEventAlertsAsync(records.Select(r =>
+                (r, batchSources.TryGetValue(r.SourceSystemId, out var alertSource) ? alertSource.Name : string.Empty)));
 
             // Update LastEventReceivedAt once per source system.
             if (sourceSystemIds.Count > 0) {
@@ -508,14 +721,33 @@ public partial class DataAccess
                     .Where(x => ids.Contains(x.ExternalId))
                     .ToDictionaryAsync(x => x.ExternalId);
 
+                // Recalculate unique accessor counts for the affected subjects in one
+                // grouped query over direct-match events. Multi-subject (JSON) events
+                // are not matched here, so the value is treated as a floor and never
+                // allowed to regress below the previously stored count.
+                var accessorCounts = await data.AccessEvents
+                    .Where(x => ids.Contains(x.SubjectId))
+                    .GroupBy(x => x.SubjectId)
+                    .Select(g => new { SubjectId = g.Key, Count = g.Select(x => x.UserId).Distinct().Count() })
+                    .ToDictionaryAsync(x => x.SubjectId, x => x.Count);
+
                 foreach (var kvp in subjectHits) {
                     var externalId = kvp.Key;
                     var hits = kvp.Value;
                     subjectTypes.TryGetValue(externalId, out var type);
+                    var firstAccess = subjectFirstAccess.GetValueOrDefault(externalId, now);
+                    var lastAccess = subjectLastAccess.GetValueOrDefault(externalId, now);
+                    var uniqueAccessors = Math.Max(1, accessorCounts.GetValueOrDefault(externalId, 0));
 
                     if (existing.TryGetValue(externalId, out var subject)) {
-                        subject.LastAccessedAt = now;
+                        if (firstAccess < subject.FirstAccessedAt) {
+                            subject.FirstAccessedAt = firstAccess;
+                        }
+                        if (lastAccess > subject.LastAccessedAt) {
+                            subject.LastAccessedAt = lastAccess;
+                        }
                         subject.TotalAccessCount += hits;
+                        subject.UniqueAccessorCount = Math.Max(subject.UniqueAccessorCount, uniqueAccessors);
                         if (!string.IsNullOrEmpty(type) && string.IsNullOrEmpty(subject.SubjectType)) {
                             subject.SubjectType = type;
                         }
@@ -524,10 +756,10 @@ public partial class DataAccess
                             DataSubjectId = Guid.NewGuid(),
                             ExternalId = externalId,
                             SubjectType = string.IsNullOrEmpty(type) ? "Student" : type,
-                            FirstAccessedAt = now,
-                            LastAccessedAt = now,
+                            FirstAccessedAt = firstAccess,
+                            LastAccessedAt = lastAccess,
                             TotalAccessCount = hits,
-                            UniqueAccessorCount = 1,
+                            UniqueAccessorCount = uniqueAccessors,
                         });
                     }
                 }
@@ -537,6 +769,10 @@ public partial class DataAccess
 
             await data.SaveChangesAsync();
             output.Success = true;
+
+            if (output.Saved > 0) {
+                await NotifyGlbaChangeAsync(DataObjects.SignalRUpdateType.GlbaAccessEvent, null, "Batch:" + output.Saved.ToString());
+            }
         } catch (Exception ex) {
             output.Success = false;
             output.Message = ex.Message;

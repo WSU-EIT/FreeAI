@@ -48,6 +48,29 @@ public class GlbaEventRequest
     public string? DataCategory { get; set; }
 
     /// <summary>
+    /// Optional: department of the owner of the data this event is about.
+    /// When omitted, the server captures the source system's current data owner.
+    /// </summary>
+    [JsonPropertyName("dataOwnerDepartment")]
+    public string? DataOwnerDepartment { get; set; }
+
+    /// <summary>
+    /// Optional: email of the owner of the data this event is about.
+    /// When omitted, the server captures the source system's current data owner.
+    /// </summary>
+    [JsonPropertyName("dataOwnerEmail")]
+    public string? DataOwnerEmail { get; set; }
+
+    /// <summary>
+    /// Optional: name of the owner (point of contact) of the data this event is about.
+    /// Stored as an immutable snapshot on the event — "who owned the data at the time
+    /// of access". When omitted, the server captures the source system's current data
+    /// owner automatically.
+    /// </summary>
+    [JsonPropertyName("dataOwnerName")]
+    public string? DataOwnerName { get; set; }
+
+    /// <summary>
     /// The IP address from which the access was made.
     /// </summary>
     [JsonPropertyName("ipAddress")]

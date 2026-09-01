@@ -34,6 +34,14 @@ Wraps the FreeGLBA REST API in a typed `GlbaClient` class. Applications that acc
 dotnet add package FreeGLBA.Client
 ```
 
+## Data Ownership Fields
+
+`GlbaEventRequest` accepts optional `DataOwnerName`, `DataOwnerEmail`, and `DataOwnerDepartment`
+fields identifying the owner (point of contact) of the data the event is about — not the user who
+accessed it. When omitted, the server automatically snapshots the source system's current data
+owner onto the event, preserving "who owned this data at the time of access" even after ownership
+later changes hands.
+
 ## Quick Start
 
 ```csharp

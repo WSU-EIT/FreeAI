@@ -244,6 +244,62 @@
                         </div>
 
                         <hr />
+                        <h6 class="text-primary"><i class="fa-solid fa-user-shield me-1" aria-hidden="true"></i>Data Ownership</h6>
+                        @if (IsNew) {
+                            <p class="form-text mb-2">
+                                Who owns the data this event is about (point of contact) — not who accessed it.
+                                Leave blank to automatically snapshot the source system's current data owner.
+                            </p>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label" for="edit-accessevent-OwnerName">Owner Name</label>
+                                    <input type="text" id="edit-accessevent-OwnerName" class="form-control" @bind="Item.DataOwnerName" placeholder="Auto-captured if blank" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label" for="edit-accessevent-OwnerEmail">Owner Email</label>
+                                    <input type="email" id="edit-accessevent-OwnerEmail" class="form-control" @bind="Item.DataOwnerEmail" placeholder="Auto-captured if blank" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label" for="edit-accessevent-OwnerDepartment">Owner Department</label>
+                                    <input type="text" id="edit-accessevent-OwnerDepartment" class="form-control" @bind="Item.DataOwnerDepartment" placeholder="Auto-captured if blank" />
+                                </div>
+                            </div>
+                        } else {
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small mb-0">Owner at Time of Access (snapshot)</label>
+                                    @if (HasOwnerSnapshot) {
+                                        <div>
+                                            <strong>@Item.DataOwnerName</strong>
+                                            @if (!string.IsNullOrEmpty(Item.DataOwnerDepartment)) { <span class="text-muted"> — @Item.DataOwnerDepartment</span> }
+                                            @if (!string.IsNullOrEmpty(Item.DataOwnerEmail)) { <br /><a href="mailto:@Item.DataOwnerEmail" class="small">@Item.DataOwnerEmail</a> }
+                                        </div>
+                                    } else {
+                                        <div class="text-muted">Not recorded</div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small mb-0">Current Owner (live)</label>
+                                    @if (HasCurrentOwner) {
+                                        <div>
+                                            <strong>@Item.CurrentDataOwnerName</strong>
+                                            @if (!string.IsNullOrEmpty(Item.CurrentDataOwnerDepartment)) { <span class="text-muted"> — @Item.CurrentDataOwnerDepartment</span> }
+                                            @if (!string.IsNullOrEmpty(Item.CurrentDataOwnerEmail)) { <br /><a href="mailto:@Item.CurrentDataOwnerEmail" class="small">@Item.CurrentDataOwnerEmail</a> }
+                                        </div>
+                                    } else {
+                                        <div class="text-muted">Not set on source system</div>
+                                    }
+                                </div>
+                            </div>
+                            @if (OwnershipChanged) {
+                                <div class="alert alert-warning py-2 mb-3" role="status">
+                                    <i class="fa-solid fa-right-left me-1" aria-hidden="true"></i>
+                                    Ownership of this data has changed hands since this access was recorded.
+                                </div>
+                            }
+                        }
+
+                        <hr />
                         <h6 class="text-primary"><i class="fa-solid fa-file-signature me-1"></i>Privacy Agreement</h6>
                         <div class="mb-3">
                             <label class="form-label">Agreement Text</label>
@@ -335,6 +391,12 @@
     private bool IsNew => Item.AccessEventId == default;
     private bool _loading = true;
     private bool _saving = false;
+
+    private bool HasOwnerSnapshot => !string.IsNullOrEmpty(Item.DataOwnerName) || !string.IsNullOrEmpty(Item.DataOwnerEmail) || !string.IsNullOrEmpty(Item.DataOwnerDepartment);
+    private bool HasCurrentOwner => !string.IsNullOrEmpty(Item.CurrentDataOwnerName) || !string.IsNullOrEmpty(Item.CurrentDataOwnerEmail) || !string.IsNullOrEmpty(Item.CurrentDataOwnerDepartment);
+    private bool OwnershipChanged => HasOwnerSnapshot && HasCurrentOwner &&
+        (!string.Equals(Item.DataOwnerName, Item.CurrentDataOwnerName, StringComparison.OrdinalIgnoreCase) ||
+         !string.Equals(Item.DataOwnerEmail, Item.CurrentDataOwnerEmail, StringComparison.OrdinalIgnoreCase));
 
     private bool _bulkAccessMode = false;
     private string _bulkSubjectIdsText = "";
@@ -574,16 +636,16 @@
             .Where(id => !string.IsNullOrEmpty(id))
             .ToList();
 
-        // Удалить дубликаты
+        // Remove duplicates
         var uniqueIds = rawIds.Distinct().ToList();
 
         _parsedSubjectCount = uniqueIds.Count;
 
         if (_parsedSubjectCount > 0) {
-            // Хранить в виде массива JSON в SubjectIds
+            // Store as a JSON array in SubjectIds
             Item.SubjectIds = System.Text.Json.JsonSerializer.Serialize(uniqueIds);
             Item.SubjectCount = _parsedSubjectCount;
-            // Установить SubjectId в "BULK" или первый идентификатор для целей отображения
+            // Set SubjectId to "BULK" or the single ID for display purposes
             Item.SubjectId = _parsedSubjectCount > 1 ? "BULK" : uniqueIds[0];
         } else {
             Item.SubjectIds = "";

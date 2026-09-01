@@ -1,0 +1,386 @@
+@* FreeGLBA.App.ApiExplorer.razor - Interactive API explorer.
+   Conference-demo style page: paste a source-system API key, click a sample,
+   and watch the request hit the live server. Successful events appear on the
+   dashboard and Access Events page in real time via SignalR. *@
+@page "/ApiExplorer"
+@page "/{TenantCode}/ApiExplorer"
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="API Explorer" />
+            <h1 class="page-title mb-0">
+                <i class="fa-solid fa-flask me-2" aria-hidden="true"></i>API Explorer
+            </h1>
+        </div>
+
+        <p class="text-muted mt-2 mb-3">
+            Try the GLBA ingestion API against this running server. Each sample shows the exact
+            request it sends and the raw response that comes back. Events you log here are real -
+            open <a href="@Helpers.BuildUrl("AccessEvents")">Access Events</a> or the
+            <a href="@Helpers.BuildUrl("GlbaDashboard")">Dashboard</a> in another tab and watch
+            them appear live.
+        </p>
+
+        @* Step 1: API key *@
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2">
+                <h2 class="mb-0 fs-6"><span class="badge bg-primary me-2">1</span>Provide a Source System API key</h2>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-2">
+                    The <code>POST</code> samples authenticate the way an external application would:
+                    an <code>Authorization: Bearer</code> header carrying a source-system API key.
+                    Create or open a system under
+                    <a href="@Helpers.BuildUrl("SourceSystems")">Source Systems</a>, copy the key it
+                    generates, and paste it here. The key stays in this page - it is only sent to this server.
+                </p>
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                        <label class="form-label mb-1" for="api-explorer-key">API Key</label>
+                        <div class="input-group">
+                            <input type="@(_showKey ? "text" : "password")" id="api-explorer-key" class="form-control font-monospace"
+                                   @bind="_apiKey" @bind:event="oninput" placeholder="Paste the key shown when you saved the source system" autocomplete="off" />
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => _showKey = !_showKey"
+                                    aria-label="@(_showKey ? "Hide API key" : "Show API key")">
+                                <i class="fa-solid @(_showKey ? "fa-eye-slash" : "fa-eye")" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-text mt-md-4">
+                            @if (HasApiKey) {
+                                <span class="text-success"><i class="fa-solid fa-check me-1" aria-hidden="true"></i>Key set - the POST samples below are ready.</span>
+                            } else {
+                                <span><i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>The GET samples use your current login and work without a key.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Step 2: samples *@
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2">
+                <h2 class="mb-0 fs-6"><span class="badge bg-primary me-2">2</span>Send sample requests</h2>
+            </div>
+            <div class="card-body">
+
+                @* Sample: single event *@
+                <section class="mb-4" aria-labelledby="sample-single-heading">
+                    <h3 id="sample-single-heading" class="fs-6">
+                        <span class="badge text-bg-warning me-1">POST</span>
+                        <code>/api/glba/events</code> - Log a single access event
+                        <span class="badge bg-secondary ms-1">API key</span>
+                    </h3>
+                    <p class="small text-muted mb-2">
+                        The one call every integrated application makes: "<em>user X viewed subject Y's data for purpose P</em>".
+                        Edit the body freely, then send. Expect <strong>201 Created</strong>.
+                    </p>
+                    <label class="form-label small text-muted mb-1" for="sample-single-body">Request body (JSON)</label>
+                    <textarea id="sample-single-body" class="form-control font-monospace small mb-2" rows="10" @bind="_singleBody"></textarea>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="SendSingle" disabled="@(!HasApiKey || _singleState.Sending)">
+                            @if (_singleState.Sending) { <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i> } else { <i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i> }
+                            Send
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RegenerateSingleBody">
+                            <i class="fa-solid fa-rotate me-1" aria-hidden="true"></i>New sample data
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm" @onclick="SendSingleAgain"
+                                disabled="@(!HasApiKey || _singleState.Sending || string.IsNullOrEmpty(_lastSentSingleBody))"
+                                title="Re-sends the exact same body. The server deduplicates on sourceEventId and returns 409 Conflict.">
+                            <i class="fa-solid fa-clone me-1" aria-hidden="true"></i>Send again (expect 409 duplicate)
+                        </button>
+                    </div>
+                    @ResponsePanel(_singleState)
+                </section>
+
+                <hr />
+
+                @* Sample: bulk export *@
+                <section class="mb-4" aria-labelledby="sample-bulk-heading">
+                    <h3 id="sample-bulk-heading" class="fs-6">
+                        <span class="badge text-bg-warning me-1">POST</span>
+                        <code>/api/glba/events</code> - Log a bulk export (many subjects, one event)
+                        <span class="badge bg-secondary ms-1">API key</span>
+                    </h3>
+                    <p class="small text-muted mb-2">
+                        A CSV export that touched several people is one event with a <code>subjectIds</code> list.
+                        Every subject is tracked individually for audit purposes. Expect <strong>201 Created</strong>
+                        with a <code>subjectCount</code>.
+                    </p>
+                    <label class="form-label small text-muted mb-1" for="sample-bulk-body">Request body (JSON)</label>
+                    <textarea id="sample-bulk-body" class="form-control font-monospace small mb-2" rows="10" @bind="_bulkBody"></textarea>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="SendBulk" disabled="@(!HasApiKey || _bulkState.Sending)">
+                            @if (_bulkState.Sending) { <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i> } else { <i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i> }
+                            Send
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RegenerateBulkBody">
+                            <i class="fa-solid fa-rotate me-1" aria-hidden="true"></i>New sample data
+                        </button>
+                    </div>
+                    @ResponsePanel(_bulkState)
+                </section>
+
+                <hr />
+
+                @* Sample: stats (user auth) *@
+                <section class="mb-4" aria-labelledby="sample-stats-heading">
+                    <h3 id="sample-stats-heading" class="fs-6">
+                        <span class="badge text-bg-info me-1">GET</span>
+                        <code>/api/glba/stats/summary</code> - Dashboard statistics
+                        <span class="badge bg-secondary ms-1">Your login</span>
+                    </h3>
+                    <p class="small text-muted mb-2">
+                        The query side of the API: aggregate statistics for the dashboard, authenticated as you
+                        (no API key needed). Send an event above, then call this again and watch the numbers move.
+                    </p>
+                    <button type="button" class="btn btn-primary btn-sm mb-2" @onclick="SendStats" disabled="@_statsState.Sending">
+                        @if (_statsState.Sending) { <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i> } else { <i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i> }
+                        Send
+                    </button>
+                    @ResponsePanel(_statsState)
+                </section>
+
+                <hr />
+
+                @* Sample: recent events (user auth) *@
+                <section aria-labelledby="sample-recent-heading">
+                    <h3 id="sample-recent-heading" class="fs-6">
+                        <span class="badge text-bg-info me-1">GET</span>
+                        <code>/api/glba/events/recent?limit=5</code> - Recent events feed
+                        <span class="badge bg-secondary ms-1">Your login</span>
+                    </h3>
+                    <p class="small text-muted mb-2">
+                        The most recent events, newest first - the event you just logged should be at the top,
+                        including its <code>dataOwnerName</code> snapshot.
+                    </p>
+                    <button type="button" class="btn btn-primary btn-sm mb-2" @onclick="SendRecent" disabled="@_recentState.Sending">
+                        @if (_recentState.Sending) { <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i> } else { <i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i> }
+                        Send
+                    </button>
+                    @ResponsePanel(_recentState)
+                </section>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header py-2">
+                <h2 class="mb-0 fs-6"><span class="badge bg-primary me-2">3</span>Integrate your own application</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="small text-muted mb-2">Any language, plain HTTP:</p>
+                        <pre class="bg-dark text-light p-2 rounded small mb-0"><code>POST /api/glba/events
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{ "userId": "jsmith", "subjectId": "S12345678",
+  "accessType": "View", "purpose": "Enrollment verification" }</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="small text-muted mb-2">.NET, one package and one call:</p>
+                        <pre class="bg-dark text-light p-2 rounded small mb-0"><code>// dotnet add package FreeGLBA.Client
+var client = new GlbaClient("https://your-server", "YOUR_API_KEY");
+await client.LogAccessAsync(new GlbaEventRequest {
+    UserId = "jsmith", SubjectId = "S12345678",
+    AccessType = "View", Purpose = "Enrollment verification"
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "apiexplorer";
+    private string _apiKey = "";
+    private bool _showKey = false;
+    private string _singleBody = "";
+    private string _bulkBody = "";
+    private string _lastSentSingleBody = "";
+
+    private ResponseState _singleState = new();
+    private ResponseState _bulkState = new();
+    private ResponseState _statsState = new();
+    private ResponseState _recentState = new();
+
+    private static readonly Random _random = new();
+
+    private bool HasApiKey => !string.IsNullOrWhiteSpace(_apiKey);
+
+    /// <summary>Shared response panel: status badge plus pretty-printed JSON body.</summary>
+    private RenderFragment<ResponseState> ResponsePanel => state =>
+        @<div aria-live="polite">
+            @if (state.HasResponse) {
+                <div class="small mb-1">
+                    <span class="badge @(state.Success ? "text-bg-success" : "text-bg-danger")">@state.StatusLine</span>
+                </div>
+                <pre class="bg-body-tertiary border rounded p-2 small mb-0" style="max-height: 300px; overflow: auto;"><code>@state.Body</code></pre>
+            } else if (state.Sending) {
+                <div class="text-muted small" role="status"><i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>Sending...</div>
+            }
+        </div>;
+
+    public void Dispose() { Model.OnChange -= StateHasChanged; }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+        RegenerateSingleBody();
+        RegenerateBulkBody();
+    }
+
+    protected override void OnParametersSet() {
+        Model.TenantCodeFromUrl = TenantCode;
+    }
+
+    private void RegenerateSingleBody() {
+        var evt = _random.Next(10000, 99999);
+        _singleBody =
+$@"{{
+  ""sourceEventId"": ""DEMO-{DateTime.Now:yyyyMMdd}-{evt}"",
+  ""userId"": ""E{_random.Next(100000, 999999)}"",
+  ""userName"": ""Demo User"",
+  ""userDepartment"": ""Financial Aid"",
+  ""subjectId"": ""S{_random.Next(10000000, 99999999)}"",
+  ""subjectType"": ""Student"",
+  ""accessType"": ""View"",
+  ""dataCategory"": ""Financial Aid"",
+  ""purpose"": ""API Explorer demonstration"",
+  ""accessedAt"": ""{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}""
+}}";
+    }
+
+    private void RegenerateBulkBody() {
+        var subjects = string.Join(", ", Enumerable.Range(0, 4).Select(_ => $"\"S{_random.Next(10000000, 99999999)}\""));
+        _bulkBody =
+$@"{{
+  ""sourceEventId"": ""DEMO-BULK-{DateTime.Now:yyyyMMdd}-{_random.Next(10000, 99999)}"",
+  ""userId"": ""E{_random.Next(100000, 999999)}"",
+  ""userName"": ""Demo User"",
+  ""userDepartment"": ""Bursar"",
+  ""subjectIds"": [ {subjects} ],
+  ""subjectType"": ""Student"",
+  ""accessType"": ""Export"",
+  ""dataCategory"": ""Account Balance"",
+  ""purpose"": ""Monthly reconciliation export (API Explorer demo)"",
+  ""accessedAt"": ""{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ssZ}""
+}}";
+    }
+
+    private async Task SendSingle() {
+        _lastSentSingleBody = _singleBody;
+        await SendApiKeyRequest(_singleState, "api/glba/events", _singleBody);
+    }
+
+    private async Task SendSingleAgain() {
+        await SendApiKeyRequest(_singleState, "api/glba/events", _lastSentSingleBody);
+    }
+
+    private async Task SendBulk() {
+        await SendApiKeyRequest(_bulkState, "api/glba/events", _bulkBody);
+    }
+
+    private async Task SendStats() {
+        await SendUserRequest(_statsState, "api/glba/stats/summary");
+    }
+
+    private async Task SendRecent() {
+        await SendUserRequest(_recentState, "api/glba/events/recent?limit=5");
+    }
+
+    /// <summary>Sends a POST authenticated with the pasted source-system API key, exactly as an external app would.</summary>
+    private async Task SendApiKeyRequest(ResponseState state, string url, string body) {
+        state.Sending = true;
+        state.HasResponse = false;
+        StateHasChanged();
+
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        try {
+            var request = new HttpRequestMessage(HttpMethod.Post, url) {
+                Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json"),
+            };
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey.Trim());
+
+            var response = await Http.SendAsync(request);
+            await CaptureResponse(state, response, watch.ElapsedMilliseconds);
+        } catch (Exception ex) {
+            state.StatusLine = "Request failed";
+            state.Body = ex.Message;
+            state.Success = false;
+            state.HasResponse = true;
+        } finally {
+            state.Sending = false;
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>Sends a GET authenticated as the logged-in user (same Token headers the app itself uses).</summary>
+    private async Task SendUserRequest(ResponseState state, string url) {
+        state.Sending = true;
+        state.HasResponse = false;
+        StateHasChanged();
+
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        try {
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("TenantId", Model.User.TenantId.ToString());
+            if (!string.IsNullOrWhiteSpace(Model.User.AuthToken) && Model.User.AuthToken != "na") {
+                request.Headers.Add("Token", Model.User.AuthToken);
+            }
+            if (!string.IsNullOrWhiteSpace(Model.Fingerprint)) {
+                request.Headers.Add("Fingerprint", Model.Fingerprint);
+            }
+
+            var response = await Http.SendAsync(request);
+            await CaptureResponse(state, response, watch.ElapsedMilliseconds);
+        } catch (Exception ex) {
+            state.StatusLine = "Request failed";
+            state.Body = ex.Message;
+            state.Success = false;
+            state.HasResponse = true;
+        } finally {
+            state.Sending = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CaptureResponse(ResponseState state, HttpResponseMessage response, long elapsedMs) {
+        var raw = await response.Content.ReadAsStringAsync();
+        state.StatusLine = $"{(int)response.StatusCode} {response.StatusCode} · {elapsedMs} ms";
+        state.Success = response.IsSuccessStatusCode;
+        state.Body = PrettyJson(raw);
+        state.HasResponse = true;
+    }
+
+    private static string PrettyJson(string raw) {
+        if (string.IsNullOrWhiteSpace(raw)) return "(empty response body)";
+        try {
+            using var doc = System.Text.Json.JsonDocument.Parse(raw);
+            return System.Text.Json.JsonSerializer.Serialize(doc.RootElement,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        } catch {
+            return raw;
+        }
+    }
+
+    public class ResponseState
+    {
+        public bool Sending { get; set; }
+        public bool HasResponse { get; set; }
+        public bool Success { get; set; }
+        public string StatusLine { get; set; } = "";
+        public string Body { get; set; } = "";
+    }
+}

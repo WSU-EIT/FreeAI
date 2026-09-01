@@ -142,8 +142,17 @@ public async Task<ActionResult<GlbaEventResponse>> PostEvent(
 | `additionalData` | string | No | JSON string with custom metadata |
 | `agreementText` | string | No | Privacy agreement text shown to user |
 | `agreementAcknowledgedAt` | datetime | No | When user acknowledged agreement |
+| `dataOwnerName` | string | No | Owner (point of contact) of the data this event is about |
+| `dataOwnerEmail` | string | No | Email of the data owner |
+| `dataOwnerDepartment` | string | No | Department of the data owner |
 
 > *`subjectId` is optional. If omitted, defaults to "SYSTEM" for general audit logging.
+
+> **Data-owner snapshot.** When the `dataOwner*` fields are omitted, the server copies the source
+> system's *current* data owner onto the event at ingest time. Either way the event stores an
+> immutable snapshot of "who owned this data at the time of access"; the source system record holds
+> the live "who owns it now", and `POST api/Data/GetDataOwnershipHistory` (user auth) returns the
+> full ownership history for a source system.
 
 #### Example Requests
 

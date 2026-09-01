@@ -34,6 +34,11 @@ public partial interface IDataAccess
 
     // ComplianceReport methods
     Task<DataObjects.ComplianceReportFilterResult> GetComplianceReportsAsync(DataObjects.ComplianceReportFilter filter);
+    /// <summary>
+    /// Gets the data-ownership history for a source system, current owner first.
+    /// The row with EndedAt == null is the current owner.
+    /// </summary>
+    Task<List<DataObjects.DataOwnership>> GetDataOwnershipHistoryAsync(Guid sourceSystemId);
     Task<DataObjects.DataSubject?> GetDataSubjectAsync(Guid id);
     Task<List<DataObjects.DataSubjectLookup>> GetDataSubjectLookupsAsync();
 
@@ -52,5 +57,10 @@ public partial interface IDataAccess
     Task<DataObjects.AccessEventBulkResult> SaveAccessEventsAsync(List<DataObjects.AccessEvent> items);
     Task<DataObjects.ComplianceReport?> SaveComplianceReportAsync(DataObjects.ComplianceReport dto);
     Task<DataObjects.DataSubject?> SaveDataSubjectAsync(DataObjects.DataSubject dto);
-    Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto);
+
+    /// <summary>
+    /// Creates or updates a SourceSystem. When the data-owner fields change, the open
+    /// DataOwnership history row is closed and a new one is written, stamped with savedBy.
+    /// </summary>
+    Task<DataObjects.SourceSystem?> SaveSourceSystemAsync(DataObjects.SourceSystem dto, string? savedBy = null);
 }

@@ -1,0 +1,110 @@
+@* FreeGLBA.App.TrendChart.razor - Self-contained daily-volume column chart.
+   Inline SVG with no external libraries: total events per day as columns, with
+   the export/download portion overlaid from the same baseline ("of which
+   exports"). Colors come from Bootstrap theme variables so both themes work. *@
+
+@if (Days.Count > 0) {
+    <div class="d-flex flex-wrap gap-3 small text-muted mb-1" aria-hidden="true">
+        <span><span class="trend-swatch" style="background: var(--bs-primary);"></span>All events</span>
+        <span><span class="trend-swatch" style="background: var(--bs-warning);"></span>of which exports / downloads</span>
+    </div>
+
+    <svg viewBox="0 0 @ViewWidth @ViewHeight" style="width: 100%; height: auto;" role="img"
+         aria-label="@AriaSummary" preserveAspectRatio="xMidYMid meet">
+        @* Horizontal gridlines with y-axis labels *@
+        @for (var i = 0; i <= GridLines; i++) {
+            var value = MaxValue * i / GridLines;
+            var y = PlotBottom - (PlotHeight * i / GridLines);
+            <line x1="@LeftMargin" y1="@y" x2="@(ViewWidth - RightMargin)" y2="@y"
+                  stroke="var(--bs-border-color)" stroke-width="1" stroke-dasharray="@(i == 0 ? "none" : "2,4")" />
+            @* Razor reserves the <text> tag, so SVG text is emitted as markup. *@
+            @((MarkupString)$"<text x=\"{LeftMargin - 8}\" y=\"{y + 4}\" text-anchor=\"end\" font-size=\"11\" fill=\"var(--bs-secondary-color)\">{value:N0}</text>")
+        }
+
+        @* Columns *@
+        @for (var i = 0; i < Days.Count; i++) {
+            var day = Days[i];
+            var x = LeftMargin + (SlotWidth * i) + (SlotWidth - BarWidth) / 2;
+            var totalHeight = MaxValue == 0 ? 0 : PlotHeight * day.Events / MaxValue;
+            var exportHeight = MaxValue == 0 ? 0 : PlotHeight * day.Exports / MaxValue;
+            <g>
+                <title>@day.Date.ToString("MMM d"): @day.Events event@(day.Events == 1 ? "" : "s"), @day.Exports export@(day.Exports == 1 ? "" : "s")</title>
+                @* Hover target covering the full column slot *@
+                <rect x="@(LeftMargin + SlotWidth * i)" y="@PlotTop" width="@SlotWidth" height="@PlotHeight" fill="transparent" />
+                @if (day.Events > 0) {
+                    <rect x="@x" y="@(PlotBottom - totalHeight)" width="@BarWidth" height="@totalHeight"
+                          rx="1.5" fill="var(--bs-primary)" opacity="0.85" />
+                }
+                @if (day.Exports > 0) {
+                    <rect x="@x" y="@(PlotBottom - exportHeight)" width="@BarWidth" height="@exportHeight"
+                          rx="1.5" fill="var(--bs-warning)" />
+                }
+            </g>
+        }
+
+        @* X-axis labels roughly weekly, always including the first and last day *@
+        @for (var i = 0; i < Days.Count; i++) {
+            if (i % LabelEvery == 0 || i == Days.Count - 1) {
+                var x = LeftMargin + (SlotWidth * i) + SlotWidth / 2;
+                @((MarkupString)$"<text x=\"{x}\" y=\"{PlotBottom + 18}\" text-anchor=\"middle\" font-size=\"11\" fill=\"var(--bs-secondary-color)\">{Days[i].Date:MMM d}</text>")
+            }
+        }
+    </svg>
+
+    <span class="visually-hidden">@AriaSummary</span>
+}
+
+<style>
+    .trend-swatch {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        margin-right: 5px;
+        vertical-align: -1px;
+    }
+</style>
+
+@code {
+    /// <summary>Daily counts, oldest first (as returned by the insights endpoint).</summary>
+    [Parameter] public List<DataObjects.GlbaDailyCount> Days { get; set; } = new();
+
+    private const double ViewWidth = 920;
+    private const double ViewHeight = 260;
+    private const double LeftMargin = 46;
+    private const double RightMargin = 8;
+    private const double PlotTop = 10;
+    private const double PlotBottom = ViewHeight - 28;
+    private const int GridLines = 4;
+
+    private double PlotHeight => PlotBottom - PlotTop;
+    private double SlotWidth => Days.Count == 0 ? 0 : (ViewWidth - LeftMargin - RightMargin) / Days.Count;
+    private double BarWidth => Math.Max(3, SlotWidth * 0.62);
+    private int LabelEvery => Math.Max(1, (int)Math.Ceiling(Days.Count / 6.0));
+
+    /// <summary>Max y-value rounded up to a clean gridline step.</summary>
+    private int MaxValue {
+        get {
+            var max = Days.Count == 0 ? 0 : Days.Max(x => x.Events);
+            if (max <= 4) return 4;
+            var step = (int)Math.Ceiling(max / (double)GridLines);
+            // Round the step to 1/2/5 × 10^n so the axis labels stay clean.
+            var magnitude = (int)Math.Pow(10, (int)Math.Log10(step));
+            foreach (var nice in new[] { 1, 2, 5, 10 }) {
+                if (step <= nice * magnitude) { step = nice * magnitude; break; }
+            }
+            return step * GridLines;
+        }
+    }
+
+    private string AriaSummary {
+        get {
+            if (Days.Count == 0) return "No access events recorded yet.";
+            var total = Days.Sum(x => x.Events);
+            var exports = Days.Sum(x => x.Exports);
+            var peak = Days.OrderByDescending(x => x.Events).First();
+            return $"Column chart of access events per day from {Days.First().Date:MMMM d} to {Days.Last().Date:MMMM d}: " +
+                   $"{total:N0} events total, {exports:N0} of them exports or downloads, peaking at {peak.Events:N0} on {peak.Date:MMMM d}.";
+        }
+    }
+}

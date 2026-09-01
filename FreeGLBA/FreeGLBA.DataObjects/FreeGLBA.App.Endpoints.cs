@@ -31,6 +31,9 @@ public partial class DataObjects
             /// <summary>Delete SourceSystem by ID</summary>
             public const string DeleteSourceSystem = "api/Data/DeleteSourceSystem";
 
+            /// <summary>Get the data-ownership history for a SourceSystem (current owner first)</summary>
+            public const string GetDataOwnershipHistory = "api/Data/GetDataOwnershipHistory";
+
             // ============================================================
             // ACCESSEVENT ENDPOINTS
             // ============================================================
@@ -72,6 +75,9 @@ public partial class DataObjects
             /// <summary>Delete DataSubject by ID</summary>
             public const string DeleteDataSubject = "api/Data/DeleteDataSubject";
 
+            /// <summary>Generate a PDF of one subject's complete access history (DSAR-style export)</summary>
+            public const string GenerateSubjectAccessHistoryPdf = "api/Data/GenerateSubjectAccessHistoryPdf";
+
             // ============================================================
             // COMPLIANCEREPORT ENDPOINTS
             // ============================================================
@@ -91,9 +97,31 @@ public partial class DataObjects
             /// <summary>Delete ComplianceReport by ID</summary>
             public const string DeleteComplianceReport = "api/Data/DeleteComplianceReport";
 
+            /// <summary>Generate a CSV export of every event in the report's period</summary>
+            public const string GenerateComplianceReportCsv = "api/Data/GenerateComplianceReportCsv";
+
+            /// <summary>Generate a PDF summary for the report's period</summary>
+            public const string GenerateComplianceReportPdf = "api/Data/GenerateComplianceReportPdf";
+
             // ============================================================
             // ACCESSOR (USER WHO ACCESSED DATA) ENDPOINTS
             // ============================================================
+
+            // ============================================================
+            // GLBA SETTINGS AND INTEGRITY ENDPOINTS
+            // ============================================================
+
+            /// <summary>Get the app-wide GLBA settings (alerts, timezone, thresholds)</summary>
+            public const string GetGlbaSettings = "api/Data/GetGlbaSettings";
+
+            /// <summary>Save the app-wide GLBA settings</summary>
+            public const string SaveGlbaSettings = "api/Data/SaveGlbaSettings";
+
+            /// <summary>Send a test alert to the configured webhook</summary>
+            public const string SendTestGlbaAlert = "api/Data/SendTestGlbaAlert";
+
+            /// <summary>Verify a source system's tamper-evident event hash chain</summary>
+            public const string VerifyAccessEventChain = "api/Data/VerifyAccessEventChain";
 
             /// <summary>Get filtered list of Accessors (users who have accessed data)</summary>
             public const string GetAccessors = "api/Data/GetAccessors";

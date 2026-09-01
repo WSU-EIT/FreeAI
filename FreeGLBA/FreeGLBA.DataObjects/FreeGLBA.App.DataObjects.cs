@@ -9,12 +9,84 @@
 
 public partial class DataObjects
 {
+    public partial class SignalRUpdateType
+    {
+        /// <summary>A GLBA access event was recorded (single event or batch).</summary>
+        public const string GlbaAccessEvent = "GlbaAccessEvent";
+        /// <summary>A GLBA source system was created or updated (including data-owner changes).</summary>
+        public const string GlbaSourceSystem = "GlbaSourceSystem";
+    }
+
+    /// <summary>
+    /// App-wide GLBA configuration: webhook alerting, thresholds, and the
+    /// institution timezone used for after-hours detection. Stored via the
+    /// framework Settings table (setting name "GlbaSettings").
+    /// </summary>
+    public class GlbaSettings
+    {
+        /// <summary>Send an immediate webhook alert when an event accesses this many subjects or more.</summary>
+        public int BulkExportAlertThreshold { get; set; } = 50;
+        /// <summary>Local hour (0-23) when business hours begin.</summary>
+        public int BusinessHoursStart { get; set; } = 7;
+        /// <summary>Local hour (0-23) when business hours end (exclusive).</summary>
+        public int BusinessHoursEnd { get; set; } = 19;
+        /// <summary>Send an immediate webhook alert for events recorded outside business hours.</summary>
+        public bool AlertOnAfterHours { get; set; } = false;
+        /// <summary>Master switch for webhook alerts.</summary>
+        public bool AlertsEnabled { get; set; } = false;
+        /// <summary>
+        /// Windows time zone id (e.g. "Pacific Standard Time") used for after-hours
+        /// detection. Empty means UTC.
+        /// </summary>
+        public string InstitutionTimeZone { get; set; } = string.Empty;
+        /// <summary>Whether weekend access counts as after-hours.</summary>
+        public bool WeekendsAreAfterHours { get; set; } = true;
+        /// <summary>
+        /// Webhook URL alerts are POSTed to as JSON with a "text" field
+        /// (compatible with Slack and Teams incoming webhooks).
+        /// </summary>
+        public string WebhookUrl { get; set; } = string.Empty;
+    }
+
+    /// <summary>One problem found while verifying an access-event hash chain.</summary>
+    public class ChainVerificationIssue
+    {
+        public Guid AccessEventId { get; set; }
+        public long ChainSequence { get; set; }
+        public string Detail { get; set; } = string.Empty;
+        /// <summary>ContentMismatch, BrokenLink, or SequenceGap.</summary>
+        public string IssueType { get; set; } = string.Empty;
+    }
+
+    /// <summary>Result of verifying a source system's tamper-evident hash chain.</summary>
+    public class ChainVerificationResult
+    {
+        public int EventsChecked { get; set; }
+        public List<ChainVerificationIssue> Issues { get; set; } = new();
+        public Guid SourceSystemId { get; set; }
+        public string SourceSystemName { get; set; } = string.Empty;
+        /// <summary>Events recorded before integrity chaining existed (no hash to check).</summary>
+        public int UnhashedEvents { get; set; }
+        public bool Valid => Issues.Count == 0;
+        public DateTime VerifiedAt { get; set; }
+    }
+
     /// <summary>SourceSystem data transfer object.</summary>
     public class SourceSystem
     {
         /// <summary>Hashed API key (stored in database)</summary>
         public string ApiKey { get; set; } = string.Empty;
         public string ContactEmail { get; set; } = string.Empty;
+        /// <summary>When the current data owner was assigned. Null when no owner is recorded.</summary>
+        public DateTime? DataOwnerAssignedAt { get; set; }
+        /// <summary>Department of the current data owner (e.g., "Financial Aid Office").</summary>
+        public string DataOwnerDepartment { get; set; } = string.Empty;
+        /// <summary>Email of the current data owner (point of contact for this system's data).</summary>
+        public string DataOwnerEmail { get; set; } = string.Empty;
+        /// <summary>Name of the current data owner (point of contact for this system's data).</summary>
+        public string DataOwnerName { get; set; } = string.Empty;
+        /// <summary>Phone number of the current data owner.</summary>
+        public string DataOwnerPhone { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public long EventCount { get; set; } = 0;
         public bool IsActive { get; set; } = true;
@@ -54,6 +126,31 @@ public partial class DataObjects
     }
 
 
+    /// <summary>
+    /// One ownership period for a source system's data. The row with EndedAt == null
+    /// is the current owner. Answers "who owned this data at time T".
+    /// </summary>
+    public class DataOwnership
+    {
+        /// <summary>When this owner became responsible for the data.</summary>
+        public DateTime AssignedAt { get; set; }
+        /// <summary>Who recorded this ownership assignment.</summary>
+        public string AssignedBy { get; set; } = string.Empty;
+        /// <summary>Primary key</summary>
+        public Guid DataOwnershipId { get; set; }
+        /// <summary>When this ownership period ended. Null while current.</summary>
+        public DateTime? EndedAt { get; set; }
+        /// <summary>True when this row is the current owner.</summary>
+        public bool IsCurrent => EndedAt == null;
+        public string Notes { get; set; } = string.Empty;
+        public string OwnerDepartment { get; set; } = string.Empty;
+        public string OwnerEmail { get; set; } = string.Empty;
+        public string OwnerName { get; set; } = string.Empty;
+        public string OwnerPhone { get; set; } = string.Empty;
+        public Guid SourceSystemId { get; set; }
+    }
+
+
     /// <summary>AccessEvent data transfer object.</summary>
     public class AccessEvent
     {
@@ -67,7 +164,19 @@ public partial class DataObjects
         public DateTime? AgreementAcknowledgedAt { get; set; }
         /// <summary>Copy of the privacy notice/agreement text shown to user at time of access.</summary>
         public string AgreementText { get; set; } = string.Empty;
+        /// <summary>Live: department of the source system's current data owner (populated on read, not stored on the event).</summary>
+        public string CurrentDataOwnerDepartment { get; set; } = string.Empty;
+        /// <summary>Live: email of the source system's current data owner (populated on read, not stored on the event).</summary>
+        public string CurrentDataOwnerEmail { get; set; } = string.Empty;
+        /// <summary>Live: name of the source system's current data owner (populated on read, not stored on the event).</summary>
+        public string CurrentDataOwnerName { get; set; } = string.Empty;
         public string DataCategory { get; set; } = string.Empty;
+        /// <summary>Snapshot: department of the data owner at the time of access.</summary>
+        public string DataOwnerDepartment { get; set; } = string.Empty;
+        /// <summary>Snapshot: email of the data owner at the time of access.</summary>
+        public string DataOwnerEmail { get; set; } = string.Empty;
+        /// <summary>Snapshot: name of the data owner (point of contact for the data this event is about) at the time of access.</summary>
+        public string DataOwnerName { get; set; } = string.Empty;
         public string IpAddress { get; set; } = string.Empty;
         public string Purpose { get; set; } = string.Empty;
         public DateTime ReceivedAt { get; set; }
@@ -227,6 +336,14 @@ public partial class DataObjects
         public bool SortDescending { get; set; } = true;
         public (decimal? Min, decimal? Max)? UniqueSubjectsFilter { get; set; }
         public (decimal? Min, decimal? Max)? UniqueUsersFilter { get; set; }
+    }
+
+    /// <summary>A generated compliance report file (CSV detail or PDF summary).</summary>
+    public class ComplianceReportExport
+    {
+        public byte[] Bytes { get; set; } = Array.Empty<byte>();
+        public string ContentType { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
     }
 
     /// <summary>Paginated result for ComplianceReport queries.</summary>

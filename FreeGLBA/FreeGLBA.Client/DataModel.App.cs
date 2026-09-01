@@ -4,6 +4,19 @@ public partial class BlazorDataModel
 {
     private List<string> _MyValues = new List<string>();
 
+    /// <summary>
+    /// Raised when a GLBA SignalR update arrives (new access events, source-system
+    /// changes). Pages subscribe to refresh their data in real time and must
+    /// unsubscribe in Dispose.
+    /// </summary>
+    public event Action<DataObjects.SignalRUpdate>? OnGlbaUpdate;
+
+    /// <summary>Notify subscribed pages that GLBA data changed.</summary>
+    public void NotifyGlbaUpdate(DataObjects.SignalRUpdate update)
+    {
+        OnGlbaUpdate?.Invoke(update);
+    }
+
     private bool HaveDeletedRecordsApp {
         get {
             bool output = false;

@@ -2,7 +2,7 @@
 @inject BlazorDataModel Model
 
 <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -48,9 +48,39 @@
                         <input type="text" class="form-control" @bind="Item.DisplayName" placeholder="Friendly name for display" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Contact Email</label>
-                        <input type="email" class="form-control" @bind="Item.ContactEmail" placeholder="admin@example.com" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        <label class="form-label" for="edit-sourcesystem-ContactEmail">Technical Contact Email</label>
+                        <input type="email" id="edit-sourcesystem-ContactEmail" class="form-control" @bind="Item.ContactEmail" placeholder="admin@example.com" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        <div class="form-text">Who to contact about the integration itself (API issues, outages).</div>
                     </div>
+
+                    <hr />
+                    <h6 class="text-muted"><i class="fa-solid fa-user-shield me-1" aria-hidden="true"></i>Data Owner (Point of Contact for the Data)</h6>
+                    <p class="form-text mb-2">
+                        The person or office responsible for the data this system holds — not who requests it.
+                        Each access event snapshots the owner at the time of access, so you can always answer
+                        "who owned this data then" and "who owns it now".
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="edit-sourcesystem-OwnerName">Owner Name</label>
+                            <input type="text" id="edit-sourcesystem-OwnerName" class="form-control" @bind="Item.DataOwnerName" placeholder="e.g., Jane Doe" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="edit-sourcesystem-OwnerEmail">Owner Email</label>
+                            <input type="email" id="edit-sourcesystem-OwnerEmail" class="form-control" @bind="Item.DataOwnerEmail" placeholder="owner@example.edu" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="edit-sourcesystem-OwnerDepartment">Owner Department</label>
+                            <input type="text" id="edit-sourcesystem-OwnerDepartment" class="form-control" @bind="Item.DataOwnerDepartment" placeholder="e.g., Financial Aid Office" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="edit-sourcesystem-OwnerPhone">Owner Phone</label>
+                            <input type="tel" id="edit-sourcesystem-OwnerPhone" class="form-control" @bind="Item.DataOwnerPhone" placeholder="e.g., 509-555-0100" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
+                        </div>
+                    </div>
+
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="isActive" @bind="Item.IsActive" disabled="@(!string.IsNullOrEmpty(Item.NewApiKey))" />
                         <label class="form-check-label" for="isActive">Active</label>
@@ -77,6 +107,54 @@
                             </button>
                             <div class="form-text text-warning">Warning: Regenerating will invalidate the current key immediately.</div>
                         </div>
+
+                        <hr />
+                        <h6 class="text-muted"><i class="fa-solid fa-clock-rotate-left me-1" aria-hidden="true"></i>Ownership History</h6>
+                        @if (_loadingHistory) {
+                            <div class="text-muted small py-2"><i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>Loading history...</div>
+                        } else if (_ownershipHistory.Count == 0) {
+                            <p class="text-muted small mb-3">No data owner has been recorded yet. Set one above and save.</p>
+                        } else {
+                            <div class="table-responsive mb-3">
+                                <table class="table table-sm align-middle mb-0">
+                                    <caption class="visually-hidden">Data ownership history for this source system</caption>
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">Owner</th>
+                                            <th scope="col">Department</th>
+                                            <th scope="col">From</th>
+                                            <th scope="col">Until</th>
+                                            <th scope="col">Recorded By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var h in _ownershipHistory) {
+                                            <tr class="@(h.IsCurrent ? "table-success" : "")">
+                                                <td>
+                                                    <strong>@(string.IsNullOrEmpty(h.OwnerName) ? "-" : h.OwnerName)</strong>
+                                                    @if (h.IsCurrent) {
+                                                        <span class="badge bg-success ms-1">Current</span>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(h.OwnerEmail)) {
+                                                        <br /><a href="mailto:@h.OwnerEmail" class="small">@h.OwnerEmail</a>
+                                                    }
+                                                </td>
+                                                <td>@(string.IsNullOrEmpty(h.OwnerDepartment) ? "-" : h.OwnerDepartment)</td>
+                                                <td><span title="@h.AssignedAt.ToLocalTime().ToString("f")">@h.AssignedAt.ToLocalTime().ToString("MMM d, yyyy")</span></td>
+                                                <td>
+                                                    @if (h.EndedAt.HasValue) {
+                                                        <span title="@h.EndedAt.Value.ToLocalTime().ToString("f")">@h.EndedAt.Value.ToLocalTime().ToString("MMM d, yyyy")</span>
+                                                    } else {
+                                                        <span class="text-muted">Present</span>
+                                                    }
+                                                </td>
+                                                <td>@(string.IsNullOrEmpty(h.AssignedBy) ? "-" : h.AssignedBy)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
 
                         <hr />
                         <h6 class="text-muted">Statistics</h6>
@@ -128,8 +206,23 @@
     private static readonly string[] _departments = { "Financial Aid", "Bursar", "Registrar", "IT Services", "Student Accounts", "Enrollment Services", "Business Office" };
     private static readonly Random _random = new();
 
+    private static readonly string[] _ownerFirstNames = { "Alice", "Marcus", "Priya", "Daniel", "Sofia", "Grace", "Victor", "Elena" };
+    private static readonly string[] _ownerLastNames = { "Nguyen", "Okafor", "Ramirez", "Chen", "Kowalski", "Thompson", "Ivanova", "Baker" };
+
     private bool IsNew => Item.SourceSystemId == default;
     private bool _saving = false;
+    private bool _loadingHistory = false;
+    private List<DataObjects.DataOwnership> _ownershipHistory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!IsNew) {
+            _loadingHistory = true;
+            _ownershipHistory = await Helpers.GetOrPost<List<DataObjects.DataOwnership>>(
+                DataObjects.Endpoints.FreeGLBA.GetDataOwnershipHistory, Item.SourceSystemId) ?? new();
+            _loadingHistory = false;
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -151,10 +244,16 @@
         var systemName = _systemNames[_random.Next(_systemNames.Length)];
         var dept = _departments[_random.Next(_departments.Length)];
         var suffix = _random.Next(100, 999);
-        
+        var ownerFirst = _ownerFirstNames[_random.Next(_ownerFirstNames.Length)];
+        var ownerLast = _ownerLastNames[_random.Next(_ownerLastNames.Length)];
+
         Item.Name = $"{systemName}-{suffix}";
         Item.DisplayName = $"{systemName} {dept} Integration";
         Item.ContactEmail = $"{systemName.ToLower()}-admin@university.edu";
+        Item.DataOwnerName = $"{ownerFirst} {ownerLast}";
+        Item.DataOwnerEmail = $"{ownerFirst.ToLower()}.{ownerLast.ToLower()}@university.edu";
+        Item.DataOwnerDepartment = dept;
+        Item.DataOwnerPhone = $"509-555-0{_random.Next(100, 200)}";
         Item.IsActive = true;
         StateHasChanged();
     }

@@ -1,0 +1,221 @@
+@* FreeGLBA.App.GlbaSettingsPage.razor - App-wide GLBA configuration (admin).
+   Webhook alerting, alert thresholds, and the institution timezone used for
+   after-hours detection. *@
+@page "/GlbaSettings"
+@page "/{TenantCode}/GlbaSettings"
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="GLBA Settings" />
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0">
+                    <i class="fa-solid fa-sliders me-2" aria-hidden="true"></i>GLBA Settings
+                </h1>
+                <button class="btn btn-primary" @onclick="Save" disabled="@_saving">
+                    @if (_saving) {
+                        <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>
+                    } else {
+                        <i class="fa-solid fa-save me-1" aria-hidden="true"></i>
+                    }
+                    Save Settings
+                </button>
+            </div>
+        </div>
+
+        @if (_loading) {
+            <div class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fa-2x" aria-hidden="true"></i></div>
+        } else {
+            <div class="row mt-3">
+                @* Webhook alerts *@
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header py-2">
+                            <h2 class="mb-0 fs-6"><i class="fa-solid fa-bell me-2" aria-hidden="true"></i>Webhook Alerts</h2>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                When enabled, events that trip a rule are POSTed immediately to the webhook as JSON with a
+                                <code>text</code> field — compatible with Slack and Microsoft Teams incoming webhooks, or any
+                                endpoint of your own.
+                            </p>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="glba-alerts-enabled" @bind="_settings.AlertsEnabled" />
+                                <label class="form-check-label" for="glba-alerts-enabled">Enable webhook alerts</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="glba-webhook-url">Webhook URL</label>
+                                <input type="url" id="glba-webhook-url" class="form-control font-monospace" @bind="_settings.WebhookUrl"
+                                       placeholder="https://hooks.slack.com/services/…" disabled="@(!_settings.AlertsEnabled)" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="glba-bulk-threshold">Alert when one event accesses at least this many subjects</label>
+                                <input type="number" id="glba-bulk-threshold" class="form-control" style="max-width: 8rem;"
+                                       min="2" @bind="_settings.BulkExportAlertThreshold" disabled="@(!_settings.AlertsEnabled)" />
+                                <div class="form-text">Fires a <strong>critical</strong> alert for large bulk exports.</div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="glba-afterhours-alert"
+                                       @bind="_settings.AlertOnAfterHours" disabled="@(!_settings.AlertsEnabled)" />
+                                <label class="form-check-label" for="glba-afterhours-alert">
+                                    Also alert on after-hours access <span class="text-muted">(uses the business hours configured on the right)</span>
+                                </label>
+                            </div>
+
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="SendTest"
+                                    disabled="@(_testing || !_settings.AlertsEnabled || string.IsNullOrWhiteSpace(_settings.WebhookUrl))">
+                                @if (_testing) {
+                                    <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>
+                                } else {
+                                    <i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i>
+                                }
+                                Send test alert
+                            </button>
+                            <div class="form-text">Saves nothing — sends one test message using the values currently saved.</div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Institution time *@
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header py-2">
+                            <h2 class="mb-0 fs-6"><i class="fa-solid fa-clock me-2" aria-hidden="true"></i>Institution Time &amp; Business Hours</h2>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted">
+                                After-hours detection (the dashboard insight and the optional alert) judges each event's
+                                access time in this timezone. Unset means UTC.
+                            </p>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="glba-timezone">Institution time zone</label>
+                                <select id="glba-timezone" class="form-select" @bind="_settings.InstitutionTimeZone">
+                                    <option value="">UTC (not set)</option>
+                                    @foreach (var tz in _timezones) {
+                                        <option value="@tz.Id">@tz.Display</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label" for="glba-hours-start">Business hours start</label>
+                                    <select id="glba-hours-start" class="form-select" @bind="_settings.BusinessHoursStart">
+                                        @for (var h = 0; h < 24; h++) {
+                                            <option value="@h">@($"{h:00}:00")</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label" for="glba-hours-end">Business hours end</label>
+                                    <select id="glba-hours-end" class="form-select" @bind="_settings.BusinessHoursEnd">
+                                        @for (var h = 1; h <= 24; h++) {
+                                            <option value="@h">@($"{h:00}:00")</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="glba-weekends" @bind="_settings.WeekendsAreAfterHours" />
+                                <label class="form-check-label" for="glba-weekends">Weekend access counts as after-hours</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body py-2 small text-muted">
+                    <i class="fa-solid fa-shield-halved me-1" aria-hidden="true"></i>
+                    <strong>Audit-trail integrity</strong> needs no configuration: every ingested event is added to a
+                    per-source-system tamper-evident hash chain automatically. Verify a chain any time from
+                    <a href="@Helpers.BuildUrl("SourceSystems")">Source Systems</a> — modified rows, broken links,
+                    and deletions are all detectable.
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "glbasettings";
+    private bool _loading = true;
+    private bool _saving = false;
+    private bool _testing = false;
+    private DataObjects.GlbaSettings _settings = new();
+
+    // Common US timezones (Windows ids), matching the picker used elsewhere in the app.
+    private static readonly List<(string Id, string Display)> _timezones = new() {
+        ("Pacific Standard Time", "Pacific Time (PT)"),
+        ("Mountain Standard Time", "Mountain Time (MT)"),
+        ("US Mountain Standard Time", "Arizona (no DST)"),
+        ("Central Standard Time", "Central Time (CT)"),
+        ("Eastern Standard Time", "Eastern Time (ET)"),
+        ("Alaskan Standard Time", "Alaska Time (AKT)"),
+        ("Hawaiian Standard Time", "Hawaii Time (HST)"),
+    };
+
+    public void Dispose() { Model.OnChange -= StateHasChanged; }
+
+    protected override void OnInitialized() {
+        Model.View = _pageName;
+        Model.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+            _settings = await Helpers.GetOrPost<DataObjects.GlbaSettings>(
+                DataObjects.Endpoints.FreeGLBA.GetGlbaSettings) ?? new();
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task Save() {
+        _saving = true;
+        StateHasChanged();
+        try {
+            var saved = await Helpers.GetOrPost<DataObjects.GlbaSettings>(
+                DataObjects.Endpoints.FreeGLBA.SaveGlbaSettings, _settings);
+            if (saved != null) {
+                _settings = saved;
+                Model.AddMessage("GLBA settings saved.", MessageType.Success, true);
+            } else {
+                Model.ErrorMessages(new List<string> { "Saving GLBA settings failed. Please try again." });
+            }
+        } finally {
+            _saving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendTest() {
+        _testing = true;
+        StateHasChanged();
+        try {
+            var ok = await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.SendTestGlbaAlert, new { });
+            if (ok) {
+                Model.AddMessage("Test alert delivered to the webhook.", MessageType.Success, true);
+            } else {
+                Model.ErrorMessages(new List<string> {
+                    "The test alert was not delivered. Check that alerts are enabled, the saved webhook URL is correct, and the endpoint accepts JSON POSTs. (The test uses the last saved settings — save first if you just changed them.)"
+                });
+            }
+        } finally {
+            _testing = false;
+            StateHasChanged();
+        }
+    }
+}

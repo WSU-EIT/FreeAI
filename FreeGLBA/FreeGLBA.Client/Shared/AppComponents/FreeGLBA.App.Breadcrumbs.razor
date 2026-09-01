@@ -1,0 +1,33 @@
+@* FreeGLBA.App.Breadcrumbs.razor - Consistent breadcrumb trail for GLBA pages.
+   Every trail starts at the GLBA Dashboard; pass Current for the active page and
+   optional intermediate items via Trail. *@
+
+<nav aria-label="Breadcrumb">
+    <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item">
+            <a href="@Helpers.BuildUrl("GlbaDashboard")">
+                <i class="fa-solid fa-shield-halved me-1" aria-hidden="true"></i>GLBA Dashboard
+            </a>
+        </li>
+        @foreach (var item in Trail) {
+            <li class="breadcrumb-item">
+                <a href="@item.Url">@item.Title</a>
+            </li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Current</li>
+    </ol>
+</nav>
+
+@code {
+    /// <summary>The active page's title (not a link).</summary>
+    [Parameter] public string Current { get; set; } = string.Empty;
+
+    /// <summary>Optional intermediate crumbs between the dashboard and the current page.</summary>
+    [Parameter] public List<BreadcrumbItem> Trail { get; set; } = new();
+
+    public class BreadcrumbItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+}

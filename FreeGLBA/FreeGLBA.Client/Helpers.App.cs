@@ -124,6 +124,14 @@ public static partial class Helpers
             var userId = update.UserId;
 
             switch (update.UpdateType) {
+                case DataObjects.SignalRUpdateType.GlbaAccessEvent:
+                case DataObjects.SignalRUpdateType.GlbaSourceSystem:
+                    // New access events or source-system changes. Pages subscribed to
+                    // Model.OnGlbaUpdate (dashboard, events, subjects, accessors,
+                    // source systems) reload their data.
+                    Model.NotifyGlbaUpdate(update);
+                    break;
+
                 default:
                     // Since this is called only from the default method in the main handler here,
                     // we can assume that the update type is not recognized by this app.

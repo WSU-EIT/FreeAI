@@ -126,6 +126,30 @@ public class GlbaController : ControllerBase
     }
 
     /// <summary>
+    /// Get dashboard trend data and items needing attention
+    /// </summary>
+    /// <remarks>
+    /// Returns event counts per day for the trend chart plus insight items:
+    /// unusual per-user volume spikes, large bulk exports, first-time accessors,
+    /// and source systems with no data owner recorded.
+    ///
+    /// **Authentication:** User JWT (not API key)
+    /// </remarks>
+    /// <param name="days">Trend window in days (7–90, default 30)</param>
+    /// <response code="200">Insights retrieved successfully</response>
+    /// <response code="401">Not authenticated</response>
+    [HttpGet("stats/insights")]
+    [Authorize]
+    [Tags("Internal - Dashboard")]
+    [ProducesResponseType(typeof(DataObjects.GlbaInsights), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<DataObjects.GlbaInsights>> GetInsights([FromQuery] int days = 30)
+    {
+        var insights = await _da.GetGlbaInsightsAsync(days);
+        return Ok(insights);
+    }
+
+    /// <summary>
     /// Get access events for a specific data subject
     /// </summary>
     /// <remarks>

@@ -74,6 +74,30 @@ public static partial class Helpers
                 });
             }
 
+            // API Explorer - Admin only (works with source-system API keys)
+            if (Model.User.Admin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = "API Explorer",
+                    Icon = "fa-solid fa-flask",
+                    PageNames = new List<string> { "apiexplorer" },
+                    SortOrder = 600,
+                    url = Helpers.BuildUrl("ApiExplorer"),
+                    AppAdminOnly = false,
+                });
+            }
+
+            // GLBA Settings (alerts, timezone) - Admin only
+            if (Model.User.Admin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = "GLBA Settings",
+                    Icon = "fa-solid fa-sliders",
+                    PageNames = new List<string> { "glbasettings" },
+                    SortOrder = 650,
+                    url = Helpers.BuildUrl("GlbaSettings"),
+                    AppAdminOnly = false,
+                });
+            }
+
             return output;
         }
     }

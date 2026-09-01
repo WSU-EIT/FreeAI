@@ -1,4 +1,4 @@
-﻿@* FreeGLBA.App.AccessEventsPage.razor - List page for AccessEvent *@
+@* FreeGLBA.App.AccessEventsPage.razor - List page for AccessEvent *@
 @page "/AccessEvents"
 @page "/AccessEvents/{SelectedEventId:guid}"
 @page "/{TenantCode}/AccessEvents"
@@ -11,9 +11,10 @@
 @if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
     <div class="container-fluid">
         <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="Access Events" />
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="page-title mb-0">
-                    <i class="fa-solid fa-list-check me-2"></i>Access Events
+                    <i class="fa-solid fa-list-check me-2" aria-hidden="true"></i>Access Events
                 </h1>
                 <div class="btn-group">
                     <button class="btn btn-primary" @onclick="CreateNew">
@@ -44,9 +45,10 @@
                         <div class="col-md-3">
                             <h6 class="text-info"><i class="fa-solid fa-scale-balanced me-1"></i>In GLBA Terms</h6>
                             <p class="small text-muted mb-0">
-                                An <strong>Access Event</strong> records each instance when an employee or system accesses 
-                                a customer's nonpublic personal information (NPI). GLBA requires institutions to maintain 
-                                logs showing who accessed what data, when, and for what legitimate business purpose.
+                                An <strong>Access Event</strong> records each instance when an employee or system accesses
+                                a customer's nonpublic personal information (NPI). The FTC Safeguards Rule requires
+                                monitoring and logging the activity of authorized users (16 CFR 314.4(c)(8)) — who accessed
+                                what data and when. Recording the business purpose as well is a best practice auditors expect.
                             </p>
                         </div>
                         <div class="col-md-3">
@@ -272,16 +274,16 @@
                             <table class="table table-hover align-middle mb-0 table-sm">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="sortable @SortClass("AccessedAt")" @onclick="@(() => Sort("AccessedAt"))">
+                                        <th class="sortable @SortClass("AccessedAt")" @onclick="@(() => Sort("AccessedAt"))" @onkeydown="@(e => SortKeyDown(e, "AccessedAt"))" tabindex="0" aria-sort="@AriaSort("AccessedAt")">
                                             When <i class="fa-solid @SortIcon("AccessedAt") ms-1"></i>
                                         </th>
-                                        <th class="sortable @SortClass("UserId")" @onclick="@(() => Sort("UserId"))">
+                                        <th class="sortable @SortClass("UserId")" @onclick="@(() => Sort("UserId"))" @onkeydown="@(e => SortKeyDown(e, "UserId"))" tabindex="0" aria-sort="@AriaSort("UserId")">
                                             User <i class="fa-solid @SortIcon("UserId") ms-1"></i>
                                         </th>
-                                        <th class="sortable @SortClass("SubjectId")" @onclick="@(() => Sort("SubjectId"))">
+                                        <th class="sortable @SortClass("SubjectId")" @onclick="@(() => Sort("SubjectId"))" @onkeydown="@(e => SortKeyDown(e, "SubjectId"))" tabindex="0" aria-sort="@AriaSort("SubjectId")">
                                             Subject <i class="fa-solid @SortIcon("SubjectId") ms-1"></i>
                                         </th>
-                                        <th class="sortable @SortClass("AccessType")" @onclick="@(() => Sort("AccessType"))">
+                                        <th class="sortable @SortClass("AccessType")" @onclick="@(() => Sort("AccessType"))" @onkeydown="@(e => SortKeyDown(e, "AccessType"))" tabindex="0" aria-sort="@AriaSort("AccessType")">
                                             Type <i class="fa-solid @SortIcon("AccessType") ms-1"></i>
                                         </th>
                                     </tr>
@@ -398,7 +400,13 @@
                             <div class="row mb-3">
                                 <div class="col-6">
                                     <label class="form-label text-muted small mb-0">User ID</label>
-                                    <div><strong>@_selectedEvent.UserId</strong></div>
+                                    <div>
+                                        <a href="@Helpers.BuildUrl($"Accessors?search={Uri.EscapeDataString(_selectedEvent.UserId)}")"
+                                                title="View this user's accessor profile">
+                                            <strong>@_selectedEvent.UserId</strong>
+                                            <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label text-muted small mb-0">User Name</label>
@@ -498,6 +506,49 @@
                                             }
                                         </div>
                                     }
+                                </div>
+                            }
+
+                            <hr />
+                            <h6 class="text-muted"><i class="fa-solid fa-user-shield me-1" aria-hidden="true"></i>Data Ownership</h6>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <label class="form-label text-muted small mb-0">Owner at Time of Access</label>
+                                    @if (!string.IsNullOrEmpty(_selectedEvent.DataOwnerName) || !string.IsNullOrEmpty(_selectedEvent.DataOwnerEmail)) {
+                                        <div>
+                                            <strong>@_selectedEvent.DataOwnerName</strong>
+                                            @if (!string.IsNullOrEmpty(_selectedEvent.DataOwnerDepartment)) {
+                                                <br /><small class="text-muted">@_selectedEvent.DataOwnerDepartment</small>
+                                            }
+                                            @if (!string.IsNullOrEmpty(_selectedEvent.DataOwnerEmail)) {
+                                                <br /><a href="mailto:@_selectedEvent.DataOwnerEmail" class="small">@_selectedEvent.DataOwnerEmail</a>
+                                            }
+                                        </div>
+                                    } else {
+                                        <div class="text-muted">Not recorded</div>
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-muted small mb-0">Current Owner</label>
+                                    @if (!string.IsNullOrEmpty(_selectedEvent.CurrentDataOwnerName) || !string.IsNullOrEmpty(_selectedEvent.CurrentDataOwnerEmail)) {
+                                        <div>
+                                            <strong>@_selectedEvent.CurrentDataOwnerName</strong>
+                                            @if (!string.IsNullOrEmpty(_selectedEvent.CurrentDataOwnerDepartment)) {
+                                                <br /><small class="text-muted">@_selectedEvent.CurrentDataOwnerDepartment</small>
+                                            }
+                                            @if (!string.IsNullOrEmpty(_selectedEvent.CurrentDataOwnerEmail)) {
+                                                <br /><a href="mailto:@_selectedEvent.CurrentDataOwnerEmail" class="small">@_selectedEvent.CurrentDataOwnerEmail</a>
+                                            }
+                                        </div>
+                                    } else {
+                                        <div class="text-muted">Not set on source system</div>
+                                    }
+                                </div>
+                            </div>
+                            @if (OwnershipChangedFor(_selectedEvent)) {
+                                <div class="alert alert-warning py-2 mb-3" role="status">
+                                    <i class="fa-solid fa-right-left me-1" aria-hidden="true"></i>
+                                    Ownership of this data has changed hands since this access was recorded.
                                 </div>
                             }
 
@@ -681,6 +732,12 @@
 [Parameter] public string? TenantCode { get; set; }
 [Parameter] public Guid? SelectedEventId { get; set; }
 
+// Deep-link filters: other pages link here as AccessEvents?userId=...&subjectId=...&system=...
+[SupplyParameterFromQuery(Name = "userId")] public string? UserIdFromQuery { get; set; }
+[SupplyParameterFromQuery(Name = "subjectId")] public string? SubjectIdFromQuery { get; set; }
+[SupplyParameterFromQuery(Name = "system")] public string? SystemFromQuery { get; set; }
+[SupplyParameterFromQuery(Name = "search")] public string? SearchFromQuery { get; set; }
+
 private string _pageName = "accessevents";
 private bool _loading = true;
 private bool _showMoreFilters = false;
@@ -715,11 +772,31 @@ private int _subjectsPage = 1;
 private int _subjectsPageSize = 25;
 private int _subjectsTotalPages => (int)Math.Ceiling((double)_parsedSubjectIds.Count / _subjectsPageSize);
 
-public void Dispose() { Model.OnChange -= StateHasChanged; }
+public void Dispose() {
+    Model.OnChange -= StateHasChanged;
+    Model.OnGlbaUpdate -= OnGlbaUpdate;
+}
 
 protected override void OnInitialized() {
     Model.View = _pageName;
     Model.OnChange += StateHasChanged;
+    Model.OnGlbaUpdate += OnGlbaUpdate;
+}
+
+private void OnGlbaUpdate(DataObjects.SignalRUpdate update) {
+    // New events arrived via SignalR - refresh the list in place.
+    if (update.UpdateType == DataObjects.SignalRUpdateType.GlbaAccessEvent && !_generating && !_showEdit) {
+        _ = InvokeAsync(LoadData);
+    }
+}
+
+/// <summary>True when the owner snapshot on the event differs from the source system's current owner.</summary>
+private bool OwnershipChangedFor(DataObjects.AccessEvent evt) {
+    var hasSnapshot = !string.IsNullOrEmpty(evt.DataOwnerName) || !string.IsNullOrEmpty(evt.DataOwnerEmail);
+    var hasCurrent = !string.IsNullOrEmpty(evt.CurrentDataOwnerName) || !string.IsNullOrEmpty(evt.CurrentDataOwnerEmail);
+    return hasSnapshot && hasCurrent &&
+        (!string.Equals(evt.DataOwnerName, evt.CurrentDataOwnerName, StringComparison.OrdinalIgnoreCase) ||
+         !string.Equals(evt.DataOwnerEmail, evt.CurrentDataOwnerEmail, StringComparison.OrdinalIgnoreCase));
 }
 
 protected override async Task OnParametersSetAsync()
@@ -738,6 +815,23 @@ protected override async Task OnParametersSetAsync()
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (firstRender) {
+            // Apply deep-link query filters before the first load so linked-in
+            // views (from Accessors, Data Subjects, Source Systems) open filtered.
+            if (!string.IsNullOrWhiteSpace(UserIdFromQuery)) {
+                _filter.UserIdFilter = UserIdFromQuery;
+                _showMoreFilters = true;
+            }
+            if (!string.IsNullOrWhiteSpace(SubjectIdFromQuery)) {
+                _filter.SubjectIdFilter = SubjectIdFromQuery;
+                _showMoreFilters = true;
+            }
+            if (!string.IsNullOrWhiteSpace(SystemFromQuery)) {
+                _sourceSystemFilter = SystemFromQuery;
+            }
+            if (!string.IsNullOrWhiteSpace(SearchFromQuery)) {
+                _filter.Search = SearchFromQuery;
+            }
+
             await LoadSourceSystems();
             await LoadData();
         }
@@ -901,6 +995,14 @@ protected override async Task OnParametersSetAsync()
         _filter.Page = 1;
         _ = LoadData();
     }
+
+    /// <summary>Keyboard support for the clickable sort headers (Enter or Space).</summary>
+    private void SortKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e, string column) {
+        if (e.Key == "Enter" || e.Key == " ") { Sort(column); }
+    }
+
+    /// <summary>aria-sort value for a sortable column header.</summary>
+    private string AriaSort(string column) => _filter.SortColumn == column ? (_filter.SortDescending ? "descending" : "ascending") : "none";
 
     private string SortClass(string column) => _filter.SortColumn == column ? "sort-active" : "";
     private string SortIcon(string column) {

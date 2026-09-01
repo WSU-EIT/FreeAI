@@ -16,9 +16,17 @@
     } else {
         <div class="container-fluid">
             <div class="@Model.StickyMenuClass">
-                <h1 class="page-title">
-                    <i class="fa-solid fa-shield-halved me-2"></i>GLBA Compliance Dashboard
-                </h1>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h1 class="page-title mb-0">
+                        <i class="fa-solid fa-shield-halved me-2" aria-hidden="true"></i>GLBA Compliance Dashboard
+                    </h1>
+                    <span class="badge rounded-pill text-bg-success" role="status" title="This dashboard refreshes automatically when new events arrive">
+                        <i class="fa-solid fa-tower-broadcast me-1" aria-hidden="true"></i>Live
+                        @if (_lastRefreshed.HasValue) {
+                            <span class="fw-normal ms-1">· updated @GetTimeAgo(_lastRefreshed.Value)</span>
+                        }
+                    </span>
+                </div>
             </div>
 
             @* About GLBA - Collapsible Banner *@
@@ -44,29 +52,37 @@
                         <div class="row">
                             @* What is GLBA *@
                             <div class="col-md-6 col-lg-3 mb-3">
-                                <h6 class="text-primary"><i class="fa-solid fa-scale-balanced me-2"></i>What is GLBA?</h6>
+                                <h6 class="text-primary"><i class="fa-solid fa-scale-balanced me-2" aria-hidden="true"></i>What is GLBA?</h6>
                                 <p class="small text-muted mb-2">
-                                    The <strong>Gramm-Leach-Bliley Act (GLBA)</strong> is a 1999 federal law that requires 
-                                    financial institutions to explain their information-sharing practices and protect 
-                                    sensitive consumer data.
+                                    The <strong>Gramm-Leach-Bliley Act (GLBA)</strong> is a 1999 federal law that requires
+                                    financial institutions to explain their information-sharing practices and safeguard
+                                    sensitive customer data. Its
+                                    <a href="https://www.ftc.gov/business-guidance/privacy-security/gramm-leach-bliley-act" target="_blank" rel="noopener noreferrer">FTC Safeguards Rule</a>
+                                    (<a href="https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-314" target="_blank" rel="noopener noreferrer">16 CFR Part 314</a>)
+                                    was amended in December 2021, with most provisions effective June 9, 2023.
                                 </p>
                                 <p class="small text-muted mb-0">
-                                    Educational institutions handling student financial aid (Title IV) must also comply 
-                                    with GLBA requirements for protecting financial information.
+                                    Colleges and universities participating in Title IV federal student aid are
+                                    "financial institutions" under the rule. The Department of Education
+                                    <a href="https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2023-02-09/updates-gramm-leach-bliley-act-cybersecurity-requirements" target="_blank" rel="noopener noreferrer">enforces it through Federal Student Aid</a>,
+                                    and Safeguards Rule compliance is checked in the annual federal Single Audit.
                                 </p>
                             </div>
 
                             @* Why This System *@
                             <div class="col-md-6 col-lg-3 mb-3">
-                                <h6 class="text-primary"><i class="fa-solid fa-bullseye me-2"></i>Why This System?</h6>
+                                <h6 class="text-primary"><i class="fa-solid fa-bullseye me-2" aria-hidden="true"></i>Why This System?</h6>
                                 <p class="small text-muted mb-2">
-                                    GLBA compliance requires tracking <strong>who accessed what data, when, and why</strong>. 
-                                    This system provides:
+                                    The Safeguards Rule requires controls "designed to <strong>monitor and log the activity
+                                    of authorized users</strong> and detect unauthorized access" to customer information
+                                    (16 CFR 314.4(c)(8)) — in practice: who accessed what data, and when. This system also
+                                    records the <em>business purpose</em> and the <em>data owner</em> for each access, which
+                                    the rule does not literally mandate but auditors routinely ask for. It provides:
                                 </p>
                                 <ul class="small text-muted mb-0 ps-3">
                                     <li>Centralized access logging from all systems</li>
                                     <li>Real-time monitoring dashboard</li>
-                                    <li>Audit-ready compliance reports</li>
+                                    <li>Data-ownership tracking (owner then and now)</li>
                                     <li>API for automated event capture</li>
                                 </ul>
                             </div>
@@ -175,8 +191,8 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
             </div>
 
             @* Stats Cards *@
-            <div class="row mb-4">
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+            <div class="row mb-2">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-primary">@_stats.Today.ToString("N0")</h2>
@@ -184,7 +200,7 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-primary">@_stats.ThisWeek.ToString("N0")</h2>
@@ -192,7 +208,7 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-primary">@_stats.ThisMonth.ToString("N0")</h2>
@@ -200,7 +216,17 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
+                    <div class="card shadow-sm h-100 border-primary">
+                        <div class="card-body text-center py-3">
+                            <h2 class="mb-0 text-primary">@_stats.TotalAccessors.ToString("N0")</h2>
+                            <p class="text-muted mb-0 small">Total Accessors (all time)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100 border-info">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-info">@_stats.SubjectsToday.ToString("N0")</h2>
@@ -208,7 +234,7 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100 border-info">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-info">@_stats.SubjectsThisWeek.ToString("N0")</h2>
@@ -216,13 +242,122 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
+                    <div class="card shadow-sm h-100 border-info">
+                        <div class="card-body text-center py-3">
+                            <h2 class="mb-0 text-info">@_stats.SubjectsThisMonth.ToString("N0")</h2>
+                            <p class="text-muted mb-0 small">Subjects This Month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-6 mb-3">
                     <div class="card shadow-sm h-100 border-success">
                         <div class="card-body text-center py-3">
                             <h2 class="mb-0 text-success">@_stats.TotalSubjects.ToString("N0")</h2>
-                            <p class="text-muted mb-0 small">Total Subjects</p>
+                            <p class="text-muted mb-0 small">Total Subjects (all time)</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            @* Breakdown by Access Type and Data Category *@
+            @if (_stats.ByAccessType.Count > 0 || _stats.ByCategory.Count > 0) {
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header py-2">
+                                <h5 class="mb-0 fs-6"><i class="fa-solid fa-shapes me-2" aria-hidden="true"></i>By Access Type</h5>
+                            </div>
+                            <div class="card-body py-2">
+                                @if (_stats.ByAccessType.Count == 0) {
+                                    <span class="text-muted small">No events yet.</span>
+                                } else {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var kvp in _stats.ByAccessType) {
+                                            <li class="d-flex justify-content-between align-items-center py-1">
+                                                <span>@kvp.Key</span>
+                                                <span class="badge bg-primary">@kvp.Value.ToString("N0")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header py-2">
+                                <h5 class="mb-0 fs-6"><i class="fa-solid fa-folder-tree me-2" aria-hidden="true"></i>By Data Category</h5>
+                            </div>
+                            <div class="card-body py-2">
+                                @if (_stats.ByCategory.Count == 0) {
+                                    <span class="text-muted small">No categorized events yet.</span>
+                                } else {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var kvp in _stats.ByCategory) {
+                                            <li class="d-flex justify-content-between align-items-center py-1">
+                                                <span>@kvp.Key</span>
+                                                <span class="badge bg-info">@kvp.Value.ToString("N0")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* Access Volume Trend *@
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-2">
+                    <h5 class="mb-0 fs-6"><i class="fa-solid fa-chart-column me-2" aria-hidden="true"></i>Access Volume — Last @_insights.WindowDays Days</h5>
+                </div>
+                <div class="card-body">
+                    @if (_insights.EventsPerDay.Count == 0 || _insights.EventsPerDay.All(x => x.Events == 0)) {
+                        <p class="text-muted small mb-0">The trend chart appears once events have been recorded.</p>
+                    } else {
+                        <div id="glba-trend-chart">
+                            <FreeGLBA_App_TrendChart Days="_insights.EventsPerDay" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Needs Attention *@
+            <div class="card shadow-sm mb-4 @(_insights.Items.Any(x => x.Severity == "critical") ? "border-danger" : _insights.Items.Count > 0 ? "border-warning" : "")">
+                <div class="card-header py-2">
+                    <h5 class="mb-0 fs-6"><i class="fa-solid fa-bell me-2" aria-hidden="true"></i>Needs Attention</h5>
+                </div>
+                <div class="card-body py-2" aria-live="polite">
+                    @if (_insights.Items.Count == 0) {
+                        <p class="text-muted small mb-0 py-1">
+                            <i class="fa-solid fa-circle-check text-success me-1" aria-hidden="true"></i>
+                            All clear — no unusual volume, large bulk exports, first-time accessors, or ownership gaps detected.
+                        </p>
+                    } else {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var insight in _insights.Items) {
+                                var badge = insight.Severity switch {
+                                    "critical" => "text-bg-danger",
+                                    "warning" => "text-bg-warning",
+                                    _ => "text-bg-info"
+                                };
+                                <li class="d-flex align-items-start gap-2 py-2 border-bottom border-light-subtle">
+                                    <span class="badge @badge text-uppercase" style="min-width: 4.5rem;">@insight.Severity</span>
+                                    <div class="flex-grow-1">
+                                        <strong>@insight.Title</strong>
+                                        <div class="small text-muted">@insight.Detail</div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(insight.LinkPage)) {
+                                        <a class="btn btn-sm btn-outline-primary text-nowrap" href="@Helpers.BuildUrl(insight.LinkPage)">
+                                            @insight.LinkText <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
                 </div>
             </div>
 
@@ -316,6 +451,7 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                                 <tr>
                                     <th>System</th>
                                     <th>Status</th>
+                                    <th>Data Owner</th>
                                     <th>Last Event</th>
                                     <th>Total Events</th>
                                 </tr>
@@ -329,6 +465,16 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
                                                 <span class="badge bg-success"><i class="fa-solid fa-circle me-1"></i>Active</span>
                                             } else {
                                                 <span class="badge bg-secondary"><i class="fa-solid fa-circle me-1"></i>Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(src.DataOwnerName)) {
+                                                <span>@src.DataOwnerName</span>
+                                                @if (!string.IsNullOrEmpty(src.DataOwnerDepartment)) {
+                                                    <br /><small class="text-muted">@src.DataOwnerDepartment</small>
+                                                }
+                                            } else {
+                                                <span class="text-muted">Not set</span>
                                             }
                                         </td>
                                         <td>@GetTimeAgo(src.LastEventReceivedAt)</td>
@@ -415,16 +561,38 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
     private List<DataObjects.AccessEvent> _recentEvents = new();
     private List<DataObjects.SourceSystem> _sources = new();
     private List<DataObjects.AccessorSummary> _topAccessors = new();
+    private DataObjects.GlbaInsights _insights = new();
+    private DateTime? _lastRefreshed = null;
+    private bool _refreshQueued = false;
 
     public void Dispose()
     {
         Model.OnChange -= OnDataModelUpdated;
+        Model.OnGlbaUpdate -= OnGlbaUpdate;
     }
 
     protected override void OnInitialized()
     {
         Model.View = _pageName;
         Model.OnChange += OnDataModelUpdated;
+        Model.OnGlbaUpdate += OnGlbaUpdate;
+    }
+
+    private void OnGlbaUpdate(DataObjects.SignalRUpdate update)
+    {
+        // New events or source-system changes arrived via SignalR. Coalesce bursts
+        // into a single refresh so batch inserts don't hammer the API.
+        if (_refreshQueued) return;
+        _refreshQueued = true;
+
+        _ = InvokeAsync(async () => {
+            try {
+                await Task.Delay(500);
+                await LoadDataAsync();
+            } finally {
+                _refreshQueued = false;
+            }
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -457,18 +625,24 @@ await glbaClient.LogAccessAsync(new GlbaEventRequest {
         StateHasChanged();
 
         try {
-            // Load all data in parallel
+            // Load all data in parallel.
+            // Note: GetOrPost mutates shared default headers on the one HttpClient,
+            // so the calls are awaited sequentially-safe via Task.WhenAll on the
+            // already-started tasks (the header values are identical for each).
             var statsTask = Helpers.GetOrPost<DataObjects.GlbaStats>("api/glba/stats/summary");
             var eventsTask = Helpers.GetOrPost<List<DataObjects.AccessEvent>>("api/glba/events/recent?limit=20");
             var sourcesTask = Helpers.GetOrPost<List<DataObjects.SourceSystem>>("api/glba/sources/status");
             var accessorsTask = Helpers.GetOrPost<List<DataObjects.AccessorSummary>>("api/glba/accessors/top");
+            var insightsTask = Helpers.GetOrPost<DataObjects.GlbaInsights>("api/glba/stats/insights");
 
-            await Task.WhenAll(statsTask, eventsTask, sourcesTask, accessorsTask);
+            await Task.WhenAll(statsTask, eventsTask, sourcesTask, accessorsTask, insightsTask);
 
             _stats = await statsTask ?? new();
             _recentEvents = await eventsTask ?? new();
             _sources = await sourcesTask ?? new();
             _topAccessors = await accessorsTask ?? new();
+            _insights = await insightsTask ?? new();
+            _lastRefreshed = DateTime.UtcNow;
         } catch (Exception ex) {
             Model.ErrorMessage($"Error loading dashboard: {ex.Message}");
         }

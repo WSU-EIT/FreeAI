@@ -1,4 +1,4 @@
-﻿@* FreeGLBA.App.DataSubjectsPage.razor - List page for DataSubject *@
+@* FreeGLBA.App.DataSubjectsPage.razor - List page for DataSubject *@
 @page "/DataSubjects"
 @page "/DataSubjects/{SelectedSubjectId}"
 @page "/{TenantCode}/DataSubjects"
@@ -11,6 +11,7 @@
 @if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
     <div class="container-fluid">
         <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="Data Subjects" />
             <h1 class="page-title mb-0">
                 <i class="fa-solid fa-users me-2"></i>Data Subjects
             </h1>
@@ -34,9 +35,10 @@
                         <div class="col-md-4">
                             <h6 class="text-info"><i class="fa-solid fa-user-shield me-1"></i>In GLBA Terms</h6>
                             <p class="small text-muted mb-0">
-                                A <strong>Data Subject</strong> is any individual whose nonpublic personal information (NPI) 
-                                is held by your institution. Under GLBA, you must protect their financial data and be able 
-                                to report all access to their records upon request (e.g., for audits or data subject access requests).
+                                A <strong>Data Subject</strong> is any individual whose nonpublic personal information (NPI)
+                                is held by your institution. GLBA requires safeguarding their financial data and monitoring
+                                access to it; a per-person access history like this one is how you demonstrate that during
+                                audits and breach investigations.
                             </p>
                         </div>
                         <div class="col-md-4">
@@ -205,13 +207,13 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="sortable @SortClass("ExternalId")" @onclick="@(() => Sort("ExternalId"))">
+                                        <th class="sortable @SortClass("ExternalId")" @onclick="@(() => Sort("ExternalId"))" @onkeydown="@(e => SortKeyDown(e, "ExternalId"))" tabindex="0" aria-sort="@AriaSort("ExternalId")">
                                             Subject ID <i class="fa-solid @SortIcon("ExternalId") ms-1"></i>
                                         </th>
-                                        <th class="sortable @SortClass("TotalAccessCount")" @onclick="@(() => Sort("TotalAccessCount"))">
+                                        <th class="sortable @SortClass("TotalAccessCount")" @onclick="@(() => Sort("TotalAccessCount"))" @onkeydown="@(e => SortKeyDown(e, "TotalAccessCount"))" tabindex="0" aria-sort="@AriaSort("TotalAccessCount")">
                                             Accesses <i class="fa-solid @SortIcon("TotalAccessCount") ms-1"></i>
                                         </th>
-                                        <th class="sortable @SortClass("LastAccessedAt")" @onclick="@(() => Sort("LastAccessedAt"))">
+                                        <th class="sortable @SortClass("LastAccessedAt")" @onclick="@(() => Sort("LastAccessedAt"))" @onkeydown="@(e => SortKeyDown(e, "LastAccessedAt"))" tabindex="0" aria-sort="@AriaSort("LastAccessedAt")">
                                             Last Access <i class="fa-solid @SortIcon("LastAccessedAt") ms-1"></i>
                                         </th>
                                     </tr>
@@ -289,13 +291,25 @@
                     <div class="card shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fa-solid fa-user-shield me-2"></i>
+                                <i class="fa-solid fa-user-shield me-2" aria-hidden="true"></i>
                                 @_selectedSubject.ExternalId
                                 <span class="badge bg-secondary ms-2">@_selectedSubject.SubjectType</span>
                             </h5>
-                            <button class="btn btn-sm btn-outline-secondary" @onclick="CloseDetail">
-                                <i class="fa-solid fa-times"></i>
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-success" @onclick="DownloadSubjectHistory" disabled="@_downloadingHistory"
+                                        title="Download this subject's complete access history as a PDF"
+                                        aria-label="Download access history PDF for @_selectedSubject.ExternalId">
+                                    @if (_downloadingHistory) {
+                                        <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>
+                                    } else {
+                                        <i class="fa-solid fa-file-pdf me-1" aria-hidden="true"></i>
+                                    }
+                                    History PDF
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="CloseDetail" aria-label="Close detail panel">
+                                    <i class="fa-solid fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
                             @* Stats Row *@
@@ -386,13 +400,11 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                @if (_subjectEvents.Count >= 100) {
-                                    <div class="text-center py-2">
-                                        <a href="@Helpers.BuildUrl("AccessEvents")?subjectId=@_selectedSubject.ExternalId" class="btn btn-sm btn-outline-primary">
-                                            View All Events <i class="fa-solid fa-arrow-right ms-1"></i>
-                                        </a>
-                                    </div>
-                                }
+                                <div class="text-center py-2">
+                                    <a href="@Helpers.BuildUrl($"AccessEvents?subjectId={Uri.EscapeDataString(_selectedSubject.ExternalId)}")" class="btn btn-sm btn-outline-primary">
+                                        Open in Access Events <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                                    </a>
+                                </div>
                             }
                         </div>
                         <div class="card-footer small text-muted">
@@ -430,11 +442,46 @@ private bool _helpExpanded = false;
 private DataObjects.DataSubject? _selectedSubject = null;
 private List<DataObjects.AccessEvent> _subjectEvents = new();
 
-public void Dispose() { Model.OnChange -= StateHasChanged; }
+public void Dispose() {
+    Model.OnChange -= StateHasChanged;
+    Model.OnGlbaUpdate -= OnGlbaUpdate;
+}
 
 protected override void OnInitialized() {
     Model.View = _pageName;
     Model.OnChange += StateHasChanged;
+    Model.OnGlbaUpdate += OnGlbaUpdate;
+}
+
+private bool _downloadingHistory = false;
+
+/// <summary>Generates and downloads the selected subject's complete access history PDF.</summary>
+private async Task DownloadSubjectHistory() {
+    if (_selectedSubject == null) return;
+    _downloadingHistory = true;
+    StateHasChanged();
+
+    try {
+        var export = await Helpers.GetOrPost<DataObjects.ComplianceReportExport>(
+            DataObjects.Endpoints.FreeGLBA.GenerateSubjectAccessHistoryPdf, _selectedSubject.ExternalId);
+
+        if (export != null && export.Bytes.Length > 0) {
+            await Helpers.DownloadFileToBrowser(export.FileName, export.Bytes);
+            Model.AddMessage($"Downloaded {export.FileName}", MessageType.Success, true);
+        } else {
+            Model.ErrorMessages(new List<string> { "Could not generate the access history PDF. Please try again." });
+        }
+    } finally {
+        _downloadingHistory = false;
+        StateHasChanged();
+    }
+}
+
+private void OnGlbaUpdate(DataObjects.SignalRUpdate update) {
+    // New access events change subject statistics - refresh the list in place.
+    if (update.UpdateType == DataObjects.SignalRUpdateType.GlbaAccessEvent) {
+        _ = InvokeAsync(LoadData);
+    }
 }
 
 protected override async Task OnParametersSetAsync()
@@ -606,6 +653,14 @@ private async Task LoadData() {
         _filter.Page = 1;
         _ = LoadData();
     }
+
+    /// <summary>Keyboard support for the clickable sort headers (Enter or Space).</summary>
+    private void SortKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e, string column) {
+        if (e.Key == "Enter" || e.Key == " ") { Sort(column); }
+    }
+
+    /// <summary>aria-sort value for a sortable column header.</summary>
+    private string AriaSort(string column) => _filter.SortColumn == column ? (_filter.SortDescending ? "descending" : "ascending") : "none";
 
     private string SortClass(string column) => _filter.SortColumn == column ? "sort-active" : "";
     private string SortIcon(string column) {

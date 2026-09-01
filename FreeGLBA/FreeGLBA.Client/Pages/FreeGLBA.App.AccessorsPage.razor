@@ -1,4 +1,4 @@
-﻿@* FreeGLBA.App.AccessorsPage.razor - List page for Accessors (users who accessed data) *@
+@* FreeGLBA.App.AccessorsPage.razor - List page for Accessors (users who accessed data) *@
 @page "/Accessors"
 @page "/{TenantCode}/Accessors"
 @implements IDisposable
@@ -8,9 +8,10 @@
 @if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
     <div class="container-fluid">
         <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="Accessors" />
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="page-title mb-0">
-                    <i class="fa-solid fa-user-shield me-2"></i>Accessors
+                    <i class="fa-solid fa-user-shield me-2" aria-hidden="true"></i>Accessors
                 </h1>
             </div>
         </div>
@@ -244,25 +245,25 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="sortable @SortClass("UserId")" @onclick="@(() => Sort("UserId"))">
+                                <th class="sortable @SortClass("UserId")" @onclick="@(() => Sort("UserId"))" @onkeydown="@(e => SortKeyDown(e, "UserId"))" tabindex="0" aria-sort="@AriaSort("UserId")">
                                     User <i class="fa-solid @SortIcon("UserId") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("UserDepartment")" @onclick="@(() => Sort("UserDepartment"))">
+                                <th class="sortable @SortClass("UserDepartment")" @onclick="@(() => Sort("UserDepartment"))" @onkeydown="@(e => SortKeyDown(e, "UserDepartment"))" tabindex="0" aria-sort="@AriaSort("UserDepartment")">
                                     Department <i class="fa-solid @SortIcon("UserDepartment") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("TotalAccesses")" @onclick="@(() => Sort("TotalAccesses"))">
+                                <th class="sortable @SortClass("TotalAccesses")" @onclick="@(() => Sort("TotalAccesses"))" @onkeydown="@(e => SortKeyDown(e, "TotalAccesses"))" tabindex="0" aria-sort="@AriaSort("TotalAccesses")">
                                     Total Accesses <i class="fa-solid @SortIcon("TotalAccesses") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("UniqueSubjectsAccessed")" @onclick="@(() => Sort("UniqueSubjectsAccessed"))">
+                                <th class="sortable @SortClass("UniqueSubjectsAccessed")" @onclick="@(() => Sort("UniqueSubjectsAccessed"))" @onkeydown="@(e => SortKeyDown(e, "UniqueSubjectsAccessed"))" tabindex="0" aria-sort="@AriaSort("UniqueSubjectsAccessed")">
                                     Unique Subjects <i class="fa-solid @SortIcon("UniqueSubjectsAccessed") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("ExportCount")" @onclick="@(() => Sort("ExportCount"))">
+                                <th class="sortable @SortClass("ExportCount")" @onclick="@(() => Sort("ExportCount"))" @onkeydown="@(e => SortKeyDown(e, "ExportCount"))" tabindex="0" aria-sort="@AriaSort("ExportCount")">
                                     Exports <i class="fa-solid @SortIcon("ExportCount") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("ViewCount")" @onclick="@(() => Sort("ViewCount"))">
+                                <th class="sortable @SortClass("ViewCount")" @onclick="@(() => Sort("ViewCount"))" @onkeydown="@(e => SortKeyDown(e, "ViewCount"))" tabindex="0" aria-sort="@AriaSort("ViewCount")">
                                     Views <i class="fa-solid @SortIcon("ViewCount") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("LastAccessAt")" @onclick="@(() => Sort("LastAccessAt"))">
+                                <th class="sortable @SortClass("LastAccessAt")" @onclick="@(() => Sort("LastAccessAt"))" @onkeydown="@(e => SortKeyDown(e, "LastAccessAt"))" tabindex="0" aria-sort="@AriaSort("LastAccessAt")">
                                     Last Access <i class="fa-solid @SortIcon("LastAccessAt") ms-1"></i>
                                 </th>
                                 <th style="width: 80px;">Actions</th>
@@ -307,9 +308,10 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="@Helpers.BuildUrl($"AccessEvents?search={item.UserId}")" 
-                                                class="btn btn-sm btn-outline-primary" title="View Events">
-                                            <i class="fa-solid fa-list"></i>
+                                        <a href="@Helpers.BuildUrl($"AccessEvents?userId={Uri.EscapeDataString(item.UserId)}")"
+                                                class="btn btn-sm btn-outline-primary" title="View this user's access events"
+                                                aria-label="View access events for @item.UserId">
+                                            <i class="fa-solid fa-list" aria-hidden="true"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -359,6 +361,9 @@
 @code {
 [Parameter] public string? TenantCode { get; set; }
 
+// Deep-link filter: other pages link here as Accessors?search=...
+[SupplyParameterFromQuery(Name = "search")] public string? SearchFromQuery { get; set; }
+
 private string _pageName = "accessors";
 private bool _loading = true;
 private bool _loadedData = false;
@@ -374,18 +379,33 @@ private List<string> _departments = new();
     public void Dispose()
     {
         Model.OnChange -= OnDataModelUpdated;
+        Model.OnGlbaUpdate -= OnGlbaUpdate;
     }
 
     protected override void OnInitialized()
     {
         Model.View = _pageName;
         Model.OnChange += OnDataModelUpdated;
+        Model.OnGlbaUpdate += OnGlbaUpdate;
+    }
+
+    private void OnGlbaUpdate(DataObjects.SignalRUpdate update)
+    {
+        // New access events change accessor statistics - refresh the list in place.
+        if (update.UpdateType == DataObjects.SignalRUpdateType.GlbaAccessEvent) {
+            _ = InvokeAsync(LoadData);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) {
             Model.TenantCodeFromUrl = TenantCode;
+
+            // Deep-link support: Accessors?search=E123456 opens pre-filtered.
+            if (!string.IsNullOrWhiteSpace(SearchFromQuery)) {
+                _filter.Search = SearchFromQuery;
+            }
         }
 
         if (Model.Loaded && Model.LoggedIn && !_loadedData) {
@@ -511,6 +531,14 @@ private List<string> _departments = new();
         _filter.Page = 1;
         _ = LoadData();
     }
+
+    /// <summary>Keyboard support for the clickable sort headers (Enter or Space).</summary>
+    private void SortKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e, string column) {
+        if (e.Key == "Enter" || e.Key == " ") { Sort(column); }
+    }
+
+    /// <summary>aria-sort value for a sortable column header.</summary>
+    private string AriaSort(string column) => _filter.SortColumn == column ? (_filter.SortDescending ? "descending" : "ascending") : "none";
 
     private string SortClass(string column) => _filter.SortColumn == column ? "text-primary" : "";
     private string SortIcon(string column) => _filter.SortColumn == column

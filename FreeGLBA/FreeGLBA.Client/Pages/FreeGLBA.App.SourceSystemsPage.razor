@@ -1,4 +1,4 @@
-﻿@* FreeGLBA.App.SourceSystemsPage.razor - List page for SourceSystem *@
+@* FreeGLBA.App.SourceSystemsPage.razor - List page for SourceSystem *@
 @page "/SourceSystems"
 @page "/{TenantCode}/SourceSystems"
 @implements IDisposable
@@ -8,9 +8,10 @@
 @if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
     <div class="container-fluid">
         <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_Breadcrumbs Current="Source Systems" />
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="page-title mb-0">
-                    <i class="fa-solid fa-server me-2"></i>Source Systems
+                    <i class="fa-solid fa-server me-2" aria-hidden="true"></i>Source Systems
                 </h1>
                 <button class="btn btn-primary" @onclick="CreateNew">
                     <i class="fa-solid fa-plus me-1"></i>New Source System
@@ -34,11 +35,13 @@
                 <div class="card-body py-2">
                     <div class="row">
                         <div class="col-md-4">
-                            <h6 class="text-info"><i class="fa-solid fa-building me-1"></i>In GLBA Terms</h6>
+                            <h6 class="text-info"><i class="fa-solid fa-building me-1" aria-hidden="true"></i>In GLBA Terms</h6>
                             <p class="small text-muted mb-0">
-                                A <strong>Source System</strong> is any application, database, or service within your institution 
-                                that accesses protected financial information. Under GLBA, you must track all systems that 
-                                can view, modify, or transmit customer financial data.
+                                A <strong>Source System</strong> is any application, database, or service within your institution
+                                that accesses protected financial information. The FTC Safeguards Rule requires you to identify
+                                the systems that store or access customer information (16 CFR 314.4(c)(1)) and to monitor and
+                                log the activity of authorized users on them (314.4(c)(8)). Each system also records a
+                                <strong>data owner</strong> — the point of contact responsible for the data it holds.
                             </p>
                         </div>
                         <div class="col-md-4">
@@ -96,6 +99,8 @@
                             <option value="DisplayName-desc">Display Name (Z-A)</option>
                             <option value="ContactEmail-asc">Contact (A-Z)</option>
                             <option value="ContactEmail-desc">Contact (Z-A)</option>
+                            <option value="DataOwnerName-asc">Data Owner (A-Z)</option>
+                            <option value="DataOwnerName-desc">Data Owner (Z-A)</option>
                             <option value="EventCount-desc">Most Events</option>
                             <option value="EventCount-asc">Fewest Events</option>
                             <option value="LastEventReceivedAt-desc">Recent Activity</option>
@@ -203,22 +208,25 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="sortable @SortClass("Name")" @onclick="@(() => Sort("Name"))">
+                                <th class="sortable @SortClass("Name")" @onclick="@(() => Sort("Name"))" @onkeydown="@(e => SortKeyDown(e, "Name"))" tabindex="0" aria-sort="@AriaSort("Name")">
                                     Name <i class="fa-solid @SortIcon("Name") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("DisplayName")" @onclick="@(() => Sort("DisplayName"))">
+                                <th class="sortable @SortClass("DisplayName")" @onclick="@(() => Sort("DisplayName"))" @onkeydown="@(e => SortKeyDown(e, "DisplayName"))" tabindex="0" aria-sort="@AriaSort("DisplayName")">
                                     Display Name <i class="fa-solid @SortIcon("DisplayName") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("ContactEmail")" @onclick="@(() => Sort("ContactEmail"))">
+                                <th class="sortable @SortClass("ContactEmail")" @onclick="@(() => Sort("ContactEmail"))" @onkeydown="@(e => SortKeyDown(e, "ContactEmail"))" tabindex="0" aria-sort="@AriaSort("ContactEmail")">
                                     Contact <i class="fa-solid @SortIcon("ContactEmail") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("EventCount")" @onclick="@(() => Sort("EventCount"))">
+                                <th class="sortable @SortClass("DataOwnerName")" @onclick="@(() => Sort("DataOwnerName"))" @onkeydown="@(e => SortKeyDown(e, "DataOwnerName"))" tabindex="0" aria-sort="@AriaSort("DataOwnerName")">
+                                    Data Owner <i class="fa-solid @SortIcon("DataOwnerName") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("EventCount")" @onclick="@(() => Sort("EventCount"))" @onkeydown="@(e => SortKeyDown(e, "EventCount"))" tabindex="0" aria-sort="@AriaSort("EventCount")">
                                     Events <i class="fa-solid @SortIcon("EventCount") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("LastEventReceivedAt")" @onclick="@(() => Sort("LastEventReceivedAt"))">
+                                <th class="sortable @SortClass("LastEventReceivedAt")" @onclick="@(() => Sort("LastEventReceivedAt"))" @onkeydown="@(e => SortKeyDown(e, "LastEventReceivedAt"))" tabindex="0" aria-sort="@AriaSort("LastEventReceivedAt")">
                                     Last Activity <i class="fa-solid @SortIcon("LastEventReceivedAt") ms-1"></i>
                                 </th>
-                                <th class="sortable @SortClass("IsActive")" @onclick="@(() => Sort("IsActive"))">
+                                <th class="sortable @SortClass("IsActive")" @onclick="@(() => Sort("IsActive"))" @onkeydown="@(e => SortKeyDown(e, "IsActive"))" tabindex="0" aria-sort="@AriaSort("IsActive")">
                                     Status <i class="fa-solid @SortIcon("IsActive") ms-1"></i>
                                 </th>
                                 <th style="width: 80px;">Actions</th>
@@ -241,7 +249,29 @@
                                         }
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">@item.EventCount.ToString("N0")</span>
+                                        @if (!string.IsNullOrEmpty(item.DataOwnerName) || !string.IsNullOrEmpty(item.DataOwnerEmail)) {
+                                            @if (!string.IsNullOrEmpty(item.DataOwnerName)) {
+                                                <span>@item.DataOwnerName</span>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.DataOwnerDepartment)) {
+                                                <br /><small class="text-muted">@item.DataOwnerDepartment</small>
+                                            }
+                                        } else {
+                                            <span class="text-warning-emphasis" title="No data owner recorded for this system">
+                                                <i class="fa-solid fa-triangle-exclamation me-1" aria-hidden="true"></i>Not set
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.EventCount > 0) {
+                                            <a href="@Helpers.BuildUrl($"AccessEvents?system={item.SourceSystemId}")"
+                                                    class="text-decoration-none" title="View this system's access events"
+                                                    aria-label="View @item.EventCount access events from @item.Name">
+                                                <span class="badge bg-info">@item.EventCount.ToString("N0")</span>
+                                            </a>
+                                        } else {
+                                            <span class="badge bg-info">0</span>
+                                        }
                                     </td>
                                     <td>
                                         @if (item.LastEventReceivedAt.HasValue) {
@@ -261,6 +291,15 @@
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-info" @onclick="@(() => VerifyChain(item))" title="Verify audit-trail integrity"
+                                                    aria-label="Verify the tamper-evident hash chain for @item.Name"
+                                                    disabled="@(_verifyingId == item.SourceSystemId)">
+                                                @if (_verifyingId == item.SourceSystemId) {
+                                                    <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                                                } else {
+                                                    <i class="fa-solid fa-fingerprint" aria-hidden="true"></i>
+                                                }
+                                            </button>
                                             <button class="btn btn-outline-primary" @onclick="@(() => Edit(item))" title="Edit">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
@@ -320,6 +359,59 @@
         <FreeGLBA_App_EditSourceSystem Item="_editItem" OnSave="SaveItem" OnCancel="CloseEdit" />
     }
 
+    @* Chain Verification Result Modal *@
+    @if (_verifyResult != null) {
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" role="dialog" aria-modal="true" aria-labelledby="verify-modal-title">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header @(_verifyResult.Valid ? "bg-success" : "bg-danger") text-white">
+                        <h5 class="modal-title" id="verify-modal-title">
+                            <i class="fa-solid fa-fingerprint me-2" aria-hidden="true"></i>
+                            Audit-Trail Integrity — @_verifyResult.SourceSystemName
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" @onclick="() => _verifyResult = null" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (_verifyResult.Valid) {
+                            <div class="alert alert-success mb-3" role="status">
+                                <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>
+                                <strong>Chain intact.</strong> All @_verifyResult.EventsChecked.ToString("N0") chained events verified —
+                                no modified rows, no broken links, no deletions.
+                            </div>
+                        } else {
+                            <div class="alert alert-danger mb-3" role="alert">
+                                <i class="fa-solid fa-triangle-exclamation me-2" aria-hidden="true"></i>
+                                <strong>@_verifyResult.Issues.Count integrity issue@(_verifyResult.Issues.Count == 1 ? "" : "s") found</strong>
+                                across @_verifyResult.EventsChecked.ToString("N0") chained events. The audit trail was altered
+                                after these events were recorded.
+                            </div>
+                            <ul class="list-unstyled mb-3">
+                                @foreach (var issue in _verifyResult.Issues) {
+                                    <li class="d-flex align-items-start gap-2 py-2 border-bottom border-light-subtle">
+                                        <span class="badge text-bg-danger" style="min-width: 7.5rem;">@issue.IssueType</span>
+                                        <span class="small">@issue.Detail</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        <p class="small text-muted mb-0">
+                            Every ingested event carries a SHA-256 hash over its audit fields, linked to the previous event's
+                            hash in a per-system chain. Editing a stored event breaks its hash by design — audit records are
+                            meant to be immutable.
+                            @if (_verifyResult.UnhashedEvents > 0) {
+                                <span> @_verifyResult.UnhashedEvents.ToString("N0") event(s) predate integrity chaining and cannot be verified.</span>
+                            }
+                            <span> Verified @_verifyResult.VerifiedAt.ToLocalTime().ToString("MMM d, yyyy h:mm tt").</span>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="() => _verifyResult = null">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     @* Delete Confirmation Modal *@
     @if (_showDeleteConfirm) {
         <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
@@ -331,7 +423,10 @@
                     </div>
                     <div class="modal-body">
                         <p>Are you sure you want to delete <strong>@_deleteItem?.DisplayName</strong>?</p>
-                        <p class="text-muted small">This will remove the source system but preserve its events.</p>
+                        <p class="text-muted small">
+                            A source system with recorded access events cannot be deleted — the audit trail is preserved.
+                            Deactivate it instead to stop accepting new events.
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
@@ -346,6 +441,7 @@
 <style>
     .sortable { cursor: pointer; user-select: none; }
     .sortable:hover { background-color: #e9ecef; }
+    .sortable:focus-visible { outline: 2px solid #0d6efd; outline-offset: -2px; }
     .sort-active { font-weight: bold; }
 </style>
 
@@ -365,11 +461,39 @@ private bool _showDeleteConfirm = false;
 private DataObjects.SourceSystem? _deleteItem = null;
 private bool _helpExpanded = false;
 
-public void Dispose() { Model.OnChange -= StateHasChanged; }
+public void Dispose() {
+    Model.OnChange -= StateHasChanged;
+    Model.OnGlbaUpdate -= OnGlbaUpdate;
+}
 
 protected override void OnInitialized() {
     Model.View = _pageName;
     Model.OnChange += StateHasChanged;
+    Model.OnGlbaUpdate += OnGlbaUpdate;
+}
+
+private void OnGlbaUpdate(DataObjects.SignalRUpdate update) {
+    // Refresh live when events arrive (counts/last-activity change) or a system is edited.
+    _ = InvokeAsync(LoadData);
+}
+
+private Guid _verifyingId = Guid.Empty;
+private DataObjects.ChainVerificationResult? _verifyResult = null;
+
+/// <summary>Runs tamper-evidence verification for one source system's event chain.</summary>
+private async Task VerifyChain(DataObjects.SourceSystem item) {
+    _verifyingId = item.SourceSystemId;
+    StateHasChanged();
+    try {
+        _verifyResult = await Helpers.GetOrPost<DataObjects.ChainVerificationResult>(
+            DataObjects.Endpoints.FreeGLBA.VerifyAccessEventChain, item.SourceSystemId);
+        if (_verifyResult == null) {
+            Model.ErrorMessages(new List<string> { "Verification failed to run. Please try again." });
+        }
+    } finally {
+        _verifyingId = Guid.Empty;
+        StateHasChanged();
+    }
 }
 
 protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -443,6 +567,8 @@ private string GetSortDisplayName() => _sortOption switch {
     "DisplayName-desc" => "Display Name (Z-A)",
     "ContactEmail-asc" => "Contact (A-Z)",
     "ContactEmail-desc" => "Contact (Z-A)",
+    "DataOwnerName-asc" => "Data Owner (A-Z)",
+    "DataOwnerName-desc" => "Data Owner (Z-A)",
     "EventCount-desc" => "Most Events",
     "EventCount-asc" => "Fewest Events",
     "LastEventReceivedAt-desc" => "Recent Activity",
@@ -463,6 +589,14 @@ private void Sort(string column) {
     _filter.Page = 1;
     _ = LoadData();
 }
+
+    /// <summary>Keyboard support for the clickable sort headers (Enter or Space).</summary>
+    private void SortKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e, string column) {
+        if (e.Key == "Enter" || e.Key == " ") { Sort(column); }
+    }
+
+    /// <summary>aria-sort value for a sortable column header.</summary>
+    private string AriaSort(string column) => _filter.SortColumn == column ? (_filter.SortDescending ? "descending" : "ascending") : "none";
 
 private string SortClass(string column) => _filter.SortColumn == column ? "sort-active" : "";
 private string SortIcon(string column) {
@@ -505,7 +639,12 @@ private async Task GoToPage(int page) {
 
     private async Task DeleteConfirmed() {
         if (_deleteItem != null) {
-            await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.DeleteSourceSystem, _deleteItem.SourceSystemId);
+            var deleted = await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.DeleteSourceSystem, _deleteItem.SourceSystemId);
+            if (!deleted) {
+                Model.ErrorMessages(new List<string> {
+                    $"\"{_deleteItem.DisplayName}\" was not deleted. Source systems with recorded access events cannot be deleted because the audit trail must be preserved — deactivate it instead."
+                });
+            }
             _deleteItem = null;
             _showDeleteConfirm = false;
             await LoadData();

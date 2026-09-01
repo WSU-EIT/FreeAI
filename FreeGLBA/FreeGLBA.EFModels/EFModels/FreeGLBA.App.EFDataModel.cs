@@ -16,6 +16,32 @@ public partial class EFDataModel : DbContext
     public virtual DbSet<ApiRequestLogItem> ApiRequestLogs { get; set; } = null!;
     public virtual DbSet<BodyLoggingConfigItem> BodyLoggingConfigs { get; set; } = null!;
     public virtual DbSet<ComplianceReportItem> ComplianceReports { get; set; } = null!;
+    public virtual DbSet<DataOwnershipItem> DataOwnerships { get; set; } = null!;
     public virtual DbSet<DataSubjectItem> DataSubjects { get; set; } = null!;
     public virtual DbSet<SourceSystemItem> SourceSystems { get; set; } = null!;
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        // Close the ingest de-duplication race with a real unique constraint on
+        // (SourceSystemId, SourceEventId), filtered to rows that actually carry a
+        // dedupe key (SourceEventId is often empty, and empty rows must not collide).
+        // Filtered/partial indexes exist on SQL Server, PostgreSQL, and SQLite but
+        // not MySQL; InMemory would enforce the uniqueness while ignoring the
+        // filter, which would reject legitimate events with no SourceEventId, so
+        // those providers keep the plain non-unique index from the entity attribute.
+        var providerName = (this.Database.ProviderName ?? string.Empty).ToUpper();
+        string? filter = providerName switch {
+            "MICROSOFT.ENTITYFRAMEWORKCORE.SQLSERVER" => "[SourceEventId] <> ''",
+            "NPGSQL.ENTITYFRAMEWORKCORE.POSTGRESQL" => "\"SourceEventId\" <> ''",
+            "MICROSOFT.ENTITYFRAMEWORKCORE.SQLITE" => "\"SourceEventId\" <> ''",
+            _ => null,
+        };
+
+        if (filter != null) {
+            modelBuilder.Entity<AccessEventItem>()
+                .HasIndex(x => new { x.SourceSystemId, x.SourceEventId })
+                .IsUnique()
+                .HasFilter(filter);
+        }
+    }
 }

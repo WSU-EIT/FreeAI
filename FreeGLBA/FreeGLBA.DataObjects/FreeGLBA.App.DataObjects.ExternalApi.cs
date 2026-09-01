@@ -24,6 +24,22 @@ public partial class DataObjects
         /// </summary>
         public string? AgreementText { get; set; }
         public string? DataCategory { get; set; }
+        /// <summary>
+        /// Optional: department of the owner of the data this event is about.
+        /// When omitted, the source system's current data owner is captured automatically.
+        /// </summary>
+        public string? DataOwnerDepartment { get; set; }
+        /// <summary>
+        /// Optional: email of the owner of the data this event is about.
+        /// When omitted, the source system's current data owner is captured automatically.
+        /// </summary>
+        public string? DataOwnerEmail { get; set; }
+        /// <summary>
+        /// Optional: name of the owner (point of contact) of the data this event is about.
+        /// Stored as an immutable snapshot on the event — "who owned the data at the time".
+        /// When omitted, the source system's current data owner is captured automatically.
+        /// </summary>
+        public string? DataOwnerName { get; set; }
         public string? IpAddress { get; set; }
         public string? Purpose { get; set; }
         public string? SourceEventId { get; set; }
@@ -90,6 +106,39 @@ public partial class DataObjects
         public long TotalAccessors { get; set; }
         /// <summary>Total number of data subjects in the system.</summary>
         public long TotalSubjects { get; set; }
+    }
+
+    /// <summary>One day's event volume for the dashboard trend chart.</summary>
+    public class GlbaDailyCount
+    {
+        public DateTime Date { get; set; }
+        public int Events { get; set; }
+        /// <summary>Events whose access type was Export or Download.</summary>
+        public int Exports { get; set; }
+    }
+
+    /// <summary>
+    /// One item needing attention: an access anomaly or a configuration gap.
+    /// Severity is "critical", "warning", or "info".
+    /// </summary>
+    public class GlbaInsight
+    {
+        public string Detail { get; set; } = string.Empty;
+        /// <summary>Relative page URL (without tenant prefix) the insight links to, e.g. "AccessEvents?userId=x".</summary>
+        public string LinkPage { get; set; } = string.Empty;
+        public string LinkText { get; set; } = string.Empty;
+        public string Severity { get; set; } = "info";
+        public string Title { get; set; } = string.Empty;
+    }
+
+    /// <summary>Dashboard trend data plus items needing attention.</summary>
+    public class GlbaInsights
+    {
+        /// <summary>Event counts per day, oldest first, zero-filled across the window.</summary>
+        public List<GlbaDailyCount> EventsPerDay { get; set; } = new();
+        public List<GlbaInsight> Items { get; set; } = new();
+        /// <summary>Number of days covered by EventsPerDay.</summary>
+        public int WindowDays { get; set; } = 30;
     }
 
     /// <summary>Accessor (user who accessed data) summary for reporting.</summary>
