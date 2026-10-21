@@ -1,0 +1,31 @@
+@page "/sample"
+@* Fixture: two renamed copies of one method in a Razor @code block (lines 10-18 and 20-28). *@
+
+<h3>Sample</h3>
+<p>@Message</p>
+
+@code {
+    private string Message = "}"; // a brace in a string and in this comment: {
+
+    private int Total(int[] values)
+    {
+        int total = 0;
+        foreach (var v in values)
+        {
+            if (v > 0) { total += v; }
+        }
+        return total;
+    }
+
+    private int Sum(int[] items)
+    {
+        int sum = 0;
+        foreach (var item in items)
+        {
+            if (item > 0) { sum += item; }
+        }
+        return sum;
+    }
+}
+
+<p>Trailing markup with a brace { that is not code.</p>

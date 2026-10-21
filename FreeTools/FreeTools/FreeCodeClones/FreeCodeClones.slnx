@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="FreeCodeClones.Cli/FreeCodeClones.Cli.csproj" />
+  <Project Path="FreeCodeClones.Core/FreeCodeClones.Core.csproj" />
+  <Project Path="FreeCodeClones.Core.Tests/FreeCodeClones.Core.Tests.csproj" />
+</Solution>

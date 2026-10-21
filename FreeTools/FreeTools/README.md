@@ -10,7 +10,8 @@ application, plus a .NET Aspire orchestrator that runs them together as one pipe
 >    orchestrated, and the only group with a real dependency graph.
 > 2. **[FreeCodeMaid](FreeCodeMaid/)** — a separate Roslyn code-reorganiser product with its own
 >    solution, its own core library (`FreeCodeReorganizer.Core`, *not* `FreeTools.Core`), and four
->    front-ends. It shares no code with the pipeline.
+>    front-ends. It shares no code with the pipeline. **[FreeCodeClones](FreeCodeClones/)**, a Roslyn
+>    copy-paste detector, is a second separate product of the same kind (own solution, own core).
 > 3. **Two standalone utilities** — `ForkCRM` and `AppExtractor`. Neither references
 >    `FreeTools.Core`, and `AppExtractor` is in no solution file.
 
@@ -62,7 +63,8 @@ The branch name is read by parsing `.git/HEAD` directly (`GetGitBranch`, `AppHos
 
 | | |
 |---|---|
-| **[FreeCodeMaid](FreeCodeMaid/)** | Roslyn C#/Razor member reorganiser. `1.0/` is current; `0.0/` is frozen. Has its own solution and the only unit tests in this tree. |
+| **[FreeCodeMaid](FreeCodeMaid/)** | Roslyn C#/Razor member reorganiser. `1.0/` is current; `0.0/` is frozen. Has its own solution and unit tests. |
+| **[FreeCodeClones](FreeCodeClones/FreeCodeClones.Cli/)** | Roslyn clone detector: finds copy-pasted C# (and Razor `@code`) in a FreeCRM project's `{Project}.App.*` layer, with a baseline to gate a build and a behavioural-equivalence helper. Console app runnable from a terminal or Visual Studio; its own solution and tests. |
 
 ---
 

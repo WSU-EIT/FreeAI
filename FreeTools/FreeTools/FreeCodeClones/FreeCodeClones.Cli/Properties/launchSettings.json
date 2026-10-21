@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "FreeCICD (cloned next to WSU-EIT)": {
+      "commandName": "Project",
+      "commandLineArgs": "--root ..\\..\\..\\..\\..\\..\\FreeCICD --timestamp",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "This tool's own source (include-all)": {
+      "commandName": "Project",
+      "commandLineArgs": "--root .. --include-all --timestamp",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}

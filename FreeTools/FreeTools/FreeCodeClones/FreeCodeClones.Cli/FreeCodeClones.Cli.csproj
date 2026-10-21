@@ -1,0 +1,24 @@
+<!--
+  FreeCodeClones.Cli: a thin console wrapper over FreeCodeClones.Core. Scans a FreeCRM-style repo's
+  {ProjectName}.App.* layer (or every file with include-all) for copy-pasted C# and prints the clone
+  classes; optional JSON / Markdown reports and a baseline to gate a build. Runs the same from a
+  terminal ("dotnet run -project ... -no-launch-profile -root <repo>", with double dashes) as from
+  Visual Studio (set as startup project, pick a launch profile, F5). See README.md.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FreeCodeClones.Cli</RootNamespace>
+    <AssemblyName>FreeCodeClones.Cli</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreeCodeClones.Core\FreeCodeClones.Core.csproj" />
+  </ItemGroup>
+
+</Project>
