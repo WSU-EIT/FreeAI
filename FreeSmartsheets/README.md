@@ -1,184 +1,92 @@
-# FreeCRM 
+# FreeSmartsheets
 
-An open-source CRM solution built in C# Blazor WebAssembly using .NET 10. You can use this project as-is,
-or customize it to fit your needs. Or, just grab code that you need to use in your project.
+A Blazor WebAssembly application for viewing a Smartsheet workspace inventory — showing what workspaces, sheets, and reports exist in an organization's Smartsheet account and who has access to what. Configure the Smartsheet API key in `appsettings.FreeSmartsheets.App.json` to connect to your organization's account.
 
-## Database Setup & Default Admin Login
+## Project Structure
 
-The application is configured to use a local SQL Server database by default.
-You can change this in the appsettings.json file.
-Assuming your have SQL Server installed and your local account has permission to create databases,
-a new database will be created and you will be able to login with a username and password of 'admin'.
+| Project | Description |
+|---------|-------------|
+| [`FreeSmartsheets`](FreeSmartsheets/README.md) | Main server application (ASP.NET Core, Blazor Server/WASM host) |
+| [`FreeSmartsheets.Client`](FreeSmartsheets/FreeSmartsheets.Client/README.md) | Blazor WebAssembly UI components |
+| [`FreeSmartsheets.DataAccess`](FreeSmartsheets/FreeSmartsheets.DataAccess/README.md) | Business logic and data access layer |
+| [`FreeSmartsheets.DataObjects`](FreeSmartsheets/FreeSmartsheets.DataObjects/README.md) | DTOs and configuration objects |
+| [`FreeSmartsheets.EFModels`](FreeSmartsheets/FreeSmartsheets.EFModels/README.md) | Entity Framework Core database models |
+| [`FreeSmartsheets.Plugins`](FreeSmartsheets/FreeSmartsheets.Plugins/README.md) | Dynamic C# plugin system |
 
-If you update your connection string to point to a different server, you will need
-to make sure the user specified for the connection has permissions to modify the database schema.
+## Quick Start
 
-## Utilities
+### Prerequisites
 
-The previous utilities "Remove Modules from FreeCRM.exe", "Rename FreeCRM.exe", and
-"Upgrade FreeCRM.exe" have now been combined into a new single "Util.exe" utility,
-referred to below as Util. This Util console application has an intuitive main menu
-with options, as well as a built-in help to show all available commands.
-Command in the utility are not case-sensitive.
+- .NET 10 SDK
+- SQL Server, PostgreSQL, SQLite, or MySQL
+- Smartsheet API key
 
-## Step 1 - Rename the Solution
+### Configuration
 
-Using rename with the Util will rename the project files,
-create new GUIDs for each project in the solution,
-and rename namespaces to match your project name.
+Set your Smartsheet API key in `FreeSmartsheets/appsettings.FreeSmartsheets.App.json` and configure a database connection string in `FreeSmartsheets/appsettings.json`, then run:
 
-The tool supports adding the rename value as a command-line argument. For example:
-
-`Util --rename:MyNewProjectName`
-
-## Step 2 - Remove Unwanted Modules
-
-If you want to remove one or more of the optional components from the application
-you can use the Util to do so.
-This utility may still leave remnants of the removed modules in the code.
-If you find any items that are not removed that you believe should be,
-please open an issue on GitHub. Please include the name of the file and the line number
-where the item is located.
-
-The removal tool supports two command-line options. They are:
-
-`Util --remove:Module1,Module2,etc.`
-
-This removes any named modules.
-
-`Util --keep:Module1,Module2,etc.`
-
-This removes any modules not named. For example, to remove all optional modules except
-the Tags module, you would use:
-
-`Util --keep:Tags`
-
-You can also remove all optional modules without having to list them all by using:
-
-`Util --remove:all`
-
-Do not use any spaces in the command line options. The names of the modules that can be
-kept or removed are:
-
-- About
-- Appointments
-- EmailTemplates
-- Invoices
-- Locations
-- Logo
-- Payments
-- SamplePages
-- SamplePlugins
-- Services
-- Tags
-
-## Details
-
-### Plugins
-
-FreeCRM supports a plugin architecture that allows you to extend the functionality
-of the software. See the example files in the Plugins folder for examples of how
-to use the various plugin types. You can easily add support for more plugin types
-to support your custom application changes by following the various examples
-already built into the application. The types built in out of the box are:
-"Auth", "BackgroundProcess", "Example", and "UserUpdate".
-
-Plugins can have a .cs file extension and be included in your project as source code,
-or they can have the .plugin extension for files that may have build conflicts
-with your solution. For example, the HelloWorld sample plugin uses an external dll
-file that would cause build issues if it were included as a .cs file.
-See the .assemblies file used with that plugin to see how external files can be included.
-These external references can be paths to files or can be statements that evaluate
-to the location of the files at runtime, like:
-
-```
-.\HelloWorld\HelloWorld.dll
-typeof(SomeNameSpace.SomeProperty).Assembly.Location
+```bash
+cd FreeSmartsheets
+dotnet run
 ```
 
-### Background Service
+Navigate to `https://localhost:5001`
 
-FreeCRM includes a background service that can be started when your application starts
-to perform periodic tasks. This is controlled by the settings in the BackgroundService
-section of appsettings.json. By default, the background service is enabled and configured
-to run every 60 seconds.
+## 🧭 Plain-English Briefing — The Boss Questions
 
-For tenants that are configured to mark records as deleted instead of deleting them immediately,
-this background service will take care of permanently deleting those records after the
-specified retention period has passed.
+**How does this work?**
+FreeSmartsheets is built on the FreeCRM platform — a multi-tenant Blazor web app with login, user/tenant admin, runtime plugins, and real-time updates. Its *intended* job is to connect to a Smartsheet account (API key in `appsettings.FreeSmartsheets.App.json`) and show an inventory of the workspaces, sheets, and reports in that account, plus who can access what.
 
-If you want detailed logging for the background service then set the LogFilePath with
-the path to the folder where you want the logs to be stored. The application will need
-to be running under credentials that have write access to that folder.
+> **Honest status (as of this commit):** the platform is fully in place, and the Smartsheet data flow is *designed and documented* in [FreeSmartsheets.Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets.Docs/003_architecture.md) (`GetWorkspaces() → SmartsheetClient.WorkspaceResources.ListWorkspaces()`) — but those Smartsheet API calls are **not yet implemented in the code**. There is no `GetWorkspaces` method or Smartsheet SDK usage in the data layer yet. So today this is the scaffold + design; building the inventory viewer is the next step.
 
-The StartOnLoad flag indicates if the tasks to be run should be started immediately,
-or if they should wait until the first timer interval to start. For example, if this
-is set to false and the IntervalSeconds is set to 60, then the first time the tasks
-will run is 60 seconds after the application starts. If you have something that needs
-to be run as soon as the application starts, then set this to true.
+**What technology does it use — and where exactly?**
 
-There are two methods to tie into the background service to run your own tasks.
-First, you can modify the ProcessBackgroundTasksApp method in the DataAccess.App.cs file
-to run methods in there. The second method is to build plugins using the new
-"BackgroundProcess" plugin type. See the ExampleBackgroundProcess.cs file in the
-Plugins folder for an example of how to build a background process plugin.
-The example plugin will simple log a message to the console each time it runs,
-and to the logging file if you have one configured.
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WASM + ASP.NET Core host | The platform UI and web server | [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/Program.cs) |
+| EF Core (5 providers) | Data layer | [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets.EFModels/EFModels/EFDataModel.cs) |
+| Roslyn plugins | Extend at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets.Plugins/Plugins.cs) |
+| SignalR (`/freesmartsheetsHub`) | Real-time updates | [Program.cs#L238](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets/Program.cs#L238) |
+| Smartsheet integration *(planned)* | The inventory data flow — **design only, not yet coded** | [FreeSmartsheets.Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets.Docs/003_architecture.md) |
 
-If you are running in a load balanced environment with multiple instances of the application
-and you only want the background service to run on a specific instance, you can set the
-LoadBalancingFilter value in the BackgroundService section of appsettings.json to a value
-that must be matched in the name of the current System.Environment.MachineName.
+**Why does this exist?**
+Organizations on Smartsheet lose track of what workspaces and sheets exist and who has access. The goal is a single read-only **inventory + access map** across the whole account — governance and audit value Smartsheet's own UI doesn't surface in one place. Building it on FreeCRM means it inherits enterprise SSO and multi-tenancy for free.
 
-### IIS Configuration for the Background Service
+**What does it accomplish that other tools don't?**
+- *(Goal)* A cross-account "who can see what" map across all workspaces in one view.
+- Built on a reusable, SSO-capable multi-tenant platform rather than a one-off script.
+- *(Today)* Transparent status: the platform is done; the Smartsheet API calls are the remaining work — no overstating what's shipped.
 
-If you are hosting on IIS and want to ensure that the background service is always running,
-set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
-for the application settings to true. The Preload Enabled flag is only available
-if you have installed the Application Initialization feature for IIS.
+**Terminology & "can I see it?"**
+- **Workspace / sheet / report** — Smartsheet's containers for data.
+- **API key** — the token that authorizes read access to a Smartsheet account.
+- **Scaffold** — the shared FreeCRM platform this is built on.
+- *See it:* the intended data flow is written out in [FreeSmartsheets.Docs/003_architecture.md](https://github.com/WSU-EIT/FreeAI/blob/main/FreeSmartsheets/FreeSmartsheets.Docs/003_architecture.md).
 
-## Upgrade
+**The hard part, drawn** — design vs. what's live today:
 
-If you are running an older version of an application based on the FreeCRM
-framework and you have already migrated to use .app. files for all of your
-app-specific code, then you can use the Util console
-application to upgrade your existing application. To do so download a fresh
-copy of the FreeCRM files, run the "rename" option in the utility to rename
-the application using the exact same namespace as your existing application.
-Then, use the "remove" option in the utility to remove any modules
-that you won't be using in your application. Finally, run the
-"upgrade" option in the utility which will attempt to migrate your existing
-code into the new version.
+```
+  [ DESIGN — documented in FreeSmartsheets.Docs/003_architecture.md, NOT yet implemented in code ]
+     Browser ─▶ GET /api/Data/GetWorkspaces
+                     ▼
+            DataAccess.GetWorkspaces()
+                     ▼  (Smartsheet C# SDK, using the configured API key)
+            SmartsheetClient.WorkspaceResources.ListWorkspaces()
+                     ▼
+            workspaces · sheets · reports · who-has-access ──▶ inventory UI
 
-This tool can take a single command-line argument of the path to your
-existing application. For example:
+  [ TODAY — the FreeCRM platform underneath is fully in place ]
+     Browser (Blazor WASM) ─REST─▶ DataController ─▶ IDataAccess ─ EF Core ─▶ 5 DB engines
+            └ auth (OIDC/OAuth) · multi-tenant · Roslyn plugins · SignalR (freesmartsheetsHub)
+```
 
-`Util --upgrade:"C:\MyExistingApp"`
+## License
 
-There are edge cases that cannot be updated with this tool, such as having
-additional project in your solution. The tool will copy those projects,
-but any references in other projects must be added manually.
+Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-The tool will produce a report that will help with any additional steps
-that will be required for the migration.
+## About
 
-The commands in the Util console application can be chained together to perform
-all steps in one call. For example, to rename your app, remove some modules, and
-perform the upgrade you could use:
+Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
 
-`--Rename:MyNewProjectName --Keep:about,tags --Upgrade:"C:\Path\To\Current\Version"`
-
-## Mac OS
-
-A separate UtilMacOS file is available for use on Macs with Apple silicone.
-To make this work you must open a console into the folder where the file
-exists and issue the following command:
-
-```chmod +x UtilMacOS```
-
-Then, to run the application issue the following command:
-
-```./UtilMacOS```
-
-Both the Util.exe and UtilMacOS applications are framework-dependent, so
-you must have .NET 10 installed to run them.
+- Website: https://em.wsu.edu/eit/
+- GitHub: https://github.com/WSU-EIT
