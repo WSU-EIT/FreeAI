@@ -1,0 +1,11 @@
+﻿@code {
+    // FreeManager additions to the page <head>, rendered from Modules.App.razor (case "head"), after the Radzen theme,
+    // so these styles keep their place in the cascade without editing the stock App.razor.
+    [Parameter] public string Module { get; set; } = String.Empty;
+}
+
+@switch (Module) {
+    case "head":
+        <link rel="stylesheet" href="@Assets["css/FreeManager.App.css"]" />
+        break;
+}

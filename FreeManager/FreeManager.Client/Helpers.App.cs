@@ -7,6 +7,7 @@ public static partial class Helpers
             Dictionary<string, List<string>> icons = new Dictionary<string, List<string>> {
                 { "fa:fa-solid fa-home", new List<string> { "IconName1", "IconName2" }},
             };
+            foreach (var kv in FreeManagerAppIcons) { icons[kv.Key] = kv.Value; }
 
             return icons;
         }
@@ -150,6 +151,7 @@ public static partial class Helpers
         get {
             // Add any app-specific top-level menu items here.
             var output = new List<DataObjects.MenuItem>();
+            output.AddRange(Helpers.FreeManagerMenuItemsApp);
 
             // Sample
             //if (Model.User.Admin) {
@@ -171,6 +173,7 @@ public static partial class Helpers
         get {
             // Add any app-specific admin menu items here.
             var output = new List<DataObjects.MenuItem>();
+            output.AddRange(Helpers.FreeManagerMenuItemsAdminApp);
 
             return output;
         }

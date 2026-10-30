@@ -1,0 +1,117 @@
+# FreeManager.Client
+
+Blazor WebAssembly client for the FreeManager application platform.
+
+This project is the in-browser UI. It contains all pages, components, the App Builder / Entity Wizard code-generation suite, shared UI components (Monaco editor, file upload, tag selector, dialogs), and the client-side data model (`BlazorDataModel`).
+
+## Blazor Pages and Routes
+
+| Route | Page file | Description |
+|-------|-----------|-------------|
+| `/` and `/{TenantCode}` | `Index.razor` | Home / dashboard |
+| `/Login` | `Authorization/Login.razor` | Login page |
+| `/Logout` | `Authorization/Logout.razor` | Logout |
+| `/AppBuilder` | `Pages/App/FreeManager.App.Pages.Projects.razor` | App Builder project dashboard |
+| `/AppBuilder/New` | `Pages/App/FreeManager.App.Pages.NewProject.razor` | New project entry |
+| `/AppBuilder/Edit/{ProjectId}` | `Pages/App/FreeManager.App.Pages.ProjectEditor.razor` | Edit saved project |
+| `/AppBuilder/EntityWizard` | `Shared/AppComponents/FreeManager.App.UI.EntityWizard.razor` | 7-step entity & code-gen wizard |
+| `/AppBuilder/Dashboard` | `Pages/App/FreeManager.App.Pages.EntityDashboard.razor` | Legacy redirect to `/AppBuilder` |
+| `/AppBuilder/SetupWizardBuilder` | `Shared/AppComponents/FreeManager.App.UI.SetupWizardBuilder.razor` | Setup wizard builder |
+| `/Templates` | `Shared/AppComponents/FreeManager.App.UI.Templates.razor` | Template selection (FreeBase / FreeTracker / FreeAudit) |
+| `/Templates/Setup` | `Shared/AppComponents/FreeManager.App.UI.TemplateSetup.razor` | Configure template before scaffolding |
+| `/fm/templates` | `Shared/AppComponents/FreeManager.App.UI.TemplateGallery.razor` | Full template gallery browser |
+| `/Settings` | `Settings/Misc/Settings.razor` | Application settings |
+| `/Users` | `Settings/Users/Users.razor` | User management |
+| `/Departments` | `Settings/Departments/Departments.razor` | Department management |
+| `/Tenants` | `Settings/Tenants/Tenants.razor` | Tenant management |
+| `/Tags` | `Settings/Tags/Tags.razor` | Tag management |
+| `/Files` | `Settings/Files/Files.razor` | File storage |
+| `/ChangePassword` | `ChangePassword.razor` | Password change |
+| `/Profile` | `Profile.razor` | User profile |
+| `/About` | `About.razor` | About page |
+
+## Key Public Classes
+
+| Class | Description |
+|-------|-------------|
+| `BlazorDataModel` | Singleton client state model — authentication, tenant, navigation, messages |
+| `Helpers` | Static HTTP helper methods (`GetOrPost`, `NavigateToLogin`, `BuildUrl`, `ConsoleLog`) |
+| `EntityTemplates` | Code generator — `GenerateAllFiles(EntityWizardState)` produces all `.App.` partial-class files |
+| `ProjectTemplates` | Project-level template generators used by the App Builder |
+| `PagePatterns` | Reusable Blazor page pattern generators (Kanban, Timeline, Dashboard, SplitPanel, etc.) |
+| `WizardTemplates` | Component and service code templates for the wizard output |
+| `EntityWizardUndoRedo` | Undo/redo state stack for the Entity Wizard |
+| `EntityWizardImportParser` | Parses imported entity definitions (CSV / JSON) into wizard state |
+
+## Project References and NuGet Packages
+
+**References:** `FreeManager.DataObjects`
+
+| Package | Version |
+|---------|---------|
+| `Microsoft.AspNetCore.Components.WebAssembly` | 10.0.1 |
+| `Microsoft.AspNetCore.SignalR.Client` | 10.0.1 |
+| `MudBlazor` | 8.15.0 |
+| `Radzen.Blazor` | 8.4.0 |
+| `Blazor.Bootstrap` | 3.5.0 |
+| `BlazorMonaco` | 3.4.0 (Monaco code editor) |
+| `BlazorSortableList` | 2.1.0 |
+| `Blazored.LocalStorage` | 4.5.0 |
+| `FreeBlazor` | 1.0.62 |
+| `CsvHelper` | 33.1.0 |
+| `Humanizer` | 3.0.1 |
+| `HtmlAgilityPack` | 1.12.4 |
+
+## Build Details
+
+| Field | Value |
+|-------|-------|
+| SDK | `Microsoft.NET.Sdk.BlazorWebAssembly` |
+| Target framework | `net10.0` |
+| Output type | Library (served by `FreeManager` host) |
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+The browser UI, including the App Builder / Entity Wizard code-generation suite. The actual generator is `EntityTemplates.GenerateAllFiles(EntityWizardState)` — spread across the sections of `FreeManager.App.EntityTemplates.cs`, one per output layer (DataObjects, EFModel, DataAccess, Controller). The wizard supports live preview (Monaco editor), undo/redo, CSV/JSON import of entity definitions, and a library of reusable page patterns (Kanban, Timeline, Dashboard…).
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| The code generator | Turns the model into source files | [FreeManager.App.EntityTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/FreeManager.App.EntityTemplates.cs) |
+| Entity Wizard UI | The 7-step model-definition flow | [Shared/AppComponents/FreeManager.App.UI.EntityWizard.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/Shared/AppComponents/FreeManager.App.UI.EntityWizard.razor) |
+| Project-level templates | Whole-project generation | [FreeManager.App.ProjectTemplates.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/FreeManager.App.ProjectTemplates.cs) |
+| API helpers | Server calls + navigation | [Helpers.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeManager/FreeManager.Client/Helpers.cs) |
+
+**Why does this exist?**
+So the entire code-generation experience — define, preview, save, export — runs client-side, with the generator living next to the UI that drives it.
+
+**What does it accomplish that other tools don't?**
+- The generator runs **in the browser**, with live Monaco preview of every file before you export.
+- **Per-layer partial templates** (`.Controller`, `.DataAccess`, `.DataObjects`, `.EFModel`) keep the generated code maintainable and consistent.
+- **Undo/redo** and **CSV/JSON import** make modeling fast; a **page-pattern library** emits common UIs (Kanban, Timeline…).
+
+**Terminology & "can I see it?"**
+- **Page pattern** — a prebuilt UI shape (Kanban, Dashboard) the generator can emit.
+- **State bag** (`BlazorDataModel`) — the shared client state every page reads/writes.
+
+**The hard part, drawn** — model to previewed, exportable files:
+
+```
+  Entity Wizard (7 steps) ─▶ EntityWizardState
+          │ EntityTemplates.GenerateAllFiles()
+          ▼   partials: .DataObjects · .EFModel · .DataAccess · .Controller · page patterns
+   generated .App. files ─▶ live preview (Monaco) · undo/redo · import CSV/JSON ─▶ save / export
+```
+
+## License
+
+Released under the [MIT License](https://opensource.org/licenses/MIT).
+
+## About
+
+Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
+
+- Website: https://em.wsu.edu/eit/
+- GitHub: https://github.com/WSU-EIT

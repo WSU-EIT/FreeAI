@@ -26,6 +26,7 @@ public partial class DataAccess
     /// </summary>
     private Dictionary<string, string> AppLanguage {
         get {
+            if (FreeManagerAppLanguage.Any()) { return FreeManagerAppLanguage; }
             return new Dictionary<string, string>
             {
                 //{ "AppTitle", "My Custom App Title" },

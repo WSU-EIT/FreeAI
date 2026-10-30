@@ -1,0 +1,69 @@
+﻿@* FreeManager.App.UI.EntityWizard.TypePicker.razor - Visual tile-based type selector *@
+
+<div class="type-picker-container">
+    <label class="form-label">
+        Type <span class="text-danger">*</span>
+    </label>
+    
+    <div class="type-picker-grid">
+        @foreach (var typeInfo in DataObjects.PropertyTypes.All) {
+            <div class="type-tile @(SelectedType == typeInfo.Type ? "selected" : "") @typeInfo.TileColorClass"
+                    @onclick="() => SelectType(typeInfo.Type)"
+                    title="@typeInfo.DisplayName">
+                <div class="type-tile-icon">
+                    @if (typeInfo.TileLabel.Length <= 3) {
+                        <span class="type-tile-label">@typeInfo.TileLabel</span>
+                    } else {
+                        <i class="fa-solid @typeInfo.Icon"></i>
+                    }
+                </div>
+                <div class="type-tile-name">@GetShortName(typeInfo.Type)</div>
+                @if (SelectedType == typeInfo.Type) {
+                    <div class="type-tile-check">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    
+    @if (!string.IsNullOrEmpty(SelectedType)) {
+        <div class="type-picker-selected mt-2">
+            <small class="text-muted">
+                Selected: <strong>@GetSelectedDisplayName()</strong>
+            </small>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnTypeSelected { get; set; }
+    [Parameter] public string SelectedType { get; set; } = "string";
+    [Parameter] public EventCallback<string> SelectedTypeChanged { get; set; }
+
+    private string GetSelectedDisplayName() {
+        var typeInfo = DataObjects.PropertyTypes.Get(SelectedType);
+        return typeInfo?.DisplayName ?? SelectedType;
+    }
+
+    private string GetShortName(string type) {
+        return type switch {
+            "string" => "text",
+            "int" => "int",
+            "long" => "long",
+            "decimal" => "money",
+            "bool" => "bool",
+            "DateTime" => "date",
+            "DateOnly" => "date",
+            "Guid" => "guid",
+            "enum" => "enum",
+            _ => type
+        };
+    }
+
+    private async Task SelectType(string type) {
+        SelectedType = type;
+        await SelectedTypeChanged.InvokeAsync(type);
+        await OnTypeSelected.InvokeAsync(type);
+    }
+}
