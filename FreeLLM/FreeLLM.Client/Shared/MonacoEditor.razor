@@ -26,7 +26,13 @@
 
 @code {
     /// <summary>
-    /// OPTIONAL: An optiona class for the editor (defaults to 'default-editor' which has a min-height of 100px.)
+    /// The aria-label to show for the hidden input element.
+    /// </summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Monaco Code Editor";
+
+    /// <summary>
+    /// OPTIONAL: An optional class for the editor (defaults to 'default-editor' which has a min-height of 100px.)
     // </summary>
     [Parameter] public string Class { get; set; } = "default-editor";
 
@@ -44,7 +50,7 @@
     /// <summary>
     /// OPTIONAL: An Id for the editor. If empty a ramdom Id will be generated.
     /// </summary>
-    [Parameter] public string Id { get; set; } = "";
+    [Parameter] public string Id { get; set; } = String.Empty;
 
     /// <summary>
     /// REQUIRED: The language for the editor (defaults to 'plaintext'.)
@@ -59,7 +65,7 @@
     /// <summary>
     /// OPTIONAL: The placeholder text to display when the editor is empty.
     /// </summary>
-    [Parameter] public string PlaceholderText { get; set; } = "";
+    [Parameter] public string PlaceholderText { get; set; } = String.Empty;
 
     /// <summary>
     /// OPTIONAL: Set to true to make the editor read-only.
@@ -74,7 +80,7 @@
     /// <summary>
     /// REQUIRED: The value to display in the editor.
     /// </summary>
-    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Value { get; set; } = String.Empty;
 
     /// <summary>
     /// OPTIONAL: The value to diff against.
@@ -86,49 +92,53 @@
     /// </summary>
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
-    protected BlazorMonaco.Editor.StandaloneCodeEditor _editor = null!;
     protected BlazorMonaco.Editor.StandaloneDiffEditor _diffEditor = null!;
-
+    protected string _id = Guid.NewGuid().ToString().Replace("-", "").ToLower();
+    protected BlazorMonaco.Editor.StandaloneCodeEditor _editor = null!;
     protected BlazorMonaco.Position _editorPosition = new BlazorMonaco.Position();
+    protected bool _readOnly = false;
     protected System.Timers.Timer _timer = new System.Timers.Timer();
 
-    protected string _id = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-    protected bool _readOnly = false;
+    protected IJSObjectReference? jsModule;
 
     public void Dispose()
     {
         _timer.Dispose();
     }
 
-    protected async Task InitDiffEditor()
-    {
-        await _diffEditor.SetModel(new DiffEditorModel {
-                Original = await Global.CreateModel(jsRuntime, ValueToDiff, Language),
-                Modified = await Global.CreateModel(jsRuntime, Value, Language),
-            });
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            jsModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./Shared/MonacoEditor.Razor.js?v=" + Guid.NewGuid().ToString().Replace("-", ""));
+
+            Helpers.SetTimeout(async() => {
+                await jsModule.InvokeVoidAsync("SetAriaLabel", EditorId, AriaLabel);
+            }, 300);
+        }
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         _timer = new System.Timers.Timer();
         _timer.Interval = Timeout;
         _timer.Elapsed += TimerElapsed;
         _timer.AutoReset = false;
     }
 
-    protected override async Task OnParametersSetAsync()
-    {
+    protected override async Task OnParametersSetAsync() {
         if (_readOnly != ReadOnly) {
             _readOnly = ReadOnly;
 
             if (String.IsNullOrWhiteSpace(ValueToDiff)) {
-                await _editor.UpdateOptions(new BlazorMonaco.Editor.EditorUpdateOptions {
-                    ReadOnly = _readOnly,
-                });
+                if (_editor != null) {
+                    await _editor.UpdateOptions(new BlazorMonaco.Editor.EditorUpdateOptions {
+                        ReadOnly = _readOnly,
+                    });
+                }
             } else {
-                await _diffEditor.UpdateOptions(new BlazorMonaco.Editor.DiffEditorOptions {
-                    ReadOnly = _readOnly,
-                });
+                if (_diffEditor != null) {
+                    await _diffEditor.UpdateOptions(new BlazorMonaco.Editor.DiffEditorOptions {
+                        ReadOnly = _readOnly,
+                    });
+                }
             }
         }
     }
@@ -236,6 +246,14 @@
         return output;
     }
 
+    protected async Task InitDiffEditor()
+    {
+        await _diffEditor.SetModel(new DiffEditorModel {
+            Original = await Global.CreateModel(jsRuntime, ValueToDiff, Language),
+            Modified = await Global.CreateModel(jsRuntime, Value, Language),
+        });
+    }
+
     /// <summary>
     /// Insert a value into the editor at the current cursor position.
     /// </summary>
@@ -310,36 +328,37 @@
         ValueHasChanged();
     }
 
-    protected async void TimerElapsed(Object? source, System.Timers.ElapsedEventArgs e)
-    {
-        if (String.IsNullOrEmpty(ValueToDiff)) {
-            Value = await _editor.GetValue();
-        } else {
-            Value = await _diffEditor.ModifiedEditor.GetValue();
-        }
-
-        ValueHasChanged();
-    }
-
     protected BlazorMonaco.Editor.StandaloneEditorConstructionOptions StandaloneEditorConstructionOptions {
         get {
             if (ConstructorOptions != null) {
+                ConstructorOptions.AccessibilityPageSize = 10;
+                ConstructorOptions.AccessibilitySupport = "auto";
+                ConstructorOptions.AriaRequired = true;
+                
+                if (String.IsNullOrWhiteSpace(ConstructorOptions.AriaLabel)) {
+                    ConstructorOptions.AriaLabel = AriaLabel;
+                }
+
                 return ConstructorOptions;
             } else {
                 return new BlazorMonaco.Editor.StandaloneEditorConstructionOptions {
+                    AccessibilityPageSize = 10,
+                    AccessibilitySupport = "auto",
+                    AriaLabel = AriaLabel,
+                    AriaRequired = true,
                     AutomaticLayout = true,
                     ColorDecorators = true,
                     ColorDecoratorsActivatedOn = "clickAndHover",
-                    DefaultColorDecorators = true,
+                    DefaultColorDecorators = "auto",
                     Language = Language,
                     Minimap = new BlazorMonaco.Editor.EditorMinimapOptions {
-                        Autohide = true,
+                        Autohide = "mouseover",
                         Enabled = true,
                     },
                     MouseWheelZoom = true,
                     Placeholder = PlaceholderText,
                     ReadOnly = _readOnly,
-                    RenderWhitespace = "all",
+                    RenderWhitespace = "selection",
                     ScrollBeyondLastLine = false,
                     Value = !String.IsNullOrWhiteSpace(Value) ? Value : String.Empty,
                     WordWrap = "on",
@@ -352,22 +371,34 @@
     protected BlazorMonaco.Editor.StandaloneDiffEditorConstructionOptions StandaloneEditorConstructionOptionsDiff {
         get {
             if (ConstructorOptionsForDiffEditor != null) {
+                ConstructorOptionsForDiffEditor.AccessibilityPageSize = 10;
+                ConstructorOptionsForDiffEditor.AccessibilitySupport = "auto";
+                ConstructorOptionsForDiffEditor.AriaRequired = true;
+                
+                if (String.IsNullOrWhiteSpace(ConstructorOptionsForDiffEditor.AriaLabel)) {
+                    ConstructorOptionsForDiffEditor.AriaLabel = AriaLabel;
+                }
+
                 return ConstructorOptionsForDiffEditor;
             } else {
                 return new BlazorMonaco.Editor.StandaloneDiffEditorConstructionOptions {
+                    AccessibilityPageSize = 10,
+                    AccessibilitySupport = "auto",
+                    AriaLabel = AriaLabel,
+                    AriaRequired = true,
                     AutomaticLayout = true,
                     ColorDecorators = true,
                     ColorDecoratorsActivatedOn = "clickAndHover",
-                    DefaultColorDecorators = true,
+                    DefaultColorDecorators = "auto",
                     Minimap = new BlazorMonaco.Editor.EditorMinimapOptions {
-                        Autohide = true,
+                        Autohide = "mouseover",
                         Enabled = true,
                     },
                     MouseWheelZoom = true,
                     OriginalEditable = false,
                     ReadOnly = _readOnly,
                     RenderSideBySide = true,
-                    RenderWhitespace = "all",
+                    RenderWhitespace = "selection",
                     ScrollBeyondLastLine = false,
                     UseInlineViewWhenSpaceIsLimited = true,
                     WordWrap = "on",
@@ -375,6 +406,17 @@
                 };
             }
         }
+    }
+
+    protected async void TimerElapsed(Object? source, System.Timers.ElapsedEventArgs e)
+    {
+        if (String.IsNullOrEmpty(ValueToDiff)) {
+            Value = await _editor.GetValue();
+        } else {
+            Value = await _diffEditor.ModifiedEditor.GetValue();
+        }
+
+        ValueHasChanged();
     }
 
     protected void ValueHasChanged()

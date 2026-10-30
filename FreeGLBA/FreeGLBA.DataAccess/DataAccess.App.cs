@@ -1,3 +1,5 @@
+using Plugins;
+
 namespace FreeGLBA;
 
 // Use this file as a place to put any application-specific data access methods.
@@ -5,11 +7,20 @@ namespace FreeGLBA;
 public partial interface IDataAccess
 {
     Task<DataObjects.BooleanResponse> ProcessBackgroundTasksApp(Guid TenantId, long Iteration);
-    DataObjects.BooleanResponse YourMethod();
 }
 
 public partial class DataAccess
 {
+    private int _accountLockoutMaxAttempts = 5; // The number of bad login attempts before an account is locked out.
+    private int _accountLockoutMinutes = 10; // The number of minutes an account is locked out after reaching the maximum number of bad login attempts.
+    private string _appName = "FreeGLBA"; // The name of the application.
+    private string _copyright = "Company Name"; // The copyright name used in the application.
+    private DateOnly _released = DateOnly.FromDateTime(Convert.ToDateTime("10/16/2026")); // The date this version of your application was released.
+    private bool _tokenAutoRenew = true; // If true, a new token will be sent to the client to keep the token automatically renewed.
+    private int _tokenDays = 7; // The number of days a JWT token is valid for. This is used when encoding JWT tokens.
+    private bool _useMigrations = false; // Indicates if the app uses data migrations. If false, you will manage your own database schema updates.
+    private string _version = "2.0.0"; // The version of your application.
+
     /// <summary>
     /// Use this area to add your custom language tags for your app, or to override built-in language tags (eg: AppTitle).
     /// </summary>
@@ -97,11 +108,6 @@ public partial class DataAccess
                 }
             }
 
-
-
-
-
-
             if (Rec is EFModels.EFModels.Tenant) {
                 var rec = Rec as EFModels.EFModels.Tenant;
                 if (rec != null) {
@@ -126,11 +132,24 @@ public partial class DataAccess
                 }
             }
         } catch (Exception ex) {
-            output.Messages.Add("An Error Occurred in DeleteUserApp");
+            output.Messages.Add("An Error Occurred in DeleteRecordsApp");
             output.Messages.AddRange(RecurseException(ex));
         }
 
         output.Result = output.Messages.Count == 0;
+
+        return output;
+    }
+
+    private object[]? ExecutePluginApp(PluginExecuteRequest request, DataObjects.User? CurrentUser = null)
+    {
+        object[]? output = null;
+
+        switch (request.Plugin.Type.ToLower()) {
+            // Handle any app-specific plugin Object Arguments transformations.
+            default:
+                break;
+        }
 
         return output;
     }
@@ -163,8 +182,11 @@ public partial class DataAccess
     /// </summary>
     /// <param name="CurrentUser">The User object for the current user, if loaded.</param>
     /// <returns></returns>
-    private async Task<DataObjects.BlazorDataModelLoader> GetBlazorDataModelApp(DataObjects.BlazorDataModelLoader blazorDataModelLoader, DataObjects.User? CurrentUser = null)
-    {
+    private async Task<DataObjects.BlazorDataModelLoader> GetBlazorDataModelApp
+    (
+        DataObjects.BlazorDataModelLoader blazorDataModelLoader,
+        DataObjects.User? CurrentUser = null
+    ){
         await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
         var output = blazorDataModelLoader;
 
@@ -204,11 +226,6 @@ public partial class DataAccess
 
                 return;
             }
-
-
-
-
-
 
             if (Rec is EFModels.EFModels.User && DataObject is DataObjects.ActiveUser) {
                 var rec = Rec as EFModels.EFModels.User;
@@ -270,8 +287,11 @@ public partial class DataAccess
     /// <summary>
     /// This method is called to add any app-specific deleted record counts to the output.
     /// </summary>
-    private async Task<DataObjects.DeletedRecordCounts> GetDeletedRecordCountsApp(Guid TenantId, DataObjects.DeletedRecordCounts deletedRecordCounts)
-    {
+    private async Task<DataObjects.DeletedRecordCounts> GetDeletedRecordCountsApp
+    (
+        Guid TenantId,
+        DataObjects.DeletedRecordCounts deletedRecordCounts
+    ){
         await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
 
         var output = deletedRecordCounts;
@@ -303,8 +323,13 @@ public partial class DataAccess
     /// <param name="Position">The position in the column orders (see calling code for details.)</param>
     /// <param name="CurrentUser">The current user object, if one exists</param>
     /// <returns>A list of FilterColumn objects</returns>
-    private List<DataObjects.FilterColumn> GetFilterColumnsApp(string Type, string Position, DataObjects.Language Language, DataObjects.User? CurrentUser = null)
-    {
+    private List<DataObjects.FilterColumn> GetFilterColumnsApp
+    (
+        string Type,
+        string Position,
+        DataObjects.Language Language,
+        DataObjects.User? CurrentUser = null
+    ){
         var output = new List<DataObjects.FilterColumn>();
         // Add any app-specific filter columns here.
         // Example:
@@ -390,10 +415,14 @@ public partial class DataAccess
                 return;
             }
 
+            if (Rec is EFModels.EFModels.FileStorage && DataObject is DataObjects.FileStorage) {
+                var rec = Rec as EFModels.EFModels.FileStorage;
+                var fileStorage = DataObject as DataObjects.FileStorage;
 
-
-
-
+                if (rec != null && fileStorage != null) {
+                    //rec.Property = fileStorage.Property;
+                }
+            }
 
             if (Rec is EFModels.EFModels.User && DataObject is DataObjects.User) {
                 var rec = Rec as EFModels.EFModels.User;
@@ -417,6 +446,15 @@ public partial class DataAccess
                 return;
             }
         } catch { }
+    }
+
+    /// <summary>
+    /// Called from the main SeedTestData method to seed any app-specific test data.
+    /// </summary>
+    private void SeedTestDataApp()
+    {
+        // You cannot make any async calls in this method, as this is called in the DataAccess constructor.
+        // Any async calls, even using .Result, will block the main app thread and cause the UI to freeze during load.
     }
 
     /// <summary>
@@ -492,8 +530,10 @@ public partial class DataAccess
         return output;
     }
 
-    public DataObjects.BooleanResponse YourMethod()
+    private bool UserCanViewFileApp(DataObjects.FileStorage file, DataObjects.User CurrentUser)
     {
-        return new DataObjects.BooleanResponse { Result = true, Messages = new List<string> { "Your Messages" } };
+        // Perform any app-specific methods to determine if a user has app-specific access to a file.
+        // If so, return true. Otherwise, return false to continue with the built-in checks.
+        return false;
     }
 }

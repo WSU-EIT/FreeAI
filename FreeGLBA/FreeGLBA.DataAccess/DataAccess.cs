@@ -1,39 +1,28 @@
-using Microsoft.AspNetCore.Http;
-using Plugins;
-
 namespace FreeGLBA;
 
 public partial class DataAccess: IDisposable, IDataAccess
 {
-    private int _accountLockoutMaxAttempts = 5;
-    private int _accountLockoutMinutes = 10;
-    private string _appName = "FreeGLBA";
     private DataObjects.AuthenticationProviders? _authenticationProviders;
     private string _connectionString;
-    private string _cookiePrefix = "";
-    private string _copyright = "Company Name";
+    private string _cookiePrefix = String.Empty;
     private EFDataModel data;
     private string _databaseType;
     private bool _firstInit = true;
     private Guid _guid1 = new Guid("00000000-0000-0000-0000-000000000001");
     private Guid _guid2 = new Guid("00000000-0000-0000-0000-000000000002");
-    private HttpContext? _httpContext;
-    private HttpRequest? _httpRequest;
-    private HttpResponse? _httpResponse;
+    private Microsoft.AspNetCore.Http.HttpContext? _httpContext;
+    private Microsoft.AspNetCore.Http.HttpRequest? _httpRequest;
+    private Microsoft.AspNetCore.Http.HttpResponse? _httpResponse;
     private bool _inMemoryDatabase = false;
-    private string _localModeUrl = "";
     private bool _open;
-    private DateOnly _released = DateOnly.FromDateTime(Convert.ToDateTime("12/17/2025"));
     private IServiceProvider? _serviceProvider;
     private string _uniqueId = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-    private bool _useMigrations = false;
     private bool _useBackgroundService = false;
-    private string _version = "2.0.0";
 
-    public DataAccess(
+    public DataAccess
+    (
         string ConnectionString = "",
         string DatabaseType = "",
-        string LocalModeUrl = "",
         IServiceProvider? serviceProvider = null,
         string CookiePrefix = "",
         bool UseBackgroundService = false
@@ -41,7 +30,6 @@ public partial class DataAccess: IDisposable, IDataAccess
         _cookiePrefix = CookiePrefix;
         _connectionString = ConnectionString;
         _databaseType = DatabaseType;
-        _localModeUrl = LocalModeUrl;
         _serviceProvider = serviceProvider;
         _useBackgroundService = UseBackgroundService;
 
@@ -52,6 +40,11 @@ public partial class DataAccess: IDisposable, IDataAccess
         DataAccessAppInit();
 
         var optionsBuilder = new DbContextOptionsBuilder<EFDataModel>();
+
+        // Default to SQLServer if no type was specified.
+        if (String.IsNullOrWhiteSpace(_databaseType)) {
+            _databaseType = "SQLServer";
+        }
 
         if (StringValue(_databaseType).ToLower() == "inmemory") {
             // A connection string is not required or used for the InMemory option,
@@ -76,11 +69,16 @@ public partial class DataAccess: IDisposable, IDataAccess
                     optionsBuilder.UseNpgsql(_connectionString, options => options.EnableRetryOnFailure());
                     break;
 
-                case "sqlite":
-                    optionsBuilder.UseSqlite(_connectionString);
-                    break;
+                // Removed the Microsoft.EntityFrameworkCore.Sqlite nuget package and support for
+                // SQLite for now as the Microsoft library has a dependency still on the deprecated
+                // SQLitePCLRaw.lib.e_sqlite3 package which has known vulnerabilities.
+                // 
+                //case "sqlite":
+                //    optionsBuilder.UseSqlite(_connectionString);
+                //    break;
 
                 case "sqlserver":
+                default:
                     optionsBuilder.UseSqlServer(_connectionString, options => options.EnableRetryOnFailure());
                     break;
             }

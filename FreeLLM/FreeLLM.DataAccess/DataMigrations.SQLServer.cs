@@ -18,7 +18,6 @@ public partial class DataMigrations
             END
             """);
 
-
         m1.Add(
             """
             IF OBJECT_ID(N'[DepartmentGroups]') IS NULL
@@ -62,7 +61,6 @@ public partial class DataMigrations
             END
             """);
 
-
         m1.Add(
             """
             IF OBJECT_ID(N'[FileStorage]') IS NULL
@@ -89,9 +87,6 @@ public partial class DataMigrations
             END
             """);
 
-
-
-
         m1.Add(
             """
             IF OBJECT_ID(N'[PluginCache]') IS NULL
@@ -115,7 +110,6 @@ public partial class DataMigrations
             END
             """);
 
-
         m1.Add(
             """
             IF OBJECT_ID(N'[Settings]') IS NULL
@@ -135,7 +129,6 @@ public partial class DataMigrations
                 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
             END
             """);
-
 
         m1.Add(
             """
@@ -214,7 +207,7 @@ public partial class DataMigrations
             END
             """);
 
-        m1.Add(
+        var usersTable =
             """
             IF OBJECT_ID(N'[Users]') IS NULL
             BEGIN
@@ -234,9 +227,12 @@ public partial class DataMigrations
                     [LastLogin] [datetime] NULL,
                     [LastLoginSource] [nvarchar](50) NULL,
                     [Admin] [bit] NOT NULL,
-                    [CanBeScheduled] [bit] NOT NULL,
+            
+            """;
+
+        usersTable +=
+            """
                     [ManageFiles] [bit] NOT NULL,
-                    [ManageAppointments] [bit] NOT NULL,
                     [Password] [nvarchar](max) NULL,
                     [PreventPasswordChange] [bit] NOT NULL,
                     [FailedLoginAttempts] [int] NULL,
@@ -263,8 +259,9 @@ public partial class DataMigrations
                     WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
                 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
             END
-            """);
+            """;
 
+        m1.Add(usersTable);
 
         m1.Add(
             """
@@ -275,9 +272,6 @@ public partial class DataMigrations
                 ALTER TABLE[dbo].[FileStorage] CHECK CONSTRAINT[IX_FileStorage_UserId]
             END
             """);
-
-
-
 
         m1.Add(
             """

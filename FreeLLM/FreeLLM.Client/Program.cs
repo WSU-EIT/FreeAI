@@ -1,24 +1,31 @@
-using FreeLLM.Client;
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using MudBlazor.Services;
 using Radzen;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Try.Core;
 
 namespace FreeLLM.Client
 {
-    public class Program
+    internal class Program
     {
-        public static async Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddBlazoredSessionStorage();
             builder.Services.AddSingleton<BlazorDataModel>();
-
             builder.Services.AddBlazorBootstrap();
             builder.Services.AddMudServices();
             builder.Services.AddRadzenComponents();
+            builder.Services.AddScoped<Radzen.DialogService>();
+            builder.Services.AddScoped<Radzen.NotificationService>();
+            builder.Services.AddScoped<Radzen.ThemeService>();
+            builder.Services.AddSingleton(serviceProvider => (IJSInProcessRuntime)serviceProvider.GetRequiredService<IJSRuntime>());
+            builder.Services.AddCompilerService();
 
             await builder.Build().RunAsync();
         }

@@ -1,56 +1,184 @@
-# FreePlugins
+# FreeCRM 
 
-Plugin authoring and testing workspace for the WSU-EIT FreePlugins ecosystem. This directory contains two sub-projects:
+An open-source CRM solution built in C# Blazor WebAssembly using .NET 10. You can use this project as-is,
+or customize it to fit your needs. Or, just grab code that you need to use in your project.
 
-| Project | Description |
-|---------|-------------|
-| `FreePluginsV1/` | The full FreePlugins v1 solution — FreeCRM-based host application, Blazor WASM client, data layer, Roslyn plugin runtime, compiled NuGet plugin SDK, and all example plugins |
-| `BlazorApp1/` | Throwaway Blazor Server template application used as a scan/test target by analysis tools |
+## Database Setup & Default Admin Login
 
-## FreePluginsV1 solution
+The application is configured to use a local SQL Server database by default.
+You can change this in the appsettings.json file.
+Assuming your have SQL Server installed and your local account has permission to create databases,
+a new database will be created and you will be able to login with a username and password of 'admin'.
 
-The `FreePluginsV1/` sub-directory holds the complete solution. See `FreePluginsV1/README.md` for a full project-by-project breakdown.
+If you update your connection string to point to a different server, you will need
+to make sure the user specified for the connection has permissions to modify the database schema.
 
-Quick reference:
+## Utilities
 
-- **Plugin contracts**: `FreePlugins.Abstractions`
-- **Integration bridge**: `FreePlugins.Abstractions.Integration`
-- **File-based plugin runtime**: `FreePlugins.Plugins`
-- **Web host**: `FreePlugins`
-- **Blazor WASM client**: `FreePlugins.Client`
-- **Data layer**: `FreePlugins.DataAccess`, `FreePlugins.EFModels`, `FreePlugins.DataObjects`
+The previous utilities "Remove Modules from FreeCRM.exe", "Rename FreeCRM.exe", and
+"Upgrade FreeCRM.exe" have now been combined into a new single "Util.exe" utility,
+referred to below as Util. This Util console application has an intuitive main menu
+with options, as well as a built-in help to show all available commands.
+Command in the utility are not case-sensitive.
 
-## 🧭 Plain-English Briefing — The Boss Questions
+## Step 1 - Rename the Solution
 
-**How does this work?** A workspace for authoring and testing plugins for the WSU-EIT plugin system. `FreePluginsV1/` is the full reference solution — a FreeCRM host, the Roslyn file-plugin runtime, the compiled NuGet plugin SDK, and ~7 example plugins. `BlazorApp1/` is a throwaway app used as a test target.
+Using rename with the Util will rename the project files,
+create new GUIDs for each project in the solution,
+and rename namespaces to match your project name.
 
-**What technology does it use — and where exactly?**
+The tool supports adding the rename value as a command-line argument. For example:
 
-| Technology | What it's for | Exact location |
-|---|---|---|
-| The full plugin solution | Host + both plugin systems + examples | [FreePluginsV1/](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/FreePluginsV1) |
-| Throwaway test target | A sample app to run plugins against | [BlazorApp1/](https://github.com/WSU-EIT/FreeAI/tree/main/FreePlugins/BlazorApp1) |
+`Util --rename:MyNewProjectName`
 
-**Why does this exist?** To be the reference *and* sandbox for the plugin ecosystem — where you learn, write, and test both styles of plugin.
+## Step 2 - Remove Unwanted Modules
 
-**What does it beat?** It demonstrates **two plugin authoring models in one place** (see the V1 briefing) rather than just one.
+If you want to remove one or more of the optional components from the application
+you can use the Util to do so.
+This utility may still leave remnants of the removed modules in the code.
+If you find any items that are not removed that you believe should be,
+please open an issue on GitHub. Please include the name of the file and the line number
+where the item is located.
 
-**Terminology:** **Plugin** — drop-in code that extends the app without rebuilding it.
+The removal tool supports two command-line options. They are:
 
-**The hard part, drawn:**
+`Util --remove:Module1,Module2,etc.`
+
+This removes any named modules.
+
+`Util --keep:Module1,Module2,etc.`
+
+This removes any modules not named. For example, to remove all optional modules except
+the Tags module, you would use:
+
+`Util --keep:Tags`
+
+You can also remove all optional modules without having to list them all by using:
+
+`Util --remove:all`
+
+Do not use any spaces in the command line options. The names of the modules that can be
+kept or removed are:
+
+- About
+- Appointments
+- EmailTemplates
+- Invoices
+- Locations
+- Logo
+- Payments
+- SamplePages
+- SamplePlugins
+- Services
+- Tags
+
+## Details
+
+### Plugins
+
+FreeCRM supports a plugin architecture that allows you to extend the functionality
+of the software. See the example files in the Plugins folder for examples of how
+to use the various plugin types. You can easily add support for more plugin types
+to support your custom application changes by following the various examples
+already built into the application. The types built in out of the box are:
+"Auth", "BackgroundProcess", "Example", and "UserUpdate".
+
+Plugins can have a .cs file extension and be included in your project as source code,
+or they can have the .plugin extension for files that may have build conflicts
+with your solution. For example, the HelloWorld sample plugin uses an external dll
+file that would cause build issues if it were included as a .cs file.
+See the .assemblies file used with that plugin to see how external files can be included.
+These external references can be paths to files or can be statements that evaluate
+to the location of the files at runtime, like:
+
 ```
-  FreePlugins workspace
-        ├─ FreePluginsV1/  (host + Roslyn file plugins + compiled NuGet plugins + examples)
-        └─ BlazorApp1/     (a target app to test plugins against)
+.\HelloWorld\HelloWorld.dll
+typeof(SomeNameSpace.SomeProperty).Assembly.Location
 ```
 
-## License
+### Background Service
 
-Released under the [MIT License](https://opensource.org/licenses/MIT).
+FreeCRM includes a background service that can be started when your application starts
+to perform periodic tasks. This is controlled by the settings in the BackgroundService
+section of appsettings.json. By default, the background service is enabled and configured
+to run every 60 seconds.
 
-## About
+For tenants that are configured to mark records as deleted instead of deleting them immediately,
+this background service will take care of permanently deleting those records after the
+specified retention period has passed.
 
-Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
+If you want detailed logging for the background service then set the LogFilePath with
+the path to the folder where you want the logs to be stored. The application will need
+to be running under credentials that have write access to that folder.
 
-- Website: https://em.wsu.edu/eit/
-- GitHub: https://github.com/WSU-EIT
+The StartOnLoad flag indicates if the tasks to be run should be started immediately,
+or if they should wait until the first timer interval to start. For example, if this
+is set to false and the IntervalSeconds is set to 60, then the first time the tasks
+will run is 60 seconds after the application starts. If you have something that needs
+to be run as soon as the application starts, then set this to true.
+
+There are two methods to tie into the background service to run your own tasks.
+First, you can modify the ProcessBackgroundTasksApp method in the DataAccess.App.cs file
+to run methods in there. The second method is to build plugins using the new
+"BackgroundProcess" plugin type. See the ExampleBackgroundProcess.cs file in the
+Plugins folder for an example of how to build a background process plugin.
+The example plugin will simple log a message to the console each time it runs,
+and to the logging file if you have one configured.
+
+If you are running in a load balanced environment with multiple instances of the application
+and you only want the background service to run on a specific instance, you can set the
+LoadBalancingFilter value in the BackgroundService section of appsettings.json to a value
+that must be matched in the name of the current System.Environment.MachineName.
+
+### IIS Configuration for the Background Service
+
+If you are hosting on IIS and want to ensure that the background service is always running,
+set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
+for the application settings to true. The Preload Enabled flag is only available
+if you have installed the Application Initialization feature for IIS.
+
+## Upgrade
+
+If you are running an older version of an application based on the FreeCRM
+framework and you have already migrated to use .app. files for all of your
+app-specific code, then you can use the Util console
+application to upgrade your existing application. To do so download a fresh
+copy of the FreeCRM files, run the "rename" option in the utility to rename
+the application using the exact same namespace as your existing application.
+Then, use the "remove" option in the utility to remove any modules
+that you won't be using in your application. Finally, run the
+"upgrade" option in the utility which will attempt to migrate your existing
+code into the new version.
+
+This tool can take a single command-line argument of the path to your
+existing application. For example:
+
+`Util --upgrade:"C:\MyExistingApp"`
+
+There are edge cases that cannot be updated with this tool, such as having
+additional project in your solution. The tool will copy those projects,
+but any references in other projects must be added manually.
+
+The tool will produce a report that will help with any additional steps
+that will be required for the migration.
+
+The commands in the Util console application can be chained together to perform
+all steps in one call. For example, to rename your app, remove some modules, and
+perform the upgrade you could use:
+
+`--Rename:MyNewProjectName --Keep:about,tags --Upgrade:"C:\Path\To\Current\Version"`
+
+## Mac OS
+
+A separate UtilMacOS file is available for use on Macs with Apple silicone.
+To make this work you must open a console into the folder where the file
+exists and issue the following command:
+
+```chmod +x UtilMacOS```
+
+Then, to run the application issue the following command:
+
+```./UtilMacOS```
+
+Both the Util.exe and UtilMacOS applications are framework-dependent, so
+you must have .NET 10 installed to run them.

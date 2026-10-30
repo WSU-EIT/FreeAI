@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreeExamples.Client/FreeExamples.Client.csproj" />
+  <Project Path="FreeExamples.DataAccess/FreeExamples.DataAccess.csproj" Id="CB5677E8-FA89-4208-92C0-8A0E0A0D094F" />
+  <Project Path="FreeExamples.DataObjects/FreeExamples.DataObjects.csproj" Id="6710FD28-853C-4238-9424-0F15738A241C" />
+  <Project Path="FreeExamples.EFModels/FreeExamples.EFModels.csproj" Id="F1252540-465D-4EDA-B16F-74ED8825327B" />
+  <Project Path="FreeExamples.Plugins/FreeExamples.Plugins.csproj" Id="7FC3A1F2-FA51-40A8-AD19-74652F571666" />
+  <Project Path="FreeExamples/FreeExamples.csproj" />
+</Solution>

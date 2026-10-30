@@ -6,6 +6,7 @@
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 @inject BlazorDataModel Model
+
 @if (Model.Loaded && Model.View == "language") {
     switch (Helpers.StringLower(_view)) {
         case "add":
@@ -27,7 +28,7 @@
             <table class="table table-sm">
                 <thead>
                     <tr class="table-dark">
-                        <th style="width:1%;"></th>
+                        <td style="width:1%;"></td>
                         <th style="width:1%;" class="min-100">
                             <Language Tag="Code" />
                         </th>
@@ -88,6 +89,9 @@
                     <button type="button" class="btn btn-primary" @onclick="EditAll">
                         <Language Tag="EditAll" IncludeIcon="true" />
                     </button>
+                    <button type="button" class="btn btn-primary" @onclick="EditModified" disabled="@(ResetAllDisabled)">
+                        <Language Tag="EditModified" IncludeIcon="true" />
+                    </button>
                     <button type="button" class="btn btn-warning" @onclick="ResetAll" disabled="@(ResetAllDisabled)">
                         <Icon Name="Reset" />
                         <Language Tag="ResetLanguageDefaults" />
@@ -104,18 +108,18 @@
 
             <div class="mb-2">
                 <FreeBlazor.AutoComplete Class="form-control"
-                        Disabled="false"
-                        GetAutoCompleteItems="Lookup"
-                        HighlightFirstMatch="true"
-                        Id="language-tag-lookup"
-                        LookupDelay="300"
-                        MatchParentWidth="true"
-                        MinimumCharacters="1"
-                        OnSelected="LookupItemSelected"
-                        PlaceholderText="@Helpers.Text("SearchLanguageTag")" />
+                Disabled="false"
+                GetAutoCompleteItems="Lookup"
+                HighlightFirstMatch="true"
+                Id="language-tag-lookup"
+                LookupDelay="300"
+                MatchParentWidth="true"
+                MinimumCharacters="1"
+                OnSelected="LookupItemSelected"
+                PlaceholderText="@Helpers.Text("SearchLanguageTag")" />
             </div>
 
-            @if (_editingItem != "") {
+            @if (_editingItem != String.Empty) {
                 var defaultValue = Helpers.DefaultLanguage(_editingItem);
 
                 <div class="card mt-4">
@@ -161,6 +165,9 @@
                     <button type="button" class="btn btn-dark" @onclick="Cancel">
                         <Language Tag="Cancel" IncludeIcon="true" />
                     </button>
+                    <button type="button" class="btn btn-primary" @onclick="EditModified" disabled="@(ResetAllDisabled)">
+                        <Language Tag="EditModified" IncludeIcon="true" />
+                    </button>
                     <button type="button" class="btn btn-warning" @onclick="ResetAll">
                         <Icon Name="Reset" />
                         <Language Tag="ResetLanguageDefaults" />
@@ -171,16 +178,66 @@
                 </div>
             </div>
 
-            @foreach (var item in _language.Phrases) {
-                var tagName = "" + item.Id;
+            @foreach (var item in _language.Phrases.OrderBy(x => x.Id)) {
+                var itemId = "edit-language-item-" + Helpers.StringLower(item.Id).Replace(" ", "-");
+                var tagName = String.Empty + item.Id;
                 var defaultValue = Helpers.DefaultLanguage(tagName);
                 string itemClass = defaultValue == item.Value ? "badge text-bg-secondary" : "badge text-bg-warning";
 
                 <div class="mb-3">
                     <div class="mb-1">
-                        <b>@item.Id</b><span>:&nbsp;</span><span class="@itemClass">@defaultValue</span>
+                        <label for="@itemId">@item.Id</label><span>:&nbsp;</span><span class="@itemClass">@defaultValue</span>
+                        @if (defaultValue != item.Value) {
+                            <button type="button" class="btn btn-xs btn-warning ms-1" @onclick="@(() => ResetItem(tagName))">
+                                <Language Tag="Reset" IncludeIcon="true" />
+                            </button>
+                        }
                     </div>
-                    <input type="text" class="form-control" @bind="item.Value" />
+                    <input type="text" id="@itemId" class="form-control" @bind="item.Value" />
+                </div>
+            }
+            break;
+
+        case "editmodified":
+            <div class="@Model.StickyMenuClass">
+                <h1 class="page-title">
+                    <Language Tag="EditLanguage" IncludeIcon="true" /> &ldquo;<span>@_cultureCode</span>&rdquo;
+                    <StickyMenuIcon />
+                </h1>
+
+                <div class="btn-group mb-2" role="group">
+                    <button type="button" class="btn btn-dark" @onclick="Cancel">
+                        <Language Tag="Cancel" IncludeIcon="true" />
+                    </button>
+                    <button type="button" class="btn btn-primary" @onclick="EditAll">
+                        <Language Tag="EditAll" IncludeIcon="true" />
+                    </button>
+                    <button type="button" class="btn btn-warning" @onclick="ResetAll">
+                        <Icon Name="Reset" />
+                        <Language Tag="ResetLanguageDefaults" />
+                    </button>
+                    <button type="button" class="btn btn-success" @onclick="Save">
+                        <Language Tag="Save" IncludeIcon="true" />
+                    </button>
+                </div>
+            </div>
+
+            @foreach (var item in _language.Phrases.Where(x => _modifiedItems.Contains(String.Empty + x.Id)).OrderBy(x => x.Id)) {
+                var itemId = "edit-language-item-" + Helpers.StringLower(item.Id).Replace(" ", "-");
+                var tagName = String.Empty + item.Id;
+                var defaultValue = Helpers.DefaultLanguage(tagName);
+                string itemClass = defaultValue == item.Value ? "badge text-bg-secondary" : "badge text-bg-warning";
+
+                <div class="mb-3">
+                    <div class="mb-1">
+                        <label for="@itemId">@item.Id</label><span>:&nbsp;</span><span class="@itemClass">@defaultValue</span>
+                        @if (defaultValue != item.Value) {
+                            <button type="button" class="btn btn-xs btn-warning ms-1" @onclick="@(() => ResetItem(tagName))">
+                                <Language Tag="Reset" IncludeIcon="true" />
+                            </button>
+                        }
+                    </div>
+                    <input type="text" id="@itemId" class="form-control" @bind="item.Value" />
                 </div>
             }
             break;
@@ -212,7 +269,7 @@
             <table class="table table-sm">
                 <thead>
                     <tr class="table-dark">
-                        <th style="width:1%;"></th>
+                        <td style="width:1%;"></td>
                         <th style="width:1%;" class="min-100">
                             <Language Tag="Code" />
                         </th>
@@ -238,20 +295,21 @@
             break;
     }
 }
+
 @code {
     [Parameter] public string? TenantCode { get; set; }
 
-    protected string _cultureCode = "";
-    protected string _editingItem = "";
+    protected string _cultureCode = String.Empty;
+    protected string _editingItem = String.Empty;
     protected DataObjects.Language _language = new DataObjects.Language();
-    protected string _value = "";
-    protected string _view = "";
+    protected List<string> _modifiedItems = new List<string>();
+    protected string _value = String.Empty;
+    protected string _view = String.Empty;
+    protected bool _validatedUrl = false;
 
     public void Dispose()
     {
         Model.OnChange -= StateHasChanged;
-
-        Model.Subscribers_OnChange.Remove("Languages");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -266,17 +324,16 @@
                 return;
             }
 
-            await Helpers.ValidateUrl(TenantCode);
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
         }
     }
 
     protected override void OnInitialized()
     {
-        if (!Model.Subscribers_OnChange.Contains("Languages")){
-            Model.Subscribers_OnChange.Add("Languages");
-            Model.OnChange += StateHasChanged;
-        }
-
+        Model.OnChange += StateHasChanged;
         Model.View = "language";
     }
 
@@ -293,16 +350,16 @@
             StateHasChanged();
 
             var added = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/AddLanguage", new DataObjects.SimplePost { SingleItem = cc });
-            if(added != null) {
+            if (added != null) {
                 if (added.Result) {
                     await Helpers.ReloadModel();
-                    _view = "";
+                    _view = String.Empty;
                 } else {
                     // Show errors
-                    _view = "";
+                    _view = String.Empty;
                 }
             } else {
-                _view = "";
+                _view = String.Empty;
             }
 
             StateHasChanged();
@@ -312,21 +369,20 @@
     protected void Cancel()
     {
         _language = new DataObjects.Language();
-        _view = "";
+        _view = String.Empty;
         StateHasChanged();
     }
 
     protected async Task CancelEditingItem()
     {
-        _editingItem = "";
-        _value = "";
+        _editingItem = String.Empty;
+        _value = String.Empty;
         StateHasChanged();
 
         await Helpers.DelayedFocus("language-tag-lookup");
     }
 
-    protected string DefaultLanguageJson
-    {
+    protected string DefaultLanguageJson {
         get {
             string output = String.Empty;
 
@@ -347,9 +403,9 @@
 
         var result = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteLanguage", new DataObjects.SimplePost { SingleItem = _cultureCode });
         await Helpers.ReloadModel();
-        _view = "";
+        _view = String.Empty;
         StateHasChanged();
-        if(result != null) {
+        if (result != null) {
             if (!result.Result) {
                 Model.ErrorMessages(result.Messages);
             }
@@ -361,14 +417,14 @@
     protected async Task Edit(string CultureCode)
     {
         _view = "loading";
-        _cultureCode = "";
-        _editingItem = "";
+        _cultureCode = String.Empty;
+        _editingItem = String.Empty;
         StateHasChanged();
 
         var lang = Model.Languages.FirstOrDefault(x => x.Culture.ToLower() == CultureCode.ToLower() && x.TenantId == Model.TenantId);
-        if(lang != null) {
+        if (lang != null) {
             var duplicateLanguage = Helpers.DuplicateObject<DataObjects.Language>(lang);
-            if(duplicateLanguage != null) {
+            if (duplicateLanguage != null) {
                 _language = duplicateLanguage;
                 _cultureCode = CultureCode;
                 _view = "edit";
@@ -381,19 +437,37 @@
 
     protected void EditAll()
     {
-        _editingItem = "";
-        _value = "";
+        _editingItem = String.Empty;
+        _value = String.Empty;
         _view = "editall";
+        StateHasChanged();
+    }
+
+    protected void EditModified()
+    {
+        _editingItem = String.Empty;
+        _value = String.Empty;
+        _view = "editmodified";
+
+        _modifiedItems = new List<string>();
+        foreach (var item in _language.Phrases) {
+            var tagName = String.Empty + item.Id;
+            var defaultValue = Helpers.DefaultLanguage(tagName);
+            if (defaultValue != item.Value) {
+                _modifiedItems.Add(tagName);
+            }
+        }
+
         StateHasChanged();
     }
 
     protected void EditItem(string tagName)
     {
         _editingItem = tagName;
-        _value = "";
+        _value = String.Empty;
 
         var item = _language.Phrases.FirstOrDefault(x => x.Id != null && x.Id.ToLower() == tagName.ToLower());
-        if(item != null) {
+        if (item != null) {
             _value += item.Value;
         }
 
@@ -403,10 +477,10 @@
     protected void EditItemSave()
     {
         var item = _language.Phrases.FirstOrDefault(x => x.Id != null && x.Id.ToLower() == _editingItem.ToLower());
-        if(item != null) {
+        if (item != null) {
             item.Value = _value;
-            _editingItem = "";
-            _value = "";
+            _editingItem = String.Empty;
+            _value = String.Empty;
             StateHasChanged();
         }
     }
@@ -424,8 +498,8 @@
             )
             .OrderBy(x => x.Id);
 
-        if(items != null && items.Any()) {
-            foreach(var item in items) {
+        if (items != null && items.Any()) {
+            foreach (var item in items) {
                 if (!String.IsNullOrEmpty(item.Id) && !String.IsNullOrEmpty(item.Value)) {
                     output.Add((item.Id, item.Id + " - " + item.Value));
                 }
@@ -450,19 +524,18 @@
 
     protected void ResetAll()
     {
-        _editingItem = "";
-        _value = "";
+        _editingItem = String.Empty;
+        _value = String.Empty;
 
         var def = Helpers.DuplicateObject<DataObjects.Language>(Model.DefaultLanguage);
-        if(def != null) {
+        if (def != null) {
             _language = def;
         }
 
         StateHasChanged();
     }
 
-    protected bool ResetAllDisabled
-    {
+    protected bool ResetAllDisabled {
         get {
             bool output = false;
 
@@ -486,7 +559,7 @@
     protected void ResetItem(string tagName)
     {
         var item = _language.Phrases.FirstOrDefault(x => x.Id != null && x.Id.ToLower() == tagName.ToLower());
-        if(item != null) {
+        if (item != null) {
             item.Value = Helpers.DefaultLanguage(tagName);
             StateHasChanged();
         }
@@ -501,11 +574,11 @@
 
         Model.ClearMessages();
 
-        if(saved != null) {
+        if (saved != null) {
             if (saved.Result) {
                 Model.Message_Saved();
 
-                _view = "";
+                _view = String.Empty;
                 StateHasChanged();
             } else {
                 Model.ErrorMessages(saved.Messages);

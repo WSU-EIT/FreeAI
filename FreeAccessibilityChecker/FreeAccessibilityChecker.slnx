@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreeAccessibilityChecker.Client/FreeAccessibilityChecker.Client.csproj" />
+  <Project Path="FreeAccessibilityChecker.DataAccess/FreeAccessibilityChecker.DataAccess.csproj" Id="DB4645E7-F86D-4614-82FA-8D9D1CBB37E3" />
+  <Project Path="FreeAccessibilityChecker.DataObjects/FreeAccessibilityChecker.DataObjects.csproj" Id="6C24867E-126B-4978-9261-33A5A080EF39" />
+  <Project Path="FreeAccessibilityChecker.EFModels/FreeAccessibilityChecker.EFModels.csproj" Id="A7A49A9D-EFA5-49AE-8B46-14DB8F56B4BB" />
+  <Project Path="FreeAccessibilityChecker.Plugins/FreeAccessibilityChecker.Plugins.csproj" Id="9ABB1B2B-9ED2-490C-8214-5F8226BBED9B" />
+  <Project Path="FreeAccessibilityChecker/FreeAccessibilityChecker.csproj" />
+</Solution>

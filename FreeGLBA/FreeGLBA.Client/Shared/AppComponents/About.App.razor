@@ -21,7 +21,10 @@
 }
 
 @code {
-    public void Dispose() { 
+    [Parameter] public bool InDialog { get; set; }
+
+    public void Dispose()
+    { 
         Model.OnChange -= StateHasChanged;
     }
 
@@ -29,19 +32,4 @@
     {
         Model.OnChange += StateHasChanged;
     }
-
-    // protected override void OnAfterRender(bool firstRender)
-    // {
-    //     RenderComponent();
-    // }
-
-    // protected override void OnParametersSet()
-    // {
-    //     RenderComponent();
-    // }
-
-    // protected void RenderComponent()
-    // {
-    //     // Do any work here that needs to be done after the component is rendered or parameters are set.
-    // }
 }

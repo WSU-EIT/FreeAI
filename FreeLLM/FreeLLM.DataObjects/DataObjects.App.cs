@@ -4,13 +4,18 @@ namespace FreeLLM;
 
 public partial class DataObjects
 {
-    public partial class User
+    public partial class SignalRUpdateType
     {
-        public string? MyCustomUserProperty { get; set; }
+        //public const string YourSignalRUpdateType = "YourSignalRUpdateType";
     }
 
-    public class YourClass
+    public partial class TagModule
     {
-        public string? YourProperty { get; set; }
+        // Add any custom tag modules for your app here.
+    }
+
+    public partial class User
+    {
+        //public string? MyCustomUserProperty { get; set; }
     }
 }

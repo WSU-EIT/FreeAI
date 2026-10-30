@@ -1,0 +1,129 @@
+﻿@page "/HtmlEditor"
+@page "/{TenantCode}/HtmlEditor"
+@implements IDisposable
+@inject BlazorDataModel Model
+
+<h1>HTML Editor</h1>
+
+<div class="mb-2">
+    <button type="button" class="btn btn-primary" @onclick="EditHtml">
+        Popup HTML Editor
+    </button>
+</div>
+
+<h2>Inline Editor</h2>
+
+<div class="mb-2">
+    <button type="button" class="btn btn-dark" @onclick="ToggleSimpleView">
+        Toggle Simple View
+    </button>
+</div>
+
+<HtmlEditor2 @ref="_editor"
+        Config="_config"
+        OnUpdate="InlineEditorUpdated" />
+
+@if (!String.IsNullOrWhiteSpace(_html)) {
+    <div class="mt-4">
+        <div><b>HTML:</b></div>
+
+        <AutoGrowText 
+                Class="form-control"
+                Value="@_html" />
+    </div>
+}
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    protected HtmlEditor2 _editor = null!;
+    protected string _html = String.Empty;
+    protected string _pageName = "HtmlEditor";
+    protected bool _simpleView = false;
+    protected string? _theme = String.Empty;
+
+    public void Dispose()
+    { 
+        Model.OnChange -= OnDataModelUpdated;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) {
+            _theme = Model.User.UserPreferences.Theme;
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            if (Model.LoggedIn) {
+            } else {
+                Helpers.NavigateToLogin();
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.View = _pageName;
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    protected HtmlEditor2.Configuration _config {
+        get {
+            return new HtmlEditor2.Configuration {
+                BeautifyOutput = true,
+                DarkMode = Helpers.StringLower(Model.User.UserPreferences.Theme) == "dark",
+                SimpleView = _simpleView,
+                UseMonacoForSourceView = true,
+            };
+        }
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+
+            if (Model.User.UserPreferences.Theme != _theme) {
+                _theme = Model.User.UserPreferences.Theme;
+                _editor.UpdateConfig(_config);
+            }
+        }
+    }
+
+    protected async Task EditHtml()
+    {
+        Delegate onEditComplete = async(string? html) => {
+            if (String.IsNullOrWhiteSpace(html)) {
+                _html = "No HTML Returned";
+            } else {
+                _html = html;
+            }
+
+            await _editor.SetHTML(_html);
+
+            StateHasChanged();
+        };
+
+        await Helpers.HtmlEditor(onEditComplete, _html, "Edit HTML", new HtmlEditor2.Configuration{
+            UseMonacoForSourceView = true,
+        });
+    }
+
+    protected void InlineEditorUpdated(string html)
+    {
+        if (String.IsNullOrWhiteSpace(html)) {
+            _html = "No HTML Returned";
+        } else {
+            _html = html;
+        }
+
+        StateHasChanged();
+    }
+
+    protected void ToggleSimpleView()
+    {
+        _simpleView = !_simpleView;
+        _editor.UpdateConfig(_config);
+    }
+}

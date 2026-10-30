@@ -9,7 +9,7 @@ public class RouteHelper
     {
         _context = httpContext;
         _routeInfo = new RouteInformation();
-        string path = "";
+        string path = String.Empty;
 
         if (_context != null) {
             try {
@@ -37,8 +37,7 @@ public class RouteHelper
         }
     }
 
-    public string Action
-    {
+    public string Action {
         get {
             string output = String.Empty;
             if (!String.IsNullOrEmpty(_routeInfo.Action)) {
@@ -48,8 +47,17 @@ public class RouteHelper
         }
     }
 
-    public List<string>? Extra
-    {
+    public string Id {
+        get {
+            string output = String.Empty;
+            if (!String.IsNullOrEmpty(_routeInfo.Id)) {
+                output = _routeInfo.Id;
+            }
+            return output;
+        }
+    }
+
+    public List<string>? Extra {
         get {
             return _routeInfo.Extra;
         }
@@ -57,7 +65,7 @@ public class RouteHelper
 
     public string GetBaseUrl()
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_context != null) {
             try {
@@ -76,19 +84,7 @@ public class RouteHelper
         return output;
     }
 
-    public string Id
-    {
-        get {
-            string output = String.Empty;
-            if (!String.IsNullOrEmpty(_routeInfo.Id)) {
-                output = _routeInfo.Id;
-            }
-            return output;
-        }
-    }
-
-    public RouteInformation RouteInfo
-    {
+    public RouteInformation RouteInfo {
         get {
             return _routeInfo;
         }
@@ -97,7 +93,7 @@ public class RouteHelper
     public class RouteInformation
     {
         public string? Action { get; set; }
-        public List<string>? Extra { get; set; }
         public string? Id { get; set; }
+        public List<string>? Extra { get; set; }
     }
 }

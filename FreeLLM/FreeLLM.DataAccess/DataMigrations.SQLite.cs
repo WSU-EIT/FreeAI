@@ -47,8 +47,6 @@ public partial class DataMigrations
             )
             """);
 
-
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "PluginCache" (
@@ -67,7 +65,6 @@ public partial class DataMigrations
             );
             """);
 
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "Settings" (
@@ -82,7 +79,6 @@ public partial class DataMigrations
                 "LastModifiedBy" TEXT NULL
             )
             """);
-
 
         m1.Add(
             """
@@ -131,9 +127,7 @@ public partial class DataMigrations
             );
             """);
 
-
-
-        m1.Add(
+        var usersTable =
             """
             CREATE TABLE IF NOT EXISTS "Users" (
                 "UserId" TEXT NOT NULL CONSTRAINT "PK_Users" PRIMARY KEY,
@@ -151,9 +145,12 @@ public partial class DataMigrations
                 "LastLogin" datetime NULL,
                 "LastLoginSource" TEXT NULL,
                 "Admin" INTEGER NOT NULL,
-                "CanBeScheduled" INTEGER NOT NULL,
+            
+            """;
+
+        usersTable +=
+            """
                 "ManageFiles" INTEGER NOT NULL,
-                "ManageAppointments" INTEGER NOT NULL,
                 "Password" TEXT NULL,
                 "PreventPasswordChange" INTEGER NOT NULL,
                 "FailedLoginAttempts" INTEGER NULL,
@@ -179,8 +176,9 @@ public partial class DataMigrations
                 CONSTRAINT "IX_Users_DepartmentId" FOREIGN KEY ("DepartmentId") REFERENCES "Departments" ("DepartmentId"),
                 CONSTRAINT "IX_Users_TenantId" FOREIGN KEY ("TenantId") REFERENCES "Tenants" ("TenantId")
             )
-            """);
+            """;
 
+        m1.Add(usersTable);
 
         m1.Add(
             """
@@ -204,7 +202,6 @@ public partial class DataMigrations
             )
             """);
 
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "UserInGroups" (
@@ -217,16 +214,10 @@ public partial class DataMigrations
             );
             """);
 
-
-
-
         m1.Add(
             """
             CREATE INDEX "IX_FileStorage_UserId" ON "FileStorage" ("UserId");
             """);
-
-
-
 
         m1.Add(
             """

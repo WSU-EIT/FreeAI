@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace FreeGLBA.Server.Controllers;
 
@@ -180,11 +179,30 @@ public partial class DataController
     [Route("~/api/Data/GetVersionInfo")]
     public async Task<ActionResult<DataObjects.VersionInfo>> GetVersionInfo()
     {
+        var output = da.VersionInfo;
+
         if (CurrentUser.Enabled && !CurrentUser.Sudo) {
             await da.UpdateUserLastLoginTime(CurrentUser.UserId);
         }
 
+        return Ok(output);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("~/api/Data/GetVersionInfoWithToken")]
+    public async Task<ActionResult<DataObjects.VersionInfo>> GetVersionInfoWithToken()
+    {
         var output = da.VersionInfo;
+
+        if (CurrentUser.Enabled && !CurrentUser.Sudo) {
+            await da.UpdateUserLastLoginTime(CurrentUser.UserId);
+
+            if (da.TokenAutoRenew) {
+                output.Token = da.GetUserToken(CurrentUser.TenantId, CurrentUser.UserId, _fingerprint);
+            }
+        }
+
         return Ok(output);
     }
 

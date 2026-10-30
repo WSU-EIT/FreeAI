@@ -4,6 +4,7 @@
 @inject IJSRuntime jsRuntime
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
+
 @switch (view) {
     case "alreadyconfigured":
         <div class="container-fluid">
@@ -26,7 +27,7 @@
 
             @if (errors.Any()) {
                 <div class="alert alert-danger">
-                    @if(errors.Count() == 1) {
+                    @if (errors.Count() == 1) {
                         <div class="mb-2">
                             The following error was encountered:
                         </div>
@@ -36,7 +37,7 @@
                             The following errors were encountered:
                         </div>
                         <ul>
-                            @foreach(string error in errors) {
+                            @foreach (string error in errors) {
                                 <li>@error</li>
                             }
                         </ul>
@@ -54,27 +55,27 @@
                 <h2 class="display-8">Database Type</h2>
 
                 <input type="radio" checked="@(databaseType == "InMemory")" id="database-type-InMemory"
-                        name="DatabaseType" @onchange="@(() => UpdateDatabaseType("InMemory"))" />
+                       name="DatabaseType" @onchange="@(() => UpdateDatabaseType("InMemory"))" />
                 <label for="database-type-InMemory">In-Memory <span class="note">(for testing only)</span></label>
 
                 <br />
                 <input type="radio" checked="@(databaseType == "SQLServer")" id="database-type-SQLServer"
-                        name="DatabaseType" @onchange="@(() => UpdateDatabaseType("SQLServer"))" />
+                       name="DatabaseType" @onchange="@(() => UpdateDatabaseType("SQLServer"))" />
                 <label for="database-type-SQLServer">Microsoft SQL Server</label>
 
                 <br />
                 <input type="radio" checked="@(databaseType == "MySQL")" id="database-type-MySQL"
-                        name="DatabaseType" @onchange="@(() => UpdateDatabaseType("MySQL"))" />
+                       name="DatabaseType" @onchange="@(() => UpdateDatabaseType("MySQL"))" />
                 <label for="database-type-MySQL">MySQL</label>
 
                 <br />
                 <input type="radio" checked="@(databaseType == "PostgreSQL")" id="database-type-PostgreSQL"
-                        name="DatabaseType" @onchange="@(() => UpdateDatabaseType("PostgreSQL"))" />
+                       name="DatabaseType" @onchange="@(() => UpdateDatabaseType("PostgreSQL"))" />
                 <label for="database-type-PostgreSQL">PostgreSQL</label>
 
                 <br />
                 <input type="radio" checked="@(databaseType == "SQLite")" id="database-type-SQLite"
-                        name="DatabaseType" @onchange="@(() => UpdateDatabaseType("SQLite"))" />
+                       name="DatabaseType" @onchange="@(() => UpdateDatabaseType("SQLite"))" />
                 <label for="database-type-SQLite">SQLite</label>
             </div>
 
@@ -166,7 +167,7 @@
                     <div class="mb-2">
                         <label for="database-config-SQLiteDatabase">*Database Path</label>
                         <input id="database-config-SQLiteDatabase" type="text" class="form-control" @bind="csConfig.SQLiteDatabase" 
-                                placeholder="Path to the SQLite database file (eg: C:\Data\Database.db)"/>
+                            placeholder="Path to the SQLite database file (eg: C:\Data\Database.db)"/>
                     </div>
                     break;
             }
@@ -192,20 +193,21 @@
         </div>
         break;
 }
+
 @code {
-    protected string databaseType = "";
+    protected DataObjects.ConnectionStringConfig csConfig = new DataObjects.ConnectionStringConfig();
+    protected string databaseType = String.Empty;
+    protected List<string> errors = new List<string>();
     protected string view = "loading";
 
-    protected List<string> errors = new List<string>();
-
-    protected DataObjects.ConnectionStringConfig csConfig = new DataObjects.ConnectionStringConfig();
-
-    public void Dispose() { }
+    public void Dispose()
+    {
+    }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) {
-            databaseType = "";
+            databaseType = String.Empty;
         }
 
         // Make sure that the database isn't already configured.
@@ -230,7 +232,7 @@
         errors = new List<string>();
 
         // Make sure all required fields have been completed before attempting to save.
-        string focus = "";
+        string focus = String.Empty;
 
         switch (databaseType) {
             case "SQLServer":
@@ -272,7 +274,7 @@
                 break;
         }
 
-        if(focus != "") {
+        if (focus != String.Empty) {
             await jsRuntime.InvokeVoidAsync("DelayedFocus", focus);
             return;
         }
@@ -282,9 +284,9 @@
         csConfig.DatabaseType = databaseType;
 
         var response = await Http.PostAsJsonAsync("api/Setup/SaveConnectionString/", csConfig);
-        if(response != null && response.IsSuccessStatusCode) {
+        if (response != null && response.IsSuccessStatusCode) {
             var result = await response.Content.ReadFromJsonAsync<DataObjects.BooleanResponse>();
-            if(result != null) {
+            if (result != null) {
                 if (result.Result) {
                     Helpers.NavigateTo("../", true);
                     return;
@@ -305,7 +307,7 @@
         csConfig = new DataObjects.ConnectionStringConfig();
         databaseType = type;
 
-        string focus = "";
+        string focus = String.Empty;
 
         switch (type) {
             case "SQLServer":
@@ -325,7 +327,7 @@
                 break;
         }
 
-        if(focus != "") {
+        if (focus != String.Empty) {
             await jsRuntime.InvokeVoidAsync("DelayedFocus", focus);
         }
     }

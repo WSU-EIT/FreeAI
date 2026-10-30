@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreeBlazorExample.Client/FreeBlazorExample.Client.csproj" />
+  <Project Path="FreeBlazorExample.DataAccess/FreeBlazorExample.DataAccess.csproj" Id="ECB52E7E-588C-4BBF-8458-C5C86CBB8D36" />
+  <Project Path="FreeBlazorExample.DataObjects/FreeBlazorExample.DataObjects.csproj" Id="C8B085C8-3C72-499B-B7CF-50997B481556" />
+  <Project Path="FreeBlazorExample.EFModels/FreeBlazorExample.EFModels.csproj" Id="8AD26790-E791-4604-91AE-1DF411473291" />
+  <Project Path="FreeBlazorExample.Plugins/FreeBlazorExample.Plugins.csproj" Id="975C9B54-1148-419F-8F7E-31E96E62232A" />
+  <Project Path="FreeBlazorExample/FreeBlazorExample.csproj" />
+</Solution>

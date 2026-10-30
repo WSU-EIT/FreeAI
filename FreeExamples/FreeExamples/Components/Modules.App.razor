@@ -1,0 +1,74 @@
+﻿@inject IDataAccess data
+@inject IConfigurationHelper ConfigurationHelper
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    string applicationUrl = data.ApplicationUrl(HttpContextAccessor.HttpContext);
+    string appVersion = data.Version;
+    string basePath = !String.IsNullOrWhiteSpace(ConfigurationHelper.BasePath) ? ConfigurationHelper.BasePath : "/";
+
+    string favicon96 = applicationUrl + "favicon-96x96.png";
+    string faviconAppleTouch = applicationUrl + "apple-touch-icon.png";
+    string faviconIco = applicationUrl + "favicon.ico";
+    string faviconManifest = applicationUrl + "site.webmanifest";
+    string faviconSvg = applicationUrl + "favicon.svg";
+}
+
+@code {
+    // Use this file for any app-specific javascript for the main App.razor page.
+    [Parameter] public string Module { get; set; } = String.Empty;
+}
+
+@switch (Module) {
+    case "favicon":
+    <link rel="icon" type="image/svg+xml" href="@faviconSvg" />
+    <link rel="icon" type="image/png" href="@favicon96" sizes="96x96" />
+    <link rel="shortcut icon" href="@faviconIco" />
+    <link rel="apple-touch-icon" sizes="180x180" href="@faviconAppleTouch" />
+    <link rel="manifest" href="@faviconManifest" />
+        break;
+
+    case "head":
+        // Add any custom elements to the head tag here.
+        @* <link rel="stylesheet" href="some.css" /> *@
+        @* <link rel="stylesheet" href="@(applicationUrl + "_content/Path/To/CSS.css?v=" + appVersion)" /> *@
+        break;
+
+    case "bodytop":
+        // Add any custom elements to the top of the body tag here.
+        @* <script src="some.js"></script> *@
+        @* <script src="@(applicationUrl + "_content/Path/To/Javascript.js?v=" + appVersion)"></script> *@
+        break;
+
+    case "bodymiddle":
+        // Add any custom elements to the middle of the body tag here.
+        break;
+
+    case "bodybottom":
+        // Add any custom elements to the bottom of the body tag here.
+        break;
+
+    case "javascript":
+        // Add any custom javascript here.
+        <script type="text/javascript">
+            const onReadyApp = (callback) => {
+                if (document.readyState!='loading') {
+                    callback();
+                } else if (document.addEventListener) {
+                    document.addEventListener('DOMContentLoaded', callback);
+                } else {
+                    document.attachEvent('onreadystatechange', function() {
+                        if (document.readyState=='complete') callback();
+                    });
+                }
+            };
+
+            onReadyApp(() => {
+                // myFunction();
+            });
+
+            function myFunction(){
+                // console.log("My Function");
+            }
+        </script>
+        break;
+}

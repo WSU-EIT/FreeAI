@@ -1,15 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.Kiota.Http.HttpClientLibrary.Middleware;
-using Plugins;
-using SQLitePCL;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace FreeManager;
 
@@ -45,7 +36,6 @@ public static class CustomAuthorization
             if (user.AppAdmin) {
                 identity.AddClaim(new Claim(ClaimTypes.Role, Policies.AppAdmin));
             }
-
 
             if (user.ManageFiles) {
                 identity.AddClaim(new Claim(ClaimTypes.Role, Policies.ManageFiles));

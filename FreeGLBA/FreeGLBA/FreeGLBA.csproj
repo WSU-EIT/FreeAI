@@ -6,7 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-    <UserSecretsId>0828273c-c533-4c67-8a8f-5aa1530a8e6a</UserSecretsId>
+    <UserSecretsId>81c07cc6-4843-41c6-b50f-7de710aa5fcd</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,34 +22,33 @@
     <ProjectReference Include="..\FreeGLBA.Plugins\FreeGLBA.Plugins.csproj" />
     <ProjectReference Include="..\FreeGLBA.Client\FreeGLBA.Client.csproj" />
     <PackageReference Include="AspNet.Security.OAuth.Apple" Version="10.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.32.0" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.0.36" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.33.1" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Plugins\ExampleBackgroundProcess.cs">
+    <Compile Update="PluginFiles\ExampleBackgroundProcess.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Plugins\Example1.cs">
+    <Compile Update="PluginFiles\Example1.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Plugins\Example2.cs">
+    <Compile Update="PluginFiles\Example2.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Plugins\Example3.cs">
+    <Compile Update="PluginFiles\Example3.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Plugins\LoginWithPrompts.cs">
+    <Compile Update="PluginFiles\LoginWithPrompts.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Plugins\UserUpdate.cs">
+    <Compile Update="PluginFiles\UserUpdate.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
@@ -50,19 +57,25 @@
     <Content Update="appsettings.Development.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Update="PluginFiles\BlazorComponents\Button_Testing_TestButton.razor">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="PluginFiles\BlazorComponents\Top_Testing_Sample.razor">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Plugins\HelloWorld.assemblies">
+    <None Update="PluginFiles\HelloWorld.assemblies">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\HelloWorld.plugin">
+    <None Update="PluginFiles\HelloWorld.plugin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\HelloWorld\HelloWorld.dll">
+    <None Update="PluginFiles\HelloWorld\HelloWorld.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\Plugins.md">
+    <None Update="PluginFiles\Plugins.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,11 +1,7 @@
-using Azure.Identity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
-using Microsoft.Graph.Models;
-using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using Utilities;
 
 namespace FreeLLM;
 
@@ -20,14 +16,17 @@ public partial interface IDataAccess
     bool BooleanValue(bool? value);
     string BytesToFileSizeLabel(long? bytes, List<string>? labels = null);
     string CleanHtml(string? html);
+    IConfigurationHelper? ConfigurationHelper { get; }
     string ConnectionString(bool full = false);
     string ConnectionStringReport(string input);
+    string CookiePrefix { get; }
     string CookieRead(string cookieName);
     void CookieWrite(string cookieName, string value, string cookieDomain = "");
     string Copyright { get; }
     string CultureCodeDisplay(string cc);
     Guid? CurrentUserId(DataObjects.User? user);
     string? CurrentUserIdString(DataObjects.User? user);
+    EFDataModel Data { get; }
     string DatabaseType { get; }
     DateTime? DateOnlyToDateTime(DateOnly? dateOnly);
     public DateOnly? DateTimeToDateOnly(DateTime? dateTime);
@@ -40,6 +39,7 @@ public partial interface IDataAccess
     T? DeserializeObject<T>(string? SerializedObject);
     T? DeserializeObjectFromXmlOrJson<T>(string? SerializedObject);
     T? DuplicateObject<T>(object? o);
+    string? FixedReplyEmailAddress { get; }
     string FormatStringAsGuid(string input);
     string GenerateRandomCode(int Length);
     DataObjects.AuthenticationProviders GetAuthenticationProviders();
@@ -54,13 +54,15 @@ public partial interface IDataAccess
     Guid GuidFromNumber(int number);
     Guid GuidFromNumber(long number);
     Guid GuidFromNumber(double number);
+    int GuidToInt(Guid? guid);
+    T? GuidToNumber<T>(Guid? guid);
     Guid GuidValue(Guid? guid);
     string HashPassword(string? password);
     public bool HashPasswordValidate(string? password, string? hashedPassword);
     string HtmlToPlainText(string html);
     int IntValue(int? value);
-    List<string> MessageToListOfString(string message);
     double NowFromUnixEpoch();
+    List<string> MessageToListOfString(string message);
     string QueryStringValue(string valueName);
     List<string> RecurseException(Exception ex, bool ShowExceptionType = true);
     string RecurseExceptionAsString(Exception ex, bool ShowExceptionType = true);
@@ -71,23 +73,22 @@ public partial interface IDataAccess
     string Request(string parameter);
     double RunningSince { get; }
     DataObjects.BooleanResponse SendEmail(DataObjects.EmailMessage message, DataObjects.MailServerConfig? config = null);
-    string SerializeObject(object? Object);
     string Serialize_ObjectToXml(object o, bool OmitXmlDeclaration = true);
     T? Serialize_XmlToObject<T>(string? xml);
+    string SerializeObject(object? Object);
     void SetAuthenticationProviders(DataObjects.AuthenticationProviders? authenticationProviders);
     void SetHttpContext(Microsoft.AspNetCore.Http.HttpContext? context);
     void SetHttpRequest(Microsoft.AspNetCore.Http.HttpRequest? request);
     void SetHttpResponse(Microsoft.AspNetCore.Http.HttpResponse? response);
     Guid StringToGuid(string? input);
     string StringValue(string? input);
+    bool TokenAutoRenew { get; }
     Task<DataObjects.BooleanResponse> UndeleteRecord(string? Type, Guid RecordId, DataObjects.User CurrentUser);
-    /// <summary>
-    /// A unique string generated when the application starts.
-    /// </summary>
     string UniqueId { get; }
     void UpdateApplicationURL(string? url);
     string UrlDecode(string? input);
     string UrlEncode(string? input);
+    bool UseBackgroundService { get; }
     bool UseTenantCodeInUrl { get; }
     string Version { get; }
     DataObjects.VersionInfo VersionInfo { get; }
@@ -103,24 +104,29 @@ public partial class DataAccess
     public string AppendWithComma(string Original, string New)
     {
         string output = Original;
+
         if (!String.IsNullOrWhiteSpace(Original)) {
             output += ", ";
         }
         output += New;
+
         return output;
     }
 
     public string ApplicationURL { 
         get {
-            if (!String.IsNullOrWhiteSpace(_localModeUrl)) {
-                return _localModeUrl;
+            // Prefer getting this value from the new item in the ConfigurationHelper
+            if (ConfigurationHelper != null && !String.IsNullOrWhiteSpace(ConfigurationHelper.ApplicationUrl)) {
+                return ConfigurationHelper.ApplicationUrl;
             }
 
             string output = StringValue(CacheStore.GetCachedItem<string>(Guid.Empty, "ApplicationURL"));
+
             if (String.IsNullOrWhiteSpace(output)) {
                 output += GetSetting<string>("ApplicationURL", DataObjects.SettingType.Text);
                 CacheStore.SetCacheItem(Guid.Empty, "ApplicationURL", output);
             }
+
             return output;
         }
     }
@@ -132,6 +138,7 @@ public partial class DataAccess
         }
 
         string output = StringValue(CacheStore.GetCachedItem<string>(TenantId.Value, "ApplicationURL"));
+
         if (String.IsNullOrWhiteSpace(output)) {
             var tenantSettings = GetTenantSettings(TenantId.Value);
             output = StringValue(tenantSettings.ApplicationUrl);
@@ -173,7 +180,7 @@ public partial class DataAccess
                 if (tenants != null && tenants.Any()) {
                     List<string> tenantUrls = new List<string>();
 
-                    foreach(var tenantId in tenants) {
+                    foreach (var tenantId in tenants) {
                         var settings = GetSetting<DataObjects.TenantSettings>("Settings", DataObjects.SettingType.Object, tenantId);
                         if (settings != null && !String.IsNullOrWhiteSpace(settings.ApplicationUrl) && hostUrl.ToLower().StartsWith(settings.ApplicationUrl.ToLower())) {
                             if (!tenantUrls.Contains(settings.ApplicationUrl)) {
@@ -198,16 +205,17 @@ public partial class DataAccess
         }
     }
 
-    private DataObjects.ApplicationSettingsUpdate AppSettings
-    {
+    private DataObjects.ApplicationSettingsUpdate AppSettings {
         get {
-            return new DataObjects.ApplicationSettingsUpdate {
+            var output = new DataObjects.ApplicationSettingsUpdate {
                 ApplicationURL = ApplicationURL,
                 DefaultTenantCode = DefaultTenantCode,
                 MaintenanceMode = MaintenanceMode,
                 ShowTenantListingWhenMissingTenantCode = ShowTenantListingWhenMissingTenantCode,
                 UseTenantCodeInUrl = UseTenantCodeInUrl,
             };
+
+            return GetApplicationSettingsUpdateApp(output);
         }
     }
 
@@ -219,7 +227,7 @@ public partial class DataAccess
 
     public string BytesToFileSizeLabel(long? bytes, List<string>? labels = null)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (labels == null || labels.Count() < 4) {
             labels = new List<string> { "b", "kb", "m", "gb" };
@@ -243,6 +251,7 @@ public partial class DataAccess
     public string CleanHtml(string? html)
     {
         string output = StringValue(html);
+
         if (!String.IsNullOrWhiteSpace(output)) {
             // First, if there are body tags only get the text in between the start and end tag.
             int BodyStart = output.ToLower().IndexOf("<body");
@@ -273,12 +282,30 @@ public partial class DataAccess
                 StyleStart = output.ToLower().IndexOf("<style>");
             }
         }
+
         return output;
     }
 
-    private List<string> ConcatenateErrorMessages(DataObjects.User ReportedBy,
-        DataObjects.User AffectedUser, List<DataObjects.User> AdditionalAffectedUsers){
+    public IConfigurationHelper? ConfigurationHelper {
+        get {
+            IConfigurationHelper? output = null;
+
+            if (_serviceProvider != null) {
+                output = _serviceProvider.GetRequiredService<IConfigurationHelper>();
+            }
+
+            return output;
+        }
+    }
+
+    private List<string> ConcatenateErrorMessages
+    (
+        DataObjects.User ReportedBy,
+        DataObjects.User AffectedUser,
+        List<DataObjects.User> AdditionalAffectedUsers
+    ){
         List<string> output = new List<string>();
+
         if (!ReportedBy.ActionResponse.Result) {
             if (ReportedBy.ActionResponse.Messages != null && ReportedBy.ActionResponse.Messages.Count() > 0) {
                 foreach (var msg in ReportedBy.ActionResponse.Messages) {
@@ -306,15 +333,18 @@ public partial class DataAccess
                 }
             }
         }
+
         return output;
     }
 
     public string ConnectionString(bool full = false)
     {
         string output = ConnectionStringReport(_connectionString);
+
         if (full) {
             output = _connectionString;
         }
+
         return output;
     }
 
@@ -325,7 +355,7 @@ public partial class DataAccess
         if (!String.IsNullOrWhiteSpace(output)) {
             List<string> elements = output.Split(';').ToList();
             if (elements != null && elements.Count() > 0) {
-                string report = "";
+                string report = String.Empty;
                 foreach (var element in elements) {
                     List<string> items = element.Split('=').ToList();
                     if (items != null && items.Count() > 0) {
@@ -361,15 +391,21 @@ public partial class DataAccess
         return output;
     }
 
+    public string CookiePrefix {
+        get {
+            return _cookiePrefix;
+        }
+    }
+
     public string CookieRead(string cookieName)
     {
         string output = String.Empty;
 
-        if(!String.IsNullOrWhiteSpace(cookieName)) {
+        if (!String.IsNullOrWhiteSpace(cookieName)) {
             if (_httpContext != null) {
                 try {
-                    if(_httpContext.Request != null) {
-                        var ck = _httpContext.Request.Cookies[cookieName];
+                    if (_httpContext.Request != null) {
+                        var ck = _httpContext.Request.Cookies[_cookiePrefix + cookieName];
                         if (!String.IsNullOrWhiteSpace(ck)) {
                             output = ck;
                         }
@@ -379,8 +415,8 @@ public partial class DataAccess
                 }
                 if (output.ToLower() == "cleared") { output = String.Empty; }
             } else if (_httpRequest != null) {
-                var cookieValue = _httpRequest.Cookies[cookieName];
-                if(!String.IsNullOrWhiteSpace(cookieValue)) {
+                var cookieValue = _httpRequest.Cookies[_cookiePrefix + cookieName];
+                if (!String.IsNullOrWhiteSpace(cookieValue)) {
                     output = cookieValue;
                 }
             }
@@ -391,7 +427,7 @@ public partial class DataAccess
 
     public void CookieWrite(string cookieName, string value, string cookieDomain = "")
     {
-        if(!String.IsNullOrWhiteSpace(cookieName)) {
+        if (!String.IsNullOrWhiteSpace(cookieName)) {
             DateTime now = DateTime.UtcNow;
             Microsoft.AspNetCore.Http.CookieOptions option = new Microsoft.AspNetCore.Http.CookieOptions();
             option.Expires = now.AddYears(1);
@@ -401,9 +437,9 @@ public partial class DataAccess
             }
 
             if (_httpContext != null) {
-                _httpContext.Response.Cookies.Append(cookieName, value, option);
+                _httpContext.Response.Cookies.Append(_cookiePrefix + cookieName, value, option);
             } else if (_httpResponse != null) {
-                _httpResponse.Cookies.Append(cookieName, value, option);
+                _httpResponse.Cookies.Append(_cookiePrefix + cookieName, value, option);
             }
         }
     }
@@ -436,6 +472,12 @@ public partial class DataAccess
     public string? CurrentUserIdString(DataObjects.User? user)
     {
         return user != null ? user.UserId.ToString() : null;
+    }
+
+    public EFDataModel Data {
+        get {
+            return data;
+        }
     }
 
     public string DatabaseType {
@@ -472,10 +514,46 @@ public partial class DataAccess
         return output;
     }
 
+    private Guid DecodeUserIdFromTokenValue(string? TokenValue)
+    {
+        Guid output = Guid.Empty;
+
+        try {
+            if (!String.IsNullOrWhiteSpace(TokenValue)) {
+                // The UserId is now encrypted in the format of Guid|Expiration
+                // so validate that the token contains a Guid and that it hasn't expired.
+                var decrypted = Decrypt(CompressedByteArrayStringToFullString(TokenValue));
+
+                if (!String.IsNullOrWhiteSpace(decrypted)) {
+                    if (decrypted.Contains("|")) {
+                        var parts = decrypted.Split('|');
+
+                        if (parts.Length > 1) {
+                            var userId = parts[0];
+                            var expires = parts[1];
+
+                            if (userId.IsGuid() && expires.IsNumeric()) {
+                                long expireFileTimeUtc = Convert.ToInt64(expires);
+                                DateTime dFileTimeUtc = DateTime.FromFileTimeUtc(expireFileTimeUtc);
+
+                                // If the date is still in the future return the UserId Guid.
+                                if (dFileTimeUtc >= DateTime.UtcNow) {
+                                    output = new Guid(userId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch { }
+
+        return output;
+    }
+
     private string DefaultReplyToAddress {
         get {
             string output = String.Empty;
-            if(CacheStore.ContainsKey(Guid.Empty, "DefaultReplyToAddress")) {
+            if (CacheStore.ContainsKey(Guid.Empty, "DefaultReplyToAddress")) {
                 output += CacheStore.GetCachedItem<string>(Guid.Empty, "DefaultReplyToAddress");
             } else {
                 output += GetSetting<string>("DefaultReplyToAddress", DataObjects.SettingType.Text);
@@ -501,21 +579,22 @@ public partial class DataAccess
         return output;
     }
 
-    public string DefaultTenantCode
-    {
+    public string DefaultTenantCode {
         get {
             string output = StringValue(CacheStore.GetCachedItem<string>(Guid.Empty, "DefaultTenantCode"));
+
             if (String.IsNullOrWhiteSpace(output)) {
                 output += GetSetting<string>("DefaultTenantCode", DataObjects.SettingType.Text);
                 CacheStore.SetCacheItem(Guid.Empty, "DefaultTenantCode", output);
             }
+
             return output;
         }
     }
 
     public async Task<DataObjects.BooleanResponse> DeleteAllPendingDeletedRecords(Guid TenantId)
     {
-        var output = await DeleteAllPendingDeletedRecords(TenantId, Convert.ToDateTime("1/1/2000"));
+        var output = await DeleteAllPendingDeletedRecords(TenantId, DateTime.UtcNow);
         return output;
     }
 
@@ -523,85 +602,92 @@ public partial class DataAccess
     {
         DataObjects.BooleanResponse output = new DataObjects.BooleanResponse();
 
+        List<string> errors = new List<string>();
+
         // First, try any app-specific deletions.
         var deleteAppRecords = await DeleteAllPendingDeletedRecordsApp(TenantId, OlderThan);
         if (!deleteAppRecords.Result) {
+            errors.AddRange(deleteAppRecords.Messages);
+        } else {
             output.Messages.AddRange(deleteAppRecords.Messages);
-            return output;
         }
 
         try {
 
             // Other items need to call their delete method to get all related data.
-            var departmentGroups = await data.DepartmentGroups.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt > OlderThan)).ToListAsync();
-            if(departmentGroups != null && departmentGroups.Any()) {
-                foreach(var rec in departmentGroups) {
+            var departmentGroups = await data.DepartmentGroups.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt < OlderThan)).ToListAsync();
+            if (departmentGroups != null && departmentGroups.Any()) {
+                foreach (var rec in departmentGroups) {
                     var result = await DeleteDepartmentGroup(rec.DepartmentGroupId, null, true);
                     if (!result.Result) {
-                        output.Messages = result.Messages;
-                        return output;
+                        errors.AddRange(result.Messages);
+                    } else {
+                        output.Messages.AddRange(result.Messages);
                     }
                 }
             }
 
-            var departments = await data.Departments.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt > OlderThan)).ToListAsync();
-            if(departments != null && departments.Any()) {
-                foreach(var rec in departments) {
+            var departments = await data.Departments.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt < OlderThan)).ToListAsync();
+            if (departments != null && departments.Any()) {
+                foreach (var rec in departments) {
                     var result = await DeleteDepartment(rec.DepartmentId, null, true);
                     if (!result.Result) {
-                        output.Messages = result.Messages;
-                        return output;
+                        errors.AddRange(result.Messages);
+                    } else {
+                        output.Messages.AddRange(result.Messages);
                     }
                 }
             }
 
-
-            var fileStorage = await data.FileStorages.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt > OlderThan)).ToListAsync();
+            var fileStorage = await data.FileStorages.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt < OlderThan)).ToListAsync();
             if (fileStorage != null && fileStorage.Any()) {
                 foreach (var rec in fileStorage) {
                     var result = await DeleteFileStorage(rec.FileId, null, true);
                     if (!result.Result) {
-                        output.Messages = result.Messages;
-                        return output;
+                        errors.AddRange(result.Messages);
+                    } else {
+                        output.Messages.AddRange(result.Messages);
                     }
                 }
             }
 
-
-
-
-            var userGroups = await data.UserGroups.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt > OlderThan)).ToListAsync();
-            if(userGroups != null &&  userGroups.Any()) {
+            var userGroups = await data.UserGroups.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt < OlderThan)).ToListAsync();
+            if (userGroups != null &&  userGroups.Any()) {
                 foreach (var rec in userGroups) {
                     var result = await DeleteUserGroup(rec.GroupId, null, true);
                     if (!result.Result) {
-                        output.Messages = result.Messages;
-                        return output;
+                        errors.AddRange(result.Messages);
+                    } else {
+                        output.Messages.AddRange(result.Messages);
                     }
                 }
             }
 
-            var users = await data.Users.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt > OlderThan)).ToListAsync();
-            if(users != null && users.Any()) {
-                foreach(var rec in users) { 
+            var users = await data.Users.Where(x => x.TenantId == TenantId && x.Deleted == true && (x.DeletedAt == null || x.DeletedAt < OlderThan)).ToListAsync();
+            if (users != null && users.Any()) {
+                foreach (var rec in users) { 
                     var result = await DeleteUser(rec.UserId, null, true);
                     if (!result.Result) {
-                        output.Messages = result.Messages;
-                        return output;
+                        errors.AddRange(result.Messages);
+                    } else {
+                        output.Messages.AddRange(result.Messages);
                     }
                 }
             }
         } catch (Exception ex) {
-            output.Messages.Add("Error Deleting Records:");
-            output.Messages.AddRange(RecurseException(ex));
+            errors.Add("Error Deleting Records:");
+            errors.AddRange(RecurseException(ex));
         }
 
-        output.Result = output.Messages.Count() == 0;
+        output.Messages.AddRange(errors);
+
+        output.Result = errors.Count() == 0;
 
         return output;
     }
 
-    public async Task<DataObjects.BooleanResponse> DeletePendingDeletedRecords() {
+    public async Task<DataObjects.BooleanResponse> DeletePendingDeletedRecords()
+    {
         var output = new DataObjects.BooleanResponse();
         var errors = new List<string>();
         var messages = new List<string>();
@@ -649,13 +735,9 @@ public partial class DataAccess
                     output = await DeleteDepartment(RecordId, CurrentUser, true);
                     break;
 
-
                 case "filestorage":
                     output = await DeleteFileStorage(RecordId, CurrentUser, true);
                     break;
-
-
-
 
                 case "usergroup":
                     output = await DeleteUserGroup(RecordId, CurrentUser, true);
@@ -750,6 +832,32 @@ public partial class DataAccess
         return output;
     }
 
+    private string EncodeUserIdAndExpiration(Guid UserId, DateTime Expires)
+    {
+        // The user token now stores an encrypted value of Guid|Expires.
+        var toEncrypt = UserId.ToString() + "|" + Expires.ToFileTimeUtc().ToString();
+
+        string output = CompressByteArrayString(Encrypt(toEncrypt));
+        return output;
+
+    }
+
+    public string? FixedReplyEmailAddress {
+        get {
+            string? output = null;
+
+            var appSettings = GetApplicationSettings();
+
+            if (!String.IsNullOrWhiteSpace(appSettings.DefaultReplyToAddress)) {
+                if (!appSettings.MailServerConfig.AllowSendingFromIndividualEmailAddresses) {
+                    output = appSettings.DefaultReplyToAddress;
+                }
+            }
+
+            return output;
+        }
+    }
+
     private string FormatAppointmentTitle(string title, DateTime start, DateTime end, bool allDay)
     {
         string output = String.Empty;
@@ -760,16 +868,16 @@ public partial class DataAccess
         string endTime = end.ToString("t");
 
         if (allDay) {
-            if(startDate == endDate) {
+            if (startDate == endDate) {
                 output = startDate + " All Day";
             } else {
                 output = startDate + " - " + endDate + " All Day";
             }
         } else {
-            if(startDate == endDate) {
+            if (startDate == endDate) {
                 output = startDate + " " + startTime;
 
-                if(endTime != startTime) {
+                if (endTime != startTime) {
                     output += " - " + endTime;
                 }
             } else {
@@ -803,6 +911,7 @@ public partial class DataAccess
     public string GenerateRandomCode(int Length)
     {
         string output = String.Empty;
+
         char[] Possibilities = "1234567890".ToCharArray();
         Random Randomizer = new Random();
 
@@ -818,7 +927,7 @@ public partial class DataAccess
     {
         DataObjects.AuthenticationProviders output = new DataObjects.AuthenticationProviders();
 
-        if(_authenticationProviders != null) {
+        if (_authenticationProviders != null) {
             output = _authenticationProviders;
         }
 
@@ -832,7 +941,7 @@ public partial class DataAccess
 
         var tenantsList = GetTenantsList();
         if (tenantsList.Any()) {
-            foreach(var item in tenantsList) {
+            foreach (var item in tenantsList) {
                 RemoveSensitiveData(item);
             }
         }
@@ -843,16 +952,20 @@ public partial class DataAccess
         output.ApplicationUrl = ApplicationURL;
         output.AppSettings = AppSettings;
         output.AuthenticationProviders = _authenticationProviders;
-        output.DefaultLanguage = GetDefaultLanguage();
         output.CultureCode = "en-US";
         output.CultureCodes = GetLanguageCultureCodes();
+        output.DefaultLanguage = GetDefaultLanguage();
+        output.FixedReplyEmailAddress = FixedReplyEmailAddress;
         output.Languages = new List<DataObjects.Language>();
         output.LoggedIn = false;
+        output.PathToChromiumBrowser = ConfigurationHelper != null ? StringValue(ConfigurationHelper.PathToChromiumBrowser) : String.Empty;
         output.Plugins = GetPluginsWithoutCode();
         output.Released = Released;
+        output.ServerReferences = ConfigurationHelper != null && ConfigurationHelper.ServerReferences != null ? ConfigurationHelper.ServerReferences : null;
         output.TenantId = Guid.Empty;
         output.Tenants = new List<DataObjects.Tenant>();
         output.UseCustomAuthenticationProviderFromAdminAccount = UseCustomAuthenticationProviderFromAdminAccount;
+        output.UseBackgroundService = _useBackgroundService;
         output.User = new DataObjects.User();
         output.Users = new List<DataObjects.User>();
         output.UseTenantCodeInUrl = UseTenantCodeInUrl;
@@ -913,16 +1026,20 @@ public partial class DataAccess
             output.ApplicationUrl = ApplicationURL;
             output.AppSettings = AppSettings;
             output.AuthenticationProviders = _authenticationProviders;
-            output.DefaultLanguage = GetDefaultLanguage();
             output.CultureCode = "en-US";
             output.CultureCodes = GetLanguageCultureCodes();
+            output.DefaultLanguage = GetDefaultLanguage();
+            output.FixedReplyEmailAddress = FixedReplyEmailAddress;
             output.Languages = languages;
             output.LoggedIn = true;
+            output.PathToChromiumBrowser = ConfigurationHelper != null ? StringValue(ConfigurationHelper.PathToChromiumBrowser) : String.Empty;
             output.Plugins = GetPluginsWithoutCode();
             output.Released = Released;
+            output.ServerReferences = ConfigurationHelper != null && ConfigurationHelper.ServerReferences != null ? ConfigurationHelper.ServerReferences : null;
             output.TenantId = CurrentUser.TenantId;
             output.Tenants = tenants;
             output.UseCustomAuthenticationProviderFromAdminAccount = UseCustomAuthenticationProviderFromAdminAccount;
+            output.UseBackgroundService = _useBackgroundService;
             output.User = CurrentUser;
             output.Users = users;
             output.UseTenantCodeInUrl = UseTenantCodeInUrl;
@@ -955,16 +1072,20 @@ public partial class DataAccess
             output.ApplicationUrl = ApplicationURL;
             output.AppSettings = AppSettings;
             output.AuthenticationProviders = _authenticationProviders;
-            output.DefaultLanguage = GetDefaultLanguage();
             output.CultureCode = "en-US";
             output.CultureCodes = GetLanguageCultureCodes();
+            output.DefaultLanguage = GetDefaultLanguage();
+            output.FixedReplyEmailAddress = FixedReplyEmailAddress;
             output.Languages = tenantLanguages;
             output.LoggedIn = false;
+            output.PathToChromiumBrowser = ConfigurationHelper != null ? StringValue(ConfigurationHelper.PathToChromiumBrowser) : String.Empty;
             output.Plugins = GetPluginsWithoutCode();
             output.Released = Released;
+            output.ServerReferences = ConfigurationHelper != null && ConfigurationHelper.ServerReferences != null ? ConfigurationHelper.ServerReferences : null;
             output.TenantId = tenant.TenantId;
             output.Tenants = new List<DataObjects.Tenant>{ tenant };
             output.UseCustomAuthenticationProviderFromAdminAccount = UseCustomAuthenticationProviderFromAdminAccount;
+            output.UseBackgroundService = _useBackgroundService;
             output.User = new DataObjects.User();
             output.Users = new List<DataObjects.User>();
             output.UseTenantCodeInUrl = UseTenantCodeInUrl;
@@ -1008,9 +1129,9 @@ public partial class DataAccess
             .Select(x => new { x.DeletedAt, x.LastModified, x.LastModifiedBy, x.DepartmentGroupName, x.DepartmentGroupId })
             .ToListAsync();
         if (departmentGroupRecords != null && departmentGroupRecords.Any()) {
-            foreach(var item in departmentGroupRecords) {
+            foreach (var item in departmentGroupRecords) {
                 departmentGroups.Add(new DataObjects.DeletedRecordItem {
-                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.Now,
+                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.UtcNow,
                     DeletedBy = LastModifiedDisplayName(item.LastModifiedBy),
                     Display = StringValue(item.DepartmentGroupName),
                     ItemId = item.DepartmentGroupId,
@@ -1024,9 +1145,9 @@ public partial class DataAccess
             .Select(x => new { x.DeletedAt, x.LastModified, x.LastModifiedBy, x.DepartmentName, x.DepartmentId })
             .ToListAsync();
         if (departmentRecords != null && departmentRecords.Any()) {
-            foreach(var item in departmentRecords) {
+            foreach (var item in departmentRecords) {
                 departments.Add(new DataObjects.DeletedRecordItem {
-                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.Now,
+                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.UtcNow,
                     DeletedBy = LastModifiedDisplayName(item.LastModifiedBy),
                     Display = StringValue(item.DepartmentName),
                     ItemId = item.DepartmentId,
@@ -1034,16 +1155,15 @@ public partial class DataAccess
             }
         }
 
-
         List<DataObjects.DeletedRecordItem> fileStorage = new List<DataObjects.DeletedRecordItem>();
         var fileStorageRecord = await data.FileStorages
             .Where(x => x.TenantId == TenantId && x.Deleted == true)
             .Select(x => new { x.DeletedAt, x.LastModified, x.LastModifiedBy, x.FileName, x.FileId })
             .ToListAsync();
         if (fileStorageRecord != null && fileStorageRecord.Any()) {
-            foreach(var item in fileStorageRecord) {
+            foreach (var item in fileStorageRecord) {
                 fileStorage.Add(new DataObjects.DeletedRecordItem {
-                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.Now,
+                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.UtcNow,
                     DeletedBy = LastModifiedDisplayName(item.LastModifiedBy),
                     Display = StringValue(item.FileName),
                     ItemId = item.FileId,
@@ -1051,18 +1171,15 @@ public partial class DataAccess
             }
         }
 
-
-
-
         List<DataObjects.DeletedRecordItem> userGroups = new List<DataObjects.DeletedRecordItem>();
         var userGroupRecords = await data.UserGroups
             .Where(x => x.TenantId == TenantId && x.Deleted == true)
             .Select(x => new { x.DeletedAt, x.LastModified, x.LastModifiedBy, x.Name, x.GroupId })
             .ToListAsync();
         if (userGroupRecords != null && userGroupRecords.Any()) {
-            foreach(var item in userGroupRecords) {
+            foreach (var item in userGroupRecords) {
                 userGroups.Add(new DataObjects.DeletedRecordItem {
-                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.Now,
+                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.UtcNow,
                     DeletedBy = LastModifiedDisplayName(item.LastModifiedBy),
                     Display = StringValue(item.Name),
                     ItemId = item.GroupId,
@@ -1076,9 +1193,9 @@ public partial class DataAccess
             .Select(x => new { x.DeletedAt, x.LastModified, x.LastModifiedBy, x.FirstName, x.LastName, x.Email, x.UserId })
             .ToListAsync();
         if (userRecords != null && userRecords.Any()) {
-            foreach(var item in userRecords) {
+            foreach (var item in userRecords) {
                 users.Add(new DataObjects.DeletedRecordItem {
-                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.Now,
+                    DeletedAt = item.DeletedAt.HasValue ? (DateTime)item.DeletedAt : DateTime.UtcNow,
                     DeletedBy = LastModifiedDisplayName(item.LastModifiedBy),
                     Display = StringValue(item.FirstName + " " + item.LastName + (!String.IsNullOrWhiteSpace(item.Email) ? " (" + item.Email + ")": "")),
                     ItemId = item.UserId,
@@ -1101,7 +1218,7 @@ public partial class DataAccess
 
     public string GetFullUrl()
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_httpContext != null) {
             try {
@@ -1132,7 +1249,7 @@ public partial class DataAccess
 
     public string GetFullUrlWithoutQuerystring()
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_httpContext != null) {
             try {
@@ -1144,7 +1261,7 @@ public partial class DataAccess
                     _httpContext.Request.Path.ToUriComponent()
                 );
             } catch { }
-        } else if(_httpRequest != null) {
+        } else if (_httpRequest != null) {
             output = string.Concat(
                 _httpRequest.Scheme,
                 "://",
@@ -1163,9 +1280,11 @@ public partial class DataAccess
             Result = result,
             Messages = new List<string>()
         };
+
         if (!String.IsNullOrEmpty(message)) {
             output.Messages.Add(message);
         }
+
         return output;
     }
 
@@ -1187,6 +1306,50 @@ public partial class DataAccess
         try {
             output = new Guid(FormatStringAsGuid(guid));
         } catch { }
+
+        return output;
+    }
+
+    public int GuidToInt(Guid? guid)
+    {
+        return GuidToNumber<int>(guid);
+    }
+
+    public T? GuidToNumber<T>(Guid? guid)
+    {
+        T? output = default(T);
+
+        if (guid.HasValue) {
+            var g = guid.Value.ToString().Replace("-", "");
+            if (!String.IsNullOrWhiteSpace(g)) {
+                try {
+                    if (typeof(T) == typeof(int)) {
+                        output = (T)(object)(Convert.ToInt32(g));
+                    } else if (typeof(T) == typeof(long)) {
+                        long l = 0;
+                        long.TryParse(g, out l);
+                        output = (T)(object)(l);
+                    } else if (typeof(T) == typeof(uint)) {
+                        uint u = 0;
+                        uint.TryParse(g, out u);
+                        output = (T)(object)(u);
+                    } else if (typeof(T) == typeof(ulong)) {
+                        ulong ul = 0;
+                        ulong.TryParse(g, out ul);
+                        output = (T)(object)(ul);
+                    } else if (typeof(T) == typeof(System.Numerics.BigInteger)) {
+                        System.Numerics.BigInteger bi = 0;
+                        System.Numerics.BigInteger.TryParse(g, out bi);
+                        output = (T)(object)(bi);
+                    }
+
+                } catch { }
+            }
+        }
+
+        if (output == null) {
+            output = (T)(object)(0);
+        }
 
         return output;
     }
@@ -1235,31 +1398,32 @@ public partial class DataAccess
 
     public int IntValue(int? value)
     {
-        int output = value.HasValue ? (int)value : 0;
+        int output = value.HasValue ? value.Value : 0;
         return output;
     }
 
     private DataObjects.MailServerConfig MailServerConfig {
         get {
             DataObjects.MailServerConfig output = new DataObjects.MailServerConfig();
+
             if (CacheStore.ContainsKey(Guid.Empty, "MailServerConfig")) {
                 var cachedItem = CacheStore.GetCachedItem<DataObjects.MailServerConfig>(Guid.Empty, "MailServerConfig");
-                if(cachedItem != null) {
+                if (cachedItem != null) {
                     output = cachedItem;
                 }
             } else {
                 var savedItem = GetSetting<DataObjects.MailServerConfig>("MailServerConfig", DataObjects.SettingType.EncryptedObject);
-                if(savedItem != null) {
+                if (savedItem != null) {
                     output = savedItem;
                     CacheStore.SetCacheItem(Guid.Empty, "MailServerConfig", output);
                 }
             }
+
             return output;
         }
     }
 
-    private bool MaintenanceMode
-    {
+    private bool MaintenanceMode {
         get {
             bool output = false;
 
@@ -1286,11 +1450,6 @@ public partial class DataAccess
         }
 
         return output;
-    }
-
-    public List<string> MessageToListOfString(string message)
-    {
-        return new List<string> { message };
     }
 
     public double NowFromUnixEpoch()
@@ -1324,6 +1483,11 @@ public partial class DataAccess
         return output;
     }
 
+    public List<string> MessageToListOfString(string message)
+    {
+        return new List<string> { message };
+    }
+
     private string ObjectToCSV(object[] o)
     {
         string output = String.Empty;
@@ -1343,12 +1507,14 @@ public partial class DataAccess
     private string OptionPairValue(List<DataObjects.OptionPair>? Options, string Id)
     {
         string output = String.Empty;
+
         if (Options != null && Options.Count() > 0) {
             var opt = Options.FirstOrDefault(x => x.Id != null && x.Id.ToLower() == Id.ToLower());
             if (opt != null) {
                 output += opt.Value;
             }
         }
+        
         return output;
     }
 
@@ -1435,14 +1601,18 @@ public partial class DataAccess
             if (property.IsDefined(typeof(SensitiveAttribute))) {
                 object? defaultValue = null;
                 try {
-                    defaultValue = Activator.CreateInstance(propertyType);
+                    if (propertyType == typeof(System.String)) {
+                        defaultValue = String.Empty;
+                    } else {
+                        defaultValue = Activator.CreateInstance(propertyType);
+                    }
                 } catch { }
 
                 // For specific item types return a value instead of null.
                 // In my testing so far it seems like only string is a problem.
                 if (thisObject != null) {
                     if (thisObject.GetType() == typeof(System.String)) {
-                        defaultValue = "";
+                        defaultValue = String.Empty;
                     }
                 }
 
@@ -1460,14 +1630,13 @@ public partial class DataAccess
         return o;
     }
 
-
     public string Replace(string input, string replaceText, string withText)
     {
         string output = input;
 
         if (!String.IsNullOrWhiteSpace(output) && !String.IsNullOrWhiteSpace(replaceText)) {
             if (String.IsNullOrWhiteSpace(withText)) {
-                withText = "";
+                withText = String.Empty;
             }
 
             output = Regex.Replace(
@@ -1523,7 +1692,7 @@ public partial class DataAccess
 
     public string Request(string parameter)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_httpContext != null) {
             // First, try the querystring.
@@ -1535,7 +1704,7 @@ public partial class DataAccess
                     output += _httpContext.Request.Form[parameter].ToString();
                 } catch { }
             }
-        }else if (_httpRequest != null) {
+        } else if (_httpRequest != null) {
             output = QueryStringValue(parameter);
 
             if (String.IsNullOrWhiteSpace(output)) {
@@ -1580,7 +1749,7 @@ public partial class DataAccess
     {
         DataObjects.BooleanResponse output = new DataObjects.BooleanResponse();
 
-        if(config == null) {
+        if (config == null) {
             config = MailServerConfig;
         }
 
@@ -1591,8 +1760,8 @@ public partial class DataAccess
         switch (StringValue(config.Type).ToUpper()) {
             case "GRAPH":
                 var graphConfig = DeserializeObject<DataObjects.MailServerConfigMicrosoftGraph>(config.Config);
-                if(graphConfig != null) {
-                    if(!String.IsNullOrWhiteSpace(graphConfig.ClientId) && !String.IsNullOrWhiteSpace(graphConfig.TenantId) && !String.IsNullOrWhiteSpace(graphConfig.ClientSecret)) {
+                if (graphConfig != null) {
+                    if (!String.IsNullOrWhiteSpace(graphConfig.ClientId) && !String.IsNullOrWhiteSpace(graphConfig.TenantId) && !String.IsNullOrWhiteSpace(graphConfig.ClientSecret)) {
                         var graph = new GraphClient(graphConfig.ClientId, graphConfig.TenantId, graphConfig.ClientSecret);
 
                         output = graph.SendEmail(message).Result;
@@ -1615,7 +1784,7 @@ public partial class DataAccess
 
             case "SMTP":
                 var smtpConfig = DeserializeObject<DataObjects.MailServerConfigSMTP>(config.Config);
-                if(smtpConfig != null) {
+                if (smtpConfig != null) {
                     output = SendEmailViaSMTP(message, smtpConfig);
                 } else {
                     output.Messages.Add("SMTP Mail Configuration Not Set");
@@ -1632,14 +1801,6 @@ public partial class DataAccess
 
     public DataObjects.BooleanResponse SendEmailViaSMTP(DataObjects.EmailMessage message, DataObjects.MailServerConfigSMTP config)
     {
-        //if (!String.IsNullOrWhiteSpace(config.Username)) {
-        //    config.Username = Decrypt(config.Username);
-        //}
-
-        //if (!String.IsNullOrWhiteSpace(config.Password)) {
-        //    config.Password = Decrypt(config.Password);
-        //}
-
         DataObjects.BooleanResponse output = new DataObjects.BooleanResponse();
 
         if (String.IsNullOrWhiteSpace(message.From)) {
@@ -1780,23 +1941,11 @@ public partial class DataAccess
         return output;
     }
 
-    public string SerializeObject(object? Object)
-    {
-        string output = String.Empty;
-
-        if (Object != null) {
-            output += System.Text.Json.JsonSerializer.Serialize(Object);
-        }
-
-        return output;
-    }
-
     public string Serialize_ObjectToXml(object o, bool OmitXmlDeclaration = true)
     {
         XmlSerializer serializer = new XmlSerializer(o.GetType());
 
         XmlWriterSettings settings = new XmlWriterSettings();
-        //settings.Encoding = new UnicodeEncoding(false, false); // no BOM in a .NET string
         settings.Indent = true;
         settings.OmitXmlDeclaration = OmitXmlDeclaration;
 
@@ -1831,30 +1980,41 @@ public partial class DataAccess
         return output;
     }
 
+    public string SerializeObject(object? Object)
+    {
+        string output = String.Empty;
+
+        if (Object != null) {
+            output += System.Text.Json.JsonSerializer.Serialize(Object);
+        }
+
+        return output;
+    }
+
     public void SetAuthenticationProviders(DataObjects.AuthenticationProviders? authenticationProviders)
     {
-        if(authenticationProviders != null) {
+        if (authenticationProviders != null) {
             _authenticationProviders = authenticationProviders;
         }
     }
 
     public void SetHttpContext(Microsoft.AspNetCore.Http.HttpContext? context)
     {
-        if(context != null) {
+        if (context != null) {
             _httpContext = context;
         }
     }
 
     public void SetHttpRequest(HttpRequest? request)
     {
-        if(request != null) {
+        if (request != null) {
             _httpRequest = request;
         }
     }
 
     public void SetHttpResponse(HttpResponse? response)
     {
-        if(response != null) {
+        if (response != null) {
             _httpResponse = response;
         }
     }
@@ -1879,7 +2039,7 @@ public partial class DataAccess
     {
         Guid output = Guid.Empty;
 
-        if(!String.IsNullOrWhiteSpace(input)) {
+        if (!String.IsNullOrWhiteSpace(input)) {
             try {
                 Guid g = new Guid(input);
                 output = g;
@@ -1892,6 +2052,12 @@ public partial class DataAccess
     public string StringValue(string? input)
     {
         return !String.IsNullOrEmpty(input) ? input : String.Empty;
+    }
+
+    public bool TokenAutoRenew {
+        get {
+            return _tokenAutoRenew;
+        }
     }
 
     public async Task<DataObjects.BooleanResponse> UndeleteRecord(string? Type, Guid RecordId, DataObjects.User CurrentUser)
@@ -1935,7 +2101,6 @@ public partial class DataAccess
                         }
                         break;
 
-
                     case "filestorage":
                         var recFile = await data.FileStorages.FirstOrDefaultAsync(x => x.FileId == RecordId);
                         if (recFile != null) {
@@ -1950,9 +2115,6 @@ public partial class DataAccess
                             output.Messages.Add(Type + " Record '" + RecordId.ToString() + "' Not Found");
                         }
                         break;
-
-
-
 
                     case "usergroup":
                         var recUserGroup = await data.UserGroups.FirstOrDefaultAsync(x => x.GroupId == RecordId);
@@ -2009,8 +2171,7 @@ public partial class DataAccess
         return output;
     }
 
-    public string UniqueId
-    {
+    public string UniqueId {
         get {
             return _uniqueId;
         }
@@ -2023,11 +2184,6 @@ public partial class DataAccess
             SaveSetting("ApplicationURL", DataObjects.SettingType.Text, url);
             CacheStore.SetCacheItem(Guid.Empty, "ApplicationURL", url);
         }
-
-        //if (!String.IsNullOrWhiteSpace(url) && url.ToLower() != ApplicationURL.ToLower() && url.ToLower().StartsWith("https://")) {
-        //    SaveSetting("ApplicationURL", DataObjects.SettingType.Text, url);
-        //    CacheStore.SetCacheItem(Guid.Empty, "ApplicationURL", url);
-        //}
     }
 
     private DataObjects.EmailMessage UpdateEmailReplyAddress(Guid TenantId, DataObjects.EmailMessage message)
@@ -2042,7 +2198,7 @@ public partial class DataAccess
             message.From = DefaultReplyToAddressForTenant(TenantId);
         }
 
-        if(message.From.ToLower() != defaultReplyToAddress.ToLower()) {
+        if (message.From.ToLower() != defaultReplyToAddress.ToLower()) {
             // If the mail server does not support allowing other reply address, then just use the default from the config.
             if (config.AllowSendingFromIndividualEmailAddresses) {
                 // The server allows sending from other addresses, so this is OK.
@@ -2081,8 +2237,13 @@ public partial class DataAccess
         return output;
     }
 
-    public bool UseTenantCodeInUrl
-    {
+    public bool UseBackgroundService {
+        get {
+            return _useBackgroundService;
+        }
+    }
+
+    public bool UseTenantCodeInUrl {
         get {
             var output = false;
 
@@ -2127,7 +2288,6 @@ public partial class DataAccess
             output = output.Substring(0, output.Length - 1);
         }
 
-
         return output;
     }
 
@@ -2146,5 +2306,166 @@ public partial class DataAccess
         }
 
         return output;
+    }
+}
+
+public static class MD5
+{
+    public static byte[] ComputeHash(byte[] input)
+    {
+        uint num = 1732584193u;
+        uint num2 = 4023233417u;
+        uint num3 = 2562383102u;
+        uint num4 = 271733878u;
+        int num5 = (56 - (input.Length + 1) % 64) % 64;
+        byte[] array = new byte[input.Length + 1 + num5 + 8];
+        Array.Copy(input, array, input.Length);
+        array[input.Length] = 128;
+        Array.Copy(BitConverter.GetBytes(input.Length * 8), 0, array, array.Length - 8, 4);
+        for (int i = 0; i < array.Length / 64; i++) {
+            uint[] array2 = new uint[16];
+            for (int j = 0; j < 16; j++) {
+                array2[j] = BitConverter.ToUInt32(array, i * 64 + j * 4);
+            }
+
+            uint num6 = num;
+            uint num7 = num2;
+            uint num8 = num3;
+            uint num9 = num4;
+            uint num10 = 0u;
+            uint num11 = 0u;
+            uint num12 = 0u;
+            while (true) {
+                switch (num12) {
+                    case 0u:
+                    case 1u:
+                    case 2u:
+                    case 3u:
+                    case 4u:
+                    case 5u:
+                    case 6u:
+                    case 7u:
+                    case 8u:
+                    case 9u:
+                    case 10u:
+                    case 11u:
+                    case 12u:
+                    case 13u:
+                    case 14u:
+                    case 15u:
+                        num10 = num7 & num8 | ~num7 & num9;
+                        num11 = num12;
+                        goto IL_0138;
+                    case 16u:
+                    case 17u:
+                    case 18u:
+                    case 19u:
+                    case 20u:
+                    case 21u:
+                    case 22u:
+                    case 23u:
+                    case 24u:
+                    case 25u:
+                    case 26u:
+                    case 27u:
+                    case 28u:
+                    case 29u:
+                    case 30u:
+                    case 31u:
+                    case 32u:
+                    case 33u:
+                    case 34u:
+                    case 35u:
+                    case 36u:
+                    case 37u:
+                    case 38u:
+                    case 39u:
+                    case 40u:
+                    case 41u:
+                    case 42u:
+                    case 43u:
+                    case 44u:
+                    case 45u:
+                    case 46u:
+                    case 47u:
+                    case 48u:
+                    case 49u:
+                    case 50u:
+                    case 51u:
+                    case 52u:
+                    case 53u:
+                    case 54u:
+                    case 55u:
+                    case 56u:
+                    case 57u:
+                    case 58u:
+                    case 59u:
+                    case 60u:
+                    case 61u:
+                    case 62u:
+                    case 63u:
+                        if (num12 >= 16 && num12 <= 31) {
+                            num10 = num9 & num7 | ~num9 & num8;
+                            num11 = (5 * num12 + 1) % 16u;
+                        } else if (num12 >= 32 && num12 <= 47) {
+                            num10 = num7 ^ num8 ^ num9;
+                            num11 = (3 * num12 + 5) % 16u;
+                        } else if (num12 >= 48) {
+                            num10 = num8 ^ (num7 | ~num9);
+                            num11 = 7 * num12 % 16u;
+                        }
+
+                        goto IL_0138;
+                }
+
+                break;
+            IL_0138:
+                uint num13 = num9;
+                num9 = num8;
+                num8 = num7;
+                num7 += leftRotate(num6 + num10 + K[num12] + array2[num11], s[num12]);
+                num6 = num13;
+                num12++;
+            }
+
+            num += num6;
+            num2 += num7;
+            num3 += num8;
+            num4 += num9;
+        }
+        var hashBytes = new byte[16];
+        BitConverter.GetBytes(num).CopyTo(hashBytes, 0);
+        BitConverter.GetBytes(num2).CopyTo(hashBytes, 4);
+        BitConverter.GetBytes(num3).CopyTo(hashBytes, 8);
+        BitConverter.GetBytes(num4).CopyTo(hashBytes, 12);
+        return hashBytes;
+    }
+    public static string ComputeHashString(byte[] input) => string.Join("", ComputeHash(input).Select(o => o.ToString("x2")));
+
+    private static int[] s = new int[64]
+    {
+        7, 12, 17, 22, 7, 12, 17, 22, 7, 12,
+        17, 22, 7, 12, 17, 22, 5, 9, 14, 20,
+        5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
+        14, 20, 4, 11, 16, 23, 4, 11, 16, 23,
+        4, 11, 16, 23, 4, 11, 16, 23, 6, 10,
+        15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+        6, 10, 15, 21
+    };
+
+    private static uint[] K = new uint[64]
+    {
+        3614090360u, 3905402710u, 606105819u, 3250441966u, 4118548399u, 1200080426u, 2821735955u, 4249261313u, 1770035416u, 2336552879u,
+        4294925233u, 2304563134u, 1804603682u, 4254626195u, 2792965006u, 1236535329u, 4129170786u, 3225465664u, 643717713u, 3921069994u,
+        3593408605u, 38016083u, 3634488961u, 3889429448u, 568446438u, 3275163606u, 4107603335u, 1163531501u, 2850285829u, 4243563512u,
+        1735328473u, 2368359562u, 4294588738u, 2272392833u, 1839030562u, 4259657740u, 2763975236u, 1272893353u, 4139469664u, 3200236656u,
+        681279174u, 3936430074u, 3572445317u, 76029189u, 3654602809u, 3873151461u, 530742520u, 3299628645u, 4096336452u, 1126891415u,
+        2878612391u, 4237533241u, 1700485571u, 2399980690u, 4293915773u, 2240044497u, 1873313359u, 4264355552u, 2734768916u, 1309151649u,
+        4149444226u, 3174756917u, 718787259u, 3951481745u
+    };
+
+    private static uint leftRotate(uint x, int c)
+    {
+        return x << c | x >> 32 - c;
     }
 }

@@ -1,11 +1,9 @@
+using Blazored.SessionStorage;
 using FreeLLM.Components;
-using FreeLLM.Server.Controllers;
 using FreeLLM.Server.Hubs;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
+using Radzen;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace FreeLLM
@@ -18,10 +16,30 @@ namespace FreeLLM
 
             builder.Services.AddControllersWithViews();
 
-            var isDevelopment = builder.Environment.IsDevelopment();
-            if (!isDevelopment) {
-                
-            }
+            builder.Services.AddRadzenComponents();
+            builder.Services.AddScoped<Radzen.DialogService>();
+            builder.Services.AddScoped<Radzen.NotificationService>();
+            builder.Services.AddScoped<Radzen.ThemeService>();
+
+            //var isDevelopment = builder.Environment.IsDevelopment();
+            //if (!isDevelopment) {
+
+            //}
+
+            // Try to get the application name.
+            string cookiePrefix = String.Empty;
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            try {
+                cookiePrefix += assembly.FullName;
+
+                if (cookiePrefix.Contains(",")) { 
+                    cookiePrefix = cookiePrefix.Substring(0, cookiePrefix.IndexOf(",")).Trim();
+                }
+
+                if (!String.IsNullOrWhiteSpace(cookiePrefix)) {
+                    cookiePrefix = new string(cookiePrefix.Where(Char.IsLetter).ToArray()).ToLower() + "_";
+                }
+            } catch { }
 
             // Attempts to read the AzureSignalRurl setting from appsettings.json.
             string azureSignalRUrl = String.Empty + builder.Configuration.GetValue<string>("AzureSignalRurl");
@@ -38,6 +56,8 @@ namespace FreeLLM
 
             builder.Services.AddRazorPages();
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddBlazoredSessionStorage();
 
             #region Plugin Configuration and DI Creation
 
@@ -62,14 +82,15 @@ namespace FreeLLM
             try { serverReferences.Add(typeof(Microsoft.Extensions.Primitives.StringValues).Assembly.Location); } catch { }
             try { serverReferences.Add(typeof(Plugins.Plugin).Assembly.Location); } catch { }
             try { serverReferences.Add(typeof(IPlugin).Assembly.Location); } catch { }
-            plugins.ServerReferences = serverReferences;
+            try { serverReferences.Add(typeof(RenderFragment).Assembly.Location); } catch { }
+            plugins.ServerReferences = AddServerReferencesApp(serverReferences);
 
             // Get the using statements from the appsettings.json file.
             // These will be used to ensure all required namespaces for this app are used when executing dynamic code in plugins.
             var usingStatements = new List<string>();
             var usingStatementsFromConfig = builder.Configuration.GetSection("PluginUsingStatements").GetChildren().Select(c => c.Value).ToArray();
             if (usingStatementsFromConfig != null && usingStatementsFromConfig.Length > 0) {
-                foreach(var item in usingStatementsFromConfig) {
+                foreach (var item in usingStatementsFromConfig) {
                     if (!String.IsNullOrWhiteSpace(item)) {
                         usingStatements.Add(item);
                     }
@@ -77,7 +98,7 @@ namespace FreeLLM
             }
             plugins.UsingStatements = usingStatements;
 
-            string pluginsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+            string pluginsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginFiles");
             plugins.Load(pluginsPath);
             builder.Services.AddTransient<Plugins.IPlugins>(x => plugins);
 
@@ -85,10 +106,35 @@ namespace FreeLLM
 
             builder.Services.AddSingleton<IServiceProvider>(provider => provider);
 
-            string _localModeUrl = String.Empty + builder.Configuration.GetValue<string>("LocalModeUrl");
+            bool backgroundServiceEnabled = builder.Configuration.GetValue<bool>("BackgroundService:Enabled");
+            if (backgroundServiceEnabled) {
+                var loadBalancingFilter = String.Empty + builder.Configuration.GetValue<string>("BackgroundService:LoadBalancingFilter");
+                if (!String.IsNullOrWhiteSpace(loadBalancingFilter)) {
+                    var hostname = (String.Empty + System.Environment.MachineName).ToLower();
+                    backgroundServiceEnabled = hostname.Contains(loadBalancingFilter.ToLower());
+                }
+            }
+
             string _connectionString = String.Empty + builder.Configuration.GetConnectionString("AppData");
             string _databaseType = String.Empty + builder.Configuration.GetValue<string>("DatabaseType");
-            builder.Services.AddTransient<IDataAccess>(x => ActivatorUtilities.CreateInstance<DataAccess>(x, _connectionString, _databaseType, _localModeUrl, x.GetRequiredService<IServiceProvider>()));
+            builder.Services.AddTransient<IDataAccess>(x => ActivatorUtilities.CreateInstance<DataAccess>(x, _connectionString, _databaseType, x.GetRequiredService<IServiceProvider>(), cookiePrefix, backgroundServiceEnabled));
+
+            if (backgroundServiceEnabled) {
+                // Create a logger for the background process and add the hosted service for the background processor.
+                var logFilePath = builder.Configuration.GetValue<string>("BackgroundService:LogFilePath");
+                string logFile = !String.IsNullOrWhiteSpace(logFilePath) ? System.IO.Path.Combine(logFilePath, "BackgroundService.log") : String.Empty;
+                var loggerFactory = LoggerFactory.Create(builder => {
+                    builder.AddConsole();
+                    if (!String.IsNullOrWhiteSpace(logFile)) {
+                        builder.AddFile(logFile);
+                    }
+                });
+                var logger = loggerFactory.CreateLogger<BackgroundProcessor>();
+
+                int processingIntervalSeconds = builder.Configuration.GetValue<int>("BackgroundService:ProcessingIntervalSeconds");
+                bool startOnLoad = builder.Configuration.GetValue<bool>("BackgroundService:StartOnLoad");
+                builder.Services.AddHostedService<BackgroundProcessor>(x => ActivatorUtilities.CreateInstance<BackgroundProcessor>(x, logger, x.GetRequiredService<IServiceProvider>(), processingIntervalSeconds, startOnLoad));
+            }
 
             var useAuthorization = CustomAuthenticationProviders.UseAuthorization(builder);
             builder.Services.AddTransient<ICustomAuthentication>(x => ActivatorUtilities.CreateInstance<CustomAuthentication>(x, useAuthorization));
@@ -101,6 +147,11 @@ namespace FreeLLM
             // Create DI for supported configuration items.
             var analyticsCode = builder.Configuration.GetValue<string>("AnalyticsCode");
 
+            string applicationUrl = String.Empty + builder.Configuration.GetValue<string>("ApplicationUrl");
+            if (!String.IsNullOrWhiteSpace(applicationUrl) && !applicationUrl.EndsWith("/")) {
+                applicationUrl += "/";
+            }
+
             var basePath = builder.Configuration.GetValue<string>("BasePath");
             if (!String.IsNullOrWhiteSpace(basePath) && !basePath.EndsWith("/")) {
                 basePath += "/";
@@ -108,8 +159,8 @@ namespace FreeLLM
 
             List<string> disabled = new List<string>();
             var globallyDisabledModules = builder.Configuration.GetSection("GloballyDisabledModules").GetChildren();
-            if(globallyDisabledModules != null && globallyDisabledModules.Any()) {
-                foreach(var item in globallyDisabledModules.ToArray().Select(c => c.Value).ToList()) {
+            if (globallyDisabledModules != null && globallyDisabledModules.Any()) {
+                foreach (var item in globallyDisabledModules.ToArray().Select(c => c.Value).ToList()) {
                     if (!String.IsNullOrWhiteSpace(item)) {
                         disabled.Add(item.ToLower());
                     }
@@ -119,21 +170,25 @@ namespace FreeLLM
             List<string> enabled = new List<string>();
             var globallyEnabledModules = builder.Configuration.GetSection("GloballyEnabledModules").GetChildren();
             if (globallyEnabledModules != null && globallyEnabledModules.Any()) {
-                foreach(var item in globallyEnabledModules.ToArray().Select(c => c.Value).ToList()) {
+                foreach (var item in globallyEnabledModules.ToArray().Select(c => c.Value).ToList()) {
                     if (!String.IsNullOrWhiteSpace(item)) {
                         enabled.Add(item.ToLower());
                     }
                 }
             }
 
-            var configurationHelperLoader = ConfigurationHelpersLoadApp(new ConfigurationHelperLoader {
+           var configurationHelperLoader = ConfigurationHelpersLoadApp(new ConfigurationHelperLoader {
                 AnalyticsCode = analyticsCode,
+                ApplicationUrl = applicationUrl,
+                CookiePrefix = cookiePrefix,
                 BasePath = basePath,
                 ConnectionStrings = new ConfigurationHelperConnectionStrings {
                     AppData = builder.Configuration.GetConnectionString("AppData"),
                 },
                 GloballyDisabledModules = disabled,
                 GloballyEnabledModules = enabled,
+               PathToChromiumBrowser = String.Empty + builder.Configuration.GetValue<string>("PathToChromiumBrowser"),
+               ServerReferences = serverReferences,
             }, builder);
 
             builder.Services.AddTransient<IConfigurationHelper>(x => ActivatorUtilities.CreateInstance<ConfigurationHelper>(x, configurationHelperLoader));
@@ -141,31 +196,17 @@ namespace FreeLLM
             var policies = new List<string> {
                 "AppAdmin",
                 "Admin",
-                "CanBeScheduled",
-                "ManageAppointments",
                 "ManageFiles",
                 "PreventPasswordChange",
             };
             policies.AddRange(AuthenticationPoliciesApp);
-            builder.Services.AddAuthorization(options => { 
-                foreach(var p in policies) {
+            builder.Services.AddAuthorization(options => {
+                foreach (var p in policies) {
                     options.AddPolicy(p, policy => policy.RequireClaim(ClaimTypes.Role, p));
                 }
             });
 
             var app = AppModifyStart(AppModifyBuilderEnd(builder).Build());
-
-            bool openIdForceHttps = false;
-            try {
-                openIdForceHttps = builder.Configuration.GetValue<bool>("AuthenticationProviders:OpenId:ForceHttps");
-            } catch { }
-            if (openIdForceHttps) {
-                app.Use((context, next) => {
-                    context.Request.Scheme = "https";
-                    context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self' login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu");
-                    return next(context);
-                });
-            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
@@ -176,9 +217,21 @@ namespace FreeLLM
                 app.UseHsts();
             }
 
+            bool openIdForceHttps = false;
+            try {
+                openIdForceHttps = builder.Configuration.GetValue<bool>("AuthenticationProviders:OpenId:ForceHttps");
+            } catch { }
+            if (openIdForceHttps) {
+                app.Use((context, next) => {
+                    context.Request.Scheme = "https";
+                    //context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self'");
+                    return next(context);
+                });
+            }
+
+            app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
             //app.UseHttpsRedirection();
-            
-            //app.UseStaticFiles(); Replaced by the newer MapStaticAssets middleware.
+
             app.MapStaticAssets();
 
             app.UseRouting();
@@ -198,7 +251,7 @@ namespace FreeLLM
 
             app.MapRazorComponents<App>()
                 .AddInteractiveWebAssemblyRenderMode()
-                .AddAdditionalAssemblies(typeof(FreeLLM.Client.Pages.Index).Assembly);
+                .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 

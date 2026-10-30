@@ -4,13 +4,18 @@ namespace FreeGLBA;
 
 public partial class DataObjects
 {
+    public partial class SignalRUpdateType
+    {
+        //public const string YourSignalRUpdateType = "YourSignalRUpdateType";
+    }
+
+    public partial class TagModule
+    {
+        // Add any custom tag modules for your app here.
+    }
+
     public partial class User
     {
         //public string? MyCustomUserProperty { get; set; }
     }
-
-    //public class YourClass
-    //{
-    //    public string? YourProperty { get; set; }
-    //}
 }

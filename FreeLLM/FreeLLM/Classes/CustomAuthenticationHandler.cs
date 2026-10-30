@@ -1,15 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.Kiota.Http.HttpClientLibrary.Middleware;
-using Plugins;
-using SQLitePCL;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace FreeLLM;
 
@@ -26,7 +17,7 @@ public static class CustomAuthorization
             if (!String.IsNullOrWhiteSpace(user.AuthToken)) {
                 identity.AddClaim(new Claim(ClaimTypes.Hash, user.AuthToken));
             }
-            
+
             if (!String.IsNullOrWhiteSpace(user.Email)) {
                 identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             }
@@ -46,14 +37,6 @@ public static class CustomAuthorization
                 identity.AddClaim(new Claim(ClaimTypes.Role, Policies.AppAdmin));
             }
 
-            if (user.CanBeScheduled) {
-                identity.AddClaim(new Claim(ClaimTypes.Role, Policies.CanBeScheduled));
-            }
-
-            if (user.ManageAppointments) {
-                identity.AddClaim(new Claim(ClaimTypes.Role, Policies.ManageAppointments));
-            }
-
             if (user.ManageFiles) {
                 identity.AddClaim(new Claim(ClaimTypes.Role, Policies.ManageFiles));
             }
@@ -66,7 +49,7 @@ public static class CustomAuthorization
             await context.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal,
-                new AuthenticationProperties { 
+                new AuthenticationProperties {
                     IsPersistent = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1),
                     IssuedUtc = DateTimeOffset.UtcNow,
@@ -80,8 +63,6 @@ public static class Policies
 {
     public const string Admin = "Admin";
     public const string AppAdmin = "AppAdmin";
-    public const string CanBeScheduled = "CanBeScheduled";
     public const string ManageFiles = "ManageFiles";
-    public const string ManageAppointments = "ManageAppointments";
     public const string PreventPasswordChange = "PreventPasswordChange";
 }

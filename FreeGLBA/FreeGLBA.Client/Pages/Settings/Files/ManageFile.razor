@@ -3,6 +3,7 @@
 @inject HttpClient Http
 @inject BlazorDataModel Model
 @inject Radzen.DialogService DialogService
+
 @if (Model.Loaded) {
     @if (_loading) {
         <LoadingMessage />
@@ -10,6 +11,12 @@
         if (file.Deleted) {
             <UndeleteMessage DeletedAt="file.DeletedAt" LastModifiedBy="@file.LastModifiedBy" OnUndelete="Undelete" />
         } else {
+            if (Helpers.HaveBlazorPlugins("ManageFile", "Top")) {
+                <div class="mb-2">
+                    <BlazorPlugins Module="ManageFile" Position="Top" TValue="DataObjects.FileStorage" Value="file" ValueChanged="@(v => file = v)" />
+                </div>
+            }
+
             <div class="mb-2">
                 <label for="manage-file-FileName">
                     <Language Tag="FileName" />
@@ -20,6 +27,12 @@
                     <span class="input-group-text">@file.Extension</span>
                 </div>
             </div>
+
+            if (Helpers.HaveBlazorPlugins("ManageFile", "Bottom")) {
+                <div class="mb-2">
+                    <BlazorPlugins Module="ManageFile" Position="Top" TValue="DataObjects.FileStorage" Value="file" ValueChanged="@(v => file = v)" />
+                </div>
+            }
 
             <div class="btn-group mt-2" role="group">
                 <button type="button" class="btn btn-dark" @onclick="Cancel">
@@ -33,6 +46,10 @@
                 @if (OnDelete != null) {
                     <DeleteConfirmation OnConfirmed="Delete" CancelText="@Helpers.ConfirmButtonTextCancel" DeleteText="@Helpers.ConfirmButtonTextDelete" ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
                 }
+
+                @if (Helpers.HaveBlazorToolbarButtons("ManageFile")) {
+                    <BlazorPlugins Module="ManageFile" Button="true" TValue="DataObjects.FileStorage" Value="file" ValueChanged="@(v => file = v)" />
+                }
             </div>
 
             <div class="mt-2 mb-2">
@@ -42,70 +59,24 @@
         }
     }
 }
+
 @code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Delegate? OnComplete { get; set; }
+    [Parameter] public Delegate? OnDelete { get; set; }
+
+    protected string _filename = String.Empty;
     protected bool _loadedData = false;
     protected bool _loading = true;
     protected bool _newAppointment = false;
-
-    protected DataObjects.FileStorage file = new DataObjects.FileStorage();
-    protected string _filename = "";
     protected bool _visible = false;
 
-    [Parameter]
-    public Guid FileId { get; set; }
-
-    [Parameter]
-    public Delegate? OnComplete { get; set; }
-
-    [Parameter]
-    public Delegate? OnDelete { get; set; }
-
-    protected void Cancel()
-    {
-        _visible = false;
-        DialogService.Close();
-    }
-
-    protected void Delete()
-    {
-        if(OnDelete != null) {
-            OnDelete.DynamicInvoke(file);
-        }
-
-        _visible = false;
-        DialogService.Close();
-    }
+    protected DataObjects.FileStorage file = new DataObjects.FileStorage();
 
     public void Dispose()
     {
         Model.OnChange -= StateHasChanged;
         Model.OnSignalRUpdate -= SignalRUpdate;
-    }
-
-    protected async Task LoadData()
-    {
-        var results = await Helpers.GetOrPost<DataObjects.FileStorage>("api/Data/GetFileStorage/" + FileId.ToString());
-        if(results != null) {
-            if (results.ActionResponse.Result) {
-                file = results;
-                _visible = true;
-
-                UpdateFilename();
-            } else {
-                _visible = false;
-                DialogService.Close();
-                Model.ErrorMessages(results.ActionResponse.Messages);
-            }
-        } else {
-            _visible = false;
-            DialogService.Close();
-            Model.UnknownError();
-        }
-
-        _loading = false;
-        _loadedData = true;
-
-        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -127,6 +98,48 @@
     {
         Model.OnChange += StateHasChanged;
         Model.OnSignalRUpdate += SignalRUpdate;
+    }
+
+    protected void Cancel()
+    {
+        _visible = false;
+        DialogService.Close();
+    }
+
+    protected void Delete()
+    {
+        if (OnDelete != null) {
+            OnDelete.DynamicInvoke(file);
+        }
+
+        _visible = false;
+        DialogService.Close();
+    }
+
+    protected async Task LoadData()
+    {
+        var results = await Helpers.GetOrPost<DataObjects.FileStorage>("api/Data/GetFileStorage/" + FileId.ToString());
+        if (results != null) {
+            if (results.ActionResponse.Result) {
+                file = results;
+                _visible = true;
+
+                UpdateFilename();
+            } else {
+                _visible = false;
+                DialogService.Close();
+                Model.ErrorMessages(results.ActionResponse.Messages);
+            }
+        } else {
+            _visible = false;
+            DialogService.Close();
+            Model.UnknownError();
+        }
+
+        _loading = false;
+        _loadedData = true;
+
+        StateHasChanged();
     }
 
     protected async Task Save()

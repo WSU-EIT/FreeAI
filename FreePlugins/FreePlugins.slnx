@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreePlugins.Client/FreePlugins.Client.csproj" />
+  <Project Path="FreePlugins.DataAccess/FreePlugins.DataAccess.csproj" Id="AB9DF1B5-A81A-4FF4-B657-C3BA47F7E299" />
+  <Project Path="FreePlugins.DataObjects/FreePlugins.DataObjects.csproj" Id="E49E2D4D-BA58-4946-A612-CDA1C52B1EA5" />
+  <Project Path="FreePlugins.EFModels/FreePlugins.EFModels.csproj" Id="0F8E21D5-8095-4C71-BF03-7B7C8ED85CF2" />
+  <Project Path="FreePlugins.Plugins/FreePlugins.Plugins.csproj" Id="5B0C966A-4931-462B-BB9A-0AF6602CE801" />
+  <Project Path="FreePlugins/FreePlugins.csproj" />
+</Solution>

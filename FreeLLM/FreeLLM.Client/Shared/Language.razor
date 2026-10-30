@@ -3,11 +3,6 @@
 @inject BlazorDataModel Model
 @if (!String.IsNullOrWhiteSpace(Icon)) {<Icon Name="@Icon" /><span class="@_class">@((MarkupString)LanguageTag)</span>} else {<i class="@_class">@((MarkupString)LanguageTag)</i>}
 @code {
-    protected string Icon = String.Empty;
-    protected string LanguageTag = String.Empty;
-
-    protected string _class = "";
-
     /// <summary>
     /// An optional class to add around the text.
     /// </summary>
@@ -36,14 +31,20 @@
     /// <summary>
     /// The required name of the language tag.
     /// </summary>
-    [Parameter] public string Tag { get; set; } = "";
+    [Parameter] public string Tag { get; set; } = String.Empty;
 
     /// <summary>
     /// Option to transform the case of the text using a TextCase enum of Normal, Lowercase, Uppercase, Sentence, or Title.
     /// </summary>
     [Parameter] public TextCase? TransformCase { get; set; }
 
-    public void Dispose() { 
+    protected string _class = String.Empty;
+
+    protected string Icon = String.Empty;
+    protected string LanguageTag = String.Empty;
+
+    public void Dispose()
+    { 
         Model.OnChange -= StateHasChanged;
     }
 
@@ -55,7 +56,6 @@
     protected override void OnInitialized()
     {
         Model.OnChange += StateHasChanged;
-        //RenderText();
     }
 
     protected override void OnParametersSet()
@@ -110,7 +110,7 @@
         _class = !String.IsNullOrWhiteSpace(Class) ? Class : "";
 
         if (!String.IsNullOrWhiteSpace(Icon)) {
-            if (_class != "") {
+            if (_class != String.Empty) {
                 _class += " ";
             }
             _class += "icon-text";

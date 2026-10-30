@@ -5,6 +5,7 @@
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 @inject BlazorDataModel Model
+
 @if (Model.View == _pageName) {
     if (_loading) {
         <LoadingMessage />
@@ -22,26 +23,16 @@
         }
     }
 }
-@code {
-    protected string _pageTitle = "";
-    protected string _info = "";
-    protected bool _loading = true;
 
+@code {
+    protected string _info = String.Empty;
     protected string _pageName = "missingtenantcode";
+    protected string _pageTitle = String.Empty;
+    protected bool _loading = true;
 
     public void Dispose()
     {
         Model.OnChange -= OnDataModelUpdated;
-
-        Model.Subscribers_OnChange.Remove(_pageName);
-        Model.Subscribers_OnSignalRUpdate.Remove(_pageName);
-    }
-
-    protected async Task GetTenantCodes()
-    {
-        if (!Model.TenantList.Any()) {
-            await Helpers.LoadTenantList();
-        }
     }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -67,20 +58,23 @@
         }
     }
 
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected async Task GetTenantCodes()
+    {
+        if (!Model.TenantList.Any()) {
+            await Helpers.LoadTenantList();
+        }
+    }
+
     protected void OnDataModelUpdated()
     {
         if (Model.View == _pageName) {
             StateHasChanged();
         }
-    }
-
-    protected override void OnInitialized()
-    {
-        if (!Model.Subscribers_OnChange.Contains(_pageName)){
-            Model.Subscribers_OnChange.Add(_pageName);
-            Model.OnChange += OnDataModelUpdated;
-        }
-
-        Model.View = _pageName;
     }
 }

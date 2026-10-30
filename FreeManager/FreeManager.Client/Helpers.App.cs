@@ -1,5 +1,3 @@
-using System.Net.NetworkInformation;
-
 namespace FreeManager.Client;
 
 public static partial class Helpers
@@ -7,14 +5,32 @@ public static partial class Helpers
     public static Dictionary<string, List<string>> AppIcons {
         get {
             Dictionary<string, List<string>> icons = new Dictionary<string, List<string>> {
-                { "fa:fa-solid fa-cubes", new List<string> { "Builder", "AppBuilder" }},
-                { "fa:fa-solid fa-gauge-high", new List<string> { "Dashboard" }},
-                { "fa:fa-solid fa-wand-magic-sparkles", new List<string> { "Wizard", "EntityWizard" }},
-                { "fa:fa-solid fa-layer-group", new List<string> { "Templates", "TemplateGallery" }},
-                { "fa:fa-solid fa-hat-wizard", new List<string> { "SetupWizard", "SetupWizardBuilder" }},
+                { "fa:fa-solid fa-home", new List<string> { "IconName1", "IconName2" }},
             };
 
             return icons;
+        }
+    }
+
+    public static bool AllowAnonymousAccessApp(string pagename)
+    {
+        bool output = false;
+
+        // Do any checks for custom page names in your app that should allow anonymous access.
+        switch (StringLower(pagename)) {
+            case "this":
+            case "orthis":
+                output = true;
+                break;
+        }
+
+        return output;
+    }
+
+    public static string ApplicationDomain {
+        get {
+            // Use this to return your custom domain name if needed for use in the ValidateRedirect method.
+            return "";
         }
     }
 
@@ -22,13 +38,13 @@ public static partial class Helpers
     {
         return true;
     }
-    // {{ModuleItemStart:Tags}}
 
-    public static List<DataObjects.Tag> AvailableTagListApp(DataObjects.TagModule? Module, List<Guid> ExcludeTags)
+    // {{ModuleItemStart:Tags}}
+    public static List<DataObjects.Tag> AvailableTagListApp(string? Module, List<Guid> ExcludeTags)
     {
         var output = new List<DataObjects.Tag>();
 
-        if (Module != null) {
+        if (!String.IsNullOrWhiteSpace(Module)) {
             switch (Module) {
                 //case DataObjects.TagModule.AppTagType:
                 //    output = Model.Tags.Where(x => !ExcludeTags.Contains(x.TagId) && x.UseInAppTagType == true)
@@ -44,6 +60,31 @@ public static partial class Helpers
         return output;
     }
     // {{ModuleItemEnd:Tags}}
+
+    /// <summary>
+    /// Called from the MainLayout DialogClose method
+    /// </summary>
+    public static void DialogClosedApp()
+    {
+
+    }
+
+    /// <summary>
+    /// Called from the Helpers.ForceModelUpdates method to force any app-specific model updates.
+    /// </summary>
+    private static void ForceModelUpdatesApp()
+    {
+
+    }
+
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
+
+        // Add any app-specific deleted record types here.
+
+        return output;
+    }
 
     /// <summary>
     /// Gets the deleted records for a specific app type.
@@ -88,89 +129,48 @@ public static partial class Helpers
         return output;
     }
 
-    private static List<string> GetDeletedRecordTypesApp()
+    /// <summary>
+    /// Method is called from the MainLayout page in the LocationChanged method.
+    /// </summary>
+    public static void LocationChangedApp()
     {
-        var output = new List<string>();
 
-        // Add any app-specific deleted record types here.
-
-        return output;
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
+    /// <summary>
+    /// Method is called from the MainLayout page to do any app-specific initialization.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task MainLayoutOnInitializedAsyncApp()
+    {
+        await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsApp {
         get {
+            // Add any app-specific top-level menu items here.
             var output = new List<DataObjects.MenuItem>();
 
-            // Archive section - old pages moved here
-            if (Model.User.Admin) {
-                // Entity Wizard (legacy - for custom entity building)
-                output.Add(new DataObjects.MenuItem {
-                    Title = "Entity Wizard (Archive)",
-                    Icon = "Wizard",
-                    PageNames = new List<string> { "appbuilder/entitywizard" },
-                    SortOrder = 800,
-                    url = BuildUrl("AppBuilder/EntityWizard"),
-                    AppAdminOnly = false,
-                });
-
-                // Template Gallery (legacy - view all template types)
-                output.Add(new DataObjects.MenuItem {
-                    Title = "Template Gallery (Archive)",
-                    Icon = "Templates",
-                    PageNames = new List<string> { "fm/templates" },
-                    SortOrder = 810,
-                    url = BuildUrl("fm/templates"),
-                    AppAdminOnly = false,
-                });
-
-                // Dashboard (legacy)
-                output.Add(new DataObjects.MenuItem {
-                    Title = "Dashboard (Archive)",
-                    Icon = "Dashboard",
-                    PageNames = new List<string> { "appbuilder/dashboard" },
-                    SortOrder = 820,
-                    url = BuildUrl("AppBuilder/Dashboard"),
-                    AppAdminOnly = false,
-                });
-
-                // Setup Wizard Builder (legacy)
-                output.Add(new DataObjects.MenuItem {
-                    Title = "Setup Wizard (Archive)",
-                    Icon = "SetupWizard",
-                    PageNames = new List<string> { "appbuilder/setupwizardbuilder" },
-                    SortOrder = 830,
-                    url = BuildUrl("AppBuilder/SetupWizardBuilder"),
-                    AppAdminOnly = false,
-                });
-            }
+            // Sample
+            //if (Model.User.Admin) {
+            //    output.Add(new DataObjects.MenuItem {
+            //        Title = "My Custom Menu Item",
+            //        Icon = "Home",
+            //        PageNames = new List<string> { "myitems", "editmyitem" },
+            //        SortOrder = 1000,
+            //        url = Helpers.BuildUrl("MyItems"),
+            //        AppAdminOnly = false,
+            //    });
+            //}
 
             return output;
         }
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsApp {
+    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
         get {
+            // Add any app-specific admin menu items here.
             var output = new List<DataObjects.MenuItem>();
-
-            // New Template Selection - main entry point
-            output.Add(new DataObjects.MenuItem {
-                Title = "New Project",
-                Icon = "Templates",
-                PageNames = new List<string> { "templates", "templates/setup" },
-                SortOrder = 100,
-                url = BuildUrl("Templates"),
-                AppAdminOnly = false,
-            });
-
-            // My Projects - view saved projects
-            output.Add(new DataObjects.MenuItem {
-                Title = "My Projects",
-                Icon = "Builder",
-                PageNames = new List<string> { "appbuilder", "appbuilder/new", "appbuilder/edit" },
-                SortOrder = 200,
-                url = BuildUrl("AppBuilder"),
-                AppAdminOnly = false,
-            });
 
             return output;
         }
@@ -215,5 +215,4 @@ public static partial class Helpers
     {
         // Model.DeletedRecordCounts.MyValue = deletedRecords.MyValue.Count();
     }
-
 }

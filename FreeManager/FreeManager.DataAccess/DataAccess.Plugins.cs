@@ -1,20 +1,55 @@
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using MySqlX.XDevAPI.Common;
-using Org.BouncyCastle.Utilities;
 using Plugins;
 
 namespace FreeManager;
 
 public partial interface IDataAccess
 {
+    Task DeleteOldBlazorCachedPluginBinaries();
     PluginExecuteResult ExecutePlugin(PluginExecuteRequest request, DataObjects.User? CurrentUser = null);
+    Task<byte[]> GetBlazorCachedPluginBinary(string Hash);
     List<Plugins.Plugin> GetPlugins();
     IPlugins? PluginsInterface { get; }
+    Task SaveBlazorCachedPluginBinary(string Hash, byte[] BinaryData);
 }
 
 public partial class DataAccess
 {
+    public async Task DeleteOldBlazorCachedPluginBinaries()
+    {
+        try {
+            var plugins = GetPlugins();
+            if (plugins.Any(x => x.Type.ToLower() == "blazor")) {
+                List<string> validHashes = new List<string>();
+
+                foreach (var plugin in plugins.Where(x => x.Type.ToLower() == "blazor")) {
+                    var hash = MD5.ComputeHashString(System.Text.Encoding.UTF8.GetBytes(plugin.Code));
+                    if (!String.IsNullOrWhiteSpace(hash)) {
+                        validHashes.Add("CachedBlazorBinary_" + hash);
+                    }
+                }
+
+                // Now, remove any cached binaries that are not in the validHashes list.
+                var recs = await data.Settings.Where(x => x.SettingName.StartsWith("CachedBlazorBinary_")).ToListAsync();
+                if (recs != null && recs.Any()) {
+                    bool removedRecords = false;
+
+                    foreach (var rec in recs) {
+                        if (!validHashes.Contains(rec.SettingName)) {
+                            data.Settings.Remove(rec);
+                            removedRecords = true;
+                        }
+                    }
+
+                    if (removedRecords) {
+                        await data.SaveChangesAsync();
+                    }
+                }
+            }
+
+        } catch { }
+    }
+
     public PluginExecuteResult ExecutePlugin(PluginExecuteRequest request, DataObjects.User? CurrentUser = null)
     {
         var output = new PluginExecuteResult { 
@@ -36,23 +71,29 @@ public partial class DataAccess
             bool appendArgumentObjects = true;
             object[] objectArguments = new object[] { this, request.Plugin, CurrentUser != null ? CurrentUser : new DataObjects.User() };
 
-            // Certain types don't include the CurrentUser object.
-            switch (request.Plugin.Type.ToLower()) {
-                case "auth":
-                    objectArguments = new object[] { this, request.Plugin };
-                    break;
+            // First, see if this is an app-specific plugin type.
+            var appObjectArguments = ExecutePluginApp(request, CurrentUser);
+            if (appObjectArguments != null) {
+                objectArguments = appObjectArguments;
+            } else {
+                // Certain types don't include the CurrentUser object.
+                switch (request.Plugin.Type.ToLower()) {
+                    case "auth":
+                        objectArguments = new object[] { this, request.Plugin };
+                        break;
 
-                case "backgroundprocess":
-                    long iteration = 0;
-                    try {
-                        if (request.Objects != null && request.Objects.Count() > 0) {
-                            iteration = (long)request.Objects[0];
-                        }
-                    } catch { }
+                    case "backgroundprocess":
+                        long iteration = 0;
+                        try {
+                            if (request.Objects != null && request.Objects.Count() > 0) {
+                                iteration = (long)request.Objects[0];
+                            }
+                        } catch { }
 
-                    objectArguments = new object[] { this, request.Plugin, iteration };
-                    appendArgumentObjects = false;
-                    break;
+                        objectArguments = new object[] { this, request.Plugin, iteration };
+                        appendArgumentObjects = false;
+                        break;
+                }
             }
 
             if (request.Objects != null && appendArgumentObjects) {
@@ -111,6 +152,21 @@ public partial class DataAccess
         return output;
     }
 
+    public async Task<byte[]> GetBlazorCachedPluginBinary(string Hash)
+    {
+        byte[] output = Array.Empty<byte>();
+
+        var rec = await data.Settings.FirstOrDefaultAsync(x => x.SettingName == "CachedBlazorBinary_" + Hash);
+        if (rec != null) {
+            var code = DeserializeObject<byte[]>(rec.SettingText);
+            if (code != null && code.Length > 0) {
+                output = code;
+            }
+        }
+
+        return output;
+    }
+
     public List<Plugins.Plugin> GetPlugins()
     {
         var output = new List<Plugins.Plugin>();
@@ -154,7 +210,15 @@ public partial class DataAccess
             var duplicate = DuplicateObject<List<Plugins.Plugin>>(allPlugins);
             if (duplicate != null) {
                 foreach (var item in duplicate) {
-                    item.Code = String.Empty;
+                    switch (item.Type.ToLower()) {
+                        case "blazor":
+                            // These types do not get their code removed.
+                            break;
+
+                        default:
+                            item.Code = String.Empty;
+                            break;
+                    }
                 }
                 output = duplicate;
             }
@@ -180,7 +244,31 @@ public partial class DataAccess
         }
     }
 
-    private void SavePluginsToCache() {
+    public async Task SaveBlazorCachedPluginBinary(string Hash, byte[] BinaryData)
+    {
+        try {
+            var now = DateTime.UtcNow;
+            var settingName = "CachedBlazorBinary_" + Hash;
+
+            var rec = await data.Settings.FirstOrDefaultAsync(x => x.SettingName == settingName);
+            if (rec == null) {
+                rec = new Setting {
+                    SettingName = settingName,
+                    SettingType = "Object",
+                };
+
+                data.Settings.Add(rec);
+            }
+
+            rec.SettingText = SerializeObject(BinaryData);
+            rec.LastModified = now;
+
+            await data.SaveChangesAsync();
+        } catch { }
+    }
+
+    private void SavePluginsToCache()
+    {
         if (PluginsInterface != null) {
             // First, mark all records as StillExists = false;
 
@@ -197,40 +285,48 @@ public partial class DataAccess
             // Now, add or update the records that still exists.
             if (PluginsInterface.AllPluginsForCache.Any()) {
                 foreach (var plugin in PluginsInterface.AllPluginsForCache) {
-                    bool newRecord = false;
+                    switch (plugin.Type.ToLower()) {
+                        case "blazor":
+                            // These types do not get cached to the database.
+                            break;
 
-                    var rec = data.PluginCaches.FirstOrDefault(x => x.Id == plugin.Id && x.Version == plugin.Version);
-                    if (rec == null) {
-                        rec = new PluginCache {
-                            RecordId = Guid.NewGuid(),
-                            Id = plugin.Id,
-                            Version = plugin.Version,
-                        };
-                        newRecord = true;
-                    }
+                        default:
+                            bool newRecord = false;
 
-                    var code = plugin.Code;
+                            var rec = data.PluginCaches.FirstOrDefault(x => x.Id == plugin.Id && x.Version == plugin.Version);
+                            if (rec == null) {
+                                rec = new PluginCache {
+                                    RecordId = Guid.NewGuid(),
+                                    Id = plugin.Id,
+                                    Version = plugin.Version,
+                                };
+                                newRecord = true;
+                            }
 
-                    // Always store the plugin code in the encrypted format.
-                    if (!String.IsNullOrWhiteSpace(code)) {
-                        if (!code.Contains(",0x")) {
-                            
-                        }
-                    }
+                            var code = plugin.Code;
 
-                    rec.Author = plugin.Author;
-                    rec.Name = plugin.Name;
-                    rec.Type = plugin.Type;
-                    rec.Version = plugin.Version;
-                    rec.Properties = SerializeObject(plugin.Properties);
-                    rec.Namespace = plugin.Namespace;
-                    rec.ClassName = plugin.ClassName;
-                    rec.Code = plugin.Code;
-                    rec.AdditionalAssemblies = SerializeObject(plugin.AdditionalAssemblies);
-                    rec.StillExists = true;
+                            // Always store the plugin code in the encrypted format.
+                            if (!String.IsNullOrWhiteSpace(code)) {
+                                if (!code.Contains(",0x")) {
 
-                    if (newRecord) {
-                        data.PluginCaches.Add(rec);
+                                }
+                            }
+
+                            rec.Author = plugin.Author;
+                            rec.Name = plugin.Name;
+                            rec.Type = plugin.Type;
+                            rec.Version = plugin.Version;
+                            rec.Properties = SerializeObject(plugin.Properties);
+                            rec.Namespace = plugin.Namespace;
+                            rec.ClassName = plugin.ClassName;
+                            rec.Code = plugin.Code;
+                            rec.AdditionalAssemblies = SerializeObject(plugin.AdditionalAssemblies);
+                            rec.StillExists = true;
+
+                            if (newRecord) {
+                                data.PluginCaches.Add(rec);
+                            }
+                            break;
                     }
                 }
 

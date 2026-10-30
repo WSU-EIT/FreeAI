@@ -4,19 +4,6 @@ public partial class BlazorDataModel
 {
     private List<string> _MyValues = new List<string>();
 
-    /// <summary>
-    /// Raised when a GLBA SignalR update arrives (new access events, source-system
-    /// changes). Pages subscribe to refresh their data in real time and must
-    /// unsubscribe in Dispose.
-    /// </summary>
-    public event Action<DataObjects.SignalRUpdate>? OnGlbaUpdate;
-
-    /// <summary>Notify subscribed pages that GLBA data changed.</summary>
-    public void NotifyGlbaUpdate(DataObjects.SignalRUpdate update)
-    {
-        OnGlbaUpdate?.Invoke(update);
-    }
-
     private bool HaveDeletedRecordsApp {
         get {
             bool output = false;
@@ -49,6 +36,17 @@ public partial class BlazorDataModel
                 _ModelUpdated = DateTime.UtcNow;
                 NotifyDataChanged();
             }
+        }
+    }
+
+    /// <summary>
+    /// Set this option to true if you wish to make sure all Blazor plugins are precompiled during page load.
+    /// If this is set to false then any components that have not yet been cached will take some time to load
+    /// in the interface while they are being compiled and cached.
+    /// </summary>
+    public bool PrecompileBlazorPlugins {
+        get {
+            return false;
         }
     }
 }

@@ -1,5 +1,3 @@
-﻿using System.Net.NetworkInformation;
-
 namespace FreeGLBA.Client;
 
 public static partial class Helpers
@@ -14,17 +12,39 @@ public static partial class Helpers
         }
     }
 
+    public static bool AllowAnonymousAccessApp(string pagename)
+    {
+        bool output = false;
+
+        // Do any checks for custom page names in your app that should allow anonymous access.
+        switch (StringLower(pagename)) {
+            case "this":
+            case "orthis":
+                output = true;
+                break;
+        }
+
+        return output;
+    }
+
+    public static string ApplicationDomain {
+        get {
+            // Use this to return your custom domain name if needed for use in the ValidateRedirect method.
+            return "";
+        }
+    }
+
     public static bool AppMethod()
     {
         return true;
     }
-    // {{ModuleItemStart:Tags}}
 
-    public static List<DataObjects.Tag> AvailableTagListApp(DataObjects.TagModule? Module, List<Guid> ExcludeTags)
+    // {{ModuleItemStart:Tags}}
+    public static List<DataObjects.Tag> AvailableTagListApp(string? Module, List<Guid> ExcludeTags)
     {
         var output = new List<DataObjects.Tag>();
 
-        if (Module != null) {
+        if (!String.IsNullOrWhiteSpace(Module)) {
             switch (Module) {
                 //case DataObjects.TagModule.AppTagType:
                 //    output = Model.Tags.Where(x => !ExcludeTags.Contains(x.TagId) && x.UseInAppTagType == true)
@@ -40,6 +60,31 @@ public static partial class Helpers
         return output;
     }
     // {{ModuleItemEnd:Tags}}
+
+    /// <summary>
+    /// Called from the MainLayout DialogClose method
+    /// </summary>
+    public static void DialogClosedApp()
+    {
+
+    }
+
+    /// <summary>
+    /// Called from the Helpers.ForceModelUpdates method to force any app-specific model updates.
+    /// </summary>
+    private static void ForceModelUpdatesApp()
+    {
+
+    }
+
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
+
+        // Add any app-specific deleted record types here.
+
+        return output;
+    }
 
     /// <summary>
     /// Gets the deleted records for a specific app type.
@@ -84,22 +129,21 @@ public static partial class Helpers
         return output;
     }
 
-    private static List<string> GetDeletedRecordTypesApp()
+    /// <summary>
+    /// Method is called from the MainLayout page in the LocationChanged method.
+    /// </summary>
+    public static void LocationChangedApp()
     {
-        var output = new List<string>();
 
-        // Add any app-specific deleted record types here.
-
-        return output;
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
-        get {
-            // Add any app-specific admin menu items here.
-            var output = new List<DataObjects.MenuItem>();
-
-            return output;
-        }
+    /// <summary>
+    /// Method is called from the MainLayout page to do any app-specific initialization.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task MainLayoutOnInitializedAsyncApp()
+    {
+        await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
     }
 
     public static List<DataObjects.MenuItem> MenuItemsApp {
@@ -107,8 +151,26 @@ public static partial class Helpers
             // Add any app-specific top-level menu items here.
             var output = new List<DataObjects.MenuItem>();
 
-            // GLBA Dashboard - visible to all logged in users
-            output.AddRange(Helpers.FreeGLBAMenuItemsApp.ToList());
+            // Sample
+            //if (Model.User.Admin) {
+            //    output.Add(new DataObjects.MenuItem {
+            //        Title = "My Custom Menu Item",
+            //        Icon = "Home",
+            //        PageNames = new List<string> { "myitems", "editmyitem" },
+            //        SortOrder = 1000,
+            //        url = Helpers.BuildUrl("MyItems"),
+            //        AppAdminOnly = false,
+            //    });
+            //}
+
+            return output;
+        }
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
+        get {
+            // Add any app-specific admin menu items here.
+            var output = new List<DataObjects.MenuItem>();
 
             return output;
         }
@@ -124,14 +186,6 @@ public static partial class Helpers
             var userId = update.UserId;
 
             switch (update.UpdateType) {
-                case DataObjects.SignalRUpdateType.GlbaAccessEvent:
-                case DataObjects.SignalRUpdateType.GlbaSourceSystem:
-                    // New access events or source-system changes. Pages subscribed to
-                    // Model.OnGlbaUpdate (dashboard, events, subjects, accessors,
-                    // source systems) reload their data.
-                    Model.NotifyGlbaUpdate(update);
-                    break;
-
                 default:
                     // Since this is called only from the default method in the main handler here,
                     // we can assume that the update type is not recognized by this app.
@@ -161,5 +215,4 @@ public static partial class Helpers
     {
         // Model.DeletedRecordCounts.MyValue = deletedRecords.MyValue.Count();
     }
-
 }

@@ -1,12 +1,9 @@
-using BlazorBootstrap;
 using MudBlazor;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Windows.Markup;
 
 namespace FreeManager.Client;
 
-#region Enumerations and Data Objects used by the FreeManager
+#region Enumerations and Data Objects used by the application
 public enum MessageType
 {
     Primary,
@@ -21,19 +18,19 @@ public enum MessageType
 
 public class Message
 {
+    public string Id { get; set; } = String.Empty;
     public bool AutoHide { get; set; }
-    public string Id { get; set; } = "";
+    public DateTime Shown { get; set; } = DateTime.UtcNow;
+    public string Text { get; set; } = String.Empty;
+    public string TimeLabel { get; set; } = String.Empty;
     public MessageType MessageType { get; set; } = MessageType.Dark;
     public bool ReplaceLineBreaks { get; set; }
-    public DateTime Shown { get; set; } = DateTime.UtcNow;
-    public string Text { get; set; } = "";
-    public string TimeLabel { get; set; } = "";
 }
 
 public class NewMessage
 {
+    public string Text { get; set; } = String.Empty;
     public MessageType MessageType { get; set; } = MessageType.Dark;
-    public string Text { get; set; } = "";
 }
 
 public enum TextCase
@@ -56,16 +53,19 @@ public partial class BlazorDataModel
     private List<DataObjects.Tenant> _AllTenants = new List<DataObjects.Tenant>();
     private bool _AppOnline = true;
     private DataObjects.ApplicationSettingsUpdate _AppSettings = new DataObjects.ApplicationSettingsUpdate();
-    private string _ApplicationUrl = "";
+    private string _ApplicationUrl = String.Empty;
     private DataObjects.AuthenticationProviders _AuthenticationProviders = new DataObjects.AuthenticationProviders();
-    private string _CultureCode = "en-US";
+    private DataObjects.BlazorDataModelLoader _BlazorDataModelLoader = new DataObjects.BlazorDataModelLoader();
+    private Dictionary<string, object> _BlazorPluginObjects = new Dictionary<string, object>();
+    //private string _CultureCode = "en-US";
     private List<DataObjects.OptionPair> _CultureCodes = new List<DataObjects.OptionPair>();
     private DataObjects.Language _DefaultLanguage = new DataObjects.Language();
     private DataObjects.DeletedRecordCounts _DeletedRecordCounts = new DataObjects.DeletedRecordCounts();
     private List<DataObjects.DepartmentGroup> _DepartmentGroups = new List<DataObjects.DepartmentGroup>();
     private List<DataObjects.Department> _Departments = new List<DataObjects.Department>();
+    private bool _DialogOpen = false;
     private List<string> _DotNetHelperMessages = new List<string>();
-    private string _Fingerprint = "";
+    private string _Fingerprint = String.Empty;
     private List<string>? _GloballyDisabledModules = null;
     private List<string>? _GloballyEnabledModules = null;
     private List<DataObjects.FileStorage> _ImageFiles = new List<DataObjects.FileStorage>();
@@ -75,18 +75,15 @@ public partial class BlazorDataModel
     private bool _LoggedIn = false;
     private List<Message> _Messages = new List<Message>();
     private DateTime _ModelUpdated = DateTime.UtcNow;
-    private string? _NavigationId = "";
+    private string? _NavigationId = String.Empty;
     private List<Plugins.Plugin> _Plugins = new List<Plugins.Plugin>();
-    private string _QuickAction = "";
+    private string _QuickAction = String.Empty;
     private Delegate? _QuickActionOnComplete;
     private DataObjects.User _QuickAddUser = new DataObjects.User();
     private DateOnly _Released = DateOnly.FromDateTime(DateTime.MinValue);
     private bool _ShowTenantListingWhenMissingTenantCode = false;
     private List<string> _StartupErrors = new List<string>();
     private bool _StartupValidated = false;
-    private List<string> _Subscribers_OnChange = new List<string>();
-    private List<string> _Subscribers_OnDotNetHelperHandler = new List<string>();
-    private List<string> _Subscribers_OnSignalRUpdate = new List<string>();
     // {{ModuleItemStart:Tags}}
     private List<DataObjects.Tag> _Tags = new List<DataObjects.Tag>();
     // {{ModuleItemEnd:Tags}}
@@ -95,7 +92,7 @@ public partial class BlazorDataModel
     private Guid _TenantId = Guid.Empty;
     private List<DataObjects.TenantList> _TenantList = new List<DataObjects.TenantList>();
     private List<DataObjects.Tenant> _Tenants = new List<DataObjects.Tenant>();
-    private string _Theme = "";
+    //private string _Theme = String.Empty;
     private List<DataObjects.udfLabel> _udfLabels = new List<DataObjects.udfLabel>();
     private bool _UseBackgroundService = false;
     private bool _UseCustomAuthenticationProviderFromAdminAccount = false;
@@ -103,8 +100,8 @@ public partial class BlazorDataModel
     private List<DataObjects.UserGroup> _UserGroups = new List<DataObjects.UserGroup>();
     private List<DataObjects.User> _Users = new List<DataObjects.User>();
     private bool _UseTenantCodeInUrl = false;
-    private string _Version = "";
-    private string _View = "";
+    private string _Version = String.Empty;
+    private string _View = String.Empty;
     private bool _ViewIsEditPage = false;
 
     /// <summary>
@@ -158,7 +155,7 @@ public partial class BlazorDataModel
                     MessageType = message.MessageType,
                     Shown = DateTime.UtcNow,
                     Text = message.Text,
-                    TimeLabel = "",
+                    TimeLabel = String.Empty,
                     ReplaceLineBreaks = ReplaceLineBreaks,
                 }
             };
@@ -169,7 +166,7 @@ public partial class BlazorDataModel
                 MessageType = message.MessageType,
                 Shown = DateTime.UtcNow,
                 Text = message.Text,
-                TimeLabel = "",
+                TimeLabel = String.Empty,
                 ReplaceLineBreaks = ReplaceLineBreaks,
             });
         }
@@ -228,7 +225,6 @@ public partial class BlazorDataModel
     public bool AllowUsersToManageEmployeeId {
         get { return FeatureEnabledEmployeeId && AllowUsersToManageAFeature("employeeid"); }
     }
-
 
     /// <summary>
     /// Indicates if users can edit their name.
@@ -379,6 +375,38 @@ public partial class BlazorDataModel
     }
 
     /// <summary>
+    /// Gets or sets the BlazorDataModelLoader.
+    /// </summary>
+    public DataObjects.BlazorDataModelLoader BlazorDataModelLoader {
+        get { return _BlazorDataModelLoader; }
+        set {
+            if (!ObjectsAreEqual(_BlazorDataModelLoader, value)) {
+                _BlazorDataModelLoader = value;
+                _ModelUpdated = DateTime.UtcNow;
+                NotifyDataChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Holds objects that might be used by Blazor plugins.
+    /// Plugins can't communicate with each other. So, a button type
+    /// plugin might open a dialog and use the data passed to the plugin
+    /// to update some object in the model here. Then, a component plugin
+    /// might check to see if that object has updated and refresh its data.
+    /// </summary>
+    public Dictionary<string, object> BlazorPluginObjects {
+        get { return _BlazorPluginObjects; }
+        set {
+            if (!ObjectsAreEqual(_BlazorPluginObjects, value)) {
+                _BlazorPluginObjects = value;
+                _ModelUpdated = DateTime.UtcNow;
+                NotifyDataChanged();
+            }
+        }
+    }
+
+    /// <summary>
     /// Clears any Toast messages in the user interface.
     /// </summary>
     public void ClearMessages()
@@ -391,16 +419,16 @@ public partial class BlazorDataModel
     /// <summary>
     /// The current culture code (defaults to 'en-US').
     /// </summary>
-    public string CultureCode {
-        get { return _CultureCode; }
-        set {
-            if (_CultureCode != value) {
-                _CultureCode = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
-        }
-    }
+    //public string CultureCode {
+    //    get { return _CultureCode; }
+    //    set {
+    //        if (_CultureCode != value) {
+    //            _CultureCode = value;
+    //            _ModelUpdated = DateTime.UtcNow;
+    //            NotifyDataChanged();
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// A collection of all available culture codes.
@@ -442,6 +470,20 @@ public partial class BlazorDataModel
             }
 
             return output;
+        }
+    }
+
+    /// <summary>
+    /// Indicates if a dialog is open.
+    /// </summary>
+    public bool DialogOpen {
+        get { return _DialogOpen; }
+        set {
+            if (_DialogOpen != value) {
+                _DialogOpen = value;
+                _ModelUpdated = DateTime.UtcNow;
+                NotifyDataChanged();
+            }
         }
     }
 
@@ -509,8 +551,6 @@ public partial class BlazorDataModel
         get { return FeatureEnabled("departments"); }
     }
 
-
-
     /// <summary>
     /// Indicates if the EmployeeId feature is enabled.
     /// </summary>
@@ -524,9 +564,6 @@ public partial class BlazorDataModel
     public bool FeatureEnabledFiles {
         get { return FeatureEnabled("files"); }
     }
-
-
-
 
     // {{ModuleItemStart:Tags}}
     /// <summary>
@@ -586,7 +623,7 @@ public partial class BlazorDataModel
     /// <returns>The name of the group.</returns>
     public string DepartmentGroupName(Guid? DepartmentGroupId)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_DepartmentGroups.Any() && DepartmentGroupId.HasValue) {
             var departmentGroup = _DepartmentGroups.FirstOrDefault(x => x.DepartmentGroupId == DepartmentGroupId);
@@ -605,7 +642,7 @@ public partial class BlazorDataModel
     /// <returns>The name of the department.</returns>
     public string DepartmentName(Guid? DepartmentId)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (_Departments.Any() && DepartmentId.HasValue) {
             var department = _Departments.FirstOrDefault(x => x.DepartmentId == DepartmentId);
@@ -644,7 +681,6 @@ public partial class BlazorDataModel
             }
         }
     }
-
 
     /// <summary>
     /// Shows a Toast with an error message.
@@ -687,7 +723,7 @@ public partial class BlazorDataModel
     public void ErrorMessages(List<string> messages, bool AutoHide = false, bool RemovePreviousMessages = true, bool ReplaceLineBreaks = false, string introMessage = "{{default}}")
     {
         if (messages.Any()) {
-            string message = "";
+            string message = String.Empty;
 
             if (!String.IsNullOrWhiteSpace(introMessage)) {
                 if (introMessage == "{{default}}") {
@@ -914,7 +950,6 @@ public partial class BlazorDataModel
             return "<div><div class=\"me-2 spinner-border loading-spinner text-primary\" role=\"status\"></div>" + Helpers.Text("LoadingWait") + "</div>";
         }
     }
-
 
     /// <summary>
     /// Indicates if a user is logged in.
@@ -1199,6 +1234,20 @@ public partial class BlazorDataModel
         }
     }
 
+    private List<Plugins.Plugin> PluginsByType(string? type)
+    {
+        var output = new List<Plugins.Plugin>();
+
+        if (!String.IsNullOrWhiteSpace(type)) {
+            var plugins = _Plugins.Where(x => x.Type.ToLower() == type.ToLower()).ToList();
+            if (plugins != null && plugins.Count > 0) {
+                output = plugins.OrderBy(x => x.Name).ThenBy(x => x.Author).ToList();
+            }
+        }
+
+        return output;
+    }
+
     /// <summary>
     /// Used to indicate which quick action is being used in the offcanvas area.
     /// </summary>
@@ -1226,7 +1275,6 @@ public partial class BlazorDataModel
             }
         }
     }
-
 
     /// <summary>
     /// The user object used when adding a user via the quick action menu.
@@ -1271,7 +1319,7 @@ public partial class BlazorDataModel
             output = input;
 
             if (String.IsNullOrWhiteSpace(withText)) {
-                withText = "";
+                withText = String.Empty;
             }
 
             output = Regex.Replace(
@@ -1326,7 +1374,6 @@ public partial class BlazorDataModel
 
         return output;
     }
-
 
     /// <summary>
     /// Gets or sets the option to show the tenant listing when missing the tenant code.
@@ -1391,48 +1438,6 @@ public partial class BlazorDataModel
             }
 
             return output;
-        }
-    }
-
-    /// <summary>
-    /// The collection of subscribers to the OnChange event.
-    /// </summary>
-    public List<string> Subscribers_OnChange {
-        get { return _Subscribers_OnChange; }
-        set {
-            if (!ObjectsAreEqual(_Subscribers_OnChange, value)) {
-                _Subscribers_OnChange = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// The collection of subscribers to the OnDotNetHelperHandler event.
-    /// </summary>
-    public List<string> Subscribers_OnDotNetHelperHandler {
-        get { return _Subscribers_OnDotNetHelperHandler; }
-        set {
-            if (!ObjectsAreEqual(_Subscribers_OnDotNetHelperHandler, value)) {
-                _Subscribers_OnDotNetHelperHandler = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
-        }
-    }
-
-    /// <summary>
-    /// The collection of subscribers to the OnSignalRUpdate event.
-    /// </summary>
-    public List<string> Subscribers_OnSignalRUpdate {
-        get { return _Subscribers_OnSignalRUpdate; }
-        set {
-            if (!ObjectsAreEqual(_Subscribers_OnSignalRUpdate, value)) {
-                _Subscribers_OnSignalRUpdate = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
         }
     }
 
@@ -1525,16 +1530,16 @@ public partial class BlazorDataModel
     /// <summary>
     /// The current interface theme ("dark", "light", or an empty string for auto).
     /// </summary>
-    public string Theme {
-        get { return _Theme; }
-        set {
-            if (_Theme != value) {
-                _Theme = value;
-                _ModelUpdated = DateTime.UtcNow;
-                NotifyDataChanged();
-            }
-        }
-    }
+    //public string Theme {
+    //    get { return _Theme; }
+    //    set {
+    //        if (_Theme != value) {
+    //            _Theme = value;
+    //            _ModelUpdated = DateTime.UtcNow;
+    //            NotifyDataChanged();
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// The method used to notify pages of data model updates.
@@ -1600,8 +1605,6 @@ public partial class BlazorDataModel
             _User.UserPreferences.LastView = _View;
         }
     }
-
-
 
     /// <summary>
     /// The options for a given User-Defined Field.

@@ -1,8 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FreeLLM.Server.Hubs
 {
-    public partial class freellmHub : Hub
+    public partial interface IsrHub
+    {
+        Task SignalRUpdate(DataObjects.SignalRUpdate update);
+    }
+
+    [Authorize]
+    public partial class freellmHub : Hub<IsrHub>
     {
         private List<string> tenants = new List<string>();
 
@@ -22,6 +29,16 @@ namespace FreeLLM.Server.Hubs
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, TenantId);
+        }
+
+        public async Task SignalRUpdate(DataObjects.SignalRUpdate update)
+        {
+            if (update.TenantId.HasValue) {
+                await Clients.Group(update.TenantId.Value.ToString()).SignalRUpdate(update);
+            } else {
+                // This is a non-tenant-specific update.
+                await Clients.All.SignalRUpdate(update);
+            }
         }
     }
 }

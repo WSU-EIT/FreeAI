@@ -6,6 +6,7 @@
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 @inject BlazorDataModel Model
+
 @if (Model.View == _pageName) {
     <h1 class="page-title">
         <Language Tag="InvalidUser" IncludeIcon="true" />
@@ -15,18 +16,15 @@
         <Language Tag="BackToLogin" IncludeIcon="true" />
     </button>
 }
+
 @code {
-    protected string _pageName = "invaliduser";
     [Parameter] public string? TenantCode { get; set; }
 
-    protected void Back()
-    {
-        Helpers.NavigateToLogin();
-    }
+    protected string _pageName = "invaliduser";
 
-    public void Dispose() {
+    public void Dispose()
+    {
         Model.OnChange -= OnDataModelUpdated;
-        Model.Subscribers_OnChange.Remove(_pageName);
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -36,20 +34,21 @@
         }
     }
 
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.View = _pageName;
+    }
+
+    protected void Back()
+    {
+        Helpers.NavigateToLogin();
+    }
+
     protected void OnDataModelUpdated()
     {
         if (Model.View == _pageName) {
             StateHasChanged();
         }
-    }
-
-    protected override void OnInitialized()
-    {
-        if (!Model.Subscribers_OnChange.Contains(_pageName)){
-            Model.Subscribers_OnChange.Add(_pageName);
-            Model.OnChange += OnDataModelUpdated;
-        }
-
-        Model.View = _pageName;
     }
 }

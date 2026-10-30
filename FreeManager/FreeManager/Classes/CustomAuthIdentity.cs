@@ -1,22 +1,21 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using System.Security.Claims;
 
 namespace FreeManager;
 
 public interface ICustomAuthentication
 {
     bool Enabled { get; }
-    public string? OpenIdButtonClass { get; }
-    public string? OpenIdButtonIcon { get; }
-    public string? OpenIdButtonText { get; }
     bool UseApple { get; }
     bool UseFacebook { get; }
-
-    bool UseGoogle { get; }
     bool UseMicrosoftAccount { get; }
     bool UseOpenId { get; }
+    public string? OpenIdButtonText { get; }
+    public string? OpenIdButtonClass { get; }
+    public string? OpenIdButtonIcon { get; }
+    public string? OpenIdEmployeeIdClaim { get; }
+
+    bool UseGoogle { get; }
 }
 
 public class CustomAuthentication : ICustomAuthentication
@@ -34,24 +33,6 @@ public class CustomAuthentication : ICustomAuthentication
         }
     }
 
-    public string? OpenIdButtonClass {
-        get {
-            return _config.OpenIdButtonClass;
-        }
-    }
-
-    public string? OpenIdButtonIcon {
-        get {
-            return _config.OpenIdButtonIcon;
-        }
-    }
-
-    public string? OpenIdButtonText {
-        get {
-            return _config.OpenIdButtonText;
-        }
-    }
-
     public bool UseApple {
         get {
             return _config.UseApple;
@@ -61,12 +42,6 @@ public class CustomAuthentication : ICustomAuthentication
     public bool UseFacebook {
         get {
             return _config.UseFacebook;
-        }
-    }
-
-    public bool UseGoogle {
-        get {
-            return _config.UseGoogle;
         }
     }
 
@@ -81,21 +56,51 @@ public class CustomAuthentication : ICustomAuthentication
             return _config.UseOpenId;
         }
     }
+
+    public string? OpenIdButtonText {
+        get {
+            return _config.OpenIdButtonText;
+        }
+    }
+
+    public string? OpenIdButtonClass {
+        get {
+            return _config.OpenIdButtonClass;
+        }
+    }
+
+    public string? OpenIdButtonIcon {
+        get {
+            return _config.OpenIdButtonIcon;
+        }
+    }
+
+    public string? OpenIdEmployeeIdClaim {
+        get {
+            return _config.OpenIdEmployeeIdClaim;
+        }
+    }
+
+    public bool UseGoogle {
+        get {
+            return _config.UseGoogle;
+        }
+    }
 }
 
 public class CustomAuthenticationConfiguration
 {
     public bool Enabled { get; set; }
-    public string? OpenIdButtonClass { get; set; }
-    public string? OpenIdButtonIcon { get; set; }
-    public string? OpenIdButtonText { get; set; }
     public bool UseApple { get; set; }
     public bool UseFacebook { get; set; }
-    public bool UseGoogle { get; set; }
     public bool UseMicrosoftAccount { get; set; }
     public bool UseOpenId { get; set; }
+    public string? OpenIdButtonText { get; set; }
+    public string? OpenIdButtonClass { get; set; }
+    public string? OpenIdButtonIcon { get; set; }
+    public bool UseGoogle { get; set; }
+    public string? OpenIdEmployeeIdClaim { get; set; }
 }
-
 
 public static class CustomAuthenticationProviders
 {
@@ -140,6 +145,7 @@ public static class CustomAuthenticationProviders
         string openIdButtonText = String.Empty;
         string openIdButtonClass = String.Empty;
         string openIdButtonIcon = String.Empty;
+        string openIdEmployeeIdClaim = String.Empty;
 
         try { openIdClientId += applicationBuilder.Configuration["AuthenticationProviders:OpenId:ClientId"]; } catch { }
         try { openIdClientSecret += applicationBuilder.Configuration["AuthenticationProviders:OpenId:ClientSecret"]; } catch { }
@@ -147,6 +153,7 @@ public static class CustomAuthenticationProviders
         try { openIdButtonText += applicationBuilder.Configuration["AuthenticationProviders:OpenId:ButtonText"]; } catch { }
         try { openIdButtonClass += applicationBuilder.Configuration["AuthenticationProviders:OpenId:ButtonClass"]; } catch { }
         try { openIdButtonIcon += applicationBuilder.Configuration["AuthenticationProviders:OpenId:ButtonIcon"]; } catch { }
+        try { openIdEmployeeIdClaim += applicationBuilder.Configuration["AuthenticationProviders:OpenId:EmployeeIdClaim"]; } catch { }
 
         if (!String.IsNullOrEmpty(openIdClientId) && !String.IsNullOrEmpty(openIdClientSecret) && !String.IsNullOrEmpty(openIdAuthority)) {
             output.Enabled = true;
@@ -154,6 +161,7 @@ public static class CustomAuthenticationProviders
             output.OpenIdButtonText = openIdButtonText;
             output.OpenIdButtonClass = openIdButtonClass;
             output.OpenIdButtonIcon = openIdButtonIcon;
+            output.OpenIdEmployeeIdClaim = openIdEmployeeIdClaim;
         }
 
         string googleClientId = String.Empty;

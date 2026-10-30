@@ -17,7 +17,7 @@ public static partial class PasswordGenerator
     /// <returns>A randomly generated password.</returns>
     public static string Generate(int length = 32, PasswordOptions? options = null)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (length < 5) { length = 32; }
 
@@ -32,7 +32,7 @@ public static partial class PasswordGenerator
         }
 
 
-        string allCharacters = "";
+        string allCharacters = String.Empty;
         if (opts.RequireUpperCase) { allCharacters += lettersUpperCase; }
         if (opts.RequireLowerCase) { allCharacters += lettersLowerCase; }
         if (opts.RequireNumbers) { allCharacters += numbers; }
@@ -93,6 +93,11 @@ public static partial class PasswordGenerator
     public class PasswordOptions
     {
         /// <summary>
+        /// Require UpperCase Characters (defaults to true)
+        /// </summary>
+        public bool RequireUpperCase { get; set; } = true;
+
+        /// <summary>
         /// Require LowerCase Characters (defaults to true)
         /// </summary>
         public bool RequireLowerCase { get; set; } = true;
@@ -106,9 +111,5 @@ public static partial class PasswordGenerator
         /// Require Special Characters (defaults to true)
         /// </summary>
         public bool RequireSpecialCharacters { get; set; } = true;
-        /// <summary>
-        /// Require UpperCase Characters (defaults to true)
-        /// </summary>
-        public bool RequireUpperCase { get; set; } = true;
     }
 }

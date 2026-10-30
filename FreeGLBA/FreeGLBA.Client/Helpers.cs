@@ -1,5 +1,6 @@
 using BlazorBootstrap;
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 // {{ModuleItemStart:Tags}}
 using FreeGLBA.Client.Pages.Settings.Tags;
 // {{ModuleItemEnd:Tags}}
@@ -8,38 +9,28 @@ using FreeGLBA.Client.Shared;
 using Humanizer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Primitives;
 using Microsoft.JSInterop;
-using MudBlazor.Utilities;
 using Plugins;
 using Radzen;
-using Radzen.Blazor;
-using Radzen.Blazor.Markdown;
-using Radzen.Blazor.Rendering;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net.Http.Json;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using static MudBlazor.Colors;
 
 namespace FreeGLBA.Client;
 
 public static partial class Helpers
 {
+    private static string _dialogTop = "30px";
     private static Radzen.DialogService DialogService = null!;
     private static HttpClient Http = null!;
     private static bool _initialized = false;
     private static IJSRuntime jsRuntime = null!;
     private static ILocalStorageService LocalStorage = null!;
+    private static ISessionStorageService SessionStorage = null!;
     private static BlazorDataModel Model = null!;
     private static TooltipService Tooltips = null!;
     private static NavigationManager NavManager = null!;
@@ -47,6 +38,54 @@ public static partial class Helpers
     private static bool _savingUserPreferences = false;
     private static bool _switchingTenant = false;
     private static bool _validatingUrl = false;
+
+    /// <summary>
+    /// Initializes the Helpers static class library by providing the required objects to the library.
+    /// </summary>
+    /// <param name="jSRuntime">A reference to the IJSRuntime interface.</param>
+    /// <param name="model">A reference to the BlazorDataModel.</param>
+    /// <param name="httpClient">A reference to the HttpClient.</param>
+    /// <param name="localStorage">A reference to the ILocalStorageService interface.</param>
+    /// <param name="dialogService">A reference to the Radzen DialogService.</param>
+    /// <param name="tooltipService">A reference to the Radzen TooltipService.</param>
+    /// <param name="navigationManager">A reference to the NavigationManager interface.</param>
+    public static void Init
+    (
+        IJSRuntime jSRuntime,
+        BlazorDataModel model,
+        HttpClient httpClient,
+        ILocalStorageService localStorage,
+        ISessionStorageService sessionStorage,
+        Radzen.DialogService dialogService,
+        Radzen.TooltipService tooltipService,
+        NavigationManager navigationManager
+    ){
+        DialogService = dialogService;
+        Http = httpClient;
+        jsRuntime = jSRuntime;
+        LocalStorage = localStorage;
+        SessionStorage = sessionStorage;
+        Model = model;
+        Tooltips = tooltipService;
+        NavManager = navigationManager;
+
+        _initialized = true;
+    }
+
+    /// <summary>
+    /// Indicates if the current view is an admin view.
+    /// </summary>
+    public static bool AdminView {
+        get {
+            var adminMenuItems = MenuItemsAdmin.Select(x => x.PageNames).SelectMany(x => x).ToList();
+            
+            if (adminMenuItems.Contains(Model.View, StringComparer.CurrentCultureIgnoreCase)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     /// <summary>
     /// Checks if the file type of the given filename is allowed.
@@ -123,6 +162,37 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Updates any data values where the column has the class 'auto-truncate' to auto-hide content.
+    /// </summary>
+    /// <param name="record">The record object to update.</param>
+    /// <param name="columns">The collection of columns.</param>
+    public static void AutoTruncatePagedRecordsetData(object record, List<FreeBlazor.PagedRecordset.Column> columns, string className = "auto-truncate")
+    {
+        if (String.IsNullOrWhiteSpace(className)) {
+            className = "auto-truncate";
+        }
+
+        foreach (var column in columns) {
+            if (StringLower(column.Class).Contains(className)) {
+                // This can only be used for string data types, as other data types can't be updated with string values.
+                // SetObjectPropertyValue will catch the attempt to set a value that the property can't accept, but
+                // it's best to not use this feature on fields that cannot take text, like DateTime fields.
+                var dataValue = GetObjectPropertyValue<string>(record, column.DataElementName);
+
+                if (!String.IsNullOrWhiteSpace(dataValue) && !dataValue.Contains("<span")) {
+                    string el = "<div title=\"" + dataValue + "\" class=\"auto-truncate-overflow\"><span>" + dataValue + "</span></div>";
+
+                    SetObjectPropertyValue(
+                        record,
+                        column.DataElementName,
+                        el
+                    );
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// The BaseUri from the NavigationManager
     /// </summary>
     public static string BaseUri {
@@ -140,7 +210,7 @@ public static partial class Helpers
     /// <returns>The HTML of the icon.</returns>
     public static string BooleanToCheckboxIcons(bool? value, string? iconChecked = "", string? iconUnchecked = "")
     {
-        string output = "";
+        string output = String.Empty;
 
         if (value.HasValue && (bool)value == true) {
             if (!String.IsNullOrWhiteSpace(iconChecked)) {
@@ -164,7 +234,7 @@ public static partial class Helpers
             }
         }
 
-        if (output != "") {
+        if (output != String.Empty) {
             if (!output.Contains("<")) {
                 output = "<i class=\"" + output + "\"></i>";
             }
@@ -181,7 +251,7 @@ public static partial class Helpers
     /// <returns>The HTML of the icon.</returns>
     public static string BooleanToIcon(bool? value, string? icon = "")
     {
-        string output = "";
+        string output = String.Empty;
 
         if (value.HasValue && (bool)value == true) {
             if (!String.IsNullOrWhiteSpace(icon)) {
@@ -194,7 +264,7 @@ public static partial class Helpers
                 output = Icon("Checked", true);
             }
 
-            if (output != "") {
+            if (output != String.Empty) {
                 if (!output.Contains("<")) {
                     output = "<i class=\"" + output + "\"></i>";
                 }
@@ -222,7 +292,7 @@ public static partial class Helpers
     /// <returns>A user-friendly file size.</returns>
     public static string BytesToFileSizeLabel(long? bytes, List<string>? labels = null)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (labels == null || labels.Count() < 4) {
             labels = new List<string> { "b", "kb", "m", "gb" };
@@ -244,13 +314,44 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Cleans a filename to be a readable string.
+    /// </summary>
+    /// <param name="filename">Text containing a filename.</param>
+    /// <returns>The cleaned filename.</returns>
+    public static string CleanFileName(string? filename)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrWhiteSpace(filename)) {
+            output = System.IO.Path.GetFileNameWithoutExtension(filename)
+                .Trim()
+                .Replace(".", " ")
+                .Replace("-", " ")
+                .Replace("_", " ")
+                .Replace("#", " ")
+                .Replace("~", " ")
+                .Replace("$", " ")
+                .Replace("(", " ")
+                .Replace(")", " ")
+                .Replace("[", " ")
+                .Replace("]", " ")
+                .Replace("{", " ")
+                .Replace("}", " ")
+                .Humanize(LetterCasing.Title)
+                .Trim();
+        }
+
+        return output;
+    }
+
+    /// <summary>
     /// Cleans HTML
     /// </summary>
     /// <param name="html">The text that might contain HTML.</param>
     /// <returns>The cleaned HTML.</returns>
     public static string CleanHtml(string? html)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (!String.IsNullOrWhiteSpace(html)) {
             output = html;
@@ -302,7 +403,7 @@ public static partial class Helpers
                 for (int x = 0; x < validLines.Count(); x++) {
                     var line = validLines[x];
                     var lineLower = line.ToLower();
-                    string nextLine = "";
+                    string nextLine = String.Empty;
                     if (x < validLines.Count() - 1) {
                         nextLine = validLines[x + 1];
                     }
@@ -332,6 +433,11 @@ public static partial class Helpers
         return output;
     }
 
+    public static async Task ClearDotNetHelperButtonHandlers()
+    {
+        await jsRuntime.InvokeVoidAsync("ClearDotNetHelperButtonHandlers");
+    }
+
     /// <summary>
     /// Clears the value for a local storage item.
     /// </summary>
@@ -344,11 +450,22 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Clears the value for a session storage item.
+    /// </summary>
+    /// <param name="key">The key of the item.</param>
+    public static async Task ClearSessionStorageItem(string key)
+    {
+        if (SessionStorage != null) {
+            await SessionStorage.RemoveItemAsync(key);
+        }
+    }
+
+    /// <summary>
     /// The default text to use for "Cancel" in the confirmation button control.
     /// </summary>
     public static string ConfirmButtonTextCancel {
         get {
-            return Helpers.Text("Cancel");
+            return Text("Cancel");
         }
     }
 
@@ -357,7 +474,7 @@ public static partial class Helpers
     /// </summary>
     public static string ConfirmButtonTextConfirmDelete {
         get {
-            return Helpers.Text("ConfirmDelete");
+            return Text("ConfirmDelete");
         }
     }
 
@@ -366,7 +483,7 @@ public static partial class Helpers
     /// </summary>
     public static string ConfirmButtonTextDelete {
         get {
-            return Helpers.Text("Delete");
+            return Text("Delete");
         }
     }
 
@@ -375,7 +492,7 @@ public static partial class Helpers
     /// </summary>
     public static string ConfirmButtonTextDeleteAll {
         get {
-            return Helpers.Text("DeleteAll");
+            return Text("DeleteAll");
         }
     }
 
@@ -459,13 +576,13 @@ public static partial class Helpers
                     ClassName = c,
                     Code = code,
                     ContainsSensitiveData = false,
-                    Description = "",
+                    Description = String.Empty,
                     LimitToTenants = new List<Guid>(),
                     Name = "From Code",
                     Namespace = ns,
                     Prompts = new List<PluginPrompt>(),
                     PromptValues = new List<PluginPromptValue>(),
-                    PromptValuesOnUpdate = "",
+                    PromptValuesOnUpdate = String.Empty,
                     Properties = new Dictionary<string, object>(),
                     Type = "Code",
                     Version = "X",
@@ -506,10 +623,14 @@ public static partial class Helpers
     /// Copies the value to the clipboard.
     /// </summary>
     /// <param name="value">The value to copy to the clipboard.</param>
-    public static async Task CopyToClipboard(string value)
+    public static async Task CopyToClipboard(string? value, bool showCopiedToClipboardMessage = false)
     {
-        if (jsRuntime != null) {
+        if (!String.IsNullOrWhiteSpace(value) && jsRuntime != null) {
             await jsRuntime.InvokeVoidAsync("CopyToClipboard", value);
+
+            if (showCopiedToClipboardMessage) {
+                Model.AddMessage(Text("CopiedToClipboard"), MessageType.Success, true, true);
+            }
         }
     }
 
@@ -881,7 +1002,6 @@ public static partial class Helpers
                                         var i = Convert.ToInt64(v);
                                         output.Add(key, i);
                                     }
-
                                     break;
 
                                 case System.Text.Json.JsonValueKind.Object:
@@ -987,6 +1107,96 @@ public static partial class Helpers
             }
         }
         return output;
+    }
+
+    /// <summary>
+    /// Gets the basic domain name from a hostname. Only works for standard domains.
+    /// If your application is going to use a non-standard domain name (eg: yourcompany.co.uk)
+    /// then you will need to handle this parsing differently.
+    /// </summary>
+    /// <param name="hostName"></param>
+    /// <returns></returns>
+    public static string DomainNameFromHostName(string? hostName)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrWhiteSpace(hostName)) {
+            var uri = new Uri(hostName);
+            var host = uri.Host.ToLower();
+
+            string[] tokens = host.Split('.');
+
+            if (tokens.Length < 2) {
+                output = host;
+            } else {
+                output = $"{tokens[^2]}.{tokens[^1]}";
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Builds a button used by the DotNetHelperHandler function.
+    /// </summary>
+    /// <param name="id">The id for the button element.</param>
+    /// <param name="text">The text to show on the button.</param>
+    /// <param name="callbackParameters">The callback parameters.</param>
+    /// <param name="buttonClass">The class to add to the button (defaults to "btn btn-primary").</param>
+    /// <param name="buttonIcon">An optional icon to add to the button. Can be a named icon, just some css for the class, or a complete html element.</param>
+    /// <param name="buttonTitle">An optional title to show on mouseover for the button element.</param>
+    /// <returns>The html of the button to be rendered on the page which will invoke the DotNetHelperHandler callback function.</returns>
+    public static string DotNetHelperCallbackButton
+    (
+        string id,
+        string text,
+        List<string> callbackParameters,
+        string buttonClass = "btn btn-primary",
+        string buttonIcon = "",
+        string buttonTitle = ""
+    ){
+        var output = new System.Text.StringBuilder();
+
+        var buttonText = text.Replace("'", "").Replace("\"", "");
+
+        output.Append("<button id='" + id + "' type='button' class='dotnet-helper-button " + buttonClass + "'");
+
+        if (!String.IsNullOrWhiteSpace(buttonTitle)) {
+            output.Append(" title='" + buttonTitle + "'");
+        }
+
+        output.Append(" rel='" + String.Join("--", callbackParameters) + "'>");
+
+        if (!String.IsNullOrWhiteSpace(buttonIcon)) {
+            // First, see if this is a named icon.
+            var icon = Icon(buttonIcon);
+
+            if (String.IsNullOrWhiteSpace(icon)) {
+                // If the item contains HTML just use the item.
+                if (buttonIcon.Contains("<")) {
+                    icon = buttonIcon;
+                } else {
+                    icon = "<i class='" + buttonIcon + "'></i>";
+                }
+            } else {
+                icon = "<i class='" + icon + "'></i>";
+            }
+
+            if (!String.IsNullOrWhiteSpace(buttonText)) {
+                output.Append(icon + " " + buttonText);
+            } else {
+                output.Append(icon);
+            }
+        } else if (!String.IsNullOrWhiteSpace(buttonText)) {
+            output.Append(buttonText);
+        }
+
+        output.Append("</button>");
+
+        string returnString = output.ToString();
+        return returnString;
+
+        //return output.ToString();
     }
 
     /// <summary>
@@ -1122,12 +1332,12 @@ public static partial class Helpers
                 }
 
                 if (minutes > 0) {
-                    if (output != "") { output += ":"; }
+                    if (output != String.Empty) { output += ":"; }
                     output += (minutes < 10 ? "0" : "") + minutes.ToString() + "m";
                 }
 
                 if (totalSeconds > 0) {
-                    if (output != "") { output += ":"; }
+                    if (output != String.Empty) { output += ":"; }
                     output += (totalSeconds < 10 ? "0" : "") + totalSeconds.ToString() + "s";
                 }
             }
@@ -1145,7 +1355,7 @@ public static partial class Helpers
     /// <param name="height">The height of the dialog (defaults to "auto".)</param>
     public static async Task EditUser(Guid UserId, Delegate? OnSaved = null, string width = "auto", string height = "auto")
     {
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("InDialog", true);
         parameters.Add("userid", UserId.ToString());
 
@@ -1158,11 +1368,11 @@ public static partial class Helpers
         string top = String.Empty;
 
         if (width == "auto") {
-            width = "";
+            width = String.Empty;
         }
 
         if (height == "auto") {
-            height = "";
+            height = String.Empty;
         }
 
         if (String.IsNullOrWhiteSpace(width)) {
@@ -1186,7 +1396,6 @@ public static partial class Helpers
         });
     }
 
-
     /// <summary>
     /// Executes a plugin and returns the results.
     /// </summary>
@@ -1206,7 +1415,7 @@ public static partial class Helpers
             Objects = objects,
         };
 
-        var result = await Helpers.GetOrPost<PluginExecuteResult>("api/Data/ExecutePlugin", request);
+        var result = await GetOrPost<PluginExecuteResult>("api/Data/ExecutePlugin", request);
         if (result != null) {
             output.Result = result.Result;
 
@@ -1302,15 +1511,40 @@ public static partial class Helpers
             document.LoadHtml(output);
 
             var links = document.DocumentNode.SelectNodes("//a");
-            foreach (var link in links) {
-                if (link.Attributes["target"] != null) {
-                    link.Attributes["target"].Value = "_blank";
-                } else {
-                    link.Attributes.Add("target", "blank");
+            if (links != null) {
+                foreach (var link in links) {
+                    link.SetAttributeValue("target", "_blank");
+
+                    //if (link.Attributes["target"] != null) {
+                    //    link.Attributes["target"].Value = "_blank";
+                    //} else {
+                    //    link.Attributes.Add("target", "blank");
+                    //}
                 }
             }
 
             output = document.DocumentNode.OuterHtml;
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Formats a string as a Guid.
+    /// </summary>
+    /// <param name="input">Formats a string in the Guid format.</param>
+    /// <returns>A string formatted in the Guid format.</returns>
+    public static string FormatStringAsGuid(string input)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrEmpty(input)) {
+            string guid = input;
+            if (guid.Length > 32) {
+                guid = input.Substring(0, 32);
+            }
+
+            output = guid.Substring(0, 8) + "-" + guid.Substring(8, 4) + "-" + guid.Substring(12, 4) + "-" + guid.Substring(16, 4) + "-" + guid.Substring(20);
         }
 
         return output;
@@ -1338,9 +1572,9 @@ public static partial class Helpers
         }
 
         Model.Language = lang;
+
+        ForceModelUpdatesApp();
     }
-
-
 
     /// <summary>
     /// Formats a value in the currency format.
@@ -1360,7 +1594,7 @@ public static partial class Helpers
     /// <returns>The value formatted as a currency.</returns>
     public static string FormatCurrency(string? value, bool ReplaceSpaces = false)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (!String.IsNullOrWhiteSpace(value)) {
             try {
@@ -1518,38 +1752,59 @@ public static partial class Helpers
     /// <returns>An email link element.</returns>
     public static string FormatEmailAddress(string? value, bool ReplaceSpaces = false)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (!String.IsNullOrWhiteSpace(value)) {
-            if (ReplaceSpaces) {
-                output = "<a href=\"mailto:" + value + "\">" + value.Replace(" ", "&nbsp;") + "</a>";
+            if (value.Contains("<span")) {
+                var start = value.IndexOf("<span>");
+                if (start > -1) {
+                    start = value.IndexOf(">", start + 1);
+
+                    if (start > -1) {
+                        var end = value.IndexOf("</span", start + 1);
+
+                        if (end > -1) {
+                            var before = value.Substring(0, start + 1);
+                            var inside = value.Substring(start + 1, end - start - 1);
+                            var after = value.Substring(end);
+
+                            output = before + "<a href=\"mailto:" + inside + "\">" + (ReplaceSpaces ? inside.Replace(" ", "&nbsp;") : inside) + "</a>" + after;
+                        }
+                    }
+                }
+
+                if (String.IsNullOrWhiteSpace(output)) {
+                    output = value;
+                }
             } else {
-                output = "<a href=\"mailto:" + value + "\">" + value + "</a>";
+                output = "<a href=\"mailto:" + value + "\">" + (ReplaceSpaces ? value.Replace(" ", "&nbsp;") : value) + "</a>";
             }
         }
 
         return output;
     }
 
-    /// <summary>
-    /// Formats a string as a Guid.
-    /// </summary>
-    /// <param name="input">Formats a string in the Guid format.</param>
-    /// <returns>A string formatted in the Guid format.</returns>
-    public static string FormatStringAsGuid(string input)
+    public static string FormatJson(string? json)
     {
         string output = String.Empty;
 
-        if (!String.IsNullOrEmpty(input)) {
-            string guid = input;
-            if (guid.Length > 32) {
-                guid = input.Substring(0, 32);
-            }
+        if (!String.IsNullOrWhiteSpace(json)) {
+            using (JsonDocument document = JsonDocument.Parse(json)) {
+                var options = new JsonSerializerOptions { WriteIndented = true };
 
-            output = guid.Substring(0, 8) + "-" + guid.Substring(8, 4) + "-" + guid.Substring(12, 4) + "-" + guid.Substring(16, 4) + "-" + guid.Substring(20);
+                string formattedJson = JsonSerializer.Serialize(document, options);
+
+                if (!String.IsNullOrWhiteSpace(formattedJson)) {
+                    output = formattedJson;
+                }
+            }
         }
 
-        return output;
+        if (String.IsNullOrWhiteSpace(output) && !String.IsNullOrWhiteSpace(json)) {
+            output = json;
+        }
+
+        return output.Trim();
     }
 
     /// <summary>
@@ -1840,14 +2095,10 @@ public static partial class Helpers
 
         // Also update the counts on the Main Model
 
-
         Model.DeletedRecordCounts.DepartmentGroups = output.DepartmentGroups.Count();
         Model.DeletedRecordCounts.Departments = output.Departments.Count();
 
-
         Model.DeletedRecordCounts.FileStorage = output.FileStorage.Count();
-
-
 
         // {{ModuleItemStart:Tags}}
         Model.DeletedRecordCounts.Tags = output.Tags.Count();
@@ -1913,7 +2164,6 @@ public static partial class Helpers
                     output = (T)value;
                 }
 
-
             } catch (Exception ex) {
                 if (ex != null) { }
             }
@@ -1949,7 +2199,9 @@ public static partial class Helpers
     /// <param name="width">A width for the dialog.</param>
     /// <param name="height">A height for the dialog.</param>
     /// <returns>The results of the user input. Depending on the input type this will either be a string or a list of string.</returns>
-    public static async Task GetInput(Delegate OnInputAccepted,
+    public static async Task GetInput
+    (
+        Delegate OnInputAccepted,
         FreeBlazor.GetInput.InputType UserInputType = FreeBlazor.GetInput.InputType.Text,
         string Title = "",
         string Id = "",
@@ -1961,8 +2213,9 @@ public static partial class Helpers
         bool SetFocus = false,
         Dictionary<string, string>? UserInputOptions = null,
         string width = "",
-        string height = ""){
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        string height = ""
+    ){
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnInputAccepted", OnInputAccepted);
 
         parameters.Add("UserInputType", UserInputType);
@@ -1998,11 +2251,11 @@ public static partial class Helpers
         }
 
         if (width == "auto") {
-            width = "";
+            width = String.Empty;
         }
 
         if (height == "auto") {
-            height = "";
+            height = String.Empty;
         }
 
         await DialogService.OpenAsync<GetInputDialog>(Title, parameters, new DialogOptions() {
@@ -2035,7 +2288,6 @@ public static partial class Helpers
         return output;
     }
 
-
     /// <summary>
     /// Shows a dialog to get a new password.
     /// </summary>
@@ -2047,7 +2299,8 @@ public static partial class Helpers
     /// <param name="RequireLowerCase">Option to require lowercase characters in the password.</param>
     /// <param name="RequireNumbers">Option to require numbers in the password.</param>
     /// <param name="RequireSpecialCharacters">Option to require special characters in the password.</param>
-    public static async Task GetNewPassword(
+    public static async Task GetNewPassword
+    (
         Action<string> OnPasswordAccepted,
         string Title = "",
         string Class = "",
@@ -2061,7 +2314,7 @@ public static partial class Helpers
             Title = Text("GeneratePassword");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnPasswordAccepted", OnPasswordAccepted);
 
         if (String.IsNullOrWhiteSpace(Class)) {
@@ -2219,6 +2472,32 @@ public static partial class Helpers
     /// <summary>
     /// Gets the value of a property from an object.
     /// </summary>
+    /// <param name="obj">The object to check for the property value.</param>
+    /// <param name="property">The name of the property.</param>
+    /// <returns>The value of the property as a string.</returns>
+    public static string GetObjectPropertyValue(object? obj, string? property)
+    {
+        string output = String.Empty;
+
+        if (obj != null && !String.IsNullOrWhiteSpace(property)) {
+            Type type = obj.GetType();
+
+            if (type == typeof(System.Text.Json.JsonElement)) {
+                output = GetObjectPropertyValueJson((System.Text.Json.JsonElement)obj, property);
+            } else {
+                var propertyValue = GetObjectPropertyValueStandard<string>(obj, property);
+                if (!String.IsNullOrWhiteSpace(propertyValue)) {
+                    output = propertyValue;
+                }
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Gets the value of a property from an object.
+    /// </summary>
     /// <typeparam name="T">The type of the property to return.</typeparam>
     /// <param name="obj">The object to check for the property value.</param>
     /// <param name="property">The name of the property.</param>
@@ -2239,6 +2518,101 @@ public static partial class Helpers
                 }
             }
         }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Gets the value of a property from a JsonElement object.
+    /// </summary>
+    /// <param name="element">The JsonElement object to check for the property value.</param>
+    /// <param name="property">The name of the property.</param>
+    /// <returns>The value of the property as a string.</returns>
+    public static string GetObjectPropertyValueJson(System.Text.Json.JsonElement element, string property)
+    {
+        string output = String.Empty;
+
+        try {
+            // Find the case-sensitive property name
+            var document = System.Text.Json.JsonDocument.Parse(element.ToString());
+            if (document != null) {
+                foreach (var prop in document.RootElement.EnumerateObject()) {
+                    if (prop.Name.ToLower() == property.ToLower()) {
+                        property = prop.Name;
+                        break;
+                    }
+                }
+            }
+
+            var elem = element.GetProperty(property);
+            var type = elem.ValueKind;
+
+            switch (type) {
+                case System.Text.Json.JsonValueKind.Array:
+                    break;
+
+                case System.Text.Json.JsonValueKind.False:
+                    output = "{{boolean:false}}";
+                    break;
+
+                case System.Text.Json.JsonValueKind.Null:
+                    break;
+
+                case System.Text.Json.JsonValueKind.Number:
+                    var numberAsString = elem.GetRawText();
+                    if (!String.IsNullOrWhiteSpace(numberAsString)) {
+                        numberAsString = numberAsString.Trim();
+
+                        if (numberAsString.Contains(".") || numberAsString.Contains(",")) {
+                            // try a decimal value
+                            try {
+                                var numberDecimal = elem.GetDecimal();
+                                output = numberDecimal.ToString();
+                            } catch {
+                                output = numberAsString;
+                            }
+                        } else {
+                            try {
+                                var numberInt32 = elem.GetInt32();
+                                output = numberInt32.ToString();
+                            } catch {
+                                output = numberAsString;
+                            }
+                        }
+                    }
+
+                    try {
+                        var n = elem.GetDecimal();
+                        output = n.ToString();
+                    } catch {
+                        try {
+                            var n2 = elem.GetDouble();
+                            output = n2.ToString();
+                        } catch {
+                            try {
+                                var n3 = elem.GetInt32();
+                                output = n3.ToString();
+                            } catch { }
+                        }
+                    }
+                    break;
+
+                case System.Text.Json.JsonValueKind.Object:
+                    break;
+
+                case System.Text.Json.JsonValueKind.String:
+                    output = StringOrDateValue(elem.GetString());
+                    break;
+
+                case System.Text.Json.JsonValueKind.True:
+                    output = "{{boolean:true}}";
+                    break;
+
+                case System.Text.Json.JsonValueKind.Undefined:
+                    output = "?";
+                    break;
+            }
+        } catch { }
 
         return output;
     }
@@ -2358,23 +2732,45 @@ public static partial class Helpers
         T? output = default(T);
 
         if (o != null) {
-            foreach (String part in property.Split(".")) {
-                Type type = o.GetType();
+            try {
+                foreach (String part in property.Split(".")) {
+                    Type type = o.GetType();
 
-                System.Reflection.BindingFlags bindingAttrs = System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Static |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.IgnoreCase;
+                    System.Reflection.BindingFlags bindingAttrs = System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Static |
+                        System.Reflection.BindingFlags.Public |
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.IgnoreCase;
 
-                var info = type.GetProperty(part, bindingAttrs);
-                if (info != null) {
-                    var obj = info.GetValue(o, null);
-                    if (obj != null) {
-                        return (T)obj;
+                    var info = type.GetProperty(part, bindingAttrs);
+                    if (info != null) {
+                        var obj = info.GetValue(o, null);
+                        if (obj != null) {
+                            //return (T)obj;
+
+                            try {
+                                var tType = typeof(T);
+                                if (tType == typeof(System.String) && typeof(object) != typeof(System.String)) {
+                                    // This is not a string type, but is being requested as a string.
+                                    var castObject = (object)obj;
+
+                                    if (castObject != null) {
+                                        var stringObject = castObject.ToString();
+                                        if (stringObject != null) {
+                                            return (T)(object)stringObject;
+                                        }
+                                    } else {
+                                        return output;
+                                    }
+                                } else {
+                                    return (T)obj;
+                                }
+                            } catch { }
+                        }
+
                     }
                 }
-            }
+            } catch { }
         }
 
         return output;
@@ -2481,18 +2877,18 @@ public static partial class Helpers
     }
 
     /// <summary>
-    /// Gets the password from a SecureString object.
+    /// Used by the Blazor plugins to get or post the cached plugin binary data.
     /// </summary>
-    /// <param name="secureString">A SecureString object.</param>
-    /// <returns>The password.</returns>
-    public static string GetPasswordFromSecureString(object? secureString)
+    /// <param name="url">The API endpoint URL.</param>
+    /// <param name="BinaryData">For the save endpoint this is the binary data to cached as a byte array.</param>
+    /// <returns>Always returns a byte array. For the save endpoint this will be empty. For the get method this will return the cached binary data.</returns>
+    public static async Task<byte[]> GetOrPostBlazorCachedPluginBinary(string url, byte[]? BinaryData = null)
     {
-        string output = String.Empty;
+        byte[] output = Array.Empty<byte>();
 
-        if (secureString != null && secureString.GetType() == typeof(System.Security.SecureString)) {
-            try {
-                output += new System.Net.NetworkCredential("", (System.Security.SecureString)secureString).Password;
-            } catch { }
+        var bytes = await GetOrPost<byte[]>(url, BinaryData);
+        if (bytes != null && bytes.Length > 0) {
+            output = bytes;
         }
 
         return output;
@@ -2534,6 +2930,23 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the code namespace from the plugin code.
+    /// </summary>
+    /// <param name="code">The C# code.</param>
+    /// <returns>The code namespace.</returns>
+    public static string GetPluginNamespace(string code)
+    {
+        string output = String.Empty;
+
+        var line = FindFirstLineStartingWith(code, "namespace");
+        if (!String.IsNullOrWhiteSpace(line)) {
+            output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
+        }
+
+        return output;
+    }
+
+    /// <summary>
     /// Gets the code class from the plugin code.
     /// </summary>
     /// <param name="code">The C# code.</param>
@@ -2553,24 +2966,6 @@ public static partial class Helpers
             if (output.Contains(":")) {
                 output = output.Substring(0, output.IndexOf(":")).Trim();
             }
-        }
-
-
-        return output;
-    }
-
-    /// <summary>
-    /// Gets the code namespace from the plugin code.
-    /// </summary>
-    /// <param name="code">The C# code.</param>
-    /// <returns>The code namespace.</returns>
-    public static string GetPluginNamespace(string code)
-    {
-        string output = String.Empty;
-
-        var line = FindFirstLineStartingWith(code, "namespace");
-        if (!String.IsNullOrWhiteSpace(line)) {
-            output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
         }
 
         return output;
@@ -2674,6 +3069,24 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the password from a SecureString object.
+    /// </summary>
+    /// <param name="secureString">A SecureString object.</param>
+    /// <returns>The password.</returns>
+    public static string GetPasswordFromSecureString(object? secureString)
+    {
+        string output = String.Empty;
+
+        if (secureString != null && secureString.GetType() == typeof(System.Security.SecureString)) {
+            try {
+                output += new System.Net.NetworkCredential("", (System.Security.SecureString)secureString).Password;
+            } catch { }
+        }
+
+        return output;
+    }
+
+    /// <summary>
     /// Gets a value from the querystring of the provided url.
     /// </summary>
     /// <param name="fullUrl">The full url.</param>
@@ -2740,8 +3153,8 @@ public static partial class Helpers
             foreach (var part in parts) {
                 if (part.Contains("=")) {
                     var values = part.Split("=");
-                    string key = "";
-                    string value = "";
+                    string key = String.Empty;
+                    string value = String.Empty;
 
                     try {
                         key = values[0];
@@ -2759,8 +3172,30 @@ public static partial class Helpers
 
         return output;
     }
-    // {{ModuleItemStart:Tags}}
 
+    /// <summary>
+    /// Gets a session storage item.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="key">the key of the item.</param>
+    /// <returns>A nullable object of type T.</returns>
+    public static async Task<T?> GetSessionStorageItem<T>(string key)
+    {
+        T? output = default(T);
+
+        if (SessionStorage != null) {
+            try {
+                var result = await SessionStorage.GetItemAsync<T>(key);
+                if (result != null) {
+                    output = result;
+                }
+            } catch { }
+        }
+
+        return output;
+    }
+
+    // {{ModuleItemStart:Tags}}
     /// <summary>
     /// Gets a Tag by its unique id.
     /// </summary>
@@ -2954,12 +3389,49 @@ public static partial class Helpers
     /// <returns>The number or zero.</returns>
     public static int GuidToInt(Guid? guid)
     {
-        int output = 0;
+        return GuidToNumber<int>(guid);
+    }
+
+    /// <summary>
+    /// Converts a Guid that is in the number format back to a number.
+    /// </summary>
+    /// <typeparam name="T">The type of object to return.</typeparam>
+    /// <param name="guid">A Guid that might be in the number format.</param>
+    /// <returns>The number or zero as type T.</returns>
+    public static T? GuidToNumber<T>(Guid? guid)
+    {
+        T? output = default(T);
 
         if (guid.HasValue) {
-            try {
-                output = Convert.ToInt32(((Guid)guid).ToString().Replace("-", ""));
-            } catch { }
+            var g = guid.Value.ToString().Replace("-", "");
+            if (!String.IsNullOrWhiteSpace(g)) {
+                try {
+                    if (typeof(T) == typeof(int)) {
+                        output = (T)(object)(Convert.ToInt32(g));
+                    } else if (typeof(T) == typeof(long)) {
+                        long l = 0;
+                        long.TryParse(g, out l);
+                        output = (T)(object)(l);
+                    } else if (typeof(T) == typeof(uint)) {
+                        uint u = 0;
+                        uint.TryParse(g, out u);
+                        output = (T)(object)(u);
+                    } else if (typeof(T) == typeof(ulong)) {
+                        ulong ul = 0;
+                        ulong.TryParse(g, out ul);
+                        output = (T)(object)(ul);
+                    } else if (typeof(T) == typeof(System.Numerics.BigInteger)) {
+                        System.Numerics.BigInteger bi = 0;
+                        System.Numerics.BigInteger.TryParse(g, out bi);
+                        output = (T)(object)(bi);
+                    }
+
+                } catch { }
+            }
+        }
+
+        if (output == null) {
+            output = (T)(object)(0);
         }
 
         return output;
@@ -2995,12 +3467,97 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Indicates if the selected page has any Blazor plugins for a given position.
+    /// </summary>
+    /// <param name="pageName">The name of the page.</param>
+    /// <param name="position">The position of the plugin on the page.</param>
+    /// <returns>True if any plugins exist for the given page and position.</returns>
+    public static bool HaveBlazorPlugins(string pageName, string position)
+    {
+        bool output = false;
+
+        if (!String.IsNullOrWhiteSpace(pageName) && !String.IsNullOrWhiteSpace(position)) {
+            output = Model.Plugins.Any(x => x.Name.ToLower().StartsWith(position.ToLower() + "_" + pageName.ToLower() + "_"));
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Indicates if there are any button Blazor plugins for the given page.
+    /// </summary>
+    /// <param name="pageName">The name of the page from the _pageName variable.</param>
+    /// <returns>True if any button plugins exist for this page.</returns>
+    public static bool HaveBlazorToolbarButtons(string pageName)
+    {
+        bool output = !String.IsNullOrWhiteSpace(pageName) && 
+            Model.Plugins.Any(x => x.Name.ToLower().StartsWith("button_" + pageName.ToLower() + "_"));
+        
+        return output;
+    }
+
+    /// <summary>
+    /// Hides element(s) by class name using jsInterop.
+    /// </summary>
+    /// <param name="className">The class name of the element(s).</param>
+    public static async Task HideElementByClass(string? className)
+    {
+        if (!String.IsNullOrWhiteSpace(className)) {
+            await jsRuntime.InvokeVoidAsync("HideElementByClass", className);
+        }
+    }
+
+    /// <summary>
+    /// Hides an element by id name using jsInterop.
+    /// </summary>
+    /// <param name="className">The id of the element.</param>
+    public static async Task HideElementById(string? element)
+    {
+        if (!String.IsNullOrWhiteSpace(element)) {
+            await jsRuntime.InvokeVoidAsync("HideElementById", element);
+        }
+    }
+
+    /// <summary>
     /// Hides any menus that are showing.
     /// </summary>
     public static async Task HideMenus()
     {
         await jsRuntime.InvokeVoidAsync("HideMenu");
-        Model.QuickAction = "";
+        Model.QuickAction = String.Empty;
+    }
+
+    /// <summary>
+    /// Creates a tooltip for a highcharts chart using labels and values.
+    /// </summary>
+    /// <param name="tooltip">The HighchartsTooltip object.</param>
+    /// <returns>A string with the tooltip.</returns>
+    public static string HighchartsTooltips(DataObjects.HighchartsTooltip tooltip)
+    {
+        StringBuilder output = new StringBuilder();
+
+        if (!String.IsNullOrWhiteSpace(tooltip.Header)) {
+            output.AppendLine("<div class=\"highcharts-tooltips-header\">" + tooltip.Header + "</div>");
+        }
+
+        var total = 0;
+        foreach (var row in tooltip.Rows) {
+            total += row.Value;
+
+            output.AppendLine("<div class=\"highcharts-tooltips-row\">");
+            output.AppendLine("  <div class=\"highcharts-tooltips-left-column\">" + row.Label + "</div>");
+            output.AppendLine("  <div class=\"highcharts-tooltips-right-column\">" + row.Value.ToString() + "</div>");
+            output.AppendLine("</div>");
+        }
+
+        if (tooltip.IncludeTotalRow && tooltip.Rows.Count() > 1) {
+            output.AppendLine("<div class=\"highcharts-tooltips-row total\">");
+            output.AppendLine("  <div class=\"highcharts-tooltips-left-column\">" + Text("Total") + "</div>");
+            output.AppendLine("  <div class=\"highcharts-tooltips-right-column\">" + total.ToString() + "</div>");
+            output.AppendLine("</div>");
+        }
+
+        return output.ToString();
     }
 
     /// <summary>
@@ -3018,24 +3575,27 @@ public static partial class Helpers
     /// <param name="OnEditCompleted">The required Delegate that will receive the HTML when the OK button is clicked.</param>
     /// <param name="HTML">Optional HTML to set in the editor.</param>
     /// <param name="Title">Optional title to override the default title.</param>
-    /// <param name="config">Optional HtmlEditorConfiguration object to override default editor options.</param>
+    /// <param name="config">Optional Configuration object to override default editor options.</param>
     /// <param name="width">Optional width. Leave empty for the default or set to "auto" for the dialog defaults.</param>
     /// <param name="height">Optional width. Leave empty for the default or set to "auto" for the dialog defaults.</param>
     /// <param name="setFocusOnLoad">Option to set the focus to the editor when it loads.</param>
     /// <param name="instructions">Optional instructions to show above the editor.</param>
-    public static async Task HtmlEditor(Delegate OnEditCompleted,
+    public static async Task HtmlEditor
+    (
+        Delegate OnEditCompleted,
         string? HTML = "",
         string? Title = "",
-        FreeBlazor.HtmlEditor.HtmlEditorConfiguration? config = null,
+        FreeBlazor.HtmlEditor2.Configuration? config = null,
         string width = "",
         string height = "",
         bool setFocusOnLoad = true,
-        string? instructions = ""){
+        string? instructions = ""
+    ){
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("EditHTML");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnEditCompleted", OnEditCompleted);
 
         if (!String.IsNullOrWhiteSpace(HTML)) {
@@ -3065,11 +3625,11 @@ public static partial class Helpers
         }
 
         if (width == "auto") {
-            width = "";
+            width = String.Empty;
         }
 
         if (height == "auto") {
-            height = "";
+            height = String.Empty;
         }
 
         await DialogService.OpenAsync<HtmlEditorDialog>(Title, parameters, new DialogOptions() {
@@ -3141,7 +3701,6 @@ public static partial class Helpers
                             }
                             break;
                     }
-
 
                 } else {
                     output = key;
@@ -3223,7 +3782,7 @@ public static partial class Helpers
                 { "fa:fa-solid fa-magnifying-glass",             new List<string> { "IncludeInSearch", "Preview", "Search", "View" }},
                 { "fa:fa-solid fa-moon",                         new List<string> { "ThemeDark" }},
                 { "fa:fa-solid fa-paper-plane",                  new List<string> { "SendTestEmail" }},
-                { "fa:fa-solid fa-pen-to-square",                new List<string> { "Edit", "EditAll", "Manage" }},
+                { "fa:fa-solid fa-pen-to-square",                new List<string> { "Edit", "EditAll", "EditModified", "Manage" }},
                 { "fa:fa-solid fa-person-digging",               new List<string> { "MaintenanceMode" }},
                 { "fa:fa-solid fa-play",                         new List<string> { "Play", "Process", "Reprocess", "TestCode", "TestPlugin" }},
                 { "fa:fa-solid fa-repeat",                       new List<string> { "SwitchTenant" }},
@@ -3249,40 +3808,11 @@ public static partial class Helpers
                 { "fa:fa-solid fa-users",                        new List<string> { "ActiveUsers", "AppointmentTypeMeeting", "EditUserGroup", "NewUserGroup", "UserGroups" }},
                 { "fa:fa-solid fa-users-rectangle",              new List<string> { "AddNewDepartmentGroup", "DepartmentGroups", "EditDepartmentGroup" }},
                 { "fa:fa-solid fa-xmark",                        new List<string> { "Cancel", "Close", "CloseDialog", "Hide" }},
+
             };
 
             return icons;
         }
-    }
-
-    /// <summary>
-    /// Initializes the Helpers static class library by providing the required objects to the library.
-    /// </summary>
-    /// <param name="jSRuntime">A reference to the IJSRuntime interface.</param>
-    /// <param name="model">A reference to the BlazorDataModel.</param>
-    /// <param name="httpClient">A reference to the HttpClient.</param>
-    /// <param name="localStorage">A reference to the ILocalStorageService interface.</param>
-    /// <param name="dialogService">A reference to the Radzen DialogService.</param>
-    /// <param name="tooltipService">A reference to the Radzen TooltipService.</param>
-    /// <param name="navigationManager">A reference to the NavigationManager interface.</param>
-    public static void Init(
-        IJSRuntime jSRuntime,
-        BlazorDataModel model,
-        HttpClient httpClient,
-        ILocalStorageService localStorage,
-        Radzen.DialogService dialogService,
-        Radzen.TooltipService tooltipService,
-        NavigationManager navigationManager
-    ){
-        DialogService = dialogService;
-        Http = httpClient;
-        jsRuntime = jSRuntime;
-        LocalStorage = localStorage;
-        Model = model;
-        Tooltips = tooltipService;
-        NavManager = navigationManager;
-
-        _initialized = true;
     }
 
     /// <summary>
@@ -3313,13 +3843,21 @@ public static partial class Helpers
     /// <returns>True if the value is a valid DateTime.</returns>
     public static bool IsDate(string value)
     {
+        return DateTime.TryParse(value, out DateTime tempDate);
+    }
+
+    /// <summary>
+    /// Indicates if the value contains a valid email address.
+    /// </summary>
+    /// <param name="email">The value to check</param>
+    /// <returns>True if the value contain a valid email address.</returns>
+    public static bool IsEmail(string? email)
+    {
         bool output = false;
 
-        if (!String.IsNullOrWhiteSpace(value)) {
-            try {
-                DateTime d = Convert.ToDateTime(value);
-                output = true;
-            } catch { }
+        if (!String.IsNullOrWhiteSpace(email)) {
+            var emailAddressAttribute = new EmailAddressAttribute();
+            output = emailAddressAttribute.IsValid(email);
         }
 
         return output;
@@ -3332,17 +3870,7 @@ public static partial class Helpers
     /// <returns>True if the value is a valid Guid.</returns>
     public static bool IsGuid(string value)
     {
-        bool output = false;
-
-        if (!String.IsNullOrWhiteSpace(value)) {
-            Guid? g = null;
-            try {
-                g = new Guid(value);
-            } catch { }
-            output = g != null;
-        }
-
-        return output;
+        return Guid.TryParse(value, out _);
     }
 
     /// <summary>
@@ -3354,7 +3882,7 @@ public static partial class Helpers
     {
         bool output = false;
 
-        switch (Helpers.StringValue(file.Extension).ToUpper()) {
+        switch (StringValue(file.Extension).ToUpper()) {
             case ".GIF":
             case ".JPG":
             case ".JPEG":
@@ -3374,19 +3902,7 @@ public static partial class Helpers
     /// <returns>True if the value contains a valid integer.</returns>
     public static bool IsInt(string value)
     {
-        bool output = false;
-
-        if (!String.IsNullOrWhiteSpace(value) && !value.Contains(".")) {
-            int? v = null;
-
-            try {
-                v = Convert.ToInt32(value);
-            } catch { }
-
-            output = v != null;
-        }
-
-        return output;
+        return int.TryParse(value, out _);
     }
 
     /// <summary>
@@ -3396,25 +3912,7 @@ public static partial class Helpers
     /// <returns>True if the value contains a valid number.</returns>
     public static bool IsNumeric(string? value)
     {
-        bool output = false;
-
-        if (!String.IsNullOrWhiteSpace(value)) {
-            if (value.Contains(".")) {
-                try {
-                    decimal d = Convert.ToDecimal(value);
-                    output = true;
-                } catch { }
-            }
-
-            if (!output) {
-                try {
-                    int i = Convert.ToInt32(value);
-                    output = true;
-                } catch { }
-            }
-        }
-
-        return output;
+        return double.TryParse(value, out _);
     }
 
     /// <summary>
@@ -3426,7 +3924,7 @@ public static partial class Helpers
     {
         bool output = false;
 
-        switch (Helpers.StringValue(file.Extension).ToUpper()) {
+        switch (StringValue(file.Extension).ToUpper()) {
             case ".PDF":
                 output = true;
                 break;
@@ -3444,7 +3942,7 @@ public static partial class Helpers
     {
         bool output = false;
 
-        switch (Helpers.StringValue(file.Extension).ToUpper()) {
+        switch (StringValue(file.Extension).ToUpper()) {
             case ".TXT":
                 output = true;
                 break;
@@ -3468,7 +3966,6 @@ public static partial class Helpers
         if ((Added.HasValue && Added != DateTime.MinValue) || !String.IsNullOrWhiteSpace(AddedBy)) {
             output +=
                 "<span class=\"added-text\">" + Text("Added") + "</span>&nbsp;";
-
 
             if (Added.HasValue) {
                 output += "<span class=\"datetime-added\">" + FormatDateTime(Added) + "</span>&nbsp;";
@@ -3697,7 +4194,7 @@ public static partial class Helpers
     /// </summary>
     public async static Task LoadDefaultLanguage()
     {
-        var language = await Helpers.GetOrPost<DataObjects.Language>("api/Data/GetDefaultLanguage");
+        var language = await GetOrPost<DataObjects.Language>("api/Data/GetDefaultLanguage");
         if (language != null) {
             Model.DefaultLanguage = language;
         }
@@ -3729,10 +4226,8 @@ public static partial class Helpers
         var items = await GetOrPost<List<DataObjects.FileStorage>>("api/Data/GetImageFiles");
         Model.ImageFiles = items != null && items.Any() ? items : new List<DataObjects.FileStorage>();
     }
+
     // {{ModuleItemStart:Tags}}
-
-
-
     /// <summary>
     /// Loads the Tags from the API endpoint.
     /// </summary>
@@ -3770,6 +4265,40 @@ public static partial class Helpers
         Model.UserGroups = items != null && items.Any() ? items : new List<DataObjects.UserGroup>();
     }
 
+    // {{ModuleItemStart:Logo}}
+    /// <summary>
+    /// The URL to the tenant's logo image, if set. Otherwise, returns an empty string.
+    /// </summary>
+    public static string LogoUrl {
+        get {
+            string output = String.Empty;
+
+            if (Model.Tenant.TenantSettings.Logo.HasValue && Model.Tenant.TenantSettings.Logo != Guid.Empty) {
+                output = BaseUri + "File/View/" + ((Guid)Model.Tenant.TenantSettings.Logo).ToString();
+            }
+
+            return output;
+        }
+    }
+    // {{ModuleItemEnd:Logo}}
+
+    /// <summary>
+    /// Shows the Manage Profile page in a dialog.
+    /// </summary>
+    public static async Task ManageProfile()
+    {
+        await HideMenus();
+
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>() {
+            { "InDialog", true },
+        };
+
+        await DialogService.OpenAsync<FreeGLBA.Client.Pages.Profile>(Text("ManageProfile"), parameters, new DialogOptions() {
+            AutoFocusFirstElement = false,
+            Width = "98%",
+        });
+    }
+
     /// <summary>
     /// Trims a string to a maximum length.
     /// </summary>
@@ -3793,6 +4322,195 @@ public static partial class Helpers
         }
 
         return output;
+    }
+
+    public static List<string> MenuItemPageNames(DataObjects.MenuItem menuItem)
+    {
+        var output = menuItem.PageNames;
+
+        if (menuItem.Children != null && menuItem.Children.Any()) {
+            foreach (var child in menuItem.Children) {
+                var childPageNames = MenuItemPageNames(child);
+                if (childPageNames.Any()) {
+                    output.AddRange(childPageNames);
+                }
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Gets all of the page names for a menu item and any child pages.
+    /// </summary>
+    /// <param name="menuItem">The MenuItem object</param>
+    /// <returns>A List of string of all the pagenames</returns>
+    public static List<string> MenuItemPageNames(List<DataObjects.MenuItem> menuItems)
+    {
+        List<string> output = new List<string>();
+
+        foreach (var item in menuItems) {
+            output.AddRange(item.PageNames);
+
+            if (item.Children != null && item.Children.Any()) {
+                output.AddRange(MenuItemPageNames(item.Children));
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// The collection of menu items used for the navigation menu.
+    /// </summary>
+    public static List<DataObjects.MenuItem> MenuItems {
+        get {
+            var output = new List<DataObjects.MenuItem> { };
+
+            output.AddRange(MenuItemsApp);
+
+            output = output.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+
+            return output;
+        }
+    }
+
+    /// <summary>
+    /// The collection of Admin menu items used for the navigation menu Admin dropdown menu.
+    /// </summary>
+    public static List<DataObjects.MenuItem> MenuItemsAdmin {
+        get {
+            var output = new List<DataObjects.MenuItem> { };
+
+            if (Model.User.AppAdmin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("AppSettings"),
+                    Icon = "AppSettings",
+                    PageNames = new List<string> { "appsettings" },
+                    url = BuildUrl("Settings/AppSettings"),
+                    SortOrder = 1000,
+                    AppAdminOnly = true,
+                });
+            }
+
+            // {{ModuleItemStart:Departments}}
+            if (Model.User.Admin && Model.FeatureEnabledDepartments) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("DepartmentGroups"),
+                    Icon = "DepartmentGroups",
+                    PageNames = new List<string> { "departmentgroups", "editdepartmentgroup" },
+                    url = BuildUrl("Settings/DepartmentGroups"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Departments"),
+                    Icon = "Departments",
+                    PageNames = new List<string> { "departments", "editdepartment" },
+                    url = BuildUrl("Settings/Departments"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+            // {{ModuleItemEnd:Departments}}
+
+            if (Model.User.Admin && Model.FeatureEnabledFiles) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Files"),
+                    Icon = "Files",
+                    PageNames = new List<string> { "files" },
+                    url = BuildUrl("Settings/Files"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            if (Model.User.Admin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Language"),
+                    Icon = "Language",
+                    PageNames = new List<string> { "language" },
+                    url = BuildUrl("Settings/Language"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            if (Model.User.Admin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Settings"),
+                    Icon = "Settings",
+                    PageNames = new List<string> { "settings" },
+                    url = BuildUrl("Settings"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            // {{ModuleItemStart:Tags}}
+            if (Model.User.Admin && Model.FeatureEnabledTags) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Tags"),
+                    Icon = "Tags",
+                    PageNames = new List<string> { "edittag", "tags" },
+                    url = BuildUrl("Settings/Tags"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+            // {{ModuleItemEnd:Tags}}
+
+            if (Model.User.AppAdmin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Tenants"),
+                    Icon = "Tenants",
+                    PageNames = new List<string> { "edittenant", "tenants" },
+                    url = BuildUrl("Settings/Tenants"),
+                    SortOrder = 1000,
+                    AppAdminOnly = true,
+                });
+            }
+
+            if (Model.User.Admin && Model.FeatureEnabledUDF) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("UserDefinedFields"),
+                    Icon = "UserDefinedFields",
+                    PageNames = new List<string> { "udf" },
+                    url = BuildUrl("Settings/UDF"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            if (Model.User.Admin) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("Users"),
+                    Icon = "Users",
+                    PageNames = new List<string> { "edituser", "users" },
+                    url = BuildUrl("Settings/Users"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            if (Model.User.Admin && Model.FeatureEnabledUserGroups) {
+                output.Add(new DataObjects.MenuItem {
+                    Title = Text("UserGroups"),
+                    Icon = "UserGroups",
+                    PageNames = new List<string> { "editusergroup", "usergroups" },
+                    url = BuildUrl("Settings/UserGroups"),
+                    SortOrder = 1000,
+                    AppAdminOnly = false,
+                });
+            }
+
+            output.AddRange(MenuItemsAdminApp);
+
+            output = output.OrderBy(x => x.SortOrder).ThenBy(x => x.Title).ToList();
+
+            return output;
+        }
     }
 
     /// <summary>
@@ -3970,6 +4688,21 @@ public static partial class Helpers
     /// <summary>
     /// Returns the class that marks a field as missing if no value is provided.
     /// </summary>
+    /// <param name="values">A nullable array object.</param>
+    /// <param name="defaultClass">An optional default class to append to the output.</param>
+    /// <returns>The class value.</returns>
+    public static string MissingValue(object[]? values, string? defaultClass = "")
+    {
+        if (String.IsNullOrWhiteSpace(defaultClass)) {
+            return values == null || values.Length == 0 ? MissingValueClass : "";
+        } else {
+            return values == null || values.Length == 0 ? MissingValueClass + " " + defaultClass : defaultClass;
+        }
+    }
+
+    /// <summary>
+    /// Returns the class that marks a field as missing if no value is provided.
+    /// </summary>
     /// <param name="value">A nullable string value.</param>
     /// <param name="defaultClass">An optional default class to append to the output.</param>
     /// <returns>The class value.</returns>
@@ -4009,15 +4742,15 @@ public static partial class Helpers
     /// <param name="height">Optional height for the dialog (defaults to auto-sized.)</param>
     public async static Task ModalMessage(string message, string title = "", bool DisableClose = false, string width = "auto", string height = "auto")
     {
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("Message", message);
 
         if (width == "auto") {
-            width = "";
+            width = String.Empty;
         }
 
         if (height == "auto") {
-            height = "";
+            height = String.Empty;
         }
 
         await DialogService.OpenAsync<ModalMessage>(title, parameters, new Radzen.DialogOptions() {
@@ -4099,16 +4832,6 @@ public static partial class Helpers
     public async static Task NavigateToViaJavascript(string url)
     {
         await jsRuntime.InvokeVoidAsync("NavigateTo", url);
-    }
-
-    /// <summary>
-    /// Gets the current date and time in UTC.
-    /// </summary>
-    public static DateTime Now {
-        get {
-            var output = Convert.ToDateTime(DateTime.UtcNow.ToString("o"));
-            return output;
-        }
     }
 
     /// <summary>
@@ -4377,6 +5100,21 @@ public static partial class Helpers
         }
     }
 
+    public static string NewCleanGuid()
+    {
+        return Guid.NewGuid().ToString().Replace("-", "").ToLower();
+    }
+
+    /// <summary>
+    /// Gets the current date and time in UTC.
+    /// </summary>
+    public static DateTime Now {
+        get {
+            var output = Convert.ToDateTime(DateTime.UtcNow.ToString("o"));
+            return output;
+        }
+    }
+
     /// <summary>
     /// Parses simple flat XML to get a value.
     /// </summary>
@@ -4412,7 +5150,7 @@ public static partial class Helpers
             Title = Text("PDFViewer");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("AllowDownload", AllowDownload);
         parameters.Add("FileId", FileId);
         parameters.Add("PdfFile", Model.ApplicationUrl + "File/View/" + FileId.ToString() + "?TenantId=" + Model.TenantId.ToString() + "&Token=" + Model.User.AuthToken);
@@ -4430,11 +5168,11 @@ public static partial class Helpers
         }
 
         if (width == "auto") {
-            width = "";
+            width = String.Empty;
         }
 
         if (height == "auto") {
-            height = "";
+            height = String.Empty;
         }
 
         await DialogService.OpenAsync<PDF_Viewer>(Title, parameters, new DialogOptions() {
@@ -4474,7 +5212,7 @@ public static partial class Helpers
     /// <returns>The results of the plugin execution formatted as a string.</returns>
     public static string PluginResultToString(Plugins.PluginExecuteResult result, bool includeObjects = false)
     {
-        System.Text.StringBuilder output = new StringBuilder();
+        StringBuilder output = new StringBuilder();
 
         output.AppendLine(Text("Result") + ": " + result.Result.ToString().ToLower());
 
@@ -4511,7 +5249,6 @@ public static partial class Helpers
         return output.ToString();
     }
 
-
     /// <summary>
     /// Opens a quick action slideout.
     /// </summary>
@@ -4519,8 +5256,8 @@ public static partial class Helpers
     /// <param name="OnComplete">An optional Delegate to be invoked after the action has completed.</param>
     public async static Task QuickAction(string Action, Delegate? OnComplete = null)
     {
-        if (Helpers.StringLower(Action) == "adduser" && Model.FeatureEnabledDepartments && !Model.Departments.Any()) {
-            await Helpers.LoadDepartments();
+        if (StringLower(Action) == "adduser" && Model.FeatureEnabledDepartments && !Model.Departments.Any()) {
+            await LoadDepartments();
         }
 
         Model.QuickActionOnComplete = OnComplete;
@@ -4579,6 +5316,66 @@ public static partial class Helpers
         return output;
     }
 
+    // {{ModuleItemStart:Tags}}
+    /// <summary>
+    /// Renders a tag as HTML.
+    /// </summary>
+    /// <param name="tag">The tag to render.</param>
+    /// <returns>The HTML for the tag.</returns>
+    public static string RenderTag(DataObjects.Tag tag)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrWhiteSpace(tag.Name)) {
+            if (!String.IsNullOrWhiteSpace(tag.Style)) {
+                string style = tag.Style;
+
+                if (TagColors.Contains(style)) {
+                    output += "<div class=\"tag tag-" + style.ToLower() + "\">" + tag.Name + "</div>";
+                } else {
+                    output += "<div class=\"tag\"" + (!String.IsNullOrWhiteSpace(tag.Style) ? " style=\"" + tag.Style + "\"" : "") + ">" +
+                    tag.Name +
+                    "</div>";
+                }
+            } else {
+                output += "<div class=\"tag\">" +
+                tag.Name +
+                "</div>";
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Renders a collection of tags as HTML.
+    /// </summary>
+    /// <param name="TagIds">The collection of tag ids.</param>
+    /// <param name="SortAlphabetically">Option to sort the results alphabetically.</param>
+    /// <returns>The rendered HTML for the tags.</returns>
+    public static string RenderTags(List<Guid>? TagIds, bool SortAlphabetically = true)
+    {
+        string output = String.Empty;
+
+        if (SortAlphabetically) {
+            TagIds = SortTagList(TagIds);
+        }
+
+        if (TagIds != null && TagIds.Any()) {
+            List<DataObjects.OptionPair> tags = new List<DataObjects.OptionPair>();
+
+            foreach (var tagId in TagIds) {
+                var tag = Model.Tags.FirstOrDefault(x => x.TagId == tagId);
+                if (tag != null) {
+                    output += RenderTag(tag);
+                }
+            }
+        }
+
+        return output;
+    }
+    // {{ModuleItemEnd:Tags}}
+
     /// <summary>
     /// Reloads the entire data model for the selected user id.
     /// </summary>
@@ -4586,7 +5383,7 @@ public static partial class Helpers
     {
         DataObjects.BlazorDataModelLoader? blazorDataModelLoader = null;
 
-        string currentUrl = Helpers.BaseUri;
+        string currentUrl = BaseUri;
 
         if (Model.User.Enabled && Model.User.UserId != Guid.Empty) {
             blazorDataModelLoader = await GetOrPost<DataObjects.BlazorDataModelLoader>("api/Data/GetBlazorDataModel/" + Model.User.UserId.ToString());
@@ -4596,17 +5393,18 @@ public static partial class Helpers
             blazorDataModelLoader = await GetOrPost<DataObjects.BlazorDataModelLoader>("api/Data/GetBlazorDataModel/");
         }
 
+        Model.BlazorDataModelLoader = blazorDataModelLoader != null ? blazorDataModelLoader : new DataObjects.BlazorDataModelLoader();
+
         if (blazorDataModelLoader != null) {
             string cultureCode = blazorDataModelLoader.CultureCode;
             DataObjects.Language modelLanguage = blazorDataModelLoader.DefaultLanguage;
 
             // Preferred or saved culture code.
             bool cultureCodeSet = false;
-            var savedCultureCode = await LocalStorage.GetItemAsync<string>("CultureCode");
-            if (!String.IsNullOrWhiteSpace(savedCultureCode)) {
+            if (!String.IsNullOrWhiteSpace(Model.User.UserPreferences.CultureCode)) {
                 // Only set to this culture if there is a language for this culture.
                 if (blazorDataModelLoader.Languages.Any()) {
-                    var ccExists = blazorDataModelLoader.Languages.FirstOrDefault(x => x.TenantId == Model.TenantId && x.Culture.ToLower() == savedCultureCode.ToLower());
+                    var ccExists = blazorDataModelLoader.Languages.FirstOrDefault(x => x.TenantId == Model.TenantId && x.Culture.ToLower() == Model.User.UserPreferences.CultureCode.ToLower());
                     if (ccExists != null) {
                         modelLanguage = ccExists;
                         cultureCode = ccExists.Culture;
@@ -4649,8 +5447,8 @@ public static partial class Helpers
             Model.AppSettings = blazorDataModelLoader.AppSettings;
             Model.AuthenticationProviders = blazorDataModelLoader.AuthenticationProviders != null ? blazorDataModelLoader.AuthenticationProviders : new DataObjects.AuthenticationProviders();
 
-            if (Model.CultureCode != cultureCode) {
-                Model.CultureCode = cultureCode;
+            if (Model.User.UserPreferences.CultureCode != cultureCode) {
+                Model.User.UserPreferences.CultureCode = cultureCode;
             }
 
             Model.CultureCodes = blazorDataModelLoader.CultureCodes;
@@ -4720,6 +5518,14 @@ public static partial class Helpers
                 Model.Loaded = true;
             }
 
+            if (!Model.LoggedIn) {
+                // Get the user prefs from local storage
+                var prefsFromStorage = await GetLocalStorageItem<DataObjects.UserPreferences>("UserPreferences-" + Model.TenantId.ToString());
+                if (prefsFromStorage != null) {
+                    Model.User.UserPreferences = prefsFromStorage;
+                }
+            }
+
             // If the current tenant has a specific ApplicationUrl, and we are not in that URL space, then redirect.
             if (Model.User.ActionResponse.Result && tenant != null && !String.IsNullOrWhiteSpace(tenant.TenantSettings.ApplicationUrl)) {
                 string baseUrl = BaseUri.ToLower();
@@ -4772,68 +5578,26 @@ public static partial class Helpers
             await CookieWrite("user-token", StringValue(Model.User.AuthToken));
         }
     }
-    // {{ModuleItemStart:Tags}}
 
     /// <summary>
-    /// Renders a tag as HTML.
+    /// Removes any empty items from a list of strings and returns a new list with items trimmed as well.
     /// </summary>
-    /// <param name="tag">The tag to render.</param>
-    /// <returns>The HTML for the tag.</returns>
-    public static string RenderTag(DataObjects.Tag tag)
+    /// <param name="list">A nullable list of strings.</param>
+    /// <returns>A list of strings with any empty items removed and trimmed whitespace on items.</returns>
+    public static List<string> RemoveEmptyListItems(List<string>? list)
     {
-        string output = String.Empty;
+        var output = new List<string>();
 
-        if (!String.IsNullOrWhiteSpace(tag.Name)) {
-            if (!String.IsNullOrWhiteSpace(tag.Style)) {
-                string style = tag.Style;
-
-                if (TagColors.Contains(style)) {
-                    output += "<div class=\"tag tag-" + style.ToLower() + "\">" + tag.Name + "</div>";
-                } else {
-                    output += "<div class=\"tag\"" + (!String.IsNullOrWhiteSpace(tag.Style) ? " style=\"" + tag.Style + "\"" : "") + ">" +
-                    tag.Name +
-                    "</div>";
-                }
-            } else {
-                output += "<div class=\"tag\">" +
-                tag.Name +
-                "</div>";
-            }
-
-
-        }
-
-        return output;
-    }
-
-    /// <summary>
-    /// Renders a collection of tags as HTML.
-    /// </summary>
-    /// <param name="TagIds">The collection of tag ids.</param>
-    /// <param name="SortAlphabetically">Option to sort the results alphabetically.</param>
-    /// <returns>The rendered HTML for the tags.</returns>
-    public static string RenderTags(List<Guid>? TagIds, bool SortAlphabetically = true)
-    {
-        string output = String.Empty;
-
-        if (SortAlphabetically) {
-            TagIds = SortTagList(TagIds);
-        }
-
-        if (TagIds != null && TagIds.Any()) {
-            List<DataObjects.OptionPair> tags = new List<DataObjects.OptionPair>();
-
-            foreach (var tagId in TagIds) {
-                var tag = Model.Tags.FirstOrDefault(x => x.TagId == tagId);
-                if (tag != null) {
-                    output += RenderTag(tag);
+        if (list != null && list.Any()) {
+            foreach (var item in list) {
+                if (!String.IsNullOrWhiteSpace(item)) {
+                    output.Add(item.Trim());
                 }
             }
         }
 
         return output;
     }
-    // {{ModuleItemEnd:Tags}}
 
     /// <summary>
     /// Replaces spaces in a string with non-breaking html characters.
@@ -4859,6 +5623,41 @@ public static partial class Helpers
     {
         DateTime dt = new DateTime(DateTime.Now.Ticks);
         return string.Format("{0:yyyy.MM.dd.HH.mm.ss.ff}", dt);
+    }
+
+    /// <summary>
+    /// Converts a string to a safe file name.
+    /// </summary>
+    /// <param name="FileName">A string containing a potential file name.</param>
+    /// <returns>A file system safe string.</returns>
+    public static string SafeFileName(string? FileName)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrEmpty(FileName)) {
+            output = FileName.Replace(" ", "_")
+                .Replace(",", String.Empty)
+                .Replace("\"", String.Empty)
+                .Replace(@"\", String.Empty)
+                .Replace("/", String.Empty)
+                .Replace("?", String.Empty)
+                .Replace(":", String.Empty)
+                .Replace(";", String.Empty)
+                .Replace("-", String.Empty)
+                .Replace("+", String.Empty)
+                .Replace("!", String.Empty)
+                .Replace("@", String.Empty)
+                .Replace("#", String.Empty)
+                .Replace("$", String.Empty)
+                .Replace("%", String.Empty)
+                .Replace("^", String.Empty)
+                .Replace("&", "and")
+                .Replace("*", String.Empty)
+                .Replace("(", String.Empty)
+                .Replace(")", "_");
+        }
+
+        return output;
     }
 
     /// <summary>
@@ -4888,9 +5687,14 @@ public static partial class Helpers
     {
         var output = new DataObjects.BooleanResponse();
 
-        var saved = await GetOrPost<DataObjects.BooleanResponse>("api/Data/SaveUserPreferences/" + UserId.ToString(), userPreferences);
-        if (saved != null) {
-            output = saved;
+        if (Model.LoggedIn) {
+            var saved = await GetOrPost<DataObjects.BooleanResponse>("api/Data/SaveUserPreferences/" + UserId.ToString(), userPreferences);
+            if (saved != null) {
+                output = saved;
+            }
+        } else {
+            await SetLocalStorageItem("UserPreferences-" + Model.TenantId.ToString(), userPreferences);
+            output.Result = true;
         }
 
         return output;
@@ -4903,7 +5707,7 @@ public static partial class Helpers
     /// <returns>A string in a user-readable format.</returns>
     public static string SecondsToTimePassed(double seconds)
     {
-        string output = "";
+        string output = String.Empty;
 
         int totalSeconds = (int)seconds;
 
@@ -4932,17 +5736,17 @@ public static partial class Helpers
             }
 
             if (hours > 0) {
-                if (output != "") { output += ", "; }
+                if (output != String.Empty) { output += ", "; }
                 output += hours.ToString() + " " + (hours > 1 ? Text("Hours") : Text("Hour"));
             }
 
             if (minutes > 0) {
-                if (output != "") { output += ", "; }
+                if (output != String.Empty) { output += ", "; }
                 output += minutes.ToString() + " " + (minutes > 1 ? Text("Minutes") : Text("Minute"));
             }
 
             if (totalSeconds > 0) {
-                if (output != "") { output += ", "; }
+                if (output != String.Empty) { output += ", "; }
                 output += totalSeconds.ToString() + " " + (totalSeconds > 1 ? Text("Seconds") : Text("Second"));
             }
 
@@ -4966,7 +5770,7 @@ public static partial class Helpers
             Title = Text("SelectFile");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnFileSelected", OnFileSelected);
         parameters.Add("ImagesOnly", ImagesOnly);
         parameters.Add("ShowCancelButton", ShowCancelButton);
@@ -4980,8 +5784,8 @@ public static partial class Helpers
             Top = "80px",
         });
     }
-    // {{ModuleItemStart:Tags}}
 
+    // {{ModuleItemStart:Tags}}
     /// <summary>
     /// Shows a dialog to select tags.
     /// </summary>
@@ -4990,18 +5794,21 @@ public static partial class Helpers
     /// <param name="ExistingTags">An optional collection of any existing selected tags.</param>
     /// <param name="ShowCurrentTags">An option to show the currently-selected tags.</param>
     /// <param name="PreventDeselctingSelectedTags">An option to prevent the user from deselecting existing tags.</param>
-    public static async Task SelectTags(Delegate OnComplete,
+    public static async Task SelectTags
+    (
+        Delegate OnComplete,
         string Title = "",
-        DataObjects.TagModule? Module = null,
+        string? Module = null,
         List<Guid>? ExistingTags = null,
         bool ShowCurrentTags = true,
-        bool PreventDeselctingSelectedTags = false){
+        bool PreventDeselctingSelectedTags = false
+    ){
 
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("SelectTags");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnComplete", OnComplete);
 
         if (Module != null) {
@@ -5072,22 +5879,37 @@ public static partial class Helpers
     /// <param name="PropertyName">The name of the property to set.</param>
     /// <param name="Value">The value to set for the property.</param>
     /// <returns>The updated object.</returns>
-    public static object SetObjectPropertyValue(object o, string PropertyName, object? Value)
+    public static object SetObjectPropertyValue(object o, string? PropertyName, object? Value)
     {
-        try {
-            System.Reflection.BindingFlags bindingAttrs = System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Static |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.NonPublic |
-                System.Reflection.BindingFlags.IgnoreCase;
+        if (!String.IsNullOrEmpty(PropertyName)) {
+            try {
+                System.Reflection.BindingFlags bindingAttrs = 
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Static |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.IgnoreCase;
 
-            var prop = o.GetType().GetProperty(PropertyName, bindingAttrs);
-            if (prop != null) {
-                prop.SetValue(o, Value, null);
-            }
-        } catch { }
+                var prop = o.GetType().GetProperty(PropertyName, bindingAttrs);
+                if (prop != null) {
+                    prop.SetValue(o, Value, null);
+                }
+            } catch { }
+        }
 
         return o;
+    }
+
+    /// <summary>
+    /// Sets a value for an item in the Session Storage.
+    /// </summary>
+    /// <param name="key">The key of the item.</param>
+    /// <param name="value">The value to store.</param>
+    public static async Task SetSessionStorageItem(string key, object value)
+    {
+        if (SessionStorage != null) {
+            await SessionStorage.SetItemAsync(key, value);
+        }
     }
 
     /// <summary>
@@ -5096,9 +5918,8 @@ public static partial class Helpers
     /// <param name="theme">The theme to be set.</param>
     public static async void SetTheme(string theme)
     {
-        Model.Theme = theme;
+        Model.User.UserPreferences.Theme = theme;
         await jsRuntime.InvokeVoidAsync("SetPreferredColorScheme", theme);
-        await LocalStorage.SetItemAsync("Theme", theme);
     }
 
     /// <summary>
@@ -5115,8 +5936,56 @@ public static partial class Helpers
         },
         null, millisecondsDelay, System.Threading.Timeout.Infinite);
     }
-    // {{ModuleItemStart:Tags}}
 
+    public static async Task SetupDotNetHelperButtonHandlers()
+    {
+        await jsRuntime.InvokeVoidAsync("SetupDotNetHelperButtonHandlers");
+    }
+
+    // {{ModuleItemStart:About}}
+    public static async void ShowAbout(string Title = "")
+    {
+        await HideMenus();
+
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
+        parameters.Add("InDialog", true);
+
+        await DialogService.OpenAsync<FreeGLBA.Client.Pages.About>(Title, parameters, new DialogOptions() {
+            AutoFocusFirstElement = false,
+            Draggable = false,
+            ShowClose = false,
+            CloseDialogOnEsc = true,
+            CloseDialogOnOverlayClick = true,
+            ShowTitle = false,
+        });
+    }
+    // {{ModuleItemEnd:About}}
+
+    /// <summary>
+    /// Shows element(s) by class name using jsInterop.
+    /// </summary>
+    /// <param name="className">The class name of the element(s).</param>
+    /// <param name="display">Optional override of the default "block" display type.</param>
+    public static async Task ShowElementByClass(string? className, string display = "block")
+    {
+        if (!String.IsNullOrWhiteSpace(className)) {
+            await jsRuntime.InvokeVoidAsync("ShowElementByClass", className, display);
+        }
+    }
+
+    /// <summary>
+    /// Shows an element by id name using jsInterop.
+    /// </summary>
+    /// <param name="className">The id of the element.</param>
+    /// <param name="display">Optional override of the default "block" display type.</param>
+    public static async Task ShowElementById(string? element, string display = "block")
+    {
+        if (!String.IsNullOrWhiteSpace(element)) {
+            await jsRuntime.InvokeVoidAsync("ShowElementById", element, display);
+        }
+    }
+
+    // {{ModuleItemStart:Tags}}
     /// <summary>
     /// Sorts a list of tag by their names.
     /// </summary>
@@ -5144,7 +6013,6 @@ public static partial class Helpers
                 .Select(x => new Guid(String.Empty + x.Value)).ToList();
         }
 
-
         return output;
     }
     // {{ModuleItemEnd:Tags}}
@@ -5156,7 +6024,7 @@ public static partial class Helpers
     /// <returns>A image element.</returns>
     public static string SpacerImage(int width)
     {
-        string output = "<img src=\"" + Model.ApplicationUrl + "spacer.png\" width=\"" + width.ToString() + "\" height=\"1\" alt=\"\" />";
+        string output = "<img src=\"" + Model.ApplicationUrl + "spacer.png\" width=\"" + width.ToString() + "\" height=\"1\" alt=\"\" aria-label=\"spacer image\" />";
         return output;
     }
 
@@ -5173,6 +6041,32 @@ public static partial class Helpers
             var lines = input.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
             if (lines != null && lines.Any()) {
                 output = lines.ToList();
+            }
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Returns the input string, ensuring that datetime-formatted strings include a UTC indicator ('Z').
+    /// </summary>
+    /// <param name="input">The string to process, which may contain a datetime value.</param>
+    /// <returns>The input string with a UTC indicator appended if it appears to be a datetime format, or an empty string if the
+    /// input is null or whitespace.</returns>
+    public static string StringOrDateValue(string? input)
+    {
+        string output = String.Empty;
+
+        if (!String.IsNullOrWhiteSpace(input)) {
+            output = input;
+
+            if (output.Length > 25 && output.Substring(10, 1) == "T") {
+                try {
+                    DateTime d = Convert.ToDateTime(output);
+                    if (!output.EndsWith("Z")) {
+                        output += "Z";
+                    }
+                } catch { }
             }
         }
 
@@ -5251,7 +6145,7 @@ public static partial class Helpers
         DataObjects.Language? language = null;
 
         if (user != null && Model.Languages.Any()) {
-            language = Model.Languages.FirstOrDefault(x => x.TenantId == user.TenantId && (x.Culture.ToLower() == Model.CultureCode.ToLower() || x.Culture == "en-US"));
+            language = Model.Languages.FirstOrDefault(x => x.TenantId == user.TenantId && (x.Culture.ToLower() == StringLower(Model.User.UserPreferences.CultureCode) || x.Culture == "en-US"));
         }
 
         Model.Language = language != null ? language : Model.DefaultLanguage;
@@ -5269,7 +6163,7 @@ public static partial class Helpers
             await CookieWrite("user-token", "");
         }
 
-        await Helpers.CookieWrite("requested-url", "");
+        await CookieWrite("requested-url", "");
 
         //ForceModelUpdates();
 
@@ -5286,8 +6180,8 @@ public static partial class Helpers
 
         _switchingTenant = false;
     }
-    // {{ModuleItemStart:Tags}}
 
+    // {{ModuleItemStart:Tags}}
     /// <summary>
     /// The list of colors for tags.
     /// </summary>
@@ -5412,7 +6306,6 @@ public static partial class Helpers
             tenant = Model.AllTenants.FirstOrDefault(x => x.TenantId == TenantId);
         }
 
-
         if (tenant != null) {
             output += tenant.Name;
         }
@@ -5429,11 +6322,14 @@ public static partial class Helpers
     /// <param name="MarkUndefinedStrings">An option to mark undefined strings (those not included in your custom language definitions) by converting them to uppercase</param>
     /// <param name="textCase">An option to override the default text case for the text formatting.</param>
     /// <returns>The language item.</returns>
-    public static string Text(string? text,
+    public static string Text
+    (
+        string? text,
         bool ReplaceSpaces = false,
         List<string>? ReplaceValues = null,
         bool MarkUndefinedStrings = true,
-        TextCase textCase = TextCase.Normal){
+        TextCase textCase = TextCase.Normal
+    ){
         string output = !String.IsNullOrWhiteSpace(text) ? text : "";
 
         bool foundTag = false;
@@ -5508,7 +6404,7 @@ public static partial class Helpers
         switch (output) {
             case "APPTITLE":
             case "APP TITLE":
-                output = ""; // In cases where we don't have the AppTitle, just return an empty string.
+                output = String.Empty; // In cases where we don't have the AppTitle, just return an empty string.
                 break;
 
             case "LOADINGWAIT":
@@ -5559,7 +6455,17 @@ public static partial class Helpers
             };
         }
 
-        Tooltips.Open(element, html, options);
+        if (html.Contains("<")) {
+            // The Radzen tooltip component no longer supports html, so you must pass a render fragment instead.
+
+            RenderFragment renderFragment = builder => {
+                builder.AddMarkupContent(0, html);
+            };
+
+            Tooltips.Open(element, ds => renderFragment, options);
+        } else {
+            Tooltips.Open(element, html, options);
+        }
     }
 
     /// <summary>
@@ -5588,6 +6494,7 @@ public static partial class Helpers
                         if (String.IsNullOrWhiteSpace(column.BooleanIcon)) {
                             column.BooleanIcon = column.Label;
                         }
+                        column.AriaLabel = Text(column.DataElementName);
                     } else {
                         column.Label = label;
                     }
@@ -5599,6 +6506,18 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Updates the user's JWT token and saves it in a cookie.
+    /// </summary>
+    /// <param name="token">A string containing the new token.</param>
+    public static async Task UpdateUserToken(string? token)
+    {
+        if (!String.IsNullOrWhiteSpace(token)) {
+            Model.User.AuthToken = token;
+            await CookieWrite("user-token", token);
+        }
+    }
+
+    /// <summary>
     /// Shows a dialog allowing users to upload one or more files.
     /// </summary>
     /// <param name="OnUploadComplete">The Delegate that will be invoked when the upload completes and will receive any a single file or a collection of files.</param>
@@ -5606,15 +6525,35 @@ public static partial class Helpers
     /// <param name="UploadInstructions">Any upload instructions to show before the upload control.</param>
     /// <param name="SupportedFileTypes">A list of extensions if you wish to limit the upload types allowed.</param>
     /// <param name="AllowMultipleUploads">Option to indicate if the user can upload only a single file or multiple files.</param>
-    public static async Task UploadFile(Delegate OnUploadComplete, string Title = "",
-        string UploadInstructions = "", List<string>? SupportedFileTypes = null, bool AllowMultipleUploads = false){
+    /// <param name="Height">The height of the upload area in pixels (defaults to 200px.)</param>
+    /// <param name="AriaLabel">The aria-label for the file upload input element. Defaults to "File Upload/File Uploads".</param>
+    public static async Task UploadFile
+    (
+        Delegate OnUploadComplete,
+        string Title = "",
+        string UploadInstructions = "",
+        List<string>? SupportedFileTypes = null,
+        bool AllowMultipleUploads = false,
+        int Height = 200,
+        string AriaLabel = ""
+    ){
         if (String.IsNullOrWhiteSpace(Title)) {
             Title = Text("UploadFile");
         }
 
-        Dictionary<string, object> parameters = new Dictionary<string, object>();
+        if (String.IsNullOrWhiteSpace(AriaLabel)) {
+            if (AllowMultipleUploads) {
+                AriaLabel = Text("UploadFiles");
+            } else {
+                AriaLabel = Text("UploadFile");
+            }
+        }
+
+        Dictionary<string, object?> parameters = new Dictionary<string, object?>();
         parameters.Add("OnUploadComplete", OnUploadComplete);
         parameters.Add("InDialog", true);
+        parameters.Add("Height", Height);
+        parameters.Add("AriaLabel", AriaLabel);
 
         if (!String.IsNullOrWhiteSpace(UploadInstructions)) {
             parameters.Add("UploadInstructions", UploadInstructions);
@@ -5659,15 +6598,6 @@ public static partial class Helpers
     }
 
     /// <summary>
-    /// Gets the Uri from the NavManager.
-    /// </summary>
-    public static string Uri {
-        get {
-            return NavManager.Uri;
-        }
-    }
-
-    /// <summary>
     /// URL decodes the given input.
     /// </summary>
     /// <param name="url">The input to be decoded.</param>
@@ -5700,19 +6630,40 @@ public static partial class Helpers
     }
 
     /// <summary>
+    /// Gets the Uri from the NavManager.
+    /// </summary>
+    public static string Uri {
+        get {
+            return NavManager.Uri;
+        }
+    }
+
+    /// <summary>
+    /// The URL for the user's avatar photo or an empty string if they don't have one.
+    /// </summary>
+    public static string UserAvatarUrl {
+        get {
+            string output = String.Empty;
+
+            if (Model.User.Photo.HasValue && Model.User.Photo != Guid.Empty) {
+                output = BaseUri + "File/View/" + ((Guid)Model.User.Photo).ToString();
+            }
+
+            return output;
+        }
+    }
+
+    /// <summary>
     /// Gets the name of a User Group based on the unique id.
     /// </summary>
     /// <param name="GroupId">The unique id of the User Group.</param>
     /// <returns>The name of the User Group.</returns>
-    public static async Task<string> UserGroupName(Guid? GroupId)
+    public static string UserGroupName(Guid? GroupId)
     {
+        // Make sure any page calling this method has made sure that the Model.UserGroups has been loaded.
         string output = String.Empty;
 
         if (GroupId.HasValue) {
-            if (!Model.UserGroups.Any()) {
-                await LoadUserGroups();
-            }
-
             var userGroup = Model.UserGroups.FirstOrDefault(x => x.GroupId == GroupId);
             if (userGroup != null) {
                 output += userGroup.Name;
@@ -5729,7 +6680,7 @@ public static partial class Helpers
     /// <returns>Either the user's photo or the default user icon.</returns>
     public static string UserIcon(Guid? photoId)
     {
-        string output = "";
+        string output = String.Empty;
 
         if (photoId.HasValue && photoId != Guid.Empty) {
             output = "<img class=\"user-menu-icon\" src=\"" + BaseUri + "File/View/" + ((Guid)photoId).ToString() + "\" />";
@@ -5841,7 +6792,7 @@ public static partial class Helpers
                         if (showItem) {
                             string itemValue = !String.IsNullOrWhiteSpace(item.value) ? item.value : "";
                             if (itemValue == guidEmpty) {
-                                itemValue = "";
+                                itemValue = String.Empty;
                             }
 
                             output.Add((
@@ -5855,6 +6806,39 @@ public static partial class Helpers
         }
 
         return output;
+    }
+
+    /// <summary>
+    /// Validates that a url is a valid redirection url for your comain.
+    /// </summary>
+    /// <param name="redirectUrl">The url to validate.</param>
+    /// <param name="domain">Your domain name. If left empty it will be parsed from the ApplicationUrl setting.</param>
+    /// <param name="allowLocalhost">Option to allow localhost as a redirect url.</param>
+    /// <returns></returns>
+    public static bool ValidateRedirect(string? redirectUrl, string domain = "", bool allowLocalhost = true)
+    {
+        if (!String.IsNullOrWhiteSpace(redirectUrl)) {
+            var url = redirectUrl.ToLower();
+
+            if (allowLocalhost && (url.StartsWith("http://localhost:") || url.StartsWith("https://localhost:"))) {
+                return true;
+            }
+
+            if (String.IsNullOrWhiteSpace(domain)) {
+                domain = ApplicationDomain;
+
+                if (String.IsNullOrWhiteSpace(domain)) {
+                    domain = DomainNameFromHostName(Model.ApplicationUrl);
+                }
+            }
+
+            if (url.StartsWith("http://") || url.StartsWith("https://")) {
+                var uri = new Uri(url);
+                return uri.Host.EndsWith(domain, StringComparison.InvariantCultureIgnoreCase);
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -5903,7 +6887,7 @@ public static partial class Helpers
                     NavManager.NavigateTo(Model.ApplicationUrl + "InvalidTenantCode");
                 } else {
                     // It's a valid tenant code, so make sure it's the current tenant.
-                    if (Helpers.StringValue(Model.Tenant.TenantCode).ToLower() != TenantCode.ToLower()) {
+                    if (StringValue(Model.Tenant.TenantCode).ToLower() != TenantCode.ToLower()) {
                         await SwitchTenant(tenant.TenantId);
                     }
                 }
@@ -5917,6 +6901,26 @@ public static partial class Helpers
         }
 
         _validatingUrl = false;
+    }
+
+    /// <summary>
+    /// Shows a file viewer for supported file types, or downloads the file if no viewer is available.
+    /// </summary>
+    /// <param name="file">The FileStorage object for the file.</param>
+    /// <param name="title">An optional title for the dialog.</param>
+    public static async Task ViewOrDownloadFile(DataObjects.FileStorage file, string? title = "")
+    {
+        if (IsImage(file)) {
+            await ViewImage(file, title);
+        } else if (IsPDF(file)) {
+            await PdfViewer(file.FileId, "", "", "", Model.User.Admin);
+            //} else if (IsOfficeFile(file)) {
+            //    await PdfViewer(file.FileId, "", "", "", Model.User.Admin || Model.User.Purchaser);
+        } else if (IsTextFile(file)) {
+            await ViewTextFile(file, title);
+        } else {
+            await DownloadFile(file.FileId);
+        }
     }
 
     /// <summary>
@@ -5934,36 +6938,16 @@ public static partial class Helpers
             string image = String.Empty;
 
             if (file.Value != null) {
-                string extension = Helpers.StringValue(file.Extension).Replace(".", "").ToLower();
+                string extension = StringValue(file.Extension).Replace(".", "").ToLower();
                 string imageData = "data:image/" + extension + "; base64," + Convert.ToBase64String(file.Value);
 
-                image = "<img src=\"" + imageData + "\" />";
+                image = "<img src=\"" + imageData + "\" class=\"image-preview\" />";
             } else {
                 image = "<img src=\"" + Model.ApplicationUrl + "File/Embed/" + file.FileId.ToString() + "\" class=\"image-preview\" />";
             }
 
             string content = "<div class=\"mt-2 center\">" + image + "</div>";
             await ModalMessage(content, title, false, "80%");
-        }
-    }
-
-    /// <summary>
-    /// Shows a file viewer for supported file types, or downloads the file if no viewer is available.
-    /// </summary>
-    /// <param name="file">The FileStorage object for the file.</param>
-    /// <param name="title">An optional title for the dialog.</param>
-    public static async Task ViewOrDownloadFile(DataObjects.FileStorage file, string? title = "")
-    {
-        if (IsImage(file)) {
-            await ViewImage(file, title);
-        } else if (IsPDF(file)) {
-            await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin);
-            //} else if (IsOfficeFile(file)) {
-            //    await Helpers.PdfViewer(file.FileId, "", "", "", Model.User.Admin || Model.User.Purchaser);
-        } else if (IsTextFile(file)) {
-            await ViewTextFile(file, title);
-        } else {
-            await DownloadFile(file.FileId);
         }
     }
 
@@ -5997,4 +6981,5 @@ public static partial class Helpers
             }
         }
     }
+
 }

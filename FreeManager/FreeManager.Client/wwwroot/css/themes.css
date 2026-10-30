@@ -171,6 +171,9 @@
     --rz-dropdown-item-selected-color:#fff;
     --rz-dropdown-item-selected-hover-background-color: #222;
     --rz-dropdown-item-selected-hover-color: #fff;
+    --rz-input-placeholder-color:#ccc;
+    --rz-input-hover-background-color: #111;
+    --rz-input-focus-background-color: #111;
 }
 
 [data-bs-theme=dark] .rz-slot.today {
@@ -230,6 +233,14 @@ body.dark {
 [data-bs-theme=dark] input[type="time"],
 [data-bs-theme=dark] input[type="datetime-local"] {
     color-scheme: dark;
+}
+
+[data-bs-theme=dark] .btn-outline-secondary {
+  --bs-btn-color: #adb5bd;
+  --bs-btn-border-color: #adb5bd;
+  --bs-btn-hover-bg: #adb5bd;
+  --bs-btn-hover-border-color: #adb5bd;
+  --bs-btn-hover-color: #000;
 }
 
 

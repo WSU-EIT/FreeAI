@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="FreeSmartsheets.Client/FreeSmartsheets.Client.csproj" />
+  <Project Path="FreeSmartsheets.DataAccess/FreeSmartsheets.DataAccess.csproj" Id="D24EB923-68BC-41A5-8E54-DFB282B1C510" />
+  <Project Path="FreeSmartsheets.DataObjects/FreeSmartsheets.DataObjects.csproj" Id="49504258-C2A5-42E9-A07C-E207AF2A58DD" />
+  <Project Path="FreeSmartsheets.EFModels/FreeSmartsheets.EFModels.csproj" Id="70B143CE-5084-4FAA-98C2-D044994A3441" />
+  <Project Path="FreeSmartsheets.Plugins/FreeSmartsheets.Plugins.csproj" Id="110835BC-2541-44CD-946E-74EB5C5BB109" />
+  <Project Path="FreeSmartsheets/FreeSmartsheets.csproj" />
+</Solution>

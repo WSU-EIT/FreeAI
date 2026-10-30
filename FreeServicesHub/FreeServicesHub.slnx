@@ -1,27 +1,17 @@
 <Solution>
-  <Folder Name="/FreeCRM/">
-    <Project Path="Examples/FreeCRM/CRM.Client/CRM.Client.csproj" />
-    <Project Path="Examples/FreeCRM/CRM.DataAccess/CRM.DataAccess.csproj" />
-    <Project Path="Examples/FreeCRM/CRM.DataObjects/CRM.DataObjects.csproj" />
-    <Project Path="Examples/FreeCRM/CRM.EFModels/CRM.EFModels.csproj" />
-    <Project Path="Examples/FreeCRM/CRM.Plugins/CRM.Plugins.csproj" />
-    <Project Path="Examples/FreeCRM/CRM/CRM.csproj" />
-  </Folder>
-  <Folder Name="/FreeServicesHub/">
-    <Project Path="../../All-of-Daniels-Projects2/WebDevExample/ReferenceProjects/FreeTools-main/FreeExamples/Docs/Docs.csproj" />
-    <Project Path="FreeServicesHub.Agent.Installer/FreeServicesHub.Agent.Installer.csproj" />
-    <Project Path="FreeServicesHub.Agent/FreeServicesHub.Agent.csproj" />
-    <Project Path="FreeServicesHub.AppHost/FreeServicesHub.AppHost.csproj" />
-    <Project Path="FreeServicesHub.TestMe/FreeServicesHub.TestMe.csproj" />
-    <Project Path="FreeServicesHub.Tests.Integration/FreeServicesHub.Tests.Integration.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub.Client/FreeServicesHub.Client.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub.DataAccess/FreeServicesHub.DataAccess.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub.DataObjects/FreeServicesHub.DataObjects.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub.EFModels/FreeServicesHub.EFModels.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub.Plugins/FreeServicesHub.Plugins.csproj" />
-    <Project Path="FreeServicesHub/FreeServicesHub/FreeServicesHub.csproj" />
-  </Folder>
   <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
   </Folder>
+  <Project Path="FreeServicesHub.Client/FreeServicesHub.Client.csproj" />
+  <Project Path="FreeServicesHub.DataAccess/FreeServicesHub.DataAccess.csproj" Id="71F37281-1A1D-4BBA-B548-D2F11B809CA2" />
+  <Project Path="FreeServicesHub.DataObjects/FreeServicesHub.DataObjects.csproj" Id="22EBA0F7-AB57-418B-BBE5-407566D83672" />
+  <Project Path="FreeServicesHub.EFModels/FreeServicesHub.EFModels.csproj" Id="FE5374EA-86F6-4882-BE32-61F320CE6BEF" />
+  <Project Path="FreeServicesHub.Plugins/FreeServicesHub.Plugins.csproj" Id="36CB3134-73E8-4630-8280-2FB9279BAF61" />
+  <Project Path="FreeServicesHub/FreeServicesHub.csproj" />
 </Solution>

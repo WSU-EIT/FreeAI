@@ -18,7 +18,6 @@ public partial class DataMigrations
             END
             """);
 
-
         m1.Add(
             """
             IF OBJECT_ID(N'[DepartmentGroups]') IS NULL
@@ -62,7 +61,6 @@ public partial class DataMigrations
             END
             """);
 
-
         m1.Add(
             """
             IF OBJECT_ID(N'[FileStorage]') IS NULL
@@ -89,9 +87,6 @@ public partial class DataMigrations
             END
             """);
 
-
-
-
         m1.Add(
             """
             IF OBJECT_ID(N'[PluginCache]') IS NULL
@@ -114,7 +109,6 @@ public partial class DataMigrations
                 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
             END
             """);
-
 
         m1.Add(
             """
@@ -162,9 +156,6 @@ public partial class DataMigrations
                     [Name] [nvarchar](200) NOT NULL,
                     [Style] [nvarchar](max) NULL,
                     [Enabled] [bit] NOT NULL,
-                    [UseInAppointments] [bit] NOT NULL,
-                    [UseInEmailTemplates] [bit] NOT NULL,
-                    [UseInServices] [bit] NOT NULL,
                     [Added] [datetime] NOT NULL,
                     [AddedBy] [nvarchar](100) NULL,
                     [LastModified] [datetime] NOT NULL,
@@ -278,7 +269,6 @@ public partial class DataMigrations
             
             """;
 
-
         usersTable +=
             """
                     [ManageFiles] [bit] NOT NULL,
@@ -312,7 +302,6 @@ public partial class DataMigrations
 
         m1.Add(usersTable);
 
-
         m1.Add(
             """
             IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME='IX_FileStorage_UserId')
@@ -322,8 +311,6 @@ public partial class DataMigrations
                 ALTER TABLE[dbo].[FileStorage] CHECK CONSTRAINT[IX_FileStorage_UserId]
             END
             """);
-
-
 
         // {{ModuleItemStart:Tags}}
         m1.Add(

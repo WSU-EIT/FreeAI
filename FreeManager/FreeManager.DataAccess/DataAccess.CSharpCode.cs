@@ -1,5 +1,3 @@
-using MySqlX.XDevAPI.Common;
-
 namespace FreeManager;
 
 public partial interface IDataAccess
@@ -20,12 +18,15 @@ public partial class DataAccess
     /// <param name="Classname">The class name in which the invokerFunction resides.</param>
     /// <param name="invokerFunction">The name of the function to invoke from the code.</param>
     /// <returns>An object of type T.</returns>
-    public T? ExecuteDynamicCSharpCode<T>(string code, 
+    public T? ExecuteDynamicCSharpCode<T>
+    (
+        string code, 
         object[] objects, 
         List<string>? additionalAssemblies, 
         string Namespace, 
         string Classname, 
-        string invokerFunction){
+        string invokerFunction
+    ){
         T? output = default(T);
 
         try {
@@ -117,7 +118,6 @@ public partial class DataAccess
             }
         } catch (Exception ex) {
             // When an error is encountered the output object will be null, so create and return a new object.
-            //return new DataObjects.DynamicWorkflowResponse { Message = ex.Message };
             Console.WriteLine("Exception: " + RecurseExceptionAsString(ex));
         }
 

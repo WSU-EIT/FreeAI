@@ -1,8 +1,6 @@
 using FreeLLM.Server.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
-using System.Runtime.Caching;
 using System.Security.Claims;
 
 namespace FreeLLM.Server.Controllers;
@@ -15,32 +13,31 @@ public partial class DataController : ControllerBase
     private IDataAccess da;
     private DataObjects.User CurrentUser;
     private Guid TenantId = Guid.Empty;
-    private readonly IMemoryCache _cache;
     private IConfigurationHelper configurationHelper;
     private Plugins.IPlugins plugins;
 
-    private readonly IHubContext<freellmHub>? _signalR;
+    private readonly IHubContext<freellmHub, IsrHub>? _signalR;
 
-    private string _fingerprint = "";
+    private string _fingerprint = String.Empty;
     private string _returnCodeAccessDenied = "{{AccessDenied}}";
 
-    public DataController(IDataAccess daInjection, 
-        IHttpContextAccessor httpContextAccessor, 
-        ICustomAuthentication auth, 
-        IHubContext<freellmHub> hubContext, 
+    public DataController
+    (
+        IDataAccess daInjection,
+        IHttpContextAccessor httpContextAccessor,
+        ICustomAuthentication auth,
+        IHubContext<freellmHub, IsrHub> hubContext,
         IConfigurationHelper configHelper,
-        IMemoryCache memoryCache,
-        Plugins.IPlugins diPlugins){
+        Plugins.IPlugins diPlugins
+    ){
         da = daInjection;
         authenticationProviders = auth;
         configurationHelper = configHelper;
         plugins = diPlugins;
         _signalR = hubContext;
 
-        _cache = memoryCache;
-
         if (authenticationProviders != null) {
-            da.SetAuthenticationProviders(new DataObjects.AuthenticationProviders { 
+            da.SetAuthenticationProviders(new DataObjects.AuthenticationProviders {
                 UseApple = authenticationProviders.UseApple,
                 UseFacebook = authenticationProviders.UseFacebook,
                 UseGoogle = authenticationProviders.UseGoogle,
@@ -48,13 +45,16 @@ public partial class DataController : ControllerBase
                 UseOpenId = authenticationProviders.UseOpenId,
                 OpenIdButtonText = authenticationProviders.OpenIdButtonText,
                 OpenIdButtonClass = authenticationProviders.OpenIdButtonClass,
-                OpenIdButtonIcon = authenticationProviders.OpenIdButtonIcon
+                OpenIdButtonIcon = authenticationProviders.OpenIdButtonIcon,
+                OpenIdEmployeeIdClaim = authenticationProviders.OpenIdEmployeeIdClaim,
             });
         }
 
         if (httpContextAccessor != null && httpContextAccessor.HttpContext != null) {
             context = httpContextAccessor.HttpContext;
         }
+
+        ControllerInit_App(da, context, authenticationProviders, _signalR, configurationHelper, plugins);
 
         // See if a TenantId is included in the header or querystring.
         string tenantId = HeaderValue("TenantId");
@@ -85,21 +85,27 @@ public partial class DataController : ControllerBase
         // Set the CurrentUser to a new User object and if we have a valid Token
         // use that to get set the CurrentUser.
         CurrentUser = new DataObjects.User();
-        if (context?.User?.Identity?.IsAuthenticated == true) {
-            try {
-                string token = context?.User?.FindFirstValue(ClaimTypes.Hash) ?? string.Empty;
-                if (!String.IsNullOrWhiteSpace(token)) {
-                    try {
-                        _fingerprint = context?.User?.FindFirstValue(ClaimTypes.Thumbprint) ?? string.Empty;
-                        string tenantIdString = context?.User?.FindFirstValue(ClaimTypes.GroupSid) ?? string.Empty;
 
-                        TenantId = Guid.Empty;
-                        Guid.TryParse(tenantIdString, out TenantId);
+        // Check the app-specific methods first for authentication.
+        CurrentUser = Authenticate_App();
 
-                        CurrentUser = da.GetUserFromToken(TenantId, token, _fingerprint).Result;
-                    } catch { }
-                }
-            } catch { }
+        if (!CurrentUser.ActionResponse.Result) {
+            if (context?.User?.Identity?.IsAuthenticated == true) {
+                try {
+                    string token = context?.User?.FindFirstValue(ClaimTypes.Hash) ?? string.Empty;
+                    if (!String.IsNullOrWhiteSpace(token)) {
+                        try {
+                            _fingerprint = context?.User?.FindFirstValue(ClaimTypes.Thumbprint) ?? string.Empty;
+                            string tenantIdString = context?.User?.FindFirstValue(ClaimTypes.GroupSid) ?? string.Empty;
+
+                            TenantId = Guid.Empty;
+                            Guid.TryParse(tenantIdString, out TenantId);
+
+                            CurrentUser = da.GetUserFromToken(TenantId, token, _fingerprint).Result;
+                        } catch { }
+                    }
+                } catch { }
+            }
         }
 
         // If the user wasn't loaded from the custom auth provider, but we have a token, load the user from the token.

@@ -2,58 +2,87 @@
 @inject BlazorDataModel Model
 @inject Radzen.DialogService DialogService
 @typeparam UploadType
+
 <div class="@(_uploading ? "hidden" : "mt-3")">
-    <MudBlazor.MudStack Style="width: 100%;">
-        <MudBlazor.MudFileUpload T="UploadType" OnFilesChanged="UploaderOnInputFileChanged" Hidden="false"
-                Accept="@SupportedFileTypesList" AppendMultipleFiles="true" MaximumFileCount="10"
-                Class="flex-1" InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0"
-                @ondragenter="@UploaderSetDragClass" @ondragleave="@UploaderClearDragClass" @ondragend="@UploaderClearDragClass">
-            <ActivatorContent>
-                <MudBlazor.MudPaper Height="200px" Outlined="true" Class="@UploaderDragClass">
-                    @if (!String.IsNullOrWhiteSpace(UploadInstructions)) {
-                        <div class="drag-and-drop-instructions">@((MarkupString)UploadInstructions)</div>
-                    }
-                    @if (!String.IsNullOrWhiteSpace(SupportedFileTypesList)) {
-                        <div class="drag-and-drop-instructions-file-types">
-                            <Language Tag="SupportedFileTypes" />:
-                            @((MarkupString)SupportedFileTypesList.ToUpper())
-                        </div>
-                    }
-                </MudBlazor.MudPaper>
-            </ActivatorContent>
-        </MudBlazor.MudFileUpload>
-    </MudBlazor.MudStack>
+    <MudBlazor.MudCard Style="width:100%;">
+        <MudBlazor.MudCardContent>
+            <MudBlazor.MudFileUpload
+                    aria-label="@AriaLabel"
+                    @ref="_uploadComponent"
+                    T="UploadType"
+                    OnFilesChanged="UploaderOnInputFileChanged"
+                    Hidden="false"
+                    Accept="@SupportedFileTypesList"
+                    AppendMultipleFiles="true"
+                    MaximumFileCount="10"
+                    Class="flex-1"
+                    InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20 no-opacity"
+                    @ondragenter="@UploaderSetDragClass"
+                    @ondragleave="@UploaderClearDragClass"
+                    @ondragend="@UploaderClearDragClass">
+                <CustomContent>
+                    <MudBlazor.MudPaper Height="@HeightCss" Outlined="true" Class="@UploaderDragClass">
+                        @if (!String.IsNullOrWhiteSpace(UploadInstructions)) {
+                            <div class="drag-and-drop-instructions">@((MarkupString)UploadInstructions)</div>
+                        }
+                        @if (!String.IsNullOrWhiteSpace(SupportedFileTypesList)) {
+                            <div class="drag-and-drop-instructions-file-types">
+                                <Language Tag="SupportedFileTypes" />:
+                                @((MarkupString)SupportedFileTypesList.ToUpper())
+                            </div>
+                        }
+                    </MudBlazor.MudPaper>
+                </CustomContent>
+            </MudBlazor.MudFileUpload>
+        </MudBlazor.MudCardContent>
+    </MudBlazor.MudCard>
 </div>
 @if (_uploading) {
     <div class="mt-3 mb-2">
         <Language Tag="UploadingWait" IncludeIcon="true" />
     </div>
 }
+
 @code {
+    [Parameter] public bool? AllowMultipleUploads { get; set; } = false;
+    [Parameter] public string AriaLabel { get; set; } = "File Upload";
+    [Parameter] public int Height { get; set; } = 200;
+    [Parameter] public bool InDialog { get; set; }
+    [Parameter] public Delegate? OnUploadComplete { get; set; }
+    [Parameter] public List<string>? SupportedFileTypes { get; set; }
+    [Parameter] public string? UploadInstructions { get; set; }
+
+    protected MudBlazor.MudFileUpload<UploadType>? _uploadComponent;
+    protected bool _uploading = false;
+
     private static string UploaderDefaultDragClass = "drag-and-drop-upload";
     private string UploaderDragClass = UploaderDefaultDragClass;
 
-    protected bool _uploading = false;
-    [Parameter]
-    public bool? AllowMultipleUploads { get; set; } = false;
-
-    [Parameter]
-    public bool InDialog { get; set; }
-
-    [Parameter]
-    public Delegate? OnUploadComplete { get; set; }
-
-    [Parameter]
-    public List<string>? SupportedFileTypes { get; set; }
-
-    protected string SupportedFileTypesList
+    public void Dispose()
     {
+    }
+
+    protected string HeightCss {
         get {
             string output = String.Empty;
 
-            if(SupportedFileTypes != null && SupportedFileTypes.Any()) {
+            if (Height > 0) {
+                output = $"{Height}px";
+            } else {
+                output = "200px;";
+            }
+
+            return output;
+        }
+    }
+
+    protected string SupportedFileTypesList {
+        get {
+            string output = String.Empty;
+
+            if (SupportedFileTypes != null && SupportedFileTypes.Any()) {
                 for(int x = 0; x < SupportedFileTypes.Count(); x++) {
-                    if(x > 0) {
+                    if (x > 0) {
                         output += ", ";
                     }
 
@@ -70,11 +99,6 @@
         }
     }
 
-    [Parameter]
-    public string? UploadInstructions { get; set; }
-
-    public void Dispose() { }
-
     private void UploaderClearDragClass()
     {
         UploaderDragClass = UploaderDefaultDragClass;
@@ -89,27 +113,66 @@
 
         List<DataObjects.FileStorage> output = new List<DataObjects.FileStorage>();
 
+        string lastFileName = String.Empty;
         try {
             foreach (var file in e.GetMultipleFiles()) {
+                lastFileName = file.Name;
                 string extension = System.IO.Path.GetExtension(file.Name);
 
                 var byteData = new byte[file.Size];
-                await file.OpenReadStream(52428800).ReadAsync(byteData);
+                if (byteData.Length > 52428800) {
+                    await Helpers.ConsoleLog("File '" + file.Name + "' exceeds the allowed file size.");
 
-                DataObjects.FileStorage fileStorage = new DataObjects.FileStorage {
-                    Bytes = file.Size,
-                    FileName = file.Name,
-                    Extension = extension,
-                    TenantId = Model.TenantId,
-                    Value = byteData,
-                };
+                    output.Add(new DataObjects.FileStorage {
+                        ActionResponse = new DataObjects.BooleanResponse {
+                            Result = false,
+                            Messages = new List<string> { "File exceeds the allowed file size." }
+                        },
+                        Bytes = file.Size,
+                        FileName = file.Name,
+                        Extension = extension,
+                        TenantId = Model.TenantId,
+                        Value = null,
+                    });
+                } else {
+                    await file.OpenReadStream(52428800).ReadAsync(byteData);
 
-                output.Add(fileStorage);
+                    DataObjects.FileStorage fileStorage = new DataObjects.FileStorage {
+                        ActionResponse = new DataObjects.BooleanResponse {
+                            Result = true,
+                            Messages = new List<string>()
+                        },
+                        Bytes = file.Size,
+                        FileName = file.Name,
+                        Extension = extension,
+                        TenantId = Model.TenantId,
+                        Value = byteData,
+                    };
+
+                    output.Add(fileStorage);
+                }
             }
-        }catch (Exception ex) {
-            if(ex != null) {
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog("Error in File Upload: File '" + lastFileName + "' - " + ex.Message);
 
-            }
+            var errorMessages = new List<string> { "An error occurred while uploading the file '" + lastFileName + "'." };
+            errorMessages.AddRange(Helpers.RecurseException(ex));
+
+            output.Add(new DataObjects.FileStorage {
+                ActionResponse = new DataObjects.BooleanResponse {
+                    Result = false,
+                    Messages = errorMessages,
+                },
+                Bytes = 0,
+                FileName = lastFileName,
+                Extension = String.Empty,
+                TenantId = Model.TenantId,
+                Value = null,
+            });
+        }
+
+        if (_uploadComponent != null) {
+            await _uploadComponent.ClearAsync();
         }
 
         if (InDialog) {
@@ -117,8 +180,8 @@
         }
 
         if (output.Any()) {
-            if(OnUploadComplete != null) {
-                if(AllowMultipleUploads.HasValue && (bool)AllowMultipleUploads == true) {
+            if (OnUploadComplete != null) {
+                if (AllowMultipleUploads.HasValue && (bool)AllowMultipleUploads == true) {
                     OnUploadComplete.DynamicInvoke(output);
                 } else {
                     OnUploadComplete.DynamicInvoke(output[0]);

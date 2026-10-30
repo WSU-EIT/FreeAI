@@ -1,13 +1,14 @@
-﻿@implements IDisposable
-@using Humanizer
+@implements IDisposable
 @inject BlazorDataModel Model
 
 @if (Model.Loaded && Model.View == _pageName && (Model.LoggedIn || !RequireLogin)) {
+    // {{ModuleItemStart:Logo}}
     if (Model.Tenant.TenantSettings.LogoIncludedOnHomePage && !String.IsNullOrWhiteSpace(LogoUrl)) {
         <div class="home-page-logo-container">
             <img src="@LogoUrl" class="logo-homepage" />
         </div>
     }
+    // {{ModuleItemEnd:Logo}}
 
     if (_loading) {
         <LoadingMessage />
@@ -31,13 +32,14 @@
     /// By default the home page of the app will require login.
     /// You can change this by setting RequireLogin to false.
     /// </summary>
-    public bool RequireLogin { get; set; } = false;
+    public bool RequireLogin { get; set; } = true;
 
     protected bool _loadedData = false;
     protected bool _loading = true;
     protected string _pageName = "home";
 
-    public void Dispose() { 
+    public void Dispose()
+    { 
         Model.OnChange -= OnDataModelUpdated;
     }
 
@@ -56,18 +58,14 @@
         }
     }
 
-    protected void OnDataModelUpdated() {
-        if (Model.View == _pageName) {
-            StateHasChanged();
-        }
-    }
-
-    protected async Task LoadData() {
+    protected async Task LoadData()
+    {
         // Load any app-specific data here.
         _loading = false;
         StateHasChanged();
     }
 
+    // {{ModuleItemStart:Logo}}
     protected string LogoUrl {
         get {
             if (Model.Tenant.TenantSettings.Logo.HasValue && Model.Tenant.TenantSettings.Logo != Guid.Empty) {
@@ -75,6 +73,14 @@
             } else {
                 return String.Empty;
             }
+        }
+    }
+    // {{ModuleItemEnd:Logo}}
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
         }
     }
 }

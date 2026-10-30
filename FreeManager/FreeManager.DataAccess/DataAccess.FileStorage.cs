@@ -31,13 +31,13 @@ public partial class DataAccess
 
             // If the delete preference is to delete immediately, or if the item is already marked for
             // delete, then delete now.
-            if(ForceDeleteImmediately || settings.DeletePreference == DataObjects.DeletePreference.Immediate || rec.Deleted == true) {
+            if (ForceDeleteImmediately || settings.DeletePreference == DataObjects.DeletePreference.Immediate || rec.Deleted == true) {
                 data.FileStorages.Remove(rec);
             } else {
                 rec.Deleted = true;
                 rec.DeletedAt = now;
                 rec.LastModified = now;
-                if(CurrentUser != null) {
+                if (CurrentUser != null) {
                     rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
                 }
             }
@@ -100,6 +100,7 @@ public partial class DataAccess
                 case ".GIF":
                     // OK to return these, but in the future these will be resized as thumbnails
                     break;
+
                 default:
                     output = null;
                     break;
@@ -115,7 +116,7 @@ public partial class DataAccess
 
         FileStorage? rec = null;
 
-        if(AdminUser(CurrentUser)) {
+        if (AdminUser(CurrentUser)) {
             rec = await data.FileStorages.FirstOrDefaultAsync(x => x.FileId == FileId);
         } else {
             rec = await data.FileStorages.FirstOrDefaultAsync(x => x.FileId == FileId && x.Deleted != true);
@@ -147,13 +148,18 @@ public partial class DataAccess
         return output;
     }
 
-    public async Task<List<DataObjects.FileStorage>> GetFileStorageItems(Guid ItemId, bool ImagesOnly, bool ResizeAsThumbnail, DataObjects.User? CurrentUser = null)
-    {
+    public async Task<List<DataObjects.FileStorage>> GetFileStorageItems
+    (
+        Guid ItemId,
+        bool ImagesOnly,
+        bool ResizeAsThumbnail,
+        DataObjects.User? CurrentUser = null
+    ){
         List<DataObjects.FileStorage> output = new List<DataObjects.FileStorage>();
 
         List<FileStorage>? recs = null;
 
-        if(AdminUser(CurrentUser)) {
+        if (AdminUser(CurrentUser)) {
             recs = await data.FileStorages.Where(x => x.ItemId == ItemId).OrderBy(x => x.UploadDate).ToListAsync();
         } else {
             recs = await data.FileStorages.Where(x => x.ItemId == ItemId && x.Deleted != true).OrderBy(x => x.UploadDate).ToListAsync();
@@ -204,15 +210,17 @@ public partial class DataAccess
         filter.Columns = new List<DataObjects.FilterColumn> { 
             new DataObjects.FilterColumn { 
                 Sortable = false,
-                Label = "",
+                Label = GetLanguageItem("FileId", language),
                 DataElementName = "FileId",
                 DataType = "Guid",
+                Class = "auto-truncate",
             },
             new DataObjects.FilterColumn {
                 Sortable = true,
                 Label = GetLanguageItem("FileName", language),
                 DataElementName = "FileName",
                 DataType = "string",
+                Class = "auto-truncate",
             },
             new DataObjects.FilterColumn {
                 Sortable = true,
@@ -228,7 +236,7 @@ public partial class DataAccess
             }
         };
 
-        if(AdminUser(CurrentUser)) {
+        if (AdminUser(CurrentUser)) {
             filter.Columns.Add(
                 new DataObjects.FilterColumn {
                     Align = "center",
@@ -283,7 +291,7 @@ public partial class DataAccess
         if (filter.Extensions != null && filter.Extensions.Any()) {
             // Make sure all extensions are lowercase to compare
             List<string> extensions = new List<string>();
-            foreach(var ext in filter.Extensions) {
+            foreach (var ext in filter.Extensions) {
                 extensions.Add(ext.ToLower());
             }
 
@@ -417,8 +425,8 @@ public partial class DataAccess
                     x.LastModifiedBy, x.SourceFileId, x.UploadDate, x.UploadedBy, x.UserId 
                 })
             .Where(x => x.TenantId == TenantId && x.ItemId == null && x.UserId == null && x.SourceFileId != null && !excludeSourceTypes.Contains(x.SourceFileId)).ToListAsync();
-        if(recs != null && recs.Any()) {
-            foreach(var rec in recs) {
+        if (recs != null && recs.Any()) {
+            foreach (var rec in recs) {
                 output.Add(new DataObjects.FileStorage {
                     ActionResponse = GetNewActionResponse(true),
                     Extension = rec.Extension,
@@ -454,8 +462,8 @@ public partial class DataAccess
             .Select(x => new { x.Extension, x.Bytes, x.FileId, x.SourceFileId, x.FileName, x.ItemId })
             .ToListAsync();
 
-        if(recs != null && recs.Any()) {
-            foreach(var rec in recs) {
+        if (recs != null && recs.Any()) {
+            foreach (var rec in recs) {
                 output.Add(new DataObjects.FileStorage { 
                     ActionResponse = GetNewActionResponse(true),
                     Extension = rec.Extension,
@@ -481,7 +489,7 @@ public partial class DataAccess
             .Select(x => x.Extension.ToLower())
             .Distinct()
             .ToListAsync();
-        if(recs != null && recs.Any()) {
+        if (recs != null && recs.Any()) {
             output = recs.OrderBy(x => x).ToList();
         }
 
@@ -569,12 +577,14 @@ public partial class DataAccess
         rec.UserId = output.UserId.HasValue ? (Guid)output.UserId : (Guid?)null;
 
         rec.LastModified = now;
-        if(CurrentUser != null) {
+        if (CurrentUser != null) {
             rec.LastModifiedBy = CurrentUserIdString(CurrentUser);
             if (CurrentUser.Admin) {
                 rec.Deleted = output.Deleted;
             }
         }
+
+        SaveDataApp(rec, output, CurrentUser);
 
         try {
             if (newRecord) {
@@ -604,7 +614,7 @@ public partial class DataAccess
         var output = new DataObjects.BooleanResponse();
 
         var rec = await data.FileStorages.FirstOrDefaultAsync(x => x.FileId == FileId);
-        if(rec != null) {
+        if (rec != null) {
             rec.Deleted = false;
             await data.SaveChangesAsync();
             output.Result = true;
@@ -617,14 +627,16 @@ public partial class DataAccess
 
     public bool UserCanViewFile(DataObjects.FileStorage file, DataObjects.User CurrentUser)
     {
-        bool output = false;
+        bool output = UserCanViewFileApp(file, CurrentUser);
 
-        if (CurrentUser.AppAdmin || CurrentUser.Admin || CurrentUser.ManageFiles) {
-            output = true;
-        } else if (file.UserId.HasValue && file.UserId == CurrentUser.UserId) {
-            output = true;
-        } else if (file.ItemId.HasValue) {
-            // See if this is part of a special item and check access.
+        if (!output) {
+            if (CurrentUser.AppAdmin || CurrentUser.Admin || CurrentUser.ManageFiles) {
+                output = true;
+            } else if (file.UserId.HasValue && file.UserId == CurrentUser.UserId) {
+                output = true;
+            } else if (file.ItemId.HasValue) {
+                // See if this is part of a special item and check access.
+            }
         }
 
         return output;

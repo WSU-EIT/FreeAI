@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Accessibility.md" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Util.exe" />
+    <File Path="UtilMacOS" />
+  </Folder>
+  <Project Path="ChatWithAI.Client/ChatWithAI.Client.csproj" />
+  <Project Path="ChatWithAI.DataAccess/ChatWithAI.DataAccess.csproj" Id="D2C11685-4ED0-41AE-96FB-2DC370D91E50" />
+  <Project Path="ChatWithAI.DataObjects/ChatWithAI.DataObjects.csproj" Id="C83E486A-EC68-4B33-82F6-43894735FB95" />
+  <Project Path="ChatWithAI.EFModels/ChatWithAI.EFModels.csproj" Id="0F32FF07-B431-41BA-AEC5-BC9D59EA52F6" />
+  <Project Path="ChatWithAI.Plugins/ChatWithAI.Plugins.csproj" Id="8397D01F-D801-4023-AABA-CD6D3B477599" />
+  <Project Path="ChatWithAI/ChatWithAI.csproj" />
+</Solution>

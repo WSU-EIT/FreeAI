@@ -15,13 +15,31 @@ public partial class EFDataModel : DbContext
     {
     }
 
-    public virtual DbSet<DepartmentGroup> DepartmentGroups { get; set; }
-
-
     public virtual DbSet<Department> Departments { get; set; }
 
+    public virtual DbSet<DepartmentGroup> DepartmentGroups { get; set; }
 
     public virtual DbSet<FileStorage> FileStorages { get; set; }
+
+    public virtual DbSet<PluginCache> PluginCaches { get; set; }
+
+    public virtual DbSet<Setting> Settings { get; set; }
+
+    // {{ModuleItemStart:Tags}}
+    public virtual DbSet<Tag> Tags { get; set; }
+
+    public virtual DbSet<TagItem> TagItems { get; set; }
+    // {{ModuleItemEnd:Tags}}
+
+    public virtual DbSet<Tenant> Tenants { get; set; }
+
+    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UserGroup> UserGroups { get; set; }
+
+    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
 
     // The OnConfiguring override is only commented out and used to build the migration scripts.
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -56,7 +74,6 @@ public partial class EFDataModel : DbContext
             entity.Property(e => e.LastModifiedBy).HasMaxLength(100);
         });
 
-
         modelBuilder.Entity<FileStorage>(entity =>
         {
             entity.HasKey(e => e.FileId);
@@ -80,8 +97,6 @@ public partial class EFDataModel : DbContext
                 .HasConstraintName("IX_FileStorage_UserId");
         });
 
-
-
         modelBuilder.Entity<PluginCache>(entity =>
         {
             entity.HasKey(e => e.RecordId);
@@ -96,7 +111,6 @@ public partial class EFDataModel : DbContext
             entity.Property(e => e.Type).HasMaxLength(100);
             entity.Property(e => e.Version).HasMaxLength(100);
         });
-
 
         modelBuilder.Entity<Setting>(entity =>
         {
@@ -232,28 +246,4 @@ public partial class EFDataModel : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-
-
-
-    public virtual DbSet<PluginCache> PluginCaches { get; set; }
-
-
-    public virtual DbSet<Setting> Settings { get; set; }
-    // {{ModuleItemStart:Tags}}
-
-    public virtual DbSet<TagItem> TagItems { get; set; }
-
-    public virtual DbSet<Tag> Tags { get; set; }
-    // {{ModuleItemEnd:Tags}}
-
-    public virtual DbSet<Tenant> Tenants { get; set; }
-
-    public virtual DbSet<UDFLabel> UDFLabels { get; set; }
-
-    public virtual DbSet<UserGroup> UserGroups { get; set; }
-
-    public virtual DbSet<UserInGroup> UserInGroups { get; set; }
-
-    public virtual DbSet<User> Users { get; set; }
 }

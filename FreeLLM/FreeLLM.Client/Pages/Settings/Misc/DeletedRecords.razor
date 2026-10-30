@@ -6,6 +6,7 @@
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 @inject BlazorDataModel Model
+
 @if (Model.Loaded && Model.View == _pageName) {
     @if (_loading) {
         <h1 class="page-title">
@@ -13,6 +14,12 @@
         </h1>
         <LoadingMessage />
     } else {
+        if (Helpers.HaveBlazorPlugins(_pageName, "Top")) {
+            <div class="mb-2">
+                <BlazorPlugins Module="@_pageName" Position="Top" TValue="DataObjects.DeletedRecords" Value="_DeletedRecords" ValueChanged="@(v => _DeletedRecords = v)" />
+            </div>
+        }
+
         if (Model.HaveDeletedRecords) {
             var deletedRecordTypes = Helpers.GetDeletedRecordTypes();
 
@@ -21,6 +28,12 @@
                     <Language Tag="PendingDeletedRecords" IncludeIcon="true" />
                     <StickyMenuIcon />
                 </h1>
+
+                @if (Helpers.HaveBlazorToolbarButtons(_pageName)) {
+                    <div class="mb-2">
+                        <BlazorPlugins Module="@_pageName" Button="true" TValue="DataObjects.DeletedRecords" Value="_DeletedRecords" ValueChanged="@(v => _DeletedRecords = v)" />
+                    </div>
+                }
 
                 <div class="alert alert-danger">
                     <div class="mb-2">
@@ -46,14 +59,10 @@
                         deletedRecords = _DeletedRecords.DepartmentGroups;
                         break;
 
-
                     case "FileStorage":
                         deletedRecords = _DeletedRecords.FileStorage;
                         deletedRecordTypeLanguageTag = "Files";
                         break;
-
-
-
 
                     case "User":
                         deletedRecords = _DeletedRecords.Users;
@@ -85,6 +94,7 @@
                                     <div>@item.Display</div>
                                 </div>
                                 <div class="deleted-info">
+                                    <div class="note">Id: @item.ItemId</div>
                                     <Language Tag="Deleted" />
                                     <span>@Helpers.FormatDateTime(item.DeletedAt, false, true)</span>
                                     <Language Tag="DeletedBy" />
@@ -100,23 +110,27 @@
                 <Language Tag="NoPendingDeletedRecords" IncludeIcon="true" />
             </h1>
         }
+
+        @if (Helpers.HaveBlazorPlugins(_pageName, "Top")) {
+            <div class="mb-2">
+                <BlazorPlugins Module="@_pageName" Position="Top" TValue="DataObjects.DeletedRecords" Value="_DeletedRecords" ValueChanged="@(v => _DeletedRecords = v)" />
+            </div>
+        }
     }
 }
+
 @code {
     [Parameter] public string? TenantCode { get; set; }
 
+    protected DataObjects.DeletedRecords _DeletedRecords = new DataObjects.DeletedRecords();
     protected bool _loadedData = false;
     protected bool _loading = true;
-
-    protected DataObjects.DeletedRecords _DeletedRecords = new DataObjects.DeletedRecords();
-
     protected string _pageName = "deletedrecords";
+    protected bool _validatedUrl = false;
 
     public void Dispose()
     {
         Model.OnChange -= OnDataModelUpdated;
-
-        Model.Subscribers_OnChange.Remove(_pageName);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -125,13 +139,16 @@
             Model.TenantCodeFromUrl = TenantCode;
         }
 
-        if(Model.Loaded && Model.LoggedIn) {
+        if (Model.Loaded && Model.LoggedIn) {
             if (!Model.User.Admin) {
                 Helpers.NavigateToRoot();
                 return;
             }
 
-            await Helpers.ValidateUrl(TenantCode);
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
 
             if (!_loadedData) {
                 _loadedData = true;
@@ -142,19 +159,8 @@
 
     protected override void OnInitialized()
     {
-        if (!Model.Subscribers_OnChange.Contains(_pageName)){
-            Model.Subscribers_OnChange.Add(_pageName);
-            Model.OnChange += OnDataModelUpdated;
-        }
-
+        Model.OnChange += OnDataModelUpdated;
         Model.View = _pageName;
-    }
-
-    protected void OnDataModelUpdated()
-    {
-        if (Model.View == _pageName) {
-            StateHasChanged();
-        }
     }
 
     protected async Task DeleteAllImmediately()
@@ -166,8 +172,8 @@
 
         Model.ClearMessages();
 
-        if(deleted != null) {
-            if(deleted.Result){
+        if (deleted != null) {
+            if (deleted.Result) {
                 await LoadData();
             } else {
                 Model.ErrorMessages(deleted.Messages);
@@ -205,7 +211,7 @@
         _loading = true;
 
         var deletedRecords = await Helpers.GetDeletedRecords();
-        if(deletedRecords != null) {
+        if (deletedRecords != null) {
             _DeletedRecords = deletedRecords;
 
             _loading = false;
@@ -214,6 +220,13 @@
         }
 
         StateHasChanged();
+    }
+
+    protected void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
     }
 
     protected async Task UndeleteRecord(string type, Guid ItemId)

@@ -1,5 +1,3 @@
-using System.Net.NetworkInformation;
-
 namespace FreeLLM.Client;
 
 public static partial class Helpers
@@ -14,9 +12,56 @@ public static partial class Helpers
         }
     }
 
+    public static bool AllowAnonymousAccessApp(string pagename)
+    {
+        bool output = false;
+
+        // Do any checks for custom page names in your app that should allow anonymous access.
+        switch (StringLower(pagename)) {
+            case "this":
+            case "orthis":
+                output = true;
+                break;
+        }
+
+        return output;
+    }
+
+    public static string ApplicationDomain {
+        get {
+            // Use this to return your custom domain name if needed for use in the ValidateRedirect method.
+            return "";
+        }
+    }
+
     public static bool AppMethod()
     {
         return true;
+    }
+
+    /// <summary>
+    /// Called from the MainLayout DialogClose method
+    /// </summary>
+    public static void DialogClosedApp()
+    {
+
+    }
+
+    /// <summary>
+    /// Called from the Helpers.ForceModelUpdates method to force any app-specific model updates.
+    /// </summary>
+    private static void ForceModelUpdatesApp()
+    {
+
+    }
+
+    private static List<string> GetDeletedRecordTypesApp()
+    {
+        var output = new List<string>();
+
+        // Add any app-specific deleted record types here.
+
+        return output;
     }
 
     /// <summary>
@@ -33,6 +78,9 @@ public static partial class Helpers
             //case "this":
             //    output = deletedRecords.That;
             //    break;
+
+            default:
+                break;
         }
 
         return output;
@@ -51,28 +99,29 @@ public static partial class Helpers
             //case "this":
             //    output = "That";
             //    break;
+
+            default:
+                break;
         }
 
         return output;
     }
 
-
-    private static List<string> GetDeletedRecordTypesApp()
+    /// <summary>
+    /// Method is called from the MainLayout page in the LocationChanged method.
+    /// </summary>
+    public static void LocationChangedApp()
     {
-        var output = new List<string>();
 
-        // Add any app-specific deleted record types here.
-
-        return output;
     }
 
-    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
-        get {
-            // Add any app-specific admin menu items here.
-            var output = new List<DataObjects.MenuItem>();
-
-            return output;
-        }
+    /// <summary>
+    /// Method is called from the MainLayout page to do any app-specific initialization.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task MainLayoutOnInitializedAsyncApp()
+    {
+        await Task.Delay(0); // Simulate a delay since this method has to be async. This can be removed once you implement your await logic.
     }
 
     public static List<DataObjects.MenuItem> MenuItemsApp {
@@ -91,6 +140,15 @@ public static partial class Helpers
             //        AppAdminOnly = false,
             //    });
             //}
+
+            return output;
+        }
+    }
+
+    public static List<DataObjects.MenuItem> MenuItemsAdminApp {
+        get {
+            // Add any app-specific admin menu items here.
+            var output = new List<DataObjects.MenuItem>();
 
             return output;
         }
@@ -135,5 +193,4 @@ public static partial class Helpers
     {
         // Model.DeletedRecordCounts.MyValue = deletedRecords.MyValue.Count();
     }
-
 }

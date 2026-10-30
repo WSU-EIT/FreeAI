@@ -1,10 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Diagnostics;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
-
-namespace Plugins
+﻿namespace Plugins
 {
     /// <summary>
     /// The Plugins interface.
@@ -67,7 +61,12 @@ namespace Plugins
     /// </summary>
     public class Plugins : IPlugins
     {
-        private byte[] _key = new byte[] { 0xC6, 0x46, 0xB1, 0xA0, 0x62, 0x0C, 0xCF, 0x29, 0xE4, 0xBE, 0x04, 0x38, 0x0F, 0xB8, 0x64, 0xFE, 0xA8, 0x25, 0xF8, 0x54, 0x46, 0x5D, 0xA0, 0xDF, 0x2E, 0xB3, 0x1D, 0xE9, 0x6E, 0xF3, 0xF5, 0xAE };
+        private byte[] _key = new byte[] {
+            0xC6, 0x46, 0xB1, 0xA0, 0x62, 0x0C, 0xCF, 0x29, 
+            0xE4, 0xBE, 0x04, 0x38, 0x0F, 0xB8, 0x64, 0xFE, 
+            0xA8, 0x25, 0xF8, 0x54, 0x46, 0x5D, 0xA0, 0xDF, 
+            0x2E, 0xB3, 0x1D, 0xE9, 0x6E, 0xF3, 0xF5, 0xAE 
+        };
         private string _pluginFolder = String.Empty;
         private List<Plugin> _plugins = new List<Plugin>();
         private List<string> _serverReferences = new List<string>();
@@ -189,12 +188,15 @@ namespace Plugins
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public T? ExecuteDynamicCSharpCode<T>(string code,
+        public T? ExecuteDynamicCSharpCode<T>
+        (
+            string code,
             IEnumerable<object>? objects,
             List<string>? additionalAssemblies,
             string Namespace,
             string Classname,
-            string invokerFunction){
+            string invokerFunction
+        ){
             T? output = default(T);
 
             // If this code was encrypted decrypt it now.
@@ -287,7 +289,6 @@ namespace Plugins
                 }
             } catch (Exception ex) {
                 // When an error is encountered the output object will be null, so create and return a new object.
-                //return new DataObjects.DynamicWorkflowResponse { Message = ex.Message };
                 Console.WriteLine("Exception: " + ex.Message);
                 if (ex.InnerException != null) {
                     Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
@@ -302,7 +303,7 @@ namespace Plugins
             var output = new List<string>();
 
             string code =
-            "namespace MyCodeNamespace {" + Environment.NewLine +
+                "namespace MyCodeNamespace {" + Environment.NewLine +
                 "  using System;" + Environment.NewLine +
                 "  using System.Collections.Generic;" + Environment.NewLine +
                 "  " + Environment.NewLine +
@@ -381,6 +382,18 @@ namespace Plugins
             return output;
         }
 
+        private string GetPluginNamespace(string code)
+        {
+            string output = String.Empty;
+
+            var line = FindFirstLineStartingWith(code, "namespace");
+            if (!String.IsNullOrWhiteSpace(line)) {
+                output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
+            }
+
+            return output;
+        }
+
         private string GetPluginClass(string code)
         {
             string output = String.Empty;
@@ -398,18 +411,6 @@ namespace Plugins
                 }
             }
 
-
-            return output;
-        }
-
-        private string GetPluginNamespace(string code)
-        {
-            string output = String.Empty;
-
-            var line = FindFirstLineStartingWith(code, "namespace");
-            if (!String.IsNullOrWhiteSpace(line)) {
-                output = line.Replace("namespace ", "").Replace(";", "").Replace("{", "").Trim();
-            }
 
             return output;
         }
@@ -541,7 +542,51 @@ namespace Plugins
                         }
                     }
                 }
+            }
 
+            // Read the blazor files from the various folders.
+            var blazorPath = System.IO.Path.Combine(path, "BlazorComponents");
+            var blazorFiles = GetFilesWithExtensions(blazorPath, ["*.blazor", "*.razor"]);
+            if (blazorFiles != null && blazorFiles.Any()) {
+                foreach (var file in blazorFiles) {
+                    var filename = System.IO.Path.GetFileNameWithoutExtension(file);
+                    var code = System.IO.File.ReadAllText(file);
+
+                    if (!String.IsNullOrWhiteSpace(code) && !String.IsNullOrWhiteSpace(filename)) {
+                        Plugin? blazorPlugin = null;
+
+                        // See if we have a json configuration file for this plugin.
+                        var jsonFile = System.IO.Path.Combine(blazorPath, filename + ".json");
+                        if (System.IO.File.Exists(jsonFile)) {
+                            var json = System.IO.File.ReadAllText(jsonFile);
+                            if (!String.IsNullOrWhiteSpace(json)) {
+                                blazorPlugin = System.Text.Json.JsonSerializer.Deserialize<Plugin>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            }
+                        }
+
+                        if (blazorPlugin == null) {
+                            blazorPlugin = new Plugin();
+                        }
+
+                        if (blazorPlugin.Id == Guid.Empty) {
+                            blazorPlugin.Id = Guid.NewGuid();
+                        }
+
+                        blazorPlugin.Code = code;
+                        blazorPlugin.Type = "Blazor";
+                        blazorPlugin.Name = filename;
+
+                        if (blazorPlugin.LimitToTenants != null && blazorPlugin.LimitToTenants.Count == 0) {
+                            blazorPlugin.LimitToTenants = new List<Guid>();
+                        }
+
+                        output.Add(blazorPlugin);
+                        _plugins.Add(blazorPlugin);
+                    }
+                }
+            }
+
+            if (output.Any()) {
                 output = output.OrderBy(x => x.SortOrder).ThenBy(x => x.Name).ToList();
             }
 
@@ -553,14 +598,6 @@ namespace Plugins
         /// </summary>
         public string PluginFolder {
             get { return _pluginFolder; }
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public List<string> ServerReferences {
-            get { return _serverReferences; }
-            set { _serverReferences = value != null && value.Count > 0 ? value : new List<string>(); }
         }
 
         private List<string> SplitStringIntoLines(string? input)
@@ -575,6 +612,14 @@ namespace Plugins
             }
 
             return output;
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public List<string> ServerReferences {
+            get { return _serverReferences; }
+            set { _serverReferences = value != null && value.Count > 0 ? value : new List<string>(); }
         }
 
         /// <summary>
@@ -620,22 +665,21 @@ namespace Plugins
     public class Plugin
     {
         /// <summary>
-        /// Holds the values for any additional assemblies that need to be loaded for this plugin, detected
-        /// during startup and should not be set manually.
+        /// The unique Guid Id for this plugin.
         /// </summary>
-        public List<string> AdditionalAssemblies { get; set; } = new List<string>();
+        public Guid Id { get; set; }
         /// <summary>
         /// The name of the Author of this plugin.
         /// </summary>
-        public string Author { get; set; } = "";
+        public string Author { get; set; } = String.Empty;
         /// <summary>
         /// The name of the class that contains the plugin code. This is detected at startup and should not be set manually.
         /// </summary>
-        public string ClassName { get; set; } = "";
+        public string ClassName { get; set; } = String.Empty;
         /// <summary>
         /// The code for the plugin. This is read at startup and should not be set manually.
         /// </summary>
-        public string Code { get; set; } = "";
+        public string Code { get; set; } = String.Empty;
         /// <summary>
         /// Flag that indicates if this plugin contains sensitive data.
         /// If true, then the Code will be encrypted before this object is sent to the client browser.
@@ -645,15 +689,7 @@ namespace Plugins
         /// <summary>
         /// A description of this plugin.
         /// </summary>
-        public string Description { get; set; } = "";
-        /// <summary>
-        /// The unique Guid Id for this plugin.
-        /// </summary>
-        public Guid Id { get; set; }
-        /// <summary>
-        /// The main invoker function for this plugin (defaults to "Execute".)
-        /// </summary>
-        public string Invoker { get; set; } = "Execute";
+        public string Description { get; set; } = String.Empty;
         /// <summary>
         /// An option to limit this plugin to specific tenants.
         /// If this is not set, the plugin will be available to all tenants.
@@ -663,11 +699,15 @@ namespace Plugins
         /// <summary>
         /// The name of this plugin.
         /// </summary>
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = String.Empty;
         /// <summary>
         /// The namespace in which the plugin resides. This is detected at startup and should not be set manually.
         /// </summary>
-        public string Namespace { get; set; } = "";
+        public string Namespace { get; set; } = String.Empty;
+        /// <summary>
+        /// The main invoker function for this plugin (defaults to "Execute".)
+        /// </summary>
+        public string Invoker { get; set; } = "Execute";
         /// <summary>
         /// An optional collection of Prompts that can be used to collect data for this plugin.
         /// </summary>
@@ -679,7 +719,7 @@ namespace Plugins
         /// <summary>
         /// The name of a function to execute when a prompt value is updated.
         /// </summary>
-        public string PromptValuesOnUpdate { get; set; } = "";
+        public string PromptValuesOnUpdate { get; set; } = String.Empty;
         /// <summary>
         /// The collection of Properties for this plugin read from the Properties method when the plugin is first loaded.
         /// </summary>
@@ -691,7 +731,7 @@ namespace Plugins
         /// <summary>
         /// The type of plugin.
         /// </summary>
-        public string Type { get; set; } = "";
+        public string Type { get; set; } = String.Empty;
         /// <summary>
         /// Any values for this plugin.
         /// </summary>
@@ -699,7 +739,12 @@ namespace Plugins
         /// <summary>
         /// The version of the plugin.
         /// </summary>
-        public string Version { get; set; } = "";
+        public string Version { get; set; } = String.Empty;
+        /// <summary>
+        /// Holds the values for any additional assemblies that need to be loaded for this plugin, detected
+        /// during startup and should not be set manually.
+        /// </summary>
+        public List<string> AdditionalAssemblies { get; set; } = new List<string>();
     }
 
     /// <summary>
@@ -708,13 +753,13 @@ namespace Plugins
     public class PluginExecuteRequest
     {
         /// <summary>
-        /// Any objects to pass along to the invoker function.
-        /// </summary>
-        public object[]? Objects { get; set; }
-        /// <summary>
         /// The plugin to be executed.
         /// </summary>
         public Plugin Plugin { get; set; } = new Plugin();
+        /// <summary>
+        /// Any objects to pass along to the invoker function.
+        /// </summary>
+        public object[]? Objects { get; set; }
     }
 
     /// <summary>
@@ -723,6 +768,10 @@ namespace Plugins
     public class PluginExecuteResult
     {
         /// <summary>
+        /// Indicates if the result was a success or failure.
+        /// </summary>
+        public bool Result { get; set; }
+        /// <summary>
         /// Contains any messages returned from the code.
         /// </summary>
         public List<string> Messages { get; set; } = new List<string>();
@@ -730,10 +779,6 @@ namespace Plugins
         /// Contains any objects returned from the code.
         /// </summary>
         public List<object> Objects { get; set; } = new List<object>();
-        /// <summary>
-        /// Indicates if the result was a success or failure.
-        /// </summary>
-        public bool Result { get; set; }
     }
 
     /// <summary>
@@ -744,22 +789,16 @@ namespace Plugins
         /// <summary>
         /// Any default value for this prompt.
         /// </summary>
-        public string DefaultValue { get; set; } = "";
+        public string DefaultValue { get; set; } = String.Empty;
         /// <summary>
         /// A description of this prompt. This will be shown above the prompt
         /// when using the built-in PluginPrompts Blazor component.
         /// </summary>
-        public string Description { get; set; } = "";
+        public string Description { get; set; } = String.Empty;
         /// <summary>
         /// A class to add to this individual prompt.
         /// </summary>
-        public string ElementClass { get; set; } = "";
-        /// <summary>
-        /// An optional function to call to load Options for this prompt.
-        /// You can either specific Options directly in the Options property or use this
-        /// function to load them dynamically with a matching function in your plugin.
-        /// </summary>
-        public string Function { get; set; } = "";
+        public string ElementClass { get; set; } = String.Empty;
         /// <summary>
         /// Indicates if this prompt element should be initially hidden.
         /// Can be updated by using the PromptValuesOnUpdate property of the plugin
@@ -767,9 +806,19 @@ namespace Plugins
         /// </summary>
         public bool Hidden { get; set; }
         /// <summary>
+        /// The type of this prompt.
+        /// </summary>
+        public PluginPromptType Type { get; set; }
+        /// <summary>
         /// The name for this prompt. Must be unique within the plugin prompt collection.
         /// </summary>
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = String.Empty;
+        /// <summary>
+        /// An optional function to call to load Options for this prompt.
+        /// You can either specific Options directly in the Options property or use this
+        /// function to load them dynamically with a matching function in your plugin.
+        /// </summary>
+        public string Function { get; set; } = String.Empty;
         /// <summary>
         /// Options for this prompt.
         /// </summary>
@@ -779,10 +828,6 @@ namespace Plugins
         /// PluginPrompts component, this element will be marked as required.
         /// </summary>
         public bool Required { get; set; }
-        /// <summary>
-        /// The type of this prompt.
-        /// </summary>
-        public PluginPromptType Type { get; set; }
     }
 
     /// <summary>
@@ -793,11 +838,11 @@ namespace Plugins
         /// <summary>
         /// The label for the option.
         /// </summary>
-        public string Label { get; set; } = "";
+        public string Label { get; set; } = String.Empty;
         /// <summary>
         /// The value for the option.
         /// </summary>
-        public string Value { get; set; } = "";
+        public string Value { get; set; } = String.Empty;
     }
 
     /// <summary>
@@ -808,7 +853,7 @@ namespace Plugins
         /// <summary>
         /// The name of the prompt.
         /// </summary>
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = String.Empty;
         /// <summary>
         /// Any values for the prompt.
         /// </summary>

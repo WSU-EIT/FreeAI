@@ -18,15 +18,18 @@ public partial class DataController : ControllerBase
 
     private readonly IHubContext<freemanagerHub, IsrHub>? _signalR;
 
-    private string _fingerprint = "";
+    private string _fingerprint = String.Empty;
     private string _returnCodeAccessDenied = "{{AccessDenied}}";
 
-    public DataController(IDataAccess daInjection,
+    public DataController
+    (
+        IDataAccess daInjection,
         IHttpContextAccessor httpContextAccessor,
         ICustomAuthentication auth,
         IHubContext<freemanagerHub, IsrHub> hubContext,
         IConfigurationHelper configHelper,
-        Plugins.IPlugins diPlugins){
+        Plugins.IPlugins diPlugins
+    ){
         da = daInjection;
         authenticationProviders = auth;
         configurationHelper = configHelper;
@@ -42,13 +45,16 @@ public partial class DataController : ControllerBase
                 UseOpenId = authenticationProviders.UseOpenId,
                 OpenIdButtonText = authenticationProviders.OpenIdButtonText,
                 OpenIdButtonClass = authenticationProviders.OpenIdButtonClass,
-                OpenIdButtonIcon = authenticationProviders.OpenIdButtonIcon
+                OpenIdButtonIcon = authenticationProviders.OpenIdButtonIcon,
+                OpenIdEmployeeIdClaim = authenticationProviders.OpenIdEmployeeIdClaim,
             });
         }
 
         if (httpContextAccessor != null && httpContextAccessor.HttpContext != null) {
             context = httpContextAccessor.HttpContext;
         }
+
+        ControllerInit_App(da, context, authenticationProviders, _signalR, configurationHelper, plugins);
 
         // See if a TenantId is included in the header or querystring.
         string tenantId = HeaderValue("TenantId");
@@ -79,21 +85,27 @@ public partial class DataController : ControllerBase
         // Set the CurrentUser to a new User object and if we have a valid Token
         // use that to get set the CurrentUser.
         CurrentUser = new DataObjects.User();
-        if (context?.User?.Identity?.IsAuthenticated == true) {
-            try {
-                string token = context?.User?.FindFirstValue(ClaimTypes.Hash) ?? string.Empty;
-                if (!String.IsNullOrWhiteSpace(token)) {
-                    try {
-                        _fingerprint = context?.User?.FindFirstValue(ClaimTypes.Thumbprint) ?? string.Empty;
-                        string tenantIdString = context?.User?.FindFirstValue(ClaimTypes.GroupSid) ?? string.Empty;
 
-                        TenantId = Guid.Empty;
-                        Guid.TryParse(tenantIdString, out TenantId);
+        // Check the app-specific methods first for authentication.
+        CurrentUser = Authenticate_App();
 
-                        CurrentUser = da.GetUserFromToken(TenantId, token, _fingerprint).Result;
-                    } catch { }
-                }
-            } catch { }
+        if (!CurrentUser.ActionResponse.Result) {
+            if (context?.User?.Identity?.IsAuthenticated == true) {
+                try {
+                    string token = context?.User?.FindFirstValue(ClaimTypes.Hash) ?? string.Empty;
+                    if (!String.IsNullOrWhiteSpace(token)) {
+                        try {
+                            _fingerprint = context?.User?.FindFirstValue(ClaimTypes.Thumbprint) ?? string.Empty;
+                            string tenantIdString = context?.User?.FindFirstValue(ClaimTypes.GroupSid) ?? string.Empty;
+
+                            TenantId = Guid.Empty;
+                            Guid.TryParse(tenantIdString, out TenantId);
+
+                            CurrentUser = da.GetUserFromToken(TenantId, token, _fingerprint).Result;
+                        } catch { }
+                    }
+                } catch { }
+            }
         }
 
         // If the user wasn't loaded from the custom auth provider, but we have a token, load the user from the token.

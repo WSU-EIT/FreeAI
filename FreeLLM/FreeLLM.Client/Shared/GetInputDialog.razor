@@ -1,6 +1,7 @@
 ﻿@implements IDisposable
 @inject IJSRuntime jsRuntime
 @inject Radzen.DialogService DialogService
+
 <GetInput Class="@Class"
         DefaultValue="@DefaultValue"
         Id="@Id"
@@ -19,9 +20,8 @@
         <i class="fa-solid fa-circle-check"></i> OK
     </button>
 </div>
-@code {
-    protected object? _value;
 
+@code {
     /// <summary>
     /// An optional class for the input.
     /// </summary>
@@ -73,12 +73,16 @@
     /// </summary>
     [Parameter] public FreeBlazor.GetInput.InputType? UserInputType { get; set; }
 
+    protected object? _value;
+
+    public void Dispose()
+    {
+    }
+
     protected void Cancel()
     {
         DialogService.Close();
     }
-
-    public void Dispose() { }
 
     protected void ReturnValue()
     {

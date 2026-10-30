@@ -1,6 +1,6 @@
 using FreeLLM;
 
-public class GraphClient
+public partial class GraphClient
 {
     #region Internals
     private Microsoft.Graph.GraphServiceClient? _client;

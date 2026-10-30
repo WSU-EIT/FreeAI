@@ -15,6 +15,12 @@ public partial class ConfigurationHelper : IConfigurationHelper
         }
     }
 
+    public string? ApplicationUrl {
+        get {
+            return _loader.ApplicationUrl;
+        }
+    }
+
     public string? BasePath {
         get {
             return _loader.BasePath;
@@ -44,26 +50,44 @@ public partial class ConfigurationHelper : IConfigurationHelper
             return _loader.GloballyEnabledModules;
         }
     }
+
+    public string? PathToChromiumBrowser {
+        get {
+            return _loader.PathToChromiumBrowser;
+        }
+    }
+
+    public List<string>? ServerReferences {
+        get {
+            return _loader.ServerReferences;
+        }
+    }
 }
 
 public partial interface IConfigurationHelper
 {
     public string? AnalyticsCode { get; }
+    public string? ApplicationUrl { get; }
     public string? BasePath { get; }
     ConfigurationHelperConnectionStrings ConnectionStrings { get; }
     public string? CookiePrefix { get; }
     List<string>? GloballyDisabledModules { get; }
     List<string>? GloballyEnabledModules { get; }
+    public string? PathToChromiumBrowser { get; }
+    public List<string>? ServerReferences { get; }
 }
 
 public partial class ConfigurationHelperLoader
 {
     public string? AnalyticsCode { get; set; }
+    public string? ApplicationUrl { get; set; }
     public string? BasePath { get; set; }
     public ConfigurationHelperConnectionStrings ConnectionStrings { get; set; } = new ConfigurationHelperConnectionStrings();
     public string? CookiePrefix { get; set; }
     public List<string>? GloballyDisabledModules { get; set; }
     public List<string>? GloballyEnabledModules { get; set; }
+    public string? PathToChromiumBrowser { get; set; }
+    public List<string>? ServerReferences { get; set; }
 }
 
 public partial class ConfigurationHelperConnectionStrings

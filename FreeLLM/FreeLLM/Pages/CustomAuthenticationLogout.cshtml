@@ -1,12 +1,11 @@
 @page "/Authorization/CustomAuthenticationLogout"
 @inject FreeLLM.IDataAccess data
 @inject Microsoft.AspNetCore.Hosting.Server.IServer server
-
 @{
     data.SetHttpRequest(Request);
     data.SetHttpResponse(Response);
 
-    string strTenantId = "";
+    string strTenantId = String.Empty;
 
     try {
         strTenantId += data.Request("TenantId");
@@ -69,6 +68,13 @@
         return;
     }
 
-    bool loggedOut = data.ExecuteDynamicCSharpCode<bool>(customCode,
-        new object[] { data, serverUrl }, null, "CustomAuthenticationProvider", "Authentication", "Logout");
+    bool loggedOut = data.ExecuteDynamicCSharpCode<bool>
+    (
+        customCode,
+        new object[] { data, serverUrl },
+        null,
+        "CustomAuthenticationProvider",
+        "Authentication",
+        "Logout"
+    );
 }

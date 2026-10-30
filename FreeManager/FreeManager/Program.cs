@@ -1,9 +1,9 @@
-using FreeManager.Client.Pages;
+using Blazored.SessionStorage;
 using FreeManager.Components;
 using FreeManager.Server.Hubs;
+using Microsoft.AspNetCore.Components;
 using Radzen;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace FreeManager
@@ -21,10 +21,10 @@ namespace FreeManager
             builder.Services.AddScoped<Radzen.NotificationService>();
             builder.Services.AddScoped<Radzen.ThemeService>();
 
-            var isDevelopment = builder.Environment.IsDevelopment();
-            if (!isDevelopment) {
+            //var isDevelopment = builder.Environment.IsDevelopment();
+            //if (!isDevelopment) {
 
-            }
+            //}
 
             // Try to get the application name.
             string cookiePrefix = String.Empty;
@@ -57,6 +57,8 @@ namespace FreeManager
             builder.Services.AddRazorPages();
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddBlazoredSessionStorage();
+
             #region Plugin Configuration and DI Creation
 
             // Load any plugins from the Plugins folder.
@@ -80,7 +82,8 @@ namespace FreeManager
             try { serverReferences.Add(typeof(Microsoft.Extensions.Primitives.StringValues).Assembly.Location); } catch { }
             try { serverReferences.Add(typeof(Plugins.Plugin).Assembly.Location); } catch { }
             try { serverReferences.Add(typeof(IPlugin).Assembly.Location); } catch { }
-            plugins.ServerReferences = serverReferences;
+            try { serverReferences.Add(typeof(RenderFragment).Assembly.Location); } catch { }
+            plugins.ServerReferences = AddServerReferencesApp(serverReferences);
 
             // Get the using statements from the appsettings.json file.
             // These will be used to ensure all required namespaces for this app are used when executing dynamic code in plugins.
@@ -95,7 +98,7 @@ namespace FreeManager
             }
             plugins.UsingStatements = usingStatements;
 
-            string pluginsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+            string pluginsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PluginFiles");
             plugins.Load(pluginsPath);
             builder.Services.AddTransient<Plugins.IPlugins>(x => plugins);
 
@@ -112,10 +115,9 @@ namespace FreeManager
                 }
             }
 
-            string _localModeUrl = String.Empty + builder.Configuration.GetValue<string>("LocalModeUrl");
             string _connectionString = String.Empty + builder.Configuration.GetConnectionString("AppData");
             string _databaseType = String.Empty + builder.Configuration.GetValue<string>("DatabaseType");
-            builder.Services.AddTransient<IDataAccess>(x => ActivatorUtilities.CreateInstance<DataAccess>(x, _connectionString, _databaseType, _localModeUrl, x.GetRequiredService<IServiceProvider>(), cookiePrefix, backgroundServiceEnabled));
+            builder.Services.AddTransient<IDataAccess>(x => ActivatorUtilities.CreateInstance<DataAccess>(x, _connectionString, _databaseType, x.GetRequiredService<IServiceProvider>(), cookiePrefix, backgroundServiceEnabled));
 
             if (backgroundServiceEnabled) {
                 // Create a logger for the background process and add the hosted service for the background processor.
@@ -145,6 +147,11 @@ namespace FreeManager
             // Create DI for supported configuration items.
             var analyticsCode = builder.Configuration.GetValue<string>("AnalyticsCode");
 
+            string applicationUrl = String.Empty + builder.Configuration.GetValue<string>("ApplicationUrl");
+            if (!String.IsNullOrWhiteSpace(applicationUrl) && !applicationUrl.EndsWith("/")) {
+                applicationUrl += "/";
+            }
+
             var basePath = builder.Configuration.GetValue<string>("BasePath");
             if (!String.IsNullOrWhiteSpace(basePath) && !basePath.EndsWith("/")) {
                 basePath += "/";
@@ -170,8 +177,9 @@ namespace FreeManager
                 }
             }
 
-            var configurationHelperLoader = ConfigurationHelpersLoadApp(new ConfigurationHelperLoader {
+           var configurationHelperLoader = ConfigurationHelpersLoadApp(new ConfigurationHelperLoader {
                 AnalyticsCode = analyticsCode,
+                ApplicationUrl = applicationUrl,
                 CookiePrefix = cookiePrefix,
                 BasePath = basePath,
                 ConnectionStrings = new ConfigurationHelperConnectionStrings {
@@ -179,6 +187,8 @@ namespace FreeManager
                 },
                 GloballyDisabledModules = disabled,
                 GloballyEnabledModules = enabled,
+               PathToChromiumBrowser = String.Empty + builder.Configuration.GetValue<string>("PathToChromiumBrowser"),
+               ServerReferences = serverReferences,
             }, builder);
 
             builder.Services.AddTransient<IConfigurationHelper>(x => ActivatorUtilities.CreateInstance<ConfigurationHelper>(x, configurationHelperLoader));
@@ -198,18 +208,6 @@ namespace FreeManager
 
             var app = AppModifyStart(AppModifyBuilderEnd(builder).Build());
 
-            bool openIdForceHttps = false;
-            try {
-                openIdForceHttps = builder.Configuration.GetValue<bool>("AuthenticationProviders:OpenId:ForceHttps");
-            } catch { }
-            if (openIdForceHttps) {
-                app.Use((context, next) => {
-                    context.Request.Scheme = "https";
-                    context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self' login.wsu.edu cms.em.wsu.edu futurecoug.wsu.edu");
-                    return next(context);
-                });
-            }
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
                 app.UseWebAssemblyDebugging();
@@ -217,6 +215,18 @@ namespace FreeManager
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            bool openIdForceHttps = false;
+            try {
+                openIdForceHttps = builder.Configuration.GetValue<bool>("AuthenticationProviders:OpenId:ForceHttps");
+            } catch { }
+            if (openIdForceHttps) {
+                app.Use((context, next) => {
+                    context.Request.Scheme = "https";
+                    //context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self'");
+                    return next(context);
+                });
             }
 
             app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);

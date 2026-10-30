@@ -50,8 +50,6 @@ public partial class DataMigrations
             );
             """);
 
-
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "PluginCache" (
@@ -70,7 +68,6 @@ public partial class DataMigrations
                 CONSTRAINT "PK_PluginCache" PRIMARY KEY ("RecordId")
             );
             """);
-
 
         m1.Add(
             """
@@ -158,7 +155,6 @@ public partial class DataMigrations
             );
             """);
 
-
         // {{ModuleItemStart:Tags}}
         m1.Add(
             """
@@ -194,7 +190,6 @@ public partial class DataMigrations
             
             """;
 
-
         usersTable +=
             """
                 "ManageFiles" boolean NOT NULL,
@@ -228,7 +223,6 @@ public partial class DataMigrations
 
         m1.Add(usersTable);
 
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "FileStorage" (
@@ -252,7 +246,6 @@ public partial class DataMigrations
             );
             """);
 
-
         m1.Add(
             """
             CREATE TABLE IF NOT EXISTS "UserInGroups" (
@@ -266,15 +259,10 @@ public partial class DataMigrations
             );
             """);
 
-
-
-
         m1.Add(
             """
             CREATE INDEX "IX_FileStorage_UserId" ON "FileStorage" ("UserId");
             """);
-
-
 
         // {{ModuleItemStart:Tags}}
         m1.Add(

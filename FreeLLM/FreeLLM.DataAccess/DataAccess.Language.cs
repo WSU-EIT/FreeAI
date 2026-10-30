@@ -28,9 +28,9 @@ public partial class DataAccess
     {
         DataObjects.BooleanResponse output = new DataObjects.BooleanResponse();
 
-        if(!String.IsNullOrWhiteSpace(CultureCode)) {
+        if (!String.IsNullOrWhiteSpace(CultureCode)) {
             var rec = await data.Settings.FirstOrDefaultAsync(x => x.TenantId == TenantId && x.SettingName.ToLower() == "language_" + CultureCode.ToLower());
-            if(rec != null) {
+            if (rec != null) {
                 try {
                     data.Settings.Remove(rec);
                     await data.SaveChangesAsync();
@@ -42,7 +42,7 @@ public partial class DataAccess
                         Message = "Deleted",
                         Object = CultureCode,
                     });
-                }catch(Exception ex) {
+                } catch (Exception ex) {
                     output.Messages.Add("Error Deleting Language '" + CultureCode + "'");
                     output.Messages.AddRange(RecurseException(ex));
                 }
@@ -68,10 +68,15 @@ public partial class DataAccess
         Dictionary<string, string> language = new Dictionary<string, string> {
             // Module-Specific Language Tags
 
+            // {{ModuleItemStart:About}}
+            // About
+            { "About", "About" },
+            { "HideAbout", "Hide the About Page" },
+            // {{ModuleItemEnd:About}}
+
             // Active Directory
             { "ActiveDirectoryNames", "Active Directory Names" },
-            { "ActiveDirectoryNamesInfo", "Bracket-separated names of AD groups to match for this department (eg: {Enrollment IT]{Admissions}, etc.)" },
-
+            { "ActiveDirectoryNamesInfo", "Bracket-separated names of AD groups to match for this department (eg: [IT]{Human Resources}, etc.)" },
 
             // Departments
             { "Department", "Department" },
@@ -83,29 +88,35 @@ public partial class DataAccess
             { "EditDepartment", "Edit Department" },
             { "EditDepartmentGroup", "Edit Department Group" },
 
-
             // Files
             { "Extension", "Extension" },
             { "Extensions", "Extensions" },
-
-
-
+            { "FileId", "File Id" },
 
             // Plugins
             { "InvalidPlugin", "Invalid Plugin" },
             { "Plugin", "Plugin" },
             { "PluginNotFound", "The plugin with an Id of {0} could not be found." },
+            { "PreCompilingBlazorPlugins", "Pre-Compiling Blazor Plugins..." },
             { "TestPlugin", "Test Plugin" },
-
-
 
             // UDF Labels
             { "FeatureOptInUdf", "Use the User-Defined Fields" },
             { "UDF", "UDF" },
+            { "UDFLabelFor", "Label for UDF Element" },
+            { "UDFModule", "Module" },
             { "UserDefinedFields", "User-Defined Fields" },
             { "UserDefinedFieldsHelpIntro", "For a simple text input just enter the field name in the Label field.<br /><br />Alternatively, you can specify that the field should be a select element or a list of radio buttons by using the following format:<br /><br />Label|select|options,separated,by,commas<br />Label|radio|options,separated,by,commas" },
             { "UserDefinedFieldsOptions", "Options:" },
             { "UserDefinedFieldsShowConflictNote", "NOTE: While it is possible to use both Show in Filter and Include in Search for an item, this is not recommended as it is a duplication of searching. If the item is shown as a filter you can quickly find those items by clicking the appropriate filter option. Adding unneccesary fields to the Include in Search can affect performance." },
+
+            // {{ModuleItemStart:Logo}}
+            // Logo
+            { "Logo", "Logo" },
+            { "LogoIncludedOnHomePage", "Include the Logo on the home page." },
+            { "LogoIncludedOnNavbar", "Include the Logo on the top navigation menu." },
+            { "LogoInfo", "Ideally, your logo should be in the SVG format for best scaling. If you do not have an SVG version then a transparent PNG would be the next-best option." },
+            // {{ModuleItemEnd:Logo}}
 
             // User Groups
             { "AddNewUserGroup", "Add a New User Group" },
@@ -116,7 +127,6 @@ public partial class DataAccess
             { "UsersInGroup", "Users in Group" },
 
             // General Language Tags
-            { "About", "About" },
             { "AccessDenied", "Access Denied" },
             { "Action", "Action" },
             { "Active", "Active" },
@@ -130,13 +140,16 @@ public partial class DataAccess
             { "AddNewDepartment", "Add a New Department" },
             { "AddNewDepartmentGroup", "Add a New Department Group" },
             { "AddNewTenant", "Add a New Tenant" },
+            { "AddNewTenantInfo", "To add a new tenant enter the Tenant Name and Tenant Code for this tenant. When saving a new tenant record some default data will be seeded for things like Categories, Priorities, Resolutions, and Statuses. Also, default settings will be set for this tenant." },
             { "AddNewUser", "Add a New User" },
+            { "AddText", "Add Text" },
             { "AddUser", "Add a User" },
             { "AddUsersToGroup", "Add Users to Group" },
             { "Admin", "Admin" },
             { "AdminUsersOnly", "Admin Users Only" },
             { "Ago", "Ago" },
             { "All", "All" },
+            { "AllDay", "All Day" },
             { "AllItems", "All Items" },
             { "AllowedFileTypes", "Allowed File Types" },
             { "AllowUsersToManageAvatar", "Allow Users to Manage Avatars" },
@@ -144,6 +157,16 @@ public partial class DataAccess
             { "AllowUsersToManageBasicProfileInfoElements", "Select the User Profile Elements Users Can Edit" },
             { "AllowUsersToResetLocalPasswordsAtLogin", "Allow Users to Reset Passwords on the Local Login Form" },
             { "AllowUsersToSignUpAtLogin", "Allow Users to Sign Up for an Account on the Local Login Form" },
+            { "AppendRenderedItemToBody", "Append Rendered Item to Body" },
+            { "AppendRenderedItemToBodyAttachmentFormat", "Attachment Format" },
+            { "AppendRenderedItemToBodyAttachmentFormatHtml", "HTML" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdf", "PDF" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdfDocumentSize", "PDF Document Size" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdfDocumentSizeLedger", "Ledger" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdfDocumentSizeLegal", "Legal" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdfDocumentSizeLetter", "Letter" },
+            { "AppendRenderedItemToBodyAttachmentFormatPdfDocumentSizeTabloid", "Tabloid" },
+            { "AppendRenderedItemToBodyInfo", "When selected the rendered item will be included at the end of the body. NOTE: Not all email clients will render the HTML of the item correctly." },
             { "ApplicationUrl", "Application URL" },
             { "ApplicationUrlInfo", "Enter an optional override base URL for this tenant." },
             { "AppSettings", "Application Settings" },
@@ -172,6 +195,7 @@ public partial class DataAccess
             { "CurrentPassword", "Current Password" },
             { "CustomLoginProvider", "Custom Login Provider" },
             { "CustomLoginProviderAdminTenantWarning", "When the custom login provider is enabled on the admin tenant it is available and will automatically be displayed as a log in option for all tenants and you will not be able to use a separate custom authentication provider in other tenants." },
+            { "CustomVariableName", "Custom Variable Name" },
             { "Day", "Day" },
             { "DayLabelSunday", "Sunday" },
             { "DayLabelMonday", "Monday" },
@@ -224,12 +248,21 @@ public partial class DataAccess
             { "EditItem", "Edit Item" },
             { "EditLanguage", "Edit Language" },
             { "EditLanguageInfo", "To edit a language item use the lookup field below to find the text you wish to edit. Warning: clicking the Edit All option takes a while to load and is very resource heavy, as there are a lot of language items to load into the editing interface." },
+            { "EditModified", "Edit Modified Items" },
             { "EditNotes", "Edit Notes" },
             { "EditTenant", "Edit Tenant" },
             { "EditUser", "Edit User" },
             { "EditUserGroup", "Edit User Group" },
             { "Email", "Email" },
             { "EmailAddress", "Email Address" },
+            { "EmailBcc", "Bcc" },
+            { "EmailBody", "Body" },
+            { "EmailCc", "Cc" },
+            { "EmailNoRecipients", "No Email Recipients" },
+            { "EmailNoRecipientsInfo", "You must add at least one email recipient. You can use email addresses or fields. Reference field names inside double curly brackets using the FieldId for GUI forms or the field name for HTML forms (eg: {{fieldid}})" },
+            { "EmailSentTo", "Email Sent to" },
+            { "EmailSubject", "Subject" },
+            { "EmailTo", "To" },
             { "EmployeeId", "Employee ID" },
             { "Enabled", "Enabled" },
             { "EnabledItemsOnly", "Enabled Items Only" },
@@ -240,6 +273,10 @@ public partial class DataAccess
             { "ErrorOccurred", "The following error has occurred:" },
             { "ErrorsOccurred", "The following errors have occurred:" },
             { "ErrorUnknown", "An unknown error has occurred. Please check the console for any error messages." },
+            { "ExternalApp", "External Application" },
+            { "ExternalAppInfo", "either a path relative to the context where the form will run or a fully-qualified path to the application" },
+            { "ExternalAppParameters", "Parameters" },
+            { "ExternalAppParametersInfo", "Optional parameters to pass to the application. Use the standard curly bracket option for available form fields and options such as {{recordid}}." },
             { "FailedLoginAttempts", "Failed Login Attempts" },
             { "FeatureOptIn", "Optional Features" },
             { "FeatureOptInInfo", "The following feature have been enabled for your account and you can choose which of these you want to use in the application." },
@@ -258,6 +295,8 @@ public partial class DataAccess
             { "Files", "Files" },
             { "FileSize", "Size" },
             { "FileUploaded", "Uploaded" },
+            { "FilterActionDelete", "Delete" },
+            { "FilterActionUnsubmit", "Unsubmit" },
             { "FilterOptionClear", "--- Clear ---" },
             { "FilterEnd", "End" },
             { "FilterStart", "Start" },
@@ -283,7 +322,6 @@ public partial class DataAccess
             { "GraphTenantId", "Tenant ID" },
             { "Help", "Help" },
             { "Hide", "Hide" },
-            { "HideAbout", "Hide the About Page" },
             { "HideHelp", "Hide Help" },
             { "HideFilter", "Hide Filter" },
             { "HomeMenuText", "Home" },
@@ -292,12 +330,15 @@ public partial class DataAccess
             { "Hours", "Hours" },
             { "HtmlEditorInSourceViewWarning", "The HTML editor is in Source mode. In order to save your changes you will need to switch back to the WYSIWYG mode." },
             { "HtmlEditorPlaceholder", "Enter Your HTML Here" },
+            { "IncludeAttachments", "Include Attachments" },
             { "IncludeDeletedItems", "Include Deleted Items" },
             { "IncludeDeletedRecords", "Include Deleted Records" },
             { "IncludeInSearch", "Include in Search" },
             { "IncludeInSearchInfo", "If this option is selected this field will be included when using the keyword search." },
+            { "IncludeItemAsAttachment", "Include the Item as an Attachment" },
             { "IndicatesRequiredField", "Indicates a Required Field" },
             { "Info", "Info" },
+            { "InfoMenu", "Info Menu" },
             { "InsertField", "Insert a Field" },
             { "InsertFieldAppointmentDatesAndTimes", "Dates and Times" },
             { "InsertFieldAppointmentEnd", "End" },
@@ -322,6 +363,7 @@ public partial class DataAccess
             { "InvalidLoginNoLocalAccount", "Your credentials were valid, but you do not have an account configured in this application." },
             { "InvalidTenantCode", "Invalid Tenant Code" },
             { "InvalidTenantCodeMessage", "Please check your URL and ensure a valid URL is used." },
+            { "InvalidUser", "Invalid User" },
             { "InvalidUserId", "Invalid UserId" },
             { "InvalidUsernameOrPassword", "Invalid Username or Password" },
             { "Item", "Item" },
@@ -336,6 +378,7 @@ public partial class DataAccess
             { "LastModified", "Last Modified" },
             { "LastLogin", "Last Login" },
             { "LastName", "Last Name" },
+            { "LastModifiedBy", "Last Modified by" },
             { "LastRecord", "Last Record" },
             { "Loading", "Loading" },
             { "LoadingWait", "Loading, Please Wait..." },
@@ -348,6 +391,31 @@ public partial class DataAccess
             { "LoginTextTenantCode", "Tenant Code" },
             { "LoginTextUsername", "Username" },
             { "LoginTitle", "Login Required" },
+            { "LoginTypeApple", "Apple" },
+            { "LoginTypeAppleProviderInfo", "Apple Authentication Provider Information" },
+            { "LoginTypeAppleProviderInfoDetails", "When using the Apple login option you must set the Apple ClientId, KeyId, and TeamId in the AuthenticationProviders:Apple section of the appsettings.json file. Also, your private key file must exist at the root of the web server and must be named &ldquo;SignInWithAppleKey.p8&rdquo;." },
+            { "LoginTypeCustom", "Custom Provider" },
+            { "LoginTypeCustomAuthenticationButtonClass", "Custom Authentication Button Class" },
+            { "LoginTypeCustomAuthenticationButtonClassInfo", "An optional class that will be applied to the log in button." },
+            { "LoginTypeCustomAuthenticationButtonCSharpCode", "Custom Authentication C# Code" },
+            { "LoginTypeCustomAuthenticationIcon", "Custom Authentication Icon" },
+            { "LoginTypeCustomAuthenticationIconInfo", "An optional icon that will be displayed on the log in button." },
+            { "LoginTypeCustomAuthenticationName", "Custom Authentication Name" },
+            { "LoginTypeCustomAuthenticationNameInfo", "The text that will be displayed on the log in button." },
+            { "LoginTypeCustomInfo", "Custom Authentication Provider Information" },
+            { "LoginTypeFacebook", "Facebook" },
+            { "LoginTypeFacebookProviderInfo", "Facebook Authentication Provider Information" },
+            { "LoginTypeFacebookProviderInfoDetails", "When using the Facebook login option you must set the Facebook AppId and AppSecret in the AuthenticationProviders:Facebook section of the appsettings.json file." },
+            { "LoginTypeGoogle", "Google" },
+            { "LoginTypeGoogleProviderInfo", "Google Authentication Provider Information" },
+            { "LoginTypeGoogleProviderInfoDetails", "When using the Google login option you must set the ClientId and ClientSecret in the AuthenticationProviders:Google section of the appsettings.json file." },
+            { "LoginTypeLocal", "Local Login" },
+            { "LoginTypeMicrosoftAccount", "Microsoft Account" },
+            { "LoginTypeMicrosoftAccountProviderInfo", "Microsoft Account Authentication Provider Information" },
+            { "LoginTypeMicrosoftAccountProviderInfoDetails", "When using the Microsoft Account login option you must set the ClientId and ClientSecret in the AuthenticationProviders:MicrosoftAccount section of the appsettings.json file." },
+            { "LoginTypeOpenId", "OpenId" },
+            { "LoginTypeOpenIdProviderInfo", "OpenId Authentication Provider Information" },
+            { "LoginTypeOpenIdProviderInfoDetails", "When using the OpenId login option you must set the ClientId, ClientSecret, and Authority settings in the AuthenticationProviders:OpenId section of the appsettings.json file." },
             { "LoginSuccessMessage", "Logged In, Please Wait..." },
             { "LoginWithEITSSO", "Login with OKTA Single Sign-On" },
             { "LoginWithApple", "Sign in with Apple" },
@@ -357,10 +425,6 @@ public partial class DataAccess
             { "LoginWithMicrosoftAccount", "Log in with a Microsoft Account" },
             { "LoginWithOpenId", "Log in with OpenId" },
             { "Log-in", "Log In" },
-            { "Logo", "Logo" },
-            { "LogoIncludedOnHomePage", "Include the Logo on the home page." },
-            { "LogoIncludedOnNavbar", "Include the Logo on the top navigation menu." },
-            { "LogoInfo", "Ideally, your logo should be in the SVG format for best scaling. If you do not have an SVG version then a transparent PNG would be the next-best option." },
             { "Logout", "Logout" },
             { "Log-out", "Log Out" },
             { "MailServer", "Mail Server" },
@@ -409,6 +473,7 @@ public partial class DataAccess
             { "Note", "Note" },
             { "Notes", "Notes" },
             { "Now", "Now" },
+            { "Object", "Object" },
             { "Objects", "Objects" },
             { "ObjectsWrittenToConsole", "Objects Written to Console" },
             { "Of", "of" },
@@ -454,6 +519,7 @@ public partial class DataAccess
             { "ResetPassword", "Reset Password" },
             { "ResetUserPassword", "Reset User Password" },
             { "Result", "Result" },
+            { "SampleCode", "Sample Code" },
             { "Save", "Save" },
             { "Saved", "Saved" },
             { "SavedAt", "Saved at" },
@@ -463,12 +529,17 @@ public partial class DataAccess
             { "Second", "Second" },
             { "Seconds", "Seconds" },
             { "Search", "Search" },
+            { "SearchFields", "Search Fields" },
+            { "SearchFieldsInfo", "Enter that names of fields or the FieldId GUID values of fields to search." },
             { "SearchLanguageTag", "Search for a Language Tag to Edit" },
             { "SearchUsers", "Search Users" },
+            { "SearchWords", "Search Words" },
+            { "SearchWordsInfo", "Enter words to search for, or use * to match any word" },
             { "Select", "Select" },
             { "SelectCulture", "Select a Language Culture" },
             { "SelectFile", "Select a File" },
             { "SelectImageFile", "Select an Image File" },
+            { "SelectRecord", "Select Records" },
             { "SelectTenant", "Select a Tenant" },
             { "SelectTenantInfo", "To log in you must first select the tenant account you wish to log in to." },
             { "SelectTheme", "Select Theme" },
@@ -535,6 +606,7 @@ public partial class DataAccess
             { "ThemeTeal", "Teal" },
             { "ThemeYellow", "Yellow" },
             { "Title", "Title" },
+            { "ToggleAllCheckboxes", "Toggle All Checkboxes" },
             { "ToggleStickyMenus", "Toggle Sticky Menus" },
             { "Total", "Total" },
             { "Undelete", "Undelete" },
@@ -553,6 +625,7 @@ public partial class DataAccess
             { "UploadingWait", "Uploading, Please Wait..." },
             { "UserLockedOut", "User account was locked out at {0} due to too many failed login attempts." },
             { "User", "User" },
+            { "UserAvatar", "User Avatar" },
             { "Username", "Username" },
             { "Users", "Users" },
             { "UserScheduleInfo", "You are scheduled for this event and can update your attendance below." },
@@ -561,6 +634,7 @@ public partial class DataAccess
             { "UseTenantCodeInUrl", "Use Tenant Code in URL" },
             { "ValidateConfirmationCode", "Validate Confirmation Code" },
             { "ValidatingConfirmationCode", "Validating Confirmation Code, Please Wait..." },
+            { "ValidatingWait", "Validating, Please Wait..." },
             { "ValidationCompleteReturnToLogin", "Your account has been activated. You may now log in." },
             { "ValidatingLogin", "Validating Login, Please Wait..." },
             { "ValidationCode", "Validation Code" },
@@ -574,10 +648,13 @@ public partial class DataAccess
             { "WorkScheduleDay", "Day" },
             { "WorkScheduleEnd", "End" },
             { "WorkScheduleStart", "Start" },
+            { "ZoomIn", "Zoom In" },
+            { "ZoomOut", "Zoom Out" },
+            { "ZoomReset", "Reset Zoom" },
         };
 
         // First, add any items from the app language.
-        foreach(var item in AppLanguage) {
+        foreach (var item in AppLanguage) {
             output.Phrases.Add(new DataObjects.OptionPair {
                 Id = item.Key,
                 Value = item.Value
@@ -669,11 +746,11 @@ public partial class DataAccess
 
         var cultures = await GetLanguageCultures(TenantId);
 
-        if(!cultures.Any()) {
+        if (!cultures.Any()) {
             cultures.Add("en-US");
         }
 
-        foreach(var culture in cultures) {
+        foreach (var culture in cultures) {
             var language = GetTenantLanguage(TenantId, culture);
             output.Add(language);
         }
