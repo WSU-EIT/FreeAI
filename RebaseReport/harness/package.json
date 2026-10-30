@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": { "playwright-core": "1.56.1", "pngjs": "7.0.0", "pixelmatch": "5.3.0" }
+}

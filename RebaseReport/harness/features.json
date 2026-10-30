@@ -1,0 +1,74 @@
+{
+ "FreeGLBA": [
+  "/GlbaDashboard",
+  "/AccessEvents",
+  "/SourceSystems",
+  "/ComplianceReports",
+  "/ApiExplorer",
+  "/ApiLogs/Dashboard",
+  "/GlbaSettings"
+ ],
+ "FreeAccessibilityChecker": [
+  "/",
+  "/Compliance",
+  "/Settings/Sites",
+  "/Compliance/Scorecard",
+  "/Settings/ScanMonitor",
+  "/Reports/Trends"
+ ],
+ "FreeServicesHub": [
+  "/",
+  "/AgentDashboard",
+  "/AgentManagement",
+  "/BackgroundServices",
+  "/AgentSettings",
+  "/Settings/ApiKeys",
+  "/About"
+ ],
+ "FreeManager": [
+  "/AppBuilder",
+  "/Templates",
+  "/AppBuilder/New",
+  "/AppBuilder/EntityWizard",
+  "/fm/templates",
+  "/AppBuilder/SetupWizardBuilder"
+ ],
+ "FreeExamples": [
+  "/",
+  "/Examples/Dashboard",
+  "/Examples/BootstrapShowcase",
+  "/Examples/ChartsDashboard",
+  "/Examples/CodeEditor",
+  "/Examples/KanbanBoard",
+  "/Examples/SignatureDemo",
+  "/Examples/Projects"
+ ],
+ "FreeBlazorExample": [
+  "/",
+  "/showcase/catalog",
+  "/showcase/feature101-dynamic-forms",
+  "/showcase/feature103-calendar",
+  "/showcase/feature107-hierarchical-tree",
+  "/showcase/kanbanboard/v1",
+  "/showcase/wizard/v1"
+ ],
+ "FreePlugins": [
+  "/",
+  "/Plugins",
+  "/Monaco",
+  "/WorkflowsTest",
+  "/HtmlEditor",
+  "/DoubleClick"
+ ],
+ "FreeLLM": [
+  "/"
+ ],
+ "FreeSmartsheets": [
+  "/",
+  "/About"
+ ],
+ "ChatWithAI": [
+  "/",
+  "/About"
+ ]
+}
