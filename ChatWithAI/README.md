@@ -1,184 +1,121 @@
-# FreeCRM 
+# ChatWithAI
 
-An open-source CRM solution built in C# Blazor WebAssembly using .NET 10. You can use this project as-is,
-or customize it to fit your needs. Or, just grab code that you need to use in your project.
+Multi-project .NET 9 solution that pairs the FreeCRM scaffold (renamed to the ChatWithAI namespace) with a standalone Azure OpenAI chat console. Seven projects are included:
 
-## Database Setup & Default Admin Login
+| Project | Type | Role |
+|---|---|---|
+| `ChatWithAI` | ASP.NET Core Web (Blazor United) | Server host: authentication, REST API, SignalR hub, plugin loader |
+| `ChatWithAI.Client` | Blazor WebAssembly | WASM UI: all admin and user-facing pages |
+| `ChatWithAI.DataAccess` | Class library | Server-side data access over EF Core; auth, users, tenants, files, PDF, CSV, Graph API |
+| `ChatWithAI.DataObjects` | Class library | Shared DTOs, caching helper, and startup-state flags |
+| `ChatWithAI.EFModels` | Class library | EF Core `DbContext` and entity models for all core tables |
+| `ChatWithAI.Plugins` | Class library | Roslyn-based runtime that loads, compiles, and executes `.cs`/`.plugin` files |
+| `ChatWithAI.LocalTests` | Console `Exe` | Token-budgeted Azure OpenAI chat loop — the only project with unique AI logic |
 
-The application is configured to use a local SQL Server database by default.
-You can change this in the appsettings.json file.
-Assuming your have SQL Server installed and your local account has permission to create databases,
-a new database will be created and you will be able to login with a username and password of 'admin'.
+## ChatWithAI.LocalTests — the unique project
 
-If you update your connection string to point to a different server, you will need
-to make sure the user specified for the connection has permissions to modify the database schema.
+`DataAccess.ChatWithAi()` demonstrates a token-budgeted chat round-trip against the Azure OpenAI REST API:
 
-## Utilities
+1. Loads `AzureOpenAiSettings` from `appsettings.json` and .NET user secrets (`AzureOpenAi:Endpoint`, `Deployment`, `ApiKey`, `ApiVersion`, `MaxContextTokens`, `ReplyMaxTokens`, `TokenizerEncoding`, `Temperature`).
+2. Creates a `GptEncoding` (SharpToken BPE tokenizer, default `o200k_base`) and counts tokens across all messages before sending — using a 6-token-per-message overhead buffer to approximate the API's own counting.
+3. Computes `promptBudget = MaxContextTokens − ReplyMaxTokens` and validates that `replyMaxTokens` is less than `maxContextTokens`, falling back to `maxContextTokens / 4` if not.
+4. Posts the conversation history to `/openai/deployments/{deployment}/chat/completions?api-version={version}` using a raw `HttpClient` with the `api-key` header.
+5. Pretty-prints the JSON response to stdout.
 
-The previous utilities "Remove Modules from FreeCRM.exe", "Rename FreeCRM.exe", and
-"Upgrade FreeCRM.exe" have now been combined into a new single "Util.exe" utility,
-referred to below as Util. This Util console application has an intuitive main menu
-with options, as well as a built-in help to show all available commands.
-Command in the utility are not case-sensitive.
+The hard-coded starter conversation asks the model (identified as a C# Blazor expert) for a minimal Hello World `Program.cs`.
 
-## Step 1 - Rename the Solution
+## The six scaffold projects
 
-Using rename with the Util will rename the project files,
-create new GUIDs for each project in the solution,
-and rename namespaces to match your project name.
+The remaining six projects are the FreeCRM framework renamed to the `ChatWithAI` namespace. No app-specific logic has been added; the extension points (`Program.App.cs`, `DataAccess.App.cs`, `DataController.App.cs`, `Index.App.razor`, etc.) are present but empty stubs.
 
-The tool supports adding the rename value as a command-line argument. For example:
+- **ChatWithAI** — ASP.NET Core host. Wires cookie/OAuth authentication (Google, Microsoft, Apple, Facebook, OpenId), loads plugins from a `Plugins/` folder via Roslyn, maps a SignalR hub at `/chatwithaiHub` (with optional Azure SignalR Service fallback), registers `IDataAccess`, `IConfigurationHelper`, and `ICustomAuthentication` in DI, and registers QuestPDF Community license.
+- **ChatWithAI.Client** — Blazor WASM app. Full multi-tenant UI covering login/logout, user profile, settings administration (tenants, users, groups, departments, files, languages, UDF labels), plugin testing, and a home page with a per-tenant logo stub.
+- **ChatWithAI.DataAccess** — Connects to SQL Server, MySQL, PostgreSQL, SQLite, or in-memory via EF Core. Runs custom SQL migration scripts on startup. Covers local/LDAP/AD/OAuth authentication, file storage, encryption, JWT helpers, PDF (QuestPDF), CSV, NuGet feed queries, and Microsoft Graph API calls.
+- **ChatWithAI.DataObjects** — All request/response DTOs shared between client and server. Includes `GlobalSettings` (static startup flags) and `Caching` (in-process `MemoryCache` wrapper).
+- **ChatWithAI.EFModels** — `EFDataModel` DbContext targeting all four providers. Tables: `Tenants`, `Users`, `UserGroups`, `UserInGroups`, `Departments`, `DepartmentGroups`, `FileStorages`, `Settings`, `UDFLabels`, `PluginCaches`.
+- **ChatWithAI.Plugins** — Loads `.cs`/`.plugin` source files at startup, compiles each via Roslyn, extracts metadata via `Properties()`, and exposes `ExecuteDynamicCSharpCode<T>`. Plugins with `ContainsSensitiveData = true` are AES-encrypted before being sent to the browser.
 
-`Util --rename:MyNewProjectName`
-
-## Step 2 - Remove Unwanted Modules
-
-If you want to remove one or more of the optional components from the application
-you can use the Util to do so.
-This utility may still leave remnants of the removed modules in the code.
-If you find any items that are not removed that you believe should be,
-please open an issue on GitHub. Please include the name of the file and the line number
-where the item is located.
-
-The removal tool supports two command-line options. They are:
-
-`Util --remove:Module1,Module2,etc.`
-
-This removes any named modules.
-
-`Util --keep:Module1,Module2,etc.`
-
-This removes any modules not named. For example, to remove all optional modules except
-the Tags module, you would use:
-
-`Util --keep:Tags`
-
-You can also remove all optional modules without having to list them all by using:
-
-`Util --remove:all`
-
-Do not use any spaces in the command line options. The names of the modules that can be
-kept or removed are:
-
-- About
-- Appointments
-- EmailTemplates
-- Invoices
-- Locations
-- Logo
-- Payments
-- SamplePages
-- SamplePlugins
-- Services
-- Tags
-
-## Details
-
-### Plugins
-
-FreeCRM supports a plugin architecture that allows you to extend the functionality
-of the software. See the example files in the Plugins folder for examples of how
-to use the various plugin types. You can easily add support for more plugin types
-to support your custom application changes by following the various examples
-already built into the application. The types built in out of the box are:
-"Auth", "BackgroundProcess", "Example", and "UserUpdate".
-
-Plugins can have a .cs file extension and be included in your project as source code,
-or they can have the .plugin extension for files that may have build conflicts
-with your solution. For example, the HelloWorld sample plugin uses an external dll
-file that would cause build issues if it were included as a .cs file.
-See the .assemblies file used with that plugin to see how external files can be included.
-These external references can be paths to files or can be statements that evaluate
-to the location of the files at runtime, like:
+## Solution structure
 
 ```
-.\HelloWorld\HelloWorld.dll
-typeof(SomeNameSpace.SomeProperty).Assembly.Location
+ChatWithAI/
+├── ChatWithAI/                  # Server host (Microsoft.NET.Sdk.Web, net9.0)
+├── ChatWithAI.Client/           # WASM client (Microsoft.NET.Sdk.BlazorWebAssembly, net9.0)
+├── ChatWithAI.DataAccess/       # Data access layer (Microsoft.NET.Sdk, net9.0)
+├── ChatWithAI.DataObjects/      # Shared DTOs (Microsoft.NET.Sdk, net9.0)
+├── ChatWithAI.EFModels/         # EF Core models (Microsoft.NET.Sdk, net9.0)
+├── ChatWithAI.LocalTests/       # Azure OpenAI console (Microsoft.NET.Sdk, net9.0, Exe)
+└── ChatWithAI.Plugins/          # Plugin runtime (Microsoft.NET.Sdk, net9.0)
 ```
 
-### Background Service
+## Prerequisites
 
-FreeCRM includes a background service that can be started when your application starts
-to perform periodic tasks. This is controlled by the settings in the BackgroundService
-section of appsettings.json. By default, the background service is enabled and configured
-to run every 60 seconds.
+- .NET 9 SDK
+- SQL Server, MySQL, PostgreSQL, or SQLite (or use the in-memory provider for development)
+- For `ChatWithAI.LocalTests`: an Azure OpenAI resource with a chat completions deployment; store secrets via `dotnet user-secrets set "AzureOpenAi:ApiKey" "<key>"`
 
-For tenants that are configured to mark records as deleted instead of deleting them immediately,
-this background service will take care of permanently deleting those records after the
-specified retention period has passed.
+## 🧭 Plain-English Briefing — The Boss Questions
 
-If you want detailed logging for the background service then set the LogFilePath with
-the path to the folder where you want the logs to be stored. The application will need
-to be running under credentials that have write access to that folder.
+**How does this work?**
+ChatWithAI is two things bolted together: (1) the **FreeCRM platform scaffold** — a ready-made multi-tenant web app (login, users, tenants, files, plugins, real-time updates) renamed into the `ChatWithAI` namespace — and (2) **`ChatWithAI.LocalTests`**, the only piece with real AI logic: a *token-budgeted* chat round-trip against Azure OpenAI. "Token-budgeted" means it counts how many **tokens** (the chunks an AI model bills and thinks in) your conversation will cost *before* sending, and reserves room for the reply so the request never overflows the model's context window. The six scaffold projects' app-specific hooks are present but empty — so this solution is a *starting point*: a production-grade platform plus a proven, safe AI call, ready to be joined together.
 
-The StartOnLoad flag indicates if the tasks to be run should be started immediately,
-or if they should wait until the first timer interval to start. For example, if this
-is set to false and the IntervalSeconds is set to 60, then the first time the tasks
-will run is 60 seconds after the application starts. If you have something that needs
-to be run as soon as the application starts, then set this to true.
+**What technology does it use — and where exactly?**
 
-There are two methods to tie into the background service to run your own tasks.
-First, you can modify the ProcessBackgroundTasksApp method in the DataAccess.App.cs file
-to run methods in there. The second method is to build plugins using the new
-"BackgroundProcess" plugin type. See the ExampleBackgroundProcess.cs file in the
-Plugins folder for an example of how to build a background process plugin.
-The example plugin will simple log a message to the console each time it runs,
-and to the logging file if you have one configured.
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Azure OpenAI REST API (raw `HttpClient`) | The actual chat call | [Program.cs#L174-L187](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.LocalTests/Program.cs#L174-L187) |
+| SharpToken (GPT tokenizer) | Count tokens *before* sending | [Program.cs#L141-L153](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.LocalTests/Program.cs#L141-L153) |
+| Token budgeting | Reserve reply room; never exceed context | [Program.cs#L118-L126](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.LocalTests/Program.cs#L118-L126) |
+| Blazor United (Server + WASM) | The platform UI/host | [ChatWithAI/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI/Program.cs) |
+| Roslyn plugin runtime | Compile drop-in C# at runtime | [ChatWithAI.Plugins/Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.Plugins/Plugins.cs) |
+| EF Core (5 providers) | Data layer | [EFModels/EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.EFModels/EFModels/EFDataModel.cs) |
 
-If you are running in a load balanced environment with multiple instances of the application
-and you only want the background service to run on a specific instance, you can set the
-LoadBalancingFilter value in the BackgroundService section of appsettings.json to a value
-that must be matched in the name of the current System.Environment.MachineName.
+**Why does this exist?**
+To pair WSU's reusable app platform with a *minimal, correct* example of talking to Azure OpenAI safely — so a team can start from a working multi-tenant app **and** a token-safe AI call, instead of wiring both from scratch.
 
-### IIS Configuration for the Background Service
+**What does it accomplish that other tools don't?**
+- **Token budgeting up front.** Most quick-start samples just POST the messages and hope. This counts tokens with the model's own tokenizer family and guarantees prompt + reply fit the window, with a fallback if the reply cap is set too high.
+- **Raw REST, no SDK lock-in.** It calls the Azure OpenAI endpoint directly with `HttpClient`, so you can see (and change) exactly what's sent.
+- **A real platform underneath.** The AI demo sits on a full multi-tenant scaffold (auth, plugins, 5 databases), not a toy.
 
-If you are hosting on IIS and want to ensure that the background service is always running,
-set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
-for the application settings to true. The Preload Enabled flag is only available
-if you have installed the Application Initialization feature for IIS.
+**Terminology & "can I see it?"**
+- **Token** — the unit an LLM reads and bills in (roughly ¾ of a word).
+- **Context window** — the most tokens a model can consider at once (`MaxContextTokens`, default 128,000).
+- **Tokenizer / BPE** — the algorithm (SharpToken's `o200k_base`) that splits text into tokens so they can be counted.
+- **Deployment** — your named instance of a model inside Azure OpenAI.
+- *See it:* the entire app, chat logic included, is one readable file — [Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/ChatWithAI/ChatWithAI.LocalTests/Program.cs).
 
-## Upgrade
+**The hard part, drawn** — making a conversation fit the model's window before sending:
 
-If you are running an older version of an application based on the FreeCRM
-framework and you have already migrated to use .app. files for all of your
-app-specific code, then you can use the Util console
-application to upgrade your existing application. To do so download a fresh
-copy of the FreeCRM files, run the "rename" option in the utility to rename
-the application using the exact same namespace as your existing application.
-Then, use the "remove" option in the utility to remove any modules
-that you won't be using in your application. Finally, run the
-"upgrade" option in the utility which will attempt to migrate your existing
-code into the new version.
+```
+  you ─▶ Program.cs loads settings (endpoint/key/deployment + token budget) from user secrets
+              │
+              ▼  build conversation:  [system] [user] [assistant] [user]
+  ┌──────────────────── THE HARD PART: fit the context window ─────────────────────┐
+  │ SharpToken counts the tokens of every message  (+6 overhead per message)        │
+  │ promptBudget = MaxContextTokens − ReplyMaxTokens                                │
+  │ guardrail: if ReplyMaxTokens ≥ MaxContextTokens → ReplyMaxTokens = context ÷ 4   │
+  └───────────────────────────────────┬────────────────────────────────────────────┘
+              │ now the prompt is guaranteed to leave room for the reply
+              ▼
+   POST /openai/deployments/{deployment}/chat/completions?api-version=…
+         header: api-key    body: { messages, temperature, max_tokens = ReplyMaxTokens }
+              │
+              ▼   Azure OpenAI
+         JSON reply ──▶ pretty-printed to the console
+```
 
-This tool can take a single command-line argument of the path to your
-existing application. For example:
+## License
 
-`Util --upgrade:"C:\MyExistingApp"`
+Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-There are edge cases that cannot be updated with this tool, such as having
-additional project in your solution. The tool will copy those projects,
-but any references in other projects must be added manually.
+## About
 
-The tool will produce a report that will help with any additional steps
-that will be required for the migration.
+## Accessibility showcase (regenerable output)
 
-The commands in the Util console application can be chained together to perform
-all steps in one call. For example, to rename your app, remove some modules, and
-perform the upgrade you could use:
+The screenshots and reports under `ChatWithAI.Docs/showcase/runs/` are generated, so they are not kept in this folder. To regenerate them, run `run-a11y-showcase.ps1` from the root of the FreeAI repository (`.\run-a11y-showcase.ps1 -Targets ChatWithAI`); see `ChatWithAI.Docs/004_showcase.md`.
 
-`--Rename:MyNewProjectName --Keep:about,tags --Upgrade:"C:\Path\To\Current\Version"`
+Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
 
-## Mac OS
-
-A separate UtilMacOS file is available for use on Macs with Apple silicone.
-To make this work you must open a console into the folder where the file
-exists and issue the following command:
-
-```chmod +x UtilMacOS```
-
-Then, to run the application issue the following command:
-
-```./UtilMacOS```
-
-Both the Util.exe and UtilMacOS applications are framework-dependent, so
-you must have .NET 10 installed to run them.
+- Website: https://em.wsu.edu/eit/
+- GitHub: https://github.com/WSU-EIT

@@ -14,4 +14,6 @@
   <Project Path="ChatWithAI.EFModels/ChatWithAI.EFModels.csproj" Id="0F32FF07-B431-41BA-AEC5-BC9D59EA52F6" />
   <Project Path="ChatWithAI.Plugins/ChatWithAI.Plugins.csproj" Id="8397D01F-D801-4023-AABA-CD6D3B477599" />
   <Project Path="ChatWithAI/ChatWithAI.csproj" />
+  <Project Path="ChatWithAI.LocalTests/ChatWithAI.LocalTests.csproj" />
+  <Project Path="ChatWithAI.Docs/ChatWithAI.Docs.csproj" />
 </Solution>

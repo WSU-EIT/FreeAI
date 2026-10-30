@@ -18,6 +18,7 @@ public partial class Program
     public static WebApplicationBuilder AppModifyBuilderStart(WebApplicationBuilder builder)
     {
         var output = builder;
+        output = ChatWithAIAppModifyBuilderStart(output);
         // Add any app-specific modifications to the builder here.
         return output;
     }
