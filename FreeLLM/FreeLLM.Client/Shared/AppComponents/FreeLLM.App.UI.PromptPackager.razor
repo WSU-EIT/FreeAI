@@ -1,0 +1,356 @@
+﻿@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<!--
+FreeLLM_App_UI_PromptPackager (formerly the body of Index.App.razor, merged from the old Files.razor)
+
+The prompt packager: pick a server directory, filter and select files, and build the text to paste into a chat.
+The page state and server calls live in FreeLLMPromptPackagerState (FreeLLM.App.Client.PromptPackager.cs);
+the cards are the FreeLLM_App_UI_PromptPackager_* components.
+-->
+
+<main class="container py-3">
+    <div class="row">
+        <!-- LEFT COLUMN: CONTROLS -->
+        <div class="col-lg-6 mb-4">
+            <header class="mb-4">
+                <h1 id="pageTitle" class="mb-3">File Explorer – Project</h1>
+            </header>
+
+
+            <!-- Local Mode: Directory Path Input -->
+            <section aria-labelledby="directoryPathLabel" class="mb-4">
+                <label id="directoryPathLabel" for="directoryPathInput" class="form-label">Enter Directory Path:</label>
+                <div class="input-group">
+                    <input id="directoryPathInput" @bind="State.DirectoryPath" @bind:event="oninput" @bind:after="State.Changed"
+                            placeholder="e.g. C:\\Users\\YourName\\source\\repos\\YourProject"
+                            class="form-control" />
+                </div>
+            </section>
+
+            @* ---- folded in: Instructions card ---- *@
+            <!-- Personal Modification Instructions -->
+            <section aria-labelledby="modificationInstructionsLabel" class="mb-4">
+                <label id="modificationInstructionsLabel" for="modificationInstructionsInput" class="form-label fw-bold">
+                    Your Personal Modification Instructions:
+                </label>
+                <textarea id="modificationInstructionsInput" @bind="State.ModificationInstructions" @bind:after="State.Changed" @bind:event="oninput"
+                        placeholder="Enter your instructions for code modifications..."
+                        class="form-control" rows="3" aria-describedby="instructionsHelp"></textarea>
+                <div id="instructionsHelp" class="form-text">
+                    These instructions will appear at the very top of the final update.
+                </div>
+            </section>
+
+            <!-- Common Modification Phrases -->
+            <section aria-labelledby="commonPhrasesLabel" class="mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <label id="commonPhrasesLabel" class="form-label">
+                        Common Modification Phrases:
+                    </label>
+                    <button class="btn btn-outline-secondary" @onclick="State.ToggleCommonPhrases">
+                        @(State.showCommonPhrases ? "Hide" : "Show")
+                    </button>
+                </div>
+                @if(State.showCommonPhrases) {
+                    @foreach(var group in State.ModificationOptions.GroupBy(opt => opt.Category)) {
+                        <div class="mb-3">
+                            <h5>@group.Key</h5>
+                            @foreach(var opt in group) {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="@opt.Key" id="chk_mod_@opt.Key"
+                                            checked="@State.SelectedModificationOptionKeys.Contains(opt.Key)"
+                                            @onchange="() => State.ToggleModificationOption(opt.Key)" />
+                                    <label class="form-check-label" for="chk_mod_@opt.Key">
+                                        <strong>@opt.Key</strong> – @opt.Description
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <div class="form-text mt-1">
+                        Select the phrases you want to add as bottom instructions. They will be automatically appended.
+                    </div>
+                    <div class="mb-3">
+                        <label for="beforeTextInput" class="form-label">Before Text (Project Summary Header):</label>
+                        <textarea id="beforeTextInput" class="form-control" rows="3" @bind="State.textBefore" @bind:after="State.Changed"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="afterTextInput" class="form-label">After Text (Project Summary Footer):</label>
+                        <textarea id="afterTextInput" class="form-control" rows="3" @bind="State.textAfter" @bind:after="State.Changed"></textarea>
+                    </div>
+                }
+            </section>
+
+            @* ---- folded in: Options card ---- *@
+            <!-- ChatGPT Model Selection -->
+            <section class="mb-3">
+                <label for="chatGptModel" class="form-label">Select Number of Chunks:</label>
+                <input type="number" class="form-control" @bind="State.SelectedNumberOfChunks" @bind:after="State.Changed" min="1" />
+            </section>
+
+            <!-- Sorting Options -->
+            <section class="mb-3">
+                <div class="row">
+                    <div class="col">
+                        <label for="sortOption" class="form-label">Sort by:</label>
+                        <select id="sortOption" class="form-select" @bind="State.SortOption" @bind:after="State.Changed">
+                            <option value="Name">Name</option>
+                            <option value="LineCount">Line Count</option>
+                            <option value="CharCount">Character Count</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="sortDirection" class="form-label">Sort Order:</label>
+                        <select id="sortDirection" class="form-select" @bind="State.SortDirection" @bind:after="State.Changed">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Toggle Filters Button and Totals Display -->
+            <section class="mb-3">
+                <button class="btn btn-outline-secondary" @onclick="State.ToggleFilters">
+                    @(State.showFilters ? "Hide Filters" : "Show Filters")
+                </button>
+                <button class="btn btn-outline-info" @onclick="State.CheckDefaults">
+                    Check Defaults
+                </button>
+                <div class="row text-center mt-2">
+                    <div class="col">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <div>@State.FilteredFiles.Count() visible</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-check"></i>
+                        <div>@State.FilteredFiles.Count(x => x.IsSelected) selected</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-eye-slash"></i>
+                        <div>@(State.fileItems.Count - State.FilteredFiles.Count()) hidden</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-code"></i>
+                        <div>@State.FilteredFiles.Count(x => x.FullPath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)) .cs</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-file-code"></i>
+                        <div>@State.FilteredFiles.Count(x => x.FullPath.EndsWith(".razor", StringComparison.OrdinalIgnoreCase)) .razor</div>
+                    </div>
+                    <div class="col">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <div>@State.FilteredFiles.Count(x => x.FullPath.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase)) .cshtml</div>
+                    </div>
+                </div>
+            </section>
+
+            @* ---- folded in: Filters card ---- *@
+            <!-- Plain Text Search Filter -->
+            <section class="mb-3">
+                <label id="plainTextFilterLabel" for="plainTextFilterInput" class="form-label">Plain Text Search Filter:</label>
+                <input id="plainTextFilterInput"
+                        value="@State.plainTextFilter"
+                        placeholder="Enter text to search in file paths"
+                        class="form-control"
+                        @oninput="@(e => { State.plainTextFilter = e.Value?.ToString() ?? string.Empty; State.UpdateSummaryDebounced(); State.Changed(); })" />
+            </section>
+
+            <!-- Collapsible Filters & Stats -->
+            <div class="collapse @(State.showFilters ? "show" : "")">
+                <!-- File Type Filter -->
+                <section aria-labelledby="fileTypeFiltersLabel" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend id="fileTypeFiltersLabel" class="w-auto px-2">File Type Filters:</legend>
+                        <div class="d-flex flex-wrap">
+                            @foreach(var type in State.fileTypes) {
+                                <div class="form-check me-3">
+                                    <input type="checkbox" id="chk_@type" class="form-check-input"
+                                            @onchange="e => { State.ToggleFileType(type, e.Value); State.UpdateSummaryDebounced(); State.Changed(); }"
+                                            checked="@State.selectedFileTypes.Contains(type.ToLower())" />
+                                    <label class="form-check-label" for="chk_@type">@type</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="input-group mt-2">
+                            <input type="text" placeholder="Add file type (e.g. .json)" @bind="State.customFileType" @bind:after="State.Changed" class="form-control" />
+                            <button class="btn btn-outline-secondary" @onclick="State.AddCustomFileType">Add</button>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <!-- Ignored Folders Filter -->
+                <section aria-labelledby="ignoredFoldersLabel" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend id="ignoredFoldersLabel" class="w-auto px-2">Ignored Folders:</legend>
+                        <div class="d-flex flex-wrap">
+                            @foreach(var folder in State.ignoredFolders) {
+                                <span class="badge bg-secondary me-2">
+                                    @folder
+                                    <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove" @onclick="() => State.RemoveIgnoredFolder(folder)"></button>
+                                </span>
+                            }
+                        </div>
+                        <div class="input-group mt-2">
+                            <input type="text" placeholder="Add ignored folder (e.g. bootstrap)" @bind="State.customIgnoredFolder" @bind:after="State.Changed" class="form-control" />
+                            <button class="btn btn-outline-secondary" @onclick="State.AddIgnoredFolder">Add</button>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <!-- Additional Filters -->
+                <section class="mb-4">
+                    <div class="mb-3">
+                        <label id="wildcardFilterLabel" for="wildcardFilterInput" class="form-label">Wildcard Filter (e.g. *.cs, */Views/*):</label>
+                        <input id="wildcardFilterInput"
+                                value="@State.filterText"
+                                placeholder="Enter wildcard filter"
+                                class="form-control"
+                                @oninput="@(e => { State.filterText = e.Value?.ToString() ?? string.Empty; State.UpdateSummaryDebounced(); State.Changed(); })" />
+                        <div class="form-text">Common filters: *.cs, *.cshtml, *.js, *.css, *.razor, etc.</div>
+                    </div>
+                </section>
+            </div>
+
+            @* ---- folded in: FileList card ---- *@
+            <!-- Selection Buttons -->
+            <section class="mb-4">
+                <div class="btn-group" role="group" aria-label="Selection Controls">
+                    <button class="btn btn-outline-primary" @onclick="State.SelectAllVisible">Select All Visible</button>
+                    <button class="btn btn-outline-primary" @onclick="State.DeselectAllVisible">Deselect All Visible</button>
+                    <button class="btn btn-outline-danger" @onclick="State.ClearAllSelections">Clear All Selections</button>
+                </div>
+            </section>
+
+            <!-- Available Files List -->
+            <section aria-labelledby="fileListLabel" class="mb-4">
+                <h2 id="fileListLabel" class="h5">Available Files:</h2>
+                <ul class="list-group">
+                    @foreach(var item in State.FilteredFiles) {
+                        <li class="list-group-item">
+                            <div class="form-check">
+                                <input type="checkbox" id="chk_file_@item.FileName" class="form-check-input"
+                                        @bind="item.IsSelected" @bind:after="State.Changed" @bind:event="oninput" />
+                                <label class="form-check-label" for="chk_file_@item.FileName">
+                                    @item.FullPath
+                                    @if(State.fileSizeIndicators.ContainsKey(item.FullPath)) {
+                                        <span class="badge ms-2" style="background-color: @Helpers.FreeLLMFileBadgeColor(item.LineCount);">
+                                            <i class="fa-solid fa-signal"></i> @State.fileSizeIndicators[item.FullPath]
+                                        </span>
+                                    }
+                                </label>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        </div>
+
+        <!-- RIGHT COLUMN: PREVIEW -->
+        <div class="col-lg-6">
+            @* ---- folded in: Preview card ---- *@
+            <section aria-labelledby="summaryLabel" class="mb-4 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 id="summaryLabel" class="h5">ChatGPT Project Update:</h2>
+                    <div>
+                        <button class="btn btn-outline-success" @onclick="CopySummary" title="Copy update to clipboard">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                        @if(State.fileContentsSummaryChunks.Count > 1) {
+                            <span class="ms-2" style="background-color: @Helpers.FreeLLMPreviewColor(State.overallLineCount); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                Total: @State.overallLineCount lines, @State.overallCharCount characters
+                            </span>
+                        }
+                    </div>
+                </div>
+                @if(State.isUpdating) {
+                    <div class="spinner-overlay">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                @if(State.fileContentsSummaryChunks.Count == 1) {
+                    <textarea class="form-control" rows="20" readonly aria-live="polite">
+                        @State.fileContentsSummaryChunks[0]
+                    </textarea>
+                    <div class="mt-2 text-end">
+                        <span style="background-color: @Helpers.FreeLLMPreviewColor(State.overallLineCount); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                            Total: @State.overallLineCount lines, @State.overallCharCount characters
+                        </span>
+                    </div>
+                } else if(State.fileContentsSummaryChunks.Count > 1) {
+                    @foreach(var chunk in State.fileContentsSummaryChunks.Select((text, index) => new { text, index })) {
+                        <div class="mb-2">
+                            <textarea class="form-control" rows="20" readonly aria-live="polite">
+                                @chunk.text
+                            </textarea>
+                            <div class="text-end" style="font-size: smaller;">
+                                @{
+                                    var chunkLineCount = chunk.text.Split('\n').Length;
+                                    var chunkCharCount = chunk.text.Length;
+                                }
+                                Chunk @(chunk.index + 1): @chunkLineCount lines, @chunkCharCount characters
+                            </div>
+                        </div>
+                    }
+                }
+            </section>
+        </div>
+    </div>
+</main>
+
+@code {
+    // NOTE: Removed routing/Parameter(TenantCode). Index page already sets Model.TenantCodeFromUrl.
+
+    private FreeLLMPromptPackagerState State = default!;
+
+    #region IDisposable subscription to Model changes (optional)
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        State.Dispose();
+    }
+
+    protected override void OnInitialized()
+    {
+        State = new FreeLLMPromptPackagerState(Http) {
+            OnChanged = StateHasChanged,
+            Dispatch = work => InvokeAsync(work)
+        };
+        Model.OnChange += OnDataModelUpdated;
+    }
+
+    private void OnDataModelUpdated()
+    {
+        StateHasChanged();
+    }
+    #endregion
+
+    #region Lifecycle & Initialization
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender) {
+            // Model.TenantCodeFromUrl is already set by the parent index page.
+            await State.LoadFiles();
+            await State.UpdateSummary();
+        }
+    }
+    #endregion
+
+    // ---- folded in: Preview card ----
+    private async Task CopySummary()
+    {
+        string allText = string.Join("\n\n", State.fileContentsSummaryChunks);
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", allText);
+        await ShowCopyToast();
+    }
+
+    private async Task ShowCopyToast()
+    {
+        await JS.InvokeVoidAsync("alert", "Update copied to clipboard!");
+    }
+}

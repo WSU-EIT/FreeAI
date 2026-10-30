@@ -14,4 +14,5 @@
   <Project Path="FreeLLM.EFModels/FreeLLM.EFModels.csproj" Id="642D950E-5DFE-492E-A5B3-96991E5E4353" />
   <Project Path="FreeLLM.Plugins/FreeLLM.Plugins.csproj" Id="5551F6EB-7318-4371-8065-C2681DFA68FC" />
   <Project Path="FreeLLM/FreeLLM.csproj" />
+  <Project Path="FreeLLM.Docs/FreeLLM.Docs.csproj" />
 </Solution>

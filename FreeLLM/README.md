@@ -1,184 +1,151 @@
-# FreeCRM 
+# FreeLLM
 
-An open-source CRM solution built in C# Blazor WebAssembly using .NET 10. You can use this project as-is,
-or customize it to fit your needs. Or, just grab code that you need to use in your project.
+Blazor WebAssembly + ASP.NET Core application for curating source files into structured LLM prompt packages.
 
-## Database Setup & Default Admin Login
+FreeLLM guides engineers through selecting files from a local directory, applying filters and exclusions, computing line/character counts, assembling modification instructions, and exporting a clean, chunk-balanced prompt ready to paste into any LLM (ChatGPT, Azure OpenAI, etc.).
 
-The application is configured to use a local SQL Server database by default.
-You can change this in the appsettings.json file.
-Assuming your have SQL Server installed and your local account has permission to create databases,
-a new database will be created and you will be able to login with a username and password of 'admin'.
+## Projects in this solution
 
-If you update your connection string to point to a different server, you will need
-to make sure the user specified for the connection has permissions to modify the database schema.
+| Project | SDK | Framework | Role |
+|---------|-----|-----------|------|
+| `FreeLLM` | `Microsoft.NET.Sdk.Web` | net9.0 | ASP.NET Core host; controllers, SignalR hub, auth, plugin loader |
+| `FreeLLM.Client` | `Microsoft.NET.Sdk.BlazorWebAssembly` | net9.0 | WASM client; Index page workflow, all UI components |
+| `FreeLLM.DataAccess` | `Microsoft.NET.Sdk` | net9.0 | Server-side business logic, EF Core repositories, auth helpers |
+| `FreeLLM.DataObjects` | `Microsoft.NET.Sdk` | net9.0 | Shared DTOs and endpoint constants used by both server and client |
+| `FreeLLM.EFModels` | `Microsoft.NET.Sdk` | net9.0 | EF Core DbContext and entity classes; supports SQL Server, SQLite, MySQL, PostgreSQL |
+| `FreeLLM.Plugins` | `Microsoft.NET.Sdk` | net9.0 | Roslyn-based dynamic C# plugin runtime and `IPlugin` contracts |
 
-## Utilities
+## What the application does
 
-The previous utilities "Remove Modules from FreeCRM.exe", "Rename FreeCRM.exe", and
-"Upgrade FreeCRM.exe" have now been combined into a new single "Util.exe" utility,
-referred to below as Util. This Util console application has an intuitive main menu
-with options, as well as a built-in help to show all available commands.
-Command in the utility are not case-sensitive.
+The **Index page** (`/`) is the core workflow. On load the `Index.App.razor` hook embeds `FreeLLM.App.UI.PromptPackager.razor` which:
 
-## Step 1 - Rename the Solution
+1. Accepts a local directory path and calls `POST api/Data/GetFiles` to enumerate files, excluding `bin/`, `obj/`, and hidden directories.
+2. Displays the file list with checkboxes and real-time file-count badges (colored by line-count thresholds: green < 1000 lines, blue < 2000, amber < 3000, red ≥ 3000).
+3. Filters by extension (`.cs`, `.razor`, `.cshtml`, `.md` on by default; `.js`, `.css`, `.ts`, `.json`, `.html`, `.xml`, `.scss` toggleable), wildcard pattern, plain-text path search, and ignored-folder exclusions (`fontawesome`, `bootstrap` by default).
+4. Calls `POST api/Data/GetFileMetadata` for unselected files (line/char counts only) and `POST api/Data/GetFileContents` for selected files (full content), both cached server-side for 5 minutes via `CacheStore`.
+5. Assembles a structured "Project Update" string with: selected-file manifest, top modification instructions, editable before-text (8-step AI prompt scaffold), full file contents with size annotations, common modification phrases, editable after-text, and optional bottom instructions.
+6. Splits the output into N balanced chunks (greedy line-count packing, configurable via a number input), each prefixed with a `=== Chunk X of N ===` header.
+7. Copies all chunks to the clipboard via `navigator.clipboard.writeText`.
 
-Using rename with the Util will rename the project files,
-create new GUIDs for each project in the solution,
-and rename namespaces to match your project name.
+`CheckDefaults()` (in `FreeLLM.App.Client.cs`) pre-selects canonical entry-point files (`Program.cs`, `App.razor`, `MainLayout.razor`, `DataAccess.cs`, `DataObjects.cs`, `DataController.cs`, `EFDataModel.cs`).
 
-The tool supports adding the rename value as a command-line argument. For example:
+## @page routes (FreeLLM.Client)
 
-`Util --rename:MyNewProjectName`
+| Route | Component |
+|-------|-----------|
+| `/`, `/{TenantCode}` | Index (hosts `Index.App.razor`, which renders `FreeLLM.App.UI.PromptPackager.razor`) |
+| `/About`, `/{TenantCode}/About` | About |
+| `/Login`, `/{TenantCode}/Login` | Login |
+| `/Logout`, `/{TenantCode}/Logout` | Logout |
+| `/Profile`, `/{TenantCode}/Profile` | User profile |
+| `/ChangePassword`, `/{TenantCode}/ChangePassword` | Change password |
+| `/Plugins`, `/{TenantCode}/Plugins` | Plugin testing |
+| `/Settings`, `/{TenantCode}/Settings` | Settings hub |
+| `/Settings/Users`, `/Settings/UserGroups` | User management |
+| `/Settings/Departments`, `/Settings/Tenants` | Org management |
+| `/Settings/AppSettings`, `/Settings/Files` | App configuration |
+| `/Setup` | First-run setup |
+| `/Authorization/AccessDenied`, `/Authorization/InvalidUser` | Auth error pages |
 
-## Step 2 - Remove Unwanted Modules
+## Key public classes and methods
 
-If you want to remove one or more of the optional components from the application
-you can use the Util to do so.
-This utility may still leave remnants of the removed modules in the code.
-If you find any items that are not removed that you believe should be,
-please open an issue on GitHub. Please include the name of the file and the line number
-where the item is located.
+| Class / Method | Location | Purpose |
+|---|---|---|
+| `DataController.FreeLLMGetFiles` | `FreeLLM/Controllers/FreeLLM.App.API.cs` | Enumerates directory files, strips hidden/bin/obj paths |
+| `DataController.FreeLLMGetFileContents` | same | Returns full text for a list of paths; 5-min `CacheStore` (implemented in `FreeLLM.DataAccess/FreeLLM.App.DataAccess.cs`) |
+| `DataController.FreeLLMGetFileMetadata` | same | Returns line/char counts for a list of paths; same cache key |
+| `Helpers.FreeLLMSplitIntoChunks()` | `FreeLLM.Client/FreeLLM.App.Client.cs` | Greedy block-aware chunker; emits chunk headers |
+| `FreeLLMPromptPackagerState.CheckDefaults()` | same | Pre-selects canonical file set by suffix matching |
+| `FreeLLMPromptPackagerState.UpdateSummary()` | same | Debounced (300 ms) full rebuild of the prompt package |
+| `DataObjects.Endpoints.FreeLLM` | `FreeLLM.DataObjects/FreeLLM.App.DataObjects.cs` | Typed constants for the three API routes |
+| `EFDataModel` | `FreeLLM.EFModels/EFModels/EFDataModel.cs` | DbContext for Users, Tenants, Settings, Departments, FileStorage, PluginCaches |
 
-The removal tool supports two command-line options. They are:
+## Notable NuGet packages
 
-`Util --remove:Module1,Module2,etc.`
+| Package | Project | Use |
+|---------|---------|-----|
+| `FreeBlazor` 1.0.60 | Client | Base Blazor component library from WSU-EIT |
+| `MudBlazor` 8.12 | Client | Material UI components |
+| `Radzen.Blazor` 7.3 | Client | Additional UI components |
+| `BlazorMonaco` 3.3 | Client | Monaco editor component |
+| `BlazorSortableList` 2.1 | Client | Drag-to-sort lists |
+| `Humanizer` 2.14 | Client | Human-readable string formatting |
+| `Microsoft.CodeAnalysis.CSharp` 4.14 | Client + DataAccess | Roslyn; client-side analysis and plugin compilation |
+| `Microsoft.Azure.SignalR` 1.32 | Server | Azure SignalR fallback (local SignalR used when not configured) |
+| `QuestPDF` 2025.7 | DataAccess | PDF generation |
+| `Microsoft.Graph` 5.92 | DataAccess | Microsoft Graph API integration |
+| `Novell.Directory.Ldap.NETStandard` 4.0 | DataAccess | LDAP/Active Directory authentication |
+| `Basic.Reference.Assemblies.Net90` 1.8.3 | Plugins | Reference assemblies for Roslyn dynamic compilation |
+| EF Core providers 9.0 | EFModels | SQL Server, SQLite, MySQL, PostgreSQL support |
 
-This removes any named modules.
+## Build details
 
-`Util --keep:Module1,Module2,etc.`
+| Field | Value |
+|-------|-------|
+| Target framework | net9.0 |
+| Auth options | Local accounts, Google, Facebook, Microsoft, Apple, OpenID Connect |
+| SignalR | Local or Azure SignalR (configurable via `AzureSignalRurl` in appsettings) |
+| Nullable | enabled |
+| User secrets | `ffba3dfe-46f7-436d-8b09-e77396f7920b` (server project) |
 
-This removes any modules not named. For example, to remove all optional modules except
-the Tags module, you would use:
+Part of the **FreeLLM** solution.
 
-`Util --keep:Tags`
+## 🧭 Plain-English Briefing — The Boss Questions
 
-You can also remove all optional modules without having to list them all by using:
+**How does this work?**
+FreeLLM is a "prompt packager." You point it at a folder on your machine; it lists the files (skipping `bin/`, `obj/`, hidden), lets you filter and tick the ones you want, counts the lines and characters, then assembles a single structured prompt — a manifest of selected files, an 8-step instruction scaffold, the full file contents, and your edit instructions. Because LLMs have a size limit, it then splits that big prompt into **N balanced chunks** (a greedy line-count packer), each labeled `=== Chunk X of N ===`, and copies them to your clipboard ready to paste into ChatGPT / Azure OpenAI / etc. File contents are fetched through three small server endpoints that cache results for 5 minutes.
 
-`Util --remove:all`
+**What technology does it use — and where exactly?**
 
-Do not use any spaces in the command line options. The names of the modules that can be
-kept or removed are:
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Blazor WASM workflow component | The entire curation UI | [FreeLLM.App.UI.PromptPackager.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/FreeLLM.App.UI.PromptPackager.razor) |
+| Greedy chunk balancer | Split the prompt into even pieces | [FreeLLM.App.Client.cs › FreeLLMSplitIntoChunks()](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/FreeLLM.App.Client.cs) |
+| Three file endpoints + 5-min cache | Enumerate / count / read local files | [FreeLLM.App.API.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM/Controllers/FreeLLM.App.API.cs) |
+| Endpoint constants + file DTOs | The shared client/server contract | [FreeLLM.App.DataObjects.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.DataObjects/FreeLLM.App.DataObjects.cs) |
+| Roslyn plugin runtime | Extend at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Plugins/Plugins.cs) |
 
-- About
-- Appointments
-- EmailTemplates
-- Invoices
-- Locations
-- Logo
-- Payments
-- SamplePages
-- SamplePlugins
-- Services
-- Tags
+**Why does this exist?**
+Pasting a codebase into an LLM by hand is tedious and error-prone: you forget files, blow past the size limit, and lose the structure the model needs. FreeLLM makes a clean, consistent, *size-safe* prompt package in a few clicks.
 
-## Details
+**What does it accomplish that other tools don't?**
+- **Balanced chunking** so a large codebase fits an LLM's window in even pieces, not one giant blob that gets truncated.
+- **Live size feedback** — per-file line counts color-coded by threshold (green < 1000, blue < 2000, amber < 3000, red ≥ 3000) so you see the cost before you build.
+- **A consistent prompt scaffold** (manifest + 8-step instructions + contents) — every prompt has the structure models respond best to.
+- **Smart defaults** — it pre-ticks canonical entry-point files (`Program.cs`, `App.razor`, `DataAccess.cs`…).
 
-### Plugins
+**Terminology & "can I see it?"**
+- **Prompt package** — the assembled text you paste into an LLM.
+- **Chunk** — one size-bounded slice of that package.
+- **Greedy packing** — fill each chunk up to the line budget before starting the next.
+- **Debounce** — wait 300 ms after your last change before rebuilding, so typing stays smooth.
+- *See it:* the whole workflow is one component — [FreeLLM.App.UI.PromptPackager.razor](https://github.com/WSU-EIT/FreeAI/blob/main/FreeLLM/FreeLLM.Client/Shared/AppComponents/FreeLLM.App.UI.PromptPackager.razor).
 
-FreeCRM supports a plugin architecture that allows you to extend the functionality
-of the software. See the example files in the Plugins folder for examples of how
-to use the various plugin types. You can easily add support for more plugin types
-to support your custom application changes by following the various examples
-already built into the application. The types built in out of the box are:
-"Auth", "BackgroundProcess", "Example", and "UserUpdate".
-
-Plugins can have a .cs file extension and be included in your project as source code,
-or they can have the .plugin extension for files that may have build conflicts
-with your solution. For example, the HelloWorld sample plugin uses an external dll
-file that would cause build issues if it were included as a .cs file.
-See the .assemblies file used with that plugin to see how external files can be included.
-These external references can be paths to files or can be statements that evaluate
-to the location of the files at runtime, like:
+**The hard part, drawn** — a folder becomes paste-ready, size-safe chunks:
 
 ```
-.\HelloWorld\HelloWorld.dll
-typeof(SomeNameSpace.SomeProperty).Assembly.Location
+  you ─▶ enter a folder path
+            │ POST GetFiles   (skip bin/obj/hidden)
+            ▼
+   file list + checkboxes + line/char badges  (green<1k · blue<2k · amber<3k · red≥3k)
+            │ tick files → POST GetFileMetadata (counts) / GetFileContents (text)  [5-min cache]
+            ▼
+  ┌──────────────── assemble the prompt package ────────────────┐
+  │ file manifest + 8-step instruction scaffold + full contents │
+  │ + your before/after edit instructions                       │
+  └───────────────────────────┬─────────────────────────────────┘
+            │ FreeLLMSplitIntoChunks(): greedy line-count packing into N pieces
+            ▼
+   === Chunk 1 of N ===  …  === Chunk N of N ===  ──▶ copied to clipboard
 ```
 
-### Background Service
+## License
 
-FreeCRM includes a background service that can be started when your application starts
-to perform periodic tasks. This is controlled by the settings in the BackgroundService
-section of appsettings.json. By default, the background service is enabled and configured
-to run every 60 seconds.
+Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-For tenants that are configured to mark records as deleted instead of deleting them immediately,
-this background service will take care of permanently deleting those records after the
-specified retention period has passed.
+## About
 
-If you want detailed logging for the background service then set the LogFilePath with
-the path to the folder where you want the logs to be stored. The application will need
-to be running under credentials that have write access to that folder.
+Designed, written, and implemented by **Washington State University - Enrollment Information Technology (WSU-EIT)**.
 
-The StartOnLoad flag indicates if the tasks to be run should be started immediately,
-or if they should wait until the first timer interval to start. For example, if this
-is set to false and the IntervalSeconds is set to 60, then the first time the tasks
-will run is 60 seconds after the application starts. If you have something that needs
-to be run as soon as the application starts, then set this to true.
-
-There are two methods to tie into the background service to run your own tasks.
-First, you can modify the ProcessBackgroundTasksApp method in the DataAccess.App.cs file
-to run methods in there. The second method is to build plugins using the new
-"BackgroundProcess" plugin type. See the ExampleBackgroundProcess.cs file in the
-Plugins folder for an example of how to build a background process plugin.
-The example plugin will simple log a message to the console each time it runs,
-and to the logging file if you have one configured.
-
-If you are running in a load balanced environment with multiple instances of the application
-and you only want the background service to run on a specific instance, you can set the
-LoadBalancingFilter value in the BackgroundService section of appsettings.json to a value
-that must be matched in the name of the current System.Environment.MachineName.
-
-### IIS Configuration for the Background Service
-
-If you are hosting on IIS and want to ensure that the background service is always running,
-set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
-for the application settings to true. The Preload Enabled flag is only available
-if you have installed the Application Initialization feature for IIS.
-
-## Upgrade
-
-If you are running an older version of an application based on the FreeCRM
-framework and you have already migrated to use .app. files for all of your
-app-specific code, then you can use the Util console
-application to upgrade your existing application. To do so download a fresh
-copy of the FreeCRM files, run the "rename" option in the utility to rename
-the application using the exact same namespace as your existing application.
-Then, use the "remove" option in the utility to remove any modules
-that you won't be using in your application. Finally, run the
-"upgrade" option in the utility which will attempt to migrate your existing
-code into the new version.
-
-This tool can take a single command-line argument of the path to your
-existing application. For example:
-
-`Util --upgrade:"C:\MyExistingApp"`
-
-There are edge cases that cannot be updated with this tool, such as having
-additional project in your solution. The tool will copy those projects,
-but any references in other projects must be added manually.
-
-The tool will produce a report that will help with any additional steps
-that will be required for the migration.
-
-The commands in the Util console application can be chained together to perform
-all steps in one call. For example, to rename your app, remove some modules, and
-perform the upgrade you could use:
-
-`--Rename:MyNewProjectName --Keep:about,tags --Upgrade:"C:\Path\To\Current\Version"`
-
-## Mac OS
-
-A separate UtilMacOS file is available for use on Macs with Apple silicone.
-To make this work you must open a console into the folder where the file
-exists and issue the following command:
-
-```chmod +x UtilMacOS```
-
-Then, to run the application issue the following command:
-
-```./UtilMacOS```
-
-Both the Util.exe and UtilMacOS applications are framework-dependent, so
-you must have .NET 10 installed to run them.
+- Website: https://em.wsu.edu/eit/
+- GitHub: https://github.com/WSU-EIT
