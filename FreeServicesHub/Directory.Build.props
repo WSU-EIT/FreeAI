@@ -1,0 +1,9 @@
+<Project>
+
+  <!-- FreeServicesHub: package the app needs that stock FreeCRM (e22e953) no longer references.
+       FreeServicesHub.App.Program.cs calls options.UseSqlite(...) for the "sqlite" database type. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreeServicesHub.EFModels'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
+  </ItemGroup>
+
+</Project>

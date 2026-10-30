@@ -12,6 +12,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeServicesHubAppModifyBuilderEnd(output);
         return output;
     }
 
@@ -19,6 +20,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeServicesHubAppModifyBuilderStart(output);
         return output;
     }
 
@@ -26,6 +28,7 @@ public partial class Program
     {
         var output = app;
         // Add any app-specific modifications to the app here.
+        output = FreeServicesHubAppModifyEnd(output);
         return output;
     }
 
@@ -33,6 +36,7 @@ public partial class Program
     {
         var output = app;
         // Add any app-specific modifications to the app here.
+        output = FreeServicesHubAppModifyStart(output);
         return output;
     }
 
@@ -53,6 +57,7 @@ public partial class Program
         var output = loader;
 
         //output.MyProperty = builder.Configuration.GetValue<string>("MyProperty"); ;
+        output = FreeServicesHubConfigurationHelpersLoadApp(output, builder);
 
         return output;
     }

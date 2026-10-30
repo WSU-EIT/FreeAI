@@ -1,0 +1,8 @@
+@page "/Settings/ApiKeys"
+@page "/{TenantCode}/Settings/ApiKeys"
+
+<FreeServicesHub_App_UI_ApiKeys TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

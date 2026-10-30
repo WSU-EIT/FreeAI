@@ -1,0 +1,8 @@
+@page "/AgentManagement"
+@page "/{TenantCode}/AgentManagement"
+
+<FreeServicesHub_App_UI_AgentManagement TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

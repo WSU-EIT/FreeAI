@@ -93,6 +93,7 @@ public partial class DataAccess
         var output = new DataObjects.BooleanResponse();
 
         try {
+            output = await FreeServicesHubDeleteRecordsApp(Rec, CurrentUser); if (!output.Result) return output;
 
             if (Rec is EFModels.EFModels.Department) {
                 var rec = Rec as EFModels.EFModels.Department;
@@ -191,6 +192,7 @@ public partial class DataAccess
         var output = blazorDataModelLoader;
 
         // Update any app-specific data model properties here.
+        output = await FreeServicesHubGetBlazorDataModelApp(output, CurrentUser);
 
         return output;
     }
@@ -366,6 +368,7 @@ public partial class DataAccess
         //       SaveSetting("MyCustomProcessLastRunDate", DataObjects.SettingType.DateTime, DateTime.UtcNow);
         //   }
 
+        output = await FreeServicesHubProcessBackgroundTasksApp(TenantId, Iteration);
         return output;
     }
 

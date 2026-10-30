@@ -1,0 +1,141 @@
+@* The Register a New Agent panel on Agent Management: generate keys, install steps, verify connection. *@
+
+<div id="addAgentPanel" class="card border-success mb-4">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-plus-circle me-2" aria-hidden="true"></i> Register a New Agent</span>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close panel"
+                @onclick="OnClose"></button>
+    </div>
+    <div class="card-body">
+        @if (NewKeys.Any()) {
+            @* Step 2: Keys generated — show them with install instructions *@
+            <div class="alert alert-warning mb-3" role="alert">
+                <h6 class="alert-heading"><i class="fa-solid fa-exclamation-triangle me-1" aria-hidden="true"></i> Important — Copy These Keys Now</h6>
+                <p class="small mb-2">Registration keys are shown <strong>only once</strong>. They expire after the configured period and can only be used by one agent.</p>
+            </div>
+
+            @foreach (var key in NewKeys) {
+                <div class="d-flex align-items-center mb-2">
+                    <code class="flex-grow-1 bg-light p-2 rounded border font-monospace" style="word-break:break-all;">@key</code>
+                    <button type="button" class="btn btn-sm btn-outline-success ms-2"
+                            @onclick="@(() => OnCopy.InvokeAsync(key))"
+                            aria-label="Copy registration key to clipboard">
+                        <i class="fa-solid fa-copy" aria-hidden="true"></i> Copy
+                    </button>
+                </div>
+            }
+
+            <hr />
+
+            <h6><i class="fa-solid fa-book me-1" aria-hidden="true"></i> Installation Instructions</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary">
+                                <i class="fa-solid fa-terminal me-1" aria-hidden="true"></i> Step 1: Configure the Agent
+                            </h6>
+                            <p class="small text-muted mb-2">
+                                Edit <code>appsettings.json</code> on the target machine:
+                            </p>
+                            <pre class="bg-dark text-light p-2 rounded small" style="white-space:pre-wrap;"><code>{
+  "Agent": {
+    "HubUrl": "@(HubBaseUrl)",
+    "RegistrationKey": "&lt;paste key here&gt;",
+    "AgentName": "MyServer01",
+    "HeartbeatIntervalSeconds": 30
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary">
+                                <i class="fa-solid fa-play me-1" aria-hidden="true"></i> Step 2: Start the Agent
+                            </h6>
+                            <p class="small text-muted mb-2">Install and start the Windows Service:</p>
+                            <pre class="bg-dark text-light p-2 rounded small" style="white-space:pre-wrap;"><code>sc create FreeServicesHubAgent binPath= "C:\path\to\FreeServicesHub.Agent.exe"
+sc start FreeServicesHubAgent</code></pre>
+                            <p class="small text-muted mt-2 mb-0">Or run as a console app for testing:</p>
+                            <pre class="bg-dark text-light p-2 rounded small mt-1" style="white-space:pre-wrap;"><code>.\FreeServicesHub.Agent.exe</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <h6><i class="fa-solid fa-check-circle me-1" aria-hidden="true"></i> Step 3: Verify Connection</h6>
+            <p class="small text-muted">After starting the agent, click below to check if it connects (waits up to 60 seconds).</p>
+            @if (Verifying) {
+                <button class="btn btn-outline-primary" disabled>
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Checking...
+                </button>
+            } else if (Verified) {
+                <div class="alert alert-success py-2"><i class="fa-solid fa-check me-1" aria-hidden="true"></i> Agent verified and connected!</div>
+            } else {
+                <button class="btn btn-primary" @onclick="OnVerify">
+                    <i class="fa-solid fa-satellite-dish me-1" aria-hidden="true"></i> Verify Agent Connection
+                </button>
+            }
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-outline-success" @onclick="OnGenerate"
+                        aria-label="Generate more registration keys">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i> Generate More Keys
+                </button>
+                <button type="button" class="btn btn-outline-secondary ms-2" @onclick="OnDone"
+                        aria-label="Close registration panel">
+                    Done
+                </button>
+            </div>
+        } else {
+            @* Step 1: Generate keys *@
+            <p class="mb-3">
+                Generate a one-time registration key to authorize a new agent. Each key can only be used once and expires automatically.
+            </p>
+            <div class="d-flex align-items-end gap-3">
+                <div>
+                    <label for="regKeyCount" class="form-label small fw-bold mb-1">Number of keys</label>
+                    <input type="number" id="regKeyCount" class="form-control form-control-sm" style="width:100px;"
+                            min="1" max="50" @bind:get="GenerateCount" @bind:set="SetGenerateCount" />
+                </div>
+                <button type="button" class="btn btn-success" @onclick="OnGenerate"
+                        disabled="@Generating" aria-label="Generate registration keys">
+                    @if (Generating) {
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    }
+                    <i class="fa-solid fa-key me-1" aria-hidden="true"></i> Generate Registration Key(s)
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>The number of keys to generate (two-way).</summary>
+    [Parameter] public int GenerateCount { get; set; } = 1;
+    [Parameter] public EventCallback<int> GenerateCountChanged { get; set; }
+
+    [Parameter] public bool Generating { get; set; }
+
+    /// <summary>The plaintext keys just generated; they are shown only once.</summary>
+    [Parameter] public List<string> NewKeys { get; set; } = new();
+
+    [Parameter] public string HubBaseUrl { get; set; } = "";
+    [Parameter] public bool Verifying { get; set; }
+    [Parameter] public bool Verified { get; set; }
+
+    [Parameter] public EventCallback<string> OnCopy { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnDone { get; set; }
+    [Parameter] public EventCallback OnGenerate { get; set; }
+    [Parameter] public EventCallback OnVerify { get; set; }
+
+    protected Task SetGenerateCount(int value)
+    {
+        GenerateCount = value;
+        return GenerateCountChanged.InvokeAsync(value);
+    }
+}

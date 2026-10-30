@@ -1,0 +1,30 @@
+@* A summary count card in its own grid column (Agent Dashboard and Agent Management). *@
+@* Color is the Bootstrap colour name, e.g. success, warning, danger, secondary. *@
+
+<div class="@ColumnClass">
+    <div class="card text-center border-@Color" role="region" aria-label="@RegionLabel">
+        <div class="card-body py-2">
+            <h3 class="text-@Color mb-0" aria-label="@ValueLabel">@Value</h3>
+            <small class="text-muted">@ChildContent</small>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>The Bootstrap colour name for the border and the number.</summary>
+    [Parameter, EditorRequired] public string Color { get; set; } = "secondary";
+
+    /// <summary>The grid column class.</summary>
+    [Parameter] public string ColumnClass { get; set; } = "col-6 col-md-3";
+
+    /// <summary>The caption under the number.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>The aria-label of the card.</summary>
+    [Parameter] public string? RegionLabel { get; set; }
+
+    [Parameter] public int Value { get; set; }
+
+    /// <summary>The aria-label of the number.</summary>
+    [Parameter] public string? ValueLabel { get; set; }
+}

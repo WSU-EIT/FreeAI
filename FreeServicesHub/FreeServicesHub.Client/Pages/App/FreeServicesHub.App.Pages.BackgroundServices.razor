@@ -1,0 +1,8 @@
+@page "/BackgroundServices"
+@page "/{TenantCode}/BackgroundServices"
+
+<FreeServicesHub_App_UI_BackgroundServices TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

@@ -1,0 +1,44 @@
+﻿# FreeServicesHub -- Feature Inventory
+
+> **Category:** Features
+> **Purpose:** Complete catalog of what this project can do today.
+
+---
+
+## Hub (FreeServicesHub web app)
+
+- [x] Agent registration via pre-shared key, returns JWT Bearer token
+- [x] SignalR hub at `/freeserviceshubHub` with `Agents` group
+- [x] Real-time heartbeat reception from connected agents
+- [x] Live telemetry dashboard (CPU, RAM, disk, uptime per agent)
+- [x] Agent settings management from the web UI (push HubUrl, HeartbeatIntervalSeconds, AgentName)
+- [x] Job queue: dispatch `CollectStats` and `Ping` jobs to agents
+- [x] InMemory database option for local dev (no DB setup required)
+- [x] FreeCRM multi-tenant auth scaffold (login, users, settings)
+
+## Agent (FreeServicesHub.Agent Windows service)
+
+- [x] Self-registration with hub on first start; persists JWT to appsettings.json
+- [x] Persistent SignalR connection with exponential backoff reconnect (2s->4s->8s->30s cap)
+- [x] Heartbeat every 30 seconds (configurable): CPU % via WMI, RAM via GC, drives via DriveInfo
+- [x] HTTP POST fallback to `/api/Data/SaveHeartbeat` when SignalR is disconnected
+- [x] Local buffer of up to 100 snapshots when offline
+- [x] Job polling after each heartbeat (CollectStats, Ping job types)
+- [x] Settings sync -- applies hub-pushed settings updates and persists to appsettings.json
+- [x] Standalone mode -- collects snapshots to console/log without a hub
+- [x] `.boot-status` file written after successful registration (CI/CD detection)
+- [x] Windows Service install via `sc.exe`
+
+## AppHost
+
+- [x] .NET Aspire orchestration -- starts hub + agent together with correct env vars
+- [x] Agent `.WaitFor(hub)` dependency -- agent waits for hub to be ready before connecting
+
+## Configuration
+
+| Setting | Project | Description |
+|---------|---------|-------------|
+| `Agent:HubUrl` | Agent | URL of the hub |
+| `Agent:RegistrationKey` | Agent | Pre-shared key for initial registration |
+| `Agent:HeartbeatIntervalSeconds` | Agent | Seconds between heartbeats (default 30) |
+| `DatabaseType` | Hub | InMemory / SQLServer / etc. |
