@@ -52,6 +52,6 @@ Every project area under `FreeAI/` follows this structure.
 - **FreeTools** — pipeline that auto-generates screenshots, route maps, and workspace reports
   (`FreeAI/FreeTools/FreeTools/Docs/000_overview.md`)
 - **FreeBlazorExtended.ShowcaseTool** — Playwright + Magick.NET screenshot and GIF generator
-  (`FreeAI/FreeBlazorExtended/FreeBlazorExample/FreeBlazorExample.ShowcaseTool/`)
-- **FreeA11yChecker Docs** — full numbered doc set with architecture, patterns, and component guides
-  (`FreeAI/FreeA11yChecker/Docs/`)
+  (`FreeAI/FreeBlazorExample/FreeBlazorExample.ShowcaseTool/`)
+- **FreeAccessibilityChecker Docs** — full numbered doc set with architecture, patterns, and component guides
+  (`FreeAI/FreeAccessibilityChecker/Docs/`)

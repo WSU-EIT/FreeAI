@@ -7,8 +7,8 @@ Monorepo consolidating WSU-EIT's AI-adjacent and framework tooling projects unde
 | Folder | What it is | Pages crawled |
 |--------|-----------|--------------|
 | [ChatWithAI](./ChatWithAI) | FreeCRM scaffold + Azure OpenAI token-budgeted chat console | 38 |
-| [FreeA11yChecker](./FreeA11yChecker) | WCAG 2.1/2.2 AA accessibility auditing platform — 4-engine scanner, Blazor UI, CLI crawl tool | 75 |
-| [FreeBlazorExtended](./FreeBlazorExtended) | Razor class library of reusable Blazor components + Windows agent for remote service/IIS control | 110 |
+| [FreeAccessibilityChecker](./FreeAccessibilityChecker) | WCAG 2.1/2.2 AA accessibility auditing platform — 4-engine scanner, Blazor UI, CLI crawl tool | 75 |
+| [FreeBlazorExample](./FreeBlazorExample) | Showcase app for FreeBlazorExtended, a Razor class library of reusable Blazor components + Windows agent for remote service/IIS control | 110 |
 | [FreeGLBA](./FreeGLBA) | GLBA compliance data-access tracking system + NuGet client library for external integration | 50 |
 | [FreeLLM](./FreeLLM) | Source-file curator that assembles token-balanced LLM prompt packages from a local directory | 40 |
 | [FreeManager](./FreeManager) | Code-generation platform: Entity Wizard, App Builder, and CLI scaffolder for FreeCRM projects | 54 |
@@ -80,8 +80,8 @@ FreeAI is a monorepo of self-contained .NET 10 / Blazor apps that nearly all sta
 | Project | What it adds to the scaffold | Marquee tech |
 |---|---|---|
 | [ChatWithAI](./ChatWithAI) | A token-budgeted Azure OpenAI chat | SharpToken + raw REST |
-| [FreeA11yChecker](./FreeA11yChecker) | 4-engine accessibility auditing | Playwright + consensus scoring |
-| [FreeBlazorExtended](./FreeBlazorExtended) | ~20 reusable Blazor components + a Windows agent | Razor class library |
+| [FreeAccessibilityChecker](./FreeAccessibilityChecker) | 4-engine accessibility auditing | Playwright + consensus scoring |
+| [FreeBlazorExample](./FreeBlazorExample) | ~20 reusable Blazor components + a Windows agent | Razor class library |
 | [FreeGLBA](./FreeGLBA) | GLBA access-event tracking + a NuGet client | API-key middleware + `GlbaClient` |
 | [FreeLLM](./FreeLLM) | Source-file → token-balanced LLM prompt packager | greedy chunking |
 | [FreeManager](./FreeManager) | A code generator (Entity Wizard + CLI) | Roslyn-driven scaffolding |

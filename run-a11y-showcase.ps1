@@ -1,8 +1,8 @@
 ﻿# FreeAI/run-a11y-showcase.ps1
 #
 # Boots each FreeCRM-based project in InMemory mode, crawls every page
-# (seeds from .razor @page routes + link discovery), runs FreeA11yChecker
-# Console, and saves reports + screenshots to Docs/showcase/runs/latest/.
+# (seeds from .razor @page routes + link discovery), runs FreeAccessibilityChecker
+# Console, and saves reports + screenshots to each app's showcase/runs/latest/.
 # Each run overwrites the previous latest/ — git history shows the diff.
 #
 # Usage:
@@ -21,18 +21,18 @@ $root = $PSScriptRoot
 
 # SourcePath = folder crawl seeds @page routes from (relative to $root)
 $allTargets = @(
-    @{ Name="ChatWithAI";       Project="ChatWithAI\FreeAI\FreeAI.csproj";                                                Port=5100; ShowcaseRel="ChatWithAI\Docs\showcase";       SourcePath="ChatWithAI" },
-    @{ Name="FreeGLBA";         Project="FreeGLBA\FreeGLBA\FreeGLBA.csproj";                                              Port=5101; ShowcaseRel="FreeGLBA\Docs\showcase";         SourcePath="FreeGLBA" },
-    @{ Name="FreeLLM";          Project="FreeLLM\FreeLLM\FreeLLM.csproj";                                                 Port=5102; ShowcaseRel="FreeLLM\Docs\showcase";          SourcePath="FreeLLM" },
-    @{ Name="FreeManager";      Project="FreeManager\FreeManager\FreeManager.csproj";                                     Port=5103; ShowcaseRel="FreeManager\Docs\showcase";      SourcePath="FreeManager" },
-    @{ Name="FreePlugins";      Project="FreePlugins\FreePluginsV1\FreePlugins\FreePlugins.csproj";                       Port=5104; ShowcaseRel="FreePlugins\Docs\showcase";      SourcePath="FreePlugins" },
-    @{ Name="FreeServicesHub";  Project="FreeServicesHub\FreeServicesHub\FreeServicesHub\FreeServicesHub.csproj";         Port=5105; ShowcaseRel="FreeServicesHub\Docs\showcase";  SourcePath="FreeServicesHub" },
-    @{ Name="FreeSmartsheets";  Project="FreeSmartsheets\FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.csproj";         Port=5106; ShowcaseRel="FreeSmartsheets\Docs\showcase";  SourcePath="FreeSmartsheets" },
-    @{ Name="FreeBlazorExample";Project="FreeBlazorExtended\FreeBlazorExample\FreeBlazorExample\FreeBlazorExample.csproj";Port=5107; ShowcaseRel="FreeBlazorExtended\Docs\showcase";SourcePath="FreeBlazorExtended" },
-    @{ Name="FreeA11yChecker";  Project="FreeA11yChecker\FreeA11yChecker\FreeA11yChecker.csproj";                        Port=5108; ShowcaseRel="FreeA11yChecker\Docs\showcase";  SourcePath="FreeA11yChecker" }
+    @{ Name="ChatWithAI";               Project="ChatWithAI\ChatWithAI\ChatWithAI.csproj";                                     Port=5100; ShowcaseRel="ChatWithAI\ChatWithAI.Docs\showcase";           SourcePath="ChatWithAI" },
+    @{ Name="FreeGLBA";                 Project="FreeGLBA\FreeGLBA\FreeGLBA.csproj";                                           Port=5101; ShowcaseRel="FreeGLBA\Docs\showcase";                        SourcePath="FreeGLBA" },
+    @{ Name="FreeLLM";                  Project="FreeLLM\FreeLLM\FreeLLM.csproj";                                              Port=5102; ShowcaseRel="FreeLLM\FreeLLM.Docs\showcase";                 SourcePath="FreeLLM" },
+    @{ Name="FreeManager";              Project="FreeManager\FreeManager\FreeManager.csproj";                                  Port=5103; ShowcaseRel="FreeManager\Docs\showcase";                     SourcePath="FreeManager" },
+    @{ Name="FreePlugins";              Project="FreePlugins\FreePlugins\FreePlugins.csproj";                                  Port=5104; ShowcaseRel="FreePlugins\Docs\showcase";                     SourcePath="FreePlugins" },
+    @{ Name="FreeServicesHub";          Project="FreeServicesHub\FreeServicesHub\FreeServicesHub.csproj";                      Port=5105; ShowcaseRel="FreeServicesHub\Docs\showcase";                 SourcePath="FreeServicesHub" },
+    @{ Name="FreeSmartsheets";          Project="FreeSmartsheets\FreeSmartsheets\FreeSmartsheets.csproj";                      Port=5106; ShowcaseRel="FreeSmartsheets\FreeSmartsheets.Docs\showcase"; SourcePath="FreeSmartsheets" },
+    @{ Name="FreeBlazorExample";        Project="FreeBlazorExample\FreeBlazorExample\FreeBlazorExample.csproj";                Port=5107; ShowcaseRel="FreeBlazorExample\Docs\showcase";               SourcePath="FreeBlazorExample" },
+    @{ Name="FreeAccessibilityChecker"; Project="FreeAccessibilityChecker\FreeAccessibilityChecker\FreeAccessibilityChecker.csproj"; Port=5108; ShowcaseRel="FreeAccessibilityChecker\Docs\showcase"; SourcePath="FreeAccessibilityChecker" }
 )
 
-$consoleDll = "$root\FreeA11yChecker\.publish\console\FreeA11yChecker.Console.dll"
+$consoleDll = "$root\FreeAccessibilityChecker\.publish\console\FreeAccessibilityChecker.Console.dll"
 
 if ($Targets.Count -gt 0) {
     $allTargets = $allTargets | Where-Object { $Targets -contains $_.Name }
@@ -64,8 +64,8 @@ function Wait-ForUrl([string]$Url, [int]$TimeoutSec = 90) {
 
 # Build scanner once (picks up RunLogger.cs change to fixed scan.log name)
 if (-not $SkipBuild) {
-    $consoleCsproj = "$root\FreeA11yChecker\FreeA11yChecker.Console\FreeA11yChecker.Console.csproj"
-    $out = "$root\FreeA11yChecker\.publish\console"
+    $consoleCsproj = "$root\FreeAccessibilityChecker\FreeAccessibilityChecker.Console\FreeAccessibilityChecker.Console.csproj"
+    $out = "$root\FreeAccessibilityChecker\.publish\console"
     Write-Host "Building scanner..." -ForegroundColor Cyan
     dotnet publish $consoleCsproj -c Release -o $out --nologo -v quiet 2>&1 | Where-Object { $_ -match "error" } | Select-Object -Last 5
     if ($LASTEXITCODE -ne 0) { Write-Error "Scanner build failed"; exit 1 }
