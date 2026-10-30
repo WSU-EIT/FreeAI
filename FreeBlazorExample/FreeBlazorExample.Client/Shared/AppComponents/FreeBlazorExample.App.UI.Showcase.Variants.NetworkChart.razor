@@ -1,0 +1,194 @@
+@using FreeBlazorExtended.NetworkChart
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default Network Chart</h1>
+
+    <NetworkChart Nodes="_v1Nodes" Relationships="_v1Relationships" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Configured Network Chart</h1>
+    <p class="text-muted">This example fixes the layout seed, switches to the Barnes-Hut solver, and uses icons plus varied edge styling.</p>
+
+    <NetworkChart Nodes="_v2Nodes"
+            Relationships="_v2Relationships"
+            NetworkSolver="barnesHut"
+            Seed="42"
+            ElementId="config-net"
+            StartNodeId="hub" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>Interactive Network: Selection, Randomize, Switch Solver</h1>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            @if (_v3LoadFailed) {
+                <div class="alert alert-danger" role="alert">The vis.js dependency did not load for this chart.</div>
+            }
+
+            <NetworkChart @ref="_v3ChartRef"
+                    Nodes="_v3Nodes"
+                    Relationships="_v3Relationships"
+                    NetworkSolver="@_v3CurrentSolver"
+                    Seed="@_v3CurrentSeed"
+                    OnElementSelected="@(new Action<string>(V3OnNodeClicked))"
+                    OnRelationshipSelected="@(new Action<string>(V3OnEdgeClicked))"
+                    OnLoadFailed="@(new Action(V3HandleLoadFailed))"
+                    ElementId="interactive-net"
+                    StartNodeId="hub" />
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h2 class="h5">Controls</h2>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="V3RandomizeLayout">Randomize Layout</button>
+                    </div>
+
+                    <label for="solverSelect" class="form-label">Solver</label>
+                    <select id="solverSelect" class="form-select form-select-sm mb-3" value="@_v3CurrentSolver" @onchange="V3OnSolverChanged">
+                        <option value="repulsion">repulsion</option>
+                        <option value="barnesHut">barnesHut</option>
+                    </select>
+
+                    <p class="small mb-1"><strong>Current seed:</strong> @_v3CurrentSeed</p>
+                    <p class="small mb-0"><strong>Selected node:</strong> @(_v3SelectedNode ?? "(none)")</p>
+                    <p class="small mb-0"><strong>Selected edge:</strong> @(_v3SelectedEdge ?? "(none)")</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Selection Details</h2>
+                    <p class="small mb-1"><strong>Node label:</strong> @V3SelectedNodeLabel()</p>
+                    <p class="small mb-0"><strong>Edge label:</strong> @V3SelectedEdgeLabel()</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<NetworkChart.NetworkNode> _v1Nodes = new()
+    {
+        new() { id = "1", label = "Alice", title = "Alice" },
+        new() { id = "2", label = "Bob", title = "Bob" },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _v1Relationships = new()
+    {
+        new() { id = "r1", from = "1", to = "2", label = "knows", title = "Alice knows Bob" },
+    };
+
+    // ---- v2 ----
+    private readonly List<NetworkChart.NetworkNode> _v2Nodes = new()
+    {
+        new() { id = "hub", label = "Gateway", title = "Gateway", icon = new() { code = "f0ec", color = "#0d6efd", size = 60 } },
+        new() { id = "svc-a", label = "Service A", title = "Service A", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-b", label = "Service B", title = "Service B", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-c", label = "Service C", title = "Service C", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "db", label = "Database", title = "Primary database", icon = new() { code = "f1c0", color = "#6f42c1" } },
+        new() { id = "cache", label = "Cache", title = "Redis cache", icon = new() { code = "f1c0", color = "#fd7e14" } },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _v2Relationships = new()
+    {
+        new() { id = "r1", from = "hub", to = "svc-a", label = "routes", color = "#0d6efd" },
+        new() { id = "r2", from = "hub", to = "svc-b", label = "routes", color = "#0d6efd" },
+        new() { id = "r3", from = "hub", to = "svc-c", label = "routes", color = "#0d6efd", dashes = true },
+        new() { id = "r4", from = "svc-a", to = "db", label = "reads", arrows = "to", color = "#198754" },
+        new() { id = "r5", from = "svc-b", to = "db", label = "writes", arrows = "to", color = "#dc3545" },
+        new() { id = "r6", from = "svc-b", to = "cache", label = "caches", arrows = "to", color = "#fd7e14", dashes = true },
+        new() { id = "r7", from = "svc-c", to = "cache", label = "optional", arrows = "to", color = "#6c757d", dashes = true },
+    };
+
+    // ---- v3 ----
+    private readonly List<NetworkChart.NetworkNode> _v3Nodes = new()
+    {
+        new() { id = "hub", label = "Gateway", title = "Gateway", icon = new() { code = "f0ec", color = "#0d6efd", size = 60 } },
+        new() { id = "svc-a", label = "Service A", title = "Service A", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-b", label = "Service B", title = "Service B", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "svc-c", label = "Service C", title = "Service C", icon = new() { code = "f013", color = "#198754" } },
+        new() { id = "db", label = "Database", title = "Database", icon = new() { code = "f1c0", color = "#6f42c1" } },
+        new() { id = "cache", label = "Cache", title = "Cache", icon = new() { code = "f1c0", color = "#fd7e14" } },
+        new() { id = "queue", label = "Queue", title = "Queue", icon = new() { code = "f07c", color = "#20c997" } },
+        new() { id = "worker", label = "Worker", title = "Worker", icon = new() { code = "f085", color = "#6610f2" } },
+        new() { id = "admin", label = "Admin UI", title = "Admin UI", icon = new() { code = "f3cd", color = "#dc3545" } },
+        new() { id = "audit", label = "Audit", title = "Audit store", icon = new() { code = "f15c", color = "#6c757d" } },
+    };
+
+    private readonly List<NetworkChart.NetworkRelationship> _v3Relationships = new()
+    {
+        new() { id = "r1", from = "hub", to = "svc-a", label = "routes" },
+        new() { id = "r2", from = "hub", to = "svc-b", label = "routes" },
+        new() { id = "r3", from = "hub", to = "svc-c", label = "routes" },
+        new() { id = "r4", from = "svc-a", to = "db", label = "reads" },
+        new() { id = "r5", from = "svc-b", to = "cache", label = "caches", dashes = true },
+        new() { id = "r6", from = "svc-c", to = "queue", label = "publishes" },
+        new() { id = "r7", from = "queue", to = "worker", label = "drives" },
+        new() { id = "r8", from = "worker", to = "db", label = "writes" },
+        new() { id = "r9", from = "admin", to = "hub", label = "manages", color = "#dc3545" },
+        new() { id = "r10", from = "worker", to = "audit", label = "audits", dashes = true },
+        new() { id = "r11", from = "svc-b", to = "audit", label = "logs" },
+        new() { id = "r12", from = "svc-a", to = "cache", label = "warms" },
+        new() { id = "r13", from = "admin", to = "audit", label = "reviews", dashes = true },
+        new() { id = "r14", from = "hub", to = "admin", label = "serves" },
+    };
+
+    private FreeBlazorExtended.NetworkChart.NetworkChart? _v3ChartRef;
+    private string _v3CurrentSeed = "0";
+    private string _v3CurrentSolver = "repulsion";
+    private string? _v3SelectedNode;
+    private string? _v3SelectedEdge;
+    private bool _v3LoadFailed;
+
+    private void V3HandleLoadFailed()
+    {
+        _v3LoadFailed = true;
+    }
+
+    private void V3OnEdgeClicked(string id)
+    {
+        _v3SelectedEdge = id;
+    }
+
+    private void V3OnNodeClicked(string id)
+    {
+        _v3SelectedNode = id;
+    }
+
+    private async Task V3OnSolverChanged(ChangeEventArgs args)
+    {
+        _v3CurrentSolver = args.Value?.ToString() ?? "repulsion";
+        if (_v3ChartRef is not null) {
+            await _v3ChartRef.UpdateNetworkSolver(_v3CurrentSolver);
+        }
+    }
+
+    private async Task V3RandomizeLayout()
+    {
+        if (_v3ChartRef is not null) {
+            _v3CurrentSeed = await _v3ChartRef.RandomizeLayout();
+        }
+    }
+
+    private string V3SelectedEdgeLabel()
+    {
+        return _v3Relationships.FirstOrDefault(edge => edge.id == _v3SelectedEdge)?.label ?? "(none)";
+    }
+
+    private string V3SelectedNodeLabel()
+    {
+        return _v3Nodes.FirstOrDefault(node => node.id == _v3SelectedNode)?.label ?? "(none)";
+    }
+}

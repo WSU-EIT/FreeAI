@@ -1,0 +1,19 @@
+@page "/showcase/{Family}/{Variant}"
+@layout FreeBlazorExample_App_UI_Showcase_Layout
+
+@if (_target is not null) {
+    <DynamicComponent @key="@($"{Family}/{Variant}")" Type="_target.Value.Type" Parameters="_target.Value.Parameters" />
+} else {
+    <NotFound />
+}
+
+@code {
+    [Parameter] public string Family { get; set; } = string.Empty;
+    [Parameter] public string Variant { get; set; } = string.Empty;
+
+    private (Type Type, Dictionary<string, object?>? Parameters)? _target;
+
+    protected override void OnParametersSet() {
+        _target = FreeBlazorExampleShowcaseManifest.ResolveVariant(Family, Variant);
+    }
+}

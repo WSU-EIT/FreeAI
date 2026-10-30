@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ShowcaseTool</AssemblyName>
+    <RootNamespace>FreeBlazorExample.ShowcaseTool</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Playwright for headless screenshots, console capture, network timing, GIF frames -->
+    <PackageReference Include="Microsoft.Playwright" Version="1.44.0" />
+    <!-- Magick.NET for animated GIF generation and thumbnail creation -->
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.13.0" />
+  </ItemGroup>
+
+</Project>

@@ -11,6 +11,7 @@ public partial class Program
     public static WebApplicationBuilder AppModifyBuilderEnd(WebApplicationBuilder builder)
     {
         var output = builder;
+        output = FreeBlazorExampleAppModifyBuilderEnd(output);
         // Add any app-specific modifications to the builder here.
         return output;
     }
@@ -18,6 +19,7 @@ public partial class Program
     public static WebApplicationBuilder AppModifyBuilderStart(WebApplicationBuilder builder)
     {
         var output = builder;
+        output = FreeBlazorExampleAppModifyBuilderStart(output);
         // Add any app-specific modifications to the builder here.
         return output;
     }
@@ -25,6 +27,7 @@ public partial class Program
     public static WebApplication AppModifyEnd(WebApplication app)
     {
         var output = app;
+        output = FreeBlazorExampleAppModifyEnd(output);
         // Add any app-specific modifications to the app here.
         return output;
     }

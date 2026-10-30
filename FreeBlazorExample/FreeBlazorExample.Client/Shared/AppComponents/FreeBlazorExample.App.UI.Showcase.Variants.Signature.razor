@@ -1,0 +1,118 @@
+@using FreeBlazorExtended.Signature
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default Signature Pad</h1>
+
+    <Signature @bind-Value="_v1SignatureValue" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Signature With Custom Clear Button</h1>
+    <p class="text-muted">This variant sets a stable element id, custom draw-area styling, and a styled reset button.</p>
+
+    <Signature Id="customer-sig"
+            Class="border border-2 border-primary rounded"
+            IncludeClearButton="true"
+            ClearButtonText="Reset"
+            ClearButtonClass="btn btn-sm btn-outline-danger mb-2"
+            ClearButtonIcon="fas fa-trash"
+            @bind-Value="_v2SignatureValue" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>Programmatic Signature: Save, Reload, Inspect</h1>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="V3SaveCurrent">
+            Save current
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="V3ReloadSaved" disabled="@string.IsNullOrWhiteSpace(_v3SavedSignature)">
+            Reload from saved
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="V3ClearProgrammatically" disabled="@(!_v3ShowSignaturePad)">
+            Programmatic Clear
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="V3TogglePad">
+            @(_v3ShowSignaturePad ? "Unmount Pad" : "Mount Pad")
+        </button>
+    </div>
+
+    @if (_v3ShowSignaturePad) {
+        <Signature @key="_v3SignatureInstance"
+                @ref="_v3SignatureRef"
+                IncludeClearButton="true"
+                @bind-Value="_v3CurrentSignature" />
+    } else {
+        <div class="alert alert-secondary" role="status">The signature pad is currently unmounted.</div>
+    }
+
+    <pre class="bg-light border rounded p-3 mt-3 mb-0 small">Current length: @_v3CurrentSignature.Length
+Saved length: @_v3SavedSignature.Length
+
+Current value:
+@V3PreviewValue(_v3CurrentSignature)
+
+Saved value:
+@V3PreviewValue(_v3SavedSignature)</pre>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private string _v1SignatureValue = "";
+
+    // ---- v2 ----
+    private string _v2SignatureValue = "";
+
+    // ---- v3 ----
+    private string _v3CurrentSignature = "";
+    private string _v3SavedSignature = "";
+    private bool _v3ShowSignaturePad = true;
+    private int _v3SignatureInstance;
+    private FreeBlazorExtended.Signature.Signature? _v3SignatureRef;
+
+    private async Task V3ClearProgrammatically()
+    {
+        if (_v3SignatureRef is not null) {
+            await _v3SignatureRef.Clear();
+        }
+    }
+
+    private static string V3PreviewValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) {
+            return "(empty)";
+        }
+
+        return value.Length <= 80 ? value : value[..80] + "...";
+    }
+
+    private void V3ReloadSaved()
+    {
+        if (string.IsNullOrWhiteSpace(_v3SavedSignature)) {
+            return;
+        }
+
+        _v3CurrentSignature = _v3SavedSignature;
+        _v3SignatureInstance++;
+    }
+
+    private void V3SaveCurrent()
+    {
+        _v3SavedSignature = _v3CurrentSignature;
+    }
+
+    private void V3TogglePad()
+    {
+        _v3ShowSignaturePad = !_v3ShowSignaturePad;
+        if (_v3ShowSignaturePad) {
+            _v3SignatureInstance++;
+        }
+    }
+}

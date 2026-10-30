@@ -1,0 +1,103 @@
+@using FreeBlazorExtended.Carousel
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Carousel - Default</h1>
+
+    <Carousel Slides="_v1Slides" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Carousel - Configured</h1>
+    <p class="text-muted">Autoplay advances every three seconds, hover pauses the run, dots replace the filmstrip, and looping is disabled.</p>
+
+    <Carousel Slides="_v2Slides"
+            AutoPlay="true"
+            AutoPlayInterval="@_v2Interval"
+            PauseOnHover="true"
+            ShowFilmstrip="false"
+            ShowDots="true"
+            ShowArrows="true"
+            Loop="false"
+            InitialSlideIndex="0"
+            FocusStyle="height:340px; object-fit:cover;"
+            AriaLabel="Featured products" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>Carousel - Programmatic Control Via Ref</h1>
+
+    <div class="btn-group flex-wrap mb-3" role="group" aria-label="Carousel controls">
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="V3PrevSlide">Prev</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="V3NextSlide">Next</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => V3GoToSlide(0)">Go to 1</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => V3GoToSlide(1)">Go to 2</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => V3GoToSlide(2)">Go to 3</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => V3GoToSlide(3)">Go to 4</button>
+        <button type="button" class="btn btn-outline-success btn-sm" @onclick="V3StartAutoplay">Start Autoplay</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="V3StopAutoplay">Stop Autoplay</button>
+    </div>
+
+    <Carousel @ref="_v3CarouselRef"
+            Slides="_v3Slides"
+            ShowArrows="false"
+            ShowDots="false"
+            ShowFilmstrip="true"
+            AutoPlay="false"
+            Loop="true"
+            OnSlideChanged="V3HandleSlideChanged" />
+
+    <p class="mt-3 mb-0"><strong>Active:</strong> @(_v3ActiveIndex + 1) - @_v3Slides[_v3ActiveIndex].Title</p>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<Carousel.CarouselSlide> _v1Slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/c1/1200/600", Title = "Slide One", Caption = "A simple default carousel slide." },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/c2/1200/600", Title = "Slide Two", Caption = "Navigate with arrows or thumbnails." },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/c3/1200/600", Title = "Slide Three", Caption = "The filmstrip is enabled by default." },
+    };
+
+    // ---- v2 ----
+    private readonly TimeSpan _v2Interval = TimeSpan.FromSeconds(3);
+
+    private readonly List<Carousel.CarouselSlide> _v2Slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/product1/1200/600", Title = "Foundations Suite", Caption = "Baseline component set for operational dashboards.", LinkUrl = "#" },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/product2/1200/600", Title = "Insight Cards", Caption = "Quick summary visuals for dense workflows.", LinkUrl = "#" },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/product3/1200/600", Title = "Pipeline Views", Caption = "Delivery and deployment tracking surfaces.", LinkUrl = "#" },
+        new() { Id = "4", ImageUrl = "https://picsum.photos/seed/product4/1200/600", Title = "File Workbench", Caption = "File pickers, previews, and attachment flows.", LinkUrl = "#" },
+        new() { Id = "5", ImageUrl = "https://picsum.photos/seed/product5/1200/600", Title = "Command Overlay", Caption = "Keyboard-first navigation across large apps.", LinkUrl = "#" },
+    };
+
+    // ---- v3 ----
+    private readonly List<Carousel.CarouselSlide> _v3Slides = new()
+    {
+        new() { Id = "1", ImageUrl = "https://picsum.photos/seed/prog1/1200/600", Title = "Overview", Caption = "High-level view" },
+        new() { Id = "2", ImageUrl = "https://picsum.photos/seed/prog2/1200/600", Title = "Details", Caption = "Detailed perspective" },
+        new() { Id = "3", ImageUrl = "https://picsum.photos/seed/prog3/1200/600", Title = "Activity", Caption = "Operational activity" },
+        new() { Id = "4", ImageUrl = "https://picsum.photos/seed/prog4/1200/600", Title = "Summary", Caption = "Final summary" },
+    };
+
+    private FreeBlazorExtended.Carousel.Carousel? _v3CarouselRef;
+    private int _v3ActiveIndex;
+    private void V3GoToSlide(int index) => _v3CarouselRef?.GoTo(index);
+
+    private Task V3HandleSlideChanged(int index)
+    {
+        _v3ActiveIndex = index;
+        return Task.CompletedTask;
+    }
+    private void V3NextSlide() => _v3CarouselRef?.Next();
+
+    private void V3PrevSlide() => _v3CarouselRef?.Prev();
+    private void V3StartAutoplay() => _v3CarouselRef?.StartAutoPlay();
+    private void V3StopAutoplay() => _v3CarouselRef?.StopAutoPlay();
+}

@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FreeBlazorExtended</RootNamespace>
+    <AssemblyName>FreeBlazorExtended</AssemblyName>
+
+    <Title>FreeBlazor Extended Components</Title>
+    <Description>Extended component library for FreeBlazor - Showcase examples and advanced components</Description>
+    <Version>1.0.0</Version>
+    <Authors>DanielPepka</Authors>
+    <License>MIT</License>
+  </PropertyGroup>
+
+  <!--
+    SignalR-host types (Microsoft.AspNetCore.SignalR.Hub) used by
+    MultiViewSync/PresentationHub.cs live in the Microsoft.AspNetCore.App
+    shared framework. We mark it Private so the runtime-pack requirement
+    does NOT flow up to consumers — otherwise CRM.Client.csproj (Blazor
+    WASM) would fail with NETSDK1082 because no runtime pack exists for
+    'browser-wasm'. Server-side hosts (CRM.csproj) already pull in the
+    shared framework themselves, so this Private reference is enough to
+    let this library compile against Hub/HubException without polluting
+    WASM consumers.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.0" />
+    <PackageReference Include="FreeBlazor" Version="1.0.62" />
+  </ItemGroup>
+
+</Project>

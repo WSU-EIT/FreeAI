@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Showcase tool output — screenshots, GIFs, and run reports (too large for git)
+runs/
+showcase-*/
+
 # User-specific files
 *.rsuser
 *.suo

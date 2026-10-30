@@ -1,0 +1,19 @@
+@code {
+    // FreeBlazorExample additions to the page <head> and <body>, rendered from Modules.App.razor (cases "head" and "bodymiddle"),
+    // after the Radzen theme, so App.razor stays stock FreeCRM. The Client project's static assets are served by the host.
+    [Parameter] public string Module { get; set; } = String.Empty;
+}
+
+@switch (Module) {
+    case "head":
+        <link rel="stylesheet" href="@Assets["css/FreeBlazorExample.App.css"]" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/styles/vis-network.min.css" />
+        @* vis-network must be loaded before blazor.web.js starts (NetworkChart calls it on first render), and the "bodymiddle" case renders after the stock script tags but before blazor.web.js is started, so it goes in the head. *@
+        <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+        break;
+
+    case "bodymiddle":
+        @* jSignature needs jQuery, which App.razor loads in the body before this case. *@
+        <script src="@Assets["js/jSignature.min.js"]"></script>
+        break;
+}

@@ -1,0 +1,35 @@
+﻿# FreeBlazorExtended -- Feature Inventory
+
+> **Category:** Features
+> **Purpose:** Complete catalog of what this project can do today.
+
+---
+
+## Component library (FreeBlazorExtended.dll)
+
+- [x] 12 reusable UI components (data tables, modals, status indicators, and more)
+- [x] 6 feature services (auth helpers, SignalR client, settings, etc.)
+- [x] SignalR hub infrastructure for real-time UI updates
+- [x] AgentHub -- receives heartbeats and dispatches Windows Service / IIS app-pool commands
+
+## Showcase application (FreeBlazorExample)
+
+- [x] ~17 demo pages under `/showcase/*` demonstrating every component
+- [x] Playwright + Magick.NET GIF generation via `ShowcaseTool` console project
+- [x] Multi-tenant FreeCRM auth scaffold
+- [x] EF Core multi-database (SQL Server, MySQL, PostgreSQL, SQLite, InMemory)
+
+## Agent (FreeBlazorExtended.Agent)
+
+- [x] Windows Worker Service with SignalR connection to the hub
+- [x] Host telemetry heartbeats (CPU, RAM, disk, uptime)
+- [x] Remote Windows Service management (start/stop/restart via AgentHub commands)
+- [x] Remote IIS app-pool recycling
+
+## Configuration
+
+| Setting | Description |
+|---------|-------------|
+| `DatabaseType` | InMemory / SQLServer / etc. |
+| `ConnectionStrings:AppData` | Database connection string |
+| Agent hub URL | Configured via environment or appsettings |

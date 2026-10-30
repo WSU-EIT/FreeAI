@@ -1,0 +1,139 @@
+@*
+    Purpose: jSignature-backed signature capture component with bindable value output.
+    Key behaviors: Initializes the signature pad, synchronizes value changes, and optionally exposes a clear action.
+    Dependencies: Requires the paired JavaScript sidecar and jSignature assets in the consuming host.
+*@
+@implements IAsyncDisposable
+@inject IJSRuntime jsRuntime
+
+@if (IncludeClearButton) {
+    <button type="button" class="@ClearButtonClass" @onclick="Clear" disabled="@(String.IsNullOrWhiteSpace(Value))">
+        <i class="@ClearButtonIcon"></i> @ClearButtonText
+    </button>
+}
+<div class="signature @Class" id="@SignatureId"></div>
+
+@code {
+    [Parameter] public string Class { get; set; } = "";
+
+    /// <summary>
+    /// OPTIONAL: An Id for the signature editor. If empty a random Id will be generated.
+    /// </summary>
+    [Parameter] public string Id { get; set;} = "";
+
+    /// <summary>
+    /// OPTIONAL: Show a clear button to clear the signature.
+    /// </summary>
+    [Parameter] public bool IncludeClearButton { get; set; } = false;
+
+    /// <summary>
+    /// OPTIONAL: If showing the clear button this is the class to display on the button.
+    /// </summary>
+    [Parameter] public string ClearButtonClass { get; set; } = "btn btn-sm btn-dark";
+
+    /// <summary>
+    /// OPTIONAL: If showing the clear button this is the text to display on the button.
+    /// </summary>
+    [Parameter] public string? ClearButtonText { get; set; } = "Clear";
+
+    /// <summary>
+    /// OPTIONAL: If showing the clear button this is the class to display for the icon.
+    /// </summary>
+    [Parameter] public string? ClearButtonIcon { get; set; } = "fas fa-eraser";
+
+    /// <summary>
+    /// The signature value (base30 format)
+    /// </summary>
+    [Parameter] public string Value { get; set; } = "";
+
+    /// <summary>
+    /// Internal method for 2-way binding with @bind-Value
+    /// </summary>
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    protected string _id = Guid.NewGuid().ToString().Replace("-", "").ToLower();
+
+    private IJSObjectReference? jsModule;
+    protected DotNetObjectReference<Signature>? dotNetHelper;
+    private bool _disposed = false;
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+        dotNetHelper?.Dispose();
+        if (jsModule is not null)
+        {
+            try { await jsModule.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            try {
+                dotNetHelper = DotNetObjectReference.Create(this);
+
+                jsModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import",
+                    "./_content/FreeBlazorExtended/Signature/Signature.razor.js");
+
+                await jsModule.InvokeVoidAsync("SetDotNetHelper", dotNetHelper);
+
+                if (!String.IsNullOrWhiteSpace(Value)) {
+                    if (!Value.ToLower().StartsWith("image/jsignature;base30,")) {
+                        Value = "";
+                        await ValueChanged.InvokeAsync(Value);
+                    }
+                }
+
+                await jsModule.InvokeVoidAsync("SetupSignature", SignatureId, Value);
+            }
+            catch (JSDisconnectedException) { /* Component disposed before JS init completed */ }
+            catch (TaskCanceledException) { /* Navigation away cancelled the operation */ }
+        }
+    }
+
+    public async Task Clear()
+    {
+        if (_disposed || jsModule is null) return;
+        try { await jsModule.InvokeVoidAsync("ClearSignature", SignatureId); }
+        catch (JSDisconnectedException) { return; }
+        catch (TaskCanceledException) { return; }
+
+        Value = String.Empty;
+        ValueHasChanged();
+    }
+
+    public string GetValue()
+    {
+        return Value;
+    }
+
+    protected string SignatureId {
+        get {
+            return !String.IsNullOrWhiteSpace(Id) ? Id : _id;
+        }
+    }
+
+    [JSInvokable]
+    public void SignatureUpdated(string value)
+    {
+        if (_disposed) return;
+        Value = value;
+        ValueHasChanged();
+    }
+
+    public async Task SetValue(string value)
+    {
+        if (_disposed) return;
+        Value = value;
+        ValueHasChanged();
+    }
+
+    protected void ValueHasChanged()
+    {
+        if (_disposed) return;
+        ValueChanged.InvokeAsync(Value);
+        StateHasChanged();
+    }
+}

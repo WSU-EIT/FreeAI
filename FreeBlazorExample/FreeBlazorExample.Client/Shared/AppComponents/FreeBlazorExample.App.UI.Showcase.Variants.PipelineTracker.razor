@@ -1,0 +1,125 @@
+@using FreeBlazorExtended.PipelineTracker
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default Pipeline Tracker</h1>
+
+    <PipelineTracker Stages="_v1Stages" CurrentStageIndex="2" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Build Pipeline With Error Stage</h1>
+    <p class="text-muted">CI run #42 failed at the test stage. The explicit error state overrides the inferred in-progress styling.</p>
+
+    <PipelineTracker Stages="_v2Stages" CurrentStageIndex="3" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>Order Tracker With Details Panel</h1>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="V3AdvanceStage">Advance Stage</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="V3ResetTracker">Reset to 0</button>
+        <button type="button" class="btn btn-outline-warning btn-sm" @onclick="V3MarkStageSkipped">Mark Stage 3 Skipped</button>
+    </div>
+
+    <PipelineTracker Stages="_v3Stages"
+            CurrentStageIndex="@_v3Current"
+            ShowDetailsPanel="true"
+            @bind-SelectedStageIndex="_v3Selected"
+            OnStageClick="V3HandleClick" />
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-body">
+            <h2 class="h5">Click Log</h2>
+            <ul class="small mb-0 ps-3">
+                @foreach (var entry in _v3ClickLog) {
+                    <li>@entry</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<PipelineTracker.PipelineStage> _v1Stages = new()
+    {
+        new() { Id = "submitted", Name = "Submitted" },
+        new() { Id = "review", Name = "In Review" },
+        new() { Id = "approved", Name = "Approved" },
+        new() { Id = "closed", Name = "Closed" },
+    };
+
+    // ---- v2 ----
+    private readonly List<PipelineTracker.PipelineStage> _v2Stages = new()
+    {
+        new() { Id = "checkout", Name = "Checkout", Icon = "fa-solid fa-code-branch", CompletedAt = DateTime.Now.AddMinutes(-18), CompletedBy = "Runner 12" },
+        new() { Id = "build", Name = "Build", Icon = "fa-solid fa-hammer", CompletedAt = DateTime.Now.AddMinutes(-12), CompletedBy = "Runner 12" },
+        new() { Id = "test", Name = "Test", Icon = "fa-solid fa-vial", State = PipelineTracker.PipelineStageState.Error, Notes = "3 unit tests failed." },
+        new() { Id = "deploy", Name = "Deploy", Icon = "fa-solid fa-rocket" },
+        new() { Id = "smoke", Name = "Smoke Test", Icon = "fa-solid fa-fire" },
+    };
+
+    // ---- v3 ----
+    private int _v3Current = 1;
+    private int? _v3Selected = 1;
+    private List<PipelineTracker.PipelineStage> _v3Stages = V3CreateStages();
+    private List<string> _v3ClickLog = new() { "No stage clicks yet." };
+
+    private void V3AdvanceStage()
+    {
+        if (_v3Current < _v3Stages.Count - 1) {
+            _v3Current++;
+            _v3Selected = _v3Current;
+        }
+    }
+
+    private static List<PipelineTracker.PipelineStage> V3CreateStages()
+    {
+        return new List<PipelineTracker.PipelineStage>
+        {
+            new() { Id = "order", Name = "Order Placed", Description = "The customer submitted the order.", Icon = "fa-solid fa-cart-shopping", CompletedAt = DateTime.Now.AddHours(-6), CompletedBy = "Customer" },
+            new() { Id = "prep", Name = "Preparing", Description = "The warehouse is preparing the shipment.", Icon = "fa-solid fa-box-open", CompletedAt = DateTime.Now.AddHours(-4), CompletedBy = "Fulfillment" },
+            new() { Id = "quality", Name = "Quality Check", Description = "A final inspection step before dispatch.", Icon = "fa-solid fa-clipboard-check", Notes = "Packaging verified." },
+            new() { Id = "delivery", Name = "Out for Delivery", Description = "The carrier is delivering the package.", Icon = "fa-solid fa-truck" },
+            new() { Id = "done", Name = "Delivered", Description = "Delivery completed.", Icon = "fa-solid fa-house" },
+        };
+    }
+
+    private Task V3HandleClick(int index)
+    {
+        if (_v3ClickLog.Count == 1 && _v3ClickLog[0] == "No stage clicks yet.") {
+            _v3ClickLog.Clear();
+        }
+
+        _v3ClickLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — clicked stage {index + 1}");
+        if (_v3ClickLog.Count > 6) {
+            _v3ClickLog = _v3ClickLog.Take(6).ToList();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void V3MarkStageSkipped()
+    {
+        if (_v3Stages.Count > 2) {
+            _v3Stages[2].State = PipelineTracker.PipelineStageState.Skipped;
+            _v3Selected = 2;
+        }
+    }
+
+    private void V3ResetTracker()
+    {
+        _v3Current = 0;
+        _v3Selected = 0;
+        _v3Stages = V3CreateStages();
+        _v3ClickLog = new List<string> { "Tracker reset." };
+    }
+}

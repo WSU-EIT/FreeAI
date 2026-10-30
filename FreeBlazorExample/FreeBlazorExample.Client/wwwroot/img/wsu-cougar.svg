@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="WSU Cougar">
+    <title>WSU Cougar</title>
+    <!-- Simplified cougar-head silhouette inspired by the WSU primary mark.
+         Pure fill-white on crimson background. No external deps. -->
+    <path fill="#ffffff" d="
+        M50 10
+        C 42 10, 34 14, 28 22
+        L 22 18
+        L 24 28
+        C 20 34, 18 42, 20 50
+        C 16 54, 14 60, 16 66
+        L 22 64
+        C 24 70, 28 76, 34 80
+        L 32 86
+        L 40 82
+        C 44 84, 48 85, 52 85
+        C 56 85, 60 84, 64 82
+        L 72 86
+        L 70 80
+        C 76 76, 80 70, 82 64
+        L 88 66
+        C 90 60, 88 54, 84 50
+        C 86 42, 84 34, 80 28
+        L 82 18
+        L 76 22
+        C 70 14, 62 10, 54 10
+        Z
+        M 40 38
+        C 40 34, 42 32, 45 32
+        C 48 32, 50 34, 50 38
+        L 48 42
+        L 42 42
+        Z
+        M 50 38
+        C 50 34, 52 32, 55 32
+        C 58 32, 60 34, 60 38
+        L 58 42
+        L 52 42
+        Z
+        M 40 52
+        L 60 52
+        C 58 58, 54 62, 50 62
+        C 46 62, 42 58, 40 52
+        Z
+    "/>
+</svg>

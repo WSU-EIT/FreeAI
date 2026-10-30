@@ -1,0 +1,132 @@
+@using FreeBlazorExtended.RenderFiles
+@using FreeBlazorExtended.SelectFile
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Default</h1>
+
+    <FreeBlazorExtended.RenderFiles.RenderFiles Files="_v1Files" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Clickable With Delete Confirmation</h1>
+    <p class="text-muted">Last opened: @_v2LastOpened</p>
+
+    <FreeBlazorExtended.RenderFiles.RenderFiles Files="_v2Files"
+            OnClick="V2HandleOpen"
+            OnDelete="V2HandleDelete"
+            UseDeleteConfirmation="true"
+            DeleteText="Remove"
+            CancelText="Keep"
+            ConfirmDeleteText="Yes, remove"
+            EmptyText="All files removed." />
+
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-3" @onclick="V2ResetFiles">Reset</button>
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>RenderFiles - Mixed File Types and Inline Bytes</h1>
+    <p class="small text-muted">Legend: inline SVG, remote PNG, remote JPG, PDF, Word, Excel, ZIP, and generic fallback.</p>
+
+    <FreeBlazorExtended.RenderFiles.RenderFiles Files="_v3Files"
+            OnClick="V3OpenFile"
+            OnDelete="V3DeleteFile"
+            UseDeleteConfirmation="false"
+            DeleteText="Delete"
+            EmptyText="No files." />
+
+    <p class="text-muted mt-3 mb-2">Last opened: @_v3LastOpened</p>
+    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="V3ResetFiles">Reset</button>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<FileItem> _v1Files = new()
+    {
+        new() { FileId = Guid.NewGuid(), FileName = "sunrise.png", Extension = ".png", Bytes = 820000, RemoteImageUrl = "https://picsum.photos/seed/rf1/300/200" },
+        new() { FileId = Guid.NewGuid(), FileName = "forest.jpg", Extension = ".jpg", Bytes = 1240000, RemoteImageUrl = "https://picsum.photos/seed/rf2/300/200" },
+        new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2340000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+    };
+
+    // ---- v2 ----
+    private List<FileItem> _v2Files = V2BuildFiles();
+    private string _v2LastOpened = "(none)";
+
+    private static List<FileItem> V2BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "dashboard.png", Extension = ".png", Bytes = 930000, RemoteImageUrl = "https://picsum.photos/seed/rfv21/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "lake.jpg", Extension = ".jpg", Bytes = 1180000, RemoteImageUrl = "https://picsum.photos/seed/rfv22/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "manual.pdf", Extension = ".pdf", Bytes = 1880000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "brief.docx", Extension = ".docx", Bytes = 94400, ThumbnailIcon = "fa-solid fa-file-word" },
+            new() { FileId = Guid.NewGuid(), FileName = "bundle.zip", Extension = ".zip", Bytes = 3020000, ThumbnailIcon = "fa-solid fa-file-zipper" },
+        };
+    }
+
+    private Task V2HandleDelete(FileItem file)
+    {
+        _v2Files = _v2Files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private Task V2HandleOpen(FileItem file)
+    {
+        _v2LastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private void V2ResetFiles()
+    {
+        _v2Files = V2BuildFiles();
+        _v2LastOpened = "(none)";
+    }
+
+    // ---- v3 ----
+    private List<FileItem> _v3Files = V3BuildFiles();
+    private string _v3LastOpened = "(none)";
+
+    private static List<FileItem> V3BuildFiles()
+    {
+        return new List<FileItem>
+        {
+            new() { FileId = Guid.NewGuid(), FileName = "inline.svg", Extension = ".svg", Bytes = 320, Value = V3InlineSvgBytes() },
+            new() { FileId = Guid.NewGuid(), FileName = "remote.png", Extension = ".png", Bytes = 780000, RemoteImageUrl = "https://picsum.photos/seed/rfv31/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "remote.jpg", Extension = ".jpg", Bytes = 1040000, RemoteImageUrl = "https://picsum.photos/seed/rfv32/300/200" },
+            new() { FileId = Guid.NewGuid(), FileName = "report.pdf", Extension = ".pdf", Bytes = 2400000, ThumbnailIcon = "fa-solid fa-file-pdf" },
+            new() { FileId = Guid.NewGuid(), FileName = "proposal.docx", Extension = ".docx", Bytes = 101000, ThumbnailIcon = "fa-solid fa-file-word" },
+            new() { FileId = Guid.NewGuid(), FileName = "forecast.xlsx", Extension = ".xlsx", Bytes = 132000, ThumbnailIcon = "fa-solid fa-file-excel" },
+            new() { FileId = Guid.NewGuid(), FileName = "assets.zip", Extension = ".zip", Bytes = 3100000, ThumbnailIcon = "fa-solid fa-file-zipper" },
+            new() { FileId = Guid.NewGuid(), FileName = "notes.bin", Extension = ".bin", Bytes = 4096 },
+        };
+    }
+
+    private Task V3DeleteFile(FileItem file)
+    {
+        _v3Files = _v3Files.Where(item => item.FileId != file.FileId).ToList();
+        return Task.CompletedTask;
+    }
+
+    private static byte[] V3InlineSvgBytes()
+    {
+        return System.Text.Encoding.UTF8.GetBytes("<svg xmlns='http://www.w3.org/2000/svg' width='120' height='80'><rect width='120' height='80' fill='#dc3545'/><text x='60' y='46' text-anchor='middle' font-size='18' fill='white'>SVG</text></svg>");
+    }
+
+    private Task V3OpenFile(FileItem file)
+    {
+        _v3LastOpened = file.FileName;
+        return Task.CompletedTask;
+    }
+
+    private void V3ResetFiles()
+    {
+        _v3Files = V3BuildFiles();
+        _v3LastOpened = "(none)";
+    }
+}

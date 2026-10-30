@@ -29,6 +29,7 @@
 
     case "head":
         // Add any custom elements to the head tag here.
+        <FreeBlazorExample_App_Modules Module="head" />
         @* <link rel="stylesheet" href="some.css" /> *@
         @* <link rel="stylesheet" href="@(applicationUrl + "_content/Path/To/CSS.css?v=" + appVersion)" /> *@
         break;
@@ -41,6 +42,7 @@
 
     case "bodymiddle":
         // Add any custom elements to the middle of the body tag here.
+        <FreeBlazorExample_App_Modules Module="bodymiddle" />
         break;
 
     case "bodybottom":

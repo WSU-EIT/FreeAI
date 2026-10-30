@@ -3,6 +3,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="Accessibility.md" />
+    <File Path="Directory.Build.props" />
     <File Path="LICENSE" />
     <File Path="README.md" />
     <File Path="Util.exe" />
@@ -14,4 +15,10 @@
   <Project Path="FreeBlazorExample.EFModels/FreeBlazorExample.EFModels.csproj" Id="8AD26790-E791-4604-91AE-1DF411473291" />
   <Project Path="FreeBlazorExample.Plugins/FreeBlazorExample.Plugins.csproj" Id="975C9B54-1148-419F-8F7E-31E96E62232A" />
   <Project Path="FreeBlazorExample/FreeBlazorExample.csproj" />
+  <Folder Name="/FreeBlazorExtended/">
+    <Project Path="FreeBlazorExtended/FreeBlazorExtended.csproj" />
+    <Project Path="FreeBlazorExtended.Agent/FreeBlazorExtended.Agent.csproj" />
+  </Folder>
+  <Project Path="FreeBlazorExample.ShowcaseTool/FreeBlazorExample.ShowcaseTool.csproj" />
+  <Project Path="Docs/Docs.csproj" />
 </Solution>

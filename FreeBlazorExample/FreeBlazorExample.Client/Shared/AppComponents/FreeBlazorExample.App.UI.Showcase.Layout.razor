@@ -1,0 +1,34 @@
+@inherits LayoutComponentBase
+@layout FreeBlazorExample.Client.Layout.MainLayout
+@implements IDisposable
+@using FreeBlazorExtended.ExampleNav
+@inject NavigationManager NavManager
+
+<div class="showcase-layout-wrapper">
+    <ExampleNav Pages="@_pages"
+            CurrentRoute="@_currentRoute"
+            HomeUrl="@Helpers.BuildShowcaseUrl()"
+            HomeLabel="Showcase"
+            HomeIcon="fa-solid fa-house" />
+    @Body
+</div>
+
+@code {
+    private List<ExampleNav.NavPage> _pages = new();
+    private string _currentRoute = "";
+
+    public void Dispose() {
+        NavManager.LocationChanged -= OnLocationChanged;
+    }
+
+    protected override void OnInitialized() {
+        _pages = FreeBlazorExampleShowcaseManifest.BuildPages();
+        _currentRoute = NavManager.Uri;
+        NavManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e) {
+        _currentRoute = e.Location;
+        InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,25 @@
+<Project>
+  <!--
+    FreeBlazorExample: project settings for FreeBlazorExample's own code, kept here so the six FreeCRM csproj files
+    stay stock and a framework upgrade can overwrite them. MSBuild imports this file automatically for every project in
+    this folder; the conditions limit each item to the project that needs it.
+  -->
+
+  <!-- The FreeBlazorExtended component library (FreeBlazorExample.App.* code and the showcase pages use it). -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreeBlazorExample.Client'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)FreeBlazorExtended\FreeBlazorExtended.csproj" />
+  </ItemGroup>
+
+  <!-- Feature 104: the EF model layer shares the UserPreferences POCO from the library. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreeBlazorExample.EFModels'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)FreeBlazorExtended\FreeBlazorExtended.csproj" />
+  </ItemGroup>
+
+  <!-- Root namespaces the app has always used (the project names would give FreeBlazorExample.DataAccess and so on). -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'FreeBlazorExample.DataAccess' Or '$(MSBuildProjectName)' == 'FreeBlazorExample.DataObjects' Or '$(MSBuildProjectName)' == 'FreeBlazorExample.EFModels'">
+    <RootNamespace>FreeBlazorExample</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'FreeBlazorExample.Plugins'">
+    <RootNamespace>Plugins</RootNamespace>
+  </PropertyGroup>
+</Project>

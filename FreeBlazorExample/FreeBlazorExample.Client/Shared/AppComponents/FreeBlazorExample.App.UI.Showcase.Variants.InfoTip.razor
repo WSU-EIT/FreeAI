@@ -1,0 +1,88 @@
+@using FreeBlazorExtended.InfoTip
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default InfoTip</h1>
+
+    <p class="mb-0">
+        Need a quick explanation?
+        <InfoTip Title="What is an InfoTip?"
+                 Description="Click the (i) icon to read this short explanation. The popover auto-positions to stay on screen." />
+    </p>
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>InfoTip With Code Sample</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label for="apiKeyField" class="form-label fw-semibold">
+                API Key
+                <InfoTip Title="API Key Format"
+                         Description="Keys are 32-character hex strings issued at registration. Send them as the X-Api-Key header."
+                         Code="X-Api-Key: 0123456789abcdef0123456789abcdef" />
+            </label>
+            <input id="apiKeyField"
+                   class="form-control"
+                   value="0123456789abcdef0123456789abcdef"
+                   disabled />
+        </div>
+    </div>
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>InfoTips In A Form</h1>
+    <p class="text-muted">Open tips across the row to exercise left and right alignment in a realistic form layout.</p>
+
+    <form>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <label for="tenantName" class="form-label fw-semibold">
+                    Tenant Name
+                    <InfoTip Title="Tenant name"
+                             Description="A tenant name is the friendly label used to identify an environment or customer space throughout the UI." />
+                </label>
+                <input id="tenantName" class="form-control" value="Contoso West" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="region" class="form-label fw-semibold">
+                    Region
+                    <InfoTip Title="Deployment region"
+                             Description="Choose the geographic region that should host this tenant's primary services and data residency footprint."
+                             Code="us-east-1 | us-west-2 | eu-central-1" />
+                </label>
+                <input id="region" class="form-control" value="US-East" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="retention" class="form-label fw-semibold">
+                    Retention
+                    <InfoTip Title="Retention policy"
+                             Description="Retention controls how long audit records, exports, and operational traces stay available before archival or deletion." />
+                </label>
+                <input id="retention" class="form-control" value="365 days" />
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label for="apiUrl" class="form-label fw-semibold">
+                    API Endpoint
+                    <InfoTip Title="Base endpoint"
+                             Description="This is the base URL clients use for API requests. Right-edge placement helps demonstrate the popover's alternate alignment mode."
+                             Code="https://api.contoso.example/v1" />
+                </label>
+                <input id="apiUrl" class="form-control" value="https://api.contoso.example/v1" />
+            </div>
+        </div>
+    </form>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+
+}

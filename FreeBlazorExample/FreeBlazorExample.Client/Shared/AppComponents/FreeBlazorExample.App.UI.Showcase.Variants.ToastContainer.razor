@@ -1,0 +1,176 @@
+@using FreeBlazorExtended.Toast
+@inject FreeBlazorExtended.Foundation.Services.NotificationService Notifications
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Default (Bottom-End)</h1>
+    <p class="text-muted mb-4">
+        A global notification stack driven by the injected <code>NotificationService</code>.
+        Click any button below to fire a toast. The container auto-dismisses timed ones and lets
+        you manually close the rest.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-success" @onclick='() => Notifications.ShowSuccess("Record saved successfully.", "Saved")'>
+            <i class="fas fa-check me-1"></i> Success
+        </button>
+        <button class="btn btn-danger" @onclick='() => Notifications.ShowError("Could not connect to the server.", "Error")'>
+            <i class="fas fa-times me-1"></i> Error
+        </button>
+        <button class="btn btn-warning" @onclick='() => Notifications.ShowWarning("Your session expires in 5 minutes.", "Warning")'>
+            <i class="fas fa-triangle-exclamation me-1"></i> Warning
+        </button>
+        <button class="btn btn-primary" @onclick='() => Notifications.ShowInfo("3 new messages waiting.", "Info")'>
+            <i class="fas fa-circle-info me-1"></i> Info
+        </button>
+        <button class="btn btn-secondary" @onclick="() => Notifications.ClearAll()">
+            <i class="fas fa-trash me-1"></i> Clear All
+        </button>
+    </div>
+
+    <ToastContainer />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Top-End With Timestamp &amp; Progress Bar</h1>
+    <p class="text-muted mb-4">
+        Same <code>NotificationService</code>, different <code>Position</code> and display options.
+        Timestamps and the draining progress bar are both enabled.
+    </p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">Fire Notifications</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-success btn-sm" @onclick='() => Notifications.ShowSuccess("Invoice #1042 was emailed.", "Invoice Sent")'>
+                        <i class="fas fa-envelope me-1"></i> Invoice Sent
+                    </button>
+                    <button class="btn btn-danger btn-sm" @onclick='() => Notifications.ShowError("Payment gateway timed out. Please retry.", "Payment Failed")'>
+                        <i class="fas fa-credit-card me-1"></i> Payment Failed
+                    </button>
+                    <button class="btn btn-warning btn-sm" @onclick='() => Notifications.ShowWarning("Quota at 90%. Upgrade your plan soon.", "Quota Warning")'>
+                        <i class="fas fa-gauge me-1"></i> Quota Warning
+                    </button>
+                    <button class="btn btn-primary btn-sm" @onclick='() => Notifications.ShowInfo("Background sync completed (42 records).", "Sync Done")'>
+                        <i class="fas fa-rotate me-1"></i> Sync Done
+                    </button>
+                    <button class="btn btn-secondary btn-sm" @onclick="() => Notifications.ClearAll()">
+                        <i class="fas fa-trash me-1"></i> Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header">Component Parameters Used</div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>Position</code></td><td><code>ToastPosition.TopEnd</code></td></tr>
+                            <tr><td><code>ShowTimestamp</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>ShowProgressBar</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>ShowDismissButton</code></td><td><code>true</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ToastContainer Position="ToastPosition.TopEnd"
+                    ShowTimestamp="true"
+                    ShowProgressBar="true" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>ToastContainer — Burst &amp; No-Dismiss Pattern</h1>
+    <p class="text-muted mb-4">
+        Demonstrates firing multiple toasts at once (simulating a batch operation result) and
+        the persistent error pattern with <code>ShowDismissButton="false"</code> — forcing the user
+        to acknowledge by clicking a separate action.
+    </p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">Burst Fire (Batch Result)</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-primary" @onclick="V3FireBatch">
+                        <i class="fas fa-bolt me-1"></i> Run Batch Import (5 toasts)
+                    </button>
+                    <p class="text-muted small mb-0">
+                        Fires 5 toasts rapidly: 3 success, 1 warning, 1 error — as a batch job would.
+                        Auto-dismiss on success/warning; error stays until closed.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">Persistent Error (No Auto-Dismiss)</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <button class="btn btn-danger" @onclick="V3FirePersistentError">
+                        <i class="fas fa-triangle-exclamation me-1"></i> Simulate Critical Error
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="V3AcknowledgeError" disabled="@(!_v3HasCritical)">
+                        <i class="fas fa-check me-1"></i> Acknowledge &amp; Dismiss
+                    </button>
+                    <p class="text-muted small mb-0">
+                        Error with <code>durationMs=0</code> never auto-dismisses. Only the explicit
+                        Acknowledge button removes it.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-sm btn-outline-secondary" @onclick="() => Notifications.ClearAll()">
+            <i class="fas fa-trash me-1"></i> Clear All
+        </button>
+    </div>
+
+    <ToastContainer Position="ToastPosition.BottomStart" ShowProgressBar="true" ShowTimestamp="true" />
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v3 ----
+    private string? _v3CriticalId;
+    private bool _v3HasCritical => !string.IsNullOrEmpty(_v3CriticalId);
+
+    private void V3AcknowledgeError()
+    {
+        if (!string.IsNullOrEmpty(_v3CriticalId)) {
+            Notifications.Remove(_v3CriticalId);
+            _v3CriticalId = null;
+        }
+    }
+
+    private void V3FireBatch()
+    {
+        Notifications.ShowSuccess("Orders 1001-1003 imported (3 records).", "Import OK", 6000);
+        Notifications.ShowWarning("Order 1004 skipped — duplicate SKU.", "Skipped", 8000);
+        Notifications.ShowError("Order 1005 failed — invalid customer ID.", "Import Error", 0);
+    }
+
+    private void V3FirePersistentError()
+    {
+        // durationMs = 0 → never auto-dismissed
+        Notifications.Show(
+            "Database connection lost. Changes are not being saved. Contact your administrator.",
+            FreeBlazorExtended.Foundation.Services.NotificationType.Error,
+            "Critical: DB Offline",
+            durationMs: 0
+        );
+        // track so we can dismiss manually
+        _v3CriticalId = Notifications.GetAll().LastOrDefault()?.Id;
+    }
+}

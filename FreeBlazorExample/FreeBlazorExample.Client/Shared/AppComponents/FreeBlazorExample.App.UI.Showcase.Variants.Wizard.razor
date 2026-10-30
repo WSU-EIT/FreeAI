@@ -1,0 +1,65 @@
+@using FreeBlazorExtended.Wizard
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default Wizard Stepper</h1>
+
+    <WizardStepper Steps="_v1Steps" CurrentStep="1" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Stepper Plus Summary</h1>
+
+    <WizardStepper Steps="V2BuildSteps()" CurrentStep="@_v2Current" OnStepClick="V2HandleStepClick" />
+    <WizardSummary Selections="V2BuildSelections()" />
+
+    <div class="card">
+        <div class="card-body">
+            Step <code>@(_v2Current + 1)</code> content here.
+        </div>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<WizardStepper.WizardStepInfo> _v1Steps = new()
+    {
+        new() { Name = "Choose" },
+        new() { Name = "Configure" },
+        new() { Name = "Review" },
+    };
+
+    // ---- v2 ----
+    private int _v2Current = 2;
+
+    private List<WizardSummary.SelectionItem> V2BuildSelections()
+    {
+        return new List<WizardSummary.SelectionItem>
+        {
+            new() { Label = "Plan", Value = "Pro" },
+            new() { Label = "Region", Value = "US-East" },
+            new() { Label = "Email Notifications", Value = "On" },
+        };
+    }
+
+    private List<WizardStepper.WizardStepInfo> V2BuildSteps()
+    {
+        return new List<WizardStepper.WizardStepInfo>
+        {
+            new() { Name = "Choose Plan", SelectedValue = "Pro" },
+            new() { Name = "Pick Region", SelectedValue = "US-East" },
+            new() { Name = "Notifications", SelectedValue = "On" },
+        };
+    }
+
+    private Task V2HandleStepClick(int step)
+    {
+        _v2Current = step;
+        return Task.CompletedTask;
+    }
+}

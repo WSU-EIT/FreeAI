@@ -1,0 +1,83 @@
+@using FreeBlazorExtended.ExampleNav
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Default</h1>
+    <p class="text-muted">This is a minimal three-page strip with the current route anchored to the middle entry.</p>
+
+    <ExampleNav Pages="_v1Pages" CurrentRoute="/showcase/examplenav/v1" />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Parent/Child Pages With Custom Home</h1>
+    <p class="text-muted">This variant shows how the optional parent breadcrumb segment and custom home link metadata behave.</p>
+
+    <ExampleNav Pages="_v2Pages"
+            CurrentRoute="/showcase/examplenav/v2"
+            HomeUrl="/showcase"
+            HomeLabel="Showcase"
+            HomeIcon="fa-solid fa-grid-2" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>ExampleNav - Meta Demo Linking Carousel Variant Pages</h1>
+
+    <div class="d-flex flex-wrap gap-3 mb-3">
+        <div class="form-check">
+            <input id="showCrumbs" class="form-check-input" type="checkbox" @bind="_v3ShowCrumbs" />
+            <label class="form-check-label" for="showCrumbs">Show breadcrumbs</label>
+        </div>
+        <div class="form-check">
+            <input id="showPrevNext" class="form-check-input" type="checkbox" @bind="_v3ShowPrevNext" />
+            <label class="form-check-label" for="showPrevNext">Show Prev/Next</label>
+        </div>
+    </div>
+
+    <ExampleNav Pages="_v3Pages"
+            CurrentRoute="/showcase/examplenav/v3"
+            HomeUrl="/showcase"
+            HomeLabel="Showcase"
+            HomeIcon="fa-solid fa-house"
+            ShowBreadcrumbs="@_v3ShowCrumbs"
+            ShowPrevNext="@_v3ShowPrevNext" />
+
+    <p class="text-muted mt-3 mb-0">The previous and next links here point at the real Carousel variant routes created in this tier.</p>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v1 ----
+    private readonly List<ExampleNav.NavPage> _v1Pages = new()
+    {
+        new() { Category = "Demo", Route = "/demo/a", Title = "Page A" },
+        new() { Category = "Demo", Route = "/showcase/examplenav/v1", Title = "This Page" },
+        new() { Category = "Demo", Route = "/demo/c", Title = "Page C" },
+    };
+
+    // ---- v2 ----
+    private readonly List<ExampleNav.NavPage> _v2Pages = new()
+    {
+        new() { Category = "Demo", Route = "/items", Title = "Items" },
+        new() { Category = "Demo", Route = "/items/cards", Title = "Cards", ParentTitle = "Items", ParentRoute = "/items" },
+        new() { Category = "Demo", Route = "/items/timeline", Title = "Timeline", ParentTitle = "Items", ParentRoute = "/items" },
+        new() { Category = "Demo", Route = "/search", Title = "Search" },
+        new() { Category = "Demo", Route = "/showcase/examplenav/v2", Title = "This Page", ParentTitle = "Showcase", ParentRoute = "/showcase" },
+    };
+
+    // ---- v3 ----
+    private bool _v3ShowCrumbs = true;
+    private bool _v3ShowPrevNext = true;
+
+    private readonly List<ExampleNav.NavPage> _v3Pages = new()
+    {
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v1", Title = "Carousel V1", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v2", Title = "Carousel V2", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/carousel/v3", Title = "Carousel V3", ParentTitle = "Carousel", ParentRoute = "/showcase/carousel" },
+        new() { Category = "Tier 2B", Route = "/showcase/examplenav/v3", Title = "ExampleNav V3" },
+    };
+}

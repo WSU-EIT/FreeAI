@@ -27,6 +27,9 @@ namespace FreeBlazorExample.Client
             builder.Services.AddSingleton(serviceProvider => (IJSInProcessRuntime)serviceProvider.GetRequiredService<IJSRuntime>());
             builder.Services.AddCompilerService();
 
+            // FreeBlazorExample: the Client project has no FreeCRM App seam; this one line registers the FreeBlazorExtended showcase services (FreeBlazorExample.App.Program.cs).
+            builder.Services.AddFreeBlazorExampleApp();
+
             await builder.Build().RunAsync();
         }
     }

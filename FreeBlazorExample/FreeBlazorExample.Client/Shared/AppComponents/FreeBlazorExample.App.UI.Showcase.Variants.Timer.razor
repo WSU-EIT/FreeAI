@@ -1,0 +1,142 @@
+@using FreeBlazorExtended.Timer
+
+@if (Variant == "v1") {
+<div class="container-fluid py-4">
+    <h1>Default Timer</h1>
+
+    <Timer />
+</div>
+
+} else if (Variant == "v2") {
+<div class="container-fluid py-4">
+    <h1>Pomodoro-Style Timer</h1>
+    <p class="text-muted">A 25-minute work block with hours included in the display and controls hidden from the component chrome.</p>
+
+    <Timer Duration="@TimeSpan.FromMinutes(25)"
+            DisplayFormat="@_v2DisplayFormat"
+            AutoStart="true"
+            ShowControls="false"
+            ShowProgressBar="true"
+            Class="bg-light p-4 rounded shadow-sm" />
+</div>
+
+} else if (Variant == "v3") {
+<div class="container-fluid py-4">
+    <h1>Chained Work / Break Timers</h1>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="V3StartCycle">Start Cycle</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="V3ResetAll">Reset All</button>
+        <span class="badge bg-info text-dark">Tick count: @_v3TickCount</span>
+        <span class="badge bg-secondary">@_v3CycleStatus</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5">Work Timer</h2>
+                    <Timer @ref="_v3WorkTimer"
+                            Duration="@_v3WorkDuration"
+                            OnElapsed="V3StartBreak"
+                            OnTick="V3HandleWorkTick"
+                            ShowControls="false" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h2 class="h5">Break Timer</h2>
+                    <Timer @ref="_v3BreakTimer"
+                            Duration="@_v3BreakDuration"
+                            OnElapsed="V3HandleBreakElapsed"
+                            ShowControls="false"
+                            Class="border border-success rounded p-2" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h2 class="h5">Event Log</h2>
+            <ul class="small mb-0 ps-3">
+                @foreach (var item in _v3EventLog) {
+                    <li>@item</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+}
+
+@code {
+    [Parameter] public string Variant { get; set; } = "v1";
+
+    // ---- v2 ----
+    private readonly string _v2DisplayFormat = @"hh\:mm\:ss";
+
+    // ---- v3 ----
+    private readonly TimeSpan _v3WorkDuration = TimeSpan.FromSeconds(25);
+    private readonly TimeSpan _v3BreakDuration = TimeSpan.FromSeconds(10);
+
+    private FreeBlazorExtended.Timer.Timer? _v3WorkTimer;
+    private FreeBlazorExtended.Timer.Timer? _v3BreakTimer;
+    private int _v3TickCount;
+    private string _v3CycleStatus = "Idle";
+    private List<string> _v3EventLog = new() { "Cycle not started." };
+
+    private void V3AddLog(string message)
+    {
+        _v3EventLog.Insert(0, $"{DateTime.Now:HH:mm:ss} — {message}");
+        if (_v3EventLog.Count > 8) {
+            _v3EventLog = _v3EventLog.Take(8).ToList();
+        }
+    }
+
+    private Task V3HandleBreakElapsed()
+    {
+        _v3CycleStatus = "Cycle complete";
+        V3AddLog("Break timer elapsed. Cycle complete.");
+        return Task.CompletedTask;
+    }
+
+    private Task V3HandleWorkTick(TimeSpan remaining)
+    {
+        _v3TickCount++;
+        _v3CycleStatus = $"Work remaining: {remaining:mm\\:ss}";
+        return Task.CompletedTask;
+    }
+
+    private void V3ResetAll()
+    {
+        _v3WorkTimer?.Reset();
+        _v3BreakTimer?.Reset();
+        _v3TickCount = 0;
+        _v3CycleStatus = "Reset";
+        _v3EventLog.Clear();
+        V3AddLog("Reset both timers.");
+    }
+
+    private Task V3StartBreak()
+    {
+        _v3CycleStatus = "Break timer running";
+        V3AddLog("Work timer elapsed. Starting break timer.");
+        _v3BreakTimer?.Start();
+        return Task.CompletedTask;
+    }
+
+    private void V3StartCycle()
+    {
+        _v3TickCount = 0;
+        _v3CycleStatus = "Work timer running";
+        _v3EventLog.Clear();
+        V3AddLog("Started work timer.");
+        _v3BreakTimer?.Reset();
+        _v3WorkTimer?.Reset();
+        _v3WorkTimer?.Start();
+    }
+}
