@@ -9,9 +9,18 @@
     <File Path="UtilMacOS" />
   </Folder>
   <Project Path="FreePlugins.Client/FreePlugins.Client.csproj" />
-  <Project Path="FreePlugins.DataAccess/FreePlugins.DataAccess.csproj" Id="AB9DF1B5-A81A-4FF4-B657-C3BA47F7E299" />
-  <Project Path="FreePlugins.DataObjects/FreePlugins.DataObjects.csproj" Id="E49E2D4D-BA58-4946-A612-CDA1C52B1EA5" />
-  <Project Path="FreePlugins.EFModels/FreePlugins.EFModels.csproj" Id="0F8E21D5-8095-4C71-BF03-7B7C8ED85CF2" />
-  <Project Path="FreePlugins.Plugins/FreePlugins.Plugins.csproj" Id="5B0C966A-4931-462B-BB9A-0AF6602CE801" />
+  <Project Path="FreePlugins.DataAccess/FreePlugins.DataAccess.csproj" Id="953AD0F6-915A-484B-8F07-4643781F8880" />
+  <Project Path="FreePlugins.DataObjects/FreePlugins.DataObjects.csproj" Id="E8909FA4-B5E6-4B00-A6A8-8FCB64CB2C75" />
+  <Project Path="FreePlugins.EFModels/FreePlugins.EFModels.csproj" Id="F7735FB4-3F84-4B3D-987B-084D485CE441" />
+  <Project Path="FreePlugins.Plugins/FreePlugins.Plugins.csproj" Id="3C4AA7A1-39F5-4F1D-91A6-56BF06D3D45E" />
   <Project Path="FreePlugins/FreePlugins.csproj" />
+  <Project Path="FreePlugins.Abstractions/FreePlugins.Abstractions.csproj" />
+  <Project Path="FreePlugins.Abstractions.Integration/FreePlugins.Abstractions.Integration.csproj" />
+  <Project Path="FreePlugins.SamplePlugin/FreePlugins.SamplePlugin.csproj" />
+  <Project Path="FreePlugins.ExamplePlugin/FreePlugins.ExamplePlugin.csproj" />
+  <Project Path="FreePlugins.AuthExamplePlugin/FreePlugins.AuthExamplePlugin.csproj" />
+  <Project Path="FreePlugins.UserUpdateExamplePlugin/FreePlugins.UserUpdateExamplePlugin.csproj" />
+  <Project Path="FreePlugins.TenantRestrictedPlugin/FreePlugins.TenantRestrictedPlugin.csproj" />
+  <Project Path="FreePlugins.DataAccessExamplePlugin/FreePlugins.DataAccessExamplePlugin.csproj" />
+  <Project Path="Docs/Docs.csproj" />
 </Solution>

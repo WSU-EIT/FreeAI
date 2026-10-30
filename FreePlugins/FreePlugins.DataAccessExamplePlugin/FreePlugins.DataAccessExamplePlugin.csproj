@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    
+    <!-- NuGet Package Configuration -->
+    <PackageId>FreePlugins.DataAccessExamplePlugin</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>WSU EIT</Authors>
+    <Company>WSU EIT</Company>
+    <Description>An example compiled plugin demonstrating how to access plugin metadata and context information. Shows working with plugin properties, version info, and user data.</Description>
+    <PackageTags>plugins;freeplugins;context;metadata;info;example</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreePlugins.Abstractions\FreePlugins.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

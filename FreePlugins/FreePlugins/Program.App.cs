@@ -12,6 +12,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreePluginsAppModifyBuilderEnd(output);
         return output;
     }
 
@@ -19,6 +20,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreePluginsAppModifyBuilderStart(output);
         return output;
     }
 

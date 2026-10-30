@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    
+    <!-- NuGet Package Configuration -->
+    <PackageId>FreePlugins.TenantRestrictedPlugin</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>WSU EIT</Authors>
+    <Company>WSU EIT</Company>
+    <Description>An example compiled plugin demonstrating tenant restriction. Shows how to use LimitToTenants to restrict plugin availability to specific tenants in a multi-tenant application.</Description>
+    <PackageTags>plugins;freeplugins;tenant;multitenancy;restriction;example</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FreePlugins.Abstractions\FreePlugins.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

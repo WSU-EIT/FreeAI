@@ -4,11 +4,7 @@ public static partial class Helpers
 {
     public static Dictionary<string, List<string>> AppIcons {
         get {
-            Dictionary<string, List<string>> icons = new Dictionary<string, List<string>> {
-                { "fa:fa-solid fa-home", new List<string> { "IconName1", "IconName2" }},
-            };
-
-            return icons;
+            return FreePluginsAppIcons;
         }
     }
 
@@ -172,6 +168,7 @@ public static partial class Helpers
             // Add any app-specific admin menu items here.
             var output = new List<DataObjects.MenuItem>();
 
+            output.AddRange(Helpers.FreePluginsMenuItemsAdminApp);
             return output;
         }
     }

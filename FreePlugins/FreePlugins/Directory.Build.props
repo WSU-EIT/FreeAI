@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    FreePlugins: the compiled plugin projects that FreePlugins.App.Program.cs registers. They are kept here so
+    FreePlugins.csproj stays stock FreeCRM and a framework upgrade can overwrite it. MSBuild imports this file
+    automatically for every project in this folder; the condition limits it to the server project. All the projects
+    are inside the FreePlugins folder.
+  -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreePlugins'">
+    <ProjectReference Include="..\FreePlugins.Abstractions\FreePlugins.Abstractions.csproj" />
+    <ProjectReference Include="..\FreePlugins.Abstractions.Integration\FreePlugins.Abstractions.Integration.csproj" />
+    <ProjectReference Include="..\FreePlugins.SamplePlugin\FreePlugins.SamplePlugin.csproj" />
+    <ProjectReference Include="..\FreePlugins.ExamplePlugin\FreePlugins.ExamplePlugin.csproj" />
+    <ProjectReference Include="..\FreePlugins.AuthExamplePlugin\FreePlugins.AuthExamplePlugin.csproj" />
+    <ProjectReference Include="..\FreePlugins.UserUpdateExamplePlugin\FreePlugins.UserUpdateExamplePlugin.csproj" />
+    <ProjectReference Include="..\FreePlugins.TenantRestrictedPlugin\FreePlugins.TenantRestrictedPlugin.csproj" />
+    <ProjectReference Include="..\FreePlugins.DataAccessExamplePlugin\FreePlugins.DataAccessExamplePlugin.csproj" />
+  </ItemGroup>
+</Project>
