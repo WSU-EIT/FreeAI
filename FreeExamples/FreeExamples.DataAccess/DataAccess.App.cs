@@ -26,11 +26,7 @@ public partial class DataAccess
     /// </summary>
     private Dictionary<string, string> AppLanguage {
         get {
-            return new Dictionary<string, string>
-            {
-                //{ "AppTitle", "My Custom App Title" },
-                //{ "YourLanguageItem", "Your Language Item" },
-            };
+            return FreeExamplesAppLanguage;
         }
     }
 

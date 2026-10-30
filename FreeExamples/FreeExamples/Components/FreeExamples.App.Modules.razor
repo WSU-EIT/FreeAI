@@ -1,0 +1,12 @@
+@code {
+    // FreeExamples additions to the page <body>, rendered from Modules.App.razor (case "bodymiddle") so the stock App.razor stays untouched.
+    // jSignature (the Signature demo pages) and vis-network (the Network Graph pages) are loaded here.
+    [Parameter] public string Module { get; set; } = String.Empty;
+}
+
+@switch (Module) {
+    case "body":
+        <script src="@Assets["FreeExamples.App/lib/jSignature/jSignature.min.js"]"></script>
+        <script src="@Assets["FreeExamples.App/lib/vis-network/vis-network.min.js"]"></script>
+        break;
+}

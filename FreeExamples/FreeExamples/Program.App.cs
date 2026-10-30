@@ -12,6 +12,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeExamplesAppModifyBuilderEnd(output);
         return output;
     }
 
@@ -19,6 +20,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeExamplesAppModifyBuilderStart(output);
         return output;
     }
 
@@ -26,6 +28,7 @@ public partial class Program
     {
         var output = app;
         // Add any app-specific modifications to the app here.
+        output = FreeExamplesAppModifyEnd(output);
         return output;
     }
 

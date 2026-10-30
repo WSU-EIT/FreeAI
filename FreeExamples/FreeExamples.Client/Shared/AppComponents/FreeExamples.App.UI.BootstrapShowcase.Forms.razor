@@ -1,0 +1,148 @@
+﻿        @if (Active) {
+            <div id="tab-forms" role="tabpanel" aria-labelledby="tabs-heading">
+
+            @* Search with Clear — FreeCICD FilterBar pattern *@
+            <div class="mb-4">
+                <h6>Search with Clear Button
+                    <FreeExamples_App_UI_InfoTip Title="Search with Clear"
+                            Description="This input has a search icon on the left and a clear (X) button on the right. The X only appears when you have typed something. Clicking it empties the search box instantly. The bind:event=oninput makes it update as you type, not just when you leave the field."
+                            Code="@_codeSearchClear" />
+                </h6>
+                <p class="small text-muted">Input group with search icon and dismissable clear button. Pattern from FreeCICD FilterBar.</p>
+                <div class="input-group" style="max-width: 400px;">
+                    <span class="input-group-text bg-white border-end-0" aria-hidden="true">
+                        <i class="fa fa-search text-muted"></i>
+                    </span>
+                    <input type="text"
+                            class="form-control border-start-0"
+                            placeholder="Search items..."
+                            @bind="_searchTerm"
+                            @bind:event="oninput"
+                            aria-label="Search items" />
+                    @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
+                        <button class="btn btn-outline-secondary border-start-0" type="button"
+                                @onclick="@(() => _searchTerm = "")" aria-label="Clear search">
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                    }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(_searchTerm)) {
+                    <div class="small text-muted mt-1">Searching for: <strong>@_searchTerm</strong></div>
+                }
+            </div>
+
+            @* Toggle Switch — FreeCICD ViewControls pattern *@
+            <div class="mb-4">
+                <h6>Toggle Switches
+                    <FreeExamples_App_UI_InfoTip Title="Toggle Switches"
+                            Description="A toggle switch is a styled checkbox that looks like a physical on/off switch. It is more intuitive than a checkbox for settings like Enable Notifications because the sliding action makes the on/off state visually obvious."
+                            Code="@_codeToggles" />
+                </h6>
+                <p class="small text-muted">Bootstrap switch toggles for boolean settings. Pattern from FreeCICD Dashboard.</p>
+                <div class="d-flex flex-column gap-2" style="max-width: 300px;">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-notifications"
+                                checked="@_enableNotifications" @onchange="@(e => _enableNotifications = (bool)(e.Value ?? false))" />
+                        <label class="form-check-label" for="switch-notifications">
+                            <i class="fa fa-bell me-1" aria-hidden="true"></i> Enable Notifications
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-darkmode"
+                                checked="@_darkMode" @onchange="@(e => _darkMode = (bool)(e.Value ?? false))" />
+                        <label class="form-check-label" for="switch-darkmode">
+                            <i class="fa fa-moon me-1" aria-hidden="true"></i> Dark Mode
+                        </label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-autosave"
+                                checked="@_autoSave" @onchange="@(e => _autoSave = (bool)(e.Value ?? false))" />
+                        <label class="form-check-label" for="switch-autosave">
+                            <i class="fa fa-save me-1" aria-hidden="true"></i> Auto-Save
+                        </label>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">
+                    State: Notifications=@_enableNotifications, DarkMode=@_darkMode, AutoSave=@_autoSave
+                </div>
+            </div>
+
+            @* Inline Required Field Validation — FreeGLBA/PluginPrompts pattern *@
+            <div class="mb-4">
+                <h6>Required Field Validation (ADA)
+                    <FreeExamples_App_UI_InfoTip Title="Form Validation"
+                            Description="When you click Validate, the code checks each required field. Empty fields get a red border (is-invalid), and an error message appears below them with role=alert so screen readers announce it. The aria-invalid attribute also communicates the error state programmatically."
+                            Code="@_codeFormValidation" />
+                </h6>
+                <p class="small text-muted">
+                    Inline validation with <code>aria-required</code>, <code>aria-invalid</code>, and <code>role="alert"</code>.
+                    Pattern from PluginPrompts and WizardDemo.
+                </p>
+                <div class="row g-3" style="max-width: 500px;">
+                    <div class="col-12">
+                        <label for="demo-email" class="form-label fw-semibold">
+                            Email <span class="text-danger" aria-hidden="true">*</span>
+                        </label>
+                        <input type="email" id="demo-email"
+                                class="form-control @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "is-invalid" : !string.IsNullOrWhiteSpace(_demoEmail) ? "is-valid" : "")"
+                                @bind="_demoEmail" @bind:event="oninput"
+                                placeholder="user@example.com"
+                                aria-required="true"
+                                aria-describedby="email-help @(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "email-err" : "")"
+                                aria-invalid="@(_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail) ? "true" : null)" />
+                        <div id="email-help" class="form-text">We'll never share your email.</div>
+                        @if (_showFormValidation && string.IsNullOrWhiteSpace(_demoEmail)) {
+                            <div id="email-err" class="invalid-feedback" role="alert">
+                                <i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i> Email is required.
+                            </div>
+                        }
+                    </div>
+                    <div class="col-12">
+                        <label for="demo-dept" class="form-label fw-semibold">
+                            Department <span class="text-danger" aria-hidden="true">*</span>
+                        </label>
+                        <select id="demo-dept"
+                                class="form-select @(_showFormValidation && string.IsNullOrWhiteSpace(_demoDept) ? "is-invalid" : !string.IsNullOrWhiteSpace(_demoDept) ? "is-valid" : "")"
+                                @bind="_demoDept"
+                                aria-required="true"
+                                aria-invalid="@(_showFormValidation && string.IsNullOrWhiteSpace(_demoDept) ? "true" : null)">
+                            <option value="">-- Select --</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                        @if (_showFormValidation && string.IsNullOrWhiteSpace(_demoDept)) {
+                            <div class="invalid-feedback" role="alert">
+                                <i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i> Department is required.
+                            </div>
+                        }
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-sm" @onclick="@(() => _showFormValidation = true)">
+                            <i class="fa fa-check me-1" aria-hidden="true"></i> Validate
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm ms-1" @onclick="@(() => { _showFormValidation = false; _demoEmail = ""; _demoDept = ""; })">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        }
+
+@code {
+    [Parameter] public bool Active { get; set; }
+
+    private string _codeSearchClear = "@bind=\"_searchTerm\" @bind:event=\"oninput\"";
+    private string _codeToggles = "<input class=\"form-check-input\" type=\"checkbox\" role=\"switch\" @onchange=\"...\" />";
+    private string _codeFormValidation = "class=\"form-control @(_showFormValidation && empty ? \"is-invalid\" : \"\")\"";
+
+    private string _searchTerm = "";
+    private bool _enableNotifications = true;
+    private bool _darkMode = false;
+    private bool _autoSave = true;
+    private string _demoEmail = "";
+    private string _demoDept = "";
+    private bool _showFormValidation = false;
+}

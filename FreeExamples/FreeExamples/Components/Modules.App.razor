@@ -29,6 +29,7 @@
 
     case "head":
         // Add any custom elements to the head tag here.
+        <link rel="stylesheet" href="@Assets["css/FreeExamples.App.css"]" />
         @* <link rel="stylesheet" href="some.css" /> *@
         @* <link rel="stylesheet" href="@(applicationUrl + "_content/Path/To/CSS.css?v=" + appVersion)" /> *@
         break;
@@ -41,6 +42,7 @@
 
     case "bodymiddle":
         // Add any custom elements to the middle of the body tag here.
+        <FreeExamples_App_Modules Module="body" />
         break;
 
     case "bodybottom":

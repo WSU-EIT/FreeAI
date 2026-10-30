@@ -1,0 +1,60 @@
+﻿@inject BlazorDataModel Model
+
+@{
+    var info = FindCurrentPage();
+}
+
+@if (info.Current != null) {
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 py-2 px-3 bg-light rounded border">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item">
+                    <a href="@Helpers.BuildUrl("Examples/Dashboard")"><i class="fa-solid fa-grid-2 me-1"></i>Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="@Helpers.BuildUrl("Examples/Dashboard")">@info.Current.Category</a>
+                </li>
+                @if (info.Current.ParentTitle != null) {
+                    <li class="breadcrumb-item">
+                        <a href="@Helpers.BuildUrl(info.Current.ParentRoute!)">@info.Current.ParentTitle</a>
+                    </li>
+                }
+                <li class="breadcrumb-item active" aria-current="page">@info.Current.Title</li>
+            </ol>
+        </nav>
+        <div class="d-flex gap-1 align-items-center">
+            @if (info.Prev != null) {
+                <a href="@Helpers.BuildUrl(info.Prev.Route)" class="btn btn-outline-primary btn-sm" title="@info.Prev.Title">
+                    <i class="fa-solid fa-chevron-left me-1"></i>Prev
+                </a>
+            } else {
+                <span class="btn btn-outline-secondary btn-sm disabled"><i class="fa-solid fa-chevron-left me-1"></i>Prev</span>
+            }
+            <a href="@Helpers.BuildUrl("Examples/Dashboard")" class="btn btn-outline-dark btn-sm" title="Back to Examples Dashboard">
+                <i class="fa-solid fa-grid-2 me-1"></i>All
+            </a>
+            @if (info.Next != null) {
+                <a href="@Helpers.BuildUrl(info.Next.Route)" class="btn btn-outline-primary btn-sm" title="@info.Next.Title">
+                    Next<i class="fa-solid fa-chevron-right ms-1"></i>
+                </a>
+            } else {
+                <span class="btn btn-outline-secondary btn-sm disabled">Next<i class="fa-solid fa-chevron-right ms-1"></i></span>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private (FreeExamplesExamplePageInfo? Current, FreeExamplesExamplePageInfo? Prev, FreeExamplesExamplePageInfo? Next) FindCurrentPage()
+    {
+        var idx = _pages.FindIndex(p => p.PageName == Model.View);
+        if (idx < 0) return (null, null, null);
+        return (
+            _pages[idx],
+            idx > 0 ? _pages[idx - 1] : null,
+            idx < _pages.Count - 1 ? _pages[idx + 1] : null
+        );
+    }
+
+    private static List<FreeExamplesExamplePageInfo> _pages => FreeExamplesExampleCatalog.Pages;
+}

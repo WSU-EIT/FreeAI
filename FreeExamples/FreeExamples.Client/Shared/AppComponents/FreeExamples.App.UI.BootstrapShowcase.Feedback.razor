@@ -1,0 +1,109 @@
+﻿@inject BlazorDataModel Model
+
+        @if (Active) {
+            <div id="tab-feedback" role="tabpanel" aria-labelledby="tabs-heading">
+
+            @* Toast Notifications — ToastMessages pattern *@
+            <div class="mb-4">
+                <h6>Toast Notifications
+                    <FreeExamples_App_UI_InfoTip Title="Toast Notifications"
+                            Description="A toast is a brief message that pops up at the top of the page and fades away after a few seconds (like bread popping out of a toaster). It confirms that an action worked (Saved!) or warns about a problem. The Model.AddMessage() method triggers the toast from anywhere in code."
+                            Code="@_codeToast" />
+                </h6>
+                <p class="small text-muted">Trigger toast messages using the framework's <code>Model.AddMessage()</code> pattern.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-success btn-sm" @onclick="@(() => Model.AddMessage("Item saved successfully!", MessageType.Success))">
+                        <i class="fa fa-check me-1" aria-hidden="true"></i> Success Toast
+                    </button>
+                    <button class="btn btn-danger btn-sm" @onclick="@(() => Model.AddMessage("Something went wrong.", MessageType.Danger))">
+                        <i class="fa fa-times me-1" aria-hidden="true"></i> Error Toast
+                    </button>
+                    <button class="btn btn-warning btn-sm" @onclick="@(() => Model.AddMessage("Please review before saving.", MessageType.Warning))">
+                        <i class="fa fa-exclamation-triangle me-1" aria-hidden="true"></i> Warning Toast
+                    </button>
+                    <button class="btn btn-info btn-sm" @onclick="@(() => Model.AddMessage("New items are available.", MessageType.Info))">
+                        <i class="fa fa-info-circle me-1" aria-hidden="true"></i> Info Toast
+                    </button>
+                </div>
+            </div>
+
+            @* Loading / Spinner Variants *@
+            <div class="mb-4">
+                <h6>Loading Spinners</h6>
+                <p class="small text-muted">Various spinner patterns used for loading states. Pattern from FreeCICD Wizard.</p>
+                <div class="d-flex flex-wrap gap-4 align-items-center">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status" aria-label="Loading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="small text-muted mt-1">Border</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="spinner-grow text-success" role="status" aria-label="Loading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="small text-muted mt-1">Grow</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="spinner-border spinner-border-sm text-danger" role="status" aria-label="Loading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="small text-muted mt-1">Small</div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-sm" disabled>
+                            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                            Saving...
+                        </button>
+                        <div class="small text-muted mt-1">In Button</div>
+                    </div>
+                </div>
+            </div>
+
+            @* Alert Variants *@
+            <div class="mb-4">
+                <h6>Alert Variants</h6>
+                <p class="small text-muted">Standard Bootstrap alerts with dismiss and icons.</p>
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <i class="fa fa-check-circle me-2" aria-hidden="true"></i>
+                    <div>Changes saved successfully.</div>
+                </div>
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="fa fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                    <div>This action cannot be undone.</div>
+                </div>
+                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <i class="fa fa-times-circle me-2" aria-hidden="true"></i>
+                    <div>Connection lost. Retrying...</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fa fa-info-circle me-2" aria-hidden="true"></i>
+                    <div>Tip: Use <kbd>Ctrl+S</kbd> to save quickly.</div>
+                </div>
+            </div>
+
+            @* Empty State Placeholder *@
+            <div class="mb-4">
+                <h6>Empty State Placeholder</h6>
+                <p class="small text-muted">Pattern for when there is no data to display.</p>
+                <div class="card border-dashed border-2 bg-light">
+                    <div class="card-body text-center py-5">
+                        <i class="fa fa-inbox fa-3x text-muted mb-3" aria-hidden="true"></i>
+                        <h6 class="text-muted">No Items Found</h6>
+                        <p class="small text-muted mb-3">There are no items matching your criteria. Try adjusting your filters or create a new item.</p>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus me-1" aria-hidden="true"></i> Create Item
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        }
+
+@code {
+    [Parameter] public bool Active { get; set; }
+
+    private string _codeToast = "Model.AddMessage(\"Saved!\", MessageType.Success)";
+}

@@ -1,0 +1,279 @@
+@page "/Examples/BootstrapShowcase"
+@page "/{TenantCode}/Examples/BootstrapShowcase"
+@inherits FreeExamplesFilteredExamplePage
+@inject Radzen.DialogService DialogService
+
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">Bootstrap Showcase</h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <i class="fa-solid fa-palette me-1"></i> Bootstrap Showcase
+                <StickyMenuIcon />
+            </h1>
+        </div>
+
+        <FreeExamples_App_UI_ExampleNav />
+
+        <FreeExamples_App_UI_AboutSection Title="About Bootstrap Showcase" Subtitle="Learn the building blocks that make web pages look professional" IconClass="fa-solid fa-palette">
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-info"><i class="fa-solid fa-question-circle me-1"></i>What Is This Page?</h6>
+                    <p class="small text-muted mb-0">
+                        <strong>Bootstrap</strong> is a free toolkit of pre-built designs (buttons, cards, tabs, alerts)
+                        that web developers use so they don't have to design everything from scratch. Think of it like
+                        a LEGO set — you snap together pre-made pieces to build a professional-looking page.
+                        This page shows the most common Bootstrap pieces used across our projects.
+                    </p>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-info"><i class="fa-solid fa-lightbulb me-1"></i>What You'll Learn</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li><strong>Cards</strong> — rectangular boxes with a header, body, and optional footer</li>
+                        <li><strong>Badges</strong> — small colored labels like "Active" or "Draft"</li>
+                        <li><strong>Modals</strong> — popup dialog boxes that appear on top of the page</li>
+                        <li><strong>Form validation</strong> — showing error messages when required fields are empty</li>
+                        <li><strong>Toasts</strong> — brief notification messages that appear and fade away</li>
+                        <li><strong>Accordions</strong> — collapsible sections you click to expand</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <h6 class="text-info"><i class="fa-solid fa-road me-1"></i>How Does It Work?</h6>
+                    <p class="small text-muted mb-0">
+                        Bootstrap works by adding <strong>CSS classes</strong> to HTML elements. A CSS class is like a
+                        label that tells the browser how to style something. For example, adding <code>class="btn btn-primary"</code>
+                        to a <code>&lt;button&gt;</code> turns it into a styled blue button. No custom design code needed —
+                        Bootstrap's stylesheet handles the colors, sizes, and spacing for you.
+                    </p>
+                </div>
+            </div>
+        </FreeExamples_App_UI_AboutSection>
+
+        @* Tabs Demo *@
+        <h5 class="mb-3" id="tabs-heading">Tabs
+            <FreeExamples_App_UI_InfoTip Title="Tabs Navigation"
+                    Description="Tabs organize content into panels. Only one tab panel is visible at a time. When you click a tab, Blazor updates a _activeTab variable and re-renders to show the matching panel. The aria-selected attribute tells screen readers which tab is active."
+                    Code="@_codeTabs" />
+        </h5>
+        <ul class="nav nav-tabs mb-3" role="tablist" aria-labelledby="tabs-heading">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "cards" ? "active" : "")" @onclick="@(() => _activeTab = "cards")" role="tab" aria-selected="@(_activeTab == "cards")" aria-controls="tab-cards">
+                    Status Cards
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "badges" ? "active" : "")" @onclick="@(() => _activeTab = "badges")" role="tab" aria-selected="@(_activeTab == "badges")" aria-controls="tab-badges">
+                    Badges & Status
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "modals" ? "active" : "")" @onclick="@(() => _activeTab = "modals")" role="tab" aria-selected="@(_activeTab == "modals")" aria-controls="tab-modals">
+                    Modals & Dialogs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "forms" ? "active" : "")" @onclick="@(() => _activeTab = "forms")" role="tab" aria-selected="@(_activeTab == "forms")" aria-controls="tab-forms">
+                    Forms & Inputs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "layout" ? "active" : "")" @onclick="@(() => _activeTab = "layout")" role="tab" aria-selected="@(_activeTab == "layout")" aria-controls="tab-layout">
+                    Layout Patterns
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(_activeTab == "feedback" ? "active" : "")" @onclick="@(() => _activeTab = "feedback")" role="tab" aria-selected="@(_activeTab == "feedback")" aria-controls="tab-feedback">
+                    Feedback & Alerts
+                </button>
+            </li>
+        </ul>
+
+        @if (_activeTab == "cards") {
+            <div id="tab-cards" role="tabpanel" aria-labelledby="tabs-heading">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-4">
+                @foreach (var item in _items.Take(6)) {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0" role="article" aria-label="@item.Name">
+                            <div class="card-header bg-white border-bottom-0 py-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h6 class="card-title mb-0 text-truncate" style="max-width:180px;">@item.Name</h6>
+                                    <span class="badge @GetBadge(item.Status)" aria-label="Status: @item.Status">@item.Status</span>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="small text-muted mb-1"><i class="fa fa-folder me-1" aria-hidden="true"></i>@item.Category</div>
+                                <div class="small text-muted"><i class="fa fa-dollar-sign me-1" aria-hidden="true"></i>@item.Amount.ToString("C")</div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="@(() => OnEditClicked(item))" title="Edit @item.Name" aria-label="Edit @item.Name"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                                    <FreeExamples_App_UI_InfoTip Title="Two-Click Delete (Card)"
+                                            Description="The trash icon starts the delete. When clicked, it changes to show Cancel and Confirm buttons. You must click Confirm to actually delete. This prevents accidents — especially important on touch screens where taps can be imprecise."
+                                            Code="@_codeTwoClickDelete" />
+                                @if (_confirmDeleteId == item.SampleItemId) {
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="CancelDelete" title="Cancel delete" aria-label="Cancel delete">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => ConfirmDelete(item))" title="Confirm delete @item.Name" aria-label="Confirm delete @item.Name">
+                                        <i class="fa fa-check me-1" aria-hidden="true"></i> Confirm
+                                    </button>
+                                } else {
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="@(() => RequestDelete(item))" title="Delete @item.Name" aria-label="Delete @item.Name"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            </div>
+        }
+
+        @if (_activeTab == "badges") {
+            <div id="tab-badges" role="tabpanel" aria-labelledby="tabs-heading">
+            <div class="mb-4">
+                <h6>Status Badges
+                    <FreeExamples_App_UI_InfoTip Title="Status Badges"
+                            Description="A badge is a small colored label. The color communicates meaning at a glance: green = good/active, red = error/failed, yellow = warning/draft, grey = archived. The CSS class bg-success, bg-danger, etc. sets the color. Badges are used everywhere."
+                            Code="@_codeBadges" />
+                </h6>
+                <span class="badge bg-success me-1" role="status">Active</span>
+                <span class="badge bg-danger me-1" role="status">Failed</span>
+                <span class="badge bg-primary me-1" role="status">Running</span>
+                <span class="badge bg-warning text-dark me-1" role="status">Draft</span>
+                <span class="badge bg-secondary me-1" role="status">Archived</span>
+                <span class="badge bg-info me-1" role="status">Completed</span>
+            </div>
+            <div class="mb-4">
+                <h6>Priority Badges</h6>
+                @for (int i = 1; i <= 5; i++) {
+                    <span class="badge bg-primary me-1" role="status">Priority @i</span>
+                }
+            </div>
+            <div class="mb-4">
+                <h6>Boolean Icons</h6>
+                <div>Enabled: @Helpers.BooleanToIcon(true)</div>
+                <div>Disabled: @Helpers.BooleanToIcon(false)</div>
+            </div>
+            </div>
+        }
+
+        @if (_activeTab == "modals") {
+            <div id="tab-modals" role="tabpanel" aria-labelledby="tabs-heading">
+            <div class="mb-4">
+                <h6>Radzen Dialog
+                    <FreeExamples_App_UI_InfoTip Title="Modal Dialog"
+                            Description="A modal is a popup window that appears on top of the page and blocks interaction with everything behind it. It focuses your attention on one task (like confirming a delete or entering information). Clicking outside or pressing Escape closes it."
+                            Code="@_codeModal" />
+                </h6>
+                <p class="small text-muted">Click to open a modal dialog.</p>
+                <button class="btn btn-primary" @onclick="OpenDialog" aria-label="Open example dialog">
+                    <i class="fa-solid fa-window-restore me-1" aria-hidden="true"></i> Open Dialog
+                </button>
+            </div>
+            <div class="mb-4">
+                <h6>Delete Confirmation</h6>
+                <p class="small text-muted">Two-click delete pattern: Delete → Confirm Delete.</p>
+                <DeleteConfirmation OnConfirmed="OnDeleteConfirmed"
+                        CancelText="@Helpers.ConfirmButtonTextCancel"
+                        DeleteText="@Helpers.ConfirmButtonTextDelete"
+                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+            </div>
+            </div>
+        }
+
+        @* === Forms & Inputs Tab === *@
+        <FreeExamples_App_UI_BootstrapShowcase_Forms Active="@(_activeTab == "forms")" />
+
+        @* === Layout Patterns Tab === *@
+        <FreeExamples_App_UI_BootstrapShowcase_Layout Items="_items" Active="@(_activeTab == "layout")" />
+
+        @* === Feedback & Alerts Tab === *@
+        <FreeExamples_App_UI_BootstrapShowcase_Feedback Active="@(_activeTab == "feedback")" />
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private bool _loadedData = false;
+    protected override string PageName => "bootstrapshowcase";
+    private string _codeTabs = "<button class=\"nav-link @(_activeTab == \"cards\" ? \"active\" : \"\")\" @onclick=\"...\">Status Cards</button>";
+    private string _codeTwoClickDelete = "@if (_confirmDeleteId == item.Id) {\n    <button class=\"btn-danger\">Confirm</button>\n}";
+    private string _codeBadges = "<span class=\"badge bg-success\">Active</span>";
+    private string _codeModal = "await DialogService.OpenAsync<GetInputDialog>(\"Dialog Title\", ...)";
+    private string _activeTab = "cards";
+    private List<DataObjects.SampleItem> _items = new();
+    private Guid? _confirmDeleteId;
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) Model.TenantCodeFromUrl = TenantCode;
+
+        if (Model.Loaded && Model.LoggedIn && !_loadedData) {
+            _loadedData = true;
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        var result = await Helpers.GetOrPost<List<DataObjects.SampleItem>>("api/Data/GetSampleItems", new List<Guid>());
+        if (result != null) _items = result;
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task OpenDialog()
+    {
+        await DialogService.OpenAsync<GetInputDialog>(
+            "Example Dialog",
+            new Dictionary<string, object> { { "Message", "This is a Radzen DialogService example." } },
+            new Radzen.DialogOptions { Width = "400px", Height = "auto" });
+    }
+
+    private void OnDeleteConfirmed()
+    {
+        Model.AddMessage("Delete confirmed! (demo only — nothing was actually deleted)", MessageType.Success);
+    }
+
+    private void OnEditClicked(DataObjects.SampleItem item)
+    {
+        Helpers.NavigateTo("Examples/EditSampleItem/" + item.SampleItemId.ToString());
+    }
+
+    private void RequestDelete(DataObjects.SampleItem item)
+    {
+        _confirmDeleteId = item.SampleItemId;
+        StateHasChanged();
+    }
+
+    private void CancelDelete()
+    {
+        _confirmDeleteId = null;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmDelete(DataObjects.SampleItem item)
+    {
+        var result = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSampleItems", new List<Guid> { item.SampleItemId });
+        if (result != null && result.Result) {
+            _items.Remove(item);
+            Model.AddMessage($"Deleted '{item.Name}'.", MessageType.Success);
+        } else {
+            Model.AddMessage($"Failed to delete '{item.Name}'.", MessageType.Danger);
+        }
+        _confirmDeleteId = null;
+        StateHasChanged();
+    }
+
+    internal static string GetBadge(DataObjects.SampleItemStatus status) => status switch {
+        DataObjects.SampleItemStatus.Active => "bg-success",
+        DataObjects.SampleItemStatus.Completed => "bg-info",
+        DataObjects.SampleItemStatus.Archived => "bg-secondary",
+        _ => "bg-warning text-dark",
+    };
+
+}

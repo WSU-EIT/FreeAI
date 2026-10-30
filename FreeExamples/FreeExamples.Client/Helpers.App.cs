@@ -4,11 +4,7 @@ public static partial class Helpers
 {
     public static Dictionary<string, List<string>> AppIcons {
         get {
-            Dictionary<string, List<string>> icons = new Dictionary<string, List<string>> {
-                { "fa:fa-solid fa-home", new List<string> { "IconName1", "IconName2" }},
-            };
-
-            return icons;
+            return FreeExamplesAppIcons;
         }
     }
 
@@ -163,6 +159,7 @@ public static partial class Helpers
             //    });
             //}
 
+            output.AddRange(Helpers.FreeExamplesMenuItemsApp);
             return output;
         }
     }
@@ -179,6 +176,7 @@ public static partial class Helpers
     public static async Task ProcessSignalRUpdateApp(DataObjects.SignalRUpdate update)
     {
         // Process any SignalR updates specific to your app here. See the main ProcessSignalRUpdate method for an example in the MainLayout.razor page.
+        if (await FreeExamplesProcessSignalRUpdateApp(update)) { return; }
 
         if (update != null && (update.TenantId == null || update.TenantId == Model.TenantId)) {
             var itemId = update.ItemId;
