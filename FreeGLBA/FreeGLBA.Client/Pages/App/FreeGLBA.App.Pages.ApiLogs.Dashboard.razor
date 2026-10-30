@@ -1,0 +1,9 @@
+﻿@* FreeGLBA.App.Pages.ApiLogs.Dashboard.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.ApiLogs.Dashboard.razor. *@
+@page "/ApiLogs/Dashboard"
+@page "/{TenantCode}/ApiLogs/Dashboard"
+
+<FreeGLBA_App_UI_ApiLogs_Dashboard TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

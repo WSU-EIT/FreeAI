@@ -1,0 +1,16 @@
+@* FreeGLBA.App.Pages.AccessEvents.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.AccessEvents.razor. *@
+@page "/AccessEvents"
+@page "/AccessEvents/{SelectedEventId:guid}"
+@page "/{TenantCode}/AccessEvents"
+@page "/{TenantCode}/AccessEvents/{SelectedEventId:guid}"
+
+<FreeGLBA_App_UI_AccessEvents TenantCode="@TenantCode" SelectedEventId="@SelectedEventId" UserIdFromQuery="@UserIdFromQuery" SubjectIdFromQuery="@SubjectIdFromQuery" SystemFromQuery="@SystemFromQuery" SearchFromQuery="@SearchFromQuery" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+    [Parameter] public Guid? SelectedEventId { get; set; }
+    [SupplyParameterFromQuery(Name = "userId")] public string? UserIdFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "subjectId")] public string? SubjectIdFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "system")] public string? SystemFromQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "search")] public string? SearchFromQuery { get; set; }
+}

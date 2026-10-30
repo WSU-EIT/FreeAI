@@ -1,0 +1,325 @@
+@* FreeGLBA.App.UI.AccessEvents.Detail.razor - Detail panel for the selected access event: accessor, subject (with the multi-subject list), data ownership and access details.
+   The page owns the selection; this panel only displays it. *@
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-file-lines me-2"></i>Event Details
+                    </h5>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="Close">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Accessed At</label>
+                            <div><strong>@Item.AccessedAt.ToLocalTime().ToString("MMM dd, yyyy h:mm:ss tt")</strong></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Received At</label>
+                            <div>@Item.ReceivedAt.ToLocalTime().ToString("MMM dd, yyyy h:mm:ss tt")</div>
+                        </div>
+                    </div>
+                    
+                    <hr />
+                    <h6 class="text-muted">Accessor (Who)</h6>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">User ID</label>
+                            <div>
+                                <a href="@Helpers.BuildUrl($"Accessors?search={Uri.EscapeDataString(Item.UserId)}")"
+                                        title="View this user's accessor profile">
+                                    <strong>@Item.UserId</strong>
+                                    <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">User Name</label>
+                            <div>@(string.IsNullOrEmpty(Item.UserName) ? "-" : Item.UserName)</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Email</label>
+                            <div>@(string.IsNullOrEmpty(Item.UserEmail) ? "-" : Item.UserEmail)</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Department</label>
+                            <div>@(string.IsNullOrEmpty(Item.UserDepartment) ? "-" : Item.UserDepartment)</div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <h6 class="text-muted">Subject (Whose Data)</h6>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Subject ID</label>
+                            <div>
+                                @if (Item.SubjectId == "SYSTEM") {
+                                    <span class="badge bg-secondary">SYSTEM</span>
+                                } else {
+                                    <a href="@AppGrid.SubjectUrl(Item.SubjectId)">
+                                        <strong>@Item.SubjectId</strong>
+                                        <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Subject Type</label>
+                            <div>@(string.IsNullOrEmpty(Item.SubjectType) ? "-" : Item.SubjectType)</div>
+                        </div>
+                    </div>
+                    @if (Item.SubjectCount > 1) {
+                        <div class="alert alert-warning py-2 mb-0">
+                            <div class="d-flex justify-content-between align-items-center cursor-pointer" 
+                                    @onclick="ToggleSubjectsList">
+                                <span>
+                                    <i class="fa-solid fa-users me-1"></i>
+                                    This event involved <strong>@Item.SubjectCount subjects</strong>
+                                </span>
+                                <i class="fa-solid @(_subjectsExpanded ? "fa-chevron-up" : "fa-chevron-down")"></i>
+                            </div>
+                            @if (_subjectsExpanded && _parsedSubjectIds.Count > 0) {
+                                <div class="mt-2 pt-2 border-top">
+                                    <div class="table-responsive" style="max-height: 300px;">
+                                        <table class="table table-sm table-hover mb-0">
+                                            <thead class="table-light sticky-top">
+                                                <tr>
+                                                    <th style="width: 50px;">#</th>
+                                                    <th>Subject ID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{ var startIndex = (_subjectsPage - 1) * _subjectsPageSize; }
+                                                @foreach (var (subjectId, index) in GetPagedSubjects()) {
+                                                    <tr>
+                                                        <td class="text-muted">@(startIndex + index + 1)</td>
+                                                        <td>
+                                                            <a href="@AppGrid.SubjectUrl(subjectId)">@subjectId</a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @if (SubjectsTotalPages > 1) {
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                                            <small class="text-muted">
+                                                @(startIndex + 1)-@Math.Min(startIndex + _subjectsPageSize, _parsedSubjectIds.Count) of @_parsedSubjectIds.Count
+                                            </small>
+                                            <nav>
+                                                <ul class="pagination pagination-sm mb-0">
+                                                    <li class="page-item @(_subjectsPage <= 1 ? "disabled" : "")">
+                                                        <button class="page-link py-0" @onclick="@(() => _subjectsPage--)" 
+                                                                disabled="@(_subjectsPage <= 1)">
+                                                            <i class="fa-solid fa-angle-left"></i>
+                                                        </button>
+                                                    </li>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link py-0">@_subjectsPage / @SubjectsTotalPages</span>
+                                                    </li>
+                                                    <li class="page-item @(_subjectsPage >= SubjectsTotalPages ? "disabled" : "")">
+                                                        <button class="page-link py-0" @onclick="@(() => _subjectsPage++)" 
+                                                                disabled="@(_subjectsPage >= SubjectsTotalPages)">
+                                                            <i class="fa-solid fa-angle-right"></i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <hr />
+                    <h6 class="text-muted"><i class="fa-solid fa-user-shield me-1" aria-hidden="true"></i>Data Ownership</h6>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Owner at Time of Access</label>
+                            @if (!string.IsNullOrEmpty(Item.DataOwnerName) || !string.IsNullOrEmpty(Item.DataOwnerEmail)) {
+                                <div>
+                                    <strong>@Item.DataOwnerName</strong>
+                                    @if (!string.IsNullOrEmpty(Item.DataOwnerDepartment)) {
+                                        <br /><small class="text-muted">@Item.DataOwnerDepartment</small>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Item.DataOwnerEmail)) {
+                                        <br /><a href="mailto:@Item.DataOwnerEmail" class="small">@Item.DataOwnerEmail</a>
+                                    }
+                                </div>
+                            } else {
+                                <div class="text-muted">Not recorded</div>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Current Owner</label>
+                            @if (!string.IsNullOrEmpty(Item.CurrentDataOwnerName) || !string.IsNullOrEmpty(Item.CurrentDataOwnerEmail)) {
+                                <div>
+                                    <strong>@Item.CurrentDataOwnerName</strong>
+                                    @if (!string.IsNullOrEmpty(Item.CurrentDataOwnerDepartment)) {
+                                        <br /><small class="text-muted">@Item.CurrentDataOwnerDepartment</small>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Item.CurrentDataOwnerEmail)) {
+                                        <br /><a href="mailto:@Item.CurrentDataOwnerEmail" class="small">@Item.CurrentDataOwnerEmail</a>
+                                    }
+                                </div>
+                            } else {
+                                <div class="text-muted">Not set on source system</div>
+                            }
+                        </div>
+                    </div>
+                    @if (OwnershipChangedFor(Item)) {
+                        <div class="alert alert-warning py-2 mb-3" role="status">
+                            <i class="fa-solid fa-right-left me-1" aria-hidden="true"></i>
+                            Ownership of this data has changed hands since this access was recorded.
+                        </div>
+                    }
+
+                    <hr />
+                    <h6 class="text-muted">Access Details</h6>
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <label class="form-label text-muted small mb-0">Access Type</label>
+                            <div>
+                                @{
+                                    var typeClass = Item.AccessType?.ToLower() switch {
+                                        "export" or "download" => "bg-warning text-dark",
+                                        "view" or "query" => "bg-info",
+                                        "print" => "bg-secondary",
+                                        _ => "bg-primary"
+                                    };
+                                }
+                                <span class="badge @typeClass">@Item.AccessType</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label text-muted small mb-0">Data Category</label>
+                            <div>@(string.IsNullOrEmpty(Item.DataCategory) ? "-" : Item.DataCategory)</div>
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label text-muted small mb-0">IP Address</label>
+                            <div>@(string.IsNullOrEmpty(Item.IpAddress) ? "-" : Item.IpAddress)</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0">Purpose / Justification</label>
+                        <div class="p-2 bg-light rounded">
+                            @(string.IsNullOrEmpty(Item.Purpose) ? "No purpose recorded" : Item.Purpose)
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Item.AgreementText)) {
+                        <hr />
+                        <h6 class="text-muted">
+                            <i class="fa-solid fa-file-signature me-1"></i>Privacy Agreement
+                        </h6>
+                        @if (Item.AgreementAcknowledgedAt.HasValue) {
+                            <small class="text-muted">Acknowledged at: @Item.AgreementAcknowledgedAt.Value.ToLocalTime().ToString("f")</small>
+                        }
+                        <div class="p-2 bg-light rounded small" style="max-height: 150px; overflow-y: auto;">
+                            <pre class="mb-0" style="white-space: pre-wrap;">@Item.AgreementText</pre>
+                        </div>
+                    }
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Source System</label>
+                            <div>@(string.IsNullOrEmpty(Item.SourceSystemName) ? "Unknown" : Item.SourceSystemName)</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small mb-0">Source Event ID</label>
+                            <div class="text-truncate" title="@Item.SourceEventId">
+                                @(string.IsNullOrEmpty(Item.SourceEventId) ? "-" : Item.SourceEventId)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">
+                    <i class="fa-solid fa-lock me-1"></i>
+                    Audit records are immutable and cannot be deleted.
+                </div>
+            </div>
+        </div>
+
+@code {
+    /// <summary>The event being shown.</summary>
+    [Parameter] public DataObjects.AccessEvent Item { get; set; } = new();
+
+    /// <summary>Raised when the close button is clicked.</summary>
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool _subjectsExpanded = false;
+    private List<string> _parsedSubjectIds = new();
+    private int _subjectsPage = 1;
+    private int _subjectsPageSize = 25;
+    private int SubjectsTotalPages => (int)Math.Ceiling((double)_parsedSubjectIds.Count / _subjectsPageSize);
+    private Guid _shownItemId = Guid.Empty;
+
+    protected override void OnParametersSet() {
+        // Showing a different event starts with the multi-subject list collapsed.
+        if (_shownItemId != Item.AccessEventId) {
+            _shownItemId = Item.AccessEventId;
+            _subjectsExpanded = false;
+            _parsedSubjectIds.Clear();
+            _subjectsPage = 1;
+        }
+    }
+
+    private Task Close() => OnClose.InvokeAsync();
+
+private bool OwnershipChangedFor(DataObjects.AccessEvent evt) {
+    var hasSnapshot = !string.IsNullOrEmpty(evt.DataOwnerName) || !string.IsNullOrEmpty(evt.DataOwnerEmail);
+    var hasCurrent = !string.IsNullOrEmpty(evt.CurrentDataOwnerName) || !string.IsNullOrEmpty(evt.CurrentDataOwnerEmail);
+    return hasSnapshot && hasCurrent &&
+        (!string.Equals(evt.DataOwnerName, evt.CurrentDataOwnerName, StringComparison.OrdinalIgnoreCase) ||
+         !string.Equals(evt.DataOwnerEmail, evt.CurrentDataOwnerEmail, StringComparison.OrdinalIgnoreCase));
+}
+
+    private void ToggleSubjectsList()
+    {
+        _subjectsExpanded = !_subjectsExpanded;
+        if (_subjectsExpanded && _parsedSubjectIds.Count == 0 && Item != null)
+        {
+            ParseSubjectIds();
+        }
+    }
+
+    private void ParseSubjectIds()
+    {
+        _parsedSubjectIds.Clear();
+        _subjectsPage = 1;
+        
+        if (Item == null || string.IsNullOrEmpty(Item.SubjectIds))
+            return;
+            
+        try
+        {
+            // SubjectIds is stored as a JSON array: ["STU-001", "STU-002", ...]
+            _parsedSubjectIds = System.Text.Json.JsonSerializer.Deserialize<List<string>>(Item.SubjectIds) ?? new();
+        }
+        catch
+        {
+            // Fallback: try splitting by comma if it's not valid JSON
+            _parsedSubjectIds = Item.SubjectIds
+                .Trim('[', ']')
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim().Trim('"'))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+        }
+    }
+
+    private IEnumerable<(string SubjectId, int Index)> GetPagedSubjects()
+    {
+        return _parsedSubjectIds
+            .Skip((_subjectsPage - 1) * _subjectsPageSize)
+            .Take(_subjectsPageSize)
+            .Select((id, idx) => (id, idx));
+    }
+}

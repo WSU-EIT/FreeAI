@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    FreeGLBA: package references for FreeGLBA's own code (FreeGLBA.App.Program.cs), kept here so FreeGLBA.csproj
+    stays stock FreeCRM and a framework upgrade can overwrite it. MSBuild imports this file automatically for every
+    project in this folder; the condition limits it to the server project.
+  -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreeGLBA'">
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.36" />
+  </ItemGroup>
+</Project>

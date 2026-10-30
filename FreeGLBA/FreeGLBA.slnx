@@ -8,10 +8,17 @@
     <File Path="Util.exe" />
     <File Path="UtilMacOS" />
   </Folder>
+  <Project Path="Docs/FreeGLBA.Docs.csproj" Id="626fae91-42c9-4926-9167-59b9a7ebd85e" />
   <Project Path="FreeGLBA.Client/FreeGLBA.Client.csproj" />
-  <Project Path="FreeGLBA.DataAccess/FreeGLBA.DataAccess.csproj" Id="91101D4C-06DF-4A89-9A65-466053065F96" />
-  <Project Path="FreeGLBA.DataObjects/FreeGLBA.DataObjects.csproj" Id="2DE86CEF-7F8C-4DA9-9E25-22B34241E22D" />
-  <Project Path="FreeGLBA.EFModels/FreeGLBA.EFModels.csproj" Id="CB45E896-7CD4-4B2C-8AD2-AD37A1FF887D" />
-  <Project Path="FreeGLBA.Plugins/FreeGLBA.Plugins.csproj" Id="50662D82-8835-4BF2-8348-8847A3FF93AB" />
+  <Project Path="FreeGLBA.DataAccess/FreeGLBA.DataAccess.csproj" Id="1151d3cb-ca9f-4ff7-b187-1fe77e474ad5" />
+  <Project Path="FreeGLBA.DataObjects/FreeGLBA.DataObjects.csproj" Id="2194df46-ff60-45a3-9122-212157d74f97" />
+  <Project Path="FreeGLBA.EFModels/FreeGLBA.EFModels.csproj" Id="e430ad60-09a5-4d0c-b433-24a3921978cf" />
+  <Project Path="FreeGLBA.NugetClient/FreeGLBA.NugetClient.csproj" Id="d4eb2b4c-a1c4-4fe0-815d-e876ae666d47" />
+  <Project Path="FreeGLBA.NugetClientPublisher/FreeGLBA.NugetClientPublisher.csproj" Id="16185aa7-3b7a-4269-a310-5725ef526cc2" />
+  <Project Path="FreeGLBA.Plugins/FreeGLBA.Plugins.csproj" Id="ae71eceb-cf8e-4567-87b4-632e45271a9c" />
+  <Project Path="FreeGLBA.Showcase/FreeGLBA.Showcase.csproj" />
+  <Project Path="FreeGLBA.TestClient/FreeGLBA.TestClient.csproj" />
+  <Project Path="FreeGLBA.TestClientWithNugetPackage/FreeGLBA.TestClientWithNugetPackage.csproj" Id="385cfbc0-61c0-4947-b4fc-84e9a7275946" />
+  <Project Path="FreeGLBA.Tests/FreeGLBA.Tests.csproj" />
   <Project Path="FreeGLBA/FreeGLBA.csproj" />
 </Solution>

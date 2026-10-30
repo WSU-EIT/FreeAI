@@ -1,0 +1,190 @@
+﻿# Docs
+
+Documentation project for the FreeGLBA GLBA Compliance Data Access Tracking System. Contains guides, architecture documentation, and project plans.
+
+Developed by **Enrollment Information Technology** at **Washington State University**.
+
+## Purpose
+
+This project serves as the central documentation repository:
+- **Architecture Documentation** - System design and patterns
+- **Implementation Guides** - How to customize and extend
+- **Style Guides** - Coding standards and conventions
+- **Component Documentation** - UI component usage
+- **Project Plans** - Feature roadmaps and specifications
+
+## Documentation Files
+
+### Quick Start & Guides
+
+| File | Description |
+|------|-------------|
+| `000_quickstart.md` | Getting started guide |
+| `001_roleplay.md` | Development roleplay scenarios |
+| `002_docsguide.md` | Documentation conventions |
+
+### Style & Standards
+
+| File | Description |
+|------|-------------|
+| `003_templates.md` | Code templates |
+| `004_styleguide.md` | General style guide |
+| `005_style.md` | Coding standards |
+| `005_style.comments.md` | Comment conventions |
+
+### Architecture
+
+| File | Description |
+|------|-------------|
+| `006_architecture.md` | System architecture overview |
+| `006_architecture.freecrm_overview.md` | Base framework architecture |
+| `006_architecture.unique_features.md` | FreeGLBA-specific features |
+
+### Patterns & Best Practices
+
+| File | Description |
+|------|-------------|
+| `007_patterns.md` | Design patterns used |
+| `007_patterns.helpers.md` | Helper class patterns |
+| `007_patterns.signalr.md` | SignalR patterns |
+
+### UI Components
+
+| File | Description |
+|------|-------------|
+| `008_components.md` | Component overview |
+| `008_components.highcharts.md` | Chart components |
+| `008_components.monaco.md` | Code editor component |
+| `008_components.network_chart.md` | Network visualization |
+| `008_components.razor_templates.md` | Razor component templates |
+| `008_components.signature.md` | Signature capture |
+| `008_components.wizard.md` | Wizard component |
+
+### FreeGLBA-Specific Documentation
+
+| File | Description |
+|------|-------------|
+| `FreeGLBA_DataModel_Documentation.md` | Database schema documentation |
+| `FreeGLBA_Implementation_Guide.md` | Implementation and customization guide |
+| `FreeGLBA_NuGet_Package_ProjectPlan.md` | NuGet client library project plan |
+
+## Using This Documentation
+
+### For New Developers
+
+1. Start with `000_quickstart.md`
+2. Review `006_architecture.md` for system overview
+3. Read relevant style guides before contributing
+
+### For Customization
+
+1. Review `FreeGLBA_Implementation_Guide.md`
+2. Check `006_architecture.unique_features.md` for extension points
+3. Follow patterns in `007_patterns.md`
+
+### For UI Development
+
+1. Start with `008_components.md` for component overview
+2. Review specific component docs as needed
+3. Follow `004_styleguide.md` for consistency
+
+## Contributing Documentation
+
+When adding documentation:
+
+1. Follow the naming convention: `NNN_category.topic.md`
+2. Use markdown formatting
+3. Include code examples where applicable
+4. Update this README with new files
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+**How does this work?**
+A documentation-only project (no runtime code). It holds the team's guides, style standards, architecture notes, and component docs — and, notably, the FreeGLBA-specific design docs: the database-schema doc, the implementation/customization guide, and the **NuGet client library project plan**.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Markdown reference set | The team's documentation | [the Docs project](https://github.com/WSU-EIT/FreeAI/tree/main/FreeGLBA/Docs) |
+| Platform vs. app-specific split | Separates shared FreeCRM from GLBA design | `006_architecture.freecrm_overview.md` · `006_architecture.unique_features.md` |
+
+**Why does this exist?**
+So design intent and conventions are written down next to the code, and a new developer (or auditor) can understand the system without reverse-engineering it.
+
+**What does it accomplish that other tools don't?**
+- Keeps the **shared-platform** docs and the **GLBA-specific** design (data model, NuGet plan) clearly separated.
+
+**Terminology & "can I see it?"**
+- **Data-model doc** — the human-readable description of the audit schema.
+- **Implementation guide** — how to customize/extend FreeGLBA.
+
+**The hard part, drawn** — how the doc set is organized:
+
+```
+  Docs/ ├─ 006_architecture.freecrm_overview.md   ← the shared platform
+        ├─ 006_architecture.unique_features.md    ← GLBA-specific extension points
+        ├─ FreeGLBA_DataModel_Documentation.md     ← the audit schema, explained
+        └─ FreeGLBA_NuGet_Package_ProjectPlan.md   ← the client-library plan
+```
+
+## About
+
+FreeGLBA is developed and maintained by the **Enrollment Information Technology** team at **Washington State University**.
+
+🔗 [Meet Our Staff](https://em.wsu.edu/eit/meet-our-staff/)
+
+## Project Structure
+
+```
+Docs/
+├── FreeGLBA.Docs.csproj                     # Empty project for IDE support
+├── README.md                                # This file
+│
+├── # Getting Started
+├── 000_quickstart.md
+├── 001_roleplay.md
+├── 002_docsguide.md
+│
+├── # Standards
+├── 003_templates.md
+├── 004_styleguide.md
+├── 005_style.md
+├── 005_style.comments.md
+│
+├── # Architecture
+├── 006_architecture.md
+├── 006_architecture.freecrm_overview.md
+├── 006_architecture.unique_features.md
+│
+├── # Patterns
+├── 007_patterns.md
+├── 007_patterns.helpers.md
+├── 007_patterns.signalr.md
+│
+├── # Components
+├── 008_components.md
+├── 008_components.highcharts.md
+├── 008_components.monaco.md
+├── 008_components.network_chart.md
+├── 008_components.razor_templates.md
+├── 008_components.signature.md
+├── 008_components.wizard.md
+│
+└── # FreeGLBA Specific
+    ├── FreeGLBA_DataModel_Documentation.md
+    ├── FreeGLBA_Implementation_Guide.md
+    └── FreeGLBA_NuGet_Package_ProjectPlan.md
+```
+
+## Related Projects
+
+All FreeGLBA projects have their own README files:
+
+- [FreeGLBA/FreeGLBA.App.README.md](../FreeGLBA/FreeGLBA.App.README.md) - Server application
+- [FreeGLBA.Client/FreeGLBA.App.README.md](../FreeGLBA.Client/FreeGLBA.App.README.md) - Blazor UI
+- [FreeGLBA.DataAccess/FreeGLBA.App.README.md](../FreeGLBA.DataAccess/FreeGLBA.App.README.md) - Business logic
+- [FreeGLBA.DataObjects/FreeGLBA.App.README.md](../FreeGLBA.DataObjects/FreeGLBA.App.README.md) - DTOs
+- [FreeGLBA.EFModels/FreeGLBA.App.README.md](../FreeGLBA.EFModels/FreeGLBA.App.README.md) - Database models
+- [FreeGLBA.Plugins/FreeGLBA.App.README.md](../FreeGLBA.Plugins/FreeGLBA.App.README.md) - Plugin system
+- [FreeGLBA.NugetClient/README.md](../FreeGLBA.NugetClient/README.md) - NuGet client library

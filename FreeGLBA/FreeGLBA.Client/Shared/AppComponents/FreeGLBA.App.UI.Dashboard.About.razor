@@ -1,0 +1,171 @@
+@* FreeGLBA.App.UI.Dashboard.About.razor - Collapsible "About GLBA Compliance Tracking" banner for the GLBA Dashboard.
+   The expanded state lives in the dashboard (it survives the dashboard's loading refresh): use @bind-Expanded. *@
+
+<div class="card shadow-sm mb-4 border-primary">
+    <div class="card-header bg-primary bg-opacity-10 cursor-pointer" @onclick="ToggleAsync">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-solid fa-book-open me-2 text-primary"></i>
+                <strong>About GLBA Compliance Tracking</strong>
+                <span class="text-muted ms-2">— What this system does and how to use it</span>
+            </div>
+            <button class="btn btn-sm btn-link text-primary p-0">
+                @if (Expanded) {
+                    <i class="fa-solid fa-chevron-up"></i>
+                } else {
+                    <i class="fa-solid fa-chevron-down"></i>
+                }
+            </button>
+        </div>
+    </div>
+    @if (Expanded) {
+        <div class="card-body">
+            <div class="row">
+                @* What is GLBA *@
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <h6 class="text-primary"><i class="fa-solid fa-scale-balanced me-2" aria-hidden="true"></i>What is GLBA?</h6>
+                    <p class="small text-muted mb-2">
+                        The <strong>Gramm-Leach-Bliley Act (GLBA)</strong> is a 1999 federal law that requires
+                        financial institutions to explain their information-sharing practices and safeguard
+                        sensitive customer data. Its
+                        <a href="https://www.ftc.gov/business-guidance/privacy-security/gramm-leach-bliley-act" target="_blank" rel="noopener noreferrer">FTC Safeguards Rule</a>
+                        (<a href="https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-314" target="_blank" rel="noopener noreferrer">16 CFR Part 314</a>)
+                        was amended in December 2021, with most provisions effective June 9, 2023.
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Colleges and universities participating in Title IV federal student aid are
+                        "financial institutions" under the rule. The Department of Education
+                        <a href="https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2023-02-09/updates-gramm-leach-bliley-act-cybersecurity-requirements" target="_blank" rel="noopener noreferrer">enforces it through Federal Student Aid</a>,
+                        and Safeguards Rule compliance is checked in the annual federal Single Audit.
+                    </p>
+                </div>
+
+                @* Why This System *@
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <h6 class="text-primary"><i class="fa-solid fa-bullseye me-2" aria-hidden="true"></i>Why This System?</h6>
+                    <p class="small text-muted mb-2">
+                        The Safeguards Rule requires controls "designed to <strong>monitor and log the activity
+                        of authorized users</strong> and detect unauthorized access" to customer information
+                        (16 CFR 314.4(c)(8)) — in practice: who accessed what data, and when. This system also
+                        records the <em>business purpose</em> and the <em>data owner</em> for each access, which
+                        the rule does not literally mandate but auditors routinely ask for. It provides:
+                    </p>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li>Centralized access logging from all systems</li>
+                        <li>Real-time monitoring dashboard</li>
+                        <li>Data-ownership tracking (owner then and now)</li>
+                        <li>API for automated event capture</li>
+                    </ul>
+                </div>
+
+                @* How to Use *@
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <h6 class="text-primary"><i class="fa-solid fa-list-check me-2"></i>How to Get Started</h6>
+                    <ol class="small text-muted mb-0 ps-3">
+                        <li><strong>Create Source Systems</strong> — Register each app that accesses financial data</li>
+                        <li><strong>Get API Keys</strong> — Secure authentication for each source</li>
+                        <li><strong>Send Events</strong> — POST to <code>/api/glba/events</code> when data is accessed</li>
+                        <li><strong>Monitor</strong> — Track access patterns on this dashboard</li>
+                        <li><strong>Report</strong> — Generate compliance reports as needed</li>
+                    </ol>
+                </div>
+
+                @* Quick Links *@
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <h6 class="text-primary"><i class="fa-solid fa-link me-2"></i>Quick Links</h6>
+                    <div class="d-grid gap-2">
+                        <a href="@Helpers.BuildUrl("SourceSystems")" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-server me-1"></i>Manage Source Systems
+                        </a>
+                        <a href="@Helpers.BuildUrl("AccessEvents")" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-list me-1"></i>View All Events
+                        </a>
+                        <a href="@Helpers.BuildUrl("DataSubjects")" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-users me-1"></i>Data Subjects
+                        </a>
+                        <a href="@Helpers.BuildUrl("ComplianceReports")" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-file-lines me-1"></i>Compliance Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @* Agreement Tracking *@
+            <div class="border-top pt-3 mt-2">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fa-solid fa-file-signature me-2"></i>Privacy Agreement Tracking</h6>
+                        <p class="small text-muted mb-2">
+                            Each access event can include a copy of the <strong>privacy notice or agreement</strong> 
+                            that was shown to the user when they accessed data. This captures the exact disclosure 
+                            text the user acknowledged at that moment in time.
+                        </p>
+                        <p class="small text-muted mb-0">
+                            <strong>Why this matters:</strong> During GLBA audits, you may need to prove what 
+                            disclosure was presented to users when they accessed protected data. Storing the 
+                            agreement text with each event creates an immutable record of compliance.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fa-solid fa-code me-2"></i>Include Agreement in API Calls</h6>
+                        <pre class="bg-dark text-light p-2 rounded small mb-0"><code>POST /api/glba/events
+{
+  "subjectId": "student-12345",
+  "accessType": "view",
+  "dataCategory": "financial-aid",
+  "purpose": "enrollment verification",
+  "agreementText": "I acknowledge that I am accessing 
+    protected financial data in accordance with 
+    institutional policy and GLBA requirements...",
+  "agreementAcknowledgedAt": "2025-01-15T10:30:00Z"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            @* API Integration Example *@
+            <div class="border-top pt-3 mt-2">
+                <h6 class="text-primary"><i class="fa-solid fa-code me-2"></i>Basic API Integration</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="small text-muted mb-2">Send access events from your applications:</p>
+                        <pre class="bg-dark text-light p-2 rounded small mb-0"><code>POST /api/glba/events
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "subjectId": "student-12345",
+  "accessType": "view",
+  "dataCategory": "financial-aid",
+  "purpose": "enrollment verification"
+}</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="small text-muted mb-2">Or use the .NET client library:</p>
+                        <pre class="bg-dark text-light p-2 rounded small mb-0"><code>// Install: dotnet add package FreeGLBA.Client
+
+services.AddGlbaClient(options => {
+    options.BaseUrl = "https://your-server";
+    options.ApiKey = "YOUR_API_KEY";
+});
+
+// Then inject and use:
+await glbaClient.LogAccessAsync(new GlbaEventRequest {
+    SubjectId = "student-12345",
+    AccessType = "view"
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Whether the banner body is shown.</summary>
+    [Parameter] public bool Expanded { get; set; }
+
+    [Parameter] public EventCallback<bool> ExpandedChanged { get; set; }
+
+    private Task ToggleAsync() => ExpandedChanged.InvokeAsync(!Expanded);
+}

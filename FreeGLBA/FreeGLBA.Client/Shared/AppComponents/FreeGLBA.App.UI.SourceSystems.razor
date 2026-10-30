@@ -1,0 +1,526 @@
+@* FreeGLBA.App.UI.SourceSystems.razor - List page for SourceSystem *@
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    <div class="container-fluid">
+        <div class="@Model.StickyMenuClass">
+            <FreeGLBA_App_UI_Breadcrumbs Current="Source Systems" />
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title mb-0">
+                    <i class="fa-solid fa-server me-2" aria-hidden="true"></i>Source Systems
+                </h1>
+                <button class="btn btn-primary" @onclick="CreateNew">
+                    <i class="fa-solid fa-plus me-1"></i>New Source System
+                </button>
+            </div>
+        </div>
+
+        @* About Source Systems - Collapsible Help *@
+        <FreeGLBA_App_UI_AboutSection Title="What are Source Systems?" Subtitle="Applications that send access data to this compliance tracker">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6 class="text-info"><i class="fa-solid fa-building me-1" aria-hidden="true"></i>In GLBA Terms</h6>
+                    <p class="small text-muted mb-0">
+                        A <strong>Source System</strong> is any application, database, or service within your institution
+                        that accesses protected financial information. The FTC Safeguards Rule requires you to identify
+                        the systems that store or access customer information (16 CFR 314.4(c)(1)) and to monitor and
+                        log the activity of authorized users on them (314.4(c)(8)). Each system also records a
+                        <strong>data owner</strong> — the point of contact responsible for the data it holds.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-info"><i class="fa-solid fa-list-ul me-1"></i>Examples</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li>Student Information System (Banner, PeopleSoft)</li>
+                        <li>Financial Aid Processing System</li>
+                        <li>Bursar/Billing Applications</li>
+                        <li>Payment Processing Portals</li>
+                        <li>Data Warehouse/Reporting Tools</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-info"><i class="fa-solid fa-key me-1"></i>How It Works</h6>
+                    <p class="small text-muted mb-0">
+                        Each source system gets a unique <strong>API key</strong>. When users access financial data 
+                        in that system, the application sends an event to this tracker using its API key. This creates 
+                        an audit trail showing which system reported the access.
+                    </p>
+                </div>
+            </div>
+        </FreeGLBA_App_UI_AboutSection>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body py-2">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-2">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search by name, email..."
+                                    @bind="_filter.Search" @bind:event="oninput" @bind:after="LoadData" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" @bind="_filter.PageSize" @bind:after="@(() => { _filter.Page = 1; LoadData(); })">
+                            <option value="10">10 per page</option>
+                            <option value="25">25 per page</option>
+                            <option value="50">50 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm" @bind="_activeFilter" @bind:after="@(() => { _filter.Page = 1; LoadData(); })">
+                            <option value="">All Status</option>
+                            <option value="true">Active Only</option>
+                            <option value="false">Inactive Only</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm" @bind="_sortOption" @bind:after="ApplySortOption">
+                            <option value="Name-asc">Name (A-Z)</option>
+                            <option value="Name-desc">Name (Z-A)</option>
+                            <option value="DisplayName-asc">Display Name (A-Z)</option>
+                            <option value="DisplayName-desc">Display Name (Z-A)</option>
+                            <option value="ContactEmail-asc">Contact (A-Z)</option>
+                            <option value="ContactEmail-desc">Contact (Z-A)</option>
+                            <option value="DataOwnerName-asc">Data Owner (A-Z)</option>
+                            <option value="DataOwnerName-desc">Data Owner (Z-A)</option>
+                            <option value="EventCount-desc">Most Events</option>
+                            <option value="EventCount-asc">Fewest Events</option>
+                            <option value="LastEventReceivedAt-desc">Recent Activity</option>
+                            <option value="LastEventReceivedAt-asc">Oldest Activity</option>
+                            <option value="IsActive-desc">Active First</option>
+                            <option value="IsActive-asc">Inactive First</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-sm @(_showMoreFilters ? "btn-secondary" : "btn-outline-secondary")" @onclick="() => _showMoreFilters = !_showMoreFilters">
+                            <i class="fa-solid fa-filter me-1"></i>More Filters
+                            @if (HasAdvancedFilters()) { <span class="badge bg-primary ms-1">@GetAdvancedFilterCount()</span> }
+                        </button>
+                    </div>
+                </div>
+
+                @* Advanced Filters - Expandable *@
+                @if (_showMoreFilters) {
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted mb-1">Min Events</label>
+                                <input type="number" class="form-control form-control-sm" placeholder="Min events" 
+                                        @bind="_filter.MinEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted mb-1">Max Events</label>
+                                <input type="number" class="form-control form-control-sm" placeholder="Max events" 
+                                        @bind="_filter.MaxEventCount" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted mb-1">Activity After</label>
+                                <input type="date" class="form-control form-control-sm" @bind="_filter.LastActivityAfter" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted mb-1">Activity Before</label>
+                                <input type="date" class="form-control form-control-sm" @bind="_filter.LastActivityBefore" @bind:after="@(() => { _filter.Page = 1; _ = LoadData(); })" />
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-danger" @onclick="ClearAdvancedFilters">
+                                <i class="fa-solid fa-times me-1"></i>Clear Advanced Filters
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @* Active Filter Pills *@
+                @if (HasActiveFilters()) {
+                    <div class="mt-2 d-flex flex-wrap gap-1 align-items-center">
+                        <small class="text-muted me-1">Filters:</small>
+                        @if (!string.IsNullOrWhiteSpace(_filter.Search)) {
+                            <span class="badge bg-primary d-inline-flex align-items-center">
+                                <i class="fa-solid fa-search me-1"></i>@_filter.Search
+                                <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;" 
+                                        @onclick="@(() => { _filter.Search = ""; _filter.Page = 1; _ = LoadData(); })"></button>
+                            </span>
+                        }
+                        @if (!string.IsNullOrEmpty(_activeFilter)) {
+                            <span class="badge bg-info d-inline-flex align-items-center">
+                                <i class="fa-solid fa-toggle-on me-1"></i>@(_activeFilter == "true" ? "Active" : "Inactive")
+                                <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;" 
+                                        @onclick="@(() => { _activeFilter = ""; _filter.Page = 1; _ = LoadData(); })"></button>
+                            </span>
+                        }
+                        @if (_filter.MinEventCount.HasValue || _filter.MaxEventCount.HasValue) {
+                            <span class="badge bg-warning text-dark d-inline-flex align-items-center">
+                                Events: @(_filter.MinEventCount?.ToString() ?? "0")–@(_filter.MaxEventCount?.ToString() ?? "∞")
+                                <button type="button" class="btn-close ms-1" style="font-size: 0.5rem;" 
+                                        @onclick="@(() => { _filter.MinEventCount = null; _filter.MaxEventCount = null; _filter.Page = 1; _ = LoadData(); })"></button>
+                            </span>
+                        }
+                        @if (_filter.LastActivityAfter.HasValue || _filter.LastActivityBefore.HasValue) {
+                            <span class="badge bg-warning text-dark d-inline-flex align-items-center">
+                                Activity: @(_filter.LastActivityAfter?.ToString("M/d") ?? "…")–@(_filter.LastActivityBefore?.ToString("M/d") ?? "…")
+                                <button type="button" class="btn-close ms-1" style="font-size: 0.5rem;" 
+                                        @onclick="@(() => { _filter.LastActivityAfter = null; _filter.LastActivityBefore = null; _filter.Page = 1; _ = LoadData(); })"></button>
+                            </span>
+                        }
+                        <span class="badge bg-secondary d-inline-flex align-items-center">
+                            <i class="fa-solid fa-sort me-1"></i>@GetSortDisplayName()
+                        </span>
+                        <button class="btn btn-link btn-sm text-danger p-0 ms-2" @onclick="ClearAllFilters">
+                            <i class="fa-solid fa-times me-1"></i>Clear All
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (_loading) {
+            <div class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+        } else if (_result.Records.Count == 0) {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-server fa-4x mb-3 opacity-50"></i>
+                <h4>No source systems configured</h4>
+                <p>Create a source system to start receiving events from external applications.</p>
+                <button class="btn btn-primary mt-2" @onclick="CreateNew">
+                    <i class="fa-solid fa-plus me-1"></i>Create First Source System
+                </button>
+            </div>
+        } else {
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="sortable @SortClass("Name")" @onclick="@(() => Sort("Name"))" @onkeydown="@(e => SortKeyDown(e, "Name"))" tabindex="0" aria-sort="@AriaSort("Name")">
+                                    Name <i class="fa-solid @SortIcon("Name") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("DisplayName")" @onclick="@(() => Sort("DisplayName"))" @onkeydown="@(e => SortKeyDown(e, "DisplayName"))" tabindex="0" aria-sort="@AriaSort("DisplayName")">
+                                    Display Name <i class="fa-solid @SortIcon("DisplayName") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("ContactEmail")" @onclick="@(() => Sort("ContactEmail"))" @onkeydown="@(e => SortKeyDown(e, "ContactEmail"))" tabindex="0" aria-sort="@AriaSort("ContactEmail")">
+                                    Contact <i class="fa-solid @SortIcon("ContactEmail") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("DataOwnerName")" @onclick="@(() => Sort("DataOwnerName"))" @onkeydown="@(e => SortKeyDown(e, "DataOwnerName"))" tabindex="0" aria-sort="@AriaSort("DataOwnerName")">
+                                    Data Owner <i class="fa-solid @SortIcon("DataOwnerName") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("EventCount")" @onclick="@(() => Sort("EventCount"))" @onkeydown="@(e => SortKeyDown(e, "EventCount"))" tabindex="0" aria-sort="@AriaSort("EventCount")">
+                                    Events <i class="fa-solid @SortIcon("EventCount") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("LastEventReceivedAt")" @onclick="@(() => Sort("LastEventReceivedAt"))" @onkeydown="@(e => SortKeyDown(e, "LastEventReceivedAt"))" tabindex="0" aria-sort="@AriaSort("LastEventReceivedAt")">
+                                    Last Activity <i class="fa-solid @SortIcon("LastEventReceivedAt") ms-1"></i>
+                                </th>
+                                <th class="sortable @SortClass("IsActive")" @onclick="@(() => Sort("IsActive"))" @onkeydown="@(e => SortKeyDown(e, "IsActive"))" tabindex="0" aria-sort="@AriaSort("IsActive")">
+                                    Status <i class="fa-solid @SortIcon("IsActive") ms-1"></i>
+                                </th>
+                                <th style="width: 80px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in _result.Records) {
+                                <tr class="@(item.IsActive ? "" : "table-secondary")">
+                                    <td>
+                                        <strong>@item.Name</strong>
+                                    </td>
+                                    <td>@item.DisplayName</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ContactEmail)) {
+                                            <a href="mailto:@item.ContactEmail" class="text-decoration-none">
+                                                <i class="fa-solid fa-envelope me-1"></i>@item.ContactEmail
+                                            </a>
+                                        } else {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.DataOwnerName) || !string.IsNullOrEmpty(item.DataOwnerEmail)) {
+                                            @if (!string.IsNullOrEmpty(item.DataOwnerName)) {
+                                                <span>@item.DataOwnerName</span>
+                                            }
+                                            @if (!string.IsNullOrEmpty(item.DataOwnerDepartment)) {
+                                                <br /><small class="text-muted">@item.DataOwnerDepartment</small>
+                                            }
+                                        } else {
+                                            <span class="text-warning-emphasis" title="No data owner recorded for this system">
+                                                <i class="fa-solid fa-triangle-exclamation me-1" aria-hidden="true"></i>Not set
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.EventCount > 0) {
+                                            <a href="@Helpers.BuildUrl($"AccessEvents?system={item.SourceSystemId}")"
+                                                    class="text-decoration-none" title="View this system's access events"
+                                                    aria-label="View @item.EventCount access events from @item.Name">
+                                                <span class="badge bg-info">@item.EventCount.ToString("N0")</span>
+                                            </a>
+                                        } else {
+                                            <span class="badge bg-info">0</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.LastEventReceivedAt.HasValue) {
+                                            <span title="@item.LastEventReceivedAt.Value.ToString("f")">
+                                                @AppGrid.RelativeTime(item.LastEventReceivedAt.Value)
+                                            </span>
+                                        } else {
+                                            <span class="text-muted">Never</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.IsActive) {
+                                            <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Active</span>
+                                        } else {
+                                            <span class="badge bg-secondary"><i class="fa-solid fa-pause me-1"></i>Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-info" @onclick="@(() => VerifyChain(item))" title="Verify audit-trail integrity"
+                                                    aria-label="Verify the tamper-evident hash chain for @item.Name"
+                                                    disabled="@(_verifyingId == item.SourceSystemId)">
+                                                @if (_verifyingId == item.SourceSystemId) {
+                                                    <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                                                } else {
+                                                    <i class="fa-solid fa-fingerprint" aria-hidden="true"></i>
+                                                }
+                                            </button>
+                                            <button class="btn btn-outline-primary" @onclick="@(() => Edit(item))" title="Edit">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" @onclick="@(() => ConfirmDelete(item))" title="Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                @* Pagination *@
+                <FreeGLBA_App_UI_Pagination Variant="footer" Page="_filter.Page" PageSize="_filter.PageSize" TotalRecords="_result.TotalRecords" TotalPages="_result.TotalPages" OnPageChanged="GoToPage" />
+            </div>
+        }
+    </div>
+
+    @if (_showEdit) {
+        <FreeGLBA_App_UI_SourceSystems_Edit Item="_editItem" OnSave="SaveItem" OnCancel="CloseEdit" />
+    }
+
+    @* Chain Verification Result Modal *@
+    <FreeGLBA_App_UI_SourceSystems_ChainVerification Result="_verifyResult" OnClose="@(() => _verifyResult = null)" />
+
+    @* Delete Confirmation Modal *@
+    @if (_showDeleteConfirm) {
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title"><i class="fa-solid fa-triangle-exclamation me-2"></i>Confirm Delete</h5>
+                        <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete <strong>@_deleteItem?.DisplayName</strong>?</p>
+                        <p class="text-muted small">
+                            A source system with recorded access events cannot be deleted — the audit trail is preserved.
+                            Deactivate it instead to stop accepting new events.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteConfirmed">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+[Parameter] public string? TenantCode { get; set; }
+    
+private string _pageName = "sourcesystems";
+private bool _loading = true;
+private bool _showMoreFilters = false;
+private DataObjects.SourceSystemFilter _filter = new() { SortColumn = "Name", SortDescending = false };
+private DataObjects.SourceSystemFilterResult _result = new();
+private string _activeFilter = "";
+private string _sortOption = "Name-asc";
+private bool _showEdit = false;
+private DataObjects.SourceSystem _editItem = new();
+private bool _showDeleteConfirm = false;
+private DataObjects.SourceSystem? _deleteItem = null;
+
+public void Dispose() {
+    Model.OnChange -= StateHasChanged;
+    Model.OnGlbaUpdate -= OnGlbaUpdate;
+}
+
+protected override void OnInitialized() {
+    Model.View = _pageName;
+    Model.OnChange += StateHasChanged;
+    Model.OnGlbaUpdate += OnGlbaUpdate;
+}
+
+private void OnGlbaUpdate(DataObjects.SignalRUpdate update) {
+    // Refresh live when events arrive (counts/last-activity change) or a system is edited.
+    _ = InvokeAsync(LoadData);
+}
+
+private Guid _verifyingId = Guid.Empty;
+private DataObjects.ChainVerificationResult? _verifyResult = null;
+
+/// <summary>Runs tamper-evidence verification for one source system's event chain.</summary>
+private async Task VerifyChain(DataObjects.SourceSystem item) {
+    _verifyingId = item.SourceSystemId;
+    StateHasChanged();
+    try {
+        _verifyResult = await Helpers.GetOrPost<DataObjects.ChainVerificationResult>(
+            DataObjects.Endpoints.FreeGLBA.VerifyAccessEventChain, item.SourceSystemId);
+        if (_verifyResult == null) {
+            Model.ErrorMessages(new List<string> { "Verification failed to run. Please try again." });
+        }
+    } finally {
+        _verifyingId = Guid.Empty;
+        StateHasChanged();
+    }
+}
+
+protected override async Task OnAfterRenderAsync(bool firstRender) {
+    if (firstRender) await LoadData();
+}
+
+private async Task LoadData() {
+    _loading = true;
+    StateHasChanged();
+        
+    _filter.IsActiveFilter = _activeFilter switch {
+        "true" => true,
+        "false" => false,
+        _ => null
+    };
+        
+    _result = await Helpers.GetOrPost<DataObjects.SourceSystemFilterResult>(
+        DataObjects.Endpoints.FreeGLBA.GetSourceSystems, _filter) ?? new();
+    _loading = false;
+    StateHasChanged();
+}
+
+private bool HasActiveFilters() => 
+    !string.IsNullOrWhiteSpace(_filter.Search) || 
+    !string.IsNullOrEmpty(_activeFilter) ||
+    HasAdvancedFilters();
+
+private bool HasAdvancedFilters() =>
+    _filter.MinEventCount.HasValue || _filter.MaxEventCount.HasValue ||
+    _filter.LastActivityAfter.HasValue || _filter.LastActivityBefore.HasValue;
+
+private int GetAdvancedFilterCount() {
+    int count = 0;
+    if (_filter.MinEventCount.HasValue || _filter.MaxEventCount.HasValue) count++;
+    if (_filter.LastActivityAfter.HasValue || _filter.LastActivityBefore.HasValue) count++;
+    return count;
+}
+
+private void ClearAdvancedFilters() {
+    _filter.MinEventCount = null;
+    _filter.MaxEventCount = null;
+    _filter.LastActivityAfter = null;
+    _filter.LastActivityBefore = null;
+    _filter.Page = 1;
+    _ = LoadData();
+}
+
+private void ClearAllFilters() {
+    _filter.Search = "";
+    _activeFilter = "";
+    _sortOption = "Name-asc";
+    _filter.SortColumn = "Name";
+    _filter.SortDescending = false;
+    ClearAdvancedFilters();
+}
+
+private void ApplySortOption() {
+    var parts = _sortOption.Split('-');
+    if (parts.Length == 2) {
+        _filter.SortColumn = parts[0];
+        _filter.SortDescending = parts[1] == "desc";
+        _filter.Page = 1;
+        _ = LoadData();
+    }
+}
+
+private string GetSortDisplayName() => _sortOption switch {
+    "Name-asc" => "Name (A-Z)",
+    "Name-desc" => "Name (Z-A)",
+    "DisplayName-asc" => "Display Name (A-Z)",
+    "DisplayName-desc" => "Display Name (Z-A)",
+    "ContactEmail-asc" => "Contact (A-Z)",
+    "ContactEmail-desc" => "Contact (Z-A)",
+    "DataOwnerName-asc" => "Data Owner (A-Z)",
+    "DataOwnerName-desc" => "Data Owner (Z-A)",
+    "EventCount-desc" => "Most Events",
+    "EventCount-asc" => "Fewest Events",
+    "LastEventReceivedAt-desc" => "Recent Activity",
+    "LastEventReceivedAt-asc" => "Oldest Activity",
+    "IsActive-desc" => "Active First",
+    "IsActive-asc" => "Inactive First",
+    _ => "Custom"
+};
+
+private void Sort(string column) {
+    if (_filter.SortColumn == column) {
+        _filter.SortDescending = !_filter.SortDescending;
+    } else {
+        _filter.SortColumn = column;
+        _filter.SortDescending = column == "EventCount" || column == "LastEventReceivedAt";
+    }
+    _sortOption = $"{column}-{(_filter.SortDescending ? "desc" : "asc")}";
+    _filter.Page = 1;
+    _ = LoadData();
+}
+
+    /// <summary>Keyboard support for the clickable sort headers (Enter or Space).</summary>
+    private void SortKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e, string column) {
+        if (AppGrid.IsSortKey(e)) { Sort(column); }
+    }
+
+    /// <summary>aria-sort value for a sortable column header.</summary>
+    private string AriaSort(string column) => AppGrid.AriaSort(_filter.SortColumn, _filter.SortDescending, column);
+
+private string SortClass(string column) => AppGrid.SortClass(_filter.SortColumn, column);
+private string SortIcon(string column) => AppGrid.SortIcon(_filter.SortColumn, _filter.SortDescending, column);
+
+private async Task GoToPage(int page) {
+    _filter.Page = page;
+        await LoadData();
+    }
+
+    private void CreateNew() { _editItem = new DataObjects.SourceSystem(); _showEdit = true; }
+    private void Edit(DataObjects.SourceSystem item) { _editItem = item; _showEdit = true; }
+    private void CloseEdit() { _showEdit = false; }
+
+    private async Task SaveItem(DataObjects.SourceSystem item) {
+        await Helpers.GetOrPost<DataObjects.SourceSystem>(DataObjects.Endpoints.FreeGLBA.SaveSourceSystem, item);
+        _showEdit = false;
+        await LoadData();
+    }
+
+    private void ConfirmDelete(DataObjects.SourceSystem item) { _deleteItem = item; _showDeleteConfirm = true; }
+    private void CancelDelete() { _deleteItem = null; _showDeleteConfirm = false; }
+
+    private async Task DeleteConfirmed() {
+        if (_deleteItem != null) {
+            var deleted = await Helpers.GetOrPost<bool>(DataObjects.Endpoints.FreeGLBA.DeleteSourceSystem, _deleteItem.SourceSystemId);
+            if (!deleted) {
+                Model.ErrorMessages(new List<string> {
+                    $"\"{_deleteItem.DisplayName}\" was not deleted. Source systems with recorded access events cannot be deleted because the audit trail must be preserved — deactivate it instead."
+                });
+            }
+            _deleteItem = null;
+            _showDeleteConfirm = false;
+            await LoadData();
+        }
+    }
+}

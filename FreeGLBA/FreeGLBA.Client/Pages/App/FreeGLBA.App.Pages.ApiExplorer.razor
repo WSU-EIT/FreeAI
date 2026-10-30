@@ -1,0 +1,9 @@
+@* FreeGLBA.App.Pages.ApiExplorer.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.ApiExplorer.razor. *@
+@page "/ApiExplorer"
+@page "/{TenantCode}/ApiExplorer"
+
+<FreeGLBA_App_UI_ApiExplorer TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

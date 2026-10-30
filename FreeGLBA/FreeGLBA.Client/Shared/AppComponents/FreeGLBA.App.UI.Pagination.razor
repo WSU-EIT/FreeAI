@@ -1,0 +1,100 @@
+@* FreeGLBA.App.UI.Pagination.razor - Pagination footer shared by the list pages (range text + first/prev/numbers/next/last).
+   Renders nothing when there is only one page. Variant keeps each list page's original look:
+   "compact"  - card footer, "X-Y of Z", button titles, 5-number window that slides at the ends (Access Events, Data Subjects)
+   "footer"   - card footer, "Showing X - Y of Z", window of current +/- 2 (Compliance Reports, Source Systems)
+   "centered" - centered pager under the table, no range text, window of current +/- 2 (Accessors) *@
+
+@if (TotalPages > 1) {
+    @if (Variant == "centered") {
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item @(Page <= 1 ? "disabled" : "")">
+                    <button class="page-link" @onclick="@(() => GoTo(1))">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                </li>
+                <li class="page-item @(Page <= 1 ? "disabled" : "")">
+                    <button class="page-link" @onclick="@(() => GoTo(Page - 1))">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                </li>
+                @foreach (var p in AppGrid.PageNumbers(Page, TotalPages, false)) {
+                    var pageNum = p;
+                    <li class="page-item @(pageNum == Page ? "active" : "")">
+                        <button class="page-link" @onclick="@(() => GoTo(pageNum))">@pageNum</button>
+                    </li>
+                }
+                <li class="page-item @(Page >= TotalPages ? "disabled" : "")">
+                    <button class="page-link" @onclick="@(() => GoTo(Page + 1))">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </li>
+                <li class="page-item @(Page >= TotalPages ? "disabled" : "")">
+                    <button class="page-link" @onclick="@(() => GoTo(TotalPages))">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    } else {
+        var compact = Variant == "compact";
+        <div class="card-footer d-flex justify-content-between align-items-center@(compact ? " py-2" : "")">
+            <span class="text-muted small">
+                @if (compact) {
+                    @:@((Page - 1) * PageSize + 1)-@Math.Min(Page * PageSize, TotalRecords) of @TotalRecords
+                } else {
+                    @:Showing @((Page - 1) * PageSize + 1) - @Math.Min(Page * PageSize, TotalRecords) of @TotalRecords
+                }
+            </span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(Page <= 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => GoTo(1))" disabled="@(Page <= 1)" title="@(compact ? "First page" : null)">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </button>
+                    </li>
+                    <li class="page-item @(Page <= 1 ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => GoTo(Page - 1))" disabled="@(Page <= 1)" title="@(compact ? "Previous page" : null)">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </button>
+                    </li>
+                    @foreach (var p in AppGrid.PageNumbers(Page, TotalPages, compact)) {
+                        var pageNum = p;
+                        <li class="page-item @(pageNum == Page ? "active" : "")">
+                            <button class="page-link" @onclick="@(() => GoTo(pageNum))">@pageNum</button>
+                        </li>
+                    }
+                    <li class="page-item @(Page >= TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => GoTo(Page + 1))" disabled="@(Page >= TotalPages)" title="@(compact ? "Next page" : null)">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </button>
+                    </li>
+                    <li class="page-item @(Page >= TotalPages ? "disabled" : "")">
+                        <button class="page-link" @onclick="@(() => GoTo(TotalPages))" disabled="@(Page >= TotalPages)" title="@(compact ? "Last page" : null)">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+}
+
+@code {
+    /// <summary>Current page, 1-based.</summary>
+    [Parameter] public int Page { get; set; } = 1;
+
+    [Parameter] public int PageSize { get; set; }
+
+    [Parameter] public int TotalRecords { get; set; }
+
+    [Parameter] public int TotalPages { get; set; }
+
+    /// <summary>"compact", "footer" (default) or "centered"; see the header comment.</summary>
+    [Parameter] public string Variant { get; set; } = "footer";
+
+    /// <summary>Raised with the requested page number.</summary>
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+
+    private Task GoTo(int page) => OnPageChanged.InvokeAsync(page);
+}

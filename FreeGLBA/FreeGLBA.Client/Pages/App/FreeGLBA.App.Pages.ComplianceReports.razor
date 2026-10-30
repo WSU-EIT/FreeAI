@@ -1,0 +1,9 @@
+@* FreeGLBA.App.Pages.ComplianceReports.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.ComplianceReports.razor. *@
+@page "/ComplianceReports"
+@page "/{TenantCode}/ComplianceReports"
+
+<FreeGLBA_App_UI_ComplianceReports TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

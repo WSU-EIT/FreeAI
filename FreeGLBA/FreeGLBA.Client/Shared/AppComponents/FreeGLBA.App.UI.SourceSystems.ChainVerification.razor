@@ -1,0 +1,64 @@
+@* FreeGLBA.App.UI.SourceSystems.ChainVerification.razor - Audit-trail integrity (hash chain) result dialog for a source system.
+   Shown while Result is set; OnClose clears it. *@
+
+@if (Result != null) {
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" role="dialog" aria-modal="true" aria-labelledby="verify-modal-title">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header @(Result.Valid ? "bg-success" : "bg-danger") text-white">
+                    <h5 class="modal-title" id="verify-modal-title">
+                        <i class="fa-solid fa-fingerprint me-2" aria-hidden="true"></i>
+                        Audit-Trail Integrity — @Result.SourceSystemName
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="Close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (Result.Valid) {
+                        <div class="alert alert-success mb-3" role="status">
+                            <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>
+                            <strong>Chain intact.</strong> All @Result.EventsChecked.ToString("N0") chained events verified —
+                            no modified rows, no broken links, no deletions.
+                        </div>
+                    } else {
+                        <div class="alert alert-danger mb-3" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2" aria-hidden="true"></i>
+                            <strong>@Result.Issues.Count integrity issue@(Result.Issues.Count == 1 ? "" : "s") found</strong>
+                            across @Result.EventsChecked.ToString("N0") chained events. The audit trail was altered
+                            after these events were recorded.
+                        </div>
+                        <ul class="list-unstyled mb-3">
+                            @foreach (var issue in Result.Issues) {
+                                <li class="d-flex align-items-start gap-2 py-2 border-bottom border-light-subtle">
+                                    <span class="badge text-bg-danger" style="min-width: 7.5rem;">@issue.IssueType</span>
+                                    <span class="small">@issue.Detail</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <p class="small text-muted mb-0">
+                        Every ingested event carries a SHA-256 hash over its audit fields, linked to the previous event's
+                        hash in a per-system chain. Editing a stored event breaks its hash by design — audit records are
+                        meant to be immutable.
+                        @if (Result.UnhashedEvents > 0) {
+                            <span> @Result.UnhashedEvents.ToString("N0") event(s) predate integrity chaining and cannot be verified.</span>
+                        }
+                        <span> Verified @Result.VerifiedAt.ToLocalTime().ToString("MMM d, yyyy h:mm tt").</span>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>Raised when the dialog is closed.</summary>
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    /// <summary>The verification result to show; nothing renders while null.</summary>
+    [Parameter] public DataObjects.ChainVerificationResult? Result { get; set; }
+
+    private Task Close() => OnClose.InvokeAsync();
+}

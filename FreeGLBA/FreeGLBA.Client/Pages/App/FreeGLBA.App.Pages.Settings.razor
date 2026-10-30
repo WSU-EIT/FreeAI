@@ -1,0 +1,9 @@
+@* FreeGLBA.App.Pages.Settings.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.Settings.razor. *@
+@page "/GlbaSettings"
+@page "/{TenantCode}/GlbaSettings"
+
+<FreeGLBA_App_UI_Settings TenantCode="@TenantCode" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+}

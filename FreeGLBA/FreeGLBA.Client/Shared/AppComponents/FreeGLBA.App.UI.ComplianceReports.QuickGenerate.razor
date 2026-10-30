@@ -1,0 +1,78 @@
+@* FreeGLBA.App.UI.ComplianceReports.QuickGenerate.razor - "Quick Reports" buttons for the Compliance Reports page.
+   Each button works out its period and raises OnGenerate; the page creates and saves the report. *@
+
+<div class="card shadow-sm mb-3 border-success">
+    <div class="card-header bg-success bg-opacity-10 py-2">
+        <i class="fa-solid fa-bolt me-2 text-success"></i>
+        <strong>Quick Reports</strong>
+        <span class="text-muted ms-2">— Generate common compliance reports with one click</span>
+    </div>
+    <div class="card-body py-3">
+        <div class="row g-2">
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" @onclick="() => GenerateQuickReport_LastMonth()">
+                    <i class="fa-solid fa-calendar-day me-1"></i>Last Month
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" @onclick="() => GenerateQuickReport_LastQuarter()">
+                    <i class="fa-solid fa-calendar-week me-1"></i>Last Quarter
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-primary" @onclick="() => GenerateQuickReport_YTD()">
+                    <i class="fa-solid fa-calendar me-1"></i>Year to Date
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-warning" @onclick="() => GenerateQuickReport_ExportReview()">
+                    <i class="fa-solid fa-file-export me-1"></i>Export Review (Last 30 Days)
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-danger" @onclick="() => GenerateQuickReport_HighVolume()">
+                    <i class="fa-solid fa-chart-line me-1"></i>High Volume (Last 30 Days)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>Raised with the report type and period when a quick-report button is clicked.</summary>
+    [Parameter] public EventCallback<(string ReportType, DateTime PeriodStart, DateTime PeriodEnd)> OnGenerate { get; set; }
+
+    // Quick report periods; the page creates and saves the report (OnGenerate).
+    private async Task GenerateQuickReport_LastMonth() {
+        var now = DateTime.Now;
+        var start = new DateTime(now.Year, now.Month, 1).AddMonths(-1);
+        var end = start.AddMonths(1).AddDays(-1);
+        await OnGenerate.InvokeAsync(("Monthly", start, end));
+    }
+
+    private async Task GenerateQuickReport_LastQuarter() {
+        var now = DateTime.Now;
+        var currentQuarter = (now.Month - 1) / 3;
+        var lastQuarterStart = currentQuarter == 0 
+            ? new DateTime(now.Year - 1, 10, 1) 
+            : new DateTime(now.Year, (currentQuarter - 1) * 3 + 1, 1);
+        var lastQuarterEnd = lastQuarterStart.AddMonths(3).AddDays(-1);
+        await OnGenerate.InvokeAsync(("Quarterly", lastQuarterStart, lastQuarterEnd));
+    }
+
+    private async Task GenerateQuickReport_YTD() {
+        var now = DateTime.Now;
+        var start = new DateTime(now.Year, 1, 1);
+        await OnGenerate.InvokeAsync(("Annual", start, now.Date));
+    }
+
+    private async Task GenerateQuickReport_ExportReview() {
+        var now = DateTime.Now;
+        await OnGenerate.InvokeAsync(("Export Review", now.AddDays(-30).Date, now.Date));
+    }
+
+    private async Task GenerateQuickReport_HighVolume() {
+        var now = DateTime.Now;
+        await OnGenerate.InvokeAsync(("High Volume", now.AddDays(-30).Date, now.Date));
+    }
+}

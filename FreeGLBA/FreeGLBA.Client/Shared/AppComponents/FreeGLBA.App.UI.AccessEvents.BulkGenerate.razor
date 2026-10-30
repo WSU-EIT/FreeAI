@@ -1,0 +1,271 @@
+@* FreeGLBA.App.UI.AccessEvents.BulkGenerate.razor - "Generate Test Events" dialog and generator for the Access Events page.
+   The page shows it with Visible and refreshes the list on OnGenerated; Generating is bound so the page can pause live refresh while a run is in progress. *@
+
+    @if (Visible) {
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Test Events
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CancelAsync" disabled="@Generating"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (Generating) {
+                            <div class="text-center py-3">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x mb-3"></i>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                            style="width:@(_bulkCount == 0 ? 0 : (_generatedSoFar * 100 / _bulkCount))%"></div>
+                                </div>
+                                <p class="mb-0">Generated @_generatedSoFar of @_bulkCount events...</p>
+                            </div>
+                        } else {
+                            <div class="alert alert-info small">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                Creates randomized access events spread over the selected time range, using your
+                                existing source systems. Useful for demos and for populating the dashboard.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Number of events</label>
+                                <select class="form-select" @bind="_bulkCount">
+                                    <option value="10">10 events</option>
+                                    <option value="25">25 events</option>
+                                    <option value="50">50 events</option>
+                                    <option value="100">100 events</option>
+                                    <option value="250">250 events</option>
+                                    <option value="500">500 events</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Spread events over</label>
+                                <select class="form-select" @bind="_bulkDaysBack">
+                                    <option value="1">Today only</option>
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30">Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                </select>
+                                <div class="form-text">
+                                    Spreading across days populates the Today / This Week / This Month dashboard tiles.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Distinct people accessed (data subjects)</label>
+                                <select class="form-select" @bind="_bulkSubjectPool">
+                                    <option value="5">5 subjects</option>
+                                    <option value="15">15 subjects</option>
+                                    <option value="40">40 subjects</option>
+                                    <option value="100">100 subjects</option>
+                                </select>
+                                <div class="form-text">
+                                    A smaller pool means repeat access to the same people, which looks more realistic.
+                                </div>
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="bulk-include-bulk-events"
+                                        @bind="_bulkIncludeBulkEvents" />
+                                <label class="form-check-label" for="bulk-include-bulk-events">
+                                    Include some bulk exports (multi-subject events)
+                                </label>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(_bulkError)) {
+                            <div class="alert alert-danger mt-3 mb-0 small">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i>@_bulkError
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CancelAsync" disabled="@Generating">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" @onclick="RunBulkGenerate" disabled="@Generating">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+@code {
+    /// <summary>True while a generation run is in progress.</summary>
+    [Parameter] public bool Generating { get; set; }
+
+    [Parameter] public EventCallback<bool> GeneratingChanged { get; set; }
+
+    /// <summary>Raised when the dialog is cancelled.</summary>
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    /// <summary>Raised after a run saved all its events (the page refreshes the list).</summary>
+    [Parameter] public EventCallback OnGenerated { get; set; }
+
+    /// <summary>Source systems the generated events are spread across.</summary>
+    [Parameter] public List<DataObjects.SourceSystem> SourceSystems { get; set; } = new();
+
+    /// <summary>Whether the dialog is shown.</summary>
+    [Parameter] public bool Visible { get; set; }
+
+    private int _bulkCount = 25;
+    private int _bulkDaysBack = 7;
+    private int _bulkSubjectPool = 15;
+    private bool _bulkIncludeBulkEvents = true;
+    private int _generatedSoFar = 0;
+    private string _bulkError = "";
+    private bool _wasVisible = false;
+
+    private static readonly string[] _genAccessTypes = { "View", "View", "View", "Query", "Export", "Print", "Download", "API Access" };
+    private static readonly Random _genRandom = new();
+
+    protected override void OnParametersSet() {
+        // Opening the dialog starts with no error and no progress (the chosen options are kept).
+        if (Visible && !_wasVisible) {
+            _bulkError = "";
+            _generatedSoFar = 0;
+        }
+        _wasVisible = Visible;
+    }
+
+    private async Task SetGenerating(bool value) {
+        Generating = value;
+        await GeneratingChanged.InvokeAsync(value);
+    }
+
+    private async Task CancelAsync()
+    {
+        if (Generating) return;
+        _bulkError = "";
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task RunBulkGenerate()
+    {
+        if (SourceSystems.Count == 0) {
+            _bulkError = "No source systems available. Create a source system first.";
+            return;
+        }
+
+        await SetGenerating(true);
+        _bulkError = "";
+        _generatedSoFar = 0;
+        StateHasChanged();
+        await Task.Yield();
+
+        try {
+            // Build a fixed pool of subjects so the same people are accessed repeatedly.
+            var subjectPool = Enumerable.Range(0, Math.Max(1, _bulkSubjectPool))
+                .Select(_ => $"S{_genRandom.Next(10000000, 99999999)}")
+                .Distinct()
+                .ToList();
+
+            // Build a pool of staff accessors, smaller than the event count so
+            // the Accessors page shows meaningful per-user totals.
+            var accessorCount = Math.Max(3, Math.Min(12, _bulkCount / 4));
+            var accessorPool = Enumerable.Range(0, accessorCount)
+                .Select(_ => {
+                    var first = AppTestData.FirstNames[_genRandom.Next(AppTestData.FirstNames.Length)];
+                    var last = AppTestData.LastNames[_genRandom.Next(AppTestData.LastNames.Length)];
+                    return new {
+                        UserId = $"E{_genRandom.Next(100000, 999999)}",
+                        UserName = $"{first} {last}",
+                        UserEmail = $"{first.ToLower()}.{last.ToLower()}@university.edu",
+                        Department = AppTestData.Departments[_genRandom.Next(AppTestData.Departments.Length)]
+                    };
+                })
+                .ToList();
+
+            var pending = new List<DataObjects.AccessEvent>(_bulkCount);
+
+            for (int i = 0; i < _bulkCount; i++) {
+                var source = SourceSystems[_genRandom.Next(SourceSystems.Count)];
+                var accessor = accessorPool[_genRandom.Next(accessorPool.Count)];
+
+                // Spread the timestamp across the selected window, weighted to business hours.
+                var daysAgo = _genRandom.Next(0, Math.Max(1, _bulkDaysBack));
+                var accessedAt = DateTime.UtcNow.Date
+                    .AddDays(-daysAgo)
+                    .AddHours(_genRandom.Next(7, 19))
+                    .AddMinutes(_genRandom.Next(0, 60))
+                    .AddSeconds(_genRandom.Next(0, 60));
+
+                // Never place an event in the future (matters for "today" bucket).
+                if (accessedAt > DateTime.UtcNow) {
+                    accessedAt = DateTime.UtcNow.AddMinutes(-_genRandom.Next(1, 120));
+                }
+
+                var evt = new DataObjects.AccessEvent {
+                    SourceSystemId = source.SourceSystemId,
+                    SourceEventId = $"EVT-{accessedAt:yyyyMMdd}-{_genRandom.Next(100000, 999999)}",
+                    AccessedAt = accessedAt,
+                    ReceivedAt = accessedAt,
+                    UserId = accessor.UserId,
+                    UserName = accessor.UserName,
+                    UserEmail = accessor.UserEmail,
+                    UserDepartment = accessor.Department,
+                    SubjectType = AppTestData.SubjectTypes[_genRandom.Next(AppTestData.SubjectTypes.Length)],
+                    DataCategory = AppTestData.DataCategories[_genRandom.Next(AppTestData.DataCategories.Length)],
+                    Purpose = AppTestData.Purposes[_genRandom.Next(AppTestData.Purposes.Length)],
+                    IpAddress = $"10.{_genRandom.Next(0, 256)}.{_genRandom.Next(0, 256)}.{_genRandom.Next(1, 255)}",
+                    AdditionalData = "{}",
+                    AgreementText = "",
+                };
+
+                // Roughly 1 in 8 events is a bulk export covering several subjects.
+                var makeBulk = _bulkIncludeBulkEvents && subjectPool.Count >= 2 && _genRandom.Next(0, 8) == 0;
+
+                if (makeBulk) {
+                    var take = Math.Min(_genRandom.Next(2, 11), subjectPool.Count);
+                    var ids = subjectPool.OrderBy(_ => _genRandom.Next()).Take(take).ToList();
+                    evt.SubjectId = "BULK";
+                    evt.SubjectIds = System.Text.Json.JsonSerializer.Serialize(ids);
+                    evt.SubjectCount = ids.Count;
+                    evt.AccessType = _genRandom.Next(0, 2) == 0 ? "Export" : "Download";
+                } else {
+                    evt.SubjectId = subjectPool[_genRandom.Next(subjectPool.Count)];
+                    evt.SubjectIds = "";
+                    evt.SubjectCount = 1;
+                    evt.AccessType = _genAccessTypes[_genRandom.Next(_genAccessTypes.Length)];
+                }
+
+                pending.Add(evt);
+            }
+
+            // Post in chunks so the server stays within its 1000-per-request limit
+            // and the progress bar advances on large runs.
+            const int chunkSize = 100;
+            for (int offset = 0; offset < pending.Count; offset += chunkSize) {
+                var chunk = pending.Skip(offset).Take(chunkSize).ToList();
+
+                var result = await Helpers.GetOrPost<DataObjects.AccessEventBulkResult>(
+                    DataObjects.Endpoints.FreeGLBA.SaveAccessEvents, chunk);
+
+                if (result == null) {
+                    _bulkError = $"Save failed after {_generatedSoFar} events (no response from server).";
+                    return;
+                }
+
+                if (!result.Success) {
+                    _bulkError = $"Save failed after {_generatedSoFar} events: {result.Message}";
+                    return;
+                }
+
+                _generatedSoFar += result.Saved;
+                StateHasChanged();
+                await Task.Yield();
+            }
+
+            await OnGenerated.InvokeAsync();
+        } catch (Exception ex) {
+            _bulkError = $"Generation failed after {_generatedSoFar} events: {ex.Message}";
+        } finally {
+            await SetGenerating(false);
+            StateHasChanged();
+        }
+    }
+}

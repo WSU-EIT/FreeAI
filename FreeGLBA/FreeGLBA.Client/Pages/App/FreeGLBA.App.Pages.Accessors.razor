@@ -1,0 +1,10 @@
+@* FreeGLBA.App.Pages.Accessors.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.Accessors.razor. *@
+@page "/Accessors"
+@page "/{TenantCode}/Accessors"
+
+<FreeGLBA_App_UI_Accessors TenantCode="@TenantCode" SearchFromQuery="@SearchFromQuery" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+    [SupplyParameterFromQuery(Name = "search")] public string? SearchFromQuery { get; set; }
+}

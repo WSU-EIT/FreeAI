@@ -163,6 +163,7 @@ public static partial class Helpers
             //    });
             //}
 
+            output.AddRange(Helpers.FreeGLBAMenuItemsApp);
             return output;
         }
     }
@@ -179,6 +180,7 @@ public static partial class Helpers
     public static async Task ProcessSignalRUpdateApp(DataObjects.SignalRUpdate update)
     {
         // Process any SignalR updates specific to your app here. See the main ProcessSignalRUpdate method for an example in the MainLayout.razor page.
+        if (await FreeGLBAProcessSignalRUpdateApp(update)) { return; }
 
         if (update != null && (update.TenantId == null || update.TenantId == Model.TenantId)) {
             var itemId = update.ItemId;

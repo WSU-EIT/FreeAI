@@ -1,0 +1,33 @@
+@* FreeGLBA.App.UI.AboutSection.razor - Collapsible "About this page" help card used by the list pages.
+   The header (Title + Subtitle) is always visible; the ChildContent shows when the card is expanded. *@
+
+<div class="card shadow-sm mb-3 border-info">
+    <div class="card-header bg-info bg-opacity-10 cursor-pointer py-2" @onclick="() => _expanded = !_expanded">
+        <div class="d-flex justify-content-between align-items-center">
+            <span>
+                <i class="fa-solid fa-circle-info me-2 text-info"></i>
+                <strong>@Title</strong>
+                <span class="text-muted ms-2">— @Subtitle</span>
+            </span>
+            <i class="fa-solid @(_expanded ? "fa-chevron-up" : "fa-chevron-down") text-info"></i>
+        </div>
+    </div>
+    @if (_expanded) {
+        <div class="card-body py-2">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>The help content shown when the card is expanded.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Muted one-line description after the title (the leading dash is added here).</summary>
+    [Parameter] public string Subtitle { get; set; } = "";
+
+    /// <summary>Bold question or heading, e.g. "What are Accessors?".</summary>
+    [Parameter] public string Title { get; set; } = "";
+
+    private bool _expanded = false;
+}

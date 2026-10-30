@@ -1,0 +1,43 @@
+@* FreeGLBA.App.UI.AccessEvents.Help.razor - Collapsible "What are Access Events?" help card for the Access Events page. *@
+
+<FreeGLBA_App_UI_AboutSection Title="What are Access Events?" Subtitle="Records of who accessed protected financial data, when, and why">
+    <div class="row">
+        <div class="col-md-3">
+            <h6 class="text-info"><i class="fa-solid fa-scale-balanced me-1"></i>In GLBA Terms</h6>
+            <p class="small text-muted mb-0">
+                An <strong>Access Event</strong> records each instance when an employee or system accesses
+                a customer's nonpublic personal information (NPI). The FTC Safeguards Rule requires
+                monitoring and logging the activity of authorized users (16 CFR 314.4(c)(8)) — who accessed
+                what data and when. Recording the business purpose as well is a best practice auditors expect.
+            </p>
+        </div>
+        <div class="col-md-3">
+            <h6 class="text-info"><i class="fa-solid fa-list-ul me-1"></i>Examples</h6>
+            <ul class="small text-muted mb-0 ps-3">
+                <li>Financial aid advisor views student's FAFSA data</li>
+                <li>Bursar staff accesses account balance</li>
+                <li>Registrar exports student financial records</li>
+                <li>IT admin runs report on payment history</li>
+                <li>Automated system processes loan disbursement</li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h6 class="text-info"><i class="fa-solid fa-database me-1"></i>Key Fields</h6>
+            <ul class="small text-muted mb-0 ps-3">
+                <li><strong>User</strong> — Who accessed the data</li>
+                <li><strong>Subject</strong> — Whose data was accessed</li>
+                <li><strong>Access Type</strong> — View, export, modify</li>
+                <li><strong>Purpose</strong> — Business reason</li>
+                <li><strong>Data Category</strong> — Type of data</li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h6 class="text-info"><i class="fa-solid fa-file-signature me-1"></i>Agreement Tracking</h6>
+            <p class="small text-muted mb-0">
+                Each event can include a copy of the <strong>privacy notice/agreement</strong> the user 
+                acknowledged before accessing data. This documents exactly what disclosure was shown 
+                at the time of access — critical for GLBA compliance audits.
+            </p>
+        </div>
+    </div>
+</FreeGLBA_App_UI_AboutSection>

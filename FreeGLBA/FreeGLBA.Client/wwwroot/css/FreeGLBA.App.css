@@ -1,0 +1,20 @@
+/*
+    FreeGLBA app-wide styles, imported by site.App.css.
+    Shared by the list pages (sortable table headers) and the dashboard trend chart; these were
+    identical inline <style> blocks in each page before.
+*/
+
+.sortable { cursor: pointer; user-select: none; }
+.sortable:hover { background-color: #e9ecef; }
+.sortable:focus-visible { outline: 2px solid #0d6efd; outline-offset: -2px; }
+.sort-active { font-weight: bold; }
+.cursor-pointer { cursor: pointer; }
+
+.trend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: -1px;
+}

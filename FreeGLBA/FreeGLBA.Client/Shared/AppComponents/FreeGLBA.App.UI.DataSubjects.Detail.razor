@@ -1,0 +1,158 @@
+@* FreeGLBA.App.UI.DataSubjects.Detail.razor - Detail panel for the selected data subject: stats, History PDF button and access history.
+   The page owns the selection and loads the events; this panel only displays them. *@
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user-shield me-2" aria-hidden="true"></i>
+                        @Subject.ExternalId
+                        <span class="badge bg-secondary ms-2">@Subject.SubjectType</span>
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-success" @onclick="Download" disabled="@DownloadingHistory"
+                                title="Download this subject's complete access history as a PDF"
+                                aria-label="Download access history PDF for @Subject.ExternalId">
+                            @if (DownloadingHistory) {
+                                <i class="fa-solid fa-spinner fa-spin me-1" aria-hidden="true"></i>
+                            } else {
+                                <i class="fa-solid fa-file-pdf me-1" aria-hidden="true"></i>
+                            }
+                            History PDF
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="Close" aria-label="Close detail panel">
+                            <i class="fa-solid fa-times" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @* Stats Row *@
+                    <div class="row mb-3">
+                        <div class="col-3 text-center">
+                            <h4 class="mb-0 text-primary">@Subject.TotalAccessCount.ToString("N0")</h4>
+                            <small class="text-muted">Total Accesses</small>
+                        </div>
+                        <div class="col-3 text-center">
+                            <h4 class="mb-0 text-info">@Subject.UniqueAccessorCount.ToString("N0")</h4>
+                            <small class="text-muted">Unique Users</small>
+                        </div>
+                        <div class="col-3 text-center">
+                            <small class="text-muted d-block">First Access</small>
+                            <span>@Subject.FirstAccessedAt.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="col-3 text-center">
+                            <small class="text-muted d-block">Last Access</small>
+                            <span>@AppGrid.RelativeTime(Subject.LastAccessedAt)</span>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    @* Access History *@
+                    <h6 class="mb-3">
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>Access History
+                    </h6>
+
+                    @if (Loading) {
+                        <div class="text-center py-3">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Loading events...
+                        </div>
+                    } else if (Events.Count == 0) {
+                        <div class="text-center py-3 text-muted">
+                            <i class="fa-solid fa-inbox me-2"></i>No access events found
+                        </div>
+                    } else {
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>When</th>
+                                        <th>Who</th>
+                                        <th>Type</th>
+                                        <th>Purpose</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var evt in Events) {
+                                        <tr>
+                                            <td>
+                                                <span title="@evt.AccessedAt.ToLocalTime().ToString("f")">
+                                                    @AppGrid.RelativeTime(evt.AccessedAt)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <strong>@evt.UserId</strong>
+                                                @if (!string.IsNullOrEmpty(evt.UserName)) {
+                                                    <br /><small class="text-muted">@evt.UserName</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = evt.AccessType?.ToLower() switch {
+                                                        "export" or "download" => "bg-warning text-dark",
+                                                        "view" or "query" => "bg-info",
+                                                        "print" => "bg-secondary",
+                                                        _ => "bg-primary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@evt.AccessType</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@evt.Purpose">
+                                                    @(string.IsNullOrEmpty(evt.Purpose) ? "-" : evt.Purpose)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="@GetEventUrl(evt.AccessEventId)" class="btn btn-sm btn-outline-primary" 
+                                                        title="View Event Details">
+                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center py-2">
+                            <a href="@Helpers.BuildUrl($"AccessEvents?subjectId={Uri.EscapeDataString(Subject.ExternalId)}")" class="btn btn-sm btn-outline-primary">
+                                Open in Access Events <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer small text-muted">
+                    <i class="fa-solid fa-lock me-1"></i>
+                    Audit records are immutable and cannot be deleted.
+                </div>
+            </div>
+        </div>
+
+@code {
+    /// <summary>The subject's access events (most recent first, as loaded by the page).</summary>
+    [Parameter] public List<DataObjects.AccessEvent> Events { get; set; } = new();
+
+    /// <summary>True while the History PDF is being generated.</summary>
+    [Parameter] public bool DownloadingHistory { get; set; }
+
+    /// <summary>True while the access events are loading.</summary>
+    [Parameter] public bool Loading { get; set; }
+
+    /// <summary>Raised when the close button is clicked.</summary>
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    /// <summary>Raised when the History PDF button is clicked.</summary>
+    [Parameter] public EventCallback OnDownload { get; set; }
+
+    /// <summary>The selected subject.</summary>
+    [Parameter] public DataObjects.DataSubject Subject { get; set; } = new();
+
+    private Task Close() => OnClose.InvokeAsync();
+
+    private Task Download() => OnDownload.InvokeAsync();
+
+    private string GetEventUrl(Guid eventId)
+    {
+        return Helpers.BuildUrl($"AccessEvents/{eventId}");
+    }
+}

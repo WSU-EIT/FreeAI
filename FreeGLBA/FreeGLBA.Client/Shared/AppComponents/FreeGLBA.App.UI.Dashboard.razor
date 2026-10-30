@@ -1,0 +1,461 @@
+﻿@* FreeGLBA.App.UI.Dashboard.razor - Dashboard page *@
+@implements IDisposable
+@inject BlazorDataModel Model
+@inject HttpClient Http
+
+@if (Model.Loaded && Model.LoggedIn && Model.View == _pageName) {
+    @if (_loading) {
+        <div class="container-fluid">
+            <h1 class="page-title">
+                <i class="fa-solid fa-shield-halved me-2"></i>GLBA Compliance Dashboard
+            </h1>
+            <div class="text-center py-5"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div>
+        </div>
+    } else {
+        <div class="container-fluid">
+            <div class="@Model.StickyMenuClass">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h1 class="page-title mb-0">
+                        <i class="fa-solid fa-shield-halved me-2" aria-hidden="true"></i>GLBA Compliance Dashboard
+                    </h1>
+                    <span class="badge rounded-pill text-bg-success" role="status" title="This dashboard refreshes automatically when new events arrive">
+                        <i class="fa-solid fa-tower-broadcast me-1" aria-hidden="true"></i>Live
+                        @if (_lastRefreshed.HasValue) {
+                            <span class="fw-normal ms-1">· updated @GetTimeAgo(_lastRefreshed.Value)</span>
+                        }
+                    </span>
+                </div>
+            </div>
+
+            @* About GLBA - Collapsible Banner *@
+            <FreeGLBA_App_UI_Dashboard_About @bind-Expanded="_aboutExpanded" />
+
+            @* Stats Cards *@
+            <div class="row mb-2">
+                <FreeGLBA_App_UI_StatTile Value="@_stats.Today.ToString("N0")" Label="Events Today" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.ThisWeek.ToString("N0")" Label="Events This Week" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.ThisMonth.ToString("N0")" Label="Events This Month" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.TotalAccessors.ToString("N0")" Label="Total Accessors (all time)" BorderClass="border-primary" />
+            </div>
+            <div class="row mb-4">
+                <FreeGLBA_App_UI_StatTile Value="@_stats.SubjectsToday.ToString("N0")" Label="Subjects Today" ColorClass="text-info" BorderClass="border-info" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.SubjectsThisWeek.ToString("N0")" Label="Subjects This Week" ColorClass="text-info" BorderClass="border-info" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.SubjectsThisMonth.ToString("N0")" Label="Subjects This Month" ColorClass="text-info" BorderClass="border-info" />
+                <FreeGLBA_App_UI_StatTile Value="@_stats.TotalSubjects.ToString("N0")" Label="Total Subjects (all time)" ColorClass="text-success" BorderClass="border-success" />
+            </div>
+
+            @* Breakdown by Access Type and Data Category *@
+            @if (_stats.ByAccessType.Count > 0 || _stats.ByCategory.Count > 0) {
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header py-2">
+                                <h5 class="mb-0 fs-6"><i class="fa-solid fa-shapes me-2" aria-hidden="true"></i>By Access Type</h5>
+                            </div>
+                            <div class="card-body py-2">
+                                @if (_stats.ByAccessType.Count == 0) {
+                                    <span class="text-muted small">No events yet.</span>
+                                } else {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var kvp in _stats.ByAccessType) {
+                                            <li class="d-flex justify-content-between align-items-center py-1">
+                                                <span>@kvp.Key</span>
+                                                <span class="badge bg-primary">@kvp.Value.ToString("N0")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header py-2">
+                                <h5 class="mb-0 fs-6"><i class="fa-solid fa-folder-tree me-2" aria-hidden="true"></i>By Data Category</h5>
+                            </div>
+                            <div class="card-body py-2">
+                                @if (_stats.ByCategory.Count == 0) {
+                                    <span class="text-muted small">No categorized events yet.</span>
+                                } else {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var kvp in _stats.ByCategory) {
+                                            <li class="d-flex justify-content-between align-items-center py-1">
+                                                <span>@kvp.Key</span>
+                                                <span class="badge bg-info">@kvp.Value.ToString("N0")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* Access Volume Trend *@
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-2">
+                    <h5 class="mb-0 fs-6"><i class="fa-solid fa-chart-column me-2" aria-hidden="true"></i>Access Volume — Last @_insights.WindowDays Days</h5>
+                </div>
+                <div class="card-body">
+                    @if (_insights.EventsPerDay.Count == 0 || _insights.EventsPerDay.All(x => x.Events == 0)) {
+                        <p class="text-muted small mb-0">The trend chart appears once events have been recorded.</p>
+                    } else {
+                        <div id="glba-trend-chart">
+                            <FreeGLBA_App_UI_Dashboard_TrendChart Days="_insights.EventsPerDay" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Needs Attention *@
+            <div class="card shadow-sm mb-4 @(_insights.Items.Any(x => x.Severity == "critical") ? "border-danger" : _insights.Items.Count > 0 ? "border-warning" : "")">
+                <div class="card-header py-2">
+                    <h5 class="mb-0 fs-6"><i class="fa-solid fa-bell me-2" aria-hidden="true"></i>Needs Attention</h5>
+                </div>
+                <div class="card-body py-2" aria-live="polite">
+                    @if (_insights.Items.Count == 0) {
+                        <p class="text-muted small mb-0 py-1">
+                            <i class="fa-solid fa-circle-check text-success me-1" aria-hidden="true"></i>
+                            All clear — no unusual volume, large bulk exports, first-time accessors, or ownership gaps detected.
+                        </p>
+                    } else {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var insight in _insights.Items) {
+                                var badge = insight.Severity switch {
+                                    "critical" => "text-bg-danger",
+                                    "warning" => "text-bg-warning",
+                                    _ => "text-bg-info"
+                                };
+                                <li class="d-flex align-items-start gap-2 py-2 border-bottom border-light-subtle">
+                                    <span class="badge @badge text-uppercase" style="min-width: 4.5rem;">@insight.Severity</span>
+                                    <div class="flex-grow-1">
+                                        <strong>@insight.Title</strong>
+                                        <div class="small text-muted">@insight.Detail</div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(insight.LinkPage)) {
+                                        <a class="btn btn-sm btn-outline-primary text-nowrap" href="@Helpers.BuildUrl(insight.LinkPage)">
+                                            @insight.LinkText <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            @* Recent Events *@
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>Recent Events
+                    </h5>
+                    <a href="@Helpers.BuildUrl("AccessEvents")" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @if (_recentEvents.Count == 0) {
+                        <div class="text-center text-muted py-4">
+                            <i class="fa-solid fa-inbox fa-2x mb-2"></i>
+                            <p class="mb-0">No access events recorded yet.</p>
+                            <small>Events will appear here as they are logged by source systems.</small>
+                        </div>
+                    } else {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Accessed At</th>
+                                        <th>User</th>
+                                        <th>Subject(s)</th>
+                                        <th>Data Category</th>
+                                        <th>Access Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var evt in _recentEvents) {
+                                        <tr>
+                                            <td>
+                                                <a href="@GetEventUrl(evt.AccessEventId)">
+                                                    <span title="@evt.AccessedAt.ToLocalTime().ToString("f")">@GetTimeAgo(evt.AccessedAt)</span>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <div>@evt.UserId</div>
+                                                @if (!string.IsNullOrEmpty(evt.UserName)) {
+                                                    <small class="text-muted">@evt.UserName</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (evt.SubjectCount > 1) {
+                                                    <span class="badge bg-warning text-dark">@evt.SubjectCount subjects</span>
+                                                } else if (evt.SubjectId == "SYSTEM") {
+                                                    <span class="badge bg-secondary">SYSTEM</span>
+                                                } else {
+                                                    <a href="@GetSubjectUrl(evt.SubjectId)">@evt.SubjectId</a>
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrEmpty(evt.DataCategory) ? "-" : evt.DataCategory)</td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = evt.AccessType?.ToLower() switch {
+                                                        "export" or "download" => "bg-warning text-dark",
+                                                        "view" or "query" => "bg-info",
+                                                        "print" => "bg-secondary",
+                                                        _ => "bg-primary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@evt.AccessType</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Source Systems Status *@
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-server me-2"></i>Source Systems
+                    </h5>
+                    <a href="@Helpers.BuildUrl("SourceSystems")" class="btn btn-sm btn-outline-primary">
+                        Manage <i class="fa-solid fa-gear ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>System</th>
+                                    <th>Status</th>
+                                    <th>Data Owner</th>
+                                    <th>Last Event</th>
+                                    <th>Total Events</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var src in _sources) {
+                                    <tr>
+                                        <td>@(src.DisplayName ?? src.Name)</td>
+                                        <td>
+                                            @if (src.IsActive) {
+                                                <span class="badge bg-success"><i class="fa-solid fa-circle me-1"></i>Active</span>
+                                            } else {
+                                                <span class="badge bg-secondary"><i class="fa-solid fa-circle me-1"></i>Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(src.DataOwnerName)) {
+                                                <span>@src.DataOwnerName</span>
+                                                @if (!string.IsNullOrEmpty(src.DataOwnerDepartment)) {
+                                                    <br /><small class="text-muted">@src.DataOwnerDepartment</small>
+                                                }
+                                            } else {
+                                                <span class="text-muted">Not set</span>
+                                            }
+                                        </td>
+                                        <td>@GetTimeAgo(src.LastEventReceivedAt)</td>
+                                        <td>@src.EventCount.ToString("N0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @* Top Accessors *@
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user-shield me-2"></i>Top Accessors
+                    </h5>
+                    <a href="@Helpers.BuildUrl("Accessors")" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @if (_topAccessors.Count == 0) {
+                        <div class="text-center text-muted py-4">
+                            <i class="fa-solid fa-users fa-2x mb-2"></i>
+                            <p class="mb-0">No accessor data yet.</p>
+                            <small>Users who access data will appear here.</small>
+                        </div>
+                    } else {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Department</th>
+                                        <th>Total Accesses</th>
+                                        <th>Subjects</th>
+                                        <th>Exports</th>
+                                        <th>Last Access</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var accessor in _topAccessors) {
+                                        <tr>
+                                            <td>
+                                                <div>@accessor.UserId</div>
+                                                @if (!string.IsNullOrEmpty(accessor.UserName)) {
+                                                    <small class="text-muted">@accessor.UserName</small>
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrEmpty(accessor.UserDepartment) ? "-" : accessor.UserDepartment)</td>
+                                            <td><span class="badge bg-primary">@accessor.TotalAccesses</span></td>
+                                            <td><span class="badge bg-info">@accessor.UniqueSubjectsAccessed</span></td>
+                                            <td>
+                                                @if (accessor.ExportCount > 0) {
+                                                    <span class="badge bg-warning text-dark">@accessor.ExportCount</span>
+                                                } else {
+                                                    <span class="text-muted">0</span>
+                                                }
+                                            </td>
+                                            <td>@GetTimeAgo(accessor.LastAccessAt)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private string _pageName = "glbadashboard";
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _aboutExpanded = false;
+
+    private DataObjects.GlbaStats _stats = new();
+    private List<DataObjects.AccessEvent> _recentEvents = new();
+    private List<DataObjects.SourceSystem> _sources = new();
+    private List<DataObjects.AccessorSummary> _topAccessors = new();
+    private DataObjects.GlbaInsights _insights = new();
+    private DateTime? _lastRefreshed = null;
+    private bool _refreshQueued = false;
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnGlbaUpdate -= OnGlbaUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.View = _pageName;
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnGlbaUpdate += OnGlbaUpdate;
+    }
+
+    private void OnGlbaUpdate(DataObjects.SignalRUpdate update)
+    {
+        // New events or source-system changes arrived via SignalR. Coalesce bursts
+        // into a single refresh so batch inserts don't hammer the API.
+        if (_refreshQueued) return;
+        _refreshQueued = true;
+
+        _ = InvokeAsync(async () => {
+            try {
+                await Task.Delay(500);
+                await LoadDataAsync();
+            } finally {
+                _refreshQueued = false;
+            }
+        });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn && !_loadedData) {
+            _loadedData = true;
+            await LoadDataAsync();
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _loading = true;
+        StateHasChanged();
+
+        try {
+            // Load all data in parallel.
+            // Note: GetOrPost mutates shared default headers on the one HttpClient,
+            // so the calls are awaited sequentially-safe via Task.WhenAll on the
+            // already-started tasks (the header values are identical for each).
+            var statsTask = Helpers.GetOrPost<DataObjects.GlbaStats>("api/glba/stats/summary");
+            var eventsTask = Helpers.GetOrPost<List<DataObjects.AccessEvent>>("api/glba/events/recent?limit=20");
+            var sourcesTask = Helpers.GetOrPost<List<DataObjects.SourceSystem>>("api/glba/sources/status");
+            var accessorsTask = Helpers.GetOrPost<List<DataObjects.AccessorSummary>>("api/glba/accessors/top");
+            var insightsTask = Helpers.GetOrPost<DataObjects.GlbaInsights>("api/glba/stats/insights");
+
+            await Task.WhenAll(statsTask, eventsTask, sourcesTask, accessorsTask, insightsTask);
+
+            _stats = await statsTask ?? new();
+            _recentEvents = await eventsTask ?? new();
+            _sources = await sourcesTask ?? new();
+            _topAccessors = await accessorsTask ?? new();
+            _insights = await insightsTask ?? new();
+            _lastRefreshed = DateTime.UtcNow;
+        } catch (Exception ex) {
+            Model.ErrorMessage($"Error loading dashboard: {ex.Message}");
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private string GetTimeAgo(DateTime? dt)
+    {
+        if (!dt.HasValue) return "Never";
+        return GetTimeAgo(dt.Value);
+    }
+
+    private string GetTimeAgo(DateTime dt)
+    {
+        var diff = DateTime.UtcNow - dt;
+        if (diff.TotalSeconds < 0) return "Just now"; // Future date edge case
+        if (diff.TotalMinutes < 1) return "Just now";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} min ago";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours} hours ago";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays} days ago";
+        return dt.ToString("MMM d, yyyy");
+    }
+
+    private string GetEventUrl(Guid eventId)
+    {
+        return Helpers.BuildUrl($"AccessEvents/{eventId}");
+    }
+
+    private string GetSubjectUrl(string? subjectId)
+    {
+        if (string.IsNullOrEmpty(subjectId)) return "#";
+        var encoded = Uri.EscapeDataString(subjectId);
+        return Helpers.BuildUrl($"DataSubjects/{encoded}");
+    }
+}

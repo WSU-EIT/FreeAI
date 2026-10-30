@@ -1,0 +1,12 @@
+@* FreeGLBA.App.Pages.DataSubjects.razor - Route shell. The page UI is Shared/AppComponents/FreeGLBA.App.UI.DataSubjects.razor. *@
+@page "/DataSubjects"
+@page "/DataSubjects/{SelectedSubjectId}"
+@page "/{TenantCode}/DataSubjects"
+@page "/{TenantCode}/DataSubjects/{SelectedSubjectId}"
+
+<FreeGLBA_App_UI_DataSubjects TenantCode="@TenantCode" SelectedSubjectId="@SelectedSubjectId" />
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+    [Parameter] public string? SelectedSubjectId { get; set; }
+}
