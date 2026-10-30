@@ -1,0 +1,187 @@
+@* The bulk edit toolbar on the Sites page: switch bulk mode on, enable or disable every site, smart select by scan status, queue and save. *@
+
+@* ── Bulk Edit Toolbar ── *@
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+    <button class="btn btn-sm @(BulkMode ? "btn-primary" : "btn-outline-primary")" @onclick="OnToggleBulkMode">
+        <i class="fas fa-check-double me-1"></i>Bulk Edit
+    </button>
+    @if (BulkMode) {
+        int enabledCount = Sites.Count(s => s.Enabled);
+        int totalCount = Sites.Count;
+        <span class="badge bg-dark fs-6">@enabledCount / @totalCount enabled</span>
+
+        @* ── Selection group ── *@
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-success" @onclick="() => Apply(BulkEnableAll)" title="Enable every site">
+                <i class="fas fa-check-square me-1"></i>Enable All
+            </button>
+            <button class="btn btn-sm btn-outline-danger" @onclick="() => Apply(BulkDisableAll)" title="Disable every site">
+                <i class="far fa-square me-1"></i>Disable All
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" @onclick="() => Apply(BulkInvertAll)" title="Flip enabled/disabled on every site">
+                <i class="fas fa-exchange-alt me-1"></i>Invert
+            </button>
+        </div>
+
+        @* ── Smart select dropdown ── *@
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-magic me-1"></i>Smart Select
+            </button>
+            <ul class="dropdown-menu">
+                <li><h6 class="dropdown-header">Enable by status</h6></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(() => SelectByStatus_Enable(true))"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Enable sites with critical issues</button></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(SelectByStatus_EnableViolations)"><i class="fas fa-exclamation-circle text-warning me-2"></i>Enable sites with any violations</button></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(SelectByStatus_EnableClean)"><i class="fas fa-check-circle text-success me-2"></i>Enable only clean sites</button></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(SelectByStatus_EnableNotScanned)"><i class="fas fa-question-circle text-secondary me-2"></i>Enable unscanned sites</button></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><h6 class="dropdown-header">Disable by status</h6></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(SelectByStatus_DisableClean)"><i class="fas fa-check-circle text-success me-2"></i>Disable clean sites (focus on problems)</button></li>
+                <li><button class="dropdown-item" @onclick="() => Apply(SelectByStatus_DisableNotScanned)"><i class="fas fa-question-circle text-secondary me-2"></i>Disable unscanned sites</button></li>
+            </ul>
+        </div>
+
+        @* ── Actions ── *@
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-primary" @onclick="OnScanSelected" disabled="@(BulkScanning || enabledCount == 0)"
+                    title="Queue scans for all enabled sites">
+                @if (BulkScanning) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                <i class="fas fa-play me-1"></i>Queue Enabled (@enabledCount)
+            </button>
+            <button class="btn btn-sm btn-success" @onclick="OnSave" disabled="@BulkSaving"
+                    title="Save all enable/disable changes to the server">
+                @if (BulkSaving) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                <i class="fas fa-save me-1"></i>Save Changes
+            </button>
+        </div>
+
+        <button class="btn btn-sm btn-outline-dark" @onclick="OnToggleBulkMode">
+            <i class="fas fa-times me-1"></i>Exit Bulk
+        </button>
+    }
+</div>
+
+@code {
+    /// <summary>Whether bulk edit mode is on; the Sites page owns it because the tree rows show checkboxes in it.</summary>
+    [Parameter] public bool BulkMode { get; set; }
+
+    [Parameter] public bool BulkSaving { get; set; }
+
+    [Parameter] public bool BulkScanning { get; set; }
+
+    /// <summary>Raised after an Enable All, Disable All, Invert or Smart Select, so the page redraws the tree.</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    [Parameter] public EventCallback OnSave { get; set; }
+
+    [Parameter] public EventCallback OnScanSelected { get; set; }
+
+    [Parameter] public EventCallback OnToggleBulkMode { get; set; }
+
+    /// <summary>The page's sites and their pages; the bulk actions change the Enabled flags in place.</summary>
+    [Parameter] public Dictionary<Guid, List<DataObjects.SitePage>> SitePages { get; set; } = new();
+
+    [Parameter] public List<DataObjects.Site> Sites { get; set; } = new();
+
+    private Task Apply(Action change)
+    {
+        change();
+        return OnChanged.InvokeAsync();
+    }
+
+    private void BulkEnableAll()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = true;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = true;
+            }
+        }
+    }
+
+    private void BulkDisableAll()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = false;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = false;
+            }
+        }
+    }
+
+    private void BulkInvertAll()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = !site.Enabled;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_Enable(bool criticalOnly)
+    {
+        foreach (var site in Sites) {
+            if (criticalOnly) {
+                site.Enabled = site.LastCriticalCount > 0;
+            }
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableViolations()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = site.LastViolationCount > 0;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableClean()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = site.LastScanAt.HasValue && site.LastViolationCount == 0;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_EnableNotScanned()
+    {
+        foreach (var site in Sites) {
+            site.Enabled = !site.LastScanAt.HasValue;
+            if (SitePages.ContainsKey(site.SiteId)) {
+                foreach (var page in SitePages[site.SiteId]) page.Enabled = site.Enabled;
+            }
+        }
+    }
+
+    private void SelectByStatus_DisableClean()
+    {
+        foreach (var site in Sites) {
+            if (site.LastScanAt.HasValue && site.LastViolationCount == 0) {
+                site.Enabled = false;
+                if (SitePages.ContainsKey(site.SiteId)) {
+                    foreach (var page in SitePages[site.SiteId]) page.Enabled = false;
+                }
+            }
+        }
+    }
+
+    private void SelectByStatus_DisableNotScanned()
+    {
+        foreach (var site in Sites) {
+            if (!site.LastScanAt.HasValue) {
+                site.Enabled = false;
+                if (SitePages.ContainsKey(site.SiteId)) {
+                    foreach (var page in SitePages[site.SiteId]) page.Enabled = false;
+                }
+            }
+        }
+    }
+}

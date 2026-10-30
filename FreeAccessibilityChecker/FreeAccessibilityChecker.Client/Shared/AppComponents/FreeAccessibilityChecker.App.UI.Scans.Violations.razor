@@ -1,0 +1,88 @@
+@* The violations under an expanded page result (Sites.Runs and Scans.Detail): a table of the first 50 that pass the filters, *@
+@* a "clear filters" prompt when the filters hide them all, or a "no violations" note. *@
+
+@if (Loading) {
+    <LoadingMessage />
+} else if (Violations != null) {
+    var filteredViols = Violations.Where(v =>
+        (WcagLevelFilter == "all" || WcagLevelHelper.MatchesWcagLevel(v.WcagCriteria, WcagLevelFilter)) &&
+        (SeverityFilter == "all" || v.Severity.ToLower() == SeverityFilter) &&
+        ToolMatches(v.Tool)
+    ).ToList();
+    @if (filteredViols.Any()) {
+        <div style="max-height:400px; overflow-y:auto;">
+            <table class="@TableClass">
+                <thead>
+                    <tr class="table-dark">
+                        <th style="width:80px;">Severity</th>
+                        <th style="width:80px;">Tool</th>
+                        <th style="width:140px;">Rule</th>
+                        <th>Message</th>
+                        <th style="width:80px;">WCAG</th>
+                        <th style="width:40px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in filteredViols.Take(50)) {
+                        <tr @key="v.A11yViolationId">
+                            <td>
+                                @((MarkupString)ScanBadges.SeverityBadge(v.Severity))
+                                @if (v.IsSuppressed) {
+                                    <span class="badge bg-warning text-dark ms-1" title="@v.SuppressionReason"><i class="fas fa-shield-alt"></i></span>
+                                }
+                            </td>
+                            <td><span class="badge bg-secondary">@v.Tool</span></td>
+                            <td class="small"><strong>@v.RuleId</strong></td>
+                            <td class="small">@v.Message</td>
+                            <td class="small">@v.WcagCriteria</td>
+                            <td>
+                                @if (!String.IsNullOrWhiteSpace(v.HelpUrl)) {
+                                    <a href="@v.HelpUrl" target="_blank" rel="noopener" title="Fix guidance">
+                                        <i class="fas fa-question-circle"></i>
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (filteredViols.Count > 50) {
+            <div class="text-muted small mt-1">
+                Showing 50 of @filteredViols.Count violations.
+                <a href="@ViewAllUrl">View all &rarr;</a>
+            </div>
+        }
+    } else if (Violations.Any()) {
+        <div class="alert alert-warning small py-2 mb-0 d-flex align-items-center flex-wrap gap-2">
+            <span><i class="fas fa-filter me-1"></i><strong>@Violations.Count violation@(Violations.Count == 1 ? "" : "s") on this page</strong> — all hidden by current filters.</span>
+            <button class="btn btn-sm btn-outline-dark" @onclick="OnClearFilters">
+                <i class="fas fa-times me-1"></i>Clear filters
+            </button>
+        </div>
+    } else {
+        <div class="text-success small"><i class="fas fa-check-circle me-1"></i>No violations found.</div>
+    }
+}
+
+@code {
+    [Parameter] public bool Loading { get; set; }
+
+    [Parameter] public EventCallback OnClearFilters { get; set; }
+
+    [Parameter] public string SeverityFilter { get; set; } = "all";
+
+    /// <summary>The table's CSS classes; the pages differ only in the background.</summary>
+    [Parameter] public string TableClass { get; set; } = "table table-sm table-striped mb-0";
+
+    /// <summary>Whether a violation's tool passes the page's tool filter (the pages' filter lists differ).</summary>
+    [Parameter] public Func<string, bool> ToolMatches { get; set; } = _ => true;
+
+    /// <summary>The page's violations once loaded; null shows nothing.</summary>
+    [Parameter] public List<DataObjects.A11yViolation>? Violations { get; set; }
+
+    /// <summary>Where "View all" goes when more than 50 violations match.</summary>
+    [Parameter] public string ViewAllUrl { get; set; } = "";
+
+    [Parameter] public string WcagLevelFilter { get; set; } = "all";
+}

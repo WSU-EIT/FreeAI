@@ -1,0 +1,138 @@
+@* The page results of an expanded scan run on Site Runs: a table of the pages that pass the filters, each opening to its violations. *@
+
+@if (Loading) {
+    <div class="text-center py-3"><LoadingMessage /></div>
+} else if (Pages != null && Pages.Any()) {
+    var allPages = Pages;
+    var visiblePages = GetFilteredPages(allPages).ToList();
+    @if (visiblePages.Count < allPages.Count) {
+        <div class="small text-muted mb-1">Showing @visiblePages.Count of @allPages.Count pages</div>
+    }
+    <table class="table table-sm table-hover mb-0 bg-white">
+        <thead>
+            <tr class="table-dark">
+                <th style="width:1.5rem;"></th>
+                <th>Page</th>
+                <th class="text-center" style="width:60px;">Status</th>
+                <th class="text-center" style="width:70px;">Total</th>
+                <th class="text-center" style="width:100px;">Severity</th>
+                <th class="text-center" style="width:70px;">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pr in visiblePages) {
+                bool pageExpanded = ExpandedPageIds.Contains(pr.PageScanResultId);
+                string pageDetailUrl = Helpers.BuildUrl("Pages/" + pr.PageScanResultId);
+                <tr @key="pr.PageScanResultId" class="cursor-pointer @(pageExpanded ? "table-active" : "")"
+                        @onclick="() => OnTogglePage.InvokeAsync(pr)">
+                    <td><i class="fas @(pageExpanded ? "fa-chevron-down" : "fa-chevron-right") text-muted" style="font-size:0.7rem;"></i></td>
+                    <td>
+                        <strong>@(String.IsNullOrWhiteSpace(pr.PageTitle) ? pr.Url : pr.PageTitle)</strong>
+                        <br /><small class="text-muted">@pr.Url</small>
+                    </td>
+                    <td class="text-center">
+                        @if (pr.StatusCode >= 200 && pr.StatusCode < 300) {
+                            <span class="text-success">@pr.StatusCode</span>
+                        } else if (pr.StatusCode >= 400) {
+                            <span class="text-danger">@pr.StatusCode</span>
+                        } else {
+                            @pr.StatusCode
+                        }
+                    </td>
+                    <td class="text-center fw-bold">@pr.TotalViolations</td>
+                    <td class="text-center">
+                        @if (pr.CriticalCount > 0) { <span class="badge bg-danger">@pr.CriticalCount</span> }
+                        @if (pr.SeriousCount > 0) { <span class="badge bg-warning text-dark">@pr.SeriousCount</span> }
+                        @if (pr.ModerateCount > 0) { <span class="badge bg-info text-dark">@pr.ModerateCount</span> }
+                        @if (pr.MinorCount > 0) { <span class="badge bg-secondary">@pr.MinorCount</span> }
+                    </td>
+                    <td class="text-center small text-muted">@((pr.ScanDurationMs / 1000.0).ToString("F1"))s</td>
+                </tr>
+                @if (pageExpanded) {
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div class="bg-white border-top p-3">
+                                <div class="d-flex gap-2 mb-2">
+                                    <a href="@pageDetailUrl" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-search me-1"></i>Full Page Detail
+                                    </a>
+                                    <a href="@pr.Url" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-external-link-alt me-1"></i>Visit Page
+                                    </a>
+                                </div>
+                                @* Inline violations *@
+                                <FreeAccessibilityChecker_App_UI_Scans_Violations Loading="LoadingPageViolations.Contains(pr.PageScanResultId)"
+                                        Violations="@(PageViolations.ContainsKey(pr.PageScanResultId) ? PageViolations[pr.PageScanResultId] : null)"
+                                        WcagLevelFilter="@WcagLevelFilter" SeverityFilter="@SeverityFilter"
+                                        ToolMatches="@(t => ToolFilter == "all" || t.ToLower() == ToolFilter)"
+                                        ViewAllUrl="@pageDetailUrl" OnClearFilters="OnClearFilters" />
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+} else {
+    <div class="text-muted small py-2">No page results available for this scan run.</div>
+}
+
+@code {
+    [Parameter] public HashSet<Guid> ExpandedPageIds { get; set; } = new();
+
+    /// <summary>True while the run's page results are loading.</summary>
+    [Parameter] public bool Loading { get; set; }
+
+    [Parameter] public HashSet<Guid> LoadingPageViolations { get; set; } = new();
+
+    [Parameter] public EventCallback OnClearFilters { get; set; }
+
+    /// <summary>Opens or closes a page result (the Site Runs page loads its violations the first time).</summary>
+    [Parameter] public EventCallback<DataObjects.PageScanResult> OnTogglePage { get; set; }
+
+    [Parameter] public string PageSearchText { get; set; } = "";
+
+    /// <summary>The run's page results; null until they are loaded.</summary>
+    [Parameter] public List<DataObjects.PageScanResult>? Pages { get; set; }
+
+    [Parameter] public Dictionary<Guid, List<DataObjects.A11yViolation>> PageViolations { get; set; } = new();
+
+    [Parameter] public string SeverityFilter { get; set; } = "all";
+
+    [Parameter] public string ToolFilter { get; set; } = "all";
+
+    [Parameter] public string WcagLevelFilter { get; set; } = "aa";
+
+    private IEnumerable<DataObjects.PageScanResult> GetFilteredPages(List<DataObjects.PageScanResult> pages)
+    {
+        var results = pages.AsEnumerable();
+
+        if (SeverityFilter != "all") {
+            results = SeverityFilter switch {
+                "critical" => results.Where(x => x.CriticalCount > 0),
+                "serious"  => results.Where(x => x.SeriousCount > 0),
+                "moderate" => results.Where(x => x.ModerateCount > 0),
+                "minor"    => results.Where(x => x.MinorCount > 0),
+                _          => results,
+            };
+        }
+
+        if (ToolFilter != "all") {
+            results = ToolFilter switch {
+                "axe"                => results.Where(x => x.AxeViolationCount > 0),
+                "htmlcheck"          => results.Where(x => x.HtmlCheckViolationCount > 0),
+                "htmlcs" or "ibm"   => results.Where(x => x.OverlayViolationCount > 0),
+                _                    => results,
+            };
+        }
+
+        if (!String.IsNullOrWhiteSpace(PageSearchText)) {
+            string search = PageSearchText.Trim().ToLower();
+            results = results.Where(x =>
+                x.Url.ToLower().Contains(search) ||
+                (!String.IsNullOrWhiteSpace(x.PageTitle) && x.PageTitle.ToLower().Contains(search)));
+        }
+
+        return results.OrderByDescending(x => x.TotalViolations);
+    }
+}

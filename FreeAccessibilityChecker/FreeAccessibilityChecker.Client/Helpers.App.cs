@@ -8,6 +8,7 @@ public static partial class Helpers
                 { "fa:fa-solid fa-home", new List<string> { "IconName1", "IconName2" }},
             };
 
+            foreach (var kv in FreeAccessibilityCheckerAppIcons) { icons[kv.Key] = kv.Value; }
             return icons;
         }
     }
@@ -163,6 +164,7 @@ public static partial class Helpers
             //    });
             //}
 
+            output.AddRange(FreeAccessibilityCheckerMenuItemsApp);
             return output;
         }
     }
@@ -179,6 +181,7 @@ public static partial class Helpers
     public static async Task ProcessSignalRUpdateApp(DataObjects.SignalRUpdate update)
     {
         // Process any SignalR updates specific to your app here. See the main ProcessSignalRUpdate method for an example in the MainLayout.razor page.
+        if (await FreeAccessibilityCheckerProcessSignalRUpdateApp(update)) { return; }
 
         if (update != null && (update.TenantId == null || update.TenantId == Model.TenantId)) {
             var itemId = update.ItemId;
@@ -209,6 +212,7 @@ public static partial class Helpers
     private async static Task ReloadModelApp(DataObjects.BlazorDataModelLoader? blazorDataModelLoader)
     {
         // Called from the main ReloadModel method in Helpers to load app-specific data.
+        await FreeAccessibilityCheckerReloadModelApp(blazorDataModelLoader);
     }
 
     private static void UpdateModelDeletedRecordCountsForAppItems(DataObjects.DeletedRecords deletedRecords)

@@ -1,0 +1,20 @@
+@* A hero stat card: a number over a small caps label, with a coloured left border (the Home dashboard). *@
+
+<div class="col-6 col-md-3">
+    <div class="card border-start border-4 border-@Color dashboard-stat-card">
+        <div class="card-body py-2 text-center">
+            <h3 class="mb-0">@Value</h3>
+            <small class="text-muted text-uppercase">@ChildContent</small>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>The label: an icon and a Language tag.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>The Bootstrap colour name of the left border, e.g. primary.</summary>
+    [Parameter] public string Color { get; set; } = "primary";
+
+    [Parameter] public int Value { get; set; }
+}

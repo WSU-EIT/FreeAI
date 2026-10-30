@@ -1,0 +1,761 @@
+﻿@page "/Settings/Sites"
+@page "/{TenantCode}/Settings/Sites"
+@inherits FreeAccessibilityCheckerPageBase
+@using Blazored.LocalStorage
+@using Microsoft.JSInterop
+@using Humanizer
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="Sites" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="Sites" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/EditSite/new"))" role="button" class="btn btn-success">
+                    <Language Tag="AddNewSite" IncludeIcon="true" />
+                </a>
+                <button type="button" class="btn btn-outline-primary" @onclick="ScanAllEnabled" disabled="@_bulkScanning">
+                    @if (_bulkScanning) {<span class="spinner-border spinner-border-sm me-1"></span>}
+                    <i class="fas fa-play me-1"></i>Queue All Enabled
+                </button>
+                <a href="@(Helpers.BuildUrl("Compliance/Scorecard"))" role="button" class="btn btn-outline-info" title="Cross-site triage views: scorecard, URL search, domain tree, rule hotlist">
+                    <i class="fas fa-bullseye me-1"></i>Triage Across Sites
+                </a>
+                <a href="@(Helpers.BuildUrl("Settings/Suppressions"))" role="button" class="btn btn-outline-warning" title="Manage rules suppressed for known third-party issues">
+                    <i class="fas fa-shield-alt me-1"></i>Suppressions
+                </a>
+            </div>
+        </div>
+
+        <FreeAccessibilityChecker_App_UI_AboutSection Title="About Sites">
+            <p><Language Tag="SitesAboutText" /></p>
+        </FreeAccessibilityChecker_App_UI_AboutSection>
+
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <label for="siteSearchInput" class="visually-hidden">Search sites</label>
+            <input type="text" id="siteSearchInput" class="form-control" placeholder="Search sites..."
+                    style="max-width:400px;"
+                    @bind="_searchText" @bind:event="oninput" />
+            <fieldset class="btn-group btn-group-sm m-0 p-0 border-0" style="display:inline-flex;">
+                <legend class="visually-hidden">Filter by enabled status</legend>
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterAll" autocomplete="off"
+                        checked="@(_enabledFilter == "all")" @onchange="@(() => SetEnabledFilter("all"))" />
+                <label class="btn btn-outline-secondary" for="enabledFilterAll">
+                    All <span class="badge bg-secondary ms-1">@_sites.Count</span>
+                </label>
+
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterEnabled" autocomplete="off"
+                        checked="@(_enabledFilter == "enabled")" @onchange="@(() => SetEnabledFilter("enabled"))" />
+                <label class="btn btn-outline-success" for="enabledFilterEnabled">
+                    Enabled only <span class="badge bg-success ms-1">@_sites.Count(s => s.Enabled)</span>
+                </label>
+
+                <input type="radio" class="btn-check" name="enabledFilter" id="enabledFilterDisabled" autocomplete="off"
+                        checked="@(_enabledFilter == "disabled")" @onchange="@(() => SetEnabledFilter("disabled"))" />
+                <label class="btn btn-outline-secondary" for="enabledFilterDisabled">
+                    Disabled only <span class="badge bg-dark ms-1">@_sites.Count(s => !s.Enabled)</span>
+                </label>
+            </fieldset>
+        </div>
+
+        @* ── Bulk Edit Toolbar ── *@
+        <FreeAccessibilityChecker_App_UI_Sites_BulkEdit Sites="_sites" SitePages="_sitePages"
+                BulkMode="_bulkMode" BulkSaving="_bulkSaving" BulkScanning="_bulkScanning"
+                OnToggleBulkMode="ToggleBulkMode" OnScanSelected="ScanSelected" OnSave="BulkSave" OnChanged="StateHasChanged" />
+
+        var treeRoots = BuildSiteTree();
+        if (treeRoots.Any()) {
+            <div class="d-flex align-items-center mb-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary me-2" @onclick="ExpandAllNodes" @onclick:preventDefault="true">
+                    <i class="fas fa-expand-alt me-1"></i>Expand All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="CollapseAllNodes" @onclick:preventDefault="true">
+                    <i class="fas fa-compress-alt me-1"></i>Collapse All
+                </button>
+            </div>
+            <div class="list-group">
+                @foreach (var node in treeRoots) {
+                    <FreeAccessibilityChecker_App_UI_Sites_TreeNode Owner="this" Node="node" Depth="0" />
+                }
+            </div>
+        } else {
+            <Language Tag="NoItemsToShow" />
+        }
+    }
+}
+
+@code {
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loadedData = false;
+    private bool _loading = true;
+    private bool _validatedUrl = false;
+    private string _pageName = "sites";
+    protected override string PageName => _pageName;
+    private string _searchText = "";
+    private string _enabledFilter = "all"; // "all" | "enabled" | "disabled"
+
+    private void SetEnabledFilter(string value)
+    {
+        _enabledFilter = value;
+        StateHasChanged();
+    }
+    private List<DataObjects.Site> _sites = new();
+    internal HashSet<Guid> _scanningIds = new();
+    internal HashSet<Guid> _queuedIds = new();
+    internal Dictionary<Guid, DataObjects.ScanProgress> _scanProgress = new();
+    internal Dictionary<Guid, int> _sitePageCounts = new();
+    internal Dictionary<Guid, List<DataObjects.SitePage>> _sitePages = new();
+    internal HashSet<Guid> _expandedSites = new();
+    internal HashSet<string> _expandedTreeNodes = new();
+    private List<FreeAccessibilityCheckerSiteTreeNode> _lastTreeRoots = new();
+    private Dictionary<Guid, FreeAccessibilityCheckerSiteTreeNode> _nodeMap = new();
+    private bool _treeInitialized = false;
+    internal bool _bulkMode = false;
+    private bool _bulkSaving = false;
+    private bool _bulkScanning = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+
+        if (_bulkMode) {
+            foreach (var site in _sites) {
+                var state = GetSiteCheckState(site);
+                if (state == "indeterminate") {
+                    // Cannot assign to an optional-chaining expression in JS — that's a
+                    // SyntaxError ("Invalid left-hand side in assignment") which Blazor
+                    // bubbles up as an unhandled component-render exception. Use the same
+                    // var-then-guard pattern as SetGroupIndeterminateState below.
+                    await jsRuntime.InvokeVoidAsync("eval",
+                        $"var el = document.getElementById('site-check-{site.SiteId}'); if (el) el.indeterminate = true;");
+                }
+            }
+            // Set indeterminate on group (domain) checkboxes.
+            foreach (var root in _lastTreeRoots) {
+                await SetGroupIndeterminateState(root);
+            }
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        _sitePages.Clear();
+        _expandedSites.Clear();
+        var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+        if (result != null) {
+            _sites = result;
+
+            // Load page counts for each site.
+            _sitePageCounts.Clear();
+            foreach (var site in _sites) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/GetSitePages",
+                    new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePageCounts[site.SiteId] = pages?.Count ?? 0;
+            }
+        }
+        _loading = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Reloads the Sites list and page counts in-place without toggling the page-level
+    /// loading spinner. Used after ScanComplete so newly-discovered disabled sub-sites
+    /// appear in the tree alongside the scan-completion summary update.
+    /// </summary>
+    private async Task RefreshSitesList()
+    {
+        try {
+            var result = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid>());
+            if (result == null) return;
+            _sites = result;
+            _sitePageCounts.Clear();
+            foreach (var site in _sites) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/GetSitePages",
+                    new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePageCounts[site.SiteId] = pages?.Count ?? 0;
+            }
+            _treeInitialized = false; // Force tree rebuild so new Sites appear in the right group.
+            StateHasChanged();
+        } catch { /* best-effort refresh — failures will self-correct on next manual reload */ }
+    }
+
+    private List<DataObjects.Site> GetFilteredSites()
+    {
+        IEnumerable<DataObjects.Site> seq = _sites;
+        if (_enabledFilter == "enabled") {
+            seq = seq.Where(x => x.Enabled);
+        } else if (_enabledFilter == "disabled") {
+            seq = seq.Where(x => !x.Enabled);
+        }
+        if (!String.IsNullOrWhiteSpace(_searchText)) {
+            string search = _searchText.Trim().ToLower();
+            seq = seq.Where(x => x.Name.ToLower().Contains(search) || x.BaseUrl.ToLower().Contains(search));
+        }
+        return seq.OrderBy(x => x.Name).ToList();
+    }
+
+    private void EditSite(Guid siteId)
+    {
+        Helpers.NavigateTo("Settings/EditSite/" + siteId.ToString());
+    }
+
+    private void ViewSiteRuns(Guid siteId)
+    {
+        Helpers.NavigateTo("Settings/SiteRuns/" + siteId.ToString());
+    }
+
+    internal async Task DeleteSite(Guid siteId)
+    {
+        Model.ClearMessages();
+        Model.Message_Deleting();
+
+        var deleted = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSites", new List<Guid> { siteId });
+
+        Model.ClearMessages();
+
+        if (deleted != null) {
+            if (deleted.Result) {
+                _sites = _sites.Where(x => x.SiteId != siteId).ToList();
+                StateHasChanged();
+            } else {
+                Model.ErrorMessages(deleted.Messages);
+            }
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    internal string GetStatusBadge(DataObjects.Site site)
+    {
+        if (String.Equals(site.LastScanStatus, "Running", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(site.LastScanStatus, "Queued", StringComparison.OrdinalIgnoreCase)) {
+            return "<span class=\"badge bg-info\"><span class=\"spinner-border spinner-border-sm me-1\" role=\"status\"></span>Scanning</span>";
+        }
+        if (!site.LastScanAt.HasValue) {
+            return "<span class=\"badge bg-secondary\">Not Scanned</span>";
+        }
+        if (site.LastCriticalCount > 0) {
+            return "<span class=\"badge bg-danger\">Critical</span>";
+        }
+        if (site.LastViolationCount > 0) {
+            return "<span class=\"badge bg-warning text-dark\">Violations</span>";
+        }
+        return "<span class=\"badge bg-success\">Clean</span>";
+    }
+
+    internal async Task ScanNow(Guid siteId)
+    {
+        // Optimistically show as Queued. The actual Scanning badge appears when the
+        // background service broadcasts ScanStarted (handled in SignalRUpdate).
+        _queuedIds.Add(siteId);
+        StateHasChanged();
+
+        var result = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/TriggerScan", siteId);
+        if (result != null && result.ActionResponse != null && !result.ActionResponse.Result) {
+            _queuedIds.Remove(siteId);
+            Model.ErrorMessages(result.ActionResponse.Messages);
+            StateHasChanged();
+        }
+    }
+
+    protected override void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName) { return; }
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanQueued && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _queuedIds.Add(scanRun.SiteId);
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanStarted && update.Object != null) {
+            // Background service picked up a queued scan and started running it.
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _queuedIds.Remove(scanRun.SiteId);
+                    _scanningIds.Add(scanRun.SiteId);
+                    InvokeAsync(StateHasChanged);
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json, jsonOptions);
+                if (progress != null) {
+                    _queuedIds.Remove(progress.SiteId);
+                    _scanningIds.Add(progress.SiteId);
+                    _scanProgress[progress.SiteId] = progress;
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+                   update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json, jsonOptions);
+                if (scanRun != null) {
+                    _scanningIds.Remove(scanRun.SiteId);
+                    _queuedIds.Remove(scanRun.SiteId);
+                    _scanProgress.Remove(scanRun.SiteId);
+
+                    // Update just the affected site's summary from the event payload.
+                    var site = _sites.FirstOrDefault(s => s.SiteId == scanRun.SiteId);
+                    if (site != null) {
+                        site.LastScanAt = scanRun.StartedAt;
+                        site.LastScanStatus = scanRun.Status;
+                        site.LastViolationCount = scanRun.TotalViolations;
+                        site.LastCriticalCount = scanRun.CriticalCount;
+                        site.LastScanRunId = scanRun.ScanRunId;
+                    }
+
+                    InvokeAsync(StateHasChanged);
+
+                    // The scan likely discovered new same-host links that became disabled
+                    // top-level Sites — and the page count for the scanned site may have grown.
+                    // Reload the full Sites list so they appear in the tree without manual refresh.
+                    InvokeAsync(async () => {
+                        await RefreshSitesList();
+                    });
+                }
+            } catch { }
+        }
+    }
+
+    internal async Task ToggleExpand(Guid siteId)
+    {
+        if (_expandedSites.Contains(siteId)) {
+            _expandedSites.Remove(siteId);
+        } else {
+            _expandedSites.Add(siteId);
+            if (!_sitePages.ContainsKey(siteId)) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                    "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = siteId });
+                _sitePages[siteId] = pages ?? new();
+            }
+        }
+    }
+
+    internal void ToggleSite(DataObjects.Site site, bool enabled)
+    {
+        // Per-row toggle affects only this single site. Cascading to descendants
+        // is done via the "Enable All Under" / "Disable All Under" toolbar buttons.
+        SetSiteEnabled(site, enabled);
+    }
+
+    private void SetSiteEnabled(DataObjects.Site site, bool enabled)
+    {
+        site.Enabled = enabled;
+        if (_sitePages.ContainsKey(site.SiteId)) {
+            foreach (var page in _sitePages[site.SiteId]) {
+                page.Enabled = enabled;
+            }
+        }
+    }
+
+    private void SetDescendantsEnabled(FreeAccessibilityCheckerSiteTreeNode node, bool enabled)
+    {
+        foreach (var child in node.Children) {
+            if (child.Site != null) {
+                SetSiteEnabled(child.Site, enabled);
+            }
+            SetDescendantsEnabled(child, enabled);
+        }
+    }
+
+    internal void EnableSubSites(FreeAccessibilityCheckerSiteTreeNode node)
+    {
+        SetDescendantsEnabled(node, true);
+    }
+
+    internal void DisableSubSites(FreeAccessibilityCheckerSiteTreeNode node)
+    {
+        SetDescendantsEnabled(node, false);
+    }
+
+    internal string GetSiteCheckState(DataObjects.Site site)
+    {
+        if (!_sitePages.ContainsKey(site.SiteId)) {
+            return site.Enabled ? "checked" : "unchecked";
+        }
+        var pages = _sitePages[site.SiteId];
+        if (!pages.Any()) return site.Enabled ? "checked" : "unchecked";
+        bool allOn = site.Enabled && pages.All(p => p.Enabled);
+        bool allOff = !site.Enabled && pages.All(p => !p.Enabled);
+        if (allOn) return "checked";
+        if (allOff) return "unchecked";
+        return "indeterminate";
+    }
+
+    private async Task BulkSave()
+    {
+        _bulkSaving = true;
+        StateHasChanged();
+
+        await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites", _sites);
+
+        var allPages = _sitePages.Values.SelectMany(p => p).ToList();
+        if (allPages.Any()) {
+            await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", allPages);
+        }
+
+        _bulkSaving = false;
+        _bulkMode = false;
+        await LoadData();
+    }
+
+    private void ToggleBulkMode()
+    {
+        _bulkMode = !_bulkMode;
+    }
+
+    internal void ToggleGroupNode(FreeAccessibilityCheckerSiteTreeNode groupNode, bool enabled)
+    {
+        SetGroupEnabled(groupNode, enabled);
+    }
+
+    internal void SetGroupEnabled(FreeAccessibilityCheckerSiteTreeNode groupNode, bool enabled)
+    {
+        // Enable/disable the group node's own site (if it has one).
+        if (groupNode.Site != null) {
+            SetSiteEnabled(groupNode.Site, enabled);
+        }
+        // Cascade to all descendants.
+        SetDescendantsEnabled(groupNode, enabled);
+    }
+
+    private async Task ScanAllEnabled()
+    {
+        _bulkScanning = true;
+        StateHasChanged();
+        var toScan = _sites.Where(s => s.Enabled
+            && !_scanningIds.Contains(s.SiteId)
+            && !_queuedIds.Contains(s.SiteId)).ToList();
+        // Optimistically mark all as queued so the UI shows the queued state immediately.
+        // The background service flips them to Scanning one-at-a-time via ScanStarted SignalR.
+        foreach (var site in toScan) {
+            _queuedIds.Add(site.SiteId);
+        }
+        StateHasChanged();
+        // Fire all queue requests concurrently — each creates a "Queued" ScanRun.
+        // The background service processes them one at a time.
+        var tasks = toScan.Select(site => QueueScan(site.SiteId)).ToList();
+        await Task.WhenAll(tasks);
+        _bulkScanning = false;
+        StateHasChanged();
+    }
+
+    private async Task ScanSelected()
+    {
+        _bulkScanning = true;
+        StateHasChanged();
+        var toScan = _sites.Where(s => s.Enabled
+            && !_scanningIds.Contains(s.SiteId)
+            && !_queuedIds.Contains(s.SiteId)).ToList();
+        foreach (var site in toScan) {
+            _queuedIds.Add(site.SiteId);
+        }
+        StateHasChanged();
+        var tasks = toScan.Select(site => QueueScan(site.SiteId)).ToList();
+        await Task.WhenAll(tasks);
+        _bulkScanning = false;
+        StateHasChanged();
+    }
+
+    private async Task QueueScan(Guid siteId)
+    {
+        var result = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/TriggerScan", siteId);
+        if (result != null && result.ActionResponse != null && !result.ActionResponse.Result) {
+            // Queue request rejected (e.g. already running) — clear the optimistic queued mark.
+            _queuedIds.Remove(siteId);
+        }
+    }
+
+    // ================================================================
+    // Tree model and building logic
+    // ================================================================
+
+    /// <summary>
+    /// Builds a hierarchical tree from the flat list of sites (see FreeAccessibilityCheckerSiteTree.Build), keeping the node lookup
+    /// and the first-build auto-expand of the root nodes.
+    /// </summary>
+    private List<FreeAccessibilityCheckerSiteTreeNode> BuildSiteTree()
+    {
+        var filtered = GetFilteredSites();
+        if (!filtered.Any()) return new();
+
+        var roots = FreeAccessibilityCheckerSiteTree.Build(filtered);
+
+        // Build SiteId → node lookup for cascading.
+        _nodeMap.Clear();
+        FreeAccessibilityCheckerSiteTree.BuildNodeMap(roots, _nodeMap);
+
+        // Auto-expand root nodes on first build only.
+        if (!_treeInitialized) {
+            _treeInitialized = true;
+            foreach (var root in roots) {
+                if (root.Children.Any()) {
+                    _expandedTreeNodes.Add(root.Key);
+                }
+            }
+        }
+
+        _lastTreeRoots = roots.OrderBy(r => r.Label).ToList();
+        return _lastTreeRoots;
+    }
+
+    /// <summary>
+    /// Wraps an action from a child component (the tree rows) so that this page redraws after it runs,
+    /// as it does for its own event handlers.
+    /// </summary>
+    internal EventCallback Callback(Action action) => EventCallback.Factory.Create(this, action);
+
+    internal EventCallback Callback(Func<Task> action) => EventCallback.Factory.Create(this, action);
+
+    internal EventCallback<T> Callback<T>(Action<T> action) => EventCallback.Factory.Create<T>(this, action);
+
+    internal void ToggleTreeNode(string key)
+    {
+        if (!_expandedTreeNodes.Remove(key)) {
+            _expandedTreeNodes.Add(key);
+        }
+    }
+
+    private void ExpandAllNodes()
+    {
+        FreeAccessibilityCheckerSiteTree.CollectAllNodeKeys(_lastTreeRoots, _expandedTreeNodes);
+    }
+
+    private void CollapseAllNodes()
+    {
+        _expandedTreeNodes.Clear();
+    }
+
+    private async Task SetGroupIndeterminateState(FreeAccessibilityCheckerSiteTreeNode node)
+    {
+        if (node.Site == null && node.Children.Any()) {
+            int total = FreeAccessibilityCheckerSiteTree.CountDescendants(node);
+            int enabled = FreeAccessibilityCheckerSiteTree.CountEnabledDescendants(node);
+            if (enabled > 0 && enabled < total) {
+                await jsRuntime.InvokeVoidAsync("eval",
+                    $"var el = document.getElementById('group-check-{node.Key}'); if (el) el.indeterminate = true;");
+            }
+        }
+        foreach (var child in node.Children) {
+            await SetGroupIndeterminateState(child);
+        }
+    }
+
+    // ---- FreeAccessibilityChecker.App.UI.Sites.Convert.cs ----
+    /// <summary>
+    /// Finds a Site that this site is a "same-host child of" — i.e. another site whose
+    /// BaseUrl is a strict URL prefix of this one (e.g. flex.em.wsu.edu is a parent of
+    /// flex.em.wsu.edu/Touchpoints). Returns null if no such parent exists. Used to
+    /// decide whether to show the "Convert to Page" button on a Site row.
+    /// </summary>
+    internal DataObjects.Site? FindSameHostParentSite(DataObjects.Site site)
+    {
+        try {
+            Uri thisUri = new Uri(site.BaseUrl.TrimEnd('/'));
+            string thisNormalized = thisUri.AbsoluteUri.TrimEnd('/').ToLowerInvariant();
+
+            // Walk all sites to find the LONGEST prefix match — that's the closest parent.
+            DataObjects.Site? best = null;
+            int bestLen = -1;
+            foreach (var candidate in _sites) {
+                if (candidate.SiteId == site.SiteId) continue;
+                if (candidate.Deleted) continue;
+                string candNorm = candidate.BaseUrl.TrimEnd('/').ToLowerInvariant();
+                if (candNorm.Length >= thisNormalized.Length) continue;
+                // Must match host AND be a prefix terminating on a path boundary (or origin).
+                if (!thisNormalized.StartsWith(candNorm, StringComparison.OrdinalIgnoreCase)) continue;
+                char nextChar = thisNormalized[candNorm.Length];
+                if (nextChar != '/' && nextChar != '?' && nextChar != '#') continue;
+                if (candNorm.Length > bestLen) {
+                    best = candidate;
+                    bestLen = candNorm.Length;
+                }
+            }
+            return best;
+        } catch {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Promotes a SitePage into its own Site. Used when a discovered "page" is actually
+    /// a virtual sub-app that warrants its own auth/schedule/scan policy. The new Site
+    /// inherits the page's full URL (parent.BaseUrl + page.Path) as its BaseUrl. The
+    /// original SitePage is deleted from the parent.
+    /// </summary>
+    internal async Task PromotePageToSite(DataObjects.Site parentSite, DataObjects.SitePage page)
+    {
+        try {
+            string fullUrl = (parentSite.BaseUrl.TrimEnd('/') + (page.Path.StartsWith("/") ? page.Path : "/" + page.Path)).TrimEnd('/');
+            string newName = string.IsNullOrWhiteSpace(page.Title)
+                ? parentSite.Name + " / " + page.Path.Trim('/').Split('/').LastOrDefault()
+                : page.Title;
+
+            var newSite = new DataObjects.Site {
+                SiteId = Guid.Empty,
+                TenantId = parentSite.TenantId,
+                Name = newName,
+                BaseUrl = fullUrl,
+                Enabled = page.Enabled,
+                PublicVisible = true,
+                MaxConcurrency = parentSite.MaxConcurrency > 0 ? parentSite.MaxConcurrency : 5,
+            };
+
+            var saved = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites",
+                new List<DataObjects.Site> { newSite });
+            if (saved == null || !saved.Any()) {
+                Model.UnknownError();
+                return;
+            }
+
+            // Delete the original page on the parent.
+            await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSitePages",
+                new List<Guid> { page.SitePageId });
+
+            // Refresh local state.
+            if (_sitePages.ContainsKey(parentSite.SiteId)) {
+                _sitePages[parentSite.SiteId].RemoveAll(p => p.SitePageId == page.SitePageId);
+                _sitePageCounts[parentSite.SiteId] = _sitePages[parentSite.SiteId].Count;
+            }
+            await LoadData();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog("PromotePageToSite failed: " + ex.Message);
+            Model.UnknownError();
+        }
+    }
+
+    /// <summary>
+    /// Confirmation wrapper around ConvertSiteToPage. Shows what will happen
+    /// (delete this site's scan history, move N pages over) before doing it.
+    /// </summary>
+    internal async Task ConfirmConvertSiteToPage(DataObjects.Site site, DataObjects.Site parentSite)
+    {
+        int pageCount = _sitePageCounts.ContainsKey(site.SiteId) ? _sitePageCounts[site.SiteId] : 0;
+        string msg = $"Convert '{site.Name}' into a page of '{parentSite.Name}'?\n\n"
+            + $"• A new page will be created on '{parentSite.Name}' for this site's URL.\n"
+            + (pageCount > 0 ? $"• {pageCount} pages currently on '{site.Name}' will be moved to '{parentSite.Name}' (with paths re-rooted).\n" : "")
+            + $"• '{site.Name}' will be deleted, including any scan history.\n\n"
+            + $"Continue?";
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", msg);
+        if (!confirmed) return;
+        await ConvertSiteToPage(site, parentSite);
+    }
+
+    private async Task ConvertSiteToPage(DataObjects.Site site, DataObjects.Site parentSite)
+    {
+        try {
+            // The path-suffix that distinguishes this site from its parent.
+            string parentBase = parentSite.BaseUrl.TrimEnd('/');
+            string thisBase = site.BaseUrl.TrimEnd('/');
+            string suffix = "/";
+            if (thisBase.StartsWith(parentBase, StringComparison.OrdinalIgnoreCase)
+                && thisBase.Length > parentBase.Length) {
+                suffix = thisBase.Substring(parentBase.Length);
+                if (!suffix.StartsWith("/")) suffix = "/" + suffix;
+            }
+
+            // Load this site's existing pages so we can move them too.
+            if (!_sitePages.ContainsKey(site.SiteId)) {
+                var pages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                    "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = site.SiteId });
+                _sitePages[site.SiteId] = pages ?? new();
+            }
+
+            // Load parent's existing pages for de-dup.
+            var parentPages = await Helpers.GetOrPost<List<DataObjects.SitePage>>(
+                "api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = parentSite.SiteId }) ?? new();
+            HashSet<string> existingPaths = new HashSet<string>(parentPages.Select(p => p.Path), StringComparer.OrdinalIgnoreCase);
+
+            int sortOrder = parentPages.Count;
+            List<DataObjects.SitePage> toAdd = new List<DataObjects.SitePage>();
+
+            // Add the site's BaseUrl itself as a page (e.g. "/Touchpoints").
+            if (!existingPaths.Contains(suffix)) {
+                sortOrder++;
+                toAdd.Add(new DataObjects.SitePage {
+                    SitePageId = Guid.Empty,
+                    SiteId = parentSite.SiteId,
+                    Path = suffix,
+                    Title = site.Name,
+                    Enabled = site.Enabled,
+                    RequiresAuth = false,
+                    SortOrder = sortOrder,
+                });
+                existingPaths.Add(suffix);
+            }
+
+            // Add each of the converted site's pages with paths re-rooted under the parent.
+            foreach (var p in _sitePages[site.SiteId]) {
+                string childPath = p.Path.StartsWith("/") ? p.Path : "/" + p.Path;
+                string newPath = (suffix.TrimEnd('/') + childPath);
+                if (string.IsNullOrEmpty(newPath)) newPath = "/";
+                if (existingPaths.Contains(newPath)) continue;
+                sortOrder++;
+                toAdd.Add(new DataObjects.SitePage {
+                    SitePageId = Guid.Empty,
+                    SiteId = parentSite.SiteId,
+                    Path = newPath,
+                    Title = p.Title,
+                    Enabled = p.Enabled,
+                    RequiresAuth = p.RequiresAuth,
+                    SortOrder = sortOrder,
+                });
+                existingPaths.Add(newPath);
+            }
+
+            if (toAdd.Any()) {
+                await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", toAdd);
+            }
+
+            // Delete the original site (cascades scan history per existing FKs).
+            await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSites",
+                new List<Guid> { site.SiteId });
+
+            await LoadData();
+        } catch (Exception ex) {
+            await Helpers.ConsoleLog("ConvertSiteToPage failed: " + ex.Message);
+            Model.UnknownError();
+        }
+    }
+}

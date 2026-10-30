@@ -1,0 +1,70 @@
+@* The static WCAG Compliance Levels guide on the Compliance dashboard: a heading that opens and closes three cards (A, AA, AAA). *@
+
+<div class="card mb-3 border-0 bg-light">
+    <div class="card-body py-3">
+        <div class="d-flex align-items-center mb-2 cursor-pointer" @onclick="OnToggle" role="button">
+            <i class="fas fa-universal-access text-primary me-2 fs-5"></i>
+            <strong class="me-auto">WCAG Compliance Levels</strong>
+            <i class="fas @(Expanded ? "fa-chevron-up" : "fa-chevron-down") text-muted"></i>
+        </div>
+        @if (Expanded) {
+            <div class="row g-3 mt-1">
+                <div class="col-md-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body py-2">
+                            <h6 class="card-title text-success mb-1"><i class="fas fa-check-circle me-1"></i> Level A <span class="badge bg-success ms-1">Minimum</span></h6>
+                            <p class="small mb-1">Basic accessibility. Without this, some users <strong>cannot use the site at all</strong>.</p>
+                            <ul class="small mb-0 ps-3">
+                                <li>Images have alt text</li>
+                                <li>Form fields have labels</li>
+                                <li>Pages have titles</li>
+                                <li>No keyboard traps</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body py-2">
+                            <h6 class="card-title text-primary mb-1"><i class="fas fa-balance-scale me-1"></i> Level AA <span class="badge bg-primary ms-1">Required</span></h6>
+                            <p class="small mb-1"><strong>Legal standard</strong> for most organizations (Section 508, ADA, EU EN 301 549).</p>
+                            <ul class="small mb-0 ps-3">
+                                <li>Color contrast ≥ 4.5:1</li>
+                                <li>Text resizable to 200%</li>
+                                <li>Consistent navigation</li>
+                                <li>Error identification &amp; suggestion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-secondary">
+                        <div class="card-body py-2">
+                            <h6 class="card-title text-secondary mb-1"><i class="fas fa-star me-1"></i> Level AAA <span class="badge bg-secondary ms-1">Aspirational</span></h6>
+                            <p class="small mb-1">Highest level. Not required by law but recommended where feasible.</p>
+                            <ul class="small mb-0 ps-3">
+                                <li>Enhanced contrast ≥ 7:1</li>
+                                <li>Sign language for media</li>
+                                <li>No timing limits</li>
+                                <li>Context-sensitive help</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-primary mt-3 mb-0 py-2 small">
+                <i class="fas fa-gavel me-1"></i>
+                <strong>Our obligation:</strong> WCAG 2.1 Level AA compliance. All Level A and AA violations must be remediated.
+                Level AAA is best-effort. This scanner tests against <strong>WCAG 2.1 AA</strong> criteria.
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Whether the three level cards are showing.</summary>
+    [Parameter] public bool Expanded { get; set; }
+
+    /// <summary>Raised when the heading is clicked; the dashboard flips Expanded.</summary>
+    [Parameter] public EventCallback OnToggle { get; set; }
+}

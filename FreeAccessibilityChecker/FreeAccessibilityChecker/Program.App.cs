@@ -12,6 +12,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeAccessibilityCheckerAppModifyBuilderEnd(output);
         return output;
     }
 
@@ -19,6 +20,7 @@ public partial class Program
     {
         var output = builder;
         // Add any app-specific modifications to the builder here.
+        output = FreeAccessibilityCheckerAppModifyBuilderStart(output);
         return output;
     }
 
@@ -26,6 +28,7 @@ public partial class Program
     {
         var output = app;
         // Add any app-specific modifications to the app here.
+        output = FreeAccessibilityCheckerAppModifyEnd(output);
         return output;
     }
 
@@ -53,6 +56,7 @@ public partial class Program
         var output = loader;
 
         //output.MyProperty = builder.Configuration.GetValue<string>("MyProperty"); ;
+        output = FreeAccessibilityCheckerConfigurationHelpersLoadApp(output, builder);
 
         return output;
     }

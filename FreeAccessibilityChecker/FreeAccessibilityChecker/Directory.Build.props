@@ -1,0 +1,15 @@
+<Project>
+  <!--
+    FreeAccessibilityChecker: project and package references for FreeAccessibilityChecker's own code (the scanner service in
+    FreeAccessibilityChecker.App.Services.Scanner*.cs and the API in Controllers/FreeAccessibilityChecker.App.API*.cs), kept here so
+    FreeAccessibilityChecker.csproj stays stock FreeCRM and a framework upgrade can overwrite it. MSBuild imports this file
+    automatically for every project in this folder; the condition limits it to the server project.
+    Microsoft.Playwright stays a direct reference: its build targets copy the browser driver into this project's
+    output, and build assets do not flow through the Scanner project reference.
+  -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'FreeAccessibilityChecker'">
+    <ProjectReference Include="..\FreeAccessibilityChecker.Scanner\FreeAccessibilityChecker.Scanner.csproj" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.56.0" />
+    <PackageReference Include="NCrontab" Version="3.3.3" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,59 @@
+@* The dark monospace box that shows scan log lines (Sites.Runs, Scans.Detail, Scans.Monitor). *@
+@* Each page keeps its own header and sets the box size; the box renders the lines, coloured by level. *@
+
+<div id="@ContainerId" class="@ContainerClass" style="@BoxStyle">
+    @if (Entries.Any()) {
+        @foreach (var entry in VisibleEntries) {
+            <div class="@GetLogLineClass(entry)" style="white-space:pre-wrap; line-height:@LineHeight;">[@entry.Timestamp.ToString("HH:mm:ss")]@TimestampGap@entry.Message</div>
+        }
+    } else if (ShowWaiting) {
+        <div class="text-secondary" style="white-space:pre-wrap; line-height:@LineHeight;">
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Waiting for scan output... (logs will appear as pages are scanned)
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? ContainerClass { get; set; }
+
+    /// <summary>The element id, used by the page's auto-scroll script.</summary>
+    [Parameter] public string? ContainerId { get; set; }
+
+    [Parameter] public string? BorderRadius { get; set; }
+
+    [Parameter] public List<DataObjects.ScanLogEntry> Entries { get; set; } = new();
+
+    [Parameter] public string FontSize { get; set; } = "0.8rem";
+
+    [Parameter] public string LineHeight { get; set; } = "1.6";
+
+    [Parameter] public string MaxHeight { get; set; } = "400px";
+
+    [Parameter] public string Padding { get; set; } = "0.75rem";
+
+    /// <summary>Show the "detail" level lines too.</summary>
+    [Parameter] public bool ShowDetail { get; set; } = true;
+
+    /// <summary>Show a "waiting" line while there are no entries yet.</summary>
+    [Parameter] public bool ShowWaiting { get; set; }
+
+    /// <summary>The text between the "[HH:mm:ss]" stamp and the message.</summary>
+    [Parameter] public string TimestampGap { get; set; } = "  ";
+
+    private string BoxStyle => "max-height:" + MaxHeight + "; overflow-y:auto; font-family:'Cascadia Code','Fira Code','Consolas',monospace; font-size:" + FontSize
+        + "; background:#1e1e1e; color:#d4d4d4; padding:" + Padding + ";" + (String.IsNullOrEmpty(BorderRadius) ? "" : " border-radius:" + BorderRadius + ";");
+
+    private IEnumerable<DataObjects.ScanLogEntry> VisibleEntries => ShowDetail ? Entries : Entries.Where(e => e.Level != "detail");
+
+    private static string GetLogLineClass(DataObjects.ScanLogEntry entry)
+    {
+        return entry.Level switch {
+            "error" => "text-danger",
+            "warning" => "text-warning",
+            "success" => "text-success",
+            "detail" => "text-secondary",
+            _ => "",  // info uses default text color
+        };
+    }
+}

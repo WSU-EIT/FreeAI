@@ -1,0 +1,115 @@
+@* The Accessibility Health roll-up on Page Detail: pass and fail counts per tool (axe-core, IBM Equal Access, htmlcheck, HTML_CodeSniffer). *@
+
+@{
+    int axeFails = Violations.Count(v => v.Tool.Equals("axe", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+    int axeAxePassed = PageResult.AxePassCount;
+    int axeIncomplete = PageResult.AxeIncompleteCount;
+    int axeInapplicable = PageResult.AxeInapplicableCount;
+    int axeTotal = axeFails + axeAxePassed + axeIncomplete + axeInapplicable;
+
+    int ibmFails = Violations.Count(v => v.Tool.Equals("ibm", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+    int ibmPassed = PageResult.IbmPassCount;
+    int ibmPotential = PageResult.IbmPotentialCount;
+    int ibmManual = PageResult.IbmManualCount;
+    int ibmTotal = ibmFails + ibmPassed + ibmPotential + ibmManual;
+
+    int htmlCheckFails = Violations.Where(v => v.Tool.Equals("htmlcheck", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed)
+        .Select(v => v.RuleId).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+    int htmlCheckTotal = PageResult.HtmlCheckTotalChecks > 0 ? PageResult.HtmlCheckTotalChecks : 0;
+    int htmlCheckPassed = PageResult.HtmlCheckPassCount;
+
+    int htmlCsFails = Violations.Count(v => v.Tool.Equals("htmlcs", StringComparison.OrdinalIgnoreCase) && !v.IsSuppressed);
+
+    int totalChecksPassed = axeAxePassed + ibmPassed + htmlCheckPassed;
+    int totalChecksFailed = axeFails + ibmFails + htmlCheckFails + htmlCsFails;
+    int totalChecksRun = totalChecksPassed + totalChecksFailed;
+    double overallPassRate = totalChecksRun > 0 ? 100.0 * totalChecksPassed / totalChecksRun : 0;
+    string passBarColor = overallPassRate >= 95 ? "bg-success" : overallPassRate >= 80 ? "bg-info" : overallPassRate >= 60 ? "bg-warning" : "bg-danger";
+}
+
+<div class="card mb-3">
+    <div class="card-header py-2 d-flex align-items-center">
+        <strong><i class="fas fa-heartbeat me-1" aria-hidden="true"></i>Accessibility Health</strong>
+        <span class="ms-3 text-muted small">@totalChecksPassed of @totalChecksRun rule checks passed</span>
+        <span class="ms-auto badge fs-6 @passBarColor">@overallPassRate.ToString("F0")% pass rate</span>
+    </div>
+    <div class="card-body py-2">
+        @if (totalChecksRun > 0) {
+            <div class="progress mb-3" style="height:10px;" role="progressbar"
+                    aria-valuenow="@((int)overallPassRate)" aria-valuemin="0" aria-valuemax="100"
+                    aria-label="Overall rule pass rate">
+                <div class="progress-bar @passBarColor" style="width:@overallPassRate.ToString("F0")%;"></div>
+            </div>
+        }
+        <div class="row g-2 small">
+            @* axe-core *@
+            <div class="col-md-6 col-lg-3">
+                <div class="border rounded p-2 h-100">
+                    <div class="d-flex align-items-center mb-1">
+                        <strong>axe-core</strong>
+                        @if (axeTotal > 0) {
+                            <span class="ms-auto text-muted">@axeTotal rules</span>
+                        }
+                    </div>
+                    @if (axeAxePassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@axeAxePassed pass</span> }
+                    @if (axeFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@axeFails fail</span> }
+                    @if (axeIncomplete > 0) { <span class="badge bg-warning text-dark me-1" title="Could not auto-determine — needs review">@axeIncomplete incomplete</span> }
+                    @if (axeInapplicable > 0) { <span class="badge bg-light text-dark border" title="Rule does not apply to this page">@axeInapplicable n/a</span> }
+                    @if (axeTotal == 0) { <span class="text-muted">no data</span> }
+                </div>
+            </div>
+            @* IBM Equal Access *@
+            <div class="col-md-6 col-lg-3">
+                <div class="border rounded p-2 h-100">
+                    <div class="d-flex align-items-center mb-1">
+                        <strong>IBM Equal Access</strong>
+                        @if (ibmTotal > 0) {
+                            <span class="ms-auto text-muted">@ibmTotal rules</span>
+                        }
+                    </div>
+                    @if (ibmPassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@ibmPassed pass</span> }
+                    @if (ibmFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@ibmFails fail</span> }
+                    @if (ibmPotential > 0) { <span class="badge bg-warning text-dark me-1" title="Needs human review">@ibmPotential potential</span> }
+                    @if (ibmManual > 0) { <span class="badge bg-info text-dark me-1" title="Requires manual verification">@ibmManual manual</span> }
+                    @if (ibmTotal == 0) { <span class="text-muted">no data (CDN may be blocked)</span> }
+                </div>
+            </div>
+            @* HtmlChecker *@
+            <div class="col-md-6 col-lg-3">
+                <div class="border rounded p-2 h-100">
+                    <div class="d-flex align-items-center mb-1">
+                        <strong>htmlcheck</strong>
+                        @if (htmlCheckTotal > 0) {
+                            <span class="ms-auto text-muted">@htmlCheckTotal rules</span>
+                        }
+                    </div>
+                    @if (htmlCheckPassed > 0) { <span class="badge bg-success me-1" title="Rules that passed">@htmlCheckPassed pass</span> }
+                    @if (htmlCheckFails > 0) { <span class="badge bg-danger me-1" title="Rules that failed">@htmlCheckFails fail</span> }
+                    @if (htmlCheckTotal == 0 && htmlCheckFails == 0) { <span class="text-muted">no data</span> }
+                </div>
+            </div>
+            @* HTML_CodeSniffer (failures-only tool) *@
+            <div class="col-md-6 col-lg-3">
+                <div class="border rounded p-2 h-100">
+                    <div class="d-flex align-items-center mb-1">
+                        <strong>HTML_CodeSniffer</strong>
+                        <span class="ms-auto text-muted small" title="HTMLCS reports failures only — no rule total">issues only</span>
+                    </div>
+                    @if (htmlCsFails > 0) {
+                        <span class="badge bg-danger me-1">@htmlCsFails issues</span>
+                    } else {
+                        <span class="badge bg-success">clean</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>The page result whose pass counts are shown.</summary>
+    [Parameter, EditorRequired] public DataObjects.PageScanResult PageResult { get; set; } = null!;
+
+    /// <summary>The page's violations, counted per tool.</summary>
+    [Parameter] public List<DataObjects.A11yViolation> Violations { get; set; } = new();
+}

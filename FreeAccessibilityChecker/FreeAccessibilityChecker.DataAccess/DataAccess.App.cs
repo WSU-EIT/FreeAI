@@ -93,6 +93,7 @@ public partial class DataAccess
         var output = new DataObjects.BooleanResponse();
 
         try {
+            output = await FreeAccessibilityCheckerDeleteRecordsApp(Rec, CurrentUser); if (!output.Result) return output;
 
             if (Rec is EFModels.EFModels.Department) {
                 var rec = Rec as EFModels.EFModels.Department;
@@ -191,6 +192,7 @@ public partial class DataAccess
         var output = blazorDataModelLoader;
 
         // Update any app-specific data model properties here.
+        output = await FreeAccessibilityCheckerGetBlazorDataModelApp(output, CurrentUser);
 
         return output;
     }
@@ -352,6 +354,7 @@ public partial class DataAccess
         // Return output.Result = true if all tasks were processed successfully.
         // Otherwise, add any error messages to output.Messages and set output.Result = false.
         output.Result = true;
+        output = await FreeAccessibilityCheckerProcessBackgroundTasksApp(TenantId, Iteration);
 
         // You can use the iterations to control various intervals. For example, if you have the ProcessingIntervalSeconds set to 10 seconds
         // in the appsettings.json file, you could make a task run every minute like this:

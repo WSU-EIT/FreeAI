@@ -1,0 +1,353 @@
+﻿@page "/Compliance/Status/{SiteId}"
+@page "/{TenantCode}/Compliance/Status/{SiteId}"
+@implements IDisposable
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject BlazorDataModel Model
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="ComplianceStatus" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="ComplianceStatus" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + SiteId))" class="btn btn-dark">
+                    <Language Tag="Back" IncludeIcon="true" />
+                </a>
+                <a href="@(Helpers.BuildUrl("Reports/Audit/" + SiteId))" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-alt me-1"></i><Language Tag="AuditReport" />
+                </a>
+            </div>
+        </div>
+
+        @* ── Site Header ── *@
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@_site.Name</h5>
+                <div class="text-muted mb-1">@_site.BaseUrl</div>
+                @if (_site.LastScanAt.HasValue) {
+                    <div class="text-muted">
+                        <Language Tag="LastScan" />: @_site.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* ── Summary ── *@
+        <div class="row mb-3 g-2">
+            <div class="col-auto">
+                <select class="form-select form-select-sm" aria-label="Filter by WCAG level" @bind="_wcagLevelFilter" @bind:after="RecalculateSummary">
+                    <option value="all">All WCAG Levels</option>
+                    <option value="a">Level A only</option>
+                    <option value="aa">Level AA (A + AA)</option>
+                    <option value="aaa">Level AAA (A + AA + AAA)</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-auto">
+                <span class="badge bg-secondary fs-6">@_evaluatedCount / @_filteredCriteriaCount <Language Tag="CriteriaEvaluated" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-success fs-6">@_supportsCount <Language Tag="Supports" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-warning text-dark fs-6">@_partialCount <Language Tag="PartiallySupports" /></span>
+            </div>
+            <div class="col-auto">
+                <span class="badge bg-danger fs-6">@_doesNotSupportCount <Language Tag="DoesNotSupport" /></span>
+            </div>
+        </div>
+
+        @* ── Color Legend ── *@
+        <div class="mb-3 d-flex gap-3 flex-wrap">
+            <span><span class="badge bg-success">&nbsp;&nbsp;</span> Supports</span>
+            <span><span class="badge bg-warning text-dark">&nbsp;&nbsp;</span> Partially Supports</span>
+            <span><span class="badge bg-danger">&nbsp;&nbsp;</span> Does Not Support</span>
+            <span><span class="badge bg-secondary">&nbsp;&nbsp;</span> Not Evaluated</span>
+        </div>
+
+        @* ── WCAG 2.2 AA Criteria Grid by Principle ── *@
+        @foreach (var principle in _principles) {
+            var principleCriteria = GetFilteredCriteria(principle);
+            @if (principleCriteria.Any()) {
+            <h4 class="mt-4 mb-2">@principle</h4>
+            <table class="table table-sm">
+                <thead>
+                    <tr class="table-dark">
+                        <th style="width:80px;"><Language Tag="Criterion" ReplaceSpaces="true" /></th>
+                        <th><Language Tag="Name" ReplaceSpaces="true" /></th>
+                        <th style="width:80px;"><Language Tag="Level" ReplaceSpaces="true" /></th>
+                        <th style="width:180px;"><Language Tag="ConformanceStatus" ReplaceSpaces="true" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in principleCriteria) {
+                        var status = GetConformanceStatus(item.Criterion);
+                        string rowClass = GetRowClass(status);
+                        <tr class="@rowClass">
+                            <td>@item.Criterion</td>
+                            <td>@item.Name</td>
+                            <td><span class="badge bg-dark">@item.Level</span></td>
+                            <td>@((MarkupString)GetStatusBadge(status))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            }
+        }
+    }
+}
+@code {
+    [Parameter] public string? SiteId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private string _pageName = "compliancestatus";
+
+    private DataObjects.Site _site = new DataObjects.Site();
+    private List<DataObjects.WcagCriterionDefinition> _criteria = new();
+    private Dictionary<string, string> _conformanceMap = new();
+    private string _wcagLevelFilter = "aa";
+
+    private int _filteredCriteriaCount = 0;
+    private int _evaluatedCount = 0;
+    private int _supportsCount = 0;
+    private int _partialCount = 0;
+    private int _doesNotSupportCount = 0;
+
+    private static readonly List<string> _principles = new() {
+        "Perceivable", "Operable", "Understandable", "Robust"
+    };
+
+    public void Dispose()
+    {
+        Model.OnChange -= OnDataModelUpdated;
+        Model.OnSignalRUpdate -= SignalRUpdate;
+    }
+
+    protected override void OnInitialized()
+    {
+        Model.OnChange += OnDataModelUpdated;
+        Model.OnSignalRUpdate += SignalRUpdate;
+        Model.View = _pageName;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded) {
+            if (!_loadedData) {
+                _loadedData = true;
+                await LoadData();
+            }
+        }
+    }
+
+    private void OnDataModelUpdated()
+    {
+        if (Model.View == _pageName) {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+
+        _criteria = DataObjects.WcagCriteria.All.ToList();
+
+        Guid siteGuid = Guid.Parse(SiteId!);
+
+        // Use public endpoints (AllowAnonymous data)
+        var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetPublicSites", Model.TenantId);
+        if (sites != null) {
+            var match = sites.FirstOrDefault(x => x.SiteId == siteGuid);
+            if (match != null) {
+                _site = match;
+            }
+        }
+
+        // Load manual checks via public endpoint
+        var checks = await Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/GetManualChecks", new { Ids = new List<Guid>(), SiteId = siteGuid });
+        List<DataObjects.ManualCheckResult> manualChecks = checks ?? new();
+
+        // Load automated violations from the latest public scan
+        List<DataObjects.A11yViolation> violations = new();
+        if (_site.LastScanAt.HasValue) {
+            // Get scan history to find latest scan run ID
+            var history = await Helpers.GetOrPost<List<DataObjects.ScanRun>>("api/Data/GetPublicScanHistory",
+                new { SiteId = siteGuid, Count = 1 });
+            if (history != null && history.Any()) {
+                var latestScan = history.First();
+                var viols = await Helpers.GetOrPost<List<DataObjects.A11yViolation>>("api/Data/GetViolationsByRule",
+                    new { ScanRunId = latestScan.ScanRunId, CanonicalRuleId = (string?)null });
+                if (viols != null) {
+                    violations = viols;
+                }
+            }
+        }
+
+        BuildConformanceMap(manualChecks, violations);
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void BuildConformanceMap(List<DataObjects.ManualCheckResult> manualChecks, List<DataObjects.A11yViolation> violations)
+    {
+        _conformanceMap.Clear();
+
+        // Map automated violations to WCAG criteria
+        foreach (var violation in violations) {
+            if (!String.IsNullOrWhiteSpace(violation.WcagCriteria)) {
+                var criteriaList = violation.WcagCriteria.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                foreach (var criterion in criteriaList) {
+                    string normalized = NormalizeCriterion(criterion);
+                    if (_criteria.Any(c => c.Criterion == normalized)) {
+                        _conformanceMap[normalized] = "Does Not Support";
+                    }
+                }
+            }
+        }
+
+        // Layer manual checks on top
+        foreach (var check in manualChecks) {
+            if (!String.IsNullOrWhiteSpace(check.Status) && check.Status != "Not Tested") {
+                string normalized = check.WcagCriterion ?? "";
+                if (check.Status == "Pass") {
+                    _conformanceMap[normalized] = "Supports";
+                } else if (check.Status == "Fail") {
+                    _conformanceMap[normalized] = "Does Not Support";
+                } else if (check.Status == "N/A") {
+                    _conformanceMap[normalized] = "Not Applicable";
+                }
+            }
+        }
+
+        // For automatable criteria with no violations, mark as Supports
+        foreach (var c in _criteria.Where(x => x.CanBeAutomated)) {
+            if (!_conformanceMap.ContainsKey(c.Criterion)) {
+                if (_site.LastScanAt.HasValue) {
+                    _conformanceMap[c.Criterion] = "Supports";
+                }
+            }
+        }
+
+        _evaluatedCount = _conformanceMap.Count;
+        _filteredCriteriaCount = _criteria.Count;
+        _supportsCount = _conformanceMap.Count(x => x.Value == "Supports");
+        _partialCount = _conformanceMap.Count(x => x.Value == "Partially Supports");
+        _doesNotSupportCount = _conformanceMap.Count(x => x.Value == "Does Not Support");
+
+        RecalculateSummary();
+    }
+
+    private void RecalculateSummary()
+    {
+        var allowedLevels = _wcagLevelFilter switch {
+            "a" => new HashSet<string> { "A" },
+            "aa" => new HashSet<string> { "A", "AA" },
+            "aaa" => new HashSet<string> { "A", "AA", "AAA" },
+            _ => null
+        };
+        if (allowedLevels != null) {
+            var filtered = _criteria.Where(c => allowedLevels.Contains(c.Level)).Select(c => c.Criterion).ToHashSet();
+            var filteredMap = _conformanceMap.Where(x => filtered.Contains(x.Key));
+            _filteredCriteriaCount = filtered.Count;
+            _evaluatedCount = filteredMap.Count();
+            _supportsCount = filteredMap.Count(x => x.Value == "Supports");
+            _partialCount = filteredMap.Count(x => x.Value == "Partially Supports");
+            _doesNotSupportCount = filteredMap.Count(x => x.Value == "Does Not Support");
+        } else {
+            _filteredCriteriaCount = _criteria.Count;
+            _evaluatedCount = _conformanceMap.Count;
+            _supportsCount = _conformanceMap.Count(x => x.Value == "Supports");
+            _partialCount = _conformanceMap.Count(x => x.Value == "Partially Supports");
+            _doesNotSupportCount = _conformanceMap.Count(x => x.Value == "Does Not Support");
+        }
+    }
+
+    private string GetConformanceStatus(string criterion)
+    {
+        return _conformanceMap.ContainsKey(criterion) ? _conformanceMap[criterion] : "Not Evaluated";
+    }
+
+    private List<DataObjects.WcagCriterionDefinition> GetFilteredCriteria(string principle)
+    {
+        var allowedLevels = _wcagLevelFilter switch {
+            "a" => new HashSet<string> { "A" },
+            "aa" => new HashSet<string> { "A", "AA" },
+            "aaa" => new HashSet<string> { "A", "AA", "AAA" },
+            _ => null
+        };
+        var items = _criteria.Where(x => x.Principle == principle);
+        if (allowedLevels != null) {
+            items = items.Where(x => allowedLevels.Contains(x.Level));
+        }
+        return items.OrderBy(x => x.Criterion).ToList();
+    }
+
+    private string GetStatusBadge(string status)
+    {
+        return status switch {
+            "Supports" => "<span class=\"badge bg-success\">Supports</span>",
+            "Does Not Support" => "<span class=\"badge bg-danger\">Does Not Support</span>",
+            "Partially Supports" => "<span class=\"badge bg-warning text-dark\">Partially Supports</span>",
+            "Not Applicable" => "<span class=\"badge bg-info\">Not Applicable</span>",
+            _ => "<span class=\"badge bg-secondary\">Not Evaluated</span>",
+        };
+    }
+
+    private string GetRowClass(string status)
+    {
+        return status switch {
+            "Supports" => "table-success",
+            "Does Not Support" => "table-danger",
+            "Partially Supports" => "table-warning",
+            _ => "",
+        };
+    }
+
+    private static string NormalizeCriterion(string raw)
+    {
+        string cleaned = raw.Trim().ToLower()
+            .Replace("wcag", "").Replace("sc", "").Replace("-", ".").Replace("_", ".").Trim('.');
+
+        var match = System.Text.RegularExpressions.Regex.Match(cleaned, @"(\d+)\.?(\d+)\.?(\d+)");
+        if (match.Success) {
+            return match.Groups[1].Value + "." + match.Groups[2].Value + "." + match.Groups[3].Value;
+        }
+        return raw.Trim();
+    }
+
+    private void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _site.SiteId == Guid.Empty) { return; }
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+            update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object != null) {
+                try {
+                    var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                    var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                        new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (scanRun != null && scanRun.SiteId == _site.SiteId) {
+                        InvokeAsync(async () => { await LoadData(); });
+                    }
+                } catch { }
+            }
+        }
+    }
+}

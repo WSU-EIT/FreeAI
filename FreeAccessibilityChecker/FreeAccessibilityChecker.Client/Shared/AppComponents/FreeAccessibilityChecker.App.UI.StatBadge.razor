@@ -1,0 +1,15 @@
+@* A summary count as a large badge in its own grid column (Compliance dashboard, Trend report). *@
+
+<div class="col-auto">
+    <span class="badge @Color fs-6">@Value @ChildContent</span>
+</div>
+
+@code {
+    /// <summary>The label after the number.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>The Bootstrap badge classes, e.g. bg-warning text-dark.</summary>
+    [Parameter] public string Color { get; set; } = "bg-secondary";
+
+    [Parameter] public int Value { get; set; }
+}

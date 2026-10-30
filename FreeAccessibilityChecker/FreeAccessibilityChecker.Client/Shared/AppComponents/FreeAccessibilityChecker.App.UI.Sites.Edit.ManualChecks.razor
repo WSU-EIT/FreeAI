@@ -1,0 +1,92 @@
+@* The Manual Checks tab on Edit Site: the site's manual WCAG check results, with their criterion names. *@
+@inject BlazorDataModel Model
+
+@if (Active) {
+    <div class="mb-2">
+        <button type="button" class="btn btn-primary btn-sm" @onclick="SaveManualChecks">
+            <Language Tag="SaveAll" IncludeIcon="true" />
+        </button>
+    </div>
+
+    @if (ManualChecks.Any()) {
+        <table class="table table-sm">
+            <thead>
+                <tr class="table-dark">
+                    <th style="width:80px;"><Language Tag="Criterion" ReplaceSpaces="true" /></th>
+                    <th><Language Tag="Name" ReplaceSpaces="true" /></th>
+                    <th style="width:140px;"><Language Tag="Status" ReplaceSpaces="true" /></th>
+                    <th><Language Tag="Notes" ReplaceSpaces="true" /></th>
+                    <th style="width:120px;"><Language Tag="TestedBy" ReplaceSpaces="true" /></th>
+                    <th style="width:140px;"><Language Tag="TestedAt" ReplaceSpaces="true" /></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var check in ManualChecks.OrderBy(x => x.WcagCriterion)) {
+                    <tr>
+                        <td>@check.WcagCriterion</td>
+                        <td>@DataObjects.WcagCriteria.NameOf(check.WcagCriterion)</td>
+                        <td>
+                            <select class="form-select form-select-sm" @bind="check.Status"
+                                    @bind:after="@(() => OnManualCheckStatusChanged(check))">
+                                <option value="Not Tested">Not Tested</option>
+                                <option value="Pass">Pass</option>
+                                <option value="Fail">Fail</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" @bind="check.Notes" @bind:event="oninput" />
+                        </td>
+                        <td>@check.TestedBy</td>
+                        <td>
+                            @if (check.TestedAt.HasValue) {
+                                @check.TestedAt.Value.ToString("yyyy-MM-dd")
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <Language Tag="NoItemsToShow" />
+    }
+}
+
+@code {
+    /// <summary>Whether the Manual Checks tab is the one showing.</summary>
+    [Parameter] public bool Active { get; set; }
+
+    [Parameter] public List<DataObjects.ManualCheckResult> ManualChecks { get; set; } = new();
+
+    [Parameter] public EventCallback<List<DataObjects.ManualCheckResult>> ManualChecksChanged { get; set; }
+
+    [Parameter] public DataObjects.Site Site { get; set; } = new();
+
+    private void OnManualCheckStatusChanged(DataObjects.ManualCheckResult check)
+    {
+        check.TestedBy = Model.User.DisplayName;
+        check.TestedAt = DateTime.UtcNow;
+    }
+
+    private async Task SaveManualChecks()
+    {
+        Model.ClearMessages();
+        Model.Message_Saving();
+
+        foreach (var m in ManualChecks) {
+            m.SiteId = Site.SiteId;
+        }
+
+        var saved = await Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/SaveManualChecks", ManualChecks);
+
+        Model.ClearMessages();
+
+        if (saved != null) {
+            ManualChecks = saved;
+            await ManualChecksChanged.InvokeAsync(ManualChecks);
+            Model.Message_Saved();
+        } else {
+            Model.UnknownError();
+        }
+    }
+}

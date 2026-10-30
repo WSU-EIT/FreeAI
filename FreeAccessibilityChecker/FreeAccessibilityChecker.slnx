@@ -3,15 +3,24 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="Accessibility.md" />
+    <File Path="ACCESSIBILITY_GUIDELINES.md" />
     <File Path="LICENSE" />
     <File Path="README.md" />
     <File Path="Util.exe" />
     <File Path="UtilMacOS" />
   </Folder>
+  <Folder Name="/TestSite/">
+    <Project Path="BlazorApp1/BlazorApp1.Client/BlazorApp1.Client.csproj" Id="40b438f9-8a78-48f7-aa73-b34fb25e770f" />
+    <Project Path="BlazorApp1/BlazorApp1/BlazorApp1.csproj" Id="bf158cbf-a541-49cc-a68a-6021dd741989" />
+  </Folder>
+  <Project Path="A11yAudit/A11yAudit.csproj" />
+  <Project Path="Docs/Docs.csproj" />
   <Project Path="FreeAccessibilityChecker.Client/FreeAccessibilityChecker.Client.csproj" />
-  <Project Path="FreeAccessibilityChecker.DataAccess/FreeAccessibilityChecker.DataAccess.csproj" Id="DB4645E7-F86D-4614-82FA-8D9D1CBB37E3" />
-  <Project Path="FreeAccessibilityChecker.DataObjects/FreeAccessibilityChecker.DataObjects.csproj" Id="6C24867E-126B-4978-9261-33A5A080EF39" />
-  <Project Path="FreeAccessibilityChecker.EFModels/FreeAccessibilityChecker.EFModels.csproj" Id="A7A49A9D-EFA5-49AE-8B46-14DB8F56B4BB" />
-  <Project Path="FreeAccessibilityChecker.Plugins/FreeAccessibilityChecker.Plugins.csproj" Id="9ABB1B2B-9ED2-490C-8214-5F8226BBED9B" />
+  <Project Path="FreeAccessibilityChecker.Console/FreeAccessibilityChecker.Console.csproj" />
+  <Project Path="FreeAccessibilityChecker.DataAccess/FreeAccessibilityChecker.DataAccess.csproj" Id="52ab8249-0ed6-4d8b-813d-57af76f31647" />
+  <Project Path="FreeAccessibilityChecker.DataObjects/FreeAccessibilityChecker.DataObjects.csproj" Id="cca456dc-8a04-41ad-aad2-14ea55df007e" />
+  <Project Path="FreeAccessibilityChecker.EFModels/FreeAccessibilityChecker.EFModels.csproj" Id="727333ee-37e7-4ae7-b0ce-29c8cabec9c5" />
+  <Project Path="FreeAccessibilityChecker.Plugins/FreeAccessibilityChecker.Plugins.csproj" Id="5c6e23bf-43e2-48aa-ac18-4c25e975b440" />
+  <Project Path="FreeAccessibilityChecker.Scanner/FreeAccessibilityChecker.Scanner.csproj" />
   <Project Path="FreeAccessibilityChecker/FreeAccessibilityChecker.csproj" />
 </Solution>

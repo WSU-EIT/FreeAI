@@ -1,0 +1,374 @@
+﻿@page "/Settings/EditSite/{SiteId}"
+@page "/{TenantCode}/Settings/EditSite/{SiteId}"
+@inherits FreeAccessibilityCheckerPageBase
+@using Blazored.LocalStorage
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject Radzen.DialogService DialogService
+@if (Model.Loaded && Model.View == _pageName) {
+    @if (_loading) {
+        <h1 class="page-title">
+            <Language Tag="@_title" IncludeIcon="true" />
+        </h1>
+        <LoadingMessage />
+    } else {
+        <div class="@Model.StickyMenuClass">
+            <h1 class="page-title">
+                <Language Tag="@_title" IncludeIcon="true" />
+                <StickyMenuIcon />
+            </h1>
+            <div class="btn-group mb-2" role="group">
+                <a href="@(Helpers.BuildUrl("Settings/Sites"))" class="btn btn-dark">
+                    <Language Tag="Back" IncludeIcon="true" />
+                </a>
+                <button type="button" class="btn btn-success" @onclick="Save">
+                    <Language Tag="Save" IncludeIcon="true" />
+                </button>
+                @if (!_isNew && _site.Enabled) {
+                    @if (_scanning) {
+                        <button type="button" class="btn btn-outline-info" disabled>
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            @if (_editScanProgress != null) {
+                                @($"Scanning {_editScanProgress.CurrentPage}/{_editScanProgress.TotalPages}")
+                            } else {
+                                @("Scan Queued...")
+                            }
+                        </button>
+                    } else {
+                        <button type="button" class="btn btn-outline-primary" @onclick="ScanNow">
+                            <i class="fas fa-play"></i> Scan Now
+                        </button>
+                    }
+                }
+                @if (!_isNew) {
+                    <DeleteConfirmation OnConfirmed="Delete"
+                            CancelText="@Helpers.ConfirmButtonTextCancel"
+                            DeleteText="@Helpers.ConfirmButtonTextDelete"
+                            ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                }
+            </div>
+        </div>
+
+        @* ── Tab Navigation ── *@
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <button type="button" class="nav-link @(_activeTab == "details" ? "active" : "")"
+                        @onclick="@(() => _activeTab = "details")">
+                    <Language Tag="Details" />
+                </button>
+            </li>
+            @if (!_isNew) {
+                <li class="nav-item">
+                    <button type="button" class="nav-link @(_activeTab == "pages" ? "active" : "")"
+                            @onclick="@(() => _activeTab = "pages")">
+                        <Language Tag="Pages" /> <span class="badge bg-secondary">@_pages.Count</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link @(_activeTab == "credentials" ? "active" : "")"
+                            @onclick="@(() => _activeTab = "credentials")">
+                        <Language Tag="Credentials" /> <span class="badge bg-secondary">@_credentials.Count</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link @(_activeTab == "manualchecks" ? "active" : "")"
+                            @onclick="@(() => _activeTab = "manualchecks")">
+                        <Language Tag="ManualChecks" /> <span class="badge bg-secondary">@_manualChecks.Count</span>
+                    </button>
+                </li>
+            }
+        </ul>
+
+        @* ── Details Tab ── *@
+        @if (_activeTab == "details") {
+            <RequiredIndicator />
+
+            <div class="mb-2 form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" id="edit-site-Enabled" @bind="_site.Enabled" />
+                <label for="edit-site-Enabled" class="form-check-label"><Language Tag="Enabled" /></label>
+            </div>
+
+            <div class="mb-2 form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" id="edit-site-PublicVisible" @bind="_site.PublicVisible" />
+                <label for="edit-site-PublicVisible" class="form-check-label"><Language Tag="PublicVisible" /></label>
+            </div>
+
+            <div class="mb-2 form-check form-switch">
+                <input type="checkbox" role="switch" class="form-check-input" id="edit-site-IsFreeCRMApp" @bind="_site.IsFreeCRMApp" />
+                <label for="edit-site-IsFreeCRMApp" class="form-check-label"><Language Tag="IsFreeCRMApp" /></label>
+            </div>
+
+            <div class="mb-2">
+                <label for="edit-site-Name">
+                    <Language Tag="Name" Required="true" />
+                </label>
+                <input type="text" id="edit-site-Name" @bind="_site.Name" @bind:event="oninput"
+                        class="@Helpers.MissingValue(_site.Name, "form-control")" />
+            </div>
+
+            <div class="mb-2">
+                <label for="edit-site-BaseUrl">
+                    <Language Tag="BaseUrl" Required="true" />
+                </label>
+                <input type="text" id="edit-site-BaseUrl" @bind="_site.BaseUrl" @bind:event="oninput"
+                        class="@Helpers.MissingValue(_site.BaseUrl, "form-control")"
+                        placeholder="https://example.com" />
+            </div>
+
+            <div class="mb-2">
+                <label for="edit-site-ScanScheduleCron">
+                    <Language Tag="ScanScheduleCron" />
+                </label>
+                <input type="text" id="edit-site-ScanScheduleCron" @bind="_site.ScanScheduleCron" @bind:event="oninput"
+                        class="form-control" placeholder="0 2 * * 0" />
+                <small class="text-muted"><Language Tag="CronFormatHelp" /></small>
+            </div>
+
+            <div class="mb-2">
+                <label for="edit-site-MaxConcurrency">
+                    <Language Tag="MaxConcurrency" />
+                </label>
+                <input type="number" id="edit-site-MaxConcurrency" @bind="_site.MaxConcurrency"
+                        class="form-control" min="1" max="20" />
+            </div>
+
+            @if (!_isNew && _site.LastScanAt.HasValue) {
+                <div class="mb-2">
+                    <label><Language Tag="LastScan" /></label>
+                    <div class="form-control-plaintext">
+                        @_site.LastScanAt.Value.ToString("yyyy-MM-dd HH:mm") &mdash;
+                        @((MarkupString)GetStatusBadge(_site))
+                        (@_site.LastViolationCount <Language Tag="Violations" />)
+                    </div>
+                </div>
+            }
+        }
+
+        @* ── Pages, Credentials and Manual Checks tabs (each shows only while its tab is active) ── *@
+        <FreeAccessibilityChecker_App_UI_Sites_Edit_Pages Active="@(_activeTab == "pages")" Site="_site" @bind-Pages="_pages" />
+        <FreeAccessibilityChecker_App_UI_Sites_Edit_Credentials Active="@(_activeTab == "credentials")" Site="_site" @bind-Credentials="_credentials" />
+        <FreeAccessibilityChecker_App_UI_Sites_Edit_ManualChecks Active="@(_activeTab == "manualchecks")" Site="_site" @bind-ManualChecks="_manualChecks" />
+    }
+}
+@code {
+    [Parameter] public string? SiteId { get; set; }
+    [Parameter] public string? TenantCode { get; set; }
+
+    private bool _loading = true;
+    private bool _loadedData = false;
+    private bool _isNew = false;
+    private bool _validatedUrl = false;
+    private string _title = "";
+    private string _activeTab = "details";
+    private string _pageName = "editsite";
+    protected override string PageName => _pageName;
+
+    private DataObjects.Site _site = new DataObjects.Site();
+    private List<DataObjects.SitePage> _pages = new();
+    private List<DataObjects.SiteCredential> _credentials = new();
+    private List<DataObjects.ManualCheckResult> _manualChecks = new();
+    private bool _scanning = false;
+    private DataObjects.ScanProgress? _editScanProgress = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) {
+            Model.TenantCodeFromUrl = TenantCode;
+        }
+
+        if (Model.Loaded && Model.LoggedIn) {
+            if (!Model.User.Admin) {
+                Helpers.NavigateToRoot();
+                return;
+            }
+
+            if (!_validatedUrl) {
+                _validatedUrl = true;
+                await Helpers.ValidateUrl(TenantCode);
+            }
+
+            if (!_loadedData || Helpers.StringValue(Model.NavigationId) != Helpers.StringValue(SiteId)) {
+                _loadedData = true;
+                await LoadSite();
+            }
+        }
+    }
+
+    private async Task LoadSite()
+    {
+        _loading = true;
+
+        if (SiteId == "new") {
+                _isNew = true;
+                _title = "AddNewSite";
+                Model.NavigationId = SiteId;
+                _site = new DataObjects.Site {
+                TenantId = Model.TenantId,
+                SiteId = Guid.Empty,
+                Enabled = true,
+                MaxConcurrency = 5,
+                PublicVisible = true,
+            };
+        } else {
+            _isNew = false;
+            _title = "EditSite";
+            Model.NavigationId = SiteId;
+            Model.ViewIsEditPage = true;
+
+            Guid siteGuid = Guid.Parse(SiteId!);
+
+            var sites = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/GetSites", new List<Guid> { siteGuid });
+            if (sites != null && sites.Any()) {
+                _site = sites.First();
+            }
+
+            // Load child data in parallel
+            var pagesTask = Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/GetSitePages", new { Ids = new List<Guid>(), SiteId = siteGuid });
+            var credsTask = Helpers.GetOrPost<List<DataObjects.SiteCredential>>("api/Data/GetSiteCredentials", new { Ids = new List<Guid>(), SiteId = siteGuid });
+            var checksTask = Helpers.GetOrPost<List<DataObjects.ManualCheckResult>>("api/Data/GetManualChecks", new { Ids = new List<Guid>(), SiteId = siteGuid });
+
+            await Task.WhenAll(pagesTask, credsTask, checksTask);
+
+            if (pagesTask.Result != null) _pages = pagesTask.Result;
+            if (credsTask.Result != null) _credentials = credsTask.Result;
+            if (checksTask.Result != null) _manualChecks = checksTask.Result;
+        }
+
+        _loading = false;
+        StateHasChanged();
+        await Helpers.DelayedFocus("edit-site-Name");
+    }
+
+    private async Task Save()
+    {
+        Model.ClearMessages();
+
+        List<string> errors = new();
+        string focus = "";
+
+        if (String.IsNullOrWhiteSpace(_site.Name)) {
+            errors.Add(Helpers.MissingRequiredField("Name"));
+            if (focus == "") { focus = "edit-site-Name"; }
+        }
+
+        if (String.IsNullOrWhiteSpace(_site.BaseUrl)) {
+            errors.Add(Helpers.MissingRequiredField("BaseUrl"));
+            if (focus == "") { focus = "edit-site-BaseUrl"; }
+        }
+
+        if (errors.Any()) {
+            Model.ErrorMessages(errors);
+            await Helpers.DelayedFocus(focus);
+            return;
+        }
+
+        Model.Message_Saving();
+
+        var saved = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites", new List<DataObjects.Site> { _site });
+
+        Model.ClearMessages();
+
+        if (saved != null && saved.Any()) {
+            var result = saved.First();
+            if (result.ActionResponse.Result) {
+                if (_isNew) {
+                    Helpers.NavigateTo("Settings/EditSite/" + result.SiteId.ToString());
+                } else {
+                    _site = result;
+                    Model.Message_Saved();
+                }
+            } else {
+                Model.ErrorMessages(result.ActionResponse.Messages);
+            }
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private async Task Delete()
+    {
+        Model.ClearMessages();
+        Model.Message_Deleting();
+
+        var deleted = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSites", new List<Guid> { _site.SiteId });
+
+        Model.ClearMessages();
+
+        if (deleted != null) {
+            if (deleted.Result) {
+                Helpers.NavigateTo("Settings/Sites");
+            } else {
+                Model.ErrorMessages(deleted.Messages);
+            }
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private string GetStatusBadge(DataObjects.Site site)
+    {
+        if (!site.LastScanAt.HasValue) {
+            return "<span class=\"badge bg-secondary\">Not Scanned</span>";
+        }
+        if (site.LastCriticalCount > 0) {
+            return "<span class=\"badge bg-danger\">Critical</span>";
+        }
+        if (site.LastViolationCount > 0) {
+            return "<span class=\"badge bg-warning text-dark\">Violations</span>";
+        }
+        return "<span class=\"badge bg-success\">Clean</span>";
+    }
+
+    private async Task ScanNow()
+    {
+        _scanning = true;
+        _editScanProgress = null;
+        StateHasChanged();
+
+        var result = await Helpers.GetOrPost<DataObjects.ScanRun>("api/Data/TriggerScan", _site.SiteId);
+        if (result != null && result.ActionResponse != null && !result.ActionResponse.Result) {
+            _scanning = false;
+            Model.ErrorMessages(result.ActionResponse.Messages);
+            StateHasChanged();
+        }
+    }
+
+    protected override void SignalRUpdate(DataObjects.SignalRUpdate update)
+    {
+        if (Model.View != _pageName || _site == null) { return; }
+
+        if (update.UpdateType == DataObjects.SignalRUpdateType.ScanProgress && update.Object != null) {
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var progress = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanProgress>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (progress != null && progress.SiteId == _site.SiteId) {
+                    _scanning = true;
+                    _editScanProgress = progress;
+                    RequestThrottledRender();
+                }
+            } catch { }
+        } else if (update.UpdateType == DataObjects.SignalRUpdateType.ScanComplete ||
+                   update.UpdateType == DataObjects.SignalRUpdateType.ScanFailed) {
+            if (update.Object == null) { return; }
+            try {
+                var json = System.Text.Json.JsonSerializer.Serialize(update.Object);
+                var scanRun = System.Text.Json.JsonSerializer.Deserialize<DataObjects.ScanRun>(json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (scanRun == null || scanRun.SiteId != _site.SiteId) { return; }
+
+                // Update site summary from event payload — no full reload needed.
+                _site.LastScanAt = scanRun.StartedAt;
+                _site.LastScanStatus = scanRun.Status;
+                _site.LastViolationCount = scanRun.TotalViolations;
+                _site.LastCriticalCount = scanRun.CriticalCount;
+                _site.LastScanRunId = scanRun.ScanRunId;
+                _scanning = false;
+                _editScanProgress = null;
+
+                InvokeAsync(StateHasChanged);
+            } catch { }
+        }
+    }
+}

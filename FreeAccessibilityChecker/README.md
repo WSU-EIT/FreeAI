@@ -1,184 +1,283 @@
-# FreeCRM 
+﻿# FreeAccessibilityChecker
 
-An open-source CRM solution built in C# Blazor WebAssembly using .NET 10. You can use this project as-is,
-or customize it to fit your needs. Or, just grab code that you need to use in your project.
+**Created by [Washington State University Enrollment Information Technology (WSU-EIT)](https://em.wsu.edu/eit/) · Free and open-source**
 
-## Database Setup & Default Admin Login
+An open-source web accessibility auditing platform built in C# / Blazor WebAssembly / .NET 10.
+FreeAccessibilityChecker automatically scans websites for WCAG 2.1 and WCAG 2.2 Level AA violations,
+generates rich visual reports, and provides a full multi-tenant web UI for managing scan targets,
+reviewing findings, and tracking remediation progress.
 
-The application is configured to use a local SQL Server database by default.
-You can change this in the appsettings.json file.
-Assuming your have SQL Server installed and your local account has permission to create databases,
-a new database will be created and you will be able to login with a username and password of 'admin'.
+Built by the Enrollment Information Technology (EIT) team at Washington State University to
+satisfy obligations under ADA Title II, Washington State Technology Policy USER-01, and
+UPPM 10.45 — and released for free so any organization can use it. WCAG 2.1 AA is required
+today; WCAG 2.2 AA is required by **July 1, 2026**.
 
-If you update your connection string to point to a different server, you will need
-to make sure the user specified for the connection has permissions to modify the database schema.
+---
 
-## Utilities
+## What It Does
 
-The previous utilities "Remove Modules from FreeCRM.exe", "Rename FreeCRM.exe", and
-"Upgrade FreeCRM.exe" have now been combined into a new single "Util.exe" utility,
-referred to below as Util. This Util console application has an intuitive main menu
-with options, as well as a built-in help to show all available commands.
-Command in the utility are not case-sensitive.
+| Capability | Detail |
+|-----------|--------|
+| **4-engine consensus scanning** | axe-core · IBM Equal Access · HTML CodeSniffer · custom HtmlChecker — results merged and deduplicated |
+| **WCAG 2.1 & 2.2 Level AA** | Covers all A and AA success criteria across Perceivable, Operable, Understandable, Robust |
+| **Visual overlays** | QuickPeek region map · landmark wireframe · screen reader linearized view |
+| **Color Vision Deficiency simulations** | 7 CVD types rendered as side-by-side screenshots |
+| **Structural checks** | Heading hierarchy · skip-link presence · `<main>` landmark · `<table>` headers · button names |
+| **Keyboard & mobile** | Keyboard nav simulation · mobile viewport scan · text-spacing test |
+| **Reading level analysis** | Flesch-Kincaid and related metrics flagged per page |
+| **SSL / certificate audit** | Cert expiry and configuration checked per site |
+| **PDF + HTML reports** | Full per-page and per-site reports generated via QuestPDF |
+| **Scheduled & on-demand scans** | NCrontab-driven background service or triggered from the web UI |
+| **CLI tool** | `dotnet run -- scan --url https://example.com` — no web UI required |
+| **Static source analysis** | Scan Blazor/Razor/HTML source files for ARIA, image, form, and structural issues before deployment |
+| **Multi-tenant** | One deployment serves multiple sites/organizations with isolated data |
+| **Plugin extensibility** | Drop `.cs` or `.plugin` files into `PluginFiles/` — no recompile of the core required |
 
-## Step 1 - Rename the Solution
+---
 
-Using rename with the Util will rename the project files,
-create new GUIDs for each project in the solution,
-and rename namespaces to match your project name.
+## Projects at a Glance
 
-The tool supports adding the rename value as a command-line argument. For example:
+| Project | Type | Accessibility Role |
+|---------|------|--------------------|
+| **FreeAccessibilityChecker** | Blazor Server host | API, auth, SignalR hub, scheduled scan service, PDF report delivery |
+| **FreeAccessibilityChecker.Client** | Blazor WebAssembly | Web UI — scan dashboards, issue review, site management, real-time progress via SignalR |
+| **FreeAccessibilityChecker.Scanner** | Class library | Core scanning engine — Playwright + 4 a11y engines + overlays + report generator |
+| **FreeAccessibilityChecker.Console** | CLI executable | Standalone scanner — scan any URL from the terminal; static source-code a11y analysis; AI handoff report |
+| **FreeAccessibilityChecker.DataAccess** | Class library | All database I/O, business logic, PDF generation, Azure AD / LDAP auth, MS Graph |
+| **FreeAccessibilityChecker.EFModels** | Class library | EF Core entities + DbContext (SQL Server · SQLite · PostgreSQL · MySQL) |
+| **FreeAccessibilityChecker.DataObjects** | Class library | Shared DTOs — scan models, site configs, SignalR payloads — used by both server and WASM client |
+| **FreeAccessibilityChecker.Plugins** | Class library | Roslyn dynamic C# compiler host — powers drop-in plugin and Blazor component extensibility |
+| **Docs** | Documentation | All architecture guides, patterns, component docs, and this quickstart |
 
-`Util --rename:MyNewProjectName`
+---
 
-## Step 2 - Remove Unwanted Modules
+## Quick Start
 
-If you want to remove one or more of the optional components from the application
-you can use the Util to do so.
-This utility may still leave remnants of the removed modules in the code.
-If you find any items that are not removed that you believe should be,
-please open an issue on GitHub. Please include the name of the file and the line number
-where the item is located.
-
-The removal tool supports two command-line options. They are:
-
-`Util --remove:Module1,Module2,etc.`
-
-This removes any named modules.
-
-`Util --keep:Module1,Module2,etc.`
-
-This removes any modules not named. For example, to remove all optional modules except
-the Tags module, you would use:
-
-`Util --keep:Tags`
-
-You can also remove all optional modules without having to list them all by using:
-
-`Util --remove:all`
-
-Do not use any spaces in the command line options. The names of the modules that can be
-kept or removed are:
-
-- About
-- Appointments
-- EmailTemplates
-- Invoices
-- Locations
-- Logo
-- Payments
-- SamplePages
-- SamplePlugins
-- Services
-- Tags
-
-## Details
-
-### Plugins
-
-FreeCRM supports a plugin architecture that allows you to extend the functionality
-of the software. See the example files in the Plugins folder for examples of how
-to use the various plugin types. You can easily add support for more plugin types
-to support your custom application changes by following the various examples
-already built into the application. The types built in out of the box are:
-"Auth", "BackgroundProcess", "Example", and "UserUpdate".
-
-Plugins can have a .cs file extension and be included in your project as source code,
-or they can have the .plugin extension for files that may have build conflicts
-with your solution. For example, the HelloWorld sample plugin uses an external dll
-file that would cause build issues if it were included as a .cs file.
-See the .assemblies file used with that plugin to see how external files can be included.
-These external references can be paths to files or can be statements that evaluate
-to the location of the files at runtime, like:
-
-```
-.\HelloWorld\HelloWorld.dll
-typeof(SomeNameSpace.SomeProperty).Assembly.Location
+```bash
+git clone https://github.com/WSU-EIT/FreeA11yChecker.git
+cd FreeAccessibilityChecker
+dotnet restore
+dotnet build
+dotnet run --project FreeAccessibilityChecker
 ```
 
-### Background Service
+Navigate to `https://localhost:5001` to open the web UI.
 
-FreeCRM includes a background service that can be started when your application starts
-to perform periodic tasks. This is controlled by the settings in the BackgroundService
-section of appsettings.json. By default, the background service is enabled and configured
-to run every 60 seconds.
+### CLI — Scan Without the Web UI
 
-For tenants that are configured to mark records as deleted instead of deleting them immediately,
-this background service will take care of permanently deleting those records after the
-specified retention period has passed.
+```bash
+# Scan sites configured in appsettings.json
+dotnet run --project FreeAccessibilityChecker.Console -- scan
 
-If you want detailed logging for the background service then set the LogFilePath with
-the path to the folder where you want the logs to be stored. The application will need
-to be running under credentials that have write access to that folder.
+# Quick scan of any URL
+dotnet run --project FreeAccessibilityChecker.Console -- scan --url https://example.com
 
-The StartOnLoad flag indicates if the tasks to be run should be started immediately,
-or if they should wait until the first timer interval to start. For example, if this
-is set to false and the IntervalSeconds is set to 60, then the first time the tasks
-will run is 60 seconds after the application starts. If you have something that needs
-to be run as soon as the application starts, then set this to true.
+# Scan specific pages
+dotnet run --project FreeAccessibilityChecker.Console -- scan --url https://example.com --pages /,/about,/contact
 
-There are two methods to tie into the background service to run your own tasks.
-First, you can modify the ProcessBackgroundTasksApp method in the DataAccess.App.cs file
-to run methods in there. The second method is to build plugins using the new
-"BackgroundProcess" plugin type. See the ExampleBackgroundProcess.cs file in the
-Plugins folder for an example of how to build a background process plugin.
-The example plugin will simple log a message to the console each time it runs,
-and to the logging file if you have one configured.
+# Scan with authentication
+dotnet run --project FreeAccessibilityChecker.Console -- scan --url https://example.com --user admin --pass secret
 
-If you are running in a load balanced environment with multiple instances of the application
-and you only want the background service to run on a specific instance, you can set the
-LoadBalancingFilter value in the BackgroundService section of appsettings.json to a value
-that must be matched in the name of the current System.Environment.MachineName.
+# Interactive menu
+dotnet run --project FreeAccessibilityChecker.Console
+```
 
-### IIS Configuration for the Background Service
+### Configuration (User Secrets)
 
-If you are hosting on IIS and want to ensure that the background service is always running,
-set the Application Pool Start Mode to "AlwaysRunning" and set the Preload Enabled flag
-for the application settings to true. The Preload Enabled flag is only available
-if you have installed the Application Initialization feature for IIS.
+The web app and CLI share the same `UserSecretsId` — set credentials once, both tools pick them up.
 
-## Upgrade
+```bash
+dotnet user-secrets set "ConnectionStrings:Default" "<connection-string>" --project FreeAccessibilityChecker
+dotnet user-secrets set "App:SomeKey" "<value>" --project FreeAccessibilityChecker
+```
 
-If you are running an older version of an application based on the FreeCRM
-framework and you have already migrated to use .app. files for all of your
-app-specific code, then you can use the Util console
-application to upgrade your existing application. To do so download a fresh
-copy of the FreeCRM files, run the "rename" option in the utility to rename
-the application using the exact same namespace as your existing application.
-Then, use the "remove" option in the utility to remove any modules
-that you won't be using in your application. Finally, run the
-"upgrade" option in the utility which will attempt to migrate your existing
-code into the new version.
+### Regenerating the audit evidence (A11yAudit)
 
-This tool can take a single command-line argument of the path to your
-existing application. For example:
+Scan results (`A11yAudit/<Target>/latest`, run and dated folders, JSON and screenshot output) and the `Docs/showcase/runs` evidence are generated output and are not kept in the source tree. To regenerate them, run the A11yAudit orchestrator from the folder that holds `FreeAccessibilityChecker.slnx`:
 
-`Util --upgrade:"C:\MyExistingApp"`
+```bash
+dotnet run --project A11yAudit                  # scan every target in A11yAudit/appsettings.*.json
+dotnet run --project A11yAudit -- BlazorApp1    # one target by name (also --local-only / --external-only)
+.\A11yAudit\run-audit.ps1 -SkipBuild            # PowerShell wrapper, same flags (-Target, -LocalOnly, -ExternalOnly)
+```
 
-There are edge cases that cannot be updated with this tool, such as having
-additional project in your solution. The tool will copy those projects,
-but any references in other projects must be added manually.
+See `A11yAudit/README.md` for the targets and output layout.
 
-The tool will produce a report that will help with any additional steps
-that will be required for the migration.
+---
 
-The commands in the Util console application can be chained together to perform
-all steps in one call. For example, to rename your app, remove some modules, and
-perform the upgrade you could use:
+## Plugins
 
-`--Rename:MyNewProjectName --Keep:about,tags --Upgrade:"C:\Path\To\Current\Version"`
+FreeAccessibilityChecker supports a plugin architecture for extending functionality without modifying
+core source files. Plugins live in `FreeAccessibilityChecker/PluginFiles/` and are loaded at startup.
 
-## Mac OS
+**Built-in plugin types:**
 
-A separate UtilMacOS file is available for use on Macs with Apple silicone.
-To make this work you must open a console into the folder where the file
-exists and issue the following command:
+| Type | Purpose |
+|------|---------|
+| `Auth` | Custom authentication strategy (LDAP, SSO, etc.) |
+| `BackgroundProcess` | Task executed on each background service tick (e.g., post-scan webhooks, custom alerting) |
+| `Example` | General-purpose extensibility hook |
+| `UserUpdate` | Fires when a user record is saved |
+| Blazor Components | `.blazor`/`.razor` files — rendered dynamically in the UI without recompiling |
 
-```chmod +x UtilMacOS```
+Plugin files use `.cs` (compiled with the solution) or `.plugin` (plain text, loaded at runtime —
+useful for code that references external DLLs not in the solution). A `.assemblies` sidecar
+file lists any external DLL paths the plugin needs:
 
-Then, to run the application issue the following command:
+```
+.\MyPlugin\MyPlugin.dll
+typeof(SomeNameSpace.SomeType).Assembly.Location
+```
 
-```./UtilMacOS```
+See `FreeAccessibilityChecker/PluginFiles/Plugins.md` and the example files in that folder for full details.
 
-Both the Util.exe and UtilMacOS applications are framework-dependent, so
-you must have .NET 10 installed to run them.
+---
+
+## Background Service (Scheduled Scanning)
+
+The built-in background service drives scheduled accessibility scans. Configure it in
+`appsettings.json` under the `BackgroundService` key:
+
+| Setting | Purpose |
+|---------|---------|
+| `Enabled` | Turn the scheduler on or off |
+| `IntervalSeconds` | How often to run (default: 60) |
+| `StartOnLoad` | `true` = run immediately at startup; `false` = wait for first interval |
+| `LogFilePath` | Folder for detailed scheduler log files |
+| `LoadBalancingFilter` | Restrict to a specific server name — prevents duplicate scans in load-balanced deployments |
+
+To add custom work to the scheduler, either override `ProcessBackgroundTasksApp` in
+`DataAccess.App.cs` or create a `BackgroundProcess` plugin (see `ExampleBackgroundProcess.cs`).
+
+### IIS Hosting
+
+To keep the scheduler running continuously under IIS:
+- Set **Application Pool Start Mode** to `AlwaysRunning`
+- Enable **Preload** on the application (requires the IIS Application Initialization feature)
+
+---
+
+## Compliance Context
+
+| Standard | Applies To | Deadline |
+|---------|-----------|---------|
+| WCAG 2.1 Level AA | All WSU digital services (USER-01 + UPPM 10.45) | Now |
+| WCAG 2.2 Level AA | All WSU digital services (USER-01) | July 1, 2026 |
+| ADA Title II (DOJ rule) | State/local government web + mobile | April 26, 2027 (50K+ entities) |
+
+See `ACCESSIBILITY_GUIDELINES.md` for the full compliance pyramid, WCAG criterion checklists,
+and a breakdown of what each scanning engine covers.
+
+---
+
+## Documentation
+
+All docs live in the `Docs/` folder and are indexed in `Docs/009_project_architecture_overview.md`.
+
+| Doc | Topic |
+|-----|-------|
+| `000_quickstart.md` | Local setup, CLI commands, AI agent commands |
+| `006_architecture.md` | Architecture index and hook pattern guide |
+| `007_patterns.playwright.md` | Playwright scanning patterns |
+| `007_patterns.crud_api.md` | Three-endpoint API convention |
+| `007_patterns.signalr.md` | Real-time scan progress via SignalR |
+| `008_components.md` | UI component index |
+| `009_project_architecture_overview.md` | Full solution map with ASCII diagrams |
+| `ACCESSIBILITY_GUIDELINES.md` | WCAG 2.1/2.2 checklists and compliance pyramid |
+
+---
+
+## 🧭 Plain-English Briefing — The Boss Questions
+
+*The questions a decision-maker actually asks, answered in plain terms. Every file link opens the exact source on GitHub.*
+
+**How does this work?**
+FreeAccessibilityChecker opens each page of a website in a real web browser (Microsoft Edge, running invisibly), then turns **four separate accessibility checkers loose on that page at the same time**. It merges their findings into one de-duplicated list, ranks each issue by how many of the four engines agree it's real, and captures a stack of visual evidence — annotated overlays, seven color-blindness simulations, and a "screen-reader view." You drive it two ways: the **web app** (schedule scans, review issues, download PDF reports) or the **command line** (`scan`/`crawl` any URL, no web UI). Results are saved to a database (web) or written to disk (CLI), and stream live into the browser while the scan runs.
+
+**What technology does it use — and where exactly?**
+
+| Technology | What it's for | Exact location |
+|---|---|---|
+| Playwright (headless Edge) | Drives the real browser that loads each page | [ScannerEngine.cs#L37-L42](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/ScannerEngine.cs#L37-L42) |
+| axe-core (Deque) | Engine 1 of 4 — industry-standard rules | [AxeCoreRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/AxeCoreRunner.cs) |
+| IBM Equal Access | Engine 2 of 4 | [IbmEqualAccessRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/IbmEqualAccessRunner.cs) |
+| HTML CodeSniffer (Squiz) | Engine 3 of 4 | [HtmlCodeSnifferRunner.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/HtmlCodeSnifferRunner.cs) |
+| Custom HtmlChecker | Engine 4 of 4 — regex/structural checks | [HtmlChecker.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/HtmlChecker.cs) |
+| **Consensus scorer** | Merges the 4 engines, normalizes rule IDs, ranks by agreement | [ConsensusScorer.cs#L75](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/ConsensusScorer.cs#L75) |
+| Blazor WebAssembly (.NET 10) | The web UI is C# running in the browser | [Client/Program.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Client/Program.cs) |
+| SignalR | Streams live scan progress to the browser | [DataAccess.SignalR.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.DataAccess/DataAccess.SignalR.cs) |
+| Entity Framework Core (5 DB engines) | Stores sites, runs, violations | [EFDataModel.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.EFModels/EFModels/EFDataModel.cs) |
+| QuestPDF | Renders the PDF audit reports | [App.DataAccess.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.DataAccess/FreeAccessibilityChecker.App.DataAccess.cs) |
+| Roslyn | Compiles drop-in C# plugins at runtime | [Plugins.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Plugins/Plugins.cs) |
+
+**Why does this exist?**
+WSU must meet legal accessibility deadlines — WCAG 2.1 AA now, WCAG 2.2 AA by **July 1, 2026**, and the ADA Title II rule by 2027. Commercial accessibility scanners are expensive per-seat or per-scan, and you can't see inside them. EIT built this to scan WSU's own sites at scale, on a schedule, with auditable evidence — and released it free so any organization under the same obligations can use it.
+
+**What does it accomplish that other tools don't?**
+- **Four engines, not one.** Most scanners wrap a single engine (usually axe-core). Running four and *scoring by agreement* catches more issues and tells you which findings are most certain.
+- **Visual proof, not just a list.** Overlays, 7 color-vision simulations, screen-reader view, and a full screenshot trail — evidence an auditor (or your boss) can actually look at.
+- **Same engine, web *and* CLI.** The scanner is a pure library used identically by the website and the terminal, so a developer's local check and the scheduled audit produce identical results.
+- **Free and open.** No per-seat licensing; the rules and scoring are fully inspectable.
+
+**Terminology & "can I see it?"**
+- **WCAG 2.1 / 2.2 AA** — the accessibility standard (and conformance level) the law points to.
+- **Engine** — one accessibility checker (axe-core, IBM, HTML CodeSniffer, or our HtmlChecker).
+- **Consensus / confidence** — how many of the four engines flagged the same issue; higher = more certain. Computed in [ConsensusScorer.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/ConsensusScorer.cs).
+- **CVD** — Color Vision Deficiency (color-blindness); the scanner renders 7 types via [CvdSimulator.cs](https://github.com/WSU-EIT/FreeAI/blob/main/FreeAccessibilityChecker/FreeAccessibilityChecker.Scanner/CvdSimulator.cs).
+- **Overlay** — a screenshot with the problems drawn directly onto the page.
+- *See it:* full architecture write-ups and ASCII maps are in [Docs/](./Docs); per-run screenshot evidence is written under `Docs/showcase/runs/latest/` when the audit is regenerated (see "Regenerating the audit evidence (A11yAudit)" above).
+
+**The hard part, drawn** — how one page becomes a ranked, evidence-backed report:
+
+```
+ ┌─────────────┐  "scan this site"     ┌────────────────────────────────────────────────┐
+ │ YOU          │ ──────────────────▶ │ Web app (schedule/queue)  OR  CLI (scan / crawl) │
+ │ or schedule  │                      └──────────────────────┬─────────────────────────┘
+ └──────▲──────┘                                               │ ScannerEngine.ScanAll / ScanPage
+        │                                                       ▼
+        │                                  ┌──────────────────────────────────────────────┐
+        │                                  │ Playwright launches headless Edge, logs in if  │
+        │                                  │ needed, loads & waits for the page to settle   │
+        │                                  └──────────────────────┬───────────────────────┘
+        │                                                          │ one page's live DOM
+        │              ╔═══════════════════════ THE HARD PART ═════╪═══════════════════════╗
+        │              ║         run 4 independent engines on the SAME page                ║
+        │              ║  ┌────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────────┐     ║
+        │              ║  │axe-core│  │IBM Equal │  │HTML CodeSniff│  │ HtmlChecker  │     ║
+        │              ║  └───┬────┘  └────┬─────┘  └──────┬───────┘  └──────┬───────┘     ║
+        │              ║      └────────────┴── each speaks its OWN ──────────┘             ║
+        │              ║                  rule IDs & severities                            ║
+        │              ║                          │ ConsensusScorer.Merge()                ║
+        │              ║                          ▼                                        ║
+        │              ║   normalize every tool's rule ID → one canonical ID, group        ║
+        │              ║   duplicates, score = (#tools that AGREE) ÷ (#tools that COULD    ║
+        │              ║   check it), then rank by confidence, then by severity            ║
+        │              ╚══════════════════════════╪══════════════════════════════════════╝
+        │                                          ▼
+        │                     ┌──────────────────────────────────────────────┐
+        │                     │ capture evidence: overlays, 7 CVD sims,        │
+        │                     │ screen-reader view, screenshots, PDF + markdown│
+        │                     └──────────────────────┬───────────────────────┘
+        │  live progress (SignalR) + stored results  │ saved to EF Core DB (web) / disk (CLI)
+        └────────────────────────────────────────────┘
+```
+
+---
+
+## About WSU-EIT
+
+FreeAccessibilityChecker is developed and maintained by
+[Enrollment Information Technology (EIT)](https://em.wsu.edu/eit/) at
+[Washington State University](https://wsu.edu). EIT builds and operates the
+technology systems that support enrollment services across WSU, and created
+FreeAccessibilityChecker to help the university — and anyone else who needs it — meet
+web accessibility standards.
+
+This project is open-source under the [MIT License](LICENSE). Contributions,
+bug reports, and feature requests are welcome — open an issue or submit a pull
+request on [GitHub](https://github.com/WSU-EIT/FreeA11yChecker).
+
+---
+
+*© Washington State University — Enrollment Information Technology (EIT)*  
+*[github.com/WSU-EIT](https://github.com/WSU-EIT) · [em.wsu.edu/eit](https://em.wsu.edu/eit/)*

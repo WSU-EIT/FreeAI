@@ -1,0 +1,361 @@
+@* The Pages tab on Edit Site: the site's scan pages, and Explore (discover links on the live site). *@
+@inject BlazorDataModel Model
+
+@if (Active) {
+    <div class="mb-2">
+        <button type="button" class="btn btn-success btn-sm" @onclick="AddPage">
+            <Language Tag="AddPage" IncludeIcon="true" />
+        </button>
+        <button type="button" class="btn btn-outline-info btn-sm" @onclick="DiscoverLinks" disabled="@_discoverLoading">
+            @if (_discoverLoading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            } else {
+                <i class="fas fa-search"></i>
+            }
+            Explore
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="SavePages">
+            <Language Tag="SaveAll" IncludeIcon="true" />
+        </button>
+    </div>
+
+    @if (_showDiscoverPanel && _discoverResult != null) {
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Discovered Links</strong>
+                <button type="button" class="btn-close" @onclick="@(() => _showDiscoverPanel = false)"></button>
+            </div>
+            <div class="card-body">
+                @if (!String.IsNullOrEmpty(_discoverResult.ErrorMessage)) {
+                    <div class="alert alert-danger">@_discoverResult.ErrorMessage</div>
+                }
+
+                @if (_discoverResult.InternalLinks.Any()) {
+                    <h6>Internal Links (@_discoverResult.InternalLinks.Count)</h6>
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" @onclick="SelectAllDiscovered">Select All</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="SelectNoneDiscovered">Select None</button>
+                    </div>
+                    <div style="max-height:300px; overflow-y:auto;" class="mb-2">
+                        @foreach (var link in _discoverResult.InternalLinks.OrderBy(x => x.Path)) {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="@("disc-" + link.Path.GetHashCode())"
+                                        checked="@_selectedDiscoveredPaths.Contains(link.Path)"
+                                        @onchange="@(e => ToggleDiscoveredPath(link.Path, (bool)(e.Value ?? false)))" />
+                                <label class="form-check-label" for="@("disc-" + link.Path.GetHashCode())">
+                                    <code>@link.Path</code>
+                                    @if (!String.IsNullOrEmpty(link.Text)) {
+                                        <small class="text-muted ms-1">— @link.Text</small>
+                                    }
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm" @onclick="AddSelectedDiscoveredPages"
+                            disabled="@(!_selectedDiscoveredPaths.Any())">
+                        <i class="fas fa-plus"></i> Add Selected (@_selectedDiscoveredPaths.Count)
+                    </button>
+                } else if (String.IsNullOrEmpty(_discoverResult.ErrorMessage)) {
+                    <p class="text-muted">No new internal links discovered.</p>
+                }
+
+                @if (_discoverResult.ExternalLinks.Any()) {
+                    <h6 class="mt-3">External Links (@_discoverResult.ExternalLinks.Count)</h6>
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-1" @onclick="SelectAllDiscoveredExternal">Select All</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="SelectNoneDiscoveredExternal">Select None</button>
+                    </div>
+                    <div style="max-height:200px; overflow-y:auto;" class="mb-2">
+                        @foreach (var link in _discoverResult.ExternalLinks.OrderBy(x => x.Url)) {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="@("disc-ext-" + link.Url.GetHashCode())"
+                                        checked="@_selectedDiscoveredExternalUrls.Contains(link.Url)"
+                                        @onchange="@(e => ToggleDiscoveredExternalUrl(link.Url, (bool)(e.Value ?? false)))" />
+                                <label class="form-check-label" for="@("disc-ext-" + link.Url.GetHashCode())">
+                                    <i class="fas fa-external-link-alt me-1"></i> <code>@link.Url</code>
+                                    @if (!String.IsNullOrEmpty(link.Text)) {
+                                        <small class="text-muted ms-1">— @link.Text</small>
+                                    }
+                                </label>
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-success btn-sm" @onclick="AddSelectedDiscoveredExternalAsSites"
+                            disabled="@(!_selectedDiscoveredExternalUrls.Any())">
+                        <i class="fas fa-plus"></i> Add Selected as New Sites (@_selectedDiscoveredExternalUrls.Count)
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    @if (Pages.Any()) {
+        <table class="table table-sm">
+            <thead>
+                <tr class="table-dark">
+                    <th><Language Tag="Path" ReplaceSpaces="true" /></th>
+                    <th class="center" style="width:1%;"><Language Tag="RequiresAuth" ReplaceSpaces="true" /></th>
+                    <th class="center" style="width:1%;"><Language Tag="Enabled" ReplaceSpaces="true" /></th>
+                    <th style="width:80px;"><Language Tag="SortOrder" ReplaceSpaces="true" /></th>
+                    <th style="width:1%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var page in Pages.OrderBy(x => x.SortOrder)) {
+                    <tr>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" @bind="page.Path" @bind:event="oninput" />
+                        </td>
+                        <td class="center">
+                            <input type="checkbox" class="form-check-input" @bind="page.RequiresAuth" />
+                        </td>
+                        <td class="center">
+                            <input type="checkbox" class="form-check-input" @bind="page.Enabled" />
+                        </td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm" @bind="page.SortOrder" min="0" />
+                        </td>
+                        <td>
+                            <DeleteConfirmation ButtonSize="xs" OnConfirmed="@(() => DeletePage(page.SitePageId))"
+                                    CancelText="@Helpers.ConfirmButtonTextCancel"
+                                    DeleteText="@Helpers.ConfirmButtonTextDelete"
+                                    ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else {
+        <Language Tag="NoItemsToShow" />
+    }
+}
+
+@code {
+    /// <summary>Whether the Pages tab is the one showing. The component stays in place while other tabs show, so Explore results are kept.</summary>
+    [Parameter] public bool Active { get; set; }
+
+    [Parameter] public List<DataObjects.SitePage> Pages { get; set; } = new();
+
+    [Parameter] public EventCallback<List<DataObjects.SitePage>> PagesChanged { get; set; }
+
+    [Parameter] public DataObjects.Site Site { get; set; } = new();
+
+    private bool _discoverLoading = false;
+    private bool _showDiscoverPanel = false;
+    private DataObjects.DiscoverLinksResult? _discoverResult = null;
+    private HashSet<string> _selectedDiscoveredPaths = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _selectedDiscoveredExternalUrls = new(StringComparer.OrdinalIgnoreCase);
+
+    private Task AddPage()
+    {
+        Pages.Add(new DataObjects.SitePage {
+            SitePageId = Guid.Empty,
+            SiteId = Site.SiteId,
+            Path = "/",
+            Enabled = true,
+            IncludeInScan = true,
+            SortOrder = Pages.Count,
+        });
+        return PagesChanged.InvokeAsync(Pages);
+    }
+
+    private async Task SavePages()
+    {
+        Model.ClearMessages();
+        Model.Message_Saving();
+
+        foreach (var p in Pages) {
+            p.SiteId = Site.SiteId;
+        }
+
+        var saved = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", Pages);
+
+        Model.ClearMessages();
+
+        if (saved != null) {
+            Pages = saved;
+            await PagesChanged.InvokeAsync(Pages);
+            Model.Message_Saved();
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private async Task DeletePage(Guid pageId)
+    {
+        if (pageId == Guid.Empty) {
+            Pages = Pages.Where(x => x.SitePageId != pageId).ToList();
+            await PagesChanged.InvokeAsync(Pages);
+            return;
+        }
+
+        Model.ClearMessages();
+        Model.Message_Deleting();
+
+        var deleted = await Helpers.GetOrPost<DataObjects.BooleanResponse>("api/Data/DeleteSitePages", new List<Guid> { pageId });
+
+        Model.ClearMessages();
+
+        if (deleted != null && deleted.Result) {
+            Pages = Pages.Where(x => x.SitePageId != pageId).ToList();
+            await PagesChanged.InvokeAsync(Pages);
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private async Task DiscoverLinks()
+    {
+        _discoverLoading = true;
+        _showDiscoverPanel = false;
+        _discoverResult = null;
+        _selectedDiscoveredPaths.Clear();
+        _selectedDiscoveredExternalUrls.Clear();
+        StateHasChanged();
+
+        string baseUrl = Site.BaseUrl.TrimEnd('/');
+        string url = baseUrl + "/";
+        List<string> additionalUrls = Pages
+            .Where(p => !String.IsNullOrWhiteSpace(p.Path) && p.Path != "/")
+            .Select(p => baseUrl + (p.Path.StartsWith("/") ? p.Path : "/" + p.Path))
+            .ToList();
+        var filter = new DataObjects.DiscoverLinksFilter { SiteId = Site.SiteId, Url = url, AdditionalUrls = additionalUrls };
+        _discoverResult = await Helpers.GetOrPost<DataObjects.DiscoverLinksResult>("api/Data/DiscoverLinks", filter);
+
+        if (_discoverResult != null) {
+            // Pre-select all internal links.
+            foreach (var link in _discoverResult.InternalLinks) {
+                _selectedDiscoveredPaths.Add(link.Path);
+            }
+            _showDiscoverPanel = true;
+        }
+
+        _discoverLoading = false;
+        StateHasChanged();
+    }
+
+    private void ToggleDiscoveredPath(string path, bool selected)
+    {
+        if (selected) {
+            _selectedDiscoveredPaths.Add(path);
+        } else {
+            _selectedDiscoveredPaths.Remove(path);
+        }
+    }
+
+    private void SelectAllDiscovered()
+    {
+        if (_discoverResult != null) {
+            foreach (var link in _discoverResult.InternalLinks) {
+                _selectedDiscoveredPaths.Add(link.Path);
+            }
+        }
+    }
+
+    private void SelectNoneDiscovered()
+    {
+        _selectedDiscoveredPaths.Clear();
+    }
+
+    private async Task AddSelectedDiscoveredPages()
+    {
+        if (_discoverResult == null || !_selectedDiscoveredPaths.Any()) return;
+
+        int sortOrder = Pages.Count;
+        List<DataObjects.SitePage> newPages = new();
+
+        foreach (string path in _selectedDiscoveredPaths) {
+            sortOrder++;
+            newPages.Add(new DataObjects.SitePage {
+                SitePageId = Guid.Empty,
+                SiteId = Site.SiteId,
+                Path = path,
+                Enabled = true,
+                IncludeInScan = true,
+                SortOrder = sortOrder,
+            });
+        }
+
+        Model.ClearMessages();
+        Model.Message_Saving();
+
+        var saved = await Helpers.GetOrPost<List<DataObjects.SitePage>>("api/Data/SaveSitePages", newPages);
+
+        Model.ClearMessages();
+
+        if (saved != null) {
+            Pages.AddRange(saved);
+            await PagesChanged.InvokeAsync(Pages);
+            _showDiscoverPanel = false;
+            Model.Message_Saved();
+        } else {
+            Model.UnknownError();
+        }
+    }
+
+    private void ToggleDiscoveredExternalUrl(string url, bool selected)
+    {
+        if (selected) {
+            _selectedDiscoveredExternalUrls.Add(url);
+        } else {
+            _selectedDiscoveredExternalUrls.Remove(url);
+        }
+    }
+
+    private void SelectAllDiscoveredExternal()
+    {
+        if (_discoverResult != null) {
+            foreach (var link in _discoverResult.ExternalLinks) {
+                _selectedDiscoveredExternalUrls.Add(link.Url);
+            }
+        }
+    }
+
+    private void SelectNoneDiscoveredExternal()
+    {
+        _selectedDiscoveredExternalUrls.Clear();
+    }
+
+    private async Task AddSelectedDiscoveredExternalAsSites()
+    {
+        if (_discoverResult == null || !_selectedDiscoveredExternalUrls.Any()) return;
+
+        List<DataObjects.Site> newSites = new();
+
+        foreach (string url in _selectedDiscoveredExternalUrls) {
+            string name = url;
+            try {
+                name = new Uri(url).Host;
+            } catch { }
+
+            newSites.Add(new DataObjects.Site {
+                SiteId = Guid.Empty,
+                TenantId = Model.TenantId,
+                Name = name,
+                BaseUrl = url,
+                Enabled = false,
+                MaxConcurrency = 5,
+                PublicVisible = true,
+            });
+        }
+
+        Model.ClearMessages();
+        Model.Message_Saving();
+
+        var saved = await Helpers.GetOrPost<List<DataObjects.Site>>("api/Data/SaveSites", newSites);
+
+        Model.ClearMessages();
+
+        if (saved != null) {
+            // Remove added URLs from the local discovered-external list so they don't appear duplicated.
+            var addedUrls = new HashSet<string>(_selectedDiscoveredExternalUrls, StringComparer.OrdinalIgnoreCase);
+            _discoverResult.ExternalLinks = _discoverResult.ExternalLinks
+                .Where(x => !addedUrls.Contains(x.Url))
+                .ToList();
+            _selectedDiscoveredExternalUrls.Clear();
+            Model.Message_Saved();
+        } else {
+            Model.UnknownError();
+        }
+    }
+}

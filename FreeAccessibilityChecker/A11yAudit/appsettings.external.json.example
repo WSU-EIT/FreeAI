@@ -1,0 +1,24 @@
+﻿{
+  "_comment": "EXAMPLE: Drop this file into A11yAudit/ and rename it to scan any live website.",
+  "_comment2": "Set External to true so the orchestrator skips launching a local server.",
+  "_usage": "Rename to appsettings.<yoursite>.json — the orchestrator auto-discovers it.",
+  "External": true,
+  "Scanner": {
+	"SettleDelayMs": 5000,
+	"TimeoutMs": 60000,
+	"MaxConcurrency": 1,
+	"Headless": true,
+	"OutputDir": "runs/latest",
+	"Sites": {
+	  "ExampleSite": {
+		"BaseUrl": "https://example.com/",
+		"Credentials": [],
+		"Pages": [
+		  "/",
+		  "/about",
+		  "/contact"
+		]
+	  }
+	}
+  }
+}

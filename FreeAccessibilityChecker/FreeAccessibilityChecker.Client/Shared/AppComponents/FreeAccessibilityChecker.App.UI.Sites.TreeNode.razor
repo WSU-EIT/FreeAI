@@ -1,0 +1,279 @@
+@using Humanizer
+@* One row of the Sites tree: a site (with its page rows and bulk sub-site buttons) or a domain group, then its open child rows. *@
+@* The Sites page owns the state; this row reads it from Owner and runs the actions through Owner.Callback so the page redraws. *@
+
+@{
+    var node = Node;
+    int depth = Depth;
+    int indent = depth * 24;
+    if (node.Site != null) {
+        var site = node.Site;
+        string itemClass = "list-group-item d-flex align-items-center";
+        if (site.Deleted) {
+            itemClass += " list-group-item-secondary";
+        } else if (!site.Enabled) {
+            itemClass += " list-group-item-light text-muted";
+        }
+        bool hasChildren = node.Children.Any();
+        bool isExpanded = Owner._expandedTreeNodes.Contains(node.Key);
+        <div class="@itemClass" style="padding-left: @(12 + indent)px;">
+            @if (hasChildren) {
+                <button type="button" class="btn btn-sm btn-link p-0 me-2 text-dark" style="width:24px; height:24px; z-index:2;"
+                        @onclick="Owner.Callback(() => Owner.ToggleTreeNode(node.Key))" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                        aria-label="@(isExpanded ? "Collapse " + site.Name : "Expand " + site.Name)"
+                        aria-expanded="@isExpanded.ToString().ToLower()">
+                    <i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right")" aria-hidden="true"></i>
+                </button>
+            } else {
+                <span style="width:20px; display:inline-block;" class="me-2" aria-hidden="true"></span>
+            }
+            @if (Owner._bulkMode) {
+                <div class="me-2" @onclick:stopPropagation="true">
+                    @{var checkState = Owner.GetSiteCheckState(site);}
+                    <input type="checkbox" class="form-check-input" id="site-check-@site.SiteId"
+                            aria-label="@($"Select {site.Name}")"
+                            checked="@(checkState != "unchecked")"
+                            @onchange="Owner.Callback<ChangeEventArgs>(e => Owner.ToggleSite(site, (bool)e.Value!))" />
+                </div>
+            }
+            <a href="@(Helpers.BuildUrl("Settings/SiteRuns/" + site.SiteId))" class="flex-grow-1 text-decoration-none text-reset">
+                <div class="d-flex align-items-center mb-1">
+                    <strong class="me-2">@site.Name</strong>
+                    @if (!site.Enabled) {
+                        <span class="badge bg-secondary me-1">Disabled</span>
+                    }
+                    @if (Owner._scanningIds.Contains(site.SiteId)) {
+                        <span class="badge bg-info me-1">
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            @if (Owner._scanProgress.ContainsKey(site.SiteId)) {
+                                var p = Owner._scanProgress[site.SiteId];
+                                @($"Scanning {p.CurrentPage}/{p.TotalPages}")
+                            } else {
+                                @("Scanning")
+                            }
+                        </span>
+                    } else if (Owner._queuedIds.Contains(site.SiteId)) {
+                        <span class="badge bg-warning text-dark me-1" title="Waiting in queue">
+                            <i class="fas fa-clock me-1"></i>Queued
+                        </span>
+                    } else {
+                        @((MarkupString)Owner.GetStatusBadge(site))
+                    }
+                </div>
+                <div class="d-flex align-items-center text-muted small">
+                    <span class="me-3">@site.BaseUrl</span>
+                    @if (site.LastScanAt.HasValue) {
+                        <span class="me-3"><i class="fas fa-clock me-1"></i>@site.LastScanAt.Value.Humanize()</span>
+                    }
+                    @if (site.LastViolationCount > 0 || site.LastCriticalCount > 0) {
+                        <span class="me-2">
+                            <span class="badge bg-dark badge-sm">@site.LastViolationCount violations</span>
+                            @if (site.LastCriticalCount > 0) {
+                                <span class="badge bg-danger badge-sm ms-1">@site.LastCriticalCount critical</span>
+                            }
+                        </span>
+                    }
+                    @{
+                        int pageCount = Owner._sitePageCounts.ContainsKey(site.SiteId) ? Owner._sitePageCounts[site.SiteId] : 0;
+                        bool pagesExpanded = Owner._expandedSites.Contains(site.SiteId);
+                    }
+                    <button type="button" class="btn btn-sm btn-link p-0 me-2 text-decoration-none"
+                            @onclick="Owner.Callback(() => Owner.ToggleExpand(site.SiteId))"
+                            @onclick:stopPropagation="true" @onclick:preventDefault="true"
+                            aria-label="@(pagesExpanded ? "Collapse pages list" : "Expand pages list")"
+                            aria-expanded="@pagesExpanded.ToString().ToLower()"
+                            title="@(pagesExpanded ? "Hide pages" : "Show pages")">
+                        <i class="fas @(pagesExpanded ? "fa-chevron-down" : "fa-chevron-right") me-1" aria-hidden="true"></i>
+                        <i class="fas fa-file-alt me-1" aria-hidden="true"></i>@pageCount pages
+                    </button>
+                    @if (hasChildren) {
+                        <span class="badge bg-light text-dark border me-2">@FreeAccessibilityCheckerSiteTree.CountDescendants(node) sub-sites</span>
+                    }
+                </div>
+            </a>
+            <div class="d-flex align-items-center ms-2" @onclick:stopPropagation="true">
+                @if (site.Enabled && !Owner._scanningIds.Contains(site.SiteId) && !Owner._queuedIds.Contains(site.SiteId)) {
+                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                            title="@($"Run scan: {site.Name}")"
+                            aria-label="@($"Run scan: {site.Name}")"
+                            @onclick="Owner.Callback(() => Owner.ScanNow(site.SiteId))">
+                        <i class="fas fa-play" aria-hidden="true"></i>
+                    </button>
+                }
+                @{ var parentSiteForDemote = Owner.FindSameHostParentSite(site); }
+                @if (parentSiteForDemote != null) {
+                    <button type="button" class="btn btn-sm btn-outline-warning me-1"
+                            @onclick="Owner.Callback(() => Owner.ConfirmConvertSiteToPage(site, parentSiteForDemote))"
+                            title="@($"Convert this Site into a page (and its sub-pages) of its parent: {parentSiteForDemote.Name}. Deletes this site's scan history.")"
+                            aria-label="@($"Convert site {site.Name} to a page of {parentSiteForDemote.Name}")">
+                        <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                    </button>
+                }
+                <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))" class="btn btn-sm btn-outline-secondary me-1"
+                        title="@($"Settings: {site.Name}")"
+                        aria-label="@($"Settings: {site.Name}")">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                </a>
+                <DeleteConfirmation OnConfirmed="Owner.Callback(() => Owner.DeleteSite(site.SiteId))"
+                        CancelText="@Helpers.ConfirmButtonTextCancel"
+                        DeleteText="@Helpers.ConfirmButtonTextDelete"
+                        ConfirmDeleteText="@Helpers.ConfirmButtonTextConfirmDelete" />
+            </div>
+        </div>
+        @if (Owner._bulkMode && hasChildren && isExpanded) {
+            int childTotal = FreeAccessibilityCheckerSiteTree.CountDescendants(node);
+            int childEnabled = FreeAccessibilityCheckerSiteTree.CountEnabledDescendants(node);
+            <div class="list-group-item py-1 d-flex align-items-center" style="padding-left: @(36 + indent)px; background-color: #f8f9fa;">
+                <small class="text-muted me-2">@childEnabled / @childTotal sub-sites enabled</small>
+                <div class="btn-group" @onclick:stopPropagation="true">
+                    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.75rem;"
+                            @onclick="Owner.Callback(() => Owner.EnableSubSites(node))" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                            title="Enable all sub-sites under @site.Name">
+                        <i class="fas fa-check-square me-1"></i>Enable All Under
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.75rem;"
+                            @onclick="Owner.Callback(() => Owner.DisableSubSites(node))" @onclick:preventDefault="true" @onclick:stopPropagation="true"
+                            title="Disable all sub-sites under @site.Name">
+                        <i class="far fa-square me-1"></i>Disable All Under
+                    </button>
+                </div>
+            </div>
+        }
+        @if (Owner._expandedSites.Contains(site.SiteId)) {
+            @if (Owner._sitePages.ContainsKey(site.SiteId)) {
+                @if (!Owner._sitePages[site.SiteId].Any()) {
+                    <div class="list-group-item py-2 text-muted small" style="padding-left: @(48 + indent)px;">
+                        <i class="fas fa-info-circle me-1"></i>No pages configured.
+                        <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))" class="ms-2">
+                            Add pages →
+                        </a>
+                    </div>
+                } else if (Owner._bulkMode) {
+                    @* ── Bulk-edit mode: simple checkbox list for fast multi-select ── *@
+                    <div class="list-group-item py-2" style="padding-left: @(48 + indent)px; background-color: #f8f9fa;">
+                        @foreach (var page in Owner._sitePages[site.SiteId].OrderBy(p => p.SortOrder)) {
+                            string pageCheckId = "page-check-" + page.SitePageId;
+                            <div @key="page.SitePageId" class="form-check mb-1">
+                                <input type="checkbox" class="form-check-input" id="@pageCheckId" @bind="page.Enabled" />
+                                <label class="form-check-label" for="@pageCheckId">
+                                    @(page.Path)
+                                    @if (!String.IsNullOrEmpty(page.Title)) {
+                                        <small class="text-muted">(@(page.Title))</small>
+                                    }
+                                </label>
+                            </div>
+                        }
+                    </div>
+                } else {
+                    @* ── Normal mode: full row per page, matching site row style ── *@
+                    @foreach (var page in Owner._sitePages[site.SiteId].OrderBy(p => p.SortOrder)) {
+                        string pageRowClass = "list-group-item d-flex align-items-center";
+                        if (!page.Enabled) {
+                            pageRowClass += " list-group-item-light text-muted";
+                        }
+                        <div @key="page.SitePageId" class="@pageRowClass" style="padding-left: @(48 + indent)px;">
+                            <span style="width:20px; display:inline-block;" class="me-2" aria-hidden="true"></span>
+                            <i class="fas fa-file-alt me-2 text-muted" aria-hidden="true"></i>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center">
+                                    <code class="me-2">@(page.Path)</code>
+                                    @if (!page.Enabled) {
+                                        <span class="badge bg-secondary me-1">Disabled</span>
+                                    }
+                                    @if (page.RequiresAuth) {
+                                        <span class="badge bg-info text-dark me-1" title="Requires authentication">
+                                            <i class="fas fa-lock me-1"></i>Auth
+                                        </span>
+                                    }
+                                </div>
+                                @if (!String.IsNullOrEmpty(page.Title)) {
+                                    <div class="text-muted small">@(page.Title)</div>
+                                }
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-info me-1"
+                                    @onclick="Owner.Callback(() => Owner.PromotePageToSite(site, page))"
+                                    title="@($"Promote {page.Path} into its own Site (e.g. for a virtual sub-app that needs its own auth/schedule)")"
+                                    aria-label="@($"Promote page {page.Path} to a new Site")">
+                                <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                            </button>
+                            <a href="@(Helpers.BuildUrl("Settings/EditSite/" + site.SiteId))"
+                                    class="btn btn-sm btn-outline-secondary me-1"
+                                    title="@($"Edit page: {page.Path}")"
+                                    aria-label="@($"Edit page: {page.Path}")">
+                                <i class="fas fa-cog" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    }
+                }
+            } else {
+                <div class="list-group-item py-2 text-muted small" style="padding-left: @(48 + indent)px;">
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Loading pages...
+                </div>
+            }
+        }
+        @if (isExpanded) {
+            foreach (var child in node.Children.OrderBy(c => c.Label)) {
+                <FreeAccessibilityChecker_App_UI_Sites_TreeNode Owner="Owner" Node="child" Depth="depth + 1" />
+            }
+        }
+    } else {
+        @* Group node (no site, just a label) — render as a collapsible header *@
+        bool isExpanded = Owner._expandedTreeNodes.Contains(node.Key);
+        int groupTotal = FreeAccessibilityCheckerSiteTree.CountDescendants(node);
+        int groupEnabled = FreeAccessibilityCheckerSiteTree.CountEnabledDescendants(node);
+        <div class="list-group-item list-group-item-light d-flex align-items-center fw-bold"
+                style="padding-left: @(12 + indent)px;">
+            <button class="btn btn-sm btn-link p-0 me-2 text-dark" style="width:20px;"
+                    @onclick="Owner.Callback(() => Owner.ToggleTreeNode(node.Key))" @onclick:preventDefault="true"
+                    aria-label="@(isExpanded ? "Collapse " + node.Label : "Expand " + node.Label)"
+                    aria-expanded="@isExpanded.ToString().ToLower()">
+                <i class="fas @(isExpanded ? "fa-chevron-down" : "fa-chevron-right")" aria-hidden="true"></i>
+            </button>
+            @if (Owner._bulkMode) {
+                <div class="me-2" @onclick:stopPropagation="true">
+                    @{ bool groupAllEnabled = groupEnabled == groupTotal && groupTotal > 0;
+                       bool groupNoneEnabled = groupEnabled == 0; }
+                    <input type="checkbox" class="form-check-input" id="group-check-@node.Key"
+                            aria-label="@($"Select all sites under {node.Label}")"
+                            checked="@groupAllEnabled"
+                            @onchange="Owner.Callback<ChangeEventArgs>(e => Owner.ToggleGroupNode(node, (bool)e.Value!))" />
+                </div>
+            }
+            <i class="fas fa-globe me-2 text-muted" role="button" @onclick="Owner.Callback(() => Owner.ToggleTreeNode(node.Key))"></i>
+            <span role="button" @onclick="Owner.Callback(() => Owner.ToggleTreeNode(node.Key))" class="me-auto">@node.Label</span>
+            <span class="badge bg-light text-dark border ms-2">@groupTotal</span>
+            @if (Owner._bulkMode) {
+                <span class="badge @(groupEnabled == groupTotal ? "bg-success" : groupEnabled > 0 ? "bg-warning text-dark" : "bg-secondary") ms-1"
+                        style="font-size:0.7rem;">@groupEnabled enabled</span>
+                <div class="btn-group ms-2" @onclick:stopPropagation="true">
+                    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.7rem;"
+                            @onclick="Owner.Callback(() => Owner.SetGroupEnabled(node, true))" @onclick:preventDefault="true"
+                            title="Enable all @groupTotal sites under @node.Label">
+                        <i class="fas fa-check-square me-1"></i>All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.7rem;"
+                            @onclick="Owner.Callback(() => Owner.SetGroupEnabled(node, false))" @onclick:preventDefault="true"
+                            title="Disable all @groupTotal sites under @node.Label">
+                        <i class="far fa-square me-1"></i>None
+                    </button>
+                </div>
+            }
+        </div>
+        @if (isExpanded) {
+            foreach (var child in node.Children.OrderBy(c => c.Label)) {
+                <FreeAccessibilityChecker_App_UI_Sites_TreeNode Owner="Owner" Node="child" Depth="depth + 1" />
+            }
+        }
+    }
+}
+
+@code {
+    /// <summary>How many levels down the tree this row is; sets its indent.</summary>
+    [Parameter] public int Depth { get; set; }
+
+    /// <summary>The site or group this row shows.</summary>
+    [Parameter, EditorRequired] public FreeAccessibilityCheckerSiteTreeNode Node { get; set; } = null!;
+
+    /// <summary>The Sites page that owns the tree state.</summary>
+    [Parameter, EditorRequired] public FreeAccessibilityChecker_App_UI_Sites Owner { get; set; } = null!;
+}
